@@ -103,6 +103,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
+import com.facilio.readingkpi.commands.create.PrepareReadingKpiCreationCommand;
+import com.facilio.readingkpi.commands.create.SetFieldAndModuleIdCommand;
+import com.facilio.readingkpi.commands.create.SetParentRuleIdForNamespaceCommand;
+import com.facilio.readingkpi.commands.list.AddNamespaceInKpiListCommand;
+import com.facilio.readingkpi.commands.list.FetchMetricAndUnitCommand;
+import com.facilio.readingkpi.commands.update.PrepareReadingKpiForUpdateCommand;
+import com.facilio.readingkpi.commands.update.UpdateNamespaceAndFieldsCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
 import com.facilio.relation.command.GenerateRelationDeleteAPIDataCommand;
@@ -112,10 +119,13 @@ import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.CountCommand;
+import com.facilio.workflows.command.UpdateWorkflowCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
+
+import static com.facilio.bmsconsole.commands.TransactionChainFactory.*;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -991,6 +1001,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ValidationForJobPlanCategory());
         return chain;
     }
+
     public static FacilioChain getUpdateJobPlanChain() {
         FacilioChain chain = getDefaultChain();
         // added this command to prefill/remove properties in JobPlanTask's additionInfo object
@@ -2028,6 +2039,36 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RemoveBreakShiftRelationshipCommand());
         return c;
+    }
+
+    public static FacilioChain addReadingKpi() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PrepareReadingKpiCreationCommand());
+        chain.addCommand(getAddCategoryReadingChain());
+        chain.addCommand(new SetFieldAndModuleIdCommand());
+        return chain;
+    }
+
+    public static FacilioChain addReadingKpiNamespace() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SetParentRuleIdForNamespaceCommand());
+        chain.addCommand(addNamespaceAndFieldsChain());
+        return chain;
+    }
+
+    public static FacilioChain getNameSpaceAndSupplements() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FetchMetricAndUnitCommand());
+        chain.addCommand(new AddNamespaceInKpiListCommand());
+        return chain;
+    }
+
+    public static FacilioChain updateReadingKpiWorkflowAndNamespace() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PrepareReadingKpiForUpdateCommand());
+        chain.addCommand(new UpdateNamespaceAndFieldsCommand());
+        chain.addCommand(new UpdateWorkflowCommand());
+        return chain;
     }
 
 

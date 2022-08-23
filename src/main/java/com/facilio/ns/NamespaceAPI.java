@@ -1,86 +1,92 @@
 package com.facilio.ns;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingrule.context.NewReadingRuleContext;
-import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
-import com.facilio.rule.AbstractRuleInterface;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@Log4j
 public class NamespaceAPI {
 
-    public static Map<Long, NameSpaceContext> getReadingRuleNamespaces(Long fieldId) throws Exception {
-        return getReadingRuleNamespaces(null, fieldId);
-    }
-
-    public static Map<Long, NameSpaceContext> getReadingRuleNamespaces(Long resourceId, Long fieldId) throws Exception {
+    public static List<NameSpaceContext> getNamespacesByFieldId(Long fieldId) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on("New_Reading_Rule.ID = Namespace.PARENT_RULE_ID")
-                .andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(NSType.READING_RULE.getIndex()), NumberOperators.EQUALS));
+                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID");
+        selectBuilder.andCondition(CriteriaAPI.getCondition("Namespace.STATUS", "status", String.valueOf(true), BooleanOperators.IS));
 
         selectBuilder.andCustomWhere("Namespace.ID IN (SELECT NAMESPACE_ID FROM Namespace_Fields WHERE FIELD_ID=? )", fieldId);
 
         List<Map<String, Object>> maps = selectBuilder.get();
+        LOGGER.debug("fetching namespaces : " + selectBuilder);
+        LOGGER.debug("result map : " + maps);
         if (CollectionUtils.isEmpty(maps)) {
-            return new HashMap<>();
+            return new ArrayList<>();
         }
 
+        return constructNamespaceAndFields(maps);
+    }
+
+    private static List<NameSpaceContext> constructNamespaceAndFields(List<Map<String, Object>> maps) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<Long, NameSpaceContext> nsMap = new HashMap<>();
 
         for (Map<String, Object> m : maps) {
 
-            Long parentRuleId = (Long) m.get("parentRuleId");
-            NameSpaceContext ns = nsMap.get(parentRuleId);
+            Long nsId = (Long) m.get("id");
+            NameSpaceContext ns = nsMap.get(nsId);
             if (ns == null) {
                 ns = FieldUtil.getAsBeanFromMap(m, NameSpaceContext.class);
-                nsMap.put(parentRuleId, ns);
+                nsMap.put(nsId, ns);
+                updateWorkflow(ns);
             }
 
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
-
-            if (field.getResourceId() == null || field.getResourceId() == -1L) {
-                field.setResourceId(resourceId);
+            if (field.getPrimary() != null && field.getPrimary()) {
+                field.setResourceId(null);
+                if (alreadyExistsInList(ns.getFields(), field)) {
+                    continue;
+                }
             }
-
-            if (field.getResourceId() == resourceId) {
-                ns.addField(field);
+            if(field.getRelMapId()!=null){
+                RelationMappingContext mapping = RelationUtil.getRelationMapping(field.getRelMapId());
+                field.setRelMapContext(mapping);
             }
-
+            ns.addField(field);
+            field.setField(modBean.getField(field.getFieldId()));
         }
-
-        return nsMap;
-    }
-
-    public static NameSpaceContext getNameSpaceById1(Long id) throws Exception {
-        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-        select.select(NamespaceModuleAndFieldFactory.getNSAndFields())
-                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ID", "id", id.toString(), NumberOperators.EQUALS));
-        Map<String, Object> resObj = select.fetchFirst();
-        if (resObj != null) {
-            NameSpaceContext ns = FieldUtil.getAsBeanFromMap(resObj, NameSpaceContext.class);
-            return ns;
-        }
-        return null;
+        return nsMap.values().stream().collect(Collectors.toList());
     }
 
     public static NameSpaceContext getNameSpaceByRuleId(Long ruleId) throws Exception {
@@ -88,56 +94,36 @@ public class NamespaceAPI {
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".PARENT_RULE_ID", "ruleId", ruleId.toString(), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(NSType.READING_RULE.getIndex()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".PARENT_RULE_ID", "parentRuleId", ruleId.toString(), NumberOperators.EQUALS));
 
         List<Map<String, Object>> maps = selectBuilder.get();
-        if (CollectionUtils.isEmpty(maps)) {
-            return null;
+        if (CollectionUtils.isNotEmpty(maps)) {
+            List<NameSpaceContext> nameSpaceContexts = constructNamespaceAndFields(maps);
+            if (nameSpaceContexts.size() > 0) {
+                return nameSpaceContexts.get(0);
+            }
         }
-        return constructNamespaceAndFields(maps);
+
+        return null;
     }
 
-    public static NameSpaceContext getNameSpaceById(Long nsId) throws Exception {
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
-        selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
+    private static void updateWorkflow(NameSpaceContext namespaceContext) throws Exception {
+        if(namespaceContext.getWorkflowId() != null) { //TODO: should be remove this check
+            WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(namespaceContext.getWorkflowId());
+            namespaceContext.setWorkflowContext(workflowContext);
+        }
+    }
+
+    public static int updateNsStatus(Long ruleId,boolean status) throws Exception{
+        NameSpaceContext namespaceContext=getNameSpaceByRuleId(ruleId);
+        namespaceContext.setStatus(status);
+        Map<String,Object> namespaceMap =FieldUtil.getAsProperties(namespaceContext);
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".ID", "id", nsId.toString(), NumberOperators.EQUALS));
-
-        List<Map<String, Object>> maps = selectBuilder.get();
-        if (CollectionUtils.isEmpty(maps)) {
-            return null;
-        }
-
-        return constructNamespaceAndFields(maps);
-    }
-
-    private static NameSpaceContext constructNamespaceAndFields(List<Map<String, Object>> maps) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        NameSpaceContext nsCtx = null;
-        List<NameSpaceField> fields = new ArrayList<>();
-        for (Map<String, Object> m : maps) {
-
-            if (nsCtx == null) {
-                nsCtx = FieldUtil.getAsBeanFromMap(m, NameSpaceContext.class);
-            }
-
-            NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
-            if (field.getPrimary() != null && field.getPrimary()) {
-                if (alreadyExistsInList(fields, field)) {
-                    continue;
-                }
-                field.setResourceId(null);
-            }
-            FacilioField facilioField = modBean.getField(field.getFieldId());
-            field.setField(modBean.getField(field.getFieldId()));
-            field.setModule(modBean.getModule(facilioField.getModuleId()));
-            fields.add(field);
-        }
-        nsCtx.setFields(fields);
-
-        return nsCtx;
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
+                .andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(),NamespaceModuleAndFieldFactory.getNamespaceModule()));
+        int cnt = updateBuilder.update(namespaceMap);
+        return cnt;
     }
 
     private static boolean alreadyExistsInList(List<NameSpaceField> fields, NameSpaceField field) {
@@ -186,25 +172,79 @@ public class NamespaceAPI {
         return resourceIds;
     }
 
-    public static AbstractRuleInterface getParentRule(NameSpaceContext ns) throws Exception {
-        switch (ns.getTypeEnum()) {
-            case READING_RULE:
-                return NewReadingRuleAPI.getRule(ns.getParentRuleId());
-            case FAULT_IMPACT_RULE:
-                //TODO:SPK Need to convert single query
-                NewReadingRuleContext rule = NewReadingRuleAPI.getRule(ns.getParentRuleId());
-                return FaultImpactAPI.getFaultImpactContext(rule.getImpactId());
-            case KPI_RULE:
-                throw new RuntimeException("Not implemented");
-        }
-        throw new Exception("Rule type is not matched!!");
-    }
-
     public static void deleteNameSpacesFromRuleId(Long parentId, NSType typ) throws Exception {
         GenericDeleteRecordBuilder del = new GenericDeleteRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", parentId.toString(), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(typ.getIndex()), NumberOperators.EQUALS));
         del.delete();
+    }
+
+    public static void deleteExistingInclusionRecords(NameSpaceContext ns) throws Exception {
+        if (ns.getId() != null) {
+            GenericDeleteRecordBuilder del = new GenericDeleteRecordBuilder()
+                    .table(NamespaceModuleAndFieldFactory.getNamespaceInclusionModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "namespaceId", String.valueOf(ns.getId()), NumberOperators.EQUALS));
+            int records = del.delete();
+            LOGGER.info("Successfully deleted " + records + " records.");
+        }
+    }
+
+    private static List<Map<String, Object>> getInclusionList(long nsId, List<Long> resources) {
+        long orgId = AccountUtil.getCurrentOrg().getId();
+        List<Map<String, Object>> props = new ArrayList<>();
+        for (Long resourceId : resources) {
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("orgId", orgId);
+            prop.put("namespaceId", nsId);
+            prop.put("resourceId", resourceId);
+
+            props.add(prop);
+        }
+        return props;
+    }
+
+    public static Long addNamespace(NameSpaceContext ns) throws Exception {
+
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields());
+        long id = insertBuilder.insert(FieldUtil.getAsProperties(ns));
+        ns.setId(id);
+
+        addInclusions(ns);
+
+        return id;
+    }
+
+    public static void addInclusions(NameSpaceContext ns) throws Exception {
+        List<Long> assetIds = ns.getIncludedAssetIds();
+        if (CollectionUtils.isNotEmpty(assetIds)) {
+            List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assetIds);
+
+            throwIfAssetNotFound(assetIds, assetInfo);
+            List<Long> newAssetIds = assetInfo.stream().map(info -> info.getId()).collect(Collectors.toList());
+
+            deleteExistingInclusionRecords(ns);
+
+            List<Map<String, Object>> inclusionList = getInclusionList(ns.getId(), newAssetIds);
+
+            new GenericInsertRecordBuilder()
+                    .fields(NamespaceModuleAndFieldFactory.getNamespaceInclusionFields())
+                    .table(NamespaceModuleAndFieldFactory.getNamespaceInclusionModule().getTableName())
+                    .addRecords(inclusionList)
+                    .save();
+        }
+    }
+
+    private static void throwIfAssetNotFound(List<Long> assetIds, List<AssetContext> assetInfo) {
+        if (assetIds.size() != assetInfo.size()) {
+            for (Long asset : assetIds) {
+                boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();
+                if (!present) {
+                    throw new RuntimeException("Asset (" + asset + ") is not found");
+                }
+            }
+        }
     }
 }

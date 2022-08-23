@@ -2,10 +2,8 @@ package com.facilio.readingrule.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -28,13 +26,12 @@ import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
 import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
@@ -53,7 +50,6 @@ public class NewReadingRuleAPI {
     public static final String READING_RULE_FIELD_TABLE_NAME = "Rule_Readings";
 
     public static void addReadingRule(NewReadingRuleContext ruleCtx) throws Exception {
-        ruleCtx.setStatus(true);
         updateModuleAndFields(ruleCtx);
         Map<String, Object> fieldMap = FieldUtil.getAsProperties(ruleCtx);
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -111,6 +107,19 @@ public class NewReadingRuleAPI {
         return getReadingRulesFromMap(maps);
     }
 
+    public static List<NewReadingRuleContext> getRules(Collection<Long> ruleIds) throws Exception {
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+        select.select(FieldFactory.getNewReadingRuleFields())
+                .table(ModuleFactory.getNewReadingRuleModule().getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(ruleIds, ModuleFactory.getNewReadingRuleModule()));
+
+        List<Map<String, Object>> maps = select.get();
+        if (CollectionUtils.isEmpty(maps)) {
+            return null;
+        }
+        return getReadingRulesFromMap(maps);
+    }
+
     public static List<NewReadingRuleContext> getReadingRulesFromMap(@NonNull List<Map<String, Object>> rulesMap) throws Exception {
         return getReadingRulesFromMap(rulesMap, true);
     }
@@ -123,7 +132,7 @@ public class NewReadingRuleAPI {
             if (fetchChildren) {
                 fetchAndUpdateAlarmDetails(readingRule);
                 updateNamespaceAndFields(readingRule);
-                updateWorkflow(readingRule);
+               // updateWorkflow(readingRule);
 //                updateFaultImpact(readingRule);
             }
             rules.add(readingRule);
@@ -132,16 +141,12 @@ public class NewReadingRuleAPI {
     }
 
     private static void updateFaultImpact(NewReadingRuleContext readingRule) throws Exception {
-        if(readingRule.getImpactId() != null) {
+        if (readingRule.getImpactId() != null) {
             FaultImpactContext faultImpactContext = FaultImpactAPI.getFaultImpactContext(readingRule.getImpactId());
             readingRule.setImpact(faultImpactContext);
         }
     }
 
-    private static void updateWorkflow(NewReadingRuleContext readingRule) throws Exception {
-        WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(readingRule.getWorkflowId());
-        readingRule.setWorkflowContext(workflowContext);
-    }
 
     private static void updateNamespaceAndFields(NewReadingRuleContext readingRule) throws Exception {
         NameSpaceContext nsCtx = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId());
@@ -188,6 +193,12 @@ public class NewReadingRuleAPI {
         return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
 
+    public static NewReadingRuleContext getRuleByNSId(Long nsId) throws Exception {
+        List<NewReadingRuleContext> rules = getRules(new Condition[]{
+                CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS)});
+        return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
+    }
+
     public static Map<String, Object> getMatchedResourcesWithCount(NewReadingRuleContext readingRule) throws Exception {
         Map<String, Object> resourcesWithCount = new HashMap<>();
         List<Long> matchedResourceIds = NamespaceAPI.fetchMatchedResourceIds(readingRule.getNs().getId());
@@ -209,17 +220,6 @@ public class NewReadingRuleAPI {
         return rcaRuleIds;
     }
 
-    public static Long addNamespace(NameSpaceContext ns) throws Exception {
-
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields());
-        long id = insertBuilder.insert(FieldUtil.getAsProperties(ns));
-        ns.setId(id);
-
-        return id;
-    }
-
     public static void addNamespaceFields(Long nsId, Map<Long, ResourceContext> assetsMap, List<NameSpaceField> fields) throws Exception {
         deleteFieldsIfAlreadyExists(nsId);
         List<Map<String, Object>> assetList = new ArrayList<>();
@@ -229,12 +229,28 @@ public class NewReadingRuleAPI {
             if (resourceID == -1) {
                 if (assetsMap != null) {
                     for (ResourceContext asset : assetsMap.values()) {
-                        prepareNSField(fld, nsId, asset.getId(), true);
-                        assetList.add(FieldUtil.getAsProperties(fld));
+                        if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
+                            RelationMappingContext mapping = RelationUtil.getRelationMapping(fld.getRelMapContext().getMappingLinkName());
+                            fld.setRelMapId(mapping.getId());
+                            fld.setRelMapContext(mapping);
+                            prepareNSField(fld, nsId,asset.getId(), false);
+                            assetList.add(FieldUtil.getAsProperties(fld));
+                        } else {
+                            prepareNSField(fld, nsId, asset.getId(), true);
+                            assetList.add(FieldUtil.getAsProperties(fld));
+                        }
                     }
                 } else {
-                    prepareNSField(fld, nsId, resourceID, true);
-                    assetList.add(FieldUtil.getAsProperties(fld));
+                        if (fld.getRelMapContext()!=null && fld.getRelMapContext().getMappingLinkName() != null) {
+                            RelationMappingContext mapping = RelationUtil.getRelationMapping(fld.getRelMapContext().getMappingLinkName());
+                            fld.setRelMapId(mapping.getId());
+                            fld.setRelMapContext(mapping);
+                            prepareNSField(fld, nsId, resourceID, false);
+                            assetList.add(FieldUtil.getAsProperties(fld));
+                    } else {
+                        prepareNSField(fld, nsId, resourceID, true);
+                        assetList.add(FieldUtil.getAsProperties(fld));
+                    }
                 }
             } else {
                 prepareNSField(fld, nsId, resourceID, false);
@@ -252,9 +268,9 @@ public class NewReadingRuleAPI {
 
     private static void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
         GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
-                    .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                    .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS));
-            delBuilder.delete();
+                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS));
+        delBuilder.delete();
 
     }
 
@@ -267,9 +283,8 @@ public class NewReadingRuleAPI {
         fld.setModule(module);
         fld.setNsId(nsId);
         fld.setResourceId(resourceId);
-        if(fld.getPrimary() == null) {
-            fld.setPrimary(isPrimary);
-        }
+        fld.setPrimary(isPrimary);
+
     }
 
     public static Map<Long, String> getReadingRuleNamesByIds(List<Long> ruleIds) throws Exception {

@@ -23,7 +23,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext newRuleCtx = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        newRuleCtx.getWorkflowContext().setIsV2Script(true);
+        newRuleCtx.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
         NewReadingRuleContext oldRule = NewReadingRuleAPI.getRule(newRuleCtx.getId());
         if (oldRule == null) {
             throw new Exception("Rule (" + newRuleCtx.getId() + ") is not found!");
@@ -31,7 +31,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         constructRuleDetails(context, newRuleCtx, oldRule);
         setAssets(oldRule);
         context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
-        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getWorkflowContext());
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getNs().getWorkflowContext());
 
         return false;
     }
@@ -58,18 +58,18 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         if (newCtx.getAlarmRCARules() != null) {
             oldRule.setAlarmRCARules(newCtx.getAlarmRCARules());
         }
-        if (newCtx.getNs() != null) {
+        if (newCtx.getNs() != null && newCtx.getNs().getWorkflowContext()!=null) {
             newCtx.getNs().setId(oldRule.getNs().getId());
+            newCtx.getNs().getWorkflowContext().setId(oldRule.getNs().getWorkflowId());
+            newCtx.getNs().setWorkflowId(newCtx.getNs().getWorkflowContext().getId());
             oldRule.setNs(newCtx.getNs());
         }
-        if (newCtx.getWorkflowContext() != null) {
-            oldRule.setWorkflowContext(newCtx.getWorkflowContext());
-        }
+
         if (newCtx.getImpact() != null) {
             oldRule.setImpact(newCtx.getImpact());
-        }
-        if (oldRule.getImpact() != null && newCtx.getImpact().getId() == -1) {
-            ctx.put("canDeleteFaultImpact", true);
+            if (newCtx.getImpact().getId() == -1) {
+                ctx.put("canDeleteFaultImpact", true);
+            }
         }
     }
 

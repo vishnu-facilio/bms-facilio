@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
@@ -48,6 +50,7 @@ import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 public class LookupSpecialTypeUtil {
@@ -228,6 +231,11 @@ public class LookupSpecialTypeUtil {
 					.select(FieldFactory.getKPICategoryFields())
 					.table(ModuleFactory.getKPICategoryModule().getTableName());
 
+			String search = (String) paramsMap.get("search");
+			if(StringUtils.isEmpty(search)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name",search, StringOperators.CONTAINS));
+            }
+
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<KPICategoryContext> kpiCategoryContext = FieldUtil.getAsBeanListFromMapList(props, KPICategoryContext.class);
@@ -405,11 +413,11 @@ public class LookupSpecialTypeUtil {
 			return EventAPI.getEvent(criteria);
 		}
         else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-				return NewReadingRuleAPI.getRules();
-			}else{
-				return ReadingRuleAPI.getReadingRules(criteria);
-			}
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+                return NewReadingRuleAPI.getRules();
+            }else{
+                return ReadingRuleAPI.getReadingRules(criteria);
+            }
         }
         else if (FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
             return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
@@ -488,8 +496,21 @@ public class LookupSpecialTypeUtil {
 			if (CollectionUtils.isNotEmpty(workflowRules)) {
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
 			}
-		}
-		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+    } else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+        if (!(ids instanceof List)) {
+            ids = new ArrayList<>(ids);
+        }
+        if(CollectionUtils.isNotEmpty(ids)) {
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+                List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getRules(ids);
+                return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
+            }
+            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
+            if (CollectionUtils.isNotEmpty(workflowRules)) {
+                return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
+            }
+        }
+    } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
 			if (CollectionUtils.isNotEmpty(sensorRules)) {
 				return sensorRules.stream().collect(Collectors.toMap(SensorRuleContext::getId, Function.identity()));
@@ -528,11 +549,13 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
-		}
-		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
-			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
-		}
-		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+
+        } else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+                return NewReadingRuleAPI.getRules(ids);
+            }
+            return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
+        } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 			return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
 		}
 		return null;

@@ -264,3 +264,6 @@ enums:
 
   - name: PMTriggerFrequency
     enumClassName: com.facilio.bmsconsole.context.PMTriggerV2$PMTriggerFrequency
+
+  - name: KPIType
+    enumClassName: com.facilio.readingkpi.context.KPIType

@@ -69,6 +69,7 @@ import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommand
 import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
+import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
@@ -171,12 +172,16 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
+import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
+import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
@@ -2208,15 +2213,15 @@ public class APIv3Config {
                 .build();
     }
 
-	@Module(FacilioConstants.ContextNames.PEOPLE)
-	public static Supplier<V3Config> getPeoples() {
-		return () -> new V3Config(V3PeopleContext.class, null)
-							 .create()
-							 .list()
-							 .summary()
-							 .afterFetch(new FetchLabourAndUserContextForPeople ())
-							 .build();
-	}
+    @Module(FacilioConstants.ContextNames.PEOPLE)
+    public static Supplier<V3Config> getPeoples() {
+        return () -> new V3Config(V3PeopleContext.class, null)
+                .create()
+                .list()
+                .summary()
+                .afterFetch(new FetchLabourAndUserContextForPeople())
+                .build();
+    }
 
 
     @Module(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
@@ -2235,6 +2240,26 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new OutgoingRecipientLoadSupplementsCommand())
                 .build();
+    }
+
+    @Module(FacilioConstants.ReadingKpi.READING_KPI)
+    public static Supplier<V3Config> getReadingKpi() {
+        return () -> new V3Config(ReadingKPIContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.addReadingKpi())
+                .afterSave(TransactionChainFactoryV3.addReadingKpiNamespace())
+                .update()
+                .afterSave(TransactionChainFactoryV3.updateReadingKpiWorkflowAndNamespace())
+                .list()
+                .beforeFetch(new LoadSupplementsForReadingKPICommand())
+                .afterFetch(TransactionChainFactoryV3.getNameSpaceAndSupplements())
+                .summary()
+                .beforeFetch(new LoadSupplementsForReadingKPICommand())
+                .afterFetch(TransactionChainFactoryV3.getNameSpaceAndSupplements())
+                .delete()
+                .afterDelete(new DeleteNamespaceReadingKpiCommand())
+                .build();
+
     }
 
     @Module(FacilioConstants.PeopleGroup.PEOPLE_GROUP)

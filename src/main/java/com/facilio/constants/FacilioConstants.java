@@ -3494,4 +3494,10 @@ public class FacilioConstants {
 	public static class Break {
 		public static final String BREAK = "break";
 	}
+
+    public static class ReadingKpi {
+        public static final String READING_KPI = "readingkpi";
+        public static final String READING_KPI_READINGS_TABLE = "KPIReadings";
+        public static final String READING_KPI_RESULT = "kpiResult";
+    }
 }

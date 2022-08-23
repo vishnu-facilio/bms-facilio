@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class NewReadingRuleContext implements ReadingRuleInterface, AbstractRuleInterface, Cloneable {
+public class  NewReadingRuleContext implements ReadingRuleInterface, AbstractRuleInterface, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,6 +39,10 @@ public class NewReadingRuleContext implements ReadingRuleInterface, AbstractRule
 
     Long createdBy;
 
+    Long modifiedTime;
+
+    Long modifiedBy;
+
     String appliedTo;
 
     List<Long> assets;
@@ -47,13 +51,11 @@ public class NewReadingRuleContext implements ReadingRuleInterface, AbstractRule
 
     RuleAlarmDetails alarmDetails;
 
+    FaultImpactContext impact;
+
     NameSpaceContext ns;
 
-    Long workflowId;
-
-    WorkflowContext workflowContext;
-
-    FaultImpactContext impact;
+    Long WorkflowId;
 
     Long impactId;
 
