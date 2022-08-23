@@ -53,8 +53,8 @@ public class AddWorkOrderModules extends SignUpData {
         FacilioModule woFcRelMod = new FacilioModule(name, displayName, tableName, entityType);
 
         List<FacilioField> fields = new ArrayList<>();
-        LookupField ticket = FieldFactory.getDefaultField("ticket",
-                "Ticket", "TICKET", FieldType.LOOKUP);
+        LookupField ticket = FieldFactory.getDefaultField("parent",
+                "Parent", "PARENT", FieldType.LOOKUP);
         ticket.setMainField(true);
         ticket.setLookupModule(ticketModule);
         fields.add(ticket);

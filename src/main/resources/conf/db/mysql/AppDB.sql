@@ -46576,7 +46576,7 @@ CREATE TABLE IF NOT EXISTS WorkOrder_FailureClass_Relationship (
     ID BIGINT AUTO_INCREMENT PRIMARY KEY,
     ORGID BIGINT,
     MODULEID           BIGINT,
-    TICKET           BIGINT,
+    PARENT           BIGINT,
     FAILURE_CLASS           BIGINT,
     FAILURE_CODE           BIGINT,
     FAILURE_PROBLEM           BIGINT,

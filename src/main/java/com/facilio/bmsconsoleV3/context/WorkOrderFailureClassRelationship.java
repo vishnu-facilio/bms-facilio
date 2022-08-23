@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class WorkOrderFailureClassRelationship extends V3Context {
 
-    private V3TicketContext ticket;
+    private V3TicketContext parent;
     private V3FailureClassContext failureClass;
     private V3FailureCodeContext failureCode;
     private V3FailureCodeProblemsContext failureProblem;
