@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CustomModuleDataFailureClassRelationship extends V3Context {
 
-    private CustomModuleDataV3 record;
+    private CustomModuleDataV3 parent;
     private V3FailureClassContext failureClass;
     private V3FailureCodeContext failureCode;
     private V3FailureCodeProblemsContext failureProblem;

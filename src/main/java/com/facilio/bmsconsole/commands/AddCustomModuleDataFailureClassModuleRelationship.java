@@ -74,8 +74,8 @@ public class AddCustomModuleDataFailureClassModuleRelationship extends FacilioCo
         FacilioModule cmFcRelMod = new FacilioModule(name, displayName, tableName, entityType);
 
         List<FacilioField> fields = new ArrayList<>();
-        LookupField record = FieldFactory.getDefaultField("record",
-                "Record", "RECORD", FieldType.LOOKUP);
+        LookupField record = FieldFactory.getDefaultField("parent",
+                "Parent", "PARENT", FieldType.LOOKUP);
         record.setMainField(true);
         record.setLookupModule(customModule);
         fields.add(record);
