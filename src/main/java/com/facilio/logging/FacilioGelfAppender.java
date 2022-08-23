@@ -231,7 +231,7 @@ public class FacilioGelfAppender extends GelfAppender {
 
     @Override
     public synchronized void doAppend(LoggingEvent event) {
-        if( FacilioLogHandler.isLoggable(event)) {
+        if( FacilioLogHandler.isLoggable(event, false)) {
             super.doAppend(FacilioLogHandler.addEventProps(event));
         }
     }
