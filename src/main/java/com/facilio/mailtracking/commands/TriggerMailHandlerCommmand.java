@@ -23,7 +23,7 @@ import java.util.Map;
 @Log4j
 public class TriggerMailHandlerCommmand extends FacilioCommand {
 
-    private static final String CONF_PATH = "conf/mail/mailDataConf.yml";
+    private static final String CONF_PATH = FacilioUtil.normalizePath("conf/mail/mailDataConf.yml");
     private static final Map<String, OutgoingMailData> MAIL_DATA_MAP = initMailData();
     private static Map<String, OutgoingMailData> initMailData() {
         Yaml yaml = new Yaml();

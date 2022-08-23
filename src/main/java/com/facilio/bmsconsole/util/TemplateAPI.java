@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.emailtemplate.util.EmailStructureUtil;
 import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -72,8 +73,10 @@ import com.facilio.workflows.util.WorkflowUtil;
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Fcu"};
-	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
+	private static final String DEFAULT_TEMPLATES_FILE_PATH = FacilioUtil.normalizePath("conf/templates/defaultTemplates");
 	private static final String[] LANG = new String[]{"en"};
+	private static final String FTL_KEY_SUFFIX = "_ftl";
+	private static final String FTL_FILE_PATH = FacilioUtil.normalizePath("conf/templates/ftl/");
 	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
 	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
@@ -81,7 +84,7 @@ public class TemplateAPI {
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DefaultTemplateWorkflowsConf.class);
-			DefaultTemplateWorkflowsConf workflowsConf = (DefaultTemplateWorkflowsConf) jaxbContext.createUnmarshaller().unmarshal(new File(classLoader.getResource("conf/templates/templateWorkflows.xml").getFile()));
+			DefaultTemplateWorkflowsConf workflowsConf = (DefaultTemplateWorkflowsConf) jaxbContext.createUnmarshaller().unmarshal(new File(classLoader.getResource(FacilioUtil.normalizePath("conf/templates/templateWorkflows.xml")).getFile()));
 			Map<Integer, WorkflowContext> defaultWorkflows = new HashMap<>();
 			for (TemplateWorkflowConf workflowConf : workflowsConf.getDefaultTemplatesWorkflows()) {
 				WorkflowContext workflow = new WorkflowContext();
@@ -150,8 +153,6 @@ public class TemplateAPI {
 			return templates;
 		}
 	}
-	private static final String FTL_KEY_SUFFIX = "_ftl";
-	private static final String FTL_FILE_PATH = "conf/templates/ftl/";
 	private static boolean checkAndLoadFtl (JSONObject json, ClassLoader classLoader) throws Exception {
 		Set<String> keys = json.keySet();
 		boolean isFtl = false;

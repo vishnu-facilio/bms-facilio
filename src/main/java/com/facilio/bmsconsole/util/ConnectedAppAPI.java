@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -48,7 +49,7 @@ public class ConnectedAppAPI {
 	
 	public static String getIdPMetadata(String entityId, String loginURL, String logoutURL) throws Exception {
 		
-		File privateKeyFile = new File(ConnectedAppAPI.class.getClassLoader().getResource("conf/saml/saml.crt").getFile());
+		File privateKeyFile = new File(ConnectedAppAPI.class.getClassLoader().getResource(FacilioUtil.normalizePath("conf/saml/saml.crt")).getFile());
 		
 		String x509Cert = SAMLUtil.getFileAsString(privateKeyFile);
 		

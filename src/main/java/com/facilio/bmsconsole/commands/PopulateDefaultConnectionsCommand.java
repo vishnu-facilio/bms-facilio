@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,7 +21,7 @@ public class PopulateDefaultConnectionsCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(PopulateDefaultConnectionsCommand.class.getName());
 
-	private static final String DEFAULT_CONNECTIONS = "conf/defaultConnections.yml";
+	private static final String DEFAULT_CONNECTIONS = FacilioUtil.normalizePath("conf/defaultConnections.yml");
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

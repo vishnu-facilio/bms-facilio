@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.db.builder.DBUtil;
@@ -13,7 +14,7 @@ import com.facilio.db.util.SQLScriptRunner;
 
 public class AddEventModuleCommand extends FacilioCommand {
 	
-	private static final File EVENT_MODULE_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/eventModule.sql").getFile());
+	private static final File EVENT_MODULE_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/eventModule.sql")).getFile());
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

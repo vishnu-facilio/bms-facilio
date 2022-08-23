@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,7 +29,7 @@ public class AddDefaultGraphicsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		ClassLoader classLoader = AddDefaultGraphicsCommand.class.getClassLoader();
-		try(FileReader reader = new FileReader(classLoader.getResource("conf/graphics/defaultGraphics.json").getFile());) {
+		try(FileReader reader = new FileReader(classLoader.getResource(FacilioUtil.normalizePath("conf/graphics/defaultGraphics.json")).getFile());) {
 			long orgId = (long) context.get("orgId");
 
 			JSONParser jsonParser = new JSONParser();
@@ -52,7 +53,7 @@ public class AddDefaultGraphicsCommand extends FacilioCommand {
 					}
 
 					try (
-						FileReader canvasReader = new FileReader(classLoader.getResource("conf/graphics/" + canvasJSON).getFile());
+						FileReader canvasReader = new FileReader(classLoader.getResource(FacilioUtil.normalizePath("conf/graphics/" + canvasJSON)).getFile());
 						BufferedReader in = new BufferedReader(canvasReader);
 					) {
 						String inputLine;

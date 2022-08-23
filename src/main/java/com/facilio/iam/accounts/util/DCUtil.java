@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class DCUtil {
 
-    private static final String DC_FILE = "conf/datacenter.yml";
+    private static final String DC_FILE = FacilioUtil.normalizePath("conf/datacenter.yml");
     
     private static Map<Integer, Map<String,String>> dataCenters = new HashMap<>();
     

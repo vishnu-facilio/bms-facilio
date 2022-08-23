@@ -2,6 +2,7 @@ package com.facilio.tasker;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.taskengine.JobScheduler;
+import com.facilio.util.FacilioUtil;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -19,14 +20,14 @@ public class FacilioScheduler {
         public String getJobFilePath() {
             String schJobFile = FacilioProperties.getConfig("schedulejobfile");
             schJobFile = schJobFile == null ? "schedulerJobs" : schJobFile;
-            return "conf/" + schJobFile + ".xml";
+            return FacilioUtil.normalizePath("conf/") + schJobFile + ".xml";
         }
 
         @Override
         public String getExecFilePath() {
             String schJobFile = FacilioProperties.getConfig("scheduleexecutorsfile");
             schJobFile = schJobFile == null ? "executors" : schJobFile;
-            return "conf/" + schJobFile + ".xml";
+            return FacilioUtil.normalizePath("conf/") + schJobFile + ".xml";
         }
 
         @Override

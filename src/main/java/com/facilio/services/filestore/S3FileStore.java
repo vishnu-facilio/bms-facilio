@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
+import com.facilio.util.FacilioUtil;
 import com.google.common.io.ByteSource;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.log4j.LogManager;
@@ -47,7 +48,7 @@ import com.facilio.fs.FileInfo;
 public class S3FileStore extends FileStore {
 	private static final Logger LOGGER = LogManager.getLogger(S3FileStore.class.getName());
 	private static AmazonS3 AWS_S3_CLIENT = null;
-	private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home")+"/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
+	private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home")+ FacilioUtil.normalizePath("/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem");
 	private static final long EXPIRATION = 48 * 60* 60 * 1000;
 
 
@@ -311,7 +312,7 @@ public class S3FileStore extends FileStore {
 		}
 		if(staticBucket != null) {
 			AmazonS3 s3Client = getClient();
-			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/js/app.js");
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+FacilioUtil.normalizePath("/js/app.js"));
 		}
 		return objectExists;
 	}
@@ -375,7 +376,7 @@ public class S3FileStore extends FileStore {
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
 		if(staticBucket != null) {
 			AmazonS3 s3Client = getClient();
-			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/js/app.js");
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+FacilioUtil.normalizePath("/js/app.js"));
 		}
 		return objectExists;
 

@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,7 +17,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class testScript {
 
-	public static final String FilePath = "/home/prashanth/Desktop/test1.xlsx";
+	public static final String FilePath = FacilioUtil.normalizePath("/home/prashanth/Desktop/test1.xlsx");
 	
 	public static void main(String args []) throws Exception {
 		Workbook workbook = WorkbookFactory.create(new File(FilePath));

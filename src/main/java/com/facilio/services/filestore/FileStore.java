@@ -123,7 +123,7 @@ public abstract class FileStore {
 	}
 
 	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
-	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
+	private static final String NAMESPACE_CONF_PATH = FacilioUtil.normalizePath("conf/filestorenamespaces.yml");
 	private static final Map<String, NamespaceConfig> NAMESPACES = Collections.unmodifiableMap(initNamespaces());
 	private static final int DEFAULT_FILE_URL_EXPIRY = 300000;
 

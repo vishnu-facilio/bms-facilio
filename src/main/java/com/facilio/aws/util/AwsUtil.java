@@ -28,6 +28,7 @@ import com.facilio.fw.FacilioException;
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
+import com.facilio.util.FacilioUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -201,7 +202,7 @@ public class AwsUtil extends BaseAwsUtil{
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
 		if (staticBucket != null) {
 			AmazonS3 s3Client = getAmazonS3Client();
-			objectExists = s3Client.doesObjectExist(staticBucket, newVersion + "/js/app.js");
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion + FacilioUtil.normalizePath("/js/app.js"));
 		}
 		return objectExists;
 

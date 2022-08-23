@@ -3,10 +3,12 @@ package com.facilio.tasker;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.taskengine.InstantJobScheduler;
+import com.facilio.util.FacilioUtil;
+
 
 public class FacilioInstantJobScheduler {
-    private static final String INSTANT_JOB_FILE = "conf/instantJobs.xml";
-    private static final String INSTANT_JOB_EXECUTOR_FILE = "conf/instantjobexecutors.yml";
+    private static final String INSTANT_JOB_FILE = FacilioUtil.normalizePath("conf/instantJobs.xml");
+    private static final String INSTANT_JOB_EXECUTOR_FILE = FacilioUtil.normalizePath("conf/instantjobexecutors.yml");
 
     public static void init() throws Exception {
         InstantJobScheduler.initialize(new InstantJobConfigImpl());

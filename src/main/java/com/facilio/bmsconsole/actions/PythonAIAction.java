@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -154,7 +155,7 @@ public class PythonAIAction extends FacilioAction {
 	
 	private void runOnCommandLine(String filePath, Map<String, List<String>> trendLineMap, String trendLine, String degree) throws Exception{
 		ClassLoader classLoader = PythonAIAction.class.getClassLoader();
-		String ransacFilePath = classLoader.getResource("conf/AI/ransac.py").getPath();
+		String ransacFilePath = classLoader.getResource(FacilioUtil.normalizePath("conf/AI/ransac.py")).getPath();
 		
 		String pythonPath = FacilioProperties.getPythonPath();
 		String[] command = new String[]{pythonPath, ransacFilePath, filePath, degree};

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -15,7 +16,7 @@ public class ChatBotConstants {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ChatBotConstants.class.getName());
 	
-	private static final String DEFAULT_REPLIES = "conf/chatbot/chatBotDefaultReplies.yml";
+	private static final String DEFAULT_REPLIES = FacilioUtil.normalizePath("conf/chatbot/chatBotDefaultReplies.yml");
 	
 	public static final String CHAT_BOT_DEFAULT_CONFIRMATION_TEXT = "Thanks for providing me with the information";
 	

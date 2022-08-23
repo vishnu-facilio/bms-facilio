@@ -319,7 +319,7 @@
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
-		
+
 	</package>
 		
 </struts>

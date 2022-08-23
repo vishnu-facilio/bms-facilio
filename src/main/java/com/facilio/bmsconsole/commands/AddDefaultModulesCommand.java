@@ -11,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -24,7 +25,7 @@ public class AddDefaultModulesCommand extends FacilioCommand {
 
 	private static Logger logger = Logger.getLogger("AddDefaultModulesCommand");
 
-	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/defaultModules.sql").getFile());
+	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/defaultModules.sql")).getFile());
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

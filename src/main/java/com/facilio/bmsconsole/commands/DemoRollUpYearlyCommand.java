@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
@@ -35,8 +36,8 @@ import java.util.Map.Entry;
 public class DemoRollUpYearlyCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(DemoRollUpYearlyCommand.class.getName());
-	private static final String DEFAULT_DB_CONF_PATH = "conf/demorolluptables.yml"; 
-	private static final String DEFAULT_DB_ALARM_TABLE_CONF_PATH = "conf/demoRollUpAlarmTables.yml";
+	private static final String DEFAULT_DB_CONF_PATH = FacilioUtil.normalizePath("conf/demorolluptables.yml");
+	private static final String DEFAULT_DB_ALARM_TABLE_CONF_PATH = FacilioUtil.normalizePath("conf/demoRollUpAlarmTables.yml");
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 

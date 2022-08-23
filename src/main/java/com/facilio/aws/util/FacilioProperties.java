@@ -36,7 +36,7 @@ import com.opensymphony.xwork2.ActionContext;
 public class FacilioProperties {
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioProperties.class.getName());
-    private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
+    private static final String AWS_PROPERTY_FILE = FacilioUtil.normalizePath("conf/awsprops.properties");
 
 
     private static final Properties PROPERTIES = new Properties();
@@ -436,7 +436,7 @@ public class FacilioProperties {
         if (nodejs != null && !nodejs.trim().isEmpty()) {
             return nodejs;
         }
-        return "/usr/bin/node";
+        return FacilioUtil.normalizePath("/usr/bin/node");
     }
 
     public static boolean isSmtp() {
