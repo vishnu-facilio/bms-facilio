@@ -2072,7 +2072,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("transactionDate", "Transaction Date"));
 		columns.add(new ViewField("transactionType", "Transaction Type"));
 		columns.add(new ViewField("transactionSourceRecordId", "Record Id"));
-		columns.add(new ViewField("transactionRollUpModuleName", "Module Name"));
+		columns.add(new ViewField("transactionSourceModuleName", "Module Name"));
 		columns.add(new ViewField("transactionAmount", "Actual"));
 
 		return columns;
