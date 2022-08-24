@@ -975,9 +975,6 @@ public class FormsAPI {
 			case ContextNames.INVITE_VISITOR:
 				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
 				break;
-			case ContextNames.SERVICE_REQUEST:
-				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-				break;
 			case ContextNames.VISITOR_LOG:
 				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
 				fields.add(new FormField("isDenied", FieldDisplayType.DECISION_BOX, "Is Denied", Required.OPTIONAL, 1, 1));
