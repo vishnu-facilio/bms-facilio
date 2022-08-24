@@ -46,7 +46,8 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 			double lastPurchasedPrice = -1;
 			if (itemTypesIds != null && !itemTypesIds.isEmpty()) {
 				for (Long id : itemTypesIds) {
-					double quantity = getTotalQuantity(id, itemModule, itemFieldMap);
+					double quantity = getQuantity(id, itemModule, itemFieldMap,false);
+					double currentQuantity = getQuantity(id, itemModule, itemFieldMap,true);
 
 					SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>()
 							.select(itemFields).moduleName(itemModule.getName())
@@ -98,7 +99,8 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 
 					V3ItemTypesContext itemType = new V3ItemTypesContext();
 					itemType.setId(id);
-					itemType.setCurrentQuantity(quantity);
+					itemType.setQuantity(quantity);
+					itemType.setCurrentQuantity(currentQuantity);
 					itemType.setLastPurchasedDate(lastPurchasedDate);
 					itemType.setLastPurchasedPrice(lastPurchasedPrice);
 					itemType.setLastIssuedDate(lastIssuedDate);
@@ -116,7 +118,7 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 		return false;
 	}
 
-	public static double getTotalQuantity(long id, FacilioModule module, Map<String, FacilioField> itemFieldMap)
+	public static double getQuantity(long id, FacilioModule module, Map<String, FacilioField> itemFieldMap,Boolean getCurrentQuantity)
 			throws Exception {
 
 		if (id <= 0) {
@@ -124,7 +126,12 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 		}
 
 		List<FacilioField> field = new ArrayList<>();
-		field.add(FieldFactory.getField("totalQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
+		if(getCurrentQuantity){
+			field.add(FieldFactory.getField("currentQuantity", "sum(CURRENT_QUANTITY)", FieldType.DECIMAL));
+		}
+		else{
+			field.add(FieldFactory.getField("quantity", "sum(QUANTITY)", FieldType.DECIMAL));
+		}
 
 		SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>()
 				.select(field).moduleName(module.getName()).andCondition(CriteriaAPI
@@ -133,8 +140,11 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 
 		List<Map<String, Object>> rs = builder.getAsProps();
 		if (rs != null && rs.size() > 0) {
-			if (rs.get(0).get("totalQuantity") != null) {
-				return (double) rs.get(0).get("totalQuantity");
+			if (rs.get(0).get("currentQuantity") != null && getCurrentQuantity) {
+				return (double) rs.get(0).get("currentQuantity");
+			}
+			else if (rs.get(0).get("quantity") != null && !getCurrentQuantity){
+				return (double) rs.get(0).get("quantity");
 			}
 			return 0d;
 		}

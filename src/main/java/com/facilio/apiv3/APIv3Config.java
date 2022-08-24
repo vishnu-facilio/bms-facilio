@@ -119,6 +119,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
@@ -1625,6 +1626,8 @@ public class APIv3Config {
         return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
                 .create()
                 .update()
+                .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
+                .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
                 .summary()
                 .delete()

@@ -177,6 +177,22 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
+	private Double currentQuantity;
+	private Double reservedQuantity;
 
+	public Double getCurrentQuantity() {
+		return currentQuantity;
+	}
 
+	public void setCurrentQuantity(Double currentQuantity) {
+		this.currentQuantity = currentQuantity;
+	}
+
+	public Double getReservedQuantity() {
+		return reservedQuantity;
+	}
+
+	public void setReservedQuantity(Double reservedQuantity) {
+		this.reservedQuantity = reservedQuantity;
+	}
 }

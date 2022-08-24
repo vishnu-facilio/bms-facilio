@@ -3,9 +3,9 @@ package com.facilio.bmsconsoleV3.commands.transferRequest;
 import java.util.*;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestPurchasedItems;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -39,12 +39,12 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                     List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
                     for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList){
                     Long itemTypeId = itemTypeLineItem.getItemType().getId();
-                    ItemContext item = ItemsApi.getItemsForTypeAndStore(storeRoomId, itemTypeId);
+                    V3ItemContext item = V3ItemsApi.getItemsForTypeAndStore(storeRoomId, itemTypeId);
                     Long itemId = item.getId();
                     Long lastPurchasedDate = null;
                     double lastPurchasedPrice = 0;
-                    List<PurchasedItemContext> purchasedItems = new ArrayList<>();
-                    List<ItemTransactionsContext> itemTransactionsToBeAdded = new ArrayList<>();
+                    List<V3PurchasedItemContext> purchasedItems = new ArrayList<>();
+                    List<V3ItemTransactionsContext> itemTransactionsToBeAdded = new ArrayList<>();
 
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     String purchasedItemModuleName = FacilioConstants.ContextNames.TRANSFER_REQUEST_PURCHASED_ITEMS;
@@ -57,25 +57,25 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                             .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(transferRequestContexts.get(0).getId()), NumberOperators.EQUALS));
                     List<V3TransferRequestPurchasedItems> records = selectRecordsBuilder.get();
                     for (V3TransferRequestPurchasedItems record : records) {
-                        PurchasedItemContext purchasedItem = setPurchasedItem(record, item);
-                        lastPurchasedDate = purchasedItem.getModifiedTime();
+                        V3PurchasedItemContext purchasedItem = setPurchasedItem(record, item);
+                        lastPurchasedDate = purchasedItem.getCostDate();
                         lastPurchasedPrice = purchasedItem.getQuantity() * purchasedItem.getUnitcost();
                         purchasedItems.add(purchasedItem);
                         //Item Transactions
-                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item,transferRequestContexts.get(0).getId());
+                        V3ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item,transferRequestContexts.get(0).getId());
                         itemTransactionsToBeAdded.add(woItem);
                     }
                     String itemModuleName = FacilioConstants.ContextNames.PURCHASED_ITEM;
                     module = modBean.getModule(itemModuleName);
                     fields = modBean.getAllFields(itemModuleName);
-                    InsertRecordBuilder<PurchasedItemContext> readingBuilder = new InsertRecordBuilder<PurchasedItemContext>()
+                    InsertRecordBuilder<V3PurchasedItemContext> readingBuilder = new InsertRecordBuilder<V3PurchasedItemContext>()
                             .module(module).fields(fields).addRecords(purchasedItems);
                     readingBuilder.save();
                     //Item Transaction Insertion
                     FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
                     List<FacilioField> itemTransactionsFields = modBean
                             .getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-                    InsertRecordBuilder<ItemTransactionsContext> insertRecordBuilder = new InsertRecordBuilder<ItemTransactionsContext>()
+                    InsertRecordBuilder<V3ItemTransactionsContext> insertRecordBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
                             .module(itemTransactionsModule).fields(itemTransactionsFields).addRecords(itemTransactionsToBeAdded);
                     insertRecordBuilder.save();
                     //Updating last purchased price and date of item
@@ -91,7 +91,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                     map.put("lastPurchasedDate", lastPurchasedDate);
                     map.put("lastPurchasedPrice", lastPurchasedPrice);
 
-                    UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+                    UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                             .module(module).fields(updatedFields)
                             .andCondition(CriteriaAPI.getIdCondition(itemId, module));
                     updateBuilder.updateViaMap(map);
@@ -100,22 +100,21 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         }
         return false;
     }
-      private PurchasedItemContext setPurchasedItem(V3TransferRequestPurchasedItems record,ItemContext item){
-        PurchasedItemContext purchasedItem= new PurchasedItemContext();
+      private V3PurchasedItemContext setPurchasedItem(V3TransferRequestPurchasedItems record,V3ItemContext item){
+        V3PurchasedItemContext purchasedItem= new V3PurchasedItemContext();
         purchasedItem.setQuantity(record.getQuantity());
         purchasedItem.setCurrentQuantity(record.getQuantity());
         purchasedItem.setItem(item);
         purchasedItem.setItemType(item.getItemType());
         purchasedItem.setUnitcost(record.getUnitPrice());
-        purchasedItem.setModifiedTime(System.currentTimeMillis());
         purchasedItem.setSysModifiedTime(System.currentTimeMillis());
         purchasedItem.setSysCreatedTime(System.currentTimeMillis());
         purchasedItem.setCostDate(System.currentTimeMillis());
-        purchasedItem.setTtime(System.currentTimeMillis());
+
         return purchasedItem;
     }
-    private ItemTransactionsContext setItemTransaction(V3TransferRequestPurchasedItems record,PurchasedItemContext purchasedItem,ItemContext item,Long id){
-        ItemTransactionsContext woItem = new ItemTransactionsContext();
+    private V3ItemTransactionsContext setItemTransaction(V3TransferRequestPurchasedItems record,V3PurchasedItemContext purchasedItem,V3ItemContext item,Long id){
+        V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
         woItem.setTransactionState(TransactionState.TRANSFERRED_TO);
         woItem.setIsReturnable(false);
         if (purchasedItem != null) {
@@ -129,7 +128,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         woItem.setSysModifiedTime(System.currentTimeMillis());
         woItem.setParentId(id);
         woItem.setApprovedState(1);
-        woItem.setRemainingQuantity(0);
+        woItem.setRemainingQuantity(0.0);
         return woItem;
     }
 }

@@ -2,10 +2,12 @@ package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import java.util.*;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -34,16 +36,16 @@ public class UpdateToolTransactionAfterTransferCommandV3 extends FacilioCommand 
             Long storeRoomId = transferRequests.get(0).getTransferToStore().getId();
             List<V3TransferRequestLineItemContext> toolTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.TOOL_TYPES);
             for(V3TransferRequestLineItemContext toolTypeLineItem : toolTypesList) {
-            List<ToolTransactionContext> toolTransactiosnToBeAdded = new ArrayList<>();
+            List<V3ToolTransactionContext> toolTransactiosnToBeAdded = new ArrayList<>();
             long toolTypeId = toolTypeLineItem.getToolType().getId();
-            ToolContext tool = ToolsApi.getToolsForTypeAndStore(storeRoomId, toolTypeId);
+            V3ToolContext tool = V3ToolsApi.getToolsForTypeAndStore(storeRoomId, toolTypeId);
 
-            ToolTypesContext toolType = toolTypeLineItem.getToolType();
+            V3ToolTypesContext toolType = toolTypeLineItem.getToolType();
             double quantityTransferred = toolTypeLineItem.getQuantity();
-                ToolTransactionContext woTool = setWorkorderToolObj(quantityTransferred, tool, toolType,transferRequests.get(0).getId());
+                V3ToolTransactionContext woTool = setWorkorderToolObj(quantityTransferred, tool, toolType,transferRequests.get(0).getId());
                 toolTransactiosnToBeAdded.add(woTool);
 
-                InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
+                InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
                         .module(toolTransactionsModule).fields(toolTransactionsFields).addRecords(toolTransactiosnToBeAdded);
                 readingBuilder.save();
 
@@ -51,8 +53,8 @@ public class UpdateToolTransactionAfterTransferCommandV3 extends FacilioCommand 
         }
         return false;
     }
-   private ToolTransactionContext setWorkorderToolObj(double quantity, ToolContext tool, ToolTypesContext toolTypes,Long id){
-        ToolTransactionContext woTool = new ToolTransactionContext();
+   private V3ToolTransactionContext setWorkorderToolObj(double quantity, V3ToolContext tool, V3ToolTypesContext toolTypes,Long id){
+        V3ToolTransactionContext woTool = new V3ToolTransactionContext();
         woTool.setTransactionState(TransactionState.TRANSFERRED_TO);
         woTool.setIsReturnable(false);
         woTool.setQuantity(quantity);

@@ -3,8 +3,9 @@ package com.facilio.bmsconsoleV3.commands.transferRequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.StoreroomApi;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.util.V3StoreroomApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,48 +28,51 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
                 if (transferRequestContexts.get(0).getIsCompleted()) {
                     Long storeroomId = transferRequestContexts.get(0).getTransferToStore().getId();
-                    StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
+                    V3StoreRoomContext storeRoom = V3StoreroomApi.getStoreRoom(storeroomId);
 
                     if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES))){
                         List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
                         for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList) {
                             double quantityTransferred = itemTypeLineItem.getQuantity();
-                            ItemTypesContext itemType = itemTypeLineItem.getItemType();
+                            V3ItemTypesContext itemType = itemTypeLineItem.getItemType();
                             Long itemTypeId = itemTypeLineItem.getItemType().getId();
                             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                             String itemModuleName = FacilioConstants.ContextNames.ITEM;
                             FacilioModule module = modBean.getModule(itemModuleName);
                             List<FacilioField> fields = modBean.getAllFields(itemModuleName);
-                            SelectRecordsBuilder<ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<ItemContext>()
+                            SelectRecordsBuilder<V3ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ItemContext>()
                                     .module(module)
-                                    .beanClass(ItemContext.class)
+                                    .beanClass(V3ItemContext.class)
                                     .select(fields)
                                     .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
                                     .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeroomId), NumberOperators.EQUALS));
-                            List<ItemContext> items = selectRecordsBuilder.get();
+                            List<V3ItemContext> items = selectRecordsBuilder.get();
                             if (items.size() >= 1) {
                                 Long itemId = items.get(0).getId();
                                 double newQuantity = items.get(0).getQuantity() + quantityTransferred;
-
+                                double newCurrentQuantity = items.get(0).getCurrentQuantity() + quantityTransferred;
                                 List<FacilioField> updatedFields = new ArrayList<>();
                                 Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
                                 updatedFields.add(fieldsMap.get("quantity"));
+                                updatedFields.add(fieldsMap.get("currentQuantity"));
 
                                 Map<String, Object> map = new HashMap<>();
                                 map.put("quantity", newQuantity);
+                                map.put("currentQuantity", newCurrentQuantity);
 
                                 //update total quantity in fromStore in Item Table
-                                UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+                                UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                                         .module(module).fields(updatedFields)
                                         .andCondition(CriteriaAPI.getIdCondition(itemId, module));
                                 updateBuilder.updateViaMap(map);
                             } else {
-                                ItemContext itemRecord = new ItemContext();
+                                V3ItemContext itemRecord = new V3ItemContext();
                                 itemRecord.setItemType(itemType);
                                 itemRecord.setStoreRoom(storeRoom);
-                                itemRecord.setCostType(ItemContext.CostType.FIFO);
+                                itemRecord.setCostType(V3ItemContext.CostType.FIFO.getIndex());
                                 itemRecord.setQuantity(quantityTransferred);
-                                InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>()
+                                itemRecord.setCurrentQuantity(quantityTransferred);
+                                InsertRecordBuilder<V3ItemContext> readingBuilder = new InsertRecordBuilder<V3ItemContext>()
                                         .module(module).fields(fields).addRecord(itemRecord);
                                 readingBuilder.save();
 
@@ -81,19 +85,19 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                         for(V3TransferRequestLineItemContext toolTypeLineItem : toolTypesList) {
                         double quantityTransferred = toolTypeLineItem.getQuantity();
                         long toolTypeId = toolTypeLineItem.getToolType().getId();
-                        ToolTypesContext toolType = toolTypeLineItem.getToolType();
+                        V3ToolTypesContext toolType = toolTypeLineItem.getToolType();
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                         String toolModuleName = FacilioConstants.ContextNames.TOOL;
                         FacilioModule module = modBean.getModule(toolModuleName);
                         List<FacilioField> fields = modBean.getAllFields(toolModuleName);
 
-                        SelectRecordsBuilder<ToolContext> selectRecordsBuilder = new SelectRecordsBuilder<ToolContext>()
+                        SelectRecordsBuilder<V3ToolContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ToolContext>()
                                 .module(module)
-                                .beanClass(ToolContext.class)
+                                .beanClass(V3ToolContext.class)
                                 .select(fields)
                                 .andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
                                 .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeroomId), NumberOperators.EQUALS));
-                        List<ToolContext> tools = selectRecordsBuilder.get();
+                        List<V3ToolContext> tools = selectRecordsBuilder.get();
                         if (tools.size() >= 1) {
                             Long itemId = tools.get(0).getId();
                             double newQuantity = tools.get(0).getQuantity() + quantityTransferred;
@@ -108,19 +112,19 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                             map.put("currentQuantity", newCurrentQuantity);
                             map.put("lastPurchasedDate", System.currentTimeMillis());
                             //update total quantity in fromStore in Tool Table
-                            UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
+                            UpdateRecordBuilder<V3ToolContext> updateBuilder = new UpdateRecordBuilder<V3ToolContext>()
                                     .module(module).fields(updatedFields)
                                     .andCondition(CriteriaAPI.getIdCondition(itemId, module));
                             updateBuilder.updateViaMap(map);
                         } else {
-                            ToolContext toolRecord = new ToolContext();
+                            V3ToolContext toolRecord = new V3ToolContext();
                             toolRecord.setToolType(toolType);
                             toolRecord.setStoreRoom(storeRoom);
                             toolRecord.setQuantity(quantityTransferred);
                             toolRecord.setCurrentQuantity(quantityTransferred);
-                            toolRecord.setRate(0);
+                            toolRecord.setRate(0.0);
                             toolRecord.setLastPurchasedDate(System.currentTimeMillis());
-                            InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>()
+                            InsertRecordBuilder<V3ToolContext> readingBuilder = new InsertRecordBuilder<V3ToolContext>()
                                     .module(module).fields(fields).addRecord(toolRecord);
                             readingBuilder.save();
                         }

@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
@@ -260,5 +261,14 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setStoreRoom(StoreRoomContext storeRoom) {
 		this.storeRoom = storeRoom;
 	}
-	
+
+	private WorkOrderPlannedItemsContext workOrderPlannedItem;
+
+	public WorkOrderPlannedItemsContext getWorkOrderPlannedItem() {
+		return workOrderPlannedItem;
+	}
+
+	public void setWorkOrderPlannedItem(WorkOrderPlannedItemsContext workOrderPlannedItem) {
+		this.workOrderPlannedItem = workOrderPlannedItem;
+	}
 }

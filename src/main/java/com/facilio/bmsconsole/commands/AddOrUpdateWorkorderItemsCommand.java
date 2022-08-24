@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
@@ -72,6 +73,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 				ItemTypesContext itemType = getItemType(itemTypesId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
+
 				if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
 					if(!V3InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
@@ -110,11 +112,11 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 									approvalState = ApprovalState.APPROVED;
 								}
 								if (itemType.isRotating()) {
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem(), parentTransactionId, context);
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 
 								} else {
 									wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
-											parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
+											parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 								}
 								// updatePurchasedItem(purchaseditem);
 								wItem.setId(workorderitem.getId());
@@ -144,7 +146,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 									}
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									asset.setIsUsed(true);
-									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId, context);
+									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 									updatePurchasedItem(asset);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
@@ -167,7 +169,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 								if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
-											approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
+											approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
 								} else {
@@ -181,7 +183,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
+												parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 										requiredQuantity -= quantityUsedForTheCost;
 										workorderItemslist.add(woItem);
 										itemToBeAdded.add(woItem);
@@ -225,11 +227,14 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-													 ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
+													 ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context, WorkorderItemContext workOrderItem) throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setIsReturnable(false);
 		double costOccured = 0;
+		if(workOrderItem.getWorkOrderPlannedItem()!=null){
+			woItem.setWorkOrderPlannedItem(workOrderItem.getWorkOrderPlannedItem());
+		}
 		if (purchasedItem != null) {
 			woItem.setPurchasedItem(purchasedItem);
 			if (purchasedItem.getUnitcost() >= 0) {

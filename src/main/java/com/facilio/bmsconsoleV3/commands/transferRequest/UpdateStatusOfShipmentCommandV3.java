@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -42,7 +42,7 @@ public class UpdateStatusOfShipmentCommandV3 extends FacilioCommand {
                     Map<String, Object> map = new HashMap<>();
                     map.put("isCompleted", true);
 
-                    UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+                    UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                             .module(module).fields(updatedFields)
                             .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID","transferRequest", String.valueOf(id), NumberOperators.EQUALS));
                     updateBuilder.updateViaMap(map);

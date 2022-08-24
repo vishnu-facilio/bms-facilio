@@ -295,4 +295,20 @@ public class V3ItemsApi {
         throw new IllegalArgumentException("No appropriate item found");
     }
 
+    public static List<V3ItemContext> getItem(Long itemTypeId,Long storeRoomId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String itemModuleName = FacilioConstants.ContextNames.ITEM;
+        FacilioModule module = modBean.getModule(itemModuleName);
+        List<FacilioField> fields = modBean.getAllFields(itemModuleName);
+        SelectRecordsBuilder<V3ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ItemContext>()
+                .module(module)
+                .beanClass(V3ItemContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+        List<V3ItemContext> items = selectRecordsBuilder.get();
+
+        return items;
+    }
+
 }
