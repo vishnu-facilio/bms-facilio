@@ -10,6 +10,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.ReadingKPIContext;
@@ -31,7 +32,7 @@ public class AddNamespaceInKpiListCommand extends FacilioCommand {
         List<ReadingKPIContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (ReadingKPIContext kpi : list) {
-                NameSpaceContext namespaceContext = NamespaceAPI.getNameSpaceByRuleId(kpi.getId());
+                NameSpaceContext namespaceContext = NamespaceAPI.getNameSpaceByRuleId(kpi.getId(), NSType.KPI_RULE);
                 List<Long> resourceIds = fetchResourceIdsFromNamespaceInclusions(namespaceContext.getId());
                 if(CollectionUtils.isNotEmpty(resourceIds)) {
                     kpi.setAssets(resourceIds);

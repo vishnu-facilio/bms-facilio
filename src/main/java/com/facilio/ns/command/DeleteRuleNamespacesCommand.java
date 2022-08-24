@@ -19,7 +19,9 @@ public class DeleteRuleNamespacesCommand extends FacilioCommand {
 
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(rule.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(rule.getNs().getType()), NumberOperators.EQUALS));
+
         deleteRecordBuilder.delete();
 
         return false;
