@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.view;
 
 import java.io.File;
 
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
 public class CustomModuleData extends ModuleBaseWithCustomFields {
 
@@ -43,18 +46,26 @@ public class CustomModuleData extends ModuleBaseWithCustomFields {
 	}
 
 	private String photoFileName;
+
 	public String getPhotoFileName() {
 		return photoFileName;
 	}
+
 	public void setPhotoFileName(String photoFileName) {
 		this.photoFileName = photoFileName;
 	}
 
-	private  String photoContentType;
+	private String photoContentType;
+
 	public String getPhotoContentType() {
 		return photoContentType;
 	}
+
 	public void setPhotoContentType(String photoContentType) {
 		this.photoContentType = photoContentType;
 	}
+
+	@Getter
+	@Setter
+	private V3FailureClassContext failureClass;
 }
