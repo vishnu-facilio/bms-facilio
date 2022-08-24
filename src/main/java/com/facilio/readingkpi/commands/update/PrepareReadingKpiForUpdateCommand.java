@@ -3,6 +3,7 @@ package com.facilio.readingkpi.commands.update;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingkpi.ReadingKpiAPI;
@@ -20,7 +21,7 @@ public class PrepareReadingKpiForUpdateCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         ReadingKPIContext readingKPIContext = (ReadingKPIContext) recordMap.get(moduleName).get(0);
-        NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingKPIContext.getId());
+        NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingKPIContext.getId(), NSType.KPI_RULE);
         WorkflowContext workflow = readingKPIContext.getNs().getWorkflowContext();
         workflow.setId(nameSpaceContext.getWorkflowId());
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT,workflow );

@@ -19,6 +19,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
@@ -149,7 +150,7 @@ public class NewReadingRuleAPI {
 
 
     private static void updateNamespaceAndFields(NewReadingRuleContext readingRule) throws Exception {
-        NameSpaceContext nsCtx = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId());
+        NameSpaceContext nsCtx = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
         readingRule.setAssets(NamespaceAPI.getMatchedResources(nsCtx));
         readingRule.setNs(nsCtx);
     }

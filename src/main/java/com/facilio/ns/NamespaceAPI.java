@@ -89,12 +89,13 @@ public class NamespaceAPI {
         return nsMap.values().stream().collect(Collectors.toList());
     }
 
-    public static NameSpaceContext getNameSpaceByRuleId(Long ruleId) throws Exception {
+    public static NameSpaceContext getNameSpaceByRuleId(Long ruleId, NSType type) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".PARENT_RULE_ID", "parentRuleId", ruleId.toString(), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".PARENT_RULE_ID", "parentRuleId", ruleId.toString(), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(type.getIndex()), NumberOperators.EQUALS));
 
         List<Map<String, Object>> maps = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(maps)) {
@@ -114,14 +115,15 @@ public class NamespaceAPI {
         }
     }
 
-    public static int updateNsStatus(Long ruleId,boolean status) throws Exception{
-        NameSpaceContext namespaceContext=getNameSpaceByRuleId(ruleId);
+    public static int updateNsStatus(Long ruleId,boolean status, NSType type) throws Exception{
+        NameSpaceContext namespaceContext=getNameSpaceByRuleId(ruleId, type);
         namespaceContext.setStatus(status);
         Map<String,Object> namespaceMap =FieldUtil.getAsProperties(namespaceContext);
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
-                .andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(),NamespaceModuleAndFieldFactory.getNamespaceModule()));
+                .andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(),NamespaceModuleAndFieldFactory.getNamespaceModule()))
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(type.getIndex()), NumberOperators.EQUALS));
         int cnt = updateBuilder.update(namespaceMap);
         return cnt;
     }

@@ -8,6 +8,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.NamespaceConstants;
+import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.V3Action;
@@ -150,7 +151,7 @@ public class ReadingRuleAction extends V3Action {
         NewReadingRuleContext newReadingRuleContext = new NewReadingRuleContext();
         newReadingRuleContext.setStatus(getStatus());
         newReadingRuleContext.setId(getRuleId());
-        NamespaceAPI.updateNsStatus(getRuleId(),getStatus());
+        NamespaceAPI.updateNsStatus(getRuleId(),getStatus(), NSType.READING_RULE);
         NewReadingRuleAPI.updateReadingRuleStatus(newReadingRuleContext);
         setData("result", "success");
         return SUCCESS;

@@ -232,7 +232,7 @@ public class LookupSpecialTypeUtil {
 					.table(ModuleFactory.getKPICategoryModule().getTableName());
 
 			String search = (String) paramsMap.get("search");
-			if(StringUtils.isEmpty(search)){
+			if(StringUtils.isNotEmpty(search)){
 			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name",search, StringOperators.CONTAINS));
             }
 
