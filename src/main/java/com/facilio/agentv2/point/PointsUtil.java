@@ -6,8 +6,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -16,19 +14,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.json.Json;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class PointsUtil
@@ -153,7 +145,7 @@ public class PointsUtil
                             }
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
-                                    (controller.getControllerType() == FacilioControllerType.RDM.asInt() && ((RdmControllerContext) controller).isTdb())) {
+                                    (controller.getControllerType() == FacilioControllerType.RDM.asInt() && ((RdmControllerContext) controller).getIsTdb())) {
                                 if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()) {
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }
