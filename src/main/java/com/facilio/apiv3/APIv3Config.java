@@ -1920,6 +1920,15 @@ public class APIv3Config {
         return () -> new V3Config(WorkflowLogContext.class, null)
                 .build();
     }
+    
+    @Module(FacilioConstants.WorkOrderMultiResource.NAME)
+	public static Supplier<V3Config> getWorkOrderMultiResource() {
+		return () -> new V3Config(WorkOrderMultiResourceContext.class, null)
+							 .create()
+							 .list()
+							 .delete()
+							 .build();
+	}
 
     @Module("asset")
     public static Supplier<V3Config> getAsset() {
