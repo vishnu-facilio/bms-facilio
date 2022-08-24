@@ -460,7 +460,12 @@ public class PageWidget {
 		PLANNED_INVENTORY_SERVICES("plannedInventoryServices"),
 		PLANNED_INVENTORY_LABOR("plannedInventoryLabor"),
 		PLANNED_INVENTORY_TOOLS("plannedInventoryTools"),
-		BUDGET_TRANSACTIONS("budgetTransactions");
+		BUDGET_TRANSACTIONS("budgetTransactions"),
+
+		PLANNED_MAINTENANCE_DETAILS("preventiveMaintenanceDetails"),
+		PM_PLANNER_DETAILS("pmPlannerDetails"),
+		PM_EXECUTED_WORKORDERS_DETAILS("pmExecutedWorkOrdersDetails"),
+		PM_SCHEDULER_DETAILS("pmSchedulerDetails");
 
 		private String name;
 

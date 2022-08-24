@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -270,6 +269,8 @@ public class PageFactory {
 				return VendorQuotesPageFactory.getVendorQuotesPage((V3VendorQuotesContext) record, module);
 			case ContextNames.JOB_PLAN:
 				return JobPlanPageFactory.getJobPlanPage((JobPlanContext) record, module);
+			case ContextNames.PLANNEDMAINTENANCE:
+				return PlannedMaintenancePageFactory.getPlannedMaintenancePage((PlannedMaintenance) record);
 
 
 		}
