@@ -3,10 +3,13 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -647,4 +650,8 @@ public class WorkOrderContext extends TicketContext {
 	public void setJobPlan(JobPlanContext jobPlan) {
 		this.jobPlan = jobPlan;
 	}
+
+	@Getter
+	@Setter
+	private V3FailureClassContext failureClass;
 }
