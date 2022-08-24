@@ -2172,7 +2172,7 @@ public class APIv3Config {
 
 	@Module(FacilioConstants.CraftAndSKills.SKILLS)
 	public static Supplier<V3Config> getCraftSkills() {
-		return () -> new V3Config(SkillsContext.class, null)
+		return () -> new V3Config(SkillsContext.class, new ModuleCustomFieldCount30())
 							 .list()
 							 .delete()
 							 .build();
@@ -2180,7 +2180,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.CraftAndSKills.CRAFT)
     public static Supplier<V3Config> getCrafts() {
-        return () -> new V3Config(CraftContext.class, null)
+        return () -> new V3Config(CraftContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .list()
                 .summary()
@@ -2224,7 +2224,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.PEOPLE)
     public static Supplier<V3Config> getPeoples() {
-        return () -> new V3Config(V3PeopleContext.class, null)
+        return () -> new V3Config(V3PeopleContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .list()
                 .summary()
