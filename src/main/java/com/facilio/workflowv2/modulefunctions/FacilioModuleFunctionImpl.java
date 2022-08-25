@@ -704,7 +704,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		LOGGER.info("selectBuilder -- "+selectBuilder);
+		LOGGER.debug("selectBuilder -- "+selectBuilder);
 		LOGGER.debug("selectBuilder result -- "+props);
 		
 		if(props != null && !props.isEmpty()) {
