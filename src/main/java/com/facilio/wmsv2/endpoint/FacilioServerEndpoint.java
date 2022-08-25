@@ -136,7 +136,7 @@ public class FacilioServerEndpoint
 					List<String> apps = params.get("app");
 					if (CollectionUtils.isNotEmpty(apps)) {
 						String appName = apps.get(0);
-						ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", org.getOrgId());
+						ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", iamAccount.getOrg().getOrgId());
 						ApplicationContext applicationContext = moduleCRUD.getApplicationForLinkName(appName);
 						currentAccount.setApp(applicationContext);
 					}
