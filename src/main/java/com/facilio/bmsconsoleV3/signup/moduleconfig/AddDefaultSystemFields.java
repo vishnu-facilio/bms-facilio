@@ -73,6 +73,13 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_ITEMS));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_TOOLS));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_SERVICES));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_ITEMS));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TOOLS));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SERVICES));
+
 
             FacilioChain addModuleChain = TransactionChainFactory.addDefaultSystemFields();
             addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);

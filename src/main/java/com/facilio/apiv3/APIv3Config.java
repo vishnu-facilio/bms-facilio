@@ -885,7 +885,7 @@ public class APIv3Config {
 
     @Module("itemTransactions")
     public static Supplier<V3Config> getItemTransactions() {
-        return () -> new V3Config(V3ItemTransactionsContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3ItemTransactionsContext.class, null)
                 .create()
                 .beforeSave(new SetManualItemTransactionCommandV3(), new AdjustmentItemTransactionCommandV3())
                 .afterSave(new UpdateItemTransactionsCommandV3())
@@ -897,7 +897,7 @@ public class APIv3Config {
 
     @Module("toolTransactions")
     public static Supplier<V3Config> getToolTransactions() {
-        return () -> new V3Config(V3ToolTransactionContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3ToolTransactionContext.class,null)
                 .create()
                 .beforeSave(new SetManualToolTransactionsCommandV3())
                 .afterSave(new UpdateToolTransactionsCommandV3())
@@ -1584,7 +1584,7 @@ public class APIv3Config {
 
     @Module("jobPlanItems")
     public static Supplier<V3Config> getJobPlanItems() {
-        return () -> new V3Config(JobPlanItemsContext.class, null)
+        return () -> new V3Config(JobPlanItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1597,7 +1597,7 @@ public class APIv3Config {
 
     @Module("jobPlanTools")
     public static Supplier<V3Config> getJobPlanTools() {
-        return () -> new V3Config(JobPlanToolsContext.class, null)
+        return () -> new V3Config(JobPlanToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1610,7 +1610,7 @@ public class APIv3Config {
 
     @Module("jobPlanServices")
     public static Supplier<V3Config> getJobPlanServices() {
-        return () -> new V3Config(JobPlanServicesContext.class, null)
+        return () -> new V3Config(JobPlanServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1623,7 +1623,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedItems")
     public static Supplier<V3Config> getWorkOrderPlannedItems() {
-        return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
@@ -1636,7 +1636,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedTools")
     public static Supplier<V3Config> getWorkOrderPlannedTools() {
-        return () -> new V3Config(WorkOrderPlannedToolsContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1647,7 +1647,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedServices")
     public static Supplier<V3Config> getWorkOrderPlannedServices() {
-        return () -> new V3Config(WorkOrderPlannedServicesContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
