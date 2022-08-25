@@ -41,9 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
-import com.facilio.bmsconsoleV3.commands.failureclass.CheckForDuplicateFailureCode;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
+import com.facilio.bmsconsoleV3.commands.failureclass.*;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
@@ -197,7 +195,6 @@ import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import org.apache.commons.chain.Context;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureCodeSupplements;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.IssueInvRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
@@ -587,6 +584,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeProblemsContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 
@@ -595,6 +594,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeCausesContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 
@@ -603,6 +604,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeRemediesContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 

@@ -4258,6 +4258,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getWorkOrderFailureClassRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.WORKORDER_FAILURE_CLASS_RELATIONSHIP);
+		module.setDisplayName("Failure Report");
+		module.setTableName("WorkOrder_FailureClass_Relationship");
+		return module;
+	}
+
 	public static FacilioModule getFailureCodeProblemModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.FAILURE_CODE_PROBLEMS);
