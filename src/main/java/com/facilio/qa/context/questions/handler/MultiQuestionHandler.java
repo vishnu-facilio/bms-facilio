@@ -1,6 +1,7 @@
 package com.facilio.qa.context.questions.handler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -10,8 +11,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.MatrixQuestionColumn;
@@ -49,18 +52,34 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 		
 		ModuleBean modBean = Constants.getModBean();
 		
-		List<Map<String, Object>> rowRecordList = new ArrayList<Map<String,Object>>();
-		List<Map<String, Object>> columnRecordList = new ArrayList<Map<String,Object>>();
-		
 		for(MultiQuestionContext question : questions) {
+			
+			Map<String, Object> rowRecord = new HashMap<String,Object>();
+			
+			List<Map<String, Object>> columnRecordList = new ArrayList<Map<String,Object>>();
+			
 			question.getRow().setParentId(question.getId());
-			rowRecordList.add(FieldUtil.getAsProperties(question.getRow()));
+			rowRecord = FieldUtil.getAsProperties(question.getRow());
 			
 			columnRecordList.addAll(getColumnRecordList(question));
+			
+			FacilioContext rowContext = V3Util.createRecord(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW), rowRecord);
+			
+			ModuleBaseWithCustomFields rowAfterAdd = ((Map<String, List<ModuleBaseWithCustomFields>>) rowContext.get(Constants.RECORD_MAP)).get(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW).get(0);
+			
+			question.getRow().setId(rowAfterAdd.getId());
+			
+			FacilioContext columnContext = V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN), columnRecordList, null, null);
+			
+			List<ModuleBaseWithCustomFields> columnRecordListAfterAdd = ((Map<String, List<ModuleBaseWithCustomFields>>) columnContext.get(Constants.RECORD_MAP)).get(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN);
+				
+			for(int i=0;i<columnRecordListAfterAdd.size();i++) {
+				
+				ModuleBaseWithCustomFields columnRecord = columnRecordListAfterAdd.get(i);
+				
+				question.getColumns().get(i).setId(columnRecord.getId());
+			}
 		}
-		V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW), rowRecordList, null, null);
-		
-		V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN), columnRecordList, null, null);
 	}
 
 	@Override

@@ -11,12 +11,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.agent.FacilioAgent;
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -53,10 +55,12 @@ public class MatrixQuestionHandler extends BaseMatrixQuestionHandler implements 
 		
 		ModuleBean modBean = Constants.getModBean();
 		
-		List<Map<String, Object>> rowRecordList = new ArrayList<Map<String,Object>>();
-		List<Map<String, Object>> columnRecordList = new ArrayList<Map<String,Object>>();
 		
 		for(MatrixQuestionContext question : questions) {
+			
+			List<Map<String, Object>> rowRecordList = new ArrayList<Map<String,Object>>();
+			List<Map<String, Object>> columnRecordList = new ArrayList<Map<String,Object>>();
+			
 			if(question.getRows() !=null) {
 				for(MatrixQuestionRow row : question.getRows()) {
 					row.setParentId(question.getId());
@@ -65,10 +69,30 @@ public class MatrixQuestionHandler extends BaseMatrixQuestionHandler implements 
 			}
 			
 			columnRecordList.addAll(getColumnRecordList(question));
+			
+			
+			FacilioContext rowContext = V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW), rowRecordList, null, null);
+			
+			FacilioContext columnContext = V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN), columnRecordList, null, null);
+			
+			List<ModuleBaseWithCustomFields> rowRecordListAfterAdd = ((Map<String, List<ModuleBaseWithCustomFields>>) rowContext.get(Constants.RECORD_MAP)).get(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW);
+			
+			List<ModuleBaseWithCustomFields> columnRecordListAfterAdd = ((Map<String, List<ModuleBaseWithCustomFields>>) columnContext.get(Constants.RECORD_MAP)).get(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN);
+			
+			for(int i=0;i<rowRecordListAfterAdd.size();i++) {
+				
+				ModuleBaseWithCustomFields rowRecord = rowRecordListAfterAdd.get(i);
+				
+				question.getRows().get(i).setId(rowRecord.getId());
+			}
+			
+			for(int i=0;i<columnRecordListAfterAdd.size();i++) {
+				
+				ModuleBaseWithCustomFields columnRecord = columnRecordListAfterAdd.get(i);
+				
+				question.getColumns().get(i).setId(columnRecord.getId());
+			}
 		}
-		V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW), rowRecordList, null, null);
-		
-		V3Util.createRecordList(modBean.getModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN), columnRecordList, null, null);
 	}
 
 	@Override
