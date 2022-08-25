@@ -81,7 +81,7 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
-        boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
+        boolean isTrackingConfNotFound = StringUtils.isEmpty(DBConf.getInstance().getMailTrackingConfName());
         ModuleBean modBean = Constants.getModBean();
         boolean isSignUp = modBean.getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
         if(isSignUp || isTrackingConfNotFound) { // normal behaviour for production env
