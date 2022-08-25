@@ -9,6 +9,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class LicensingInfoUtil {
     private static final Logger LOGGER = LogManager.getLogger(LicensingInfoUtil.class.getName());
-    private static final String DEFAULT_LICENSE_PATH = "conf/licensing.yml";
+    private static final String DEFAULT_LICENSE_PATH = FacilioUtil.normalizePath("conf/licensing.yml");
     public static Long getCurrentCount(LicenseInfoContext licenseInfoObj, String type) throws Exception {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;

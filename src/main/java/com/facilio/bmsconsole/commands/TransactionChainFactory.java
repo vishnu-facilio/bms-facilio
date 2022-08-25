@@ -802,12 +802,18 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ReadingRuleDependenciesCommand());
 			c.addCommand(getAddCategoryReadingChain());
-			c.addCommand(new AddWorkflowCommand());
 			c.addCommand(new AddNewReadingRuleCommand());
-			c.addCommand(new AddNamespaceCommand());
-			c.addCommand(new AddNamespaceFieldsCommand());
+			c.addCommand(addNamespaceAndFieldsChain());
 			c.addCommand(new AddRCARulesCommand());
 			c.addCommand(new AddFaultImpactRelationCommand());
+			return c;
+		}
+
+		public static FacilioChain addNamespaceAndFieldsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(new AddNamespaceCommand());
+			c.addCommand(new AddNamespaceFieldsCommand());
 			return c;
 		}
 
@@ -1197,6 +1203,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateCustomModuleCommand());
 			c.addCommand(new AddSystemFieldsCommand());
 			c.addCommand(commonAddModuleChain());
+			c.addCommand(new AddCustomModuleDataFailureClassModuleRelationship());
 			c.addCommand(new AddDefaultFormForCustomModuleCommand());
 			c.addCommand(new AddDefaultStateFlowCommand());
 			c.addCommand(new AddSubModulesSystemFieldsCommad());

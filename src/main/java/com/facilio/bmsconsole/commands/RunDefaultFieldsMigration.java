@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -19,7 +20,7 @@ public class RunDefaultFieldsMigration extends FacilioCommand {
 
 	private static Logger logger = Logger.getLogger("RunDefaultFieldsMigration");
 
-	private static final File DEFAULT_FIELDS_MIGRATION_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/defaultFieldsMigration.sql").getFile());
+	private static final File DEFAULT_FIELDS_MIGRATION_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/defaultFieldsMigration.sql")).getFile());
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

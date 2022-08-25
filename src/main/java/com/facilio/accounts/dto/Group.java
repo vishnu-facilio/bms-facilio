@@ -23,10 +23,12 @@ public class Group extends ModuleBaseWithCustomFields implements Serializable {
 	private List<GroupMember> members;
 	private Boolean isActive;
 
+
 	public long getGroupId() {
 		return getId();
 	}
-	public void setGroupId (long id) {
+
+	public void setGroupId(long id){
 		setId(id);
 	}
 

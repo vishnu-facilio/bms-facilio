@@ -11,15 +11,15 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NSType;
+import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -37,12 +37,13 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
     public boolean executeCommand(Context ctx) throws Exception {
 
         this.rule = (NewReadingRuleContext) ctx.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        this.rule.getWorkflowContext().setIsV2Script(true);
+        this.rule.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
         this.rule.getNs().setType(NSType.READING_RULE.getIndex());
 
         ctx.put(FacilioConstants.ContextNames.READING_NAME, rule.getName());
         ctx.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME);
         ctx.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.ALARM_POINT_FIELD);
+        ctx.put(NamespaceConstants.NAMESPACE, this.rule.getNs());
 
         ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
             {
@@ -56,7 +57,8 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
         ctx.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
         ctx.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
+        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getNs().getWorkflowContext());
+        ctx.put(NamespaceConstants.NAMESPACE_FIELDS, rule.getNs().getFields());
 
         setReadingParent(ctx);
         setAssets();
@@ -76,7 +78,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
     private void setAssets() throws Exception {
         List<Long> assets = rule.getAssets();
         if (CollectionUtils.isNotEmpty(assets)) {
-            @NonNull List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
+            List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
 
             for (Long asset : assets) {
                 boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();

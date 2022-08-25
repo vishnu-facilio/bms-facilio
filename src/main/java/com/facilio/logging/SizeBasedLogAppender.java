@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.facilio.util.FacilioUtil;
 
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.Layout;
@@ -215,7 +216,7 @@ public class SizeBasedLogAppender extends RollingFileAppender {
 		Date date = new Date();  
 	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH");  
 	    String strDate= formatter.format(date);
-    	String pathArr[] = fileName.split("" + java.io.File.separatorChar);
+    	String pathArr[] = FacilioUtil.splitPath(fileName);
     	String newFileName = pathArr[pathArr.length-1];
     	String a[] = newFileName.split("\\.");
     	if (a.length == 1) {

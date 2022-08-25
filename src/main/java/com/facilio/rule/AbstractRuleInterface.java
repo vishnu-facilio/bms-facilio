@@ -9,7 +9,7 @@ public interface AbstractRuleInterface {
 
     long getOrgId();
 
-    Long getWorkflowId();
+    //Long getWorkflowId();
 
 //    void setWorkflow(WorkflowContext workflow);
 //

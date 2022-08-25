@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.AggregationType;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.chain.Context;
@@ -24,34 +25,39 @@ public class AddFaultImpactRelationCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
-        if (readingRule.getImpact() != null && readingRule.getImpact().getId() != -1) {
+        boolean canDelete = (boolean) context.getOrDefault("canDeleteFaultImpact", false);
+        if (!canDelete) {
 
-            FaultImpactContext impact = (FaultImpactContext) V3Util.getRecord(FacilioConstants.FaultImpact.MODULE_NAME, readingRule.getImpact().getId(), null);
+            NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
-            Map<Long, ResourceContext> assetsMap = (Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.ASSETS);
+            if (readingRule.getImpact() != null && readingRule.getImpact().getId() != -1) {
 
-            NameSpaceContext impactNameSpaceContext = new NameSpaceContext(NSType.FAULT_IMPACT_RULE, readingRule.getId(), readingRule.getNs().getExecInterval());
+                FaultImpactContext impact = (FaultImpactContext) V3Util.getRecord(FacilioConstants.FaultImpact.MODULE_NAME, readingRule.getImpact().getId(), null);
 
-            Long impactNameSpaceId = NewReadingRuleAPI.addNamespace(impactNameSpaceContext);
+                Map<Long, ResourceContext> assetsMap = (Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.ASSETS);
 
-            List<NameSpaceField> fields = new ArrayList<NameSpaceField>();
+                NameSpaceContext impactNameSpaceContext = new NameSpaceContext(NSType.FAULT_IMPACT_RULE, readingRule.getId(), readingRule.getNs().getExecInterval(), readingRule.getNs().getWorkflowId());
 
-            if(!Collections.isEmpty(impact.getFields())){
-                for (FaultImpactNameSpaceFieldContext faultImpactField : impact.getFields()) {
-                    NameSpaceField field = faultImpactField.getNameSpaceField();
-                    field.setNsId(impactNameSpaceId);
-                    fields.add(field);
+                Long impactNameSpaceId = NamespaceAPI.addNamespace(impactNameSpaceContext);
+
+                List<NameSpaceField> fields = new ArrayList<NameSpaceField>();
+
+                if (!Collections.isEmpty(impact.getFields())) {
+                    for (FaultImpactNameSpaceFieldContext faultImpactField : impact.getFields()) {
+                        NameSpaceField field = faultImpactField.getNameSpaceField();
+                        field.setNsId(impactNameSpaceId);
+                        fields.add(field);
+                    }
                 }
+
+                fields.add(constructRuleNsFld(readingRule));
+
+                NewReadingRuleAPI.addNamespaceFields(impactNameSpaceId, assetsMap, fields);
+                readingRule.setImpactId(impact.getId());
             }
-
-            fields.add(constructRuleNsFld(readingRule));
-
-            NewReadingRuleAPI.addNamespaceFields(impactNameSpaceId, assetsMap, fields);
-            readingRule.setImpactId(impact.getId());
         }
-        return false;
+        return  false;
     }
 
     private NameSpaceField constructRuleNsFld(NewReadingRuleContext rule) {

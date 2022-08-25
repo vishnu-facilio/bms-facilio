@@ -127,7 +127,7 @@ public class AddFieldsCommand extends FacilioCommand {
 				existingColumns.put (dataType, existingColumnNames);
 			}
 			if (field.getColumnName () == null || field.getColumnName ().isEmpty ()) {
-				V3Config v3Config = ChainUtil.getV3Config (field.getModule ().getName ());
+				V3Config v3Config = ChainUtil.getV3Config (field.getModule().getName ());
 				String newColumnName;
 				if (v3Config != null) {
 					FacilioUtil.throwIllegalArgumentException (v3Config.getCustomFieldsCount () == null, "No column available for the Field type");

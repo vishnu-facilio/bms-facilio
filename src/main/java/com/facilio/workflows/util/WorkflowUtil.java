@@ -254,8 +254,8 @@ public class WorkflowUtil {
 		if(CHILLER_TEMP_VS_PRESSURE == null) {
 
 			WorkflowUtil w = new WorkflowUtil();
-			w.getClass().getClassLoader().getResource("conf/chillerdata.csv");
-			File chillerCSVFile = new File(w.getClass().getClassLoader().getResource("conf/chillerdata.csv").getFile());
+			w.getClass().getClassLoader().getResource(FacilioUtil.normalizePath("conf/chillerdata.csv"));
+			File chillerCSVFile = new File(w.getClass().getClassLoader().getResource(FacilioUtil.normalizePath("conf/chillerdata.csv")).getFile());
 	        String line = "";
 	        String cvsSplitBy = ",";
 

@@ -1,9 +1,13 @@
 package com.facilio.relation.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.RelationshipOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -13,8 +17,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -34,6 +42,60 @@ public class RelationUtil {
             }
         }
         return relation;
+    }
+
+    public static JSONObject getRecordsWithRelationship(Long relationMappingId, Long parentId, int page, int perPage) throws Exception {
+        RelationMappingContext mappingData = getRelationMapping(relationMappingId);
+        return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage);
+    }
+
+    public static JSONObject getRecordsWithReverseRelationship(Long relationMappingId, Long parentId, int page, int perPage) throws Exception {
+        RelationMappingContext mappingData = getRelationMapping(relationMappingId);
+        RelationContext relation = RelationUtil.getRelation(mappingData.getRelationId(), true);
+        if (relation == null) {
+            throw new IllegalArgumentException("Invalid Relation");
+        }
+        String relationMappingName = null;
+        for(RelationMappingContext mapping : relation.getMappings()) {
+            if(!mapping.getMappingLinkName().equals(mappingData.getMappingLinkName())) {
+                relationMappingName = mapping.getMappingLinkName();
+                break;
+            }
+        }
+
+        return getRecordsWithRelationship(relationMappingName, mappingData.getToModule().getName(), parentId, page, perPage);
+    }
+
+    public static JSONObject getRecordsWithRelationship(String relationLinkName, String moduleName, Long parentId, int page, int perPage) throws Exception {
+        JSONObject relatedData = new JSONObject();
+        page = (page < 1) ? 1 : page;
+        perPage = (perPage < 1) ? WorkflowV2Util.SELECT_DEFAULT_LIMIT : perPage;
+
+        Criteria serverCriteria = new Criteria();
+        serverCriteria.addAndCondition(CriteriaAPI.getCondition(relationLinkName, String.valueOf(parentId), RelationshipOperator.CONTAINS_RELATION));
+
+        FacilioContext listContext = V3Util.fetchList(moduleName, true, null, null, false, null, null,
+                null, null, page, perPage, false, null, serverCriteria);
+
+        JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
+        relatedData.put(FacilioConstants.ContextNames.DATA, recordJSON);
+
+        if (listContext.containsKey(FacilioConstants.ContextNames.META)) {
+            relatedData.put(FacilioConstants.ContextNames.META, (JSONObject) listContext.get(FacilioConstants.ContextNames.META));
+        }
+
+        return relatedData;
+    }
+
+    public static RelationMappingContext getRelationMapping(Long mappingId) throws Exception {
+        FacilioModule module = ModuleFactory.getRelationMappingModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getRelationMappingFields())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(mappingId), NumberOperators.EQUALS));
+
+        RelationMappingContext mapping = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationMappingContext.class);
+        return mapping;
     }
 
     public static RelationMappingContext getRelationMapping(String mappingLinkName) throws Exception {

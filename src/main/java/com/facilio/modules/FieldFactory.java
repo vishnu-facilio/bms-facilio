@@ -2042,12 +2042,14 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
         fields.add(getDefaultField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getDefaultField("modifiedTime", "Modified Time", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField("modifiedBy","Modified By", "MODIFIED_BY", module, FieldType.NUMBER));
         fields.add(getDefaultField("status", "Status","STATUS", module, FieldType.BOOLEAN));
         fields.add(getDefaultField("readingModuleId", "Reading Module Id", "READING_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("readingFieldId", "Reading Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getDefaultField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getDefaultField("workflowId", "WORKFLOW ID", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-        fields.add(getDefaultField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("impactId", "Impact Id", "IMPACT_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("autoClear", "Auto Clear", "AUTO_CLEAR", module, FieldType.BOOLEAN));
         return fields;

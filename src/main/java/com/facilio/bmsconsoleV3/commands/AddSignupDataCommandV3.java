@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -16,7 +17,7 @@ import java.util.*;
 public class AddSignupDataCommandV3 extends FacilioCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(AddSignupDataCommandV3.class.getName());
-    private static final String DEFAULT_SIGNUP_CONF_PATH = "conf/signup.yml";
+    private static final String DEFAULT_SIGNUP_CONF_PATH = FacilioUtil.normalizePath("conf/signup.yml");
     private static final List<SignUpData> SIGN_UP_CHAIN = initSignUpChain();
     private static List<SignUpData> initSignUpChain() {
         Yaml yaml = new Yaml();

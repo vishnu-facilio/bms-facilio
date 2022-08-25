@@ -2,6 +2,7 @@ package com.facilio.ns.context;
 
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationMappingContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,14 +11,18 @@ import java.util.HashMap;
 
 @Getter
 @Setter
-public class NameSpaceField {
+public class NameSpaceField implements Cloneable {
 
     Long id;
+
     Long orgId;
+
     Long nsId;
+
     String varName;
 
     Long resourceId;
+
     Long fieldId;
 
     Long moduleId;
@@ -28,7 +33,11 @@ public class NameSpaceField {
     @JsonIgnore
     FacilioModule module;
 
+    Long relMapId;
+
     Long dataInterval;
+
+    RelationMappingContext relMapContext;
 
     public Long getDataInterval() {
         return dataInterval != null ? dataInterval : -1L;
@@ -81,7 +90,15 @@ public class NameSpaceField {
                 put("varname", varName);
                 put("resource id ", resourceId);
                 put("field id ", fieldId);
+                put("agg", aggregationType);
+                put("interval", dataInterval);
+                put("relmapid", relMapId);
             }
         }.toString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

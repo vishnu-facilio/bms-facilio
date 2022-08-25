@@ -55,7 +55,7 @@ public class DisplayLogicUtil {
 		}
 		else if (displayLogicContext.getColumnId() != null) {
 			
-			jsonObject.put(JSON_RESULT_ROW_ID_STRING,displayLogicContext.getColumnId());
+			jsonObject.put(JSON_RESULT_COLUMN_ID_STRING,displayLogicContext.getColumnId());
 		}
 		
 		jsonObject.put(JSON_RESULT_ACTION_NAME_STRING,actionType.getName());

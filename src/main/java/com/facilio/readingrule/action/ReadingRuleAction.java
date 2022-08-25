@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
@@ -125,7 +126,7 @@ public class ReadingRuleAction extends V3Action {
         FacilioContext ctx = chain.getContext();
         ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, rule);
         ctx.put(NamespaceConstants.NAMESPACE, rule.getNs());
-        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
+        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getNs().getWorkflowContext());
         chain.execute();
         setData("result", true);
         return SUCCESS;
@@ -149,6 +150,7 @@ public class ReadingRuleAction extends V3Action {
         NewReadingRuleContext newReadingRuleContext = new NewReadingRuleContext();
         newReadingRuleContext.setStatus(getStatus());
         newReadingRuleContext.setId(getRuleId());
+        NamespaceAPI.updateNsStatus(getRuleId(),getStatus());
         NewReadingRuleAPI.updateReadingRuleStatus(newReadingRuleContext);
         setData("result", "success");
         return SUCCESS;

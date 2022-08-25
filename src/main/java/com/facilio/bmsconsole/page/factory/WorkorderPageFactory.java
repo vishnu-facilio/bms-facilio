@@ -109,7 +109,7 @@ public class WorkorderPageFactory extends PageFactory {
         int widgetHeight = 3;
         PageWidget slaRemainingDuration = new PageWidget(PageWidget.WidgetType.SLA_REMAINING_TIME);
         slaRemainingDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-        slaRemainingDuration.addToWidgetParams("dateField", "sla_current_time_workorder");
+        slaRemainingDuration.addToWidgetParams("dateField", "responseDueDate");
         section.addWidget(slaRemainingDuration);
         yOffset += widgetHeight;
 
@@ -290,6 +290,19 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += 7;
     }
 
+    private static void addFailureReportTab(Page page){
+        Page.Tab failureReportTab = page.new Tab("Failure Report");
+        page.addTab(failureReportTab);
+
+        Page.Section failureReportSection = page.new Section();
+        failureReportTab.addSection(failureReportSection);
+
+        PageWidget failureReport = new PageWidget(PageWidget.WidgetType.FAILURE_REPORT);
+        failureReport.addToLayoutParams(failureReportSection, 24, 8);
+        failureReport.addToWidgetParams("card", "failurereports");
+        failureReportSection.addWidget(failureReport);
+    }
+
     private static void addHistoryTab(Page page) {
         Page.Tab historyPage = page.new Tab("history");
         page.addTab(historyPage);
@@ -455,6 +468,9 @@ public class WorkorderPageFactory extends PageFactory {
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
         addMetricandTimelogTab(page,workorder.getId());
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES)) {
+            addFailureReportTab(page);
+        }
         addHistoryTab(page);
         return page;
     }

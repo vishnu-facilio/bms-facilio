@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -27,7 +28,7 @@ public class AddDefaultWoStateflowCommand extends FacilioCommand {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultWoStateflowCommand.class.getName());
 
-	private static final File INSERT_STATEFLOW_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/defaultWOStateflow.sql").getFile());
+	private static final File INSERT_STATEFLOW_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/defaultWOStateflow.sql")).getFile());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 

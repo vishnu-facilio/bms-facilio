@@ -1,8 +1,11 @@
 package com.facilio.v3.context;
 
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -227,4 +230,9 @@ public class V3Context extends ModuleBaseWithCustomFields {
         }
         super.setApprovalFlowId(approvalFlowId);
     }
+
+    @Getter
+    @Setter
+    @JsonProperty("failureClass")
+    private V3FailureClassContext failureClass;
 }

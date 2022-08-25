@@ -22,27 +22,32 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
 
         User currentUser = AccountUtil.getCurrentUser();
         readingRule.setOrgId(currentUser.getOrgId());
+
         readingRule.setCreatedBy(currentUser.getId());
         readingRule.setCreatedTime(System.currentTimeMillis());
+        readingRule.setModifiedBy(currentUser.getId());
+        readingRule.setModifiedTime(System.currentTimeMillis());
+
         readingRule.setReadingModuleId((Long) context.get(FacilioConstants.ContextNames.MODULE_ID));
         readingRule.setReadingFieldId(getReadingFieldId(context));
-        readingRule.setWorkflowId(readingRule.getWorkflowContext().getId());
+
         if (readingRule.getImpact() != null) {
             readingRule.setImpactId(readingRule.getImpact().getId());
         }
+        readingRule.setStatus(Boolean.TRUE);
+        readingRule.setAutoClear(Boolean.TRUE);
 
         NewReadingRuleAPI.addReadingRule(readingRule);
 
         context.put(NamespaceConstants.NAMESPACE, readingRule.getNs());
         context.put(NamespaceConstants.PARENT_RULE_ID, readingRule.getId());
-        context.put(NamespaceConstants.NAMESPACE_FIELDS, readingRule.getNs().getFields());
         context.put(FacilioConstants.ContextNames.ASSETS, readingRule.getMatchedResources());
 
         return Boolean.FALSE;
     }
 
     private Long getReadingFieldId(Context ctx) throws Exception {
-        List<FacilioModule> modules = (List<FacilioModule>) ctx.get(FacilioConstants.ContextNames.MODULE);
+        List<FacilioModule> modules = (List<FacilioModule>) ctx.get(FacilioConstants.ContextNames.MODULE_LIST);
         if (modules != null) {
             FacilioModule module = modules.get(0);
             ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");

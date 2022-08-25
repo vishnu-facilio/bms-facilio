@@ -39,6 +39,7 @@ import com.facilio.security.requestvalidator.type.TypeFactory;
 import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.translation.TranslationConf;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.ChainUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -202,10 +203,10 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	private void downloadEnvironmentFiles() throws Exception {
-		File secretsDir = new File("/tmp/secrets");
+		File secretsDir = new File(FacilioUtil.normalizePath("/tmp/secrets"));
 		if (!secretsDir.exists()) {
 			if (secretsDir.mkdir()) {
-				File file = new File("/tmp/secrets/google_app_credentials.json");
+				File file = new File(FacilioUtil.normalizePath("/tmp/secrets/google_app_credentials.json"));
 				if (file.exists()) {
 					if (file.delete()) {
 						try (FileOutputStream outputStream = new FileOutputStream(file); InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");) {
@@ -241,8 +242,8 @@ public class FacilioContextListener implements ServletContextListener {
 			Map<String, String> map = new HashMap<>();
 			map.put("appDomain",  FacilioProperties.getMainAppDomain());
 			map.put("devDomain", FacilioProperties.getDeveloperAppDomain());
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", map);
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
+			createTables(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql"), map);
+			createTables(FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql"), Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
 		}
 	}
 
@@ -284,7 +285,7 @@ public class FacilioContextListener implements ServletContextListener {
 			DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 			long startTime = System.currentTimeMillis();
 			Flyway flyway = new Flyway();
-			flyway.setLocations("db/migration/" + DBConf.getInstance().getDBName());
+			flyway.setLocations(FacilioUtil.normalizePath("db/migration/") + DBConf.getInstance().getDBName());
 			flyway.setDataSource(ds);
 			flyway.setBaselineOnMigrate(true);
 			int mig_status = flyway.migrate();
@@ -318,7 +319,7 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	private HashMap getCustomDomains() {
-		URL url = this.getClass().getClassLoader().getResource("conf/customdomains.xml");
+		URL url = this.getClass().getClassLoader().getResource(FacilioUtil.normalizePath("conf/customdomains.xml"));
 		if(url != null) {
 			File beansxml = new File(url.getFile());
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

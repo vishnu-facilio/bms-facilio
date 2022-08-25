@@ -28,6 +28,15 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         return module;
     }
 
+    public static FacilioModule getNamespaceInclusionModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("namespaceIncl");
+        module.setDisplayName("Namespace Inclusions Resources");
+        module.setTableName("Namespace_Inclusions");
+        module.setType(FacilioModule.ModuleType.CUSTOM);
+        return module;
+    }
+
     public static List<FacilioField> getNamespaceFieldFields() {
         FacilioModule module = getNamespaceFieldsModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -39,6 +48,7 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("dataInterval", "DATA_INTERVAL", module));
         fields.add(getNumberField("aggregationTypeI", "AGGREGATION_TYPE", module));
         fields.add(getBooleanField("primary", "IS_PRIMARY", module));
+        fields.add(getNumberField("relMapId", "RELATION_MAPPING_ID", module));
         return fields;
     }
 
@@ -49,6 +59,17 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("parentRuleId", "PARENT_RULE_ID", module));
         fields.add(getNumberField("execInterval", "EXEC_INTERVAL", module));
         fields.add(getNumberField("type", "TYPE", module));
+        fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
+        fields.add(getBooleanField("status", "STATUS", module));
+        return fields;
+    }
+
+    public static List<FacilioField> getNamespaceInclusionFields() {
+        FacilioModule module = getNamespaceInclusionModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("namespaceId", "NAMESPACE_ID", module));
+        fields.add(getNumberField("resourceId", "RESOURCE_ID", module));
         return fields;
     }
 

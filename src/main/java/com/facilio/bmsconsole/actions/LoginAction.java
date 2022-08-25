@@ -29,6 +29,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
@@ -720,7 +721,7 @@ public class LoginAction extends FacilioAction {
 
 	private String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception {
 		ClassLoader classLoader = LoginAction.class.getClassLoader();
-		File samlXML = new File(classLoader.getResource("conf/saml/saml-response.xml").getFile());
+		File samlXML = new File(classLoader.getResource(FacilioUtil.normalizePath("conf/saml/saml-response.xml")).getFile());
 		String samlTemplate = SAMLUtil.getFileAsString(samlXML);
 
 		Date dt = new Date();

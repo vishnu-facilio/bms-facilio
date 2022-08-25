@@ -59,6 +59,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Attr;
@@ -280,7 +281,7 @@ public class SAMLUtil {
 
 	public static X509Certificate loadCert() throws CertificateException, IOException {
 		ClassLoader classLoader = SAMLUtil.class.getClassLoader();
-		File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.crt").getFile());
+		File privateKeyFile = new File(classLoader.getResource(FacilioUtil.normalizePath("conf/saml/saml.crt")).getFile());
 		String certString = getFileAsString(privateKeyFile);
 		
 		certString = formatCert(certString, true);
@@ -298,7 +299,7 @@ public class SAMLUtil {
 	public static PrivateKey loadPrivateKey() throws GeneralSecurityException, IOException {
 
 		ClassLoader classLoader = SAMLUtil.class.getClassLoader();
-		File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.pem").getFile());
+		File privateKeyFile = new File(classLoader.getResource(FacilioUtil.normalizePath("conf/saml/saml.pem")).getFile());
 		String keyString = getFileAsString(privateKeyFile);
 		
 		keyString = formatPrivateKey(keyString, false);
@@ -335,7 +336,7 @@ public class SAMLUtil {
 	
 	public static String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception {
 		ClassLoader classLoader = LoginAction.class.getClassLoader();
-		File samlXML = new File(classLoader.getResource("conf/saml/saml-response.xml").getFile());
+		File samlXML = new File(classLoader.getResource(FacilioUtil.normalizePath("conf/saml/saml-response.xml")).getFile());
 		String samlTemplate = SAMLUtil.getFileAsString(samlXML);
 
 		Date dt = new Date();

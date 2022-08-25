@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.facilio.util.FacilioUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
@@ -24,11 +25,11 @@ import com.facilio.scriptengine.context.Value;
 
 public class WorkflowV2Util {
 
-	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
+	private static final String DEFAULT_WORKFLOW_FILE_NAME = FacilioUtil.normalizePath("conf/defaultWorkflows.json");
 	
-	private static final String DEFAULT_WORKFLOW_YML_FILE_NAME = "conf/workflowscript/defaultWorkflows.yml";
+	private static final String DEFAULT_WORKFLOW_YML_FILE_NAME = FacilioUtil.normalizePath("conf/workflowscript/defaultWorkflows.yml");
 	
-	private static final String WORKFLOW_TEMPLATE_FILE_NAME = "conf/workflowTemplates.json";
+	private static final String WORKFLOW_TEMPLATE_FILE_NAME = FacilioUtil.normalizePath("conf/workflowTemplates.json");
 	
 	public static final Integer SELECT_DEFAULT_LIMIT = 5000;
 	

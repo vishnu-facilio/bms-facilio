@@ -64,7 +64,7 @@ public class FacilioLogHandler extends Handler {
 
     }
 
-    private static final File ROOT_FILE = new File("/");
+    private static final File ROOT_FILE = new File(File.separator);
     private static long lastFreeSpaceCheckedTime = System.currentTimeMillis();
     private static final long FREE_SPACE_THRESHOLD = 5_000_000_000L;
     private static long freeSpace = ROOT_FILE.getFreeSpace();

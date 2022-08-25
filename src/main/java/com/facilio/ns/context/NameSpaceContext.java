@@ -1,5 +1,6 @@
 package com.facilio.ns.context;
 
+import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,20 +14,36 @@ import java.util.*;
 public class NameSpaceContext {
 
     Long id;
+
     Long orgId;
+
     Long parentRuleId;
+
     Long execInterval;
+
+    List<Long> includedAssetIds;
+
     NSType type;
+
+    Long assetCategoryId;
+
+    Long workflowId;
+
+    WorkflowContext workflowContext;
+
+    Boolean status;
+
     List<NameSpaceField> fields;
 
     {
         fields = new ArrayList<>();
     }
-    
-    public NameSpaceContext(NSType type,Long parentRuleId, Long execInterval) {
-    	this.type = type;
-    	this.parentRuleId = parentRuleId;
-    	this.execInterval = execInterval;
+
+    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval,Long workflowId) {
+        this.type = type;
+        this.parentRuleId = parentRuleId;
+        this.execInterval = execInterval;
+        this.workflowId = workflowId;
     }
 
     public void addField(NameSpaceField... fs) {

@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ServiceRequestPriorityContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
@@ -22,13 +26,14 @@ public class ServiceRequestPriorityContext extends ModuleBaseWithCustomFields {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServiceRequestPriorityContext(String priority, int sequenceNumber, String colour, String displayName, Boolean isDefault) {
+	public ServiceRequestPriorityContext(String priority, int sequenceNumber, String colour, String displayName, Boolean isDefault,String description) {
 		super();
 		this.displayName = displayName;
 		this.priority = priority;
 		this.sequenceNumber = sequenceNumber;
 		this.isDefault = isDefault;
 		this.colour = colour;
+		this.description=description;
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
@@ -74,4 +79,5 @@ public class ServiceRequestPriorityContext extends ModuleBaseWithCustomFields {
 	public String toString() {
 		return priority;
 	}
+	private String description;
 }

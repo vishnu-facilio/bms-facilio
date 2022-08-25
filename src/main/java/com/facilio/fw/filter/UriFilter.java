@@ -98,10 +98,9 @@ public class UriFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = constructFacilioRequestIfNeeded((HttpServletRequest) req);
         HttpServletResponse response = (HttpServletResponse) res;
-
         // Commenting out the if check because it shouldn't be called when app name is set
 //        if (StringUtils.isEmpty((CharSequence) request.getAttribute(RequestUtil.REQUEST_APP_NAME))) {
-            String reqUri = FilenameUtils.normalize(request.getRequestURI());
+            String reqUri = FilenameUtils.normalize(request.getRequestURI(),true);
             if (!isAllowedExtension(reqUri)) {
                 send404(response);
             }

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -39,7 +40,7 @@ import com.facilio.time.DateTimeUtil;
 public class DemoSingleRollUpYearlyCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(DemoSingleRollUpYearlyCommand.class.getName());
-	private static final String DEFAULT_DB_CONF_PATH = "conf/demorolluptables.yml"; 
+	private static final String DEFAULT_DB_CONF_PATH = FacilioUtil.normalizePath("conf/demorolluptables.yml");
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

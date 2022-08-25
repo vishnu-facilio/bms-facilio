@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -16,7 +17,7 @@ import com.facilio.db.util.SQLScriptRunner;
 
 public class RunModuleMigrationCommand extends FacilioCommand {
 	private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(RunDefaultFieldsMigration.class.getName());
-	private static final String DEFAULT_FIELDS_MIGRATION_PATH = "conf/db/" + DBConf.getInstance().getDBName() + "/ModuleMigration.sql";
+	private static final String DEFAULT_FIELDS_MIGRATION_PATH = FacilioUtil.normalizePath("conf/db/" + DBConf.getInstance().getDBName() + "/ModuleMigration.sql");
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		try {

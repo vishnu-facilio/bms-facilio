@@ -143,11 +143,15 @@ classes:
   - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules
   - com.facilio.bmsconsoleV3.signup.people.AddPeopleModuleFields
 
+    # ReadingKpi Modules
+  - com.facilio.bmsconsoleV3.signup.AddKPIModules
+
     #Adding Send Mail modules
   - com.facilio.mailtracking.signup.AddOutgoingMailLoggerModules
-
   - com.facilio.bmsconsoleV3.signup.serviceRequestModules.AddServiceRequestModules
 
+  # WorkOrder Modules
+  - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderModules
 
    #Add People Group and Group Members
   - com.facilio.bmsconsoleV3.signup.group.AddGroupAndGroupMemberModules

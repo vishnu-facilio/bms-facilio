@@ -85,7 +85,14 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 			
 			for(String key : displaylogic.getCriteria().getConditions().keySet()) {
 				Condition condition = displaylogic.getCriteria().getConditions().get(key);
-				long questionId = Long.parseLong(condition.getFieldName());
+				
+				long questionId = -1l;
+				if(condition.getFieldName().contains("_")) {
+					questionId = Long.parseLong(condition.getFieldName().split("_")[0]);
+				}
+				else {
+					questionId = Long.parseLong(condition.getFieldName());
+				}
 				
 				QuestionContext criteriaQuestion = questionMap.get(questionId);
 				
@@ -93,7 +100,7 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 				
 				if(displaylogic.getDisplayLogicTypeEnum().isQuestionDependent()) {
 					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() > displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question");
-					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() == displaylogic.getPage().getPosition() && criteriaQuestion.getPosition() >= displaylogic.getQuestion().getPosition() , ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question");
+					//V3Util.throwRestException(criteriaQuestion.getPage().getPosition() == displaylogic.getPage().getPosition() && criteriaQuestion.getPosition() >= displaylogic.getQuestion().getPosition() , ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question");
 				}
 				else {
 					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() >=  displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current page");

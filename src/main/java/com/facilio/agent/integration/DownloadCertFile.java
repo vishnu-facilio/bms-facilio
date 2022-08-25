@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -51,7 +52,7 @@ public class DownloadCertFile {
     public static long addCertificate(String policyName, String type) throws Exception {
         long fileId = -1;
         CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, policyName, type);
-        String directoryName = "facilio/";
+        String directoryName = FacilioUtil.normalizePath("facilio/");
 		String certFileId = FacilioAgent.getCertFileId(type);
 		String outFileName = FacilioAgent.getCertFileName(type);
 		File file = new File(System.getProperty("user.home") + outFileName);
@@ -150,7 +151,7 @@ public class DownloadCertFile {
     }
 
     public static Map<String, InputStream> getCertKeyFileInputStreamsFromFileStore(String type) {
-        String directoryName = "facilio/";
+        String directoryName = FacilioUtil.normalizePath("facilio/");
         InputStream fis = getCertKeyZipInputStream(type);
         Map<String, InputStream> filesMap = new HashMap<>();
         if (fis == null) {

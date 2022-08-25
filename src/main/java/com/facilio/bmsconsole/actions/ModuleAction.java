@@ -92,6 +92,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+		context.put(ContextNames.FAILURE_REPORTING_ENABLED, failureReportingEnabled);
 
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
@@ -156,12 +157,18 @@ public class ModuleAction extends FacilioAction {
 	}
 
 	public boolean stateFlowEnabled;
+
 	public boolean isStateFlowEnabled() {
 		return stateFlowEnabled;
 	}
+
 	public void setStateFlowEnabled(boolean stateFlowEnabled) {
 		this.stateFlowEnabled = stateFlowEnabled;
 	}
+
+	@Getter
+	@Setter
+	private boolean failureReportingEnabled;
 
 	public String v2UpdateModule() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getUpdateModuleChain();
