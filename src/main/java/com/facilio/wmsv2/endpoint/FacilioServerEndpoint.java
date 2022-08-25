@@ -1,17 +1,12 @@
 package com.facilio.wmsv2.endpoint;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ConnectedDeviceContext;
-import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.iam.accounts.util.IAMUtil;
-import com.facilio.screen.context.RemoteScreenContext;
-import com.facilio.screen.util.ScreenUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.wms.endpoints.FacilioServerConfigurator;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.handler.BaseHandler;
@@ -20,6 +15,7 @@ import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.MessageDecoder;
 import com.facilio.wmsv2.message.MessageEncoder;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
@@ -88,51 +84,54 @@ public class FacilioServerEndpoint
 		
 		Map<String, List<String>> headers = hreq.getHeaders();
 		Map<String, List<String>> params = hreq.getParameterMap();
-		
-		if (headers != null || params != null) {
-		
+
+		String facilioToken = getUserCookie(hreq, "fc.idToken.facilio");;
+		if(facilioToken == null) {
+			facilioToken = getUserCookie(hreq, "fc.idToken.facilioportal");
+		}
+		String headerToken = headers.containsKey("Authorization") ? headers.get("Authorization").get(0) : null;
+
+		if (facilioToken != null || headerToken != null) {
+
+			if (headerToken != null && headerToken.trim().length() > 0) {
+				if (headerToken.startsWith("Bearer facilio ")) {
+					facilioToken = headerToken.replace("Bearer facilio ", "");
+				} else if (headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
+					facilioToken = headerToken.replace("Bearer Facilio ", "");
+				} else {
+					facilioToken = headerToken.replace("Bearer ", "");
+				}
+			}
+
+			String overrideSessionCookie = getUserCookie(hreq, "fc.overrideSession");
+			boolean overrideSessionCheck = false;
+			if(overrideSessionCookie != null) {
+				if("true".equalsIgnoreCase(overrideSessionCookie)) {
+					overrideSessionCheck = true;
+				}
+			}
+
+			String userType = "web";
+			String deviceType = headers.containsKey("X-Device-Type") ? headers.get("X-Device-Type").get(0) : null;
+			if (!StringUtils.isEmpty(deviceType)
+					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+				userType = "mobile";
+			}
+
 			LiveSessionType sessionType = LiveSessionType.APP;
 			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
-			
+
 			if (params.containsKey(SESSION_TYPE)) {
 				sessionType = LiveSessionType.valueOf(params.get(SESSION_TYPE).get(0));
 			}
-			
+
 			if (params.containsKey(SESSION_SOURCE)) {
 				sessionSource = LiveSession.LiveSessionSource.valueOf(params.get(SESSION_SOURCE).get(0));
 			}
 
-			/*if (params.containsKey(AUTH_TOKEN) && sessionType != null) {
-				if (sessionType == LiveSessionType.DEVICE) {
-					deviceToken = params.get(AUTH_TOKEN).get(0);
-				}
-				else {
-					idToken = params.get(AUTH_TOKEN).get(0);
-				}
-			}*/
-			
-			Organization org = null;
-			User user = null;
-			
-			if (sessionType == LiveSessionType.REMOTE_SCREEN) {
-				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(id);
-				if (remoteScreen != null) {
-					org = IAMUtil.getOrgBean().getOrgv2(remoteScreen.getOrgId());
-				}
-			}
-			else if (sessionType == LiveSessionType.DEVICE) {
-				ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(id);
-				if (connectedDevice != null) {
-					org = IAMUtil.getOrgBean().getOrgv2(connectedDevice.getOrgId());
-				}
-			}
-			else {
-				user = AccountUtil.getUserBean().getUserInternal(id);
-				org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
-			}
-			
-			if (org != null || user != null) {
-				Account currentAccount = new Account(org, user);
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, userType);
+			if (iamAccount != null) {
+				Account currentAccount = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
 				if (params.containsKey("app")) {
 					List<String> apps = params.get("app");
 					if (CollectionUtils.isNotEmpty(apps)) {
@@ -145,14 +144,26 @@ public class FacilioServerEndpoint
 				LiveSession liveSession = new LiveSession().setId(session.getId()).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType);
 				return liveSession;
 			}
-			else {
-				throw new Exception("Invalid user!");
+		}
+		throw new Exception("Invalid user!");
+    }
+
+	public String getUserCookie(HandshakeRequest handshakeRequest, String cookieName) {
+		Map<String, List<String>> headers = handshakeRequest.getHeaders();
+		List<String> cookieValues = headers.get("cookie");
+		if (cookieValues != null && cookieValues.size() > 0) {
+			for (String cookie : cookieValues.get(0).split(";")) {
+				if (cookie.split("=").length > 1) {
+					String key = cookie.split("=")[0].trim();
+					String value = cookie.split("=")[1].trim();
+					if (key.equals(cookieName)) {
+						return value;
+					}
+				}
 			}
 		}
-		else {
-			throw new Exception("Invalid params!");
-		}
-    }
+		return null;
+	}
 
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException
