@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.command.FacilioCommand;
@@ -12,6 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j
 public class HandleV3AlarmListLookupCommand extends FacilioCommand {
 
     @Override
@@ -61,7 +65,16 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 alarm.setLastOccurrenceId(alarmOccurrenceId);
             }
 
-            List<Long> newRuleIds = newReadingAlarms.stream().map(el -> el.getRule().getId()).collect(Collectors.toList());
+//            List<Long> newRuleIds = newReadingAlarms.stream().map(el -> el.getRule().getId()).collect(Collectors.toList());
+            List<Long> newRuleIds = new ArrayList<>();
+            for(ReadingAlarm newReadingAlarm:newReadingAlarms){
+                ReadingRuleContext newReadingRule = (ReadingRuleContext) newReadingAlarm.getRule();
+                if(newReadingRule==null){
+                    LOGGER.info("Id of New Alarm that doesn't have a Rule Id " + newReadingAlarm.getId());
+                } else {
+                    newRuleIds.add(newReadingRule.getId());
+                }
+            }
             if (!newRuleIds.isEmpty()) {
                 Map<Long, String> ruleNameMap = NewReadingRuleAPI.getReadingRuleNamesByIds(newRuleIds);
                 for (ReadingAlarm alarm : newReadingAlarms) {

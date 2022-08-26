@@ -487,34 +487,33 @@ public class LookupSpecialTypeUtil {
 				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
 			}
 		}
-		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			if (!(ids instanceof List)) {
 				ids = new ArrayList<>(ids);
 			}
-			boolean isSla = ContextNames.SLA_RULE_MODULE.equals(specialType);
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, isSla, true);
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, true, true);
 			if (CollectionUtils.isNotEmpty(workflowRules)) {
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
-			}
-    } else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-        if (!(ids instanceof List)) {
-            ids = new ArrayList<>(ids);
-        }
-        if(CollectionUtils.isNotEmpty(ids)) {
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getRules(ids);
-                return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
             }
-            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
-            if (CollectionUtils.isNotEmpty(workflowRules)) {
-                return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
+        } else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+            if (!(ids instanceof List)) {
+                ids = new ArrayList<>(ids);
             }
-        }
-    } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
-			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
-			if (CollectionUtils.isNotEmpty(sensorRules)) {
-				return sensorRules.stream().collect(Collectors.toMap(SensorRuleContext::getId, Function.identity()));
-			}
+            if (CollectionUtils.isNotEmpty(ids)) {
+                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+                    List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getRules(ids);
+                    return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
+                }
+                List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
+                if (CollectionUtils.isNotEmpty(workflowRules)) {
+                    return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
+                }
+            }
+        } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+            List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
+            if (CollectionUtils.isNotEmpty(sensorRules)) {
+                return sensorRules.stream().collect(Collectors.toMap(SensorRuleContext::getId, Function.identity()));
+            }
 		}
 		return null;
 	}
