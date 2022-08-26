@@ -1489,6 +1489,7 @@ public class APIv3Config {
                 .afterSave(new RollUpTransactionAmountCommand())
                 .list()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
+                .afterFetch(new SetDislayNameForTransactionSourceModuleName())
                 .summary()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
                 .delete()
