@@ -10,7 +10,9 @@ public enum TransactionState{
 	ADJUSTMENT_INCREASE,
 	ADJUSTMENT_DECREASE,
 	TRANSFERRED_FROM,
-	TRANSFERRED_TO;
+	TRANSFERRED_TO,
+	HARD_RESERVE,
+	SOFT_RESERVE;
 
 
 	public static TransactionState valueOf(int value) {

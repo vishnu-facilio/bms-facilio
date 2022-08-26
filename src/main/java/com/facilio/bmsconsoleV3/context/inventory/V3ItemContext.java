@@ -15,7 +15,9 @@ public class V3ItemContext extends V3Context {
     private V3ItemStatusContext status;
     private CostType costType;
     private Unit issuingUnit;
-    private Double quantity;
+    private Double quantity;//available quantity
+    private Double currentQuantity;
+    private Double reservedQuantity;
     private List<V3PurchasedItemContext> purchasedItems;
     private Long lastPurchasedDate;
     private Double lastPurchasedPrice;
@@ -87,6 +89,22 @@ public class V3ItemContext extends V3Context {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public Double getCurrentQuantity() {
+        return currentQuantity;
+    }
+
+    public void setCurrentQuantity(Double currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
+
+    public Double getReservedQuantity() {
+        return reservedQuantity;
+    }
+
+    public void setReservedQuantity(Double reservedQuantity) {
+        this.reservedQuantity = reservedQuantity;
     }
 
     public List<V3PurchasedItemContext> getPurchasedItems() {

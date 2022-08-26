@@ -2258,6 +2258,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new AddOrUpdateWorkorderItemsCommand());
+			c.addCommand(new UpdateReservedQuantityCommand());
 			c.addCommand(new LoadWorkorderItemLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context.workOrderPlannedInventory;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class WorkOrderPlannedItemsContext extends V3Context {
@@ -13,6 +14,8 @@ public class WorkOrderPlannedItemsContext extends V3Context {
     private Double quantity;
     private Double totalCost;
     private V3StoreRoomContext storeRoom;
+    private Boolean isReserved;
+    private ReservationType reservationType;
 
     public V3WorkOrderContext getWorkOrder() {
         return workOrder;
@@ -68,5 +71,50 @@ public class WorkOrderPlannedItemsContext extends V3Context {
 
     public void setStoreRoom(V3StoreRoomContext storeRoom) {
         this.storeRoom = storeRoom;
+    }
+
+    public Boolean getIsReserved() {
+        return isReserved;
+    }
+
+    public void setIsReserved(Boolean reserved) {
+        isReserved = reserved;
+    }
+
+    public Integer getReservationType() {
+        if (reservationType != null) {
+            return reservationType.getIndex();
+        }
+        return -1;
+    }
+
+    public void setReservationType(Integer reservationType) {
+        if (reservationType != null) {
+            this.reservationType = ReservationType.valueOf(reservationType);
+        }
+    }
+    public ReservationType getReservationTypeEnum() {
+        return reservationType;
+    }
+
+    public enum ReservationType implements FacilioIntEnum{
+        HARD, SOFT;
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name();
+        }
+
+        public static ReservationType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
     }
 }

@@ -13,6 +13,7 @@ public class V3ItemTypesContext extends V3Context {
 	private Double minimumQuantity;
 	public Boolean isRotating;
 	private Long photoId;
+	private Double quantity;//available quantity
 	private Double currentQuantity;
 	private Long lastPurchasedDate;
 	private Double lastPurchasedPrice;
@@ -35,6 +36,14 @@ public class V3ItemTypesContext extends V3Context {
 
 	public void setPhotoId(Long photoId) {
 		this.photoId = photoId;
+	}
+
+	public Double getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Double quantity) {
+		this.quantity = quantity;
 	}
 
 	public Double getCurrentQuantity() {

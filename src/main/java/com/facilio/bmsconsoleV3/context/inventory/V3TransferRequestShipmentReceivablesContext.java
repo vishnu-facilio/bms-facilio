@@ -1,7 +1,5 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -11,8 +9,8 @@ public class V3TransferRequestShipmentReceivablesContext extends V3Context {
     private V3TransferRequestShipmentContext shipment;
     private V3TransferRequestLineItemContext lineItem;
     private InventoryType inventoryType;
-    private ItemTypesContext itemType;
-    private ToolTypesContext toolType;
+    private V3ItemTypesContext itemType;
+    private V3ToolTypesContext toolType;
     private Double quantityReceived;
     private Long receiptDate;
     private String remarks;
@@ -77,19 +75,19 @@ public class V3TransferRequestShipmentReceivablesContext extends V3Context {
         this.lineItem = lineItem;
     }
 
-    public ItemTypesContext getItemType() {
+    public V3ItemTypesContext getItemType() {
         return itemType;
     }
 
-    public void setItemType(ItemTypesContext itemType) {
+    public void setItemType(V3ItemTypesContext itemType) {
         this.itemType = itemType;
     }
 
-    public ToolTypesContext getToolType() {
+    public V3ToolTypesContext getToolType() {
         return toolType;
     }
 
-    public void setToolType(ToolTypesContext toolType) {
+    public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
     }
 

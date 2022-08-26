@@ -666,8 +666,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("itemType", "Item"));
 		columns.add(new ViewField("storeRoom", "Storeroom"));
-		columns.add(new ViewField("quantity", "Current Balance"));
-		columns.add(new ViewField("minimumQuantity", "Mininum Quantity"));
+		columns.add(new ViewField("quantity", "Available Quantity"));
+		columns.add(new ViewField("minimumQuantity", "Minimum Quantity"));
 //		columns.add(new ViewField("costType", "Cost Type"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
@@ -676,7 +676,8 @@ public class ColumnFactory {
 	}
 	private static List<ViewField> getDefaultToolColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
+		columns.add(new ViewField("toolType", "Tool"));
 		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("currentQuantity", "Current Balance"));

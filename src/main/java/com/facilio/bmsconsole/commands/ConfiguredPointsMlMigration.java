@@ -23,15 +23,11 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
             Map<Long, List<String>> controllerIdVsPointNamesMap = new HashMap<>();
             for (Point point : points) {
             if (!controllerIdVsPointNamesMap.containsKey(point.getControllerId())) {
-                if (point.getResourceId() == null || point.getFieldId() == null) {
                     List<String> pointNames = new ArrayList<>();
                     pointNames.add(point.getName());
                     controllerIdVsPointNamesMap.put(point.getControllerId(), pointNames);
-                }
             } else {
-                if (point.getResourceId() == null || point.getFieldId() == null) {
                     controllerIdVsPointNamesMap.get(point.getControllerId()).add(point.getName());
-                }
             }
         }
 

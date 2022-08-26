@@ -21,7 +21,7 @@ enums:
 
   - name: ConfigureStatus
     enumClassName: com.facilio.agentv2.point.PointEnum$ConfigureStatus
-    
+
   - name: DeviceType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$DeviceType
 
@@ -39,7 +39,7 @@ enums:
 
   - name: TenantType
     enumClassName: com.facilio.bmsconsole.tenant.TenantContext$TenantType
-    
+
   - name: Source
     enumClassName: com.facilio.bmsconsole.context.VisitorLoggingContext$Source
 
@@ -49,13 +49,13 @@ enums:
   - name: TimeFormat
     enumClassName: com.facilio.time.TimeFormat
 
-  - name: PrinterModel  
+  - name: PrinterModel
     enumClassName: com.facilio.bmsconsole.context.PrinterContext$PrinterModel
 
-  - name: ConnectMode  
+  - name: ConnectMode
     enumClassName: com.facilio.bmsconsole.context.PrinterContext$ConnectMode
 
-  - name: OccupantType  
+  - name: OccupantType
     enumClassName: com.facilio.bmsconsole.context.OccupantsContext$OccupantType
 
   - name: PermitType
@@ -85,7 +85,7 @@ enums:
   - name: CustomerType
     enumClassName: com.facilio.bmsconsoleV3.context.quotation.QuotationContext$CustomerType
 
-  - name : FaultType
+  - name: FaultType
     enumClassName: com.facilio.bmsconsole.enums.FaultType
 
   - name: ValidationType
@@ -111,7 +111,7 @@ enums:
 
   - name: NewsType
     enumClassName: com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext$Type
-    
+
   - name: FocalPointType
     enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetContext$FocalPointType
 
@@ -126,7 +126,7 @@ enums:
 
   - name: AppLayoutType
     enumClassName: com.facilio.bmsconsole.context.ApplicationLayoutContext$AppLayoutType
-    
+
   - name: FacilityType
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext$FacilityType
 
@@ -144,7 +144,7 @@ enums:
 
   - name: PaymentStatus
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext$PaymentStatus
-    
+
   - name: ClickAction
     enumClassName: com.facilio.report.context.ReportSettings$ClickAction
 
@@ -156,7 +156,7 @@ enums:
 
   - name: AmenityLogo
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext$AmenityLogo
-    
+
   - name: QAndAType
     enumClassName: com.facilio.qa.context.QAndAType
 
@@ -219,19 +219,19 @@ enums:
 
   - name: JobPlanTaskCategory
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext$JobPlanTaskCategory
-    
+
   - name: MoveType
     enumClassName: com.facilio.bmsconsoleV3.context.V3MovesContext$MoveType
 
   - name: EmailConversationFromType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$From_Type
-  
+
   - name: EmailConversationMessageType
-    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Message_Type 
+    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Message_Type
 
   - name: EmailConversationMode
-    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Email_Status_Type 
-    
+    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Email_Status_Type
+
   - name: EmailFromAddressSourceType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailFromAddress$SourceType
 
@@ -243,7 +243,7 @@ enums:
 
   - name: InsuranceType
     enumClassName: com.facilio.bmsconsole.context.InsuranceContext$InsuranceType
-    
+
   - name: FloorPlanType
     enumClassName: com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext$FloorPlanType
 
@@ -267,3 +267,5 @@ enums:
 
   - name: KPIType
     enumClassName: com.facilio.readingkpi.context.KPIType
+  - name: ReservationType
+    enumClassName: com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext$ReservationType

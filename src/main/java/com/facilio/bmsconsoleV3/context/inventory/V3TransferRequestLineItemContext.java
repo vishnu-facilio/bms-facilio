@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsole.context.*;
+
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -9,8 +9,8 @@ public class V3TransferRequestLineItemContext extends V3Context {
 
     private V3TransferRequestContext transferRequest;
     private InventoryType inventoryType;
-    private ItemTypesContext itemType;
-    private ToolTypesContext toolType;
+    private V3ItemTypesContext itemType;
+    private V3ToolTypesContext toolType;
     private Double quantity;
     private Double quantityReceived;
 
@@ -64,19 +64,19 @@ public class V3TransferRequestLineItemContext extends V3Context {
             return name;
         }
     }
-    public ItemTypesContext getItemType() {
+    public V3ItemTypesContext getItemType() {
         return itemType;
     }
 
-    public void setItemType(ItemTypesContext itemType) {
+    public void setItemType(V3ItemTypesContext itemType) {
         this.itemType = itemType;
     }
 
-    public ToolTypesContext getToolType() {
+    public V3ToolTypesContext getToolType() {
         return toolType;
     }
 
-    public void setToolType(ToolTypesContext toolType) {
+    public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
     }
 

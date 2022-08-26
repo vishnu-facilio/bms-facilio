@@ -1,17 +1,13 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,7 +37,7 @@ public class ConfigurePointCommand extends FacilioCommand {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
 
             if(controller.getControllerType()==13){
-                boolean isTdb = ((RdmControllerContext) controller).isTdb();
+                boolean isTdb = ((RdmControllerContext) controller).getIsTdb();
                 if(!isTdb){
                   throw new Exception("Cannot configure points for non-tdb controller. "+controller.getId());
               }

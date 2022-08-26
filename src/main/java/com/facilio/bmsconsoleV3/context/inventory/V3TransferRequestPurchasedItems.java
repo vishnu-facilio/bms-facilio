@@ -1,12 +1,11 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3TransferRequestPurchasedItems extends V3Context {
     private static final long serialVersionUID = 1L;
     private V3TransferRequestContext transferRequest;
-    private ItemContext item;
+    private V3ItemContext item;
     private Double unitPrice;
     private Double quantity;
 
@@ -18,11 +17,11 @@ public class V3TransferRequestPurchasedItems extends V3Context {
         this.transferRequest = transferRequest;
     }
 
-    public ItemContext getItem() {
+    public V3ItemContext getItem() {
         return item;
     }
 
-    public void setItem(ItemContext item) {
+    public void setItem(V3ItemContext item) {
         this.item = item;
     }
 

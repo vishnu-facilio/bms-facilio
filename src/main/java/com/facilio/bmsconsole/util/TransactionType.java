@@ -5,7 +5,8 @@ public enum TransactionType {
 	STOCK,
 	WORKORDER,
 	MANUAL,
-	SHIPMENT_STOCK
+	SHIPMENT_STOCK,
+	RESERVATION
 	;
 	
 	public int getValue() {

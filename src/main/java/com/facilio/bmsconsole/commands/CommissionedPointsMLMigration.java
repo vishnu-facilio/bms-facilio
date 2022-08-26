@@ -27,6 +27,7 @@ public class CommissionedPointsMLMigration extends AgentV2Command {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .withAgentId(agentId)
                 .filterConfigurePoints()
+                .limit(-1)
                 ;
         List<Point>points = getPointRequest.getPoints();
         context.put(AgentConstants.POINT,points);

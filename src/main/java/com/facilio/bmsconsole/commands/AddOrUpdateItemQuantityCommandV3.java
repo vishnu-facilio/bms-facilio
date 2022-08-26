@@ -84,7 +84,9 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						V3ItemContext item = new V3ItemContext();
 						item = itemContext;
 						itemTypesId = itemContext.getItemType().getId();
-						item.setQuantity(quantity);
+						item.setCurrentQuantity(quantity);
+						Double reservedQuantity =itemContext.getReservedQuantity()!=null && itemContext.getReservedQuantity()>=0 ? itemContext.getReservedQuantity() : 0;
+						item.setQuantity(quantity-reservedQuantity);
 						item.setLastPurchasedDate(lastPurchasedDate);
 						item.setLastPurchasedPrice(lastPurchasedPrice);
 						if( item.getMinimumQuantity()!=null && item.getQuantity() <= item.getMinimumQuantity()) {
@@ -111,6 +113,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 					else {
 						double totalConsumed = getTotalQuantityConsumed(itemId, "item");
 						itemContext.setQuantity(totalConsumed);
+						itemContext.setCurrentQuantity(totalConsumed);
 						UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(itemId, itemModule));
@@ -167,6 +170,9 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("hardReserve", "sum(case WHEN TRANSACTION_STATE = 11 THEN QUANTITY ELSE 0 END)",
+				FieldType.DECIMAL));
+
 		builder.select(fields);
 
 		builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get(fieldName),
@@ -174,12 +180,13 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			double addition = 0, issues = 0, returns = 0;
+			double addition = 0, issues = 0, returns = 0, hardReserve=0;
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
-			
-			return ((addition + returns) - issues);
+			hardReserve = rs.get(0).get("hardReserve") != null ? (double) rs.get(0).get("hardReserve") : 0;
+
+			return ((addition + returns) - issues - hardReserve);
 		}
 		return 0d;
 	}

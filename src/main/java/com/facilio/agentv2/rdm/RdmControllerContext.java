@@ -32,7 +32,7 @@ public class RdmControllerContext extends Controller {
     private String username;
     private String password;
 
-    public boolean isTdb() {
+    public boolean getIsTdb() {
         return isTdb;
     }
 
@@ -64,7 +64,7 @@ public class RdmControllerContext extends Controller {
         object.put(AgentConstants.DEVICE, getDevice());
         object.put(AgentConstants.USER_NAME, getUsername());
         object.put(AgentConstants.PASSWORD, getPassword());
-        object.put(AgentConstants.IS_TDB, isTdb());
+        object.put(AgentConstants.IS_TDB, getIsTdb());
         return object;
     }
 

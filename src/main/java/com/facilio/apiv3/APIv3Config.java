@@ -119,6 +119,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
@@ -1625,6 +1626,8 @@ public class APIv3Config {
         return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
                 .create()
                 .update()
+                .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
+                .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
                 .summary()
                 .delete()
@@ -1920,6 +1923,15 @@ public class APIv3Config {
         return () -> new V3Config(WorkflowLogContext.class, null)
                 .build();
     }
+    
+    @Module(FacilioConstants.WorkOrderMultiResource.NAME)
+	public static Supplier<V3Config> getWorkOrderMultiResource() {
+		return () -> new V3Config(WorkOrderMultiResourceContext.class, null)
+							 .create()
+							 .list()
+							 .delete()
+							 .build();
+	}
 
     @Module("asset")
     public static Supplier<V3Config> getAsset() {
@@ -2163,7 +2175,7 @@ public class APIv3Config {
 
 	@Module(FacilioConstants.CraftAndSKills.SKILLS)
 	public static Supplier<V3Config> getCraftSkills() {
-		return () -> new V3Config(SkillsContext.class, null)
+		return () -> new V3Config(SkillsContext.class, new ModuleCustomFieldCount30())
 							 .list()
 							 .delete()
 							 .build();
@@ -2171,7 +2183,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.CraftAndSKills.CRAFT)
     public static Supplier<V3Config> getCrafts() {
-        return () -> new V3Config(CraftContext.class, null)
+        return () -> new V3Config(CraftContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .list()
                 .summary()
@@ -2215,7 +2227,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.PEOPLE)
     public static Supplier<V3Config> getPeoples() {
-        return () -> new V3Config(V3PeopleContext.class, null)
+        return () -> new V3Config(V3PeopleContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .list()
                 .summary()
