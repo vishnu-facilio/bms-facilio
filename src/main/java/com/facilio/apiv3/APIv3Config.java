@@ -55,6 +55,7 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
@@ -132,10 +133,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -2257,6 +2256,7 @@ public class APIv3Config {
                 .build();
     }
 
+
     @Module(FacilioConstants.ReadingKpi.READING_KPI)
     public static Supplier<V3Config> getReadingKpi() {
         return () -> new V3Config(ReadingKPIContext.class, null)
@@ -2289,6 +2289,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
 
     @Module(FacilioConstants.ContextNames.WORKORDER_FAILURE_CLASS_RELATIONSHIP)
     public static Supplier<V3Config> getWorkOrderFailureCodeRelationship() {
@@ -2339,7 +2340,20 @@ public class APIv3Config {
                     public boolean executeCommand(Context context) throws Exception {
                         throw new IllegalArgumentException("Delete is not supported");
                     }
-                })
+                }).build();
+    }
+
+
+    @Module(FacilioConstants.ContextNames.JOB_PLAN_CRAFTS)
+    public static Supplier<V3Config> getJobPlanCrafts() {
+        return () -> new V3Config(JobPlanCraftsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
+                .summary()
+                .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
+                .delete()
                 .build();
     }
 }
