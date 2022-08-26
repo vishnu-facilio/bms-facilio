@@ -379,8 +379,10 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		}
 
 		List<User> users = ouIds.size() == 0 ? new ArrayList<>() : AccountUtil.getUserBean().getUsers(null, true, false, ouIds);
+		users = (users == null) ? new ArrayList<>() : users;
 		Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getOuid, Function.identity()));
 		List<Group> groups = groupIds.size() == 0 ? new ArrayList<>() : AccountUtil.getGroupBean().getGroups(groupIds);
+		groups = (groups == null) ? new ArrayList<>() : groups;
 		Map<Long, Group> groupMap = groups.stream().collect(Collectors.toMap(Group::getId, Function.identity()));
 		List<Role> roles = roleIds.size() == 0 ? new ArrayList<>() : AccountUtil.getRoleBean().getRoles(roleIds);
 		Map<Long, Role> roleMap = roles.stream().collect(Collectors.toMap(Role::getId, Function.identity()));
