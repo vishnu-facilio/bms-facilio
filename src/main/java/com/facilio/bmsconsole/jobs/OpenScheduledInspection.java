@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.Collections;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
@@ -13,6 +15,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.v3.util.V3Util;
 
 public class OpenScheduledInspection extends FacilioJob {
 
@@ -47,6 +50,7 @@ public class OpenScheduledInspection extends FacilioJob {
     		inspectionResponse.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
     		
     		V3RecordAPI.updateRecord(inspectionResponse, modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+    		V3Util.postCreateRecord(FacilioConstants.Inspection.INSPECTION_RESPONSE, Collections.singletonList(inspectionResponseId), null, null, null);
         }
 	}
 

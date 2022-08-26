@@ -126,9 +126,9 @@ public enum FacilioRelationshipFunctions implements FacilioWorkflowFunctionInter
 	;
 	private Integer value;
 	private String functionName;
-	private String namespace = "asset";
+	private String namespace = "relationship";
 	private String params;
-	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.ASSET;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.RELATIONSHIP;
 	
 	public Integer getValue() {
 		return value;

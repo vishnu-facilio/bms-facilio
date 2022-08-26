@@ -37,6 +37,7 @@ public class BaseSchedulerJob extends FacilioJob {
 			JSONObject jobProps = BmsJobUtil.getJobProps(jobId, jobName);
 		    Boolean isUpdate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("isUpdate", false) : false;
 		    Boolean saveAsV3 = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3", false) : false;
+		    Boolean saveAsV3PreCreate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3PreCreate", false) : false;
 
 			if(baseSchedules != null && !baseSchedules.isEmpty()) {
 				for(BaseScheduleContext baseScheduleContext: baseSchedules) {
@@ -46,6 +47,9 @@ public class BaseSchedulerJob extends FacilioJob {
 						if(childRecords != null && !childRecords.isEmpty()) {
 							if(saveAsV3) {
 								baseScheduleContext.saveAsV3Records(childRecords);
+							}
+							else if(saveAsV3PreCreate) {
+								baseScheduleContext.saveAsV3PreCreate(childRecords);
 							}
 							else {
 								baseScheduleContext.saveRecords(childRecords);

@@ -71,6 +71,14 @@ public class BaseScheduleContext implements Serializable {
 		}
 	}
 	
+	public void saveAsV3PreCreate(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(getDataModuleId());
+		
+		V3Util.preCreateRecord(module.getName(), FieldUtil.getAsMapList(childRecords, ModuleBaseWithCustomFields.class), null, null);
+	}
+	
 	public enum ScheduleType implements FacilioIntEnum {
 		
 		RECURRING_VISITOR_INVITE(new InviteVisitorScheduler()),
@@ -221,5 +229,5 @@ public class BaseScheduleContext implements Serializable {
 	public void setDataModuleId(Long dataModuleId) {
 		this.dataModuleId = dataModuleId;
 	}
-	
+
 }

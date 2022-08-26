@@ -34,6 +34,7 @@ public class BaseSchedulerSingleInstanceJob extends FacilioJob {
 		JSONObject jobProps = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 	    Boolean isUpdate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("isUpdate", false) : false;
 	    Boolean saveAsV3 = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3", false) : false;
+	    Boolean saveAsV3PreCreate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3PreCreate", false) : false;
 		
 		try {
 			List<Map<String, Object>> parentRecordProps = baseScheduleContext.fetchParent();
@@ -41,6 +42,8 @@ public class BaseSchedulerSingleInstanceJob extends FacilioJob {
 			if(childRecords != null && !childRecords.isEmpty()) {
 				if(saveAsV3) {
 					baseScheduleContext.saveAsV3Records(childRecords);
+				}else if(saveAsV3PreCreate) {
+					baseScheduleContext.saveAsV3PreCreate(childRecords);
 				}
 				else {
 					baseScheduleContext.saveRecords(childRecords);
