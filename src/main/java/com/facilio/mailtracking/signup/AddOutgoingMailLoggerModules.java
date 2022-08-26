@@ -3,6 +3,7 @@ package com.facilio.mailtracking.signup;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
@@ -29,13 +30,17 @@ import java.util.List;
 
 @Log4j
 public class AddOutgoingMailLoggerModules extends SignUpData {
+
     @Override
     public void addData() throws Exception {
-        FacilioModule mailModule = constructOutgoingMailModule();
-        FacilioModule recipientModule = constructOutgoingRecipientModule(mailModule);
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule mailModule = constructOGMailModule(modBean, MailMessageUtil.BASE_MAIL_MESSAGE_MODULE_NAME);
+        FacilioModule mailAttachmentsModule = constructOGMailAttachmentsModule(mailModule);
+        FacilioModule recipientModule = constructOGRecipientModule(mailModule);
 
         List<FacilioModule> modules = new ArrayList<>();
         modules.add(mailModule);
+        modules.add(mailAttachmentsModule);
         modules.add(recipientModule);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
@@ -45,6 +50,73 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         addRecipientStatusRollUpFields(mailModule, recipientModule);
 
         LOGGER.info("OutgoingMail related modules added successfully");
+    }
+
+    private FacilioModule constructOGMailModule(ModuleBean modBean, String baseMailModuleName) throws Exception {
+        FacilioModule baseMailModule = modBean.getModule(baseMailModuleName);
+        FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER,
+                "Outgoing Mail Logger", "Outgoing_Mail_Logger", FacilioModule.ModuleType.SUB_ENTITY, baseMailModule);
+        module.setHideFromParents(true);
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getDefaultField("mapperId", "Mapper ID", "MAPPER_ID", FieldType.NUMBER, true));
+        fields.add(FieldFactory.getDefaultField("recordId", "Record ID", "RECORD_ID", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("recordsModuleId", "Records Module ID", "RECORDS_MODULE_ID", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("recordCreatedTime", "Record Created Time", "RECORD_CREATED_TIME",
+                FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
+
+        StringSystemEnumField sourceTypeField =  FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE",
+                FieldType.STRING_SYSTEM_ENUM);
+        sourceTypeField.setEnumName("MailSourceType");
+        fields.add(sourceTypeField);
+
+        fields.add(FieldFactory.getDefaultField("recipientCount", "Recipient Count", "RECIPIENT_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("inProgressCount", "InProgress Count", "IN_PROGRESS_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("sentCount", "Sent Count", "SENT_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("deliveredCount", "Delivered Count", "DELIVERED_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("bouncedCount", "Bounced Count", "BOUNCED_COUNT", FieldType.NUMBER));
+
+        module.setFields(fields);
+        return module;
+    }
+
+    private FacilioModule constructOGRecipientModule(FacilioModule mailModule) {
+        FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER,
+                "Outgoing Recipient Logger", "Outgoing_Recipient_Logger", FacilioModule.ModuleType.SUB_ENTITY);
+        List<FacilioField> fields = new ArrayList<>();
+
+        LookupField logger = FieldFactory.getDefaultField("logger", "Logger", "LOGGER", FieldType.LOOKUP);
+        logger.setMainField(true);
+        logger.setLookupModule(mailModule);
+        fields.add(logger);
+
+        fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("recipient", "Recipient", "RECIPIENT", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("bounceType", "Bounce Type", "BOUNCE_TYPE", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("bounceReason", "Bounce Reason", "BOUNCE_REASON", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("diagnosticCode", "Diagnostic Code", "DIAGNOSTIC_CODE", FieldType.STRING));
+        fields.add(FieldFactory.getSystemField("sysCreatedTime", module));
+        fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
+
+        module.setFields(fields);
+        return module;
+    }
+
+    private FacilioModule constructOGMailAttachmentsModule(FacilioModule mailModule) {
+        FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS,
+                "Outgoing Mail Attachments", "Outgoing_Mail_Attachments", FacilioModule.ModuleType.ATTACHMENTS);
+        List<FacilioField> fields = new ArrayList<>();
+
+        LookupField logger = FieldFactory.getDefaultField("mailId", "Mail ID", "MAIL_ID", FieldType.LOOKUP);
+        logger.setMainField(true);
+        logger.setLookupModule(mailModule);
+        fields.add(logger);
+
+        fields.add(FieldFactory.getDefaultField("fileName", "File Name", "FILE_NAME", FieldType.STRING));
+
+        module.setFields(fields);
+        return module;
     }
 
     private void addRecipientStatusRollUpFields(FacilioModule mailModule, FacilioModule recipientModule) throws Exception {
@@ -100,62 +172,5 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
             rollUp.setChildCriteriaId(CriteriaAPI.addCriteria(criteria));
         }
         return rollUp;
-    }
-
-    private FacilioModule constructOutgoingMailModule() {
-        FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER,
-                "Outgoing Mail Logger", "Outgoing_Mail_Logger", FacilioModule.ModuleType.BASE_ENTITY);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("mapperId", "Mapper ID", "MAPPER_ID", FieldType.NUMBER, true));
-        fields.add(FieldFactory.getDefaultField("recordId", "Record ID", "RECORD_ID", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("recordsModuleId", "Records Module ID", "RECORDS_MODULE_ID", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("recordCreatedTime", "Record Created Time", "RECORD_CREATED_TIME",
-                FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
-        fields.add(FieldFactory.getDefaultField("messageId", "Message ID", "MESSAGE_ID", FieldType.STRING));
-
-        StringSystemEnumField sourceTypeField =  FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.STRING_SYSTEM_ENUM);
-        sourceTypeField.setEnumName("MailSourceType");
-        fields.add(sourceTypeField);
-
-        fields.add(FieldFactory.getDefaultField("sender", "From Address", "SENDER", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("to", "To Addresses", "TO_ADDR", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("cc", "CC Addresses", "CC_ADDR", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("bcc", "BCC Addresses", "BCC_ADDR", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("subject", "Subject", "SUBJECT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("message", "Message", "MESSAGE", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("recipientCount", "Recipient Count", "RECIPIENT_COUNT", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("inProgressCount", "InProgress Count", "IN_PROGRESS_COUNT", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("sentCount", "Sent Count", "SENT_COUNT", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("deliveredCount", "Delivered Count", "DELIVERED_COUNT", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("bouncedCount", "Bounced Count", "BOUNCED_COUNT", FieldType.NUMBER));
-        fields.add(FieldFactory.getSystemField("sysCreatedTime", module));
-        fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
-
-        module.setFields(fields);
-        return module;
-    }
-
-    private FacilioModule constructOutgoingRecipientModule(FacilioModule mailModule) {
-        FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER,
-                "Outgoing Recipient Logger", "Outgoing_Recipient_Logger", FacilioModule.ModuleType.BASE_ENTITY);
-        List<FacilioField> fields = new ArrayList<>();
-
-        LookupField logger = FieldFactory.getDefaultField("logger", "Logger", "LOGGER", FieldType.LOOKUP);
-        logger.setMainField(true);
-        logger.setLookupModule(mailModule);
-        fields.add(logger);
-
-        fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("recipient", "Recipient", "RECIPIENT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("bounceType", "Bounce Type", "BOUNCE_TYPE", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("bounceReason", "Bounce Reason", "BOUNCE_REASON", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("diagnosticCode", "Diagnostic Code", "DIAGNOSTIC_CODE", FieldType.STRING));
-        fields.add(FieldFactory.getSystemField("sysCreatedTime", module));
-        fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
-
-        module.setFields(fields);
-        return module;
     }
 }

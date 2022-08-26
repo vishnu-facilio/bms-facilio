@@ -18,6 +18,7 @@ public class MailTransactionChainFactory {
     public static FacilioChain sendOutgoingMailChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateGlobalMapperIdCommand());
+        c.addCommand(new InsertOutgoingMailAttachmentsCommand());
         c.addCommand(new InsertOutgoingRecipientsCommand());
         c.addCommand(new SendMailCommand());
         return c;

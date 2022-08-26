@@ -170,10 +170,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
-import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
+import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
@@ -2239,15 +2240,17 @@ public class APIv3Config {
 
 
     @Module(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
-    public static Supplier<V3Config> getSendMailTracker() {
+    public static Supplier<V3Config> getOutgoingMailLogger() {
         return () -> new V3Config(V3OutgoingMailLogContext.class, null)
                 .list()
-                .afterFetch(new OutgoingMailLoggerListAfterFetchCommand())
+                .afterFetch(new UpdateMailRecordsModuleNameCommand())
+                .summary()
+                .afterFetch(new FetchMailAttachmentsCommand())
                 .build();
     }
 
     @Module(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER)
-    public static Supplier<V3Config> getSendMailTrackerExpander() {
+    public static Supplier<V3Config> getOutgoingRecipientLogger() {
         return () -> new V3Config(V3OutgoingRecipientContext.class, null)
                 .list()
                 .beforeFetch(MailReadOnlyChainFactory.getBeforeFetchMailRecipientListChain())
@@ -2256,6 +2259,11 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS)
+    public static Supplier<V3Config> getOutgoingMailAttachments() {
+        return () -> new V3Config(V3OutgoingMailAttachmentContext.class, null)
+                .build();
+    }
 
     @Module(FacilioConstants.ReadingKpi.READING_KPI)
     public static Supplier<V3Config> getReadingKpi() {
