@@ -37,6 +37,8 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 public class ImportAPI {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportAPI.class.getName());
@@ -716,6 +718,10 @@ public class ImportAPI {
 		}
 		return fieldMap;
 	}
+	
+	public static String getKeyNameFromField(@NotNull FacilioField field) {
+		return field.getModule().getName() +"__"+field.getName();
+	}
 
 	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
 		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
@@ -861,6 +867,7 @@ public class ImportAPI {
 		public static final String INSERT_RECORDS = "insertRecords";
 		public static final String UPDATE_RECORDS = "updateRecords";
 		public static final String OLD_RECORDS = "oldRecords";
+		public static final String PARSED_PROPS = "parsedProps";
 	}
 	
 	

@@ -426,6 +426,17 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 	
 	@Override
+	public Object fetchFirst(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		Object result = fetch(globalParams,objects);
+		
+		if(result instanceof List && !((List)result).isEmpty()) {
+			return ((List)result).get(0);
+		}
+		return result;
+	}
+	
+	@Override
 	public Object fetch(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);

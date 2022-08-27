@@ -1,14 +1,36 @@
 package com.facilio.bmsconsole.imports;
 
+import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.SkillContext;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
+import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
+import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
+import com.facilio.bmsconsoleV3.context.SkillsContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
+
 import org.apache.commons.chain.Context;
+import org.everit.json.schema.ValidationException;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class ImportConfiguration {
@@ -148,6 +170,57 @@ public class ImportConfiguration {
                 .done()
                 .importHandler()
                 .afterImportCommand(new HandleFailureRemedyAfterImportCommand())
+                .done()
+                .build();
+                
+    }
+    
+    @ImportModule(value = FacilioConstants.CraftAndSKills.LABOUR_CRAFT)
+    public static Supplier<ImportConfig> getLabourCraftAndSkillImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .importHandler()
+                .afterImportFunction(new AfterRowFunction() {
+					
+					@Override
+					public Object apply(Integer rowNumber, Map<String, Object> rowValue, Map<String, Object> prop, Context context) throws Exception {
+						// TODO Auto-generated method stub
+						ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+				        HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
+				        
+				        FacilioField skillField = Constants.getModBean().getField("skill", FacilioConstants.CraftAndSKills.LABOUR_CRAFT);
+				        
+				        String key = ImportAPI.getKeyNameFromField(skillField);
+				        
+				        String skillString = (String) rowValue.get(fieldMapping.get(key));
+				        
+				        Map<String, Object> craftMap = (Map<String, Object>)prop.get("craft");
+				        
+				        if(skillString != null && craftMap != null) {
+				        	
+				        	Criteria criteria = new Criteria();
+				        	criteria.addAndCondition(CriteriaAPI.getCondition(Constants.getModBean().getField("name", FacilioConstants.CraftAndSKills.SKILLS), skillString, StringOperators.IS));
+				        	criteria.addAndCondition(CriteriaAPI.getCondition(Constants.getModBean().getField("parentId", FacilioConstants.CraftAndSKills.SKILLS), craftMap.get("id")+"", NumberOperators.EQUALS));
+				        	
+				        	SelectRecordsBuilder<SkillsContext> select = new SelectRecordsBuilder<SkillsContext>()
+				        			.moduleName(FacilioConstants.CraftAndSKills.SKILLS)
+				        			.select(Constants.getModBean().getAllFields(FacilioConstants.CraftAndSKills.SKILLS))
+				        			.beanClass(SkillsContext.class)
+				        			.andCriteria(criteria)
+				        			;
+				        	
+				        	SkillsContext skill = select.fetchFirst();
+				        	
+				        	if(skill != null) {
+				        		prop.put("skill", FieldUtil.getAsProperties(skill));
+				        	}
+				        	else {
+				        		throw new ImportParseException(rowNumber, "Skill", new Exception("skill does not belongs to current craft"));
+				        	}
+				        }
+						
+						return null;
+					}
+				})
                 .done()
                 .build();
     }

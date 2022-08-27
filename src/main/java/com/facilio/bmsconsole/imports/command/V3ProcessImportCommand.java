@@ -236,7 +236,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
             }
 
             if (afterImportFunction != null) {
-                afterImportFunction.apply(rowNo, rowVal, props, context);
+                afterImportFunction.apply(rowNo, rowVal,props, context);
             }
 
             if(groupedContext.containsKey(moduleName)) {

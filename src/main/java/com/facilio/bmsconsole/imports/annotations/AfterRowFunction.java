@@ -6,5 +6,5 @@ import java.util.Map;
 
 @FunctionalInterface
 public interface AfterRowFunction {
-    Object apply(Integer rowNumber, Map<String, Object> rowValue, Map<String, Object> prop, Context context);
+    Object apply(Integer rowNumber, Map<String, Object> rowValue, Map<String, Object> prop, Context context) throws Exception;
 }
