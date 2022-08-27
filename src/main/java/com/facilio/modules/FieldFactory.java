@@ -8029,6 +8029,11 @@ public class FieldFactory extends BaseFieldFactory {
         
         fields.add(getField("timeFilter", "TIME_FILTER", module, FieldType.STRING));
         fields.add(getField("dataFilter", "DATA_FILTER", module, FieldType.STRING));
+        fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+
         return fields;
     }
 

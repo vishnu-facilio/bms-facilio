@@ -287,6 +287,11 @@ public class ReportUtil {
         reportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
         reportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", reportModule, FieldType.NUMBER));
         reportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", reportModule, FieldType.NUMBER));
+		reportSelectFields.add(FieldFactory.getModuleIdField(reportModule));
+		reportSelectFields.add(FieldFactory.getField("createdTime", "CREATED_TIME", reportModule, FieldType.NUMBER));
+		reportSelectFields.add(FieldFactory.getField("modifiedTime", "MODIFIED_TIME", reportModule, FieldType.NUMBER));
+		reportSelectFields.add(FieldFactory.getField("createdBy", "CREATED_BY", reportModule, FieldType.NUMBER));
+		reportSelectFields.add(FieldFactory.getField("modifiedBy", "MODIFIED_BY", reportModule, FieldType.NUMBER));
 
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
@@ -478,6 +483,11 @@ public class ReportUtil {
 			for(Map<String, Object> prop :props) {
 				try {
 					ReportContext report = getReportContextFromProps(prop);
+					if(report !=null && report.getModuleId() > 0){
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						module = modBean.getModule(report.getModuleId());
+						report.setModuleName(module.getDisplayName());
+					}
 					reports.add(report);
 				}
 				catch (Exception e) {
@@ -775,7 +785,8 @@ public class ReportUtil {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getReportModule().getTableName())
 													.fields(FieldFactory.getReport1Fields());
-		
+		reportContext.setCreatedTime(System.currentTimeMillis());
+		reportContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
 		long id = insertBuilder.insert(props);
 		reportContext.setId(id);
@@ -793,7 +804,8 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getIdCondition(reportContext.getId(), module))
 													.ignoreSplNullHandling()
 													;
-		
+		reportContext.setModifiedTime(System.currentTimeMillis());
+		reportContext.setModifiedBy(AccountUtil.getCurrentUser().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext, true);
 		return updateBuilder.update(props) > 0 ? true :false ;
 	}
