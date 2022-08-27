@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.imports.config;
 
+import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import org.apache.commons.chain.Command;
 
@@ -18,21 +19,25 @@ public class ImportHandler {
     }
 
     private Command afterInsertCommand;
+
     public Command getAfterInsertCommand() {
         return afterInsertCommand;
     }
 
     private RowFunction beforeImportFunction;
+
     public RowFunction getBeforeImportFunction() {
         return beforeImportFunction;
     }
 
-    private RowFunction afterImportFunction;
-    public RowFunction getAfterImportFunction() {
+    private AfterRowFunction afterImportFunction;
+
+    public AfterRowFunction getAfterImportFunction() {
         return afterImportFunction;
     }
 
     public Map<String, String> lookupMainFieldMap;
+
     public Map<String, String> getLookupMainFieldMap() {
         return lookupMainFieldMap;
     }
@@ -66,18 +71,21 @@ public class ImportHandler {
         }
 
         private RowFunction beforeImportFunction;
+
         public ImportHandlerBuilder beforeImportFunction(RowFunction rowFunction) {
             this.beforeImportFunction = rowFunction;
             return this;
         }
 
-        private RowFunction afterImportFunction;
-        public ImportHandlerBuilder afterImportFunction(RowFunction rowFunction) {
+        private AfterRowFunction afterImportFunction;
+
+        public ImportHandlerBuilder afterImportFunction(AfterRowFunction rowFunction) {
             this.afterImportFunction = rowFunction;
             return this;
         }
 
         private Map<String, String> lookupMainFieldMap;
+
         public ImportHandlerBuilder lookupMainFieldMap(String moduleName, String fieldName) {
             if (lookupMainFieldMap == null) {
                 lookupMainFieldMap = new HashMap<>();

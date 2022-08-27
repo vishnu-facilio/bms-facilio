@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.imports;
 
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
+import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
+import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
@@ -120,6 +122,32 @@ public class ImportConfiguration {
                 .importHandler()
                 .lookupMainFieldMap("plannedmaintenance", "name")
                 .afterImportCommand(new HandleTasksImportCommand())
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "failurecodecauses")
+    public static Supplier<ImportConfig> getFailureCodeCausesConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+                .parseHandler()
+                .done()
+                .importHandler()
+                .afterImportCommand(new HandleFailureCauseAfterImportCommand())
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "failurecoderemedies")
+    public static Supplier<ImportConfig> getFailureCodeRemediesConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+                .parseHandler()
+                .done()
+                .importHandler()
+                .afterImportCommand(new HandleFailureRemedyAfterImportCommand())
                 .done()
                 .build();
     }

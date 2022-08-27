@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.imports.config;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.InsertImportDataIntoLogCommand;
+import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.imports.command.*;
@@ -143,7 +144,7 @@ public class ImportChainUtil {
         Command afterImportCommand = null;
         Command afterInsertCommand = null;
         RowFunction beforeImportFunction = null;
-        RowFunction afterImportFunction = null;
+        AfterRowFunction afterImportFunction = null;
         Map<String, String> lookupMainFieldMap = null;
 
         if (importConfig != null) {
