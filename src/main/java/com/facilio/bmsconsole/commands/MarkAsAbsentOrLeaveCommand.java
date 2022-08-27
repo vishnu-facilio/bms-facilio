@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.Shift;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -11,7 +14,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceContext.Status;
-import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -23,8 +25,26 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class MarkAsAbsentOrLeaveCommand extends FacilioCommand {
+
+	private boolean isWeekend(Shift shift, long timestamp) throws ParseException {
+		JSONObject weekend = (JSONObject) new JSONParser().parse(shift.getWeekend());
+		ZonedDateTime dateTime = DateTimeUtil.getDateTime(timestamp);
+		int weekOfMonth = dateTime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+		if (weekend != null) {
+			List<Long> dayList = (List<Long>) weekend.get(String.valueOf(weekOfMonth));
+			if (CollectionUtils.isNotEmpty(dayList)) {
+				int i = dateTime.getDayOfWeek().getValue();
+				return dayList.contains((long) i);
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -34,7 +54,7 @@ public class MarkAsAbsentOrLeaveCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ATTENDANCE);
-			ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
+			Shift shift = (Shift) context.get(FacilioConstants.ContextNames.SHIFT);
 			long date = (long) context.get(FacilioConstants.ContextNames.DATE);
 			long day = DateTimeUtil.getDayStartTimeOf(date);
 			List<Long> absentUserIds = getAbsentUsers(userIds, day);
@@ -44,12 +64,13 @@ public class MarkAsAbsentOrLeaveCommand extends FacilioCommand {
 					User user = new User();
 					user.setOuid(id);
 					AttendanceContext attendance = new AttendanceContext();
-					if (shift.isWeekend(day)) {
+					if (isWeekend(shift, day)) {
 						attendance.setStatus(Status.LEAVE);
 					} else {
 						attendance.setStatus(Status.ABSENT);
 					}
-					attendance.setShift(shift);
+					// Attendance to be moved to v3 shift.
+					attendance.setV3Shift(shift);
 					attendance.setUser(user);
 					attendance.setDay(day);
 					attendanceList.add(attendance);

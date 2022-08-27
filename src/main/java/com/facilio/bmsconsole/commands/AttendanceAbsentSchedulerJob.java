@@ -12,13 +12,8 @@ public class AttendanceAbsentSchedulerJob extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
-		// TODO Auto-generated method stub
-		
-		long jobId = jc.getJobId();
-		
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SHIFT_ID, jc.getJobId());
-		
 		FacilioChain chain = TransactionChainFactory.markAbsentChain();
 		chain.execute(context);
 	}

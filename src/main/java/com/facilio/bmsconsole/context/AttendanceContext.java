@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsoleV3.context.Shift;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 public class AttendanceContext extends ModuleBaseWithCustomFields{
 
@@ -115,23 +119,31 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public void setLastBreakId(BreakContext lastBreakId) {
 		this.lastBreakId = lastBreakId;
 	}
-	
+
 	private long totalUnpaidBreakHrs = -1;
+
 	public long getTotalUnpaidBreakHrs() {
 		return totalUnpaidBreakHrs;
 	}
+
 	public void setTotalUnpaidBreakHrs(long totalUnpaidBreakHrs) {
 		this.totalUnpaidBreakHrs = totalUnpaidBreakHrs;
 	}
-	
+
+	@Getter
+	@Setter
+	private Shift v3Shift;
+
 	private ShiftContext shift;
+
 	public ShiftContext getShift() {
 		return shift;
 	}
+
 	public void setShift(ShiftContext shift) {
 		this.shift = shift;
 	}
-	
+
 	public long getTotalWorkingHrs() {
 		if(workingHours > 0) {
 			if(totalPaidBreakHrs > 0) {
