@@ -235,6 +235,85 @@ public class ChainUtil {
         return transactionChain;
     }
 
+    public static FacilioChain getPreCreateChain(String moduleName)throws Exception{
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+
+        Command initCommand = new DefaultBulkInit();
+        Command beforeSaveCommand = null;
+        Command afterSaveCommand = null;
+
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+
+        if (v3Config != null) {
+            V3Config.PreCreateHandler preCreateHandler=v3Config.getPreCreateHandler();
+            if (preCreateHandler != null) {
+                if (preCreateHandler.getInitCommand() != null) {
+                    initCommand = preCreateHandler.getInitCommand();
+                }
+                beforeSaveCommand = preCreateHandler.getBeforeSaveCommand();
+                afterSaveCommand = preCreateHandler.getAfterSaveCommand();
+            }
+        }
+
+        addIfNotNull(transactionChain, initCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "initCommand", moduleName));
+        addIfNotNull(transactionChain, beforeSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "beforeSaveCommand", moduleName));
+        transactionChain.addCommand(new AddMultiSelectFieldsCommand());
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
+        transactionChain.addCommand(new SaveCommand(module));
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "SaveCommand", moduleName));
+        transactionChain.addCommand(new SaveSubFormCommand());
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "SaveSubFormCommand", moduleName));
+        transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "SaveSubFormFromLineItemsCommand", moduleName));
+
+        addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPreCreateRecordChain", "afterSaveCommand", moduleName));
+
+        return transactionChain;
+
+    }
+
+    public static FacilioChain getPostCreateChain(String moduleName)throws Exception {
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+
+        Command afterSaveCommand = null;
+        Command afterTransactionCommand = null;
+        Command activityCommand = new AddActivityForModuleDataCommand(CommonActivityType.ADD_RECORD);
+
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+
+        if (v3Config != null) {
+            V3Config.PostCreateHandler postCreateHandler = v3Config.getPostCreateHandler();
+            if (postCreateHandler != null) {
+                afterSaveCommand=postCreateHandler.getAfterSaveCommand();
+                afterTransactionCommand = postCreateHandler.getAfterTransactionCommand();
+                if (postCreateHandler.getActivitySaveCommand() != null) {
+                    activityCommand = postCreateHandler.getActivitySaveCommand();
+                }
+            }
+        }
+        addIfNotNull(transactionChain, activityCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPostCreateRecordChain", "activityCommand", moduleName));
+        addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPostCreateRecordChain", "afterSaveCommand", moduleName));
+
+        addWorkflowChain(transactionChain);
+        addIfNotNull(transactionChain, afterTransactionCommand);
+        transactionChain.addCommand(new CheckContextTampering("getPostCreateRecordChain", "afterTransactionCommand", moduleName));
+
+        transactionChain.addCommand(new AddActivitiesCommandV3());
+
+        return transactionChain;
+
+    }
+
+
     @Deprecated
     public static FacilioChain getUpdateChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);

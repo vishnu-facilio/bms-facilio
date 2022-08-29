@@ -1160,7 +1160,7 @@ public class WorkflowRuleAPI {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
 		}
-		LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
+		LOGGER.debug("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
 		return result;
 	}
 	

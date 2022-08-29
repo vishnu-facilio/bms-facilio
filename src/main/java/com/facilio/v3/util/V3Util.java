@@ -100,6 +100,70 @@ public class V3Util {
         return contextNew;
     }
 
+    public static FacilioContext preCreateRecord(String moduleName, List<Map<String, Object>> data,
+                                           Map<String, Object> bodyParams,
+                                           Map<String, List<Object>> queryParams) throws Exception {
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        FacilioChain preCreateChain = ChainUtil.getPreCreateChain(moduleName);
+        FacilioContext contextNew = preCreateChain.getContext();
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        if (module.isCustom()) { // TODO move this check inside command
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioField localIdField = modBean.getField("localId", module.getName());
+            if (localIdField != null) {
+                contextNew.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+            }
+        }
+
+        Constants.setV3config(contextNew, v3Config);
+        contextNew.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+        Constants.setModuleName(contextNew, module.getName());
+        contextNew.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+
+        Constants.setBulkRawInput(contextNew, data);
+
+        Constants.setBodyParams(contextNew, bodyParams);
+        contextNew.put(Constants.QUERY_PARAMS, queryParams);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        contextNew.put(Constants.BEAN_CLASS, beanClass);
+        preCreateChain.execute();
+        return contextNew;
+    }
+
+    public static FacilioContext postCreateRecord(String moduleName,List<Long> ids, List<Map<String, Object>> data, Map<String, Object> bodyParams, Map<String, List<Object>> queryParams) throws Exception {
+
+        FacilioChain postCreateChain = ChainUtil.getPostCreateChain(moduleName);
+        FacilioContext context = postCreateChain.getContext();
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config config = ChainUtil.getV3Config(moduleName);
+        Class beanClass = ChainUtil.getBeanClass(config, module);
+
+        Constants.setBulkRawInput(context, data);
+
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        recordMap.put(moduleName, moduleBaseWithCustomFields);
+        Constants.setRecordMap(context, recordMap);
+        Constants.setRecordIds(context,ids);
+        Constants.setBodyParams(context, bodyParams);
+        context.put(Constants.QUERY_PARAMS, queryParams);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        Constants.setModuleName(context, moduleName);
+        Constants.setV3config(context, config);
+
+        postCreateChain.execute();
+
+        return context;
+
+    }
+
     /**
      * Bulk create records with V3 configuration. This executes all the workflows for all the records.
      *
@@ -116,7 +180,6 @@ public class V3Util {
         }
         return createRecord(module, recordList, true, bodyParams, queryParams,false);
     }
-
     public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,boolean restrictredAction) throws Exception {
 
     	FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);

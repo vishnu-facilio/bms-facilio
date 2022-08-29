@@ -29,6 +29,7 @@ public class MailConstants {
     public static class ModuleNames {
         public static final String OUTGOING_MAIL_LOGGER = "outgoingMailLogger";
         public static final String OUTGOING_RECIPIENT_LOGGER = "outgoingRecipientLogger";
+        public static final String OUTGOING_MAIL_ATTACHMENTS = "outgoingMailAttachments";
     }
 
 

@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -573,6 +574,7 @@ public class FormFactory {
 		List<FacilioForm> labourForm = Arrays.asList(getLabourForm());
 		List<FacilioForm> jobPlanForm = Arrays.asList(getJobPlanForm());
 		List<FacilioForm> plannedmaintenance = Arrays.asList(getPlannedMaintenanceForm());
+		List<FacilioForm> shiftForm = Arrays.asList(getShiftForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -649,14 +651,15 @@ public class FormFactory {
 				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
 				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
 				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
-				.put(ContextNames.INVENTORY_CATEGORY,getFormMap(inventoryCategoryForm))
-				.put(ContextNames.ITEM,getFormMap(itemFormsList))
-				.put(ContextNames.TOOL,getFormMap(toolFormsList))
-				.put(ContextNames.REQUEST_FOR_QUOTATION,getFormMap(rfqForm))
-				.put(ContextNames.VENDOR_QUOTES,getFormMap(vendorQuotesForm))
-				.put(ContextNames.LABOUR,getFormMap(labourForm))
-				.put(ContextNames.JOB_PLAN,getFormMap(jobPlanForm))
+				.put(ContextNames.INVENTORY_CATEGORY, getFormMap(inventoryCategoryForm))
+				.put(ContextNames.ITEM, getFormMap(itemFormsList))
+				.put(ContextNames.TOOL, getFormMap(toolFormsList))
+				.put(ContextNames.REQUEST_FOR_QUOTATION, getFormMap(rfqForm))
+				.put(ContextNames.VENDOR_QUOTES, getFormMap(vendorQuotesForm))
+				.put(ContextNames.LABOUR, getFormMap(labourForm))
+				.put(ContextNames.JOB_PLAN, getFormMap(jobPlanForm))
 				.put(ContextNames.PLANNEDMAINTENANCE, getFormMap(plannedmaintenance))
+				.put(ContextNames.SHIFT, getFormMap(shiftForm))
 				.build();
 	}
 	
@@ -1407,7 +1410,18 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-	
+
+	public static FacilioForm getShiftForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW SHIFT");
+		form.setName("default_shift_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.SHIFT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getShiftFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
 	public static FacilioForm getDepartmentForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW DEPARTMENT");
@@ -1996,7 +2010,35 @@ public class FormFactory {
 
 		return fields;
 	}
-	
+
+	private static List<FormField> getShiftFormField() {
+
+		JSONObject timeConfig = new JSONObject();
+		timeConfig.put("step", "00:30");
+		JSONObject colorPickerConfig = new JSONObject();
+		JSONArray predefineColors = new JSONArray();
+		String[] predefineColorsArr = {"#B1FFF4","#99D5FF", "#FFBDBD", "#CFC9FF", "#FDBCFF", "#FFADD8", "#BDFFBB", "#F1FFB9", "#FFD39F", "#FFB9A2", "#D0FFF8", "#B8E1FF", "#FFDFDF", "#DDD8FF", "#FED7FF", "#FFD4EB", "#DBFFDA", "#F8FFDA", "#FFECD5", "#FFE7DF", "#CCCCCC"};
+		for (String color:predefineColorsArr) {
+			predefineColors.add(color);
+		}
+		colorPickerConfig.put("predefineColors",predefineColors);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 2));
+		FormField colorCode = new FormField("colorCode", FieldDisplayType.COLOR_PICKER, "Color Code", Required.REQUIRED, 1, 2);
+		colorCode.setConfig(colorPickerConfig);
+		fields.add(colorCode);
+		FormField startTime = new FormField("startTime", FieldDisplayType.TIME, "Start", Required.REQUIRED, 2, 2);
+		startTime.setConfig(timeConfig);
+		fields.add(startTime);
+		FormField endTime = new FormField("endTime", FieldDisplayType.TIME, "End", Required.REQUIRED, 2, 2);
+		endTime.setConfig(timeConfig);
+		fields.add(endTime);
+		fields.add(new FormField("weekend", FieldDisplayType.WEEK_MATRIX, "Days", Required.REQUIRED, 3, 1 ));
+		
+		return fields;
+	}
+
 	private static List<FormField> getDepartmentFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));

@@ -35,6 +35,11 @@ public class FetchSysFields extends FacilioCommand {
             sysLookupFields.add((SupplementRecord) moduleStateField);
         }
 
+        FacilioField approvalStatusField = modBean.getField("approvalStatus", moduleName);
+        if (approvalStatusField != null && approvalStatusField instanceof LookupField) {
+            sysLookupFields.add((SupplementRecord) approvalStatusField);
+        }
+
         if (module.isCustom()) {
             sysLookupFields.add((LookupField) FieldFactory.getSystemField("sysCreatedBy", module));
             sysLookupFields.add((LookupField) FieldFactory.getSystemField("sysModifiedBy", module));

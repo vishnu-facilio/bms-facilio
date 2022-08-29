@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -56,7 +57,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
 
         JSONObject importMeta = importProcessContext.getImportJobMetaJson();
         RowFunction beforeImportFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.BEFORE_IMPORT_FUNCTION);
-        RowFunction afterImportFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.AFTER_IMPORT_FUNCTION);
+        AfterRowFunction afterImportFunction = (AfterRowFunction) context.get(ImportAPI.ImportProcessConstants.AFTER_IMPORT_FUNCTION);
 
         List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 
@@ -235,7 +236,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
             }
 
             if (afterImportFunction != null) {
-                afterImportFunction.apply(rowNo, rowVal, context);
+                afterImportFunction.apply(rowNo, rowVal,props, context);
             }
 
             if(groupedContext.containsKey(moduleName)) {

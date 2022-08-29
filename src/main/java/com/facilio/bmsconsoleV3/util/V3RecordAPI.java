@@ -200,7 +200,6 @@ public class V3RecordAPI {
         if(skipScoping) {
             builder.skipScopeCriteria();
         }
-
         return builder;
     }
 

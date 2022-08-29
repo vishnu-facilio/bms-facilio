@@ -426,6 +426,17 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 	
 	@Override
+	public Object fetchFirst(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		Object result = fetch(globalParams,objects);
+		
+		if(result instanceof List && !((List)result).isEmpty()) {
+			return ((List)result).get(0);
+		}
+		return result;
+	}
+	
+	@Override
 	public Object fetch(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -704,7 +715,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		LOGGER.info("selectBuilder -- "+selectBuilder);
+		LOGGER.debug("selectBuilder -- "+selectBuilder);
 		LOGGER.debug("selectBuilder result -- "+props);
 		
 		if(props != null && !props.isEmpty()) {

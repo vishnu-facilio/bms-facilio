@@ -1522,6 +1522,15 @@ public class AccountConstants {
 		return failure_remedies_id;
 	}
 
+	public static FacilioField getWorkOrderFailureClassRelationField() {
+		FacilioField woFailureClass = new FacilioField();
+		woFailureClass.setName("id");
+		woFailureClass.setColumnName("ID");
+		woFailureClass.setDataType(FieldType.NUMBER);
+		woFailureClass.setModule(ModuleFactory.getWorkOrderFailureClassRelModule());
+		return woFailureClass;
+	}
+
 	public static List<FacilioField> getFailureCodeProblemFields() {
 		FacilioModule module = ModuleFactory.getFailureCodeProblemModule();
 		List<FacilioField> fields = new ArrayList<>();

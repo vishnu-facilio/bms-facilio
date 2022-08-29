@@ -337,14 +337,14 @@ public class IotMessageApiV2 {
 
     public static List<Map<String, Object>> listIotMessages(long agentId, FacilioContext paginationContext) throws Exception {
         FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
-        List<Long> getIotDataIds = getIotDataIds(agentId);
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(iotMessageModule.getTableName())
-                .select(FieldFactory.getIotMessageFields());
-        if( ! getIotDataIds.isEmpty()) {
-            FacilioField parentIdField = FieldFactory.getAsMap(FieldFactory.getIotMessageFields()).get(AgentConstants.PARENT_ID);
-            builder.andCondition(CriteriaAPI.getCondition(parentIdField,getIotDataIds,NumberOperators.EQUALS));
-            JSONObject pagination = (JSONObject) paginationContext.get(FacilioConstants.ContextNames.PAGINATION);
+        FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
+        JSONObject pagination = (JSONObject) paginationContext.get(FacilioConstants.ContextNames.PAGINATION);
+        if(agentId > 0) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(iotMessageModule.getTableName())
+                    .select(FieldFactory.getIotMessageFields())
+                    .innerJoin(iotDataModule.getTableName()).on(iotDataModule.getTableName() + ".ID=" + iotMessageModule.getTableName() + ".PARENT_ID")
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(iotDataModule), String.valueOf(agentId), NumberOperators.EQUALS));
             if (pagination != null ) {
                 int page = (int) pagination.get("page");
                 int perPage = (int) pagination.get("perPage");
@@ -354,44 +354,25 @@ public class IotMessageApiV2 {
                     offset = 0;
                 }
 
-                builder.offset(offset);
-                builder.limit(perPage);
+                selectRecordBuilder.offset(offset);
+                selectRecordBuilder.limit(perPage);
             }else {
-    			builder.limit(50);
-    		}
-            builder.orderBy(AgentConstants.SENT_TIME + " DESC");
-            return builder.get();
-        }else {
+                selectRecordBuilder.limit(50);
+            }
+            selectRecordBuilder.orderBy(AgentConstants.SENT_TIME + " DESC");
+            return selectRecordBuilder.get();
+        }
+        else {
             LOGGER.info(" No iot message for agent ->"+agentId);
             return new ArrayList<>();
         }
     }
-
-    private static List<Long> getIotDataIds(long agentId) throws Exception {
-        FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
-        FacilioField idField = FieldFactory.getIdField();
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(iotDataModule.getTableName())
-                .select(Collections.singletonList(idField));
-        if(agentId > 0){
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(iotDataModule), String.valueOf(agentId), NumberOperators.EQUALS));
-        }
-        List<Long> ids = new ArrayList<>();
-        List<Map<String, Object>> data = builder.get();
-        if (data != null && (! data.isEmpty()) ) {
-            for (Map<String, Object> datum : data) {
-                ids.add((Long) datum.get(idField.getName()));
-            }
-        }
-        return ids;
-    }
-
     public static long getCount(Long agentId) throws Exception {
         FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
         FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(iotMessageModule.getTableName())
-                .innerJoin(iotDataModule.getTableName()).on(iotDataModule.getTableName() + ".ID=" + iotMessageModule.getTableName() + ".ID")
+                .innerJoin(iotDataModule.getTableName()).on(iotDataModule.getTableName() + ".ID=" + iotMessageModule.getTableName() + ".PARENT_ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(iotDataModule), String.valueOf(agentId), NumberOperators.EQUALS))
                 .select(new ArrayList<>())
                 .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(iotMessageModule));

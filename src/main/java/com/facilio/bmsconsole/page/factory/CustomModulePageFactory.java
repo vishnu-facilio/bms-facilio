@@ -112,9 +112,24 @@ public class CustomModulePageFactory extends PageFactory {
 		        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		        tab4Sec1.addWidget(activityWidget);
 		}
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES)) {
+			addFailureReportTab(page);
+		}
 		
 		return page;
 	}
-	
+	private static void addFailureReportTab(Page page){
+		Page.Tab failureReportTab = page.new Tab("Failure Report");
+		page.addTab(failureReportTab);
+
+		Page.Section failureReportSection = page.new Section();
+		failureReportTab.addSection(failureReportSection);
+
+		PageWidget failureReport = new PageWidget(PageWidget.WidgetType.FAILURE_REPORT);
+		failureReport.addToLayoutParams(failureReportSection, 24, 8);
+		failureReport.addToWidgetParams("card", "failurereports");
+		failureReportSection.addWidget(failureReport);
+	}
 
 }

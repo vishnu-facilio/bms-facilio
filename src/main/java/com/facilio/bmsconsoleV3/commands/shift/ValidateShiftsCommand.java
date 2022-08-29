@@ -30,6 +30,9 @@ public class ValidateShiftsCommand extends FacilioCommand {
     private boolean emptyStartAndEndTimeBreach(Shift s) {
         return s.getStartTime() == null || s.getEndTime() == null;
     }
+    private boolean invalidStartAndEndTimeBreach(Shift s) {
+        return s.getStartTime() >= s.getEndTime();
+    }
 
     private boolean duplicateShiftNameBreach(Shift shift) throws Exception {
 
@@ -66,6 +69,9 @@ public class ValidateShiftsCommand extends FacilioCommand {
             }
             if (duplicateShiftNameBreach(s)) {
                 throw new IllegalArgumentException("Shift with name already exists");
+            }
+            if (invalidStartAndEndTimeBreach(s)) {
+                throw new IllegalArgumentException("Shift start time cannot be greater than end time");
             }
         }
         return false;

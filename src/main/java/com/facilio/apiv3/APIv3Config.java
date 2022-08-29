@@ -41,9 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
-import com.facilio.bmsconsoleV3.commands.failureclass.CheckForDuplicateFailureCode;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
+import com.facilio.bmsconsoleV3.commands.failureclass.*;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
@@ -57,6 +55,7 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
@@ -134,10 +133,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -173,10 +170,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
-import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
+import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
@@ -197,7 +195,6 @@ import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import org.apache.commons.chain.Context;
-import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureCodeSupplements;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.IssueInvRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
@@ -587,6 +584,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeProblemsContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 
@@ -595,6 +594,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeCausesContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 
@@ -603,6 +604,8 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureCodeRemediesContext.class, null)
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
+                .delete()
+                .beforeDelete(new CheckForAssociatedModulesBeforeDeletion())
                 .build();
     }
 
@@ -885,7 +888,7 @@ public class APIv3Config {
 
     @Module("itemTransactions")
     public static Supplier<V3Config> getItemTransactions() {
-        return () -> new V3Config(V3ItemTransactionsContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3ItemTransactionsContext.class, null)
                 .create()
                 .beforeSave(new SetManualItemTransactionCommandV3(), new AdjustmentItemTransactionCommandV3())
                 .afterSave(new UpdateItemTransactionsCommandV3())
@@ -897,7 +900,7 @@ public class APIv3Config {
 
     @Module("toolTransactions")
     public static Supplier<V3Config> getToolTransactions() {
-        return () -> new V3Config(V3ToolTransactionContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3ToolTransactionContext.class,null)
                 .create()
                 .beforeSave(new SetManualToolTransactionsCommandV3())
                 .afterSave(new UpdateToolTransactionsCommandV3())
@@ -1584,7 +1587,7 @@ public class APIv3Config {
 
     @Module("jobPlanItems")
     public static Supplier<V3Config> getJobPlanItems() {
-        return () -> new V3Config(JobPlanItemsContext.class, null)
+        return () -> new V3Config(JobPlanItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1597,7 +1600,7 @@ public class APIv3Config {
 
     @Module("jobPlanTools")
     public static Supplier<V3Config> getJobPlanTools() {
-        return () -> new V3Config(JobPlanToolsContext.class, null)
+        return () -> new V3Config(JobPlanToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1610,7 +1613,7 @@ public class APIv3Config {
 
     @Module("jobPlanServices")
     public static Supplier<V3Config> getJobPlanServices() {
-        return () -> new V3Config(JobPlanServicesContext.class, null)
+        return () -> new V3Config(JobPlanServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1623,7 +1626,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedItems")
     public static Supplier<V3Config> getWorkOrderPlannedItems() {
-        return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
@@ -1636,7 +1639,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedTools")
     public static Supplier<V3Config> getWorkOrderPlannedTools() {
-        return () -> new V3Config(WorkOrderPlannedToolsContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -1647,7 +1650,7 @@ public class APIv3Config {
 
     @Module("workOrderPlannedServices")
     public static Supplier<V3Config> getWorkOrderPlannedServices() {
-        return () -> new V3Config(WorkOrderPlannedServicesContext.class, null)
+        return () -> new V3Config(WorkOrderPlannedServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
@@ -2237,20 +2240,28 @@ public class APIv3Config {
 
 
     @Module(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
-    public static Supplier<V3Config> getSendMailTracker() {
+    public static Supplier<V3Config> getOutgoingMailLogger() {
         return () -> new V3Config(V3OutgoingMailLogContext.class, null)
                 .list()
-                .afterFetch(new OutgoingMailLoggerListAfterFetchCommand())
+                .afterFetch(new UpdateMailRecordsModuleNameCommand())
+                .summary()
+                .afterFetch(new FetchMailAttachmentsCommand())
                 .build();
     }
 
     @Module(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER)
-    public static Supplier<V3Config> getSendMailTrackerExpander() {
+    public static Supplier<V3Config> getOutgoingRecipientLogger() {
         return () -> new V3Config(V3OutgoingRecipientContext.class, null)
                 .list()
                 .beforeFetch(MailReadOnlyChainFactory.getBeforeFetchMailRecipientListChain())
                 .summary()
                 .beforeFetch(new OutgoingRecipientLoadSupplementsCommand())
+                .build();
+    }
+
+    @Module(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS)
+    public static Supplier<V3Config> getOutgoingMailAttachments() {
+        return () -> new V3Config(V3OutgoingMailAttachmentContext.class, null)
                 .build();
     }
 
@@ -2286,6 +2297,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
 
     @Module(FacilioConstants.ContextNames.WORKORDER_FAILURE_CLASS_RELATIONSHIP)
     public static Supplier<V3Config> getWorkOrderFailureCodeRelationship() {
@@ -2336,7 +2348,20 @@ public class APIv3Config {
                     public boolean executeCommand(Context context) throws Exception {
                         throw new IllegalArgumentException("Delete is not supported");
                     }
-                })
+                }).build();
+    }
+
+
+    @Module(FacilioConstants.ContextNames.JOB_PLAN_CRAFTS)
+    public static Supplier<V3Config> getJobPlanCrafts() {
+        return () -> new V3Config(JobPlanCraftsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
+                .summary()
+                .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
+                .delete()
                 .build();
     }
 }

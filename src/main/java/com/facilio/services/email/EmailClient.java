@@ -39,7 +39,10 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.text.MessageFormat;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class EmailClient extends BaseEmailClient {
@@ -81,10 +84,11 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
-        boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
+        boolean isTrackingConfNotFound = StringUtils.isEmpty(DBConf.getInstance().getMailTrackingConfName());
         ModuleBean modBean = Constants.getModBean();
         boolean isSignUp = modBean.getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
-        if(isSignUp || isTrackingConfNotFound) { // normal behaviour for production env
+        boolean doTracking = (boolean) mailJson.getOrDefault("_tracking", true);
+        if(!doTracking || isSignUp || isTrackingConfNotFound) { // normal behaviour for production env
             if(files == null) {
                 sendEmailImpl(mailJson);
             } else {
@@ -99,7 +103,6 @@ public abstract class EmailClient extends BaseEmailClient {
         context.put(MailConstants.Params.MAIL_JSON, mailJson);
         context.put(MailConstants.Params.FILES, files);
         chain.execute();
-
         return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
     }
 

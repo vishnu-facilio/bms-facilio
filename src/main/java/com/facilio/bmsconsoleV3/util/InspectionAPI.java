@@ -59,7 +59,7 @@ public class InspectionAPI {
 	public static void scheduleResponseCreationJob(List<InspectionTriggerContext> triggers) {
 		
 		JSONObject props = new JSONObject();
-		props.put("saveAsV3", true);
+		props.put("saveAsV3PreCreate", true);
 		triggers.stream().forEach((trigger) -> {
 			
 			if(trigger.getParent().getStatus() && trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {

@@ -22,6 +22,8 @@ public class V3Config implements V3Builder {
     private ListHandler listHandler;
     private SummaryHandler summaryHandler;
     private ModuleCustomFieldsCount customFieldsCount;
+    private PreCreateHandler preCreateHandler;
+    private PostCreateHandler postCreateHandler;
     private boolean dontUseInScript = false;
 
     public V3Config dontUseInScript() {
@@ -69,6 +71,20 @@ public class V3Config implements V3Builder {
         this.createHandler = createHandler;
     }
 
+    public PreCreateHandler getPreCreateHandler(){
+        return preCreateHandler;
+    }
+    public void setPreCreateHandler(PreCreateHandler preCreateHandler){
+        this.preCreateHandler=preCreateHandler;
+    }
+
+    public PostCreateHandler getPostCreateHandler(){
+        return postCreateHandler;
+    }
+    public void setPostCreateHandler(PostCreateHandler postCreateHandler){
+        this.postCreateHandler=postCreateHandler;
+    }
+
     public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount) {
         this (bean, customFieldsCount, null);
     }
@@ -82,6 +98,8 @@ public class V3Config implements V3Builder {
             this.deleteHandler = config.deleteHandler;
             this.listHandler = config.listHandler;
             this.summaryHandler = config.summaryHandler;
+            this.preCreateHandler=config.preCreateHandler;
+            this.postCreateHandler= config.postCreateHandler;
         }
     }
 
@@ -245,6 +263,134 @@ public class V3Config implements V3Builder {
 
         public Command getActivitySaveCommand() {
             return activitySaveCommand;
+        }
+    }
+
+    public class PreCreateHandler implements PreCreateBuilder{
+
+        private Command initCommand;
+        private Command beforeSaveCommand;
+        private Command afterSaveCommand;
+        private V3Builder parent;
+
+        private PreCreateHandler(V3Builder parent){
+            this.parent=parent;
+        }
+        @Override
+        public PreCreateHandler init(Command... initCommand) {
+            this.initCommand = buildTransactionChain(initCommand);
+            return this;
+        }
+
+        @Override
+        public PreCreateHandler beforeSave(Command... beforeSaveCommand) {
+            this.beforeSaveCommand = buildTransactionChain(beforeSaveCommand);
+            return this;
+        }
+        @Override
+        public PreCreateHandler afterSave(Command... afterSaveCommand) {
+            this.afterSaveCommand=buildTransactionChain(afterSaveCommand);
+            return  this;
+        }
+        @Override
+        public UpdateBuilder update() {
+            return this.parent.update();
+        }
+        @Override
+        public DeleteBuilder delete() { return this.parent.delete();}
+        @Override
+        public ListBuilder list() {
+            return this.parent.list();
+        }
+        @Override
+        public SummaryBuilder summary() {
+            return this.parent.summary();
+        }
+        @Override
+        public V3Config build() {
+            return this.parent.build();
+        }
+
+
+        public Command getInitCommand(){return initCommand;}
+        public void setInitCommand(Command initCommand){
+            this.initCommand=initCommand;
+        }
+        public Command getBeforeSaveCommand(){return beforeSaveCommand;}
+
+        public void setBeforeSaveCommand(Command beforeSaveCommand){
+            this.beforeSaveCommand=beforeSaveCommand;
+        }
+        public Command getAfterSaveCommand(){
+            return afterSaveCommand;
+        }
+        public void setAfterSaveCommand(Command afterSaveCommand){
+            this.afterSaveCommand=afterSaveCommand;
+        }
+
+    }
+
+    public  class PostCreateHandler implements PostCreateBuilder{
+
+        private Command afterSaveCommand;
+        private Command afterTransactionCommand;
+        private Command activitySaveCommand;
+        private V3Builder parent;
+
+        private PostCreateHandler(V3Builder parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public PostCreateHandler afterSave(Command... customSaveCommand) {
+            this.afterSaveCommand = buildTransactionChain(customSaveCommand);
+            return this;
+        }
+        @Override
+        public PostCreateBuilder afterTransaction(Command... afterTransactionCommand) {
+            this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
+            return this;
+        }
+
+        @Override
+        public PostCreateBuilder activitySaveCommand(Command... activitySaveCommand) {
+            this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
+            return this;
+        }
+
+        @Override
+        public UpdateBuilder update() {
+            return this.parent.update();
+        }
+        @Override
+        public DeleteBuilder delete() { return this.parent.delete();}
+        @Override
+        public ListBuilder list() {
+            return this.parent.list();
+        }
+        @Override
+        public SummaryBuilder summary() {
+            return this.parent.summary();
+        }
+        @Override
+        public V3Config build() {
+            return this.parent.build();
+        }
+
+        public Command getAfterSaveCommand(){ return afterSaveCommand;}
+        public void setAfterSaveCommand(Command afterSaveCommand){
+            this.afterSaveCommand=afterSaveCommand;
+        }
+
+        public Command getAfterTransactionCommand() {
+            return afterTransactionCommand;
+        }
+        public void setAfterTransactionCommand(Command afterTransactionCommand){
+            this.afterTransactionCommand=afterTransactionCommand;
+        }
+        public Command getActivitySaveCommand(){ return activitySaveCommand;}
+        public void setActivitySaveCommand(Command activitySaveCommand){
+            this.activitySaveCommand=activitySaveCommand;
         }
     }
 

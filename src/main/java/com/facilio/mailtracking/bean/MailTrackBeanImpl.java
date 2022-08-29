@@ -89,6 +89,7 @@ public class MailTrackBeanImpl implements MailBean {
         FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
         FacilioContext context = chain.getContext();
         context.put(MailConstants.Params.MAIL_JSON, mailJson);
+        context.put(MailConstants.Params.FILES, mailJson.get(MailConstants.Params.FILES));
         context.put(MailConstants.Params.LOGGER_ID, mailJson.get(MailConstants.Params.LOGGER_ID));
         context.put(MailConstants.Params.MAPPER_ID, mailJson.get(MailConstants.Params.MAPPER_ID));
         chain.execute();

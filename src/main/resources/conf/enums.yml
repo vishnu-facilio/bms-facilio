@@ -269,3 +269,6 @@ enums:
     enumClassName: com.facilio.readingkpi.context.KPIType
   - name: ReservationType
     enumClassName: com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext$ReservationType
+
+  - name: MailSourceType
+    enumClassName: com.facilio.mailtracking.context.MailSourceType
