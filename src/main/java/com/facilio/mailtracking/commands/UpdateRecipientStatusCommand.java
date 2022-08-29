@@ -17,6 +17,9 @@ public class UpdateRecipientStatusCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long loggerId = FacilioUtil.parseLong(context.get(MailConstants.Params.LOGGER_ID));
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId);
+        if(oldRecords==null || oldRecords.isEmpty()) {
+            return false;
+        }
         OutgoingMailAPI.updateRecipientStatus(oldRecords, MailStatus.SENT.getValue());
         return false;
     }

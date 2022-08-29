@@ -14,7 +14,6 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.email.EmailClient;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -57,18 +56,6 @@ public class OutgoingMailAPI {
     }
 
     public static V3OutgoingMailLogContext convertToMailLogContext(JSONObject mailJson) throws IOException {
-        if(!mailJson.containsKey("from")) {
-            mailJson.put("from", mailJson.get(EmailClient.SENDER));
-            if(mailJson.get("message")!=null) {
-                if (mailJson.get(EmailClient.MAIL_TYPE) != null && mailJson.get(EmailClient.MAIL_TYPE).equals(EmailClient.HTML)) {
-                    mailJson.put("htmlContent", mailJson.get("message"));
-                    mailJson.put("contentType", EmailClient.CONTENT_TYPE_TEXT_HTML);
-                } else {
-                    mailJson.put("textContent", mailJson.get("message"));
-                    mailJson.put("contentType", EmailClient.CONTENT_TYPE_TEXT_PLAIN);
-                }
-            }
-        }
         V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
         Object recModuleVal = mailJson.get("moduleId");
         if(mailJson.get("moduleId")!=null) {
