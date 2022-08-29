@@ -9,6 +9,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,10 @@ public class GetLabourListCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-        List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("user"),
-				(LookupField) fieldsAsMap.get("location"),
-				(LookupField) fieldsAsMap.get(FacilioConstants.ContextNames.PEOPLE));
+        List<LookupField> fetchLookup = new ArrayList<>();
+        fetchLookup.add((LookupField) fieldsAsMap.get("user"));
+        fetchLookup.add((LookupField) fieldsAsMap.get("location"));
+        fetchLookup.add((LookupField) fieldsAsMap.get(FacilioConstants.ContextNames.PEOPLE));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,fetchLookup);
         return false;
