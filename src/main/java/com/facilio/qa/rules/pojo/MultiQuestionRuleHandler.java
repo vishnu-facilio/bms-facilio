@@ -119,10 +119,9 @@ public enum MultiQuestionRuleHandler implements RuleHandler {
 
         if(MapUtils.isNotEmpty(answerProp)){
 
-            Long rowId = (Long) answerProp.getOrDefault("rowId",null);
-            Long columnId = (Long) answerProp.getOrDefault("columnId",null);
+            long columnId = (long) answerProp.getOrDefault("columnId",-1);
 
-            return (rowId !=null && columnId != null ) && (ruleCondition.getRowId() == rowId && ruleCondition.getColumnId() == columnId);
+            return ((columnId > 0 ) && (ruleCondition.getColumnId() == columnId));
         }
         return false;
     }
