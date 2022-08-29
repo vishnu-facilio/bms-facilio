@@ -5065,4 +5065,102 @@ public class ModuleFactory {
 		mailMapperModule.setTableName("Outgoing_Mail_Mapper");
 		return mailMapperModule;
 	}
+	public static FacilioModule getMisccontrolerModule() {
+		FacilioModule miscController = new FacilioModule();
+		miscController.setName("misccontroller");
+		miscController.setDisplayName("Misc Controller");
+		miscController.setTableName("Misc_Controller");
+		return miscController;
+	}
+	public static FacilioModule getBacnetipcontrollerModule() {
+		FacilioModule bacnetController = new FacilioModule();
+		bacnetController.setName("bacnetipcontroller");
+		bacnetController.setDisplayName("BACnetip Controller");
+		bacnetController.setTableName("BACnet_IP_Controller");
+		return bacnetController;
+	}
+//	public static FacilioModule getBacnetmstControllerModule() {
+//		FacilioModule bacnetMstController = new FacilioModule();
+//		bacnetMstController.setName("bacnetmstpcontroller");
+//		bacnetMstController.setDisplayName("BACnetmst Controller");
+//		bacnetMstController.setTableName("BACnet_Mst_Controller");
+//		return bacnetMstController;
+//	}
+	public static FacilioModule getNiagaraControllerModule() {
+		FacilioModule niagaraController = new FacilioModule();
+		niagaraController.setName("niagaracontroller");
+		niagaraController.setDisplayName("Niagara Controller");
+		niagaraController.setTableName("Niagra_Controller");
+		return niagaraController;
+	}
+	public static FacilioModule getModbusTcpControllerModule() {
+		FacilioModule modbusTcpController = new FacilioModule();
+		modbusTcpController.setName("modbustcpcontroller");
+		modbusTcpController.setDisplayName("Modbus Tcp Controller");
+		modbusTcpController.setTableName("Modbus_Tcp_Controller");
+		return modbusTcpController;
+	}
+	public static FacilioModule getModbusRtuControllerModule() {
+		FacilioModule modbusRtu = new FacilioModule();
+		modbusRtu.setName("modbusrtucontroller");
+		modbusRtu.setDisplayName("Modbus Rtu Controller");
+		modbusRtu.setTableName("Modbus_Rtu_Controller");
+		return modbusRtu;
+	}
+	public static FacilioModule getOpcUaControllerModule() {
+		FacilioModule opcUA_controller = new FacilioModule();
+		opcUA_controller.setName("opcuacontroller");
+		opcUA_controller.setDisplayName("Opc UA Controller");
+		opcUA_controller.setTableName("OpcUA_Controller");
+		return opcUA_controller;
+	}
+	public static FacilioModule getOpcXmlDaControllerModule() {
+		FacilioModule opcXMLDA_controller = new FacilioModule();
+		opcXMLDA_controller.setName("opcxmldacontroller");
+		opcXMLDA_controller.setDisplayName("Opc XML DA Controller");
+		opcXMLDA_controller.setTableName("OpcXMLDA_Controller");
+		return opcXMLDA_controller;
+	}
+	public static FacilioModule getLonWorksontrollerModule() {
+		FacilioModule lonWorksController = new FacilioModule();
+		lonWorksController.setName("lonworkscontroller");
+		lonWorksController.setDisplayName("Lon WorksController");
+		lonWorksController.setTableName("LonWorks_Controller");
+		return lonWorksController;
+	}
+//	public static FacilioModule getKnxControllerModule() {
+//		FacilioModule misccontroller = new FacilioModule();
+//		misccontroller.setName("knxcontroller");
+//		misccontroller.setDisplayName("Knx Controller");
+//		misccontroller.setTableName("BACnet_IP_Controller");
+//		return misccontroller;
+//	}
+	public static FacilioModule getCustomControllerModule() {
+		FacilioModule customController = new FacilioModule();
+		customController.setName("customController");
+		customController.setDisplayName("Custom Controller");
+		customController.setTableName("Custom_Controller");
+		return customController;
+	}
+	public static FacilioModule getRestControllerModule() {
+		FacilioModule restController = new FacilioModule();
+		restController.setName("restcontroller");
+		restController.setDisplayName("Rest Controller");
+		restController.setTableName("Rest_Controller");
+		return restController;
+	}
+	public static FacilioModule getSystemControllerModule() {
+		FacilioModule systemController = new FacilioModule();
+		systemController.setName("systemController");
+		systemController.setDisplayName("System Controller");
+		systemController.setTableName("System_Controller");
+		return systemController;
+	}
+	public static FacilioModule getRdmControllerModule() {
+		FacilioModule RDM_Controller = new FacilioModule();
+		RDM_Controller.setName("rdmcontroller");
+		RDM_Controller.setDisplayName("RDM Controller");
+		RDM_Controller.setTableName("RDM_Controller");
+		return RDM_Controller;
+	}
 }

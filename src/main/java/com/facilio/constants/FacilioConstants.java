@@ -2369,8 +2369,8 @@ public class FacilioConstants {
 			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			classMap.put(LON_WORKS_CONTROLLER_MODULE_NAME, LonWorksControllerContext.class);
 			classMap.put(RDM_CONTROLLER_MODULE_NAME, RdmControllerContext.class);
-			// classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
-			// classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
+			classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
+			classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, MiscControllerContext.class);
 
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);

@@ -38,7 +38,7 @@ public interface AgentBean {
 
     public boolean deleteAgent(List<Long> ids) throws Exception;
 
-    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch,JSONObject pagination) throws Exception;
+    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch,JSONObject pagination,List<Long> defaultIds) throws Exception;
 
     public long getAgentCount(String querySearch);
 

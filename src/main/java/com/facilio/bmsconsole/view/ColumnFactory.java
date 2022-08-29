@@ -281,6 +281,23 @@ public class ColumnFactory {
 
 		columnMap.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE + "-default", getDefaultPlannedMaintenanceViewColumns());
 
+		//controllerTypes
+		columnMap.put("misccontroller-default",getMiscControllerColumns());
+		columnMap.put("bacnetipcontroller-default",getBacnetControllerColumns());
+//		columnMap.put("bacnetmstpcontroller-default",getBacnetMstpControllerColumns());
+		columnMap.put("niagaracontroller-default",getNiagaraControllerColumns());
+		columnMap.put("modbustcpcontroller-default",getModbusIpControllerColumns());
+		columnMap.put("modbusrtucontroller-default",getModbusRtuControllerColumns());
+		columnMap.put("opcuacontroller-default",getObcUaControllerColumns());
+		columnMap.put("opcxmldacontroller-default",getObcXmldaControllerColumns());
+		columnMap.put("lonworkscontroller-default",getLonWorksontrollerColumns());
+//		columnMap.put("knxcontroller-default",getKnxControllerColumns());
+		columnMap.put("customcontroller-default",getCustomControllerColumns());
+		columnMap.put("restcontroller-default",getRestControllerColumns());
+		columnMap.put("systemController-default",getSystemControllerColumns());
+		columnMap.put("rdmcontroller-default",getRdmControllerColumns());
+
+
 		columnMap.put("transaction-all", getBudgetTransactionColumns());
 		return columnMap;
 	}
@@ -2076,6 +2093,134 @@ public class ColumnFactory {
 		columns.add(new ViewField("transactionSourceModuleName", "Module Name"));
 		columns.add(new ViewField("transactionAmount", "Actual"));
 
+		return columns;
+	}
+	private static List<ViewField>getMiscControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getBacnetControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		columns.add(new ViewField("ipAddress","IP Address"));
+		columns.add(new ViewField("instanceNumber","Instance"));
+		columns.add(new ViewField("networkNumber","Network Number"));
+		return columns;
+	}
+//	private static List<ViewField>getBacnetMstpControllerColumns(){
+//		List<ViewField> columns = new ArrayList<ViewField>();
+//		columns.add(new ViewField("name", "Name"));
+//		columns.add(new ViewField("siteId", "Site"));
+//		columns.add(new ViewField("createdTime", "Created Time"));
+//		return columns;
+//	}
+	private static List<ViewField>getNiagaraControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("ipAddress","IP Address"));
+		columns.add(new ViewField("portNumber","Port Number"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getModbusIpControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("slaveId", "Slave ID"));
+		columns.add(new ViewField("ipAddress", "IP Address"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getModbusRtuControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("slaveId", "Slave ID"));
+		columns.add(new ViewField("networkId", "Network ID"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getObcXmldaControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("url","URL"));
+		columns.add(new ViewField("userName","User Name"));
+		columns.add(new ViewField("password","Password"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getObcUaControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("url","URL"));
+		columns.add(new ViewField("certPath","Cert Path"));
+		columns.add(new ViewField("securityMode","Security Mode"));
+		columns.add(new ViewField("securityPolicy","Security Policy"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getLonWorksontrollerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		columns.add(new ViewField("subnetNode","Subnet Node"));
+		columns.add(new ViewField("neuronId","Neuron Id"));
+		return columns;
+	}
+//	private static List<ViewField>getKnxControllerColumns(){
+//		List<ViewField> columns = new ArrayList<ViewField>();
+//		columns.add(new ViewField("name", "Name"));
+//		columns.add(new ViewField("siteId", "Site"));
+//		columns.add(new ViewField("createdTime", "Created Time"));
+//		return columns;
+//	}
+	private static List<ViewField>getCustomControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getRestControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getSystemControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		return columns;
+	}
+	private static List<ViewField>getRdmControllerColumns(){
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
 		return columns;
 	}
 
