@@ -2032,6 +2032,23 @@ public class ModuleFactory {
 		return taskInputOptionsModule;
 	}
 
+	public static FacilioModule getJobPlanTaskInputOptionsModule() {
+		// change module name to jobPlanTaskInputOptions
+		FacilioModule taskInputOptionsModule = new FacilioModule("jobPlanTaskInputOptions", "JobPlan Task Input Options",
+				"JobPlan_Task_Input_Options", FacilioModule.ModuleType.SUB_ENTITY, null,
+				false); // in future need to enable the trash
+
+		return taskInputOptionsModule;
+	}
+
+	public static FacilioModule getJobPlanSectionInputOptionsModule() {
+		FacilioModule sectionInputOptionsModule = new FacilioModule("jobPlanSectionInputOptions", "JobPlan Section Input Options",
+				"JobPlan_Section_Input_Options", FacilioModule.ModuleType.SUB_ENTITY, null,
+				false); // in future need to enable the trash
+
+		return sectionInputOptionsModule;
+	}
+
 	public static FacilioModule getTaskSectionModule() {
 		FacilioModule taskSection = new FacilioModule();
 		taskSection.setName("tasksection");

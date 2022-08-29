@@ -9,13 +9,13 @@ import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,6 +33,42 @@ public class JobPlanAPI {
 
         deleteBuilder.delete();
 
+    }
+
+    /**
+     * Helper function to delete the JobPlan TaskInputOptions
+     * -- Not using now, as TaskInputOptions in TASK_INPUT_OPTIONS_NEW table has `ON DELETE CASCADE` constraint added.
+     * @param taskId
+     * @throws Exception
+     */
+    public static void deleteJobPlanTaskInputOptions(Long taskId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule taskInputOptionsModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TASK_INPUT_OPTIONS);
+        FacilioField taskIdField = FieldFactory.getJobPlanTaskInputOptionsFields().get("jobPlanTask");
+
+        DeleteRecordBuilder<TaskInputOptionsContext> deleteBuilder = new DeleteRecordBuilder<TaskInputOptionsContext>()
+                .module(taskInputOptionsModule)
+                .table(taskInputOptionsModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition(taskIdField.getColumnName(), taskIdField.getName(), String.valueOf(taskId), NumberOperators.EQUALS));
+        deleteBuilder.delete();
+    }
+
+    /**
+     * Helper function to delete the JobPlan SectionInputOptions
+     *
+     * @param sectionId
+     * @throws Exception
+     */
+    public static void deleteJobPlanSectionInputOptions(Long sectionId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule sectionInputOptionsModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SECTION_INPUT_OPTIONS);
+        FacilioField sectionIdField = FieldFactory.getJobPlanSectionInputOptionsFields().get("jobPlanSection");
+
+        DeleteRecordBuilder<TaskInputOptionsContext> deleteBuilder = new DeleteRecordBuilder<TaskInputOptionsContext>()
+                .module(sectionInputOptionsModule)
+                .table(sectionInputOptionsModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition(sectionIdField.getColumnName(), sectionIdField.getName(), String.valueOf(sectionId), NumberOperators.EQUALS));
+        deleteBuilder.delete();
     }
 
     public static List<JobPlanTaskSectionContext> setJobPlanDetails(long jobPlanId) throws Exception {

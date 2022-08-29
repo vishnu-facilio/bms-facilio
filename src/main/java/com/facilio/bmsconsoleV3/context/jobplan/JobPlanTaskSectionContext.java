@@ -1,10 +1,11 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
-import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -206,17 +207,17 @@ public class JobPlanTaskSectionContext extends V3Context {
      */
 
     // declarations for options
-    private List<String> options;
-    public List<String> getOptions() {
-        if(options == null && getAdditionInfo().containsKey("options")){
-            return (List<String>) getAdditionInfo().get("options");
-        }
-        return options;
-    }
-    public void setOptions(List<String> options) {
-        addStringListToAdditionInfo("options",options);
-        this.options = options;
-    }
+//    private List<String> options;
+//    public List<String> getOptions() {
+//        if(options == null && getAdditionInfo().containsKey("options")){
+//            return (List<String>) getAdditionInfo().get("options");
+//        }
+//        return options;
+//    }
+//    public void setOptions(List<String> options) {
+//        addStringListToAdditionInfo("options",options);
+//        this.options = options;
+//    }
 
     // declarations for attachmentRequired
     private Boolean attachmentRequired;
@@ -471,5 +472,9 @@ public class JobPlanTaskSectionContext extends V3Context {
             addAdditionInfo(key, list);
         }
     }
+
+    @Getter
+    @Setter
+    private List<Map<String, Object>> inputOptions;
 
 }

@@ -95,9 +95,9 @@ public class FillUpJobPlanSectionAdditionInfoObject extends FacilioCommand {
         }
 
         // handle options
-        if (section.getOptions() != null) {
-            section.addAdditionInfo("options", section.getOptions());
-        }
+//        if (section.getOptions() != null) {
+//            section.addAdditionInfo("options", section.getOptions());
+//        }
 
         // handle attachmentOption, if it isn't available remove it.
         if (section.getAttachmentOption() != null && section.getAttachmentRequired()) {

@@ -24,7 +24,7 @@ public class SortJobPlanTaskSectionCommand extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(jobPlans)){
             for(JobPlanContext jobplan : jobPlans){
-                if(!jobplan.getJobplansection().isEmpty()){
+                if(jobplan.getJobplansection() != null && !jobplan.getJobplansection().isEmpty()){
                    List<JobPlanTaskSectionContext> jobPlanSectionList = jobplan.getJobplansection();
                    // sort jobPlan section based on SequenceNumber
                    List<JobPlanTaskSectionContext> sortedJPSectionList = jobPlanSectionList.stream()

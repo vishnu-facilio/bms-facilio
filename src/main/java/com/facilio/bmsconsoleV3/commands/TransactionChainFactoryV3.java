@@ -1039,7 +1039,7 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getUpdateJobPlanBeforeChain() {
+    public static FacilioChain getUpdateJobPlanBeforeSaveChain() {
         FacilioChain chain = FacilioChain.getTransactionChain();
         // added this command to prefill/remove properties in JobPlanSection's additionInfo object
         chain.addCommand(new FillUpJobPlanSectionAdditionInfoObject());
@@ -1047,11 +1047,13 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getUpdateJobPlanChain() {
+    public static FacilioChain getUpdateJobPlanAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         // added this command to prefill/remove properties in JobPlanTask's additionInfo object
         chain.addCommand(new FillUpJobPlanTaskAdditionInfoObject());
+        chain.addCommand(new AddJobPlanSectionInputOptions());
         chain.addCommand(new AddJobPlanTasksCommand());
+        chain.addCommand(new AddJobPlanTaskInputOptions());
        // chain.addCommand(new AddJobPlanPMsInContextCommand());
         chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
         chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
@@ -1063,6 +1065,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FillJobPlanDetailsCommand());
         chain.addCommand(new SortJobPlanTaskSectionCommand());
+        chain.addCommand(new FetchJobPlanSectionAndTaskInputOptions());
         return chain;
     }
 
@@ -1916,9 +1919,11 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getCreateJobPlanChain() {
+    public static FacilioChain getCreateJobPlanAfterSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new AddJobPlanSectionInputOptions());
         c.addCommand(new AddJobPlanTasksCommand());
+        c.addCommand(new AddJobPlanTaskInputOptions());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         return c;

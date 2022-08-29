@@ -7,6 +7,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
@@ -6337,6 +6338,160 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    /**
+     * Helper function to get the Fields of JobPlan TaskInputOptions.
+     *
+     * Use this implementation to get as List.
+     *      List<FacilioField> fields = new ArrayList<>(FieldFactory.getNewTaskInputOptionsFields().values());
+     *
+     * @return Map<String, FacilioField> - Key: FieldName, Value: FacilioField
+     * @throws Exception
+     */
+    public static Map<String, FacilioField> getJobPlanTaskInputOptionsFields() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
+
+        FacilioModule module = ModuleFactory.getJobPlanTaskInputOptionsModule();
+        Map<String, FacilioField>fields = new HashMap<>();
+
+        fields.put("id", getIdField(module));
+
+        StringField valueField = SignupUtil.getStringField(module,
+                "value", "Value",  "OPTION_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
+                true, false, false, false, orgId);
+        fields.put("value", valueField);
+
+        StringField labelField = SignupUtil.getStringField(module,
+                "label", "Label", "LABEL", FacilioField.FieldDisplayType.TEXTBOX,
+                true, false, false, false, orgId);
+        fields.put("label", labelField);
+
+        NumberField sequenceField = SignupUtil.getNumberField(module,
+                "sequence", "Sequence", "SEQUENCE", FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fields.put("sequence", sequenceField);
+
+        FacilioModule jobPlanTaskModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TASK);
+        LookupField jobPlanField = SignupUtil.getLookupField(module, jobPlanTaskModule, "jobPlanTask",
+                "JobPlan Task", "TASK_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
+                true, false, false, orgId);
+        fields.put("jobPlanTask", jobPlanField);
+
+        BooleanField isJobPlanTaskField = SignupUtil.getBooleanField(module, "isJobPlanTask", "Is JobPlan Task",
+                "IS_JOBPLAN_TASK", FacilioField.FieldDisplayType.DECISION_BOX, null,
+                false, false, false, orgId);
+        fields.put("isJobPlanTask", isJobPlanTaskField);
+
+        // check the usage of the below fields and delete if not required.
+
+        /* createdTime Field */
+        FacilioField createdTimeField = FieldFactory.getSystemField("sysCreatedTime",  module);
+        fields.put("sysCreatedTime", createdTimeField);
+
+        /* ModifiedTime Field */
+        FacilioField modifiedTimeField = FieldFactory.getSystemField("sysModifiedTime",  module);
+        fields.put("sysModifiedTime", modifiedTimeField);
+
+        /* SystemCreatedBy Field */
+        LookupField createdByField = (LookupField) FieldFactory.getSystemField("sysCreatedBy",  module);
+        fields.put("sysCreatedBy", createdByField);
+
+        /* SystemModifiedByField */
+        LookupField modifiedByField = (LookupField) FieldFactory.getSystemField("sysModifiedBy",  module);
+        fields.put("sysModifiedBy",  modifiedByField);
+
+        /* SystemDeleted Field */
+        FacilioField deletedField = FieldFactory.getIsDeletedField( module);
+        fields.put("deleted", deletedField);
+
+        /* System Deleted Time Field */
+        FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(  module);
+        fields.put("sysDeletedTime", deletedTimeField);
+
+        /* System Deleted By Field */
+        FacilioField deletedByField = FieldFactory.getSysDeletedByField(  module);
+        fields.put("sysDeletedBy", deletedByField);
+
+        return fields;
+    }
+
+    /**
+     * Helper function to get the Fields of JobPlan SectionInputOptions.
+     *
+     * Use this implementation to get as List.
+     *      List<FacilioField> fields = new ArrayList<>(FieldFactory.getJobPlanSectionInputOptionsFields().values());
+     *
+     * @return Map<String, FacilioField> - Key: FieldName, Value: FacilioField
+     * @throws Exception
+     */
+    public static Map<String, FacilioField> getJobPlanSectionInputOptionsFields() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
+
+        FacilioModule module = ModuleFactory.getJobPlanSectionInputOptionsModule();
+        Map<String, FacilioField>fields = new HashMap<>();
+
+        fields.put("id", getIdField(module));
+
+        StringField valueField = SignupUtil.getStringField(module,
+                "value", "Value",  "OPTION_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
+                true, false, false, false, orgId);
+        fields.put("value", valueField);
+
+        StringField labelField = SignupUtil.getStringField(module,
+                "label", "Label", "LABEL", FacilioField.FieldDisplayType.TEXTBOX,
+                true, false, false, false, orgId);
+        fields.put("label", labelField);
+
+        NumberField sequenceField = SignupUtil.getNumberField(module,
+                "sequence", "Sequence", "SEQUENCE", FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fields.put("sequence", sequenceField);
+
+        FacilioModule jobPlanTaskModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SECTION);
+        LookupField jobPlanSectionField = SignupUtil.getLookupField(module, jobPlanTaskModule, "jobPlanSection",
+                "JobPlan Section", "SECTION_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
+                true, false, false, orgId);
+        fields.put("jobPlanSection", jobPlanSectionField);
+
+//        BooleanField isJobPlanTaskField = SignupUtil.getBooleanField(module, "isJobPlanSection", "Is JobPlan Section",
+//                "IS_JOBPLAN_SECTION", FacilioField.FieldDisplayType.DECISION_BOX, null,
+//                false, false, false, orgId);
+//        fields.put("isJobPlanSection", isJobPlanTaskField);
+
+        // check the usage of the below fields and delete if not required.
+
+        /* createdTime Field */
+        FacilioField createdTimeField = FieldFactory.getSystemField("sysCreatedTime",  module);
+        fields.put("sysCreatedTime", createdTimeField);
+
+        /* ModifiedTime Field */
+        FacilioField modifiedTimeField = FieldFactory.getSystemField("sysModifiedTime",  module);
+        fields.put("sysModifiedTime", modifiedTimeField);
+
+        /* SystemCreatedBy Field */
+        LookupField createdByField = (LookupField) FieldFactory.getSystemField("sysCreatedBy",  module);
+        fields.put("sysCreatedBy", createdByField);
+
+        /* SystemModifiedByField */
+        LookupField modifiedByField = (LookupField) FieldFactory.getSystemField("sysModifiedBy",  module);
+        fields.put("sysModifiedBy",  modifiedByField);
+
+        /* SystemDeleted Field */
+        FacilioField deletedField = FieldFactory.getIsDeletedField( module);
+        fields.put("deleted", deletedField);
+
+        /* System Deleted Time Field */
+        FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(  module);
+        fields.put("sysDeletedTime", deletedTimeField);
+
+        /* System Deleted By Field */
+        FacilioField deletedByField = FieldFactory.getSysDeletedByField(  module);
+        fields.put("sysDeletedBy", deletedByField);
+
+        return fields;
+    }
+
     public static List<FacilioField> getTaskSectionFields() {
         FacilioModule module = ModuleFactory.getTaskSectionModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -8464,15 +8619,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(spaceCategoryField);
 
         BooleanField isActiveField = (BooleanField) getBooleanField("isActive", "IS_ACTIVE", module);
-        spaceCategoryField.setDefault(true);
-        spaceCategoryField.setMainField(false);
-        spaceCategoryField.setRequired(true);
+        isActiveField.setDefault(true);
+        isActiveField.setMainField(false);
+        isActiveField.setRequired(true);
+        isActiveField.setTrueVal("Published");
+        isActiveField.setFalseVal("UnPublished");
         fields.add(isActiveField);
 
         BooleanField isDisabledField = (BooleanField)getBooleanField("isDisabled", "IS_DISABLED", module);
-        spaceCategoryField.setDefault(true);
-        spaceCategoryField.setMainField(false);
-        spaceCategoryField.setRequired(true);
+        isDisabledField.setDefault(true);
+        isDisabledField.setMainField(false);
+        isDisabledField.setRequired(true);
         fields.add(isDisabledField);
         return fields;
     }

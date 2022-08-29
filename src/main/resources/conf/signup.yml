@@ -134,12 +134,13 @@ classes:
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanTaskSectionFields
     #Adding Module jobplannotes, jobplanattachments and its fields
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanNotesAndAttachmentsModulesAndFields
+    #Adding isActive, isDisable Fields for JobPlan module
+  - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanActiveDeActivateFields
+    #Adding Module jobPlanTaskInputOptions, jobPlanSectionInputOptions and its fields
+  - com.facilio.bmsconsoleV3.signup.tasks.AddJobPlanInputOptionsModuleFields
 
     #Adding Modules and Fields for V2 Planned Maintenance
   - com.facilio.bmsconsoleV3.signup.plannedmaintenance.AddPmV2ModuleAndFields
-
-    #Adding isActive, isDisable Fields for JobPlan module
-  - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanActiveDeActivateFields
 
   - com.facilio.bmsconsoleV3.signup.craft.AddCraftModules
   - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules
