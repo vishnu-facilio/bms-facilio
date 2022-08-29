@@ -59,9 +59,7 @@ public abstract class RuleCondition {
 	private boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp, QuestionContext question){
 
 		RuleHandler ruleHandler = question.getQuestionType().getRuleHandler();
-		boolean val =  ruleHandler.evalMisc(ruleCondition, answerProp);
-        LOGGER.info("#### Multi question evalMisc... result  : "+ val);
-        return val;
+        return ruleHandler.evalMisc(ruleCondition, answerProp);
 	}
 
 
@@ -71,16 +69,12 @@ public abstract class RuleCondition {
         }
         Condition condition = CriteriaAPI.getCondition(ANSWER_FIELD_NAME, value, operatorEnum);
         Predicate predicate = condition.computePredicate();
-        boolean val =  predicate == null ? false : predicate.evaluate(answerProp);
-        LOGGER.info("#### Multi question evaluateOperatorValue... result  : "+ val);
-        return val;
+        return predicate == null ? false : predicate.evaluate(answerProp);
     }
 
     private boolean evaluateCriteria (Map<String, Object> answerProp) {
 
-        boolean val = criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
-        LOGGER.info("#### Multi question evaluateCriteria... result  : "+ val);
-        return val;
+       return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
     }
 
     public void copyDefaultProps (RuleCondition newCondition) {
