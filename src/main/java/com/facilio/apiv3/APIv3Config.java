@@ -146,6 +146,8 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContex
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
@@ -2364,4 +2366,17 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
+    @Module(FacilioConstants.ContextNames.PRECAUTION)
+    public static Supplier<V3Config> getPrecautions() {
+        return () -> new V3Config(V3PrecautionContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .afterDelete(new DeleteHazardPrecautionCommand())
+                .build();
+    }
+
 }
