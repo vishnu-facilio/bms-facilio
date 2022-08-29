@@ -43,7 +43,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 			view = ViewFactory.getView(module, viewName, modBean);
 		}
 		if ((view != null) && (view.getId() == -1)) {
-			viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null, null);
+			viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null, null, -1);
 			view.setId(viewId);
 		}
 		else {

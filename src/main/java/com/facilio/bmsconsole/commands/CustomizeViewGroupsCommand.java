@@ -25,6 +25,7 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
 		List<ViewGroups> viewGroups = (List<ViewGroups>)context.get(FacilioConstants.ContextNames.GROUP_VIEWS);
 		if(viewGroups != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -33,6 +34,7 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 			long moduleId = module.getModuleId();
 			for(ViewGroups viewGroup : viewGroups) {
 				if(viewGroup.getId() == -1) {
+					viewGroup.setAppId(appId);
 					viewGroup.setModuleId(moduleId);
 					long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), module.getName());
 					viewGroup.setId(groupId);
@@ -42,7 +44,7 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 							if(view.getId() == -1) {
 								String viewName = view.getName();
 								if (viewName != null && !viewName.isEmpty()) {
-									long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null, groupId);
+									long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null, groupId, appId);
 									view.setId(viewId);
 								} else {
 									throw new IllegalArgumentException("viewId or viewName,moduleName is required");

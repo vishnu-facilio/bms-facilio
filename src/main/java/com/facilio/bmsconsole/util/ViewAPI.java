@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.ViewGroups.ViewGroupType;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -172,10 +174,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if (app == null) {
 				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
-			/*if (app != null) {
-				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
-			}*/
-			
+
+			Criteria appCriteria = new Criteria();
+			appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+			if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), CommonOperators.IS_EMPTY));
+			}
+			builder.andCriteria(appCriteria);
+
 			List<Map<String, Object>> viewProps = builder.get();
 			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId(), getOnlyBasicValues);
 
@@ -811,20 +817,22 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return sortFields;
 	}
 	
-	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns, Long groupId) throws Exception {
+	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns, Long groupId, long appId) throws Exception {
 		long viewId = -1;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module= modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		FacilioView view = getView(viewName, moduleId, orgId, -1);
+		FacilioView view = getView(viewName, moduleId, orgId, appId);
 		if(view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 			if(view != null) {
 				if(view.getTypeEnum() == null){
 					view.setType(ViewType.TABLE_LIST);
 				}
+				view.setAppId(appId);
 				view.setDefault(true);
+				view.setViewSharing(null);
 				view.setModuleId(moduleId);
 				if (groupId != null && groupId > 0) {
 					view.setGroupId(groupId);
@@ -866,10 +874,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			else {
 				// For report-like view,  which wont be there in view db or view factory initially
 				view = new FacilioView();
+				view.setAppId(appId);
 				view.setName(viewName);
 				view.setModuleId(moduleId);
 				view.setType(ViewType.TABLE_LIST);
-				view.setDefault(false);
+				view.setDefault(LoadViewCommand.HIDDEN_VIEW_NAMES.contains(viewName));
 				view.setHidden(true);
 				if (groupId != null && groupId > 0) {
 					view.setGroupId(groupId);
