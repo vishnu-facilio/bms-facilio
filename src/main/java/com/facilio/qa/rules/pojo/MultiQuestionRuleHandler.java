@@ -114,16 +114,15 @@ public enum MultiQuestionRuleHandler implements RuleHandler {
 
     }
 
-//    @Override
-//    public boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp){
-//
-//        if(MapUtils.isNotEmpty(answerProp)){
-//
-//            Long rowId = (Long) answerProp.getOrDefault("rowId",null);
-//            Long columnId = (Long) answerProp.getOrDefault("columnId",null);
-//
-//            return (rowId !=null && columnId != null ) && (ruleCondition.getRowId() == rowId && ruleCondition.getColumnId() == columnId);
-//        }
-//        return false;
-//    }
+    @Override
+    public boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp){
+
+        if(MapUtils.isNotEmpty(answerProp)){
+
+            long columnId = (Long) answerProp.getOrDefault("columnId",-1);
+
+            return ((columnId > 0)  &&  (ruleCondition.getColumnId() == columnId));
+        }
+        return false;
+    }
 }
