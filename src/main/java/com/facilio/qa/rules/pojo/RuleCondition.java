@@ -10,12 +10,14 @@ import com.facilio.qa.context.RuleHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.Predicate;
 
 import java.util.Map;
 
 @Getter
 @Setter
+@Log4j
 public abstract class RuleCondition {
     private Long id;
     private Long ruleId;
@@ -57,7 +59,9 @@ public abstract class RuleCondition {
 	private boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp, QuestionContext question){
 
 		RuleHandler ruleHandler = question.getQuestionType().getRuleHandler();
-		return ruleHandler.evalMisc(ruleCondition, answerProp);
+		boolean val =  ruleHandler.evalMisc(ruleCondition, answerProp);
+        LOGGER.info("#### Multi question evalMisc... result  : "+ val);
+        return val;
 	}
 
 
@@ -67,11 +71,16 @@ public abstract class RuleCondition {
         }
         Condition condition = CriteriaAPI.getCondition(ANSWER_FIELD_NAME, value, operatorEnum);
         Predicate predicate = condition.computePredicate();
-        return predicate == null ? false : predicate.evaluate(answerProp);
+        boolean val =  predicate == null ? false : predicate.evaluate(answerProp);
+        LOGGER.info("#### Multi question evaluateOperatorValue... result  : "+ val);
+        return val;
     }
 
     private boolean evaluateCriteria (Map<String, Object> answerProp) {
-        return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
+
+        boolean val = criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
+        LOGGER.info("#### Multi question evaluateCriteria... result  : "+ val);
+        return val;
     }
 
     public void copyDefaultProps (RuleCondition newCondition) {
