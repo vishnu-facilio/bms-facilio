@@ -106,6 +106,8 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
     private boolean evalAndExecuteConditions (Map<String, Object> prop, AnswerContext answer, QuestionContext question, RuleCondition condition) throws Exception {
         boolean result = condition.evaluate(question,prop);
         if (result) {
+            LOGGER.info("########## Multi Question Scoring rule execute action....");
+            LOGGER.info("########## Multi Question Scoring rule score : "+answer.getScore() + " "+ answer.scoreWithZeroOnNull());
             condition.executeTrueAction(question, answer);
         }
         return result;
