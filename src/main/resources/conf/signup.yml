@@ -162,4 +162,5 @@ classes:
 
 
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanCraftModule
+  - com.facilio.bmsconsoleV3.signup.labour.AddLabourModuleFields
 
