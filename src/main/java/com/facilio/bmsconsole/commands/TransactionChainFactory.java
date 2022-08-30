@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCom
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
-import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -86,11 +86,14 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultWoStateflowCommand());
 			c.addCommand(new AddEventModuleCommand());					//eventModule.sql
 			c.addCommand(new AddOrgInfoCommand());
+			c.addCommand(new AddAllModulePermissionCommand());
+			c.addCommand(new AddSpecialTypeModulePermissionCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
+			c.addCommand(new AddAllModulePermissionCommand());
 			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceApplicationLayout());
@@ -1249,7 +1252,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddModulesCommand());
 //			c.addCommand(new SetColumnNameForNewCFsCommand());
 			c.addCommand(new AddFieldsCommand());
-
+			c.addCommand(new AddModulePermissionCommand());
 			return c;
 		}
 
@@ -5108,6 +5111,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabCommand());
 		chain.addCommand(new AddNewPermissionCommand());
+		chain.addCommand(new AddModuleAppPermissionForTabCommand());
 		return chain;
 	}
 
@@ -5146,6 +5150,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddNewPermissionChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddNewPermissionCommand());
+		chain.addCommand(new AddModuleAppPermissionForTabCommand());
 		return chain;
 	}
 

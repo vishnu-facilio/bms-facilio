@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
@@ -1226,6 +1227,38 @@ public class ModuleFactory {
 		criteriaModule.setName("criteria");
 		criteriaModule.setDisplayName("Criteria");
 		criteriaModule.setTableName("Criteria");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModulePermissionModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("modulePermission");
+		criteriaModule.setDisplayName("Module Permission");
+		criteriaModule.setTableName("ModulePermission");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModulePermissionChildModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("modulePermissionChild");
+		criteriaModule.setDisplayName("Module Permission Child");
+		criteriaModule.setTableName("ModulePermissionChild");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModuleAppPermissionModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("moduleAppPermission");
+		criteriaModule.setDisplayName("Module App Permission");
+		criteriaModule.setTableName("ModuleAppPermission");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModuleAppPermissionChildModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("moduleAppPermissionChild");
+		criteriaModule.setDisplayName("Module App Permission Child");
+		criteriaModule.setTableName("ModuleAppPermissionChild");
 		return criteriaModule;
 	}
 
@@ -4071,10 +4104,21 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getNewPermissionModule() {
+	public static FacilioModule getNewPermissionModule() throws Exception {
+		if(V3PermissionUtil.isFeatureEnabled()){
+			return getNewTabPermissionModule();
+		}
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
 		module.setTableName("NewPermission");
+		module.setDisplayName("New Permissions");
+		return module;
+	}
+
+	public static FacilioModule getNewTabPermissionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
+		module.setTableName("NewTabPermission");
 		module.setDisplayName("New Permissions");
 		return module;
 	}

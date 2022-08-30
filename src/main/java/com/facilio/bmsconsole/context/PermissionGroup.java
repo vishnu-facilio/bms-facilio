@@ -24,4 +24,6 @@ public class PermissionGroup extends Permission {
 	public void setPermissions(List<Permission> permissions) {
 		this.permissions = permissions;
 	}
+
+	public PermissionGroup(){}
 }

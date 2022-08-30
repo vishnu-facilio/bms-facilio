@@ -3,10 +3,10 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

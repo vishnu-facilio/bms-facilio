@@ -6,13 +6,11 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 public class WebTabContext implements Serializable {
     public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense,List<String> specialTypeModules,long appId) {
@@ -316,7 +314,14 @@ public class WebTabContext implements Serializable {
     public void setPermissionVal(long permissionVal) {
 		this.permissionVal = permissionVal;
 	}
-    
+    private long permissionVal2;
+    public long getPermissionVal2() {
+        return permissionVal2;
+    }
+    public void setPermissionVal2(long permissionVal2) {
+        this.permissionVal2 = permissionVal2;
+    }
+
     private List<Permission> permission;
     public List<Permission> getPermission() {
 		return permission;

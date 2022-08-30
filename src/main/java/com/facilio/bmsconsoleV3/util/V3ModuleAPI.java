@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 public class V3ModuleAPI {
 
-    private enum MODULES{
+    private enum MODULES {
         WORKORDER(FacilioConstants.ContextNames.WORK_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         ASSET(FacilioConstants.ContextNames.ASSET,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         VENDORS(FacilioConstants.ContextNames.VENDORS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
@@ -19,15 +19,15 @@ public class V3ModuleAPI {
         LABOURS(FacilioConstants.ContextNames.LABOUR,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         RENTAL_LEASE_CONTRACTS(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         WARRANTY_CONTRACTS(FacilioConstants.ContextNames.WARRANTY_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SERVICE(FacilioConstants.ContextNames.SERVICE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
+        SERVICE(FacilioConstants.ContextNames.SERVICE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         TENANT(FacilioConstants.ContextNames.TENANT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         TENANT_CONTACT(FacilioConstants.ContextNames.TENANT_CONTACT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         TENANT_UNIT_SPACE(FacilioConstants.ContextNames.TENANT_UNIT_SPACE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         PURCHASE_REQUEST(FacilioConstants.ContextNames.PURCHASE_REQUEST,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         PURCHASE_ORDER(FacilioConstants.ContextNames.PURCHASE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SERVICE_REQUEST(FacilioConstants.ContextNames.SERVICE_REQUEST,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
+        SERVICE_REQUEST(FacilioConstants.ContextNames.SERVICE_REQUEST,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         FACILITY(FacilioConstants.ContextNames.FacilityBooking.FACILITY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        FACILITY_BOOKING(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
+        FACILITY_BOOKING(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         QUOTE(FacilioConstants.ContextNames.QUOTE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         WORKPERMIT(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,Arrays.asList()),
         CONTROL_SCHEDULE_MODULE_NAME(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME,Arrays.asList()),
@@ -93,30 +93,37 @@ public class V3ModuleAPI {
 
         private String moduleName;
         private List<String> applicationLinkNames;
+
         public String getModuleName() {
             return moduleName;
         }
+
         public void setModuleName(String moduleName) {
             this.moduleName = moduleName;
         }
+
         public List<String> getApplicationLinkNames() {
             return applicationLinkNames;
         }
+
         public void setApplicationLinkNames(List<String> applicationLinkNames) {
             this.applicationLinkNames = applicationLinkNames;
         }
-        MODULES(String moduleName,List<String> applicationLinkNames){
+
+        MODULES(String moduleName, List<String> applicationLinkNames) {
             this.moduleName = moduleName;
             this.applicationLinkNames = applicationLinkNames;
         }
     }
-    public static List<String> getSystemModuleNames(){
+
+    public static List<String> getSystemModuleNames() {
         List<String> sysModuleNames = new ArrayList<>();
         for (MODULES module : MODULES.values()) {
             sysModuleNames.add(module.getModuleName());
         }
         return sysModuleNames;
     }
+
     public static List<FacilioModule> getSystemModule() throws Exception {
         List<FacilioModule> sysModules = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -126,13 +133,22 @@ public class V3ModuleAPI {
         }
         return sysModules;
     }
+
+    private static List<String> specialModules = Arrays.asList(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
     public static List<String> getSystemModuleNamesForApp(String linkName){
+        return getSystemModuleNamesForApp(linkName,false);
+    }
+    public static List<String> getSystemModuleNamesForApp(String linkName,boolean excludeSpecialModules){
         List<String> sysModuleNames = new ArrayList<>();
         for (MODULES module : MODULES.values()) {
+            if(excludeSpecialModules && specialModules.contains(module.getModuleName())){
+                continue;
+            }
             if(module.getApplicationLinkNames().contains(linkName)){
                 sysModuleNames.add(module.getModuleName());
             }
         }
         return sysModuleNames;
     }
+
 }

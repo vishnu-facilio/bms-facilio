@@ -2087,7 +2087,6 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			parentIds.add(space.getSpaceId4());
 		}
 	}
-
 	public static void v3UpdateSiteAndBuildingId(V3SpaceContext space) throws Exception {
 		boolean parentAvailable = false;
 		if(space.getBuilding() != null && space.getBuilding().getId() > 0) {

@@ -10,7 +10,6 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
-import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
@@ -480,7 +479,7 @@ public class NewPermissionUtil {
         permissionList.put(Type.SERVICE_CATALOG.getIndex(), permissionMap);
     }
 
-    public static List<Permission> getPermissions(int tabType, String moduleName) {
+    public static List<Permission> getPermissions(int tabType, String moduleName){
         Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
         if(stringListMap!=null && !stringListMap.isEmpty()) {
             if (stringListMap.containsKey(moduleName)) {

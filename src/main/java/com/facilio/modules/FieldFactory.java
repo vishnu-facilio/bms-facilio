@@ -8,6 +8,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
@@ -3785,6 +3786,189 @@ public class FieldFactory extends BaseFieldFactory {
         pattern.setColumnName("PATTERN");
         pattern.setModule(module);
         fields.add(pattern);
+        return fields;
+    }
+
+    public static List<FacilioField> modulePermissionFields() {
+        FacilioModule module = ModuleFactory.getModulePermissionModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField moduleId = new FacilioField();
+        moduleId.setName("moduleId");
+        moduleId.setDataType(FieldType.NUMBER);
+        moduleId.setColumnName("MODULE_ID");
+        moduleId.setModule(module);
+        fields.add(moduleId);
+
+        FacilioField specialLinkName = new FacilioField();
+        specialLinkName.setName("specialLinkName");
+        specialLinkName.setDataType(FieldType.STRING);
+        specialLinkName.setColumnName("SPECIAL_LINK_NAME");
+        specialLinkName.setModule(module);
+        fields.add(specialLinkName);
+
+        FacilioField permission1 = new FacilioField();
+        permission1.setName("permission1");
+        permission1.setDataType(FieldType.NUMBER);
+        permission1.setColumnName("PERMISSION1");
+        permission1.setModule(module);
+        fields.add(permission1);
+
+        FacilioField permission2 = new FacilioField();
+        permission2.setName("permission2");
+        permission2.setDataType(FieldType.NUMBER);
+        permission2.setColumnName("PERMISSION2");
+        permission2.setModule(module);
+        fields.add(permission2);
+
+        FacilioField displayName = new FacilioField();
+        displayName.setName("displayName");
+        displayName.setDataType(FieldType.STRING);
+        displayName.setColumnName("DISPLAY_NAME");
+        displayName.setModule(module);
+        fields.add(displayName);
+
+        fields.add(getIdField(module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> modulePermissionChildFields() {
+        FacilioModule module = ModuleFactory.getModulePermissionChildModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField parentId = new FacilioField();
+        parentId.setName("parentId");
+        parentId.setDataType(FieldType.NUMBER);
+        parentId.setColumnName("PARENT_ID");
+        parentId.setModule(module);
+        fields.add(parentId);
+
+        FacilioField displayName = new FacilioField();
+        displayName.setName("displayName");
+        displayName.setDataType(FieldType.STRING);
+        displayName.setColumnName("DISPLAY_NAME");
+        displayName.setModule(module);
+        fields.add(displayName);
+
+        FacilioField permission1 = new FacilioField();
+        permission1.setName("childPermission1");
+        permission1.setDataType(FieldType.NUMBER);
+        permission1.setColumnName("CHILD_PERMISSIONS_VALUE_1");
+        permission1.setModule(module);
+        fields.add(permission1);
+
+        FacilioField permission2 = new FacilioField();
+        permission2.setName("childPermission2");
+        permission2.setDataType(FieldType.NUMBER);
+        permission2.setColumnName("CHILD_PERMISSIONS_VALUE_2");
+        permission2.setModule(module);
+        fields.add(permission2);
+
+        fields.add(getIdField(module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> moduleAppPermissionFields() {
+        FacilioModule module = ModuleFactory.getModuleAppPermissionModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField applicationId = new FacilioField();
+        applicationId.setName("applicationId");
+        applicationId.setDataType(FieldType.NUMBER);
+        applicationId.setColumnName("APP_ID");
+        applicationId.setModule(module);
+        fields.add(applicationId);
+
+        FacilioField moduleId = new FacilioField();
+        moduleId.setName("moduleId");
+        moduleId.setDataType(FieldType.NUMBER);
+        moduleId.setColumnName("MODULE_ID");
+        moduleId.setModule(module);
+        fields.add(moduleId);
+
+        FacilioField specialLinkName = new FacilioField();
+        specialLinkName.setName("specialLinkName");
+        specialLinkName.setDataType(FieldType.STRING);
+        specialLinkName.setColumnName("SPECIAL_LINK_NAME");
+        specialLinkName.setModule(module);
+        fields.add(specialLinkName);
+
+        FacilioField permission1 = new FacilioField();
+        permission1.setName("permission1");
+        permission1.setDataType(FieldType.NUMBER);
+        permission1.setColumnName("PERMISSION1");
+        permission1.setModule(module);
+        fields.add(permission1);
+
+        FacilioField permission2 = new FacilioField();
+        permission2.setName("permission2");
+        permission2.setDataType(FieldType.NUMBER);
+        permission2.setColumnName("PERMISSION2");
+        permission2.setModule(module);
+        fields.add(permission2);
+
+        FacilioField displayName = new FacilioField();
+        displayName.setName("displayName");
+        displayName.setDataType(FieldType.STRING);
+        displayName.setColumnName("DISPLAY_NAME");
+        displayName.setModule(module);
+        fields.add(displayName);
+
+        FacilioField modulePermissionParentId = new FacilioField();
+        modulePermissionParentId.setName("modulePermissionParentId");
+        modulePermissionParentId.setDataType(FieldType.NUMBER);
+        modulePermissionParentId.setColumnName("MODULE_PERMISSION_PARENT_ID");
+        modulePermissionParentId.setModule(module);
+        fields.add(modulePermissionParentId);
+
+        fields.add(getIdField(module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> moduleAppPermissionChildFields() {
+        FacilioModule module = ModuleFactory.getModuleAppPermissionChildModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField parentId = new FacilioField();
+        parentId.setName("parentId");
+        parentId.setDataType(FieldType.NUMBER);
+        parentId.setColumnName("PARENT_ID");
+        parentId.setModule(module);
+        fields.add(parentId);
+
+        FacilioField displayName = new FacilioField();
+        displayName.setName("displayName");
+        displayName.setDataType(FieldType.STRING);
+        displayName.setColumnName("DISPLAY_NAME");
+        displayName.setModule(module);
+        fields.add(displayName);
+
+        FacilioField permission1 = new FacilioField();
+        permission1.setName("childPermission1");
+        permission1.setDataType(FieldType.NUMBER);
+        permission1.setColumnName("CHILD_PERMISSIONS_VALUE_1");
+        permission1.setModule(module);
+        fields.add(permission1);
+
+        FacilioField permission2 = new FacilioField();
+        permission2.setName("childPermission2");
+        permission2.setDataType(FieldType.NUMBER);
+        permission2.setColumnName("CHILD_PERMISSIONS_VALUE_2");
+        permission2.setModule(module);
+        fields.add(permission2);
+
+        FacilioField modulePermissionChildId = new FacilioField();
+        modulePermissionChildId.setName("modulePermissionChildId");
+        modulePermissionChildId.setDataType(FieldType.NUMBER);
+        modulePermissionChildId.setColumnName("MODULE_PERMISSION_CHILD_ID");
+        modulePermissionChildId.setModule(module);
+        fields.add(modulePermissionChildId);
+
+        fields.add(getIdField(module));
+
         return fields;
     }
 
@@ -9501,7 +9685,10 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getNewPermissionFields() {
+    public static List<FacilioField> getNewPermissionFields() throws Exception {
+        if(V3PermissionUtil.isFeatureEnabled()){
+            return getNewTabPermissionFields();
+        }
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewPermissionModule();
 
@@ -9509,7 +9696,18 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
         fields.add(getField("tabId", "TAB_ID", module, FieldType.NUMBER));
         fields.add(getField("permission", "PERMISSION", module, FieldType.NUMBER));
+        return fields;
+    }
 
+    public static List<FacilioField> getNewTabPermissionFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getNewTabPermissionModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
+        fields.add(getField("tabId", "TAB_ID", module, FieldType.NUMBER));
+        fields.add(getField("permission", "PERMISSION", module, FieldType.NUMBER));
+        fields.add(getField("permission2", "PERMISSION_2", module, FieldType.NUMBER));
         return fields;
     }
 

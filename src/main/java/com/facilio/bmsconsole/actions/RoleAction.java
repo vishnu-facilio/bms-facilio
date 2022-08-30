@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.RoleApp;
-import com.facilio.accounts.util.RoleFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -16,7 +15,6 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;

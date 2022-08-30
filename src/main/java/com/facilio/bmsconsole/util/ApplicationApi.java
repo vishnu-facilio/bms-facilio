@@ -267,11 +267,45 @@ public class ApplicationApi {
         return webTabs;
     }
 
+    public static List<WebTabContext> getWebTabsForApplication(long appId,boolean withPermissions,boolean withModules) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId),
+                        NumberOperators.EQUALS));
+        List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
+        if(CollectionUtils.isNotEmpty(webTabs)){
+            for(WebTabContext webtab : webTabs){
+                if(withPermissions) {
+                    webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
+                }
+                if(withModules) {
+                    List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
+                    List<Long> moduleIds = new ArrayList<>();
+                    List<String> specialTypes = new ArrayList<>();
+                    if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
+                        for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+                            if (tabIdAppIdMappingContext.getModuleId() > 0) {
+                                moduleIds.add(tabIdAppIdMappingContext.getModuleId());
+                            }
+                            if (tabIdAppIdMappingContext.getSpecialType() != null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null") && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")) {
+                                specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
+                            }
+                        }
+                    }
+                    webtab.setModuleIds(moduleIds);
+                    webtab.setSpecialTypeModules(specialTypes);
+                }
+            }
+            return webTabs;
+        }
+        return null;
+    }
+
     public static List<NewPermission> getPermissionsForWebTab(long webTabId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNewPermissionModule().getTableName())
                 .select(FieldFactory.getNewPermissionFields())
-                .andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(webTabId),
+                .andCondition(CriteriaAPI.getCondition(ModuleFactory.getNewPermissionModule().getTableName() + ".TAB_ID", "tabId", String.valueOf(webTabId),
                         NumberOperators.EQUALS));
         List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
         return permissions;
@@ -289,26 +323,57 @@ public class ApplicationApi {
     }
 
     public static long getRolesPermissionValForTab(long tabId, long roleId) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getNewPermissionModule().getTableName())
-                .select(FieldFactory.getNewPermissionFields())
-                .andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(tabId),
-                        NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("NewPermission.ROLE_ID", "roleId", String.valueOf(roleId),
-                        NumberOperators.EQUALS));
-        List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
-        if (permissions != null && !permissions.isEmpty()) {
-            return permissions.get(0).getPermission();
+        NewPermission permission = getRolesPermissionForTab(tabId,roleId);
+        if(permission != null){
+            return permission.getPermission();
         }
         return -1;
     }
 
+    public static NewPermission getRolesPermissionForTab(long tabId, long roleId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNewPermissionModule().getTableName())
+                .select(FieldFactory.getNewPermissionFields())
+                .andCondition(CriteriaAPI.getCondition(ModuleFactory.getNewPermissionModule().getTableName() + ".TAB_ID", "tabId", String.valueOf(tabId),
+                        NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(ModuleFactory.getNewPermissionModule().getTableName() + ".ROLE_ID", "roleId", String.valueOf(roleId),
+                        NumberOperators.EQUALS));
+        List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
+        if (permissions != null && !permissions.isEmpty()) {
+            return permissions.get(0);
+        }
+        return null;
+    }
+
     public static WebTabContext getWebTab(long tabId) throws Exception {
+        return getWebTab(tabId,false);
+    }
+
+    public static WebTabContext getWebTab(long tabId,boolean withModules) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
                 .andCondition(CriteriaAPI.getIdCondition(tabId, ModuleFactory.getWebTabModule()));
         List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
         if (webTabs != null && !webTabs.isEmpty()) {
+            for(WebTabContext webtab : webTabs){
+                if(withModules) {
+                    List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
+                    List<Long> moduleIds = new ArrayList<>();
+                    List<String> specialTypes = new ArrayList<>();
+                    if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
+                        for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+                            if (tabIdAppIdMappingContext.getModuleId() > 0) {
+                                moduleIds.add(tabIdAppIdMappingContext.getModuleId());
+                            }
+                            if (tabIdAppIdMappingContext.getSpecialType() != null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null") && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")) {
+                                specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
+                            }
+                        }
+                    }
+                    webtab.setModuleIds(moduleIds);
+                    webtab.setSpecialTypeModules(specialTypes);
+                }
+            }
             return webTabs.get(0);
         }
         return null;
@@ -1372,14 +1437,14 @@ public class ApplicationApi {
                 long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
                 webTabGroupContext.setId(webGroupId);
                 List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
-                for (WebTabContext webTabContext : tabs) {
-                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
-                    chainContext = chain.getContext();
-                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
-                    chain.execute();
-                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
-                    webTabContext.setId(tabId);
-                }
+//                for (WebTabContext webTabContext : tabs) {
+//                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+//                    chainContext = chain.getContext();
+//                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+//                    chain.execute();
+//                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+//                    webTabContext.setId(tabId);
+//                }
                 if (CollectionUtils.isNotEmpty(tabs)) {
                     chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
                     chainContext = chain.getContext();
@@ -1738,8 +1803,7 @@ public class ApplicationApi {
                             scopingFields.add(field);
                         }
                         if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
-                            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class
-                                    .forName(condition.getValue());
+                            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
                             ValueGenerator valueGenerator = classObject.newInstance();
                             condition.setOperatorId(valueGenerator.getOperatorId());
                             condition.setColumnName(field.getCompleteColumnName());

@@ -71,7 +71,7 @@ public class RoleBeanCacheImpl extends RoleBeanImpl implements RoleBean {
     }
 
     @Override
-    public boolean addNewPermission ( long roleId,NewPermission permissions ) throws Exception {
+    public boolean addNewPermission (long roleId, NewPermission permissions ) throws Exception {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while adding User Permission");
         removeCache(roleId);
         return super.addNewPermission(roleId,permissions);
