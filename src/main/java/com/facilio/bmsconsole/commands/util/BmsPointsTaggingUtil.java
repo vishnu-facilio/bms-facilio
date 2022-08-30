@@ -78,13 +78,17 @@ public class BmsPointsTaggingUtil {
         LOGGER.info("tagPointListV1 pointsMapList to Tag :" + pointsMapList.toString());
         HashMap<String, String> splitterMap = BmsPointsTaggingUtil.getSplitterMap();
         List<String> pointNameList = convertToList(pointsMapList, splitterMap);
-        tagPointList(pointNameList, pointsMapList, null);
+        predictApi(pointNameList,pointsMapList,null);
+        //tagPointList(resultMap);
+        //tagPointList(pointNameList, pointsMapList, null);
     }
 
-    private static Map<String, Map<String, Object>> predictApi(List<String> pointNameList) throws Exception {
+    private static void predictApi(List<String> pointNameList,List<HashMap<String, Object>>pointsMapList ,Map<String,String>pointsMap ) throws Exception {
         LOGGER.info("predictApi method pointNameList :" + pointNameList.toString());
         JSONObject postObj = new JSONObject();
         postObj.put("data", pointNameList);
+        postObj.put("pointsMapList", pointsMapList);
+        postObj.put("pointsMap", pointsMap);
         //postObj.put("splitter",splitter);
         postObj.put("org_id", orgInfo.get("orgId"));
         Map<String, String> headers = new HashMap<>();
@@ -94,15 +98,22 @@ public class BmsPointsTaggingUtil {
         if (org.apache.commons.lang.StringUtils.isEmpty(result) || result.contains("Internal Server Error")) {
             LOGGER.fatal("Error getMetaDataV1 api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
         }
-        JSONParser parser = new JSONParser();
-        JSONObject response = (JSONObject) parser.parse(result);
-        Map<String, Map<String, Object>> resultMap = (Map<String, Map<String, Object>>) response.get("data");
-        return resultMap;
+        //JSONParser parser = new JSONParser();
+        //JSONObject response = (JSONObject) parser.parse(result);
+        //Map<String, Map<String, Object>> resultMap = (Map<String, Map<String, Object>>) response.get("data");
+        //return resultMap;
     }
 
-    public static void tagPointList(List<String> pointNameList, List<HashMap<String, Object>> pointsMap, Map<String, String> pointNameMap) throws
+    public static void tagPointList(Map<String, Map<String, Object>> resultMap) throws
             Exception {
-        Map<String, Map<String, Object>> resultMap = predictApi(pointNameList);
+        //Map<String, Map<String, Object>> resultMap = predictApi(pointNameList);
+        resultMap.remove("remote_ip");
+        resultMap.remove("responseName");
+        resultMap.remove("orgid");
+        List<String> pointNameList = (List<String>) resultMap.get("metaData").get("pointNameList");
+        List<HashMap<String, Object>> pointsMap = (List<HashMap<String, Object>>) resultMap.get("metaData").get("pointsMap");
+        Map<String, String> pointNameMap = (Map<String, String>) resultMap.get("metaData").get("pointNameMap");
+        resultMap.remove("metaData");
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("mlBmsPointsTagging");
         List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -384,8 +395,9 @@ public class BmsPointsTaggingUtil {
         Map<String, Object> notUpdatedPointObj = getNotUpdatedPointList();
         List<String> notUpdatedPointList = (List<String>) notUpdatedPointObj.get("pointNameList");
         if (notUpdatedPointList.size() > 0) {
+            predictApi(notUpdatedPointList,null,(Map<String, String>) notUpdatedPointObj.get("pointNameMap"));
             //Map<String, Map<String, Object>> resultMap =
-            tagPointList(notUpdatedPointList, null, (Map<String, String>) notUpdatedPointObj.get("pointNameMap"));
+            //tagPointList(notUpdatedPointList, null, (Map<String, String>) notUpdatedPointObj.get("pointNameMap"));
                 /*
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule("mlBmsPointsTagging");
