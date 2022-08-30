@@ -1313,6 +1313,7 @@ public class FacilioConstants {
 		public static final String RELATION_MODULE_NAME = "relationModuleName";
 
 		public static final String CLASSIFICATION = "classification";
+		public static final String CLASSIFICATION_ATTRIBUTE = "classificationAttribute";
 		public static final String CLASSIFICATION_RESOLVE_PATH = "classificationResolvePath";
 
 		public static final String CLASSIFICATION_DONT_RESOLVE_PATH = "classificationDontResolvePath";

@@ -1,6 +1,9 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
+import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
+import com.facilio.attribute.context.ClassificationAttributeContext;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.MLServiceUtil;
@@ -49,7 +52,6 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
@@ -69,7 +71,6 @@ import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeop
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -206,8 +207,6 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
-
-import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
@@ -2322,6 +2321,24 @@ public class APIv3Config {
                 .summary()
                 .update()
                 .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.CLASSIFICATION_ATTRIBUTE)
+    public static Supplier<V3Config> getClassificationAttributeHandler() {
+        return () -> new V3Config(ClassificationAttributeContext.class,  null)
+                .list()
+                .create()
+                .beforeSave(new BeforeSaveClassificationAttributeCommand())
+                .update()
+                .beforeSave(new BeforeUpdateClassificationAttributeCommand())
+                .summary()
+                .delete()
+                .beforeDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        throw new IllegalArgumentException("Delete is not supported");
+                    }
+                })
                 .build();
     }
 
