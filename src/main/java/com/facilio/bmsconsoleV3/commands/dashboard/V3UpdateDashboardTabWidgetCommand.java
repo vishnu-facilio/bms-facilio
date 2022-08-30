@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.chain.FacilioChain;
@@ -40,7 +41,7 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
             JSONObject widgetMapping = new JSONObject();
 
             List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
-
+            V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets, null, dashboardTabContext.getId());
             if (widgets != null && widgets.size() > 0)  {
                 for (int i = 0; i < widgets.size(); i++) {
 

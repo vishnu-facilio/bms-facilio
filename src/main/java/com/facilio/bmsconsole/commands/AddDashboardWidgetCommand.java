@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -19,7 +20,7 @@ public class AddDashboardWidgetCommand extends FacilioCommand {
 		
 		if(dashboard != null) {
 			List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
-			
+			V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets, dashboard.getId(), null);
 			if (widgets != null && widgets.size() > 0)  {
 				for (int i = 0; i < widgets.size(); i++) {
 					

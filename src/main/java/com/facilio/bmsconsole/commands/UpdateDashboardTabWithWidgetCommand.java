@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
@@ -37,7 +38,8 @@ public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 			JSONObject widgetMapping = new JSONObject();
 			
 			List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
-			
+			V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets,  null, dashboardTabContext.getId());
+
 			if (widgets != null && widgets.size() > 0)  {
 				for (int i = 0; i < widgets.size(); i++) {
 					

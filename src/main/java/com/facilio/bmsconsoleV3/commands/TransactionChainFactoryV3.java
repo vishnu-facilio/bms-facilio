@@ -2001,7 +2001,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PublishPMCommand());
         return c;
     }
-
+    public static FacilioChain getCREDDashboardRuleChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DashboardRuleCREDCommand());
+        return c;
+    }
     public static FacilioChain getDeactivatePM() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new MarkPMAsDeactivatedCommand());

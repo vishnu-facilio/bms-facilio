@@ -26,6 +26,16 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private Long dashboardId;
 	private Long dashboardTabId;
 
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
+	private String linkName;
+
 	public Long getSectionId() {
 		return sectionId;
 	}
@@ -430,7 +440,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		WEB(4,"web",WidgetWebContext.class),
 		GRAPHICS(5,"graphics",WidgetGraphicsContext.class),
 		CARD(6,"card",WidgetCardContext.class),
-		SECTION(7,"section", WidgetSectionContext.class);
+		SECTION(7,"section", WidgetSectionContext.class),
+		FILTER(8,"filter", DashboardWidgetContext.class);
 		
 		private int value;
 		private String name;

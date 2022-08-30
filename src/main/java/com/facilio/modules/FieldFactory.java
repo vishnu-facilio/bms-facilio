@@ -5251,6 +5251,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("dashboardTabId", "DASHBOARD_TAB_ID", module, FieldType.NUMBER));
         fields.add(getField("sectionId", "SECTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
 
         FacilioField dashboardWidgetName = new FacilioField();
         dashboardWidgetName.setName("widgetName");
@@ -10352,6 +10353,68 @@ public class FieldFactory extends BaseFieldFactory {
          fields.add(getField("hideFilterInsideWidgets","WIDGET_TIMELINE_FILTER_STATUS",module,FieldType.BOOLEAN));
 		 return fields;
 	 }
+
+    public static List<FacilioField>  getDashboardRuleFields()
+    {
+        FacilioModule module=ModuleFactory.getDashboardRuleModule();
+        List<FacilioField> fields =new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("dashboardId","DASHBOARD_ID", module,FieldType.NUMBER));
+        fields.add(getField("dashboardTabId","DASHBOARD_TAB_ID", module,FieldType.NUMBER));
+        fields.add(getField("name","NAME", module,FieldType.STRING));
+        fields.add(getField("desc","DESCRIPTION", module,FieldType.STRING));
+        fields.add(getField("status","STATUS", module,FieldType.BOOLEAN));
+        fields.add(getField("trigger_type","TRIGGER_TYPE", module,FieldType.NUMBER));
+        fields.add(getField("created_by","CREATED_BY", module,FieldType.NUMBER));
+        fields.add(getField("created_time","CREATED_TIME", module,FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getDashboardTriggerWidgetFields()
+    {
+        FacilioModule module=ModuleFactory.getDashboardTriggerWidgetModule();
+        List<FacilioField> fields =new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("dashboard_rule_id","DASHBOARD_RULE_ID", module,FieldType.NUMBER));
+        fields.add(getField("trigger_widget_id","TRIGGER_WIDGET_ID", module,FieldType.NUMBER));
+        fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getDashboardRuleActionsFields()
+    {
+        FacilioModule module=ModuleFactory.getDashboardRuleActionModule();
+        List<FacilioField> fields =new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("dashboard_rule_id","DASHBOARD_RULE_ID", module,FieldType.NUMBER));
+        fields.add(getField("type","ACTION_TYPE", module,FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getDashboardRuleActionMetaFields()
+    {
+        FacilioModule module=ModuleFactory.getDashboardRuleActionMetaModule();
+        List<FacilioField> fields =new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("actionId","ACTION_ID", module,FieldType.NUMBER));
+        fields.add(getField("scriptId","SCRIPT_ID", module,FieldType.NUMBER));
+        fields.add(getField("action_deatils","ACTION_META", module,FieldType.NUMBER));
+        fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.STRING));
+        return fields;
+    }
+
+    public static List<FacilioField> getDashboardRuleTargetWidgetFields()
+    {
+        FacilioModule module=ModuleFactory.getDashboardRuleTargetWidgetModule();
+        List<FacilioField> fields =new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("actionId","ACTION_ID", module,FieldType.NUMBER));
+        fields.add(getField("target_widget_id","TARGET_WIDGET_ID", module,FieldType.NUMBER));
+        fields.add(getField("datapoint_id","DATAPOINT_ID", module,FieldType.NUMBER));
+        fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.STRING));
+        return fields;
+    }
 
 	 public static List<FacilioField> getESSyncContextFields() {
          FacilioModule module = ModuleFactory.getESSyncContextModule();

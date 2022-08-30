@@ -907,6 +907,42 @@
         </action>
     </package>
 
+    <package name="v3DashboardRule" namespace="/api/v3/dashboard/rule" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="create"/>
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="getAllDashboardRules">
+                <param name="dashbaordId">{1}</param>
+        </action>
+        <action name="*/list/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="getAllDashboardRules">
+                <param name="dashboardId">{1}</param>
+                <param name="dashboardTabId">{2}</param>
+        </action>
+        <action name="delete/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="deleteDashboardRule">
+                <param name="dashboard_rule_id">{1}</param>
+        </action>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="update">
+        </action>
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="getDashboardRule">
+                <param name="dashboard_rule_id">{1}</param>
+        </action>
+        <!-- temp code will be removed once dashboard actions ready-->
+        <action name="runMigrationForWidgetLinkName"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="runMigrationForWidgetLinkName">
+        </action>
+    </package>
+
     <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">
         <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
