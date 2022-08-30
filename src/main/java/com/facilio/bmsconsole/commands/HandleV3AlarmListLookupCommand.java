@@ -66,11 +66,14 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
 //            List<Long> newRuleIds = newReadingAlarms.stream().map(el -> el.getRule().getId()).collect(Collectors.toList());
             List<Long> newRuleIds = new ArrayList<>();
             for(ReadingAlarm newReadingAlarm:newReadingAlarms){
-                NewReadingRuleContext newReadingRule = (NewReadingRuleContext) newReadingAlarm.getRule();
-                if(newReadingRule==null){
-                    LOGGER.info("Id of New Alarm that doesn't have a Rule Id " + newReadingAlarm.getId());
+                if(newReadingAlarm.getRule()!=null) {
+                    if(newReadingAlarm.getRule() instanceof NewReadingRuleContext) {
+                        newRuleIds.add(newReadingAlarm.getRule().getId());
+                    } else {
+                        LOGGER.info("NewAlarm with old rule: NEW ALARM ID " + newReadingAlarm.getId() + "Old Rule Id: "+  newReadingAlarm.getRule().getId());
+                    }
                 } else {
-                    newRuleIds.add(newReadingRule.getId());
+                    LOGGER.info("Id of New Alarm that doesn't have a Rule " + newReadingAlarm.getId());
                 }
             }
             if (!newRuleIds.isEmpty()) {
