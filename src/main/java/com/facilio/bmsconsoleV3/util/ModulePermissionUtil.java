@@ -265,7 +265,7 @@ public class ModulePermissionUtil {
         //Setup
         for (WebTabContext.Type type: WebTabContext.Type.values()) {
             if (type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
-                permissionTypes = Arrays.asList(permissionMap.get(type.name()));
+                permissionTypes = Arrays.asList(permissionMap.get("ENABLE"));
                 modulePermissionGroupMap.put(type.name(), new ModulePermission(null, type.name(),permissionTypes));
             }
         }
