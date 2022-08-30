@@ -78,6 +78,7 @@ import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdComman
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
@@ -147,6 +148,7 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
@@ -2379,4 +2381,24 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(FacilioConstants.ContextNames.HAZARD)
+    public static Supplier<V3Config> getHazards() {
+        return () -> new V3Config(V3HazardContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.HAZARD_PRECAUTION)
+    public static Supplier<V3Config> getHazardPrecautions() {
+        return () -> new V3Config(V3HazardPrecautionContext.class, null)
+                .create()
+                .list()
+                .beforeFetch(new V3LoadHazardPrecautionLookUpsCommand())
+                .delete()
+                .build();
+    }
 }
