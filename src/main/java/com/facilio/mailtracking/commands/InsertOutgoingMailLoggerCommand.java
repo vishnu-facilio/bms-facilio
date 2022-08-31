@@ -35,10 +35,10 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
         mailJson.put("from", mailJson.get(EmailClient.SENDER));
         if(mailJson.get("message")!=null) {
             if (mailJson.get(EmailClient.MAIL_TYPE) != null && mailJson.get(EmailClient.MAIL_TYPE).equals(EmailClient.HTML)) {
-                mailJson.put("htmlContent", mailJson.get("message"));
+                mailJson.put("htmlContent", mailJson.remove("message"));
                 mailJson.put("contentType", EmailClient.CONTENT_TYPE_TEXT_HTML);
             } else {
-                mailJson.put("textContent", mailJson.get("message"));
+                mailJson.put("textContent", mailJson.remove("message"));
                 mailJson.put("contentType", EmailClient.CONTENT_TYPE_TEXT_PLAIN);
             }
         }
