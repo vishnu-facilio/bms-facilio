@@ -159,7 +159,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 						}
 					}
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+						LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 					}
 
 				}
