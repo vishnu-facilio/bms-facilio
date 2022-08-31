@@ -2356,12 +2356,6 @@ public class APIv3Config {
                 .afterSave(ClassificationChain.getAfterSaveChain())
                 .update()
                 .beforeSave(ClassificationChain.getBeforeUpdateChain())
-                .afterSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        throw new IllegalArgumentException("Should throw error");
-                    }
-                })
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.CLASSIFICATION, "parentClassification")
                 .afterFetch(ClassificationChain.getAfterSummaryChain())

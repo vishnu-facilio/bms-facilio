@@ -16,7 +16,6 @@ public class ClassificationContext extends V3Context {
     private String linkName;
     private String description;
     private ClassificationContext parentClassification;
-    private Long classificationModuleId;
     private Boolean extendAttribute;
     private Set<Long> appliedModuleIds;
 
@@ -29,5 +28,4 @@ public class ClassificationContext extends V3Context {
         }
     }
 
-    private List<ClassificationAttributeContext> attributes;
 }

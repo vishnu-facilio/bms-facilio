@@ -1,7 +1,6 @@
 package com.facilio.classification.command;
 
 import com.facilio.chain.FacilioContext;
-import com.facilio.classification.context.ClassificationAttributeContext;
 import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -33,8 +32,6 @@ public class AfterSaveClassificationCommand extends FacilioCommand {
         // only add while adding
         for (ClassificationContext classificationContext : classificationList) {
             addAppliedModulesEntry(classificationContext.getId(), classificationContext.getAppliedModuleIds());
-
-            addClassificationAttibutes(classificationContext);
         }
         return false;
     }
@@ -53,24 +50,4 @@ public class AfterSaveClassificationCommand extends FacilioCommand {
         builder.save();
     }
 
-    private void addClassificationAttibutes(ClassificationContext classfication) throws Exception {
-        if (CollectionUtils.isEmpty(classfication.getAttributes())) {
-            return;
-        }
-
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getClassificationAttributeModule().getTableName())
-                .fields(FieldFactory.getClassificationAttributeFields());
-
-        for (ClassificationAttributeContext attributeContext : classfication.getAttributes()) {
-            attributeContext.setClassificationId(classfication.getId());
-            if (attributeContext.getId() > 0) {
-                // already added, skip this. Only update the basic parameters
-                continue;
-            }
-
-            builder.addRecord(FieldUtil.getAsProperties(attributeContext));
-        }
-        builder.save();
-    }
 }
