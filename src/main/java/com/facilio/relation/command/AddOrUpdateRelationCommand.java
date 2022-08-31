@@ -228,9 +228,6 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         if (relationRequest.getToModuleId() <= 0) {
             throw new IllegalArgumentException("To Module is required");
         }
-        if(relationRequest.getFromModuleId() == relationRequest.getToModuleId()) {
-            throw new IllegalArgumentException("Same Module relationship is not allowed");
-        }
         if (StringUtils.isEmpty(relationRequest.getRelationName())) {
             throw new IllegalArgumentException("Forward Relation Name is required");
         }
