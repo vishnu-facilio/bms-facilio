@@ -13,7 +13,7 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
@@ -96,8 +96,6 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
-import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
@@ -549,10 +547,16 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
         c.addCommand(new CheckForMandatoryTenantIdCommandV3());
         return c;
     }
-
+    public static FacilioChain getTenantContactBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
+        return c;
+    }
     public static FacilioChain getTenantContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
@@ -565,10 +569,16 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
         c.addCommand(new CheckForMandatoryVendorIdCommandV3());
         return c;
     }
-
+    public static FacilioChain getVendorContactBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
+        return c;
+    }
     public static FacilioChain getVendorContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
@@ -580,7 +590,14 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getEmployeeBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
         c.addCommand(new AddPeopleTypeForEmployeeCommandV3());
+        return c;
+    }
+    public static FacilioChain getUpdateEmployeeBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new EmailIdValidateCommandV3());
         return c;
     }
 
