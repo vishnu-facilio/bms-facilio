@@ -49,9 +49,6 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
     public static final String mailDomain = FacilioProperties.getMailDomain();
-
-    private boolean viaActiveCheck = false;
-
     public static final String ERROR_MAIL_FROM="mlerror@" + mailDomain;
     public static final String ERROR_MAIL_TO="ai@" + mailDomain;
     public static final String ERROR_AT_FACILIO="error@" + mailDomain;
@@ -73,12 +70,19 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     public long sendEmailWithActiveUserCheck(JSONObject mailJson, boolean handleUserDelegation) throws Exception {
-        viaActiveCheck = true;
+        return sendEmailWithActiveUserCheck(mailJson, null, handleUserDelegation);
+    }
+
+    public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+        return sendEmailWithActiveUserCheck(mailJson, files, true);
+    }
+
+    private long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation) throws Exception {
         if (removeInActiveUsers(mailJson)) {
             if (handleUserDelegation) {
                 checkUserDelegation(mailJson);
             }
-            return sendEmail(mailJson);
+            return sendEmail(mailJson, files, true);
         }
         return -1;
     }
@@ -156,16 +160,7 @@ public abstract class EmailClient extends BaseEmailClient {
     		
     		return toEmailsList.stream().collect(Collectors.toSet());
     	}
-    	return null;
-    }
-
-    public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
-        viaActiveCheck = true;
-        if (removeInActiveUsers(mailJson)) {
-            checkUserDelegation(mailJson);
-            return sendEmail(mailJson, files);
-        }
-        return -1;
+        return null;
     }
 
     private String combineEmailsAgain (Set<String> emailAddresses) { //TODO Have to handle this better
@@ -223,7 +218,11 @@ public abstract class EmailClient extends BaseEmailClient {
      */
     @Deprecated
     public long sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
-        if(!viaActiveCheck) {
+        return sendEmail(mailJson, files, false);
+    }
+
+    private long sendEmail(JSONObject mailJson, Map<String, String> files, boolean isActive) throws Exception {
+        if(!isActive) {
             preserveOriginalEmailAddress(mailJson);
         }
         return pushEmailToQueue(mailJson, files);
@@ -421,7 +420,4 @@ public abstract class EmailClient extends BaseEmailClient {
         getEmailAddresses(mailJson, BCC, false);
     }
 
-    public void resetActiveCheck() {
-        this.viaActiveCheck = false;
-    }
 }

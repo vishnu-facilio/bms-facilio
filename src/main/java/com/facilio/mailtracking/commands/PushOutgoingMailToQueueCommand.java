@@ -30,7 +30,6 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
     }
 
     private void resetMailJson(JSONObject mailJson) {
-        EmailFactory.getEmailClient().resetActiveCheck();
         mailJson.remove("originalTo");
         mailJson.remove("originalCc");
         mailJson.remove("originalBcc");

@@ -1,10 +1,15 @@
 package com.facilio.mailtracking.commands;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fs.FileInfo;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -28,7 +33,22 @@ public class InsertOutgoingMailAttachmentsCommand extends FacilioCommand {
             records.add(record);
         }
         OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS, records);
+        if(FacilioProperties.isDevelopment()) {
+            updateFilePath(files);
+        }
         return false;
     }
-    
+
+    private void updateFilePath(Map<String, String> files) throws Exception {
+        for(Map.Entry<String, String> en : files.entrySet()) {
+            if(en.getValue() == null) {
+                continue;
+            }
+            String url = en.getValue();
+            FileStore fs = FacilioFactory.getFileStore();
+            String fileId = url.substring(url.lastIndexOf("/")+1);
+            FileInfo fileInfo = fs.getFileInfo(FacilioUtil.parseLong(fileId));
+            files.put(en.getKey(), fileInfo.getFilePath());
+        }
+    }
 }

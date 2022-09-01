@@ -13,6 +13,7 @@ import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import lombok.NonNull;
@@ -69,7 +70,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
     private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         fields = filterModuleFields(module, fields);
-        if (module.getModuleId() > 1) { // Ignoring spl modules if at all this is used for those things
+        if (!module.getName().equals(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
+                && module.getModuleId() > 1) { // Ignoring spl modules if at all this is used for those things
             fields.add(FieldFactory.getIdField(module));
         }
         return fields;
@@ -202,6 +204,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.POINT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case ContextNames.PLANNEDMAINTENANCE:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.PM_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.OUTGOING_MAIL_LOGGER_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

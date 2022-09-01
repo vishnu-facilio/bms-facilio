@@ -444,8 +444,30 @@ public class FieldFactory extends BaseFieldFactory {
                 "createdTime",
                 "assetCategoryId"
         }).collect(Collectors.toList()));
-    }
+        
+        public static final List<String> OUTGOING_MAIL_LOGGER_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "subject",
+                "from",
+                "to",
+                "cc",
+                "bcc",
+                "sysCreatedBy",
+                "sysModifiedBy",
+                "sysCreatedTime",
+                "sysModifiedTime",
+                "recordId",
+                "recordsModuleId",
+                "recordCreatedTime",
+                "sourceType",
+                "recipientCount",
+                "inProgressCount",
+                "sentCount",
+                "deliveredCount",
+                "bouncedCount"
+        }));
 
+    }
+    
     public static List<FacilioField> getFormFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFormModule();
