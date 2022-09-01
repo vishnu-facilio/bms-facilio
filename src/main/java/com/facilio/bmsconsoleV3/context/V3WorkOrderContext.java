@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class V3WorkOrderContext extends V3TicketContext {
     /**
@@ -767,13 +767,13 @@ public class V3WorkOrderContext extends V3TicketContext {
     @Setter
     private JobPlanContext prerequisiteJobPlan;
 
-    public Map<String, List<V3TaskContext>> getTasksString() {
+    public LinkedHashMap<String, List<V3TaskContext>> getTasksString() {
         return tasksString;
     }
 
-    public void setTasksString(Map<String, List<V3TaskContext>> tasksString) {
+    public void setTasksString(LinkedHashMap<String, List<V3TaskContext>> tasksString) {
         this.tasksString = tasksString;
     }
 
-    private Map<String, List<V3TaskContext>> tasksString;
+    private LinkedHashMap<String, List<V3TaskContext>> tasksString;
 }

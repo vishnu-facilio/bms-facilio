@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
+import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -50,7 +51,7 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
 
                     // set input options for section
                     if (section.getInputTypeEnum().equals(JobPlanTaskSectionContext.InputType.RADIO)) {
-                        List<Map<String, Object>> options = fetchSectionInputOptions(modBean, section);
+                        List<Map<String, Object>> options = JobPlanAPI.fetchSectionInputOptions(modBean, section);
                         if (options != null) {
                             section.setInputOptions(options);
                         }
@@ -62,7 +63,7 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
                         // jobPlan task level
                         for (JobPlanTasksContext task : taskList) {
                             if (task.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
-                                List<Map<String, Object>> options = fetchTaskInputOptions(modBean, task);
+                                List<Map<String, Object>> options = JobPlanAPI.fetchTaskInputOptions(modBean, task);
                                 if (options != null) {
                                     task.setInputOptions(options);
                                 }
@@ -76,51 +77,5 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
 
         }
         return false;
-    }
-
-    /**
-     * Helper function to fetch the JobPlan TaskInputOptions
-     *
-     * @param modBean
-     * @param task
-     * @return
-     * @throws Exception
-     */
-    private List<Map<String, Object>> fetchTaskInputOptions(ModuleBean modBean, JobPlanTasksContext task) throws Exception {
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TASK_INPUT_OPTIONS);
-        SelectRecordsBuilder<TaskInputOptionsContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
-        List<FacilioField> fields = new ArrayList<>(FieldFactory.getJobPlanTaskInputOptionsFields().values());
-        selectRecordsBuilder
-                .module(module)
-                .table(module.getTableName())
-                .beanClass(TaskInputOptionsContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getJobPlanTaskInputOptionsFields().get("jobPlanTask"),
-                        String.valueOf(task.getId()), NumberOperators.EQUALS));
-
-        return selectRecordsBuilder.getAsProps();
-    }
-
-    /**
-     * Helper function to fetch the JobPlan SectionInputOptions
-     *
-     * @param modBean
-     * @param section
-     * @return
-     * @throws Exception
-     */
-    private List<Map<String, Object>> fetchSectionInputOptions(ModuleBean modBean, JobPlanTaskSectionContext section) throws Exception {
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SECTION_INPUT_OPTIONS);
-        SelectRecordsBuilder<SectionInputOptionsContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
-        List<FacilioField> fields = new ArrayList<>(FieldFactory.getJobPlanSectionInputOptionsFields().values());
-        selectRecordsBuilder
-                .module(module)
-                .table(module.getTableName())
-                .beanClass(SectionInputOptionsContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getJobPlanSectionInputOptionsFields().get("jobPlanSection"),
-                        String.valueOf(section.getId()), NumberOperators.EQUALS));
-
-        return selectRecordsBuilder.getAsProps();
     }
 }

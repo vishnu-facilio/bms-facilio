@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -21,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JobPlanAPI {
 
@@ -81,7 +83,7 @@ public class JobPlanAPI {
                 .beanClass(JobPlanTaskSectionContext.class)
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), String.valueOf(jobPlanId), NumberOperators.EQUALS))
-                .orderBy("ID asc");
+                .orderBy("SEQUENCE_NUMBER ASC");
         List<JobPlanTaskSectionContext> sections = builder.get();
         if (CollectionUtils.isNotEmpty(sections)) {
             for (JobPlanTaskSectionContext section : sections) {
@@ -342,11 +344,22 @@ public class JobPlanAPI {
 
     public static Map<String, List<V3TaskContext>> getTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest) throws Exception {
 
-        Map<String, List<V3TaskContext>> allTasks = new HashMap<>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();
 
         List<JobPlanTaskSectionContext> taskSections = setJobPlanDetails(jobPlan.getId());
         if (taskSections != null) {
             for (JobPlanTaskSectionContext sectionContext : taskSections) {
+
+                // set input options for section
+                if (sectionContext.getInputTypeEnum().equals(JobPlanTaskSectionContext.InputType.RADIO)) {
+                    List<Map<String, Object>> options = fetchSectionInputOptions(modBean, sectionContext);
+                    if (options != null) {
+                        sectionContext.setInputOptions(options);
+                    }
+                }
+
                 // for each JobPlanTaskSectionContext
                 if (sectionContext.getTasks() != null) {
 
@@ -359,7 +372,21 @@ public class JobPlanAPI {
 
                     for (Map<String, Object> taskMap : tasksMappings) {
                         V3TaskContext task = FieldUtil.getAsBeanFromMap(taskMap, V3TaskContext.class);
+                        JobPlanTasksContext jobPlanTask = FieldUtil.getAsBeanFromMap(taskMap, JobPlanTasksContext.class);
+
                         if (task != null) {
+
+                            // handle when task InputType is RADIO (options).
+                            if (jobPlanTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
+                                List<Map<String, Object>> optionsMap = fetchTaskInputOptions(modBean, jobPlanTask);
+                                List<TaskInputOptionsContext> taskInputOptions = FieldUtil.getAsBeanListFromMapList(optionsMap, TaskInputOptionsContext.class);
+
+                                List<String> options = taskInputOptions.stream().map(TaskInputOptionsContext::getValue).collect(Collectors.toList());
+                                if (options != null) {
+                                    task.setOptions(options);
+                                }
+                            }
+
                             task.setUniqueId(taskUniqueId++);
 
                             if (!isPreRequest) {
@@ -378,5 +405,51 @@ public class JobPlanAPI {
             }
         }
         return allTasks;
+    }
+
+    /**
+     * Helper function to fetch the JobPlan TaskInputOptions
+     *
+     * @param modBean
+     * @param task
+     * @return
+     * @throws Exception
+     */
+    public static List<Map<String, Object>> fetchTaskInputOptions(ModuleBean modBean, JobPlanTasksContext task) throws Exception {
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TASK_INPUT_OPTIONS);
+        SelectRecordsBuilder<TaskInputOptionsContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+        List<FacilioField> fields = new ArrayList<>(FieldFactory.getJobPlanTaskInputOptionsFields().values());
+        selectRecordsBuilder
+                .module(module)
+                .table(module.getTableName())
+                .beanClass(TaskInputOptionsContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getJobPlanTaskInputOptionsFields().get("jobPlanTask"),
+                        String.valueOf(task.getId()), NumberOperators.EQUALS));
+
+        return selectRecordsBuilder.getAsProps();
+    }
+
+    /**
+     * Helper function to fetch the JobPlan SectionInputOptions
+     *
+     * @param modBean
+     * @param section
+     * @return
+     * @throws Exception
+     */
+    public static List<Map<String, Object>> fetchSectionInputOptions(ModuleBean modBean, JobPlanTaskSectionContext section) throws Exception {
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SECTION_INPUT_OPTIONS);
+        SelectRecordsBuilder<SectionInputOptionsContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+        List<FacilioField> fields = new ArrayList<>(FieldFactory.getJobPlanSectionInputOptionsFields().values());
+        selectRecordsBuilder
+                .module(module)
+                .table(module.getTableName())
+                .beanClass(SectionInputOptionsContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getJobPlanSectionInputOptionsFields().get("jobPlanSection"),
+                        String.valueOf(section.getId()), NumberOperators.EQUALS));
+
+        return selectRecordsBuilder.getAsProps();
     }
 }
