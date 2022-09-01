@@ -2,11 +2,15 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -20,14 +24,27 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         try{
             List<Point> points = (List<Point>) context.get(AgentConstants.POINT);
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+            FacilioAgent agent = agentBean.getAgent(agentId);
+            context.put(AgentConstants.AGENT,agent);
             Map<Long, List<String>> controllerIdVsPointNamesMap = new HashMap<>();
             for (Point point : points) {
             if (!controllerIdVsPointNamesMap.containsKey(point.getControllerId())) {
+
                     List<String> pointNames = new ArrayList<>();
-                    pointNames.add(point.getName());
+                    if (agent.getAgentType()==AgentType.NIAGARA.getKey()){
+                        pointNames.add(point.getDisplayName());
+                    }else{
+                        pointNames.add(point.getName());
+                    }
                     controllerIdVsPointNamesMap.put(point.getControllerId(), pointNames);
             } else {
+                if (agent.getAgentType()==AgentType.NIAGARA.getKey()){
+                    controllerIdVsPointNamesMap.get(point.getControllerId()).add(point.getDisplayName());
+                }else{
                     controllerIdVsPointNamesMap.get(point.getControllerId()).add(point.getName());
+                }
             }
         }
 
@@ -37,9 +54,8 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
             Controller controller = ControllerApiV2.getControllerFromDb(controllervsPointMap.getKey());
             pointMap.put("pointName", controllervsPointMap.getValue());
             pointMap.put("controller", controller.getName());
-            pointMap.put("agentName", controller.getAgent().getName());
-            pointMap.put("agentType", AgentType.valueOf(controller.getAgent().getAgentType()).toString());
-
+            pointMap.put("agentName", agent.getName());
+            pointMap.put("agentType", AgentType.valueOf(agent.getAgentType()).toString());
             finalMapList.add(pointMap);
         }
         BmsPointsTaggingUtil.tagPointListV1(finalMapList);

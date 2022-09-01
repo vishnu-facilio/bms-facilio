@@ -1,11 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.cacheimpl.AgentBeanImpl;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.constants.FacilioConstants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -16,6 +22,7 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         try{
+            FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
         List<Map<String, Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
 
         Map<Long, String> assetCategory = AssetsAPI.getCategoryList().stream().collect(Collectors.toMap(AssetCategoryContext::getId, AssetCategoryContext::getName));
@@ -38,8 +45,13 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
                 }else{
                     pointMap.put("reading",null);
                 }
+                if(agent.getAgentType()== AgentType.NIAGARA.getKey()){
+                    updateMap.put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
+                }
+                else{
+                    updateMap.put((String) point.get(AgentConstants.NAME), pointMap);
 
-                updateMap.put((String) point.get("name"), pointMap);
+                }
             }
         }
 

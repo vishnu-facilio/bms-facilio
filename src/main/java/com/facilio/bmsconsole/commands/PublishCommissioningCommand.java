@@ -58,6 +58,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		CommissioningLogContext log = CommissioningApi.commissioniongDetails(id);
 		validate(log);
 		context.put(AgentConstants.POINTS,log.getPoints());
+		context.put(AgentConstants.AGENT,log.getAgent());
 		
 		long publishTime = System.currentTimeMillis();
 		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
