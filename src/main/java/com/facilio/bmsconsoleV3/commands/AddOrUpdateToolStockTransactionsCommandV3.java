@@ -18,7 +18,12 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,12 +113,12 @@ public class AddOrUpdateToolStockTransactionsCommandV3 extends FacilioCommand {
                                         String.valueOf(pt.getId()), PickListOperators.IS));
                         List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
                         if (transactions != null && !transactions.isEmpty()) {
-                            ToolTransactionContext it = transactions.get(0);
-                            it.setQuantity(1);
-                            UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
-                                    .module(module).fields(modBean.getAllFields(module.getName()))
-                                    .andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-                            updateBuilder.update(it);
+                            ToolTransactionContext toolTr = transactions.get(0);
+                            toolTr.setQuantity(1);
+
+                            JSONObject toolTransactionJson = FieldUtil.getAsJSON(toolTr);
+                            Long toolTransactionId = toolTr.getId();
+                            V3Util.updateBulkRecords(module.getName(),FacilioUtil.getAsMap(toolTransactionJson), Collections.singletonList(toolTransactionId),false);
                         } else {
                             toolTransaction.add(transaction);
                         }
@@ -162,9 +167,7 @@ public class AddOrUpdateToolStockTransactionsCommandV3 extends FacilioCommand {
                  * toolTransaction.add(transaction); }
                  */
             }
-            InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
-                    .module(module).fields(fields).addRecords(toolTransaction);
-            readingBuilder.save();
+            V3Util.createRecordList(module, FieldUtil.getAsMapList(toolTransaction,V3ToolTransactionContext.class),null,null);
             context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
         } else {
             V3ToolContext tool = (V3ToolContext) context.get(FacilioConstants.ContextNames.TOOL);
@@ -193,9 +196,8 @@ public class AddOrUpdateToolStockTransactionsCommandV3 extends FacilioCommand {
                 }
 
                 updateToolQty(t);
-                InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
-                        .module(module).fields(fields).addRecord(transaction);
-                readingBuilder.save();
+                V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(transaction)),null,null);
+
                 context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(transaction));
                 context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(t.getToolType().getId()));
             }

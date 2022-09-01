@@ -52,10 +52,8 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
@@ -897,6 +895,7 @@ public class APIv3Config {
                 .afterSave(new UpdateItemTransactionsCommandV3())
                 .update()
                 .list()
+                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
                 .summary()
                 .build();
     }
@@ -909,6 +908,7 @@ public class APIv3Config {
                 .afterSave(new UpdateToolTransactionsCommandV3())
                 .update()
                 .list()
+                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
                 .summary()
                 .build();
     }

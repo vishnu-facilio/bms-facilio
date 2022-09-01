@@ -2,11 +2,17 @@ package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -16,12 +22,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioCommand {
 
@@ -47,10 +49,9 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
                     double totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
                     itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
-                    UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
-                            .module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
-                                    .getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
-                    updateBuilder.update(itemTransaction);
+                    JSONObject itemTransactionJson = FieldUtil.getAsJSON(itemTransaction);
+                    Long itemTransactionId = transaction.getParentTransactionId();
+                    V3Util.updateBulkRecords(itemTransactionsModule.getName(), FacilioUtil.getAsMap(itemTransactionJson), Collections.singletonList(itemTransactionId),false);
                 }
             } else if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.USE && itemTransactions.get(0).getParentTransactionId() > 0) {
                 for (V3ItemTransactionsContext transaction : itemTransactions) {
@@ -62,10 +63,9 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
 
                     itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
-                    UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
-                            .module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
-                                    .getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
-                    updateBuilder.update(itemTransaction);
+                    JSONObject itemTransactionJson = FieldUtil.getAsJSON(itemTransaction);
+                    Long itemTransactionId = transaction.getParentTransactionId();
+                    V3Util.updateBulkRecords(itemTransactionsModule.getName(), FacilioUtil.getAsMap(itemTransactionJson), Collections.singletonList(itemTransactionId),false);
                 }
             }
         }

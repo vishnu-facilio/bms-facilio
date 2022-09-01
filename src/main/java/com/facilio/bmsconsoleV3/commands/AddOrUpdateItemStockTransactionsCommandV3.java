@@ -19,7 +19,12 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +38,6 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
         // TODO Auto-generated method stub
         List<V3PurchasedItemContext> purchasedItems = (List<V3PurchasedItemContext>) context
                 .get(FacilioConstants.ContextNames.PURCHASED_ITEM);
-        ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -45,15 +49,8 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
             for (V3PurchasedItemContext ic : purchasedItems) {
                 V3ItemContext item = V3ItemsApi.getItems(ic.getItem().getId());
                 V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
-                if(shipment == null) {
-                    transaction.setTransactionType(TransactionType.STOCK.getValue());
-                    transaction.setTransactionState(TransactionState.ADDITION.getValue());
-                }
-                else {
-                    transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
-                    transaction.setTransactionState(TransactionState.ADDITION.getValue());
-                    transaction.setShipment(shipment.getId());
-                }
+                transaction.setTransactionType(TransactionType.STOCK.getValue());
+                transaction.setTransactionState(TransactionState.ADDITION.getValue());
                 transaction.setPurchasedItem(ic);
                 transaction.setItem(ic.getItem());
                 transaction.setStoreRoom(item.getStoreRoom());
@@ -76,21 +73,19 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                                     String.valueOf(ic.getId()), PickListOperators.IS));
                     List<V3ItemTransactionsContext> transactions = transactionsselectBuilder.get();
                     if (transactions != null && !transactions.isEmpty()) {
-                        V3ItemTransactionsContext it = transactions.get(0);
-                        it.setQuantity(ic.getQuantity());
-                        UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
-                                .module(module).fields(modBean.getAllFields(module.getName()))
-                                .andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-                        updateBuilder.update(it);
+                        V3ItemTransactionsContext itemTransaction = transactions.get(0);
+                        itemTransaction.setQuantity(ic.getQuantity());
+
+                        JSONObject itemTransactionJson = FieldUtil.getAsJSON(itemTransaction);
+                        Long itemTransactionId = itemTransaction.getId();
+                        V3Util.updateBulkRecords(module.getName(), FacilioUtil.getAsMap(itemTransactionJson), Collections.singletonList(itemTransactionId),false);
                     } else {
                         inventoryTransaction.add(transaction);
                     }
                 }
             }
 
-            InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                    .module(module).fields(fields).addRecords(inventoryTransaction);
-            readingBuilder.save();
+            V3Util.createRecordList(module,FieldUtil.getAsMapList(inventoryTransaction,V3ItemTransactionsContext.class),null,null);
         }
         else  {
             V3ItemContext item = (V3ItemContext) context.get(FacilioConstants.ContextNames.ITEM);
@@ -107,15 +102,8 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
                 transaction.setIsReturnable(false);
 
-                if(shipment == null) {
-                    transaction.setTransactionType(TransactionType.STOCK.getValue());
-                    transaction.setTransactionState(TransactionState.ADDITION.getValue());
-                }
-                else {
-                    transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
-                    transaction.setTransactionState(TransactionState.ADDITION.getValue());
-                    transaction.setShipment(shipment.getId());
-                }
+                transaction.setTransactionType(TransactionType.STOCK.getValue());
+                transaction.setTransactionState(TransactionState.ADDITION.getValue());
                 transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
                 transaction.setItem(items);
                 transaction.setStoreRoom(items.getStoreRoom());
@@ -124,9 +112,8 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setAsset(asset);
                 transaction.setParentId(asset.getId());
                 updateItemQty(items);
-                InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                        .module(module).fields(fields).addRecord(transaction);
-                readingBuilder.save();
+
+                V3Util.createRecord(module,FacilioUtil.getAsMap(FieldUtil.getAsJSON(transaction)),null,null);
 
                 context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(items.getItemType().getId()));
             }

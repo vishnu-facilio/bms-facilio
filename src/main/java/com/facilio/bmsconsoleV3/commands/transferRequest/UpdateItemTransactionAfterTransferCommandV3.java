@@ -7,7 +7,9 @@ import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -16,11 +18,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.util.ItemsApi;
 import org.apache.commons.collections4.CollectionUtils;
@@ -75,9 +72,8 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                     FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
                     List<FacilioField> itemTransactionsFields = modBean
                             .getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-                    InsertRecordBuilder<V3ItemTransactionsContext> insertRecordBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                            .module(itemTransactionsModule).fields(itemTransactionsFields).addRecords(itemTransactionsToBeAdded);
-                    insertRecordBuilder.save();
+
+                    V3Util.createRecordList(itemTransactionsModule, FieldUtil.getAsMapList(itemTransactionsToBeAdded,V3ItemTransactionsContext.class),null,null);
                     //Updating last purchased price and date of item
                     itemModuleName = FacilioConstants.ContextNames.ITEM;
                     module = modBean.getModule(itemModuleName);

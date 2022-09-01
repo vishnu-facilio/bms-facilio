@@ -8,7 +8,9 @@ import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3StoreroomApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -17,11 +19,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class UpdateItemTransactionCommandV3 extends FacilioCommand {
@@ -94,9 +91,9 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                             }
                         }
                     }
-                    InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                            .module(itemTransactionsModule).fields(itemTransactionsFields).addRecords(itemTransactiosnToBeAdded);
-                    readingBuilder.save();
+
+                    V3Util.createRecordList(itemTransactionsModule, FieldUtil.getAsMapList(itemTransactiosnToBeAdded,V3ItemTransactionsContext.class),null,null);
+
                     InsertRecordBuilder<V3TransferRequestPurchasedItems> insertRecordBuilder = new InsertRecordBuilder<V3TransferRequestPurchasedItems>()
                             .module(transferRequestpurchasedItemModule).fields(transferRequestpurchasedItemFields).addRecords(transferRequestPurchasedItems);
                     insertRecordBuilder.save();

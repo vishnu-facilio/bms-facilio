@@ -12,12 +12,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -69,6 +67,7 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 								transaction.setTransactionType(TransactionType.STOCK.getValue());
 								transaction.setToolType(tool.getToolType());
 								transaction.setPurchasedTool(purchaseTool);
+								transaction.setStoreRoom(tool.getStoreRoom());
 								transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 								toolTransaction.add(transaction);
 							}
@@ -82,16 +81,14 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 							transaction.setIsReturnable(false);
 							transaction.setTransactionType(TransactionType.STOCK.getValue());
 							transaction.setToolType(tool.getToolType());
+							transaction.setStoreRoom(tool.getStoreRoom());
 							transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 							toolTransaction.add(transaction);
 						}
 					}
 				}
 			}
-
-			InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
-					.module(module).fields(fields).addRecords(toolTransaction);
-			readingBuilder.save();
+			V3Util.createRecordList(module, FieldUtil.getAsMapList(toolTransaction,V3ToolTransactionContext.class),null,null);
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
 		}
 		return false;
