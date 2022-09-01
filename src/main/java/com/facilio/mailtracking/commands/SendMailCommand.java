@@ -21,8 +21,6 @@ public class SendMailCommand extends FacilioCommand {
         String messageId = emailClient.sendEmailFromWMS(mailJson, files);
         context.put(MailConstants.Params.MESSAGE_ID, messageId);
         LOGGER.info("OG_MAIL_LOG :: email sent successfully for mapperId "+ context.get(MailConstants.Params.MAPPER_ID));
-        emailClient.resetActiveCheck();
-        resetOriginalAddresses(mailJson);
         return false;
     }
 
@@ -44,9 +42,5 @@ public class SendMailCommand extends FacilioCommand {
         return mailJson;
     }
 
-    private void resetOriginalAddresses(JSONObject mailJson) {
-        mailJson.remove("originalTo");
-        mailJson.remove("originalCc");
-        mailJson.remove("originalBcc");
-    }
+
 }

@@ -8905,6 +8905,7 @@ public class FieldFactory extends BaseFieldFactory {
                 return FacilioField.FieldDisplayType.LOOKUP_SIMPLE;
             case ENUM:
             case SYSTEM_ENUM:
+            case STRING_SYSTEM_ENUM:
                 return FacilioField.FieldDisplayType.SELECTBOX;
             case DATE:
             case DATE_TIME:
