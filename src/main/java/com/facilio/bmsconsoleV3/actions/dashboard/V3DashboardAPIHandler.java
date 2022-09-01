@@ -521,6 +521,7 @@ public class V3DashboardAPIHandler {
                     }
 
                 }
+//                rule_to_execute.getResult_json();
             }
             else
             {

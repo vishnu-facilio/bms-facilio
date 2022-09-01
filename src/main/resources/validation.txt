@@ -2722,6 +2722,7 @@
 /api/v3/dashboard/rule/create
 /api/v3/dashboard/rule/update
 /api/v3/dashboard/rule/runMigrationForWidgetLinkName
+/api/v3/dashboard/rule/execute
 
 
 /api/v3/file/preview/public

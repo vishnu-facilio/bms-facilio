@@ -2173,4 +2173,14 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
+    public static FacilioChain getDashboardRuleExecuteChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExecutedDashboardRuleCommand());
+        return c;
+    }
+    public static FacilioChain getDashboardWidgetsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDashboardWidgetsCommand());
+        return c;
+    }
 }

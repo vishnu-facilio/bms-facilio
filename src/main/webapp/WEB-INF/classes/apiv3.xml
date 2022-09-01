@@ -931,10 +931,19 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="update">
         </action>
+        <action name="execute"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="execute">
+        </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="getDashboardRule">
                 <param name="dashboard_rule_id">{1}</param>
+        </action>
+        <action name="widgets/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="getTriggerWidgets">
+                <param name="dashboardId">{1}</param>
         </action>
         <!-- temp code will be removed once dashboard actions ready-->
         <action name="runMigrationForWidgetLinkName"
