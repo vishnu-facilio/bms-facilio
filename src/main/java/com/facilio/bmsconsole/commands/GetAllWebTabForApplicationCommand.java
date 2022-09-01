@@ -1,13 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -62,13 +64,33 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
                             moduleName = (String) webtab.getConfigJSON().get("type");
                         }
                     }
-                    webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+                    if(V3PermissionUtil.isFeatureEnabled()){
+                        webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,moduleName));
+                    } else{
+                        webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+                    }
+
+
                     if (webtab.getTypeEnum() == WebTabContext.Type.SETTINGS) {
-                        webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
+                        if(V3PermissionUtil.isFeatureEnabled()){
+                            webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab));
+                        } else {
+                            webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
+                        }
                     }
                     if (AccountUtil.getCurrentUser() != null) {
-                        webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
+                        if(V3PermissionUtil.isFeatureEnabled()) {
+                            NewPermission permission = ApplicationApi.getRolesPermissionForTab(webtab.getId(),
+                                    AccountUtil.getCurrentUser().getRoleId());
+                            if (permission != null) {
+                                webtab.setPermissionVal(permission.getPermission());
+                                webtab.setPermissionVal2(permission.getPermission2());
+                            }
+                        }
+                        else {
+                            webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
                                 AccountUtil.getCurrentUser().getRoleId()));
+                        }
                     }
                     List<FacilioModule> modules = new ArrayList<>();
                     if (CollectionUtils.isNotEmpty(webtab.getModuleIds())) {

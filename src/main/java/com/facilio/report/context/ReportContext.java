@@ -34,6 +34,52 @@ public class ReportContext {
 
 	int booleanSetting;
 
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	public Long getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public Long getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
+	public Long getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String moduleName;
+	public Long createdTime;
+	public Long modifiedTime;
+	public Long createdBy;
+	public Long modifiedBy;
+
 	public int getBooleanSetting() {
 		return booleanSetting;
 	}

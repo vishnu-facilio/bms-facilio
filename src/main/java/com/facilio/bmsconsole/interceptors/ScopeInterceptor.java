@@ -279,6 +279,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         AccountUtil.setTimeZone(timezoneVar);
 
+
                         Parameter action = ActionContext.getContext().getParameters().get("permission");
                         Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
                         Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");

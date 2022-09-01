@@ -1037,6 +1037,8 @@ public class FormsAPI {
 		fields.add(getFormFieldFromFacilioField(photoField, 1));
 		FacilioField nameField = modBean.getField("name", form.getModule().getName());
 		fields.add(getFormFieldFromFacilioField(nameField, 1));
+		FacilioField failureClassField = modBean.getField("failureclass", form.getModule().getName());
+		fields.add(getFormFieldFromFacilioField(failureClassField, 1));
 		fields.add(FormFactory.getSiteField());
 		FormField attField = new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1);
 		fields.add(attField);

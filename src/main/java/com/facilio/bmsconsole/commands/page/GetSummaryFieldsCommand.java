@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,11 +36,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.google.common.collect.ImmutableMap;
@@ -108,9 +104,9 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				}
 			}
 			else {
-				formFields = form.getFields().stream().filter(formField -> ( 
+				formFields = form.getFields().stream().filter(formField -> (
 						showField(formField, fetchMainFields)  &&
-						(!formField.isFieldHidden() || isValPresent(formField.getField())) 
+						(!formField.isFieldHidden() || isValPresent(formField.getField()))
 						)).collect(Collectors.toList());
 			}
 
@@ -310,7 +306,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		} else {
 			value = record.getDatum(field.getName());
 		}
-		if (value == null) {
+		if (value == null && (FieldType.FILE).equals(field.getDataTypeEnum())) {
 			if (field.isDefault()) {
 				try {
 					value = PropertyUtils.getProperty(record, field.getName() + "Id");

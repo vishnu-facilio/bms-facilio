@@ -244,11 +244,13 @@ public class FacilioConstants {
 		public static final String WEB_TAB = "webTab";
 		public static final String WEB_TABS = "webTabs";
 		public static final String NEW_PERMISSIONS = "newPermission";
+		public static final String NEW_TAB_PERMISSIONS = "newTabPermission";
 		public static final String WEB_TAB_ID = "webTabId";
 		public static final String WEB_TAB_TYPE = "webTabType";
 		public static final String FACE_COLLECTIONS = "faceCollections";
 		public static final String VISITOR_FACES = "visitorFaces";
 		public static final String VISITOR_PHOTO = "visitorPhoto";
+		public static final String ALL_PERMISSIONS = "*";
 
 		public static final String SIGNATURE_CONTENT = "signatureContent";
 		public static final String SIGNATURE_FILE_ID = "signatureFileId";
@@ -1311,6 +1313,7 @@ public class FacilioConstants {
 		public static final String RELATION_MODULE_NAME = "relationModuleName";
 
 		public static final String CLASSIFICATION = "classification";
+		public static final String CLASSIFICATION_ATTRIBUTE = "classificationAttribute";
 		public static final String CLASSIFICATION_RESOLVE_PATH = "classificationResolvePath";
 
 		public static final String CLASSIFICATION_DONT_RESOLVE_PATH = "classificationDontResolvePath";
@@ -2069,6 +2072,8 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_ITEMS = "jobPlanItems";
 		public static final String JOB_PLAN_TOOLS = "jobPlanTools";
 		public static final String JOB_PLAN_SERVICES = "jobPlanServices";
+		public static final String JOB_PLAN_TASK_INPUT_OPTIONS = "jobPlanTaskInputOptions";
+		public static final String JOB_PLAN_SECTION_INPUT_OPTIONS = "jobPlanSectionInputOptions";
 
 		public static final String JOB_PLAN_CRAFTS= "jobPlanCrafts";
 
@@ -2165,6 +2170,11 @@ public class FacilioConstants {
 			public static final String BUDGET_AMOUNT = "budgetamount";
 			public static final String BUDGET_MONTHLY_AMOUNT = "budgetmonthlyamount";
 
+		}
+
+		public static class NewTabPermission {
+			public static final String MODULE_APP_PERMISSION = "moduleAppPermission";
+			public static final String MODULE_PERMISSION = "modulePermission";
 		}
 
 		public static class FacilityBooking {
@@ -2360,8 +2370,8 @@ public class FacilioConstants {
 			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			classMap.put(LON_WORKS_CONTROLLER_MODULE_NAME, LonWorksControllerContext.class);
 			classMap.put(RDM_CONTROLLER_MODULE_NAME, RdmControllerContext.class);
-			// classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
-			// classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
+			classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
+			classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, MiscControllerContext.class);
 
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
@@ -2853,6 +2863,13 @@ public class FacilioConstants {
 		public static final String GROUP_2_LICENSE = "group2";
 		public static final String LICENSE1 = "license1";
 		public static final String LICENSE2 = "license2";
+	}
+
+	public static class PermissionKeys {
+		public static final String GROUP_1_PERMISSION = "group1permission";
+		public static final String GROUP_2_PERMISSION = "group2permission";
+		public static final String PERMISSION1 = "permission1";
+		public static final String PERMISSION2 = "permission2";
 	}
 
 	public static class OrgInfoKeys {

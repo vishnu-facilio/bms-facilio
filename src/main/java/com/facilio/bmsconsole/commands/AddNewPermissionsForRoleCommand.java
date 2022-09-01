@@ -2,11 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.bean.RoleBean;
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 

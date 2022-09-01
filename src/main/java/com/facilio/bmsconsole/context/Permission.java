@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.bmsconsoleV3.util.AppModulePermissionUtil;
 
 public class Permission {
 	public  String getActionName() {
@@ -29,6 +28,14 @@ public class Permission {
 		this.value = value;
 	}
 
+	public AppModulePermissionUtil.PermissionMapping getPermissionMapping() {
+		return permissionMapping;
+	}
+
+	public void setPermissionMapping(AppModulePermissionUtil.PermissionMapping permissionMapping) {
+		this.permissionMapping = permissionMapping;
+	}
+
 	public FeatureLicense getFeatureLicense() {
 		return featureLicense;
 	}
@@ -41,12 +48,26 @@ public class Permission {
 	String displayName;
 	long value;
 	FeatureLicense featureLicense;
+	AppModulePermissionUtil.PermissionMapping permissionMapping;
 
 	public Permission(String actionName, String displayName, long value, FeatureLicense featureLicense) {
 		this.actionName = actionName;
 		this.displayName = displayName;
 		this.value = value;
 		this.featureLicense = featureLicense;
+	}
+
+	public Permission(long value, String actionName, String displayName, AppModulePermissionUtil.PermissionMapping permissionMapping) {
+		this.actionName = actionName;
+		this.displayName = displayName;
+		this.value = value;
+		this.permissionMapping = permissionMapping;
+	}
+
+	public Permission(long value, String actionName, AppModulePermissionUtil.PermissionMapping permissionMapping) {
+		this.actionName = actionName;
+		this.value = value;
+		this.permissionMapping = permissionMapping;
 	}
 
 	public Permission() {

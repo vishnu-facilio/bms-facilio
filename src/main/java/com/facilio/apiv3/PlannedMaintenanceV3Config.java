@@ -45,7 +45,11 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPMJobPlan() {
         return () -> new V3Config(PMJobPlan.class, null)
                 .update()
+                    .beforeSave(new PrefillPMJobPlanfields(), new ValidationForJobPlanCategory())
+                    .afterSave(TransactionChainFactoryV3.getUpdateJobPlanAfterSaveChain())
                 .create()
+                    .beforeSave(new ValidationForJobPlanCategory())
+                    .afterSave(TransactionChainFactoryV3.getCreateJobPlanAfterSaveChain())
                 .delete()
                 .list()
                 .summary()

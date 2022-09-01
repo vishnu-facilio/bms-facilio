@@ -1,6 +1,9 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
+import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
+import com.facilio.attribute.context.ClassificationAttributeContext;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.MLServiceUtil;
@@ -49,7 +52,6 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
@@ -69,7 +71,6 @@ import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeop
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -78,6 +79,7 @@ import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdComman
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
@@ -146,6 +148,9 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContex
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
@@ -202,8 +207,6 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
-
-import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
@@ -1571,10 +1574,10 @@ public class APIv3Config {
         return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new ValidationForJobPlanCategory())
-                .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
+                .afterSave(TransactionChainFactoryV3.getCreateJobPlanAfterSaveChain())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.getUpdateJobPlanBeforeChain())
-                .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
+                .beforeSave(TransactionChainFactoryV3.getUpdateJobPlanBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getUpdateJobPlanAfterSaveChain())
                 .list()
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
@@ -2320,6 +2323,24 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.ContextNames.CLASSIFICATION_ATTRIBUTE)
+    public static Supplier<V3Config> getClassificationAttributeHandler() {
+        return () -> new V3Config(ClassificationAttributeContext.class,  null)
+                .list()
+                .create()
+                .beforeSave(new BeforeSaveClassificationAttributeCommand())
+                .update()
+                .beforeSave(new BeforeUpdateClassificationAttributeCommand())
+                .summary()
+                .delete()
+                .beforeDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        throw new IllegalArgumentException("Delete is not supported");
+                    }
+                })
+                .build();
+    }
 
     @Module(FacilioConstants.ContextNames.CLASSIFICATION)
     public static Supplier<V3Config> getClassificationHandler() {
@@ -2361,6 +2382,39 @@ public class APIv3Config {
                 .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
                 .summary()
                 .beforeFetch(new LoadJobPlanCraftsLookUpCommandV3())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.PRECAUTION)
+    public static Supplier<V3Config> getPrecautions() {
+        return () -> new V3Config(V3PrecautionContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .afterDelete(new DeleteHazardPrecautionCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.HAZARD)
+    public static Supplier<V3Config> getHazards() {
+        return () -> new V3Config(V3HazardContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.HAZARD_PRECAUTION)
+    public static Supplier<V3Config> getHazardPrecautions() {
+        return () -> new V3Config(V3HazardPrecautionContext.class, null)
+                .create()
+                .list()
+                .beforeFetch(new V3LoadHazardPrecautionLookUpsCommand())
                 .delete()
                 .build();
     }

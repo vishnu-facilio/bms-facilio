@@ -9,6 +9,7 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +31,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -331,7 +333,7 @@ public class AgentBeanImpl implements AgentBean {
     }
 
     @Override
-    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination ) throws Exception {
+    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination,List<Long>defaultIds) throws Exception {
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
@@ -355,6 +357,16 @@ public class AgentBeanImpl implements AgentBean {
         if (querySearch != null){
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),querySearch, StringOperators.CONTAINS));
         }
+
+       String orderBy = "";
+        if(fieldMap.containsKey(AgentConstants.CONNECTED)){
+            orderBy = fieldMap.get(AgentConstants.CONNECTED).getColumnName();
+        }
+        if (CollectionUtils.isNotEmpty(defaultIds)) {
+            orderBy = RecordAPI.getDefaultIdOrderBy(agentDataModule, defaultIds,orderBy);
+            genericSelectRecordBuilder.orderBy(orderBy);
+        }
+        genericSelectRecordBuilder.orderBy(orderBy);
         if (pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
@@ -368,11 +380,6 @@ public class AgentBeanImpl implements AgentBean {
                 genericSelectRecordBuilder.offset(offset);
                 genericSelectRecordBuilder.limit(perPage);
             }
-        }
-
-        if(fieldMap.containsKey(AgentConstants.CONNECTED)){
-            genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName());
-
         }
         if (!fetchDeleted) {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));

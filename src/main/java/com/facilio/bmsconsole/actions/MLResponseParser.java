@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
@@ -18,6 +19,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
+import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
+import org.json.simple.parser.JSONParser;
 
 public class MLResponseParser extends ActionSupport 
 {
@@ -31,30 +34,38 @@ public class MLResponseParser extends ActionSupport
 	{
 		try
 		{
-			LOGGER.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
+			AccountUtil.setCurrentAccount(orgid);
+			if(responseName.equalsIgnoreCase("mlResponse")){
+			LOGGER.info("ML ID and Result are " + ml_id + ":::" + result + "::" + orgid + "::" + error);
 //			if(error==null || error.isEmpty())
 //			{
-				AccountUtil.setCurrentAccount(orgid);
-				List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
-				if(mlContextList.isEmpty())
-				{
-					LOGGER.error("No ML Context present for "+ml_id);
-					return ERROR;
-				}
-				MLContext mlContext = mlContextList.get(0);
-				mlContext.setResult(result);
-				mlContext.setPredictionTime(predictedtime);
-				
-				Context context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.ML, mlContext);
-				FacilioChain c = FacilioChainFactory.addMLReadingChain();
-				c.execute(context);
+			List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
+			if (mlContextList.isEmpty()) {
+				LOGGER.error("No ML Context present for " + ml_id);
+				return ERROR;
+			}
+			MLContext mlContext = mlContextList.get(0);
+			mlContext.setResult(result);
+			mlContext.setPredictionTime(predictedtime);
+
+			Context context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ML, mlContext);
+			FacilioChain c = FacilioChainFactory.addMLReadingChain();
+			c.execute(context);
 //			}
 //			else
 //			{
 //				sendErrorMail();
 //			}
-			
+		} else if (responseName.equalsIgnoreCase("bmsResponse")) {
+
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(result);
+				BmsPointsTaggingUtil.tagPointList((Map<String, Map<String, Object>>) json.get("data"));
+			}
+			else{
+				LOGGER.info("Send appropriate responseName "+responseName);
+			}
 		}
 		catch(Exception e)
 		{
@@ -99,6 +110,8 @@ public class MLResponseParser extends ActionSupport
 	long orgid;
 	long predictedtime;
 	String error;
+
+	String responseName;
 	public void setResult(String result)
 	{
 		this.result = result;
@@ -141,6 +154,14 @@ public class MLResponseParser extends ActionSupport
 	public String getError()
 	{
 		return error;
+	}
+	public void setResponseName(String responseName)
+	{
+		this.responseName = responseName;
+	}
+	public String getResponseName()
+	{
+		return this.responseName;
 	}
 
 }

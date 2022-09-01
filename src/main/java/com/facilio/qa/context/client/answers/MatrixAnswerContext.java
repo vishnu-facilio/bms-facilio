@@ -1,5 +1,6 @@
 package com.facilio.qa.context.client.answers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class MatrixAnswerContext extends ClientAnswerContext<MatrixAnswerContext
 	MatrixAnswer answer;
 	
 	@Getter @Setter
-	public static class MatrixAnswer {
+	public static class MatrixAnswer implements Serializable {
 		List<RowAnswer> rowAnswer;
 		
 		public void addRowAnswer(RowAnswer row) {
@@ -26,7 +27,7 @@ public class MatrixAnswerContext extends ClientAnswerContext<MatrixAnswerContext
 		}
 	}
 	@Getter @Setter
-	public static class RowAnswer {
+	public static class RowAnswer implements Serializable{
 		Long row;
 		List<ColumnAnswer> columnAnswer;
 		
@@ -38,7 +39,7 @@ public class MatrixAnswerContext extends ClientAnswerContext<MatrixAnswerContext
 	}
 
 	@Getter @Setter @AllArgsConstructor @NoArgsConstructor
-	public static class ColumnAnswer {
+	public static class ColumnAnswer implements Serializable{
 		Long column;
 		Object answer;
 	}

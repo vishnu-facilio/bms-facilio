@@ -33,13 +33,15 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		}
 		else {
 			long oldWorkflowId = -1;
+			ReportContext oldReport = ReportUtil.getReport(report.getId(), true);
 			if (report.getTransformWorkflow() != null || ( report.getWorkflowId() != null && report.getWorkflowId() > 0 )) {
-				ReportContext oldReport = ReportUtil.getReport(report.getId(), true);
 				if(oldReport.getWorkflowId() != null) {
 					oldWorkflowId = oldReport.getWorkflowId();
 				}
 				addWorkflow(report);
 			}
+			report.setCreatedBy(oldReport.getCreatedBy() != null ?  oldReport.getCreatedBy() : null);
+			report.setCreatedTime(oldReport.getCreatedTime() != null ?  oldReport.getCreatedTime() : null);
 			ReportUtil.updateReport(report);
 			if (oldWorkflowId != -1) {
 				WorkflowUtil.deleteWorkflow(oldWorkflowId);

@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
@@ -1229,6 +1230,38 @@ public class ModuleFactory {
 		return criteriaModule;
 	}
 
+	public static FacilioModule getModulePermissionModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("modulePermission");
+		criteriaModule.setDisplayName("Module Permission");
+		criteriaModule.setTableName("ModulePermission");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModulePermissionChildModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("modulePermissionChild");
+		criteriaModule.setDisplayName("Module Permission Child");
+		criteriaModule.setTableName("ModulePermissionChild");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModuleAppPermissionModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("moduleAppPermission");
+		criteriaModule.setDisplayName("Module App Permission");
+		criteriaModule.setTableName("ModuleAppPermission");
+		return criteriaModule;
+	}
+
+	public static FacilioModule getModuleAppPermissionChildModule() {
+		FacilioModule criteriaModule = new FacilioModule();
+		criteriaModule.setName("moduleAppPermissionChild");
+		criteriaModule.setDisplayName("Module App Permission Child");
+		criteriaModule.setTableName("ModuleAppPermissionChild");
+		return criteriaModule;
+	}
+
 	public static FacilioModule getConditionsModule() {
 		FacilioModule conditionModule = new FacilioModule();
 		conditionModule.setName("conditions");
@@ -2030,6 +2063,23 @@ public class ModuleFactory {
 		taskInputOptionsModule.setDisplayName("Task Input Options");
 		taskInputOptionsModule.setTableName("Task_Input_Options");
 		return taskInputOptionsModule;
+	}
+
+	public static FacilioModule getJobPlanTaskInputOptionsModule() {
+		// change module name to jobPlanTaskInputOptions
+		FacilioModule taskInputOptionsModule = new FacilioModule("jobPlanTaskInputOptions", "JobPlan Task Input Options",
+				"JobPlan_Task_Input_Options", FacilioModule.ModuleType.SUB_ENTITY, null,
+				false); // in future need to enable the trash
+
+		return taskInputOptionsModule;
+	}
+
+	public static FacilioModule getJobPlanSectionInputOptionsModule() {
+		FacilioModule sectionInputOptionsModule = new FacilioModule("jobPlanSectionInputOptions", "JobPlan Section Input Options",
+				"JobPlan_Section_Input_Options", FacilioModule.ModuleType.SUB_ENTITY, null,
+				false); // in future need to enable the trash
+
+		return sectionInputOptionsModule;
 	}
 
 	public static FacilioModule getTaskSectionModule() {
@@ -4054,10 +4104,21 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getNewPermissionModule() {
+	public static FacilioModule getNewPermissionModule() throws Exception {
+		if(V3PermissionUtil.isFeatureEnabled()){
+			return getNewTabPermissionModule();
+		}
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
 		module.setTableName("NewPermission");
+		module.setDisplayName("New Permissions");
+		return module;
+	}
+
+	public static FacilioModule getNewTabPermissionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
+		module.setTableName("NewTabPermission");
 		module.setDisplayName("New Permissions");
 		return module;
 	}
@@ -5003,5 +5064,103 @@ public class ModuleFactory {
 		mailMapperModule.setDisplayName("OutgoingMail Mapper");
 		mailMapperModule.setTableName("Outgoing_Mail_Mapper");
 		return mailMapperModule;
+	}
+	public static FacilioModule getMisccontrolerModule() {
+		FacilioModule miscController = new FacilioModule();
+		miscController.setName("misccontroller");
+		miscController.setDisplayName("Misc Controller");
+		miscController.setTableName("Misc_Controller");
+		return miscController;
+	}
+	public static FacilioModule getBacnetipcontrollerModule() {
+		FacilioModule bacnetController = new FacilioModule();
+		bacnetController.setName("bacnetipcontroller");
+		bacnetController.setDisplayName("BACnetip Controller");
+		bacnetController.setTableName("BACnet_IP_Controller");
+		return bacnetController;
+	}
+//	public static FacilioModule getBacnetmstControllerModule() {
+//		FacilioModule bacnetMstController = new FacilioModule();
+//		bacnetMstController.setName("bacnetmstpcontroller");
+//		bacnetMstController.setDisplayName("BACnetmst Controller");
+//		bacnetMstController.setTableName("BACnet_Mst_Controller");
+//		return bacnetMstController;
+//	}
+	public static FacilioModule getNiagaraControllerModule() {
+		FacilioModule niagaraController = new FacilioModule();
+		niagaraController.setName("niagaracontroller");
+		niagaraController.setDisplayName("Niagara Controller");
+		niagaraController.setTableName("Niagra_Controller");
+		return niagaraController;
+	}
+	public static FacilioModule getModbusTcpControllerModule() {
+		FacilioModule modbusTcpController = new FacilioModule();
+		modbusTcpController.setName("modbustcpcontroller");
+		modbusTcpController.setDisplayName("Modbus Tcp Controller");
+		modbusTcpController.setTableName("Modbus_Tcp_Controller");
+		return modbusTcpController;
+	}
+	public static FacilioModule getModbusRtuControllerModule() {
+		FacilioModule modbusRtu = new FacilioModule();
+		modbusRtu.setName("modbusrtucontroller");
+		modbusRtu.setDisplayName("Modbus Rtu Controller");
+		modbusRtu.setTableName("Modbus_Rtu_Controller");
+		return modbusRtu;
+	}
+	public static FacilioModule getOpcUaControllerModule() {
+		FacilioModule opcUA_controller = new FacilioModule();
+		opcUA_controller.setName("opcuacontroller");
+		opcUA_controller.setDisplayName("Opc UA Controller");
+		opcUA_controller.setTableName("OpcUA_Controller");
+		return opcUA_controller;
+	}
+	public static FacilioModule getOpcXmlDaControllerModule() {
+		FacilioModule opcXMLDA_controller = new FacilioModule();
+		opcXMLDA_controller.setName("opcxmldacontroller");
+		opcXMLDA_controller.setDisplayName("Opc XML DA Controller");
+		opcXMLDA_controller.setTableName("OpcXMLDA_Controller");
+		return opcXMLDA_controller;
+	}
+	public static FacilioModule getLonWorksontrollerModule() {
+		FacilioModule lonWorksController = new FacilioModule();
+		lonWorksController.setName("lonworkscontroller");
+		lonWorksController.setDisplayName("Lon WorksController");
+		lonWorksController.setTableName("LonWorks_Controller");
+		return lonWorksController;
+	}
+//	public static FacilioModule getKnxControllerModule() {
+//		FacilioModule misccontroller = new FacilioModule();
+//		misccontroller.setName("knxcontroller");
+//		misccontroller.setDisplayName("Knx Controller");
+//		misccontroller.setTableName("BACnet_IP_Controller");
+//		return misccontroller;
+//	}
+	public static FacilioModule getCustomControllerModule() {
+		FacilioModule customController = new FacilioModule();
+		customController.setName("customController");
+		customController.setDisplayName("Custom Controller");
+		customController.setTableName("Custom_Controller");
+		return customController;
+	}
+	public static FacilioModule getRestControllerModule() {
+		FacilioModule restController = new FacilioModule();
+		restController.setName("restcontroller");
+		restController.setDisplayName("Rest Controller");
+		restController.setTableName("Rest_Controller");
+		return restController;
+	}
+	public static FacilioModule getSystemControllerModule() {
+		FacilioModule systemController = new FacilioModule();
+		systemController.setName("systemController");
+		systemController.setDisplayName("System Controller");
+		systemController.setTableName("System_Controller");
+		return systemController;
+	}
+	public static FacilioModule getRdmControllerModule() {
+		FacilioModule RDM_Controller = new FacilioModule();
+		RDM_Controller.setName("rdmcontroller");
+		RDM_Controller.setDisplayName("RDM Controller");
+		RDM_Controller.setTableName("RDM_Controller");
+		return RDM_Controller;
 	}
 }

@@ -427,7 +427,10 @@ public class PageFactory {
 	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules =
-				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
+				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY,
+						FacilioModule.ModuleType.Q_AND_A_RESPONSE,
+						FacilioModule.ModuleType.Q_AND_A
+								);
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {

@@ -34,13 +34,15 @@ public class SetOuIdInPeopleGroupMemberCommand extends FacilioCommand {
 
 		if(CollectionUtils.isNotEmpty(records)) {
 			for(ModuleBaseWithCustomFields record : records){
-				List<Map<String,Object>> list = record.getSubForm().get(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
-				if(CollectionUtils.isNotEmpty(list)){
-					for (Map<String, Object> groupMember : list) {
-						groupMember.put("memberRole",AccountConstants.GroupMemberRole.MEMBER.getMemberRole());
-						V3PeopleContext people = FieldUtil.getAsBeanFromMap((Map<String, Object>) groupMember.get(FacilioConstants.ContextNames.PEOPLE),V3PeopleContext.class);
-						FacilioUtil.throwIllegalArgumentException(people == null ,"People does not exist.");
-						groupMember.put("ouid", Objects.requireNonNull(PeopleAPI.getUserIdForPeople(people.getId())).get(0));
+				if(record.getSubForm() != null) {
+					List<Map<String,Object>> list = record.getSubForm().get(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+					if(CollectionUtils.isNotEmpty(list)){
+						for (Map<String, Object> groupMember : list) {
+							groupMember.put("memberRole",AccountConstants.GroupMemberRole.MEMBER.getMemberRole());
+							V3PeopleContext people = FieldUtil.getAsBeanFromMap((Map<String, Object>) groupMember.get(FacilioConstants.ContextNames.PEOPLE),V3PeopleContext.class);
+							FacilioUtil.throwIllegalArgumentException(people == null ,"People does not exist.");
+							groupMember.put("ouid", Objects.requireNonNull(PeopleAPI.getUserIdForPeople(people.getId())).get(0));
+						}
 					}
 				}
 			}

@@ -121,7 +121,7 @@ public enum MultiQuestionRuleHandler implements RuleHandler {
 
             long columnId = (long) answerProp.getOrDefault("columnId",-1);
 
-            return ((columnId > 0 ) && (ruleCondition.getColumnId() == columnId));
+            return ((columnId > 0)  &&  (ruleCondition.getColumnId() == columnId));
         }
         return false;
     }

@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.jobplan;
 
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -106,6 +108,21 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.jobPlan = jobPlan;
     }
 
+    // declarations for additionalInfoJsonStr
+    private String additionalInfoJsonStr;
+    public String getAdditionalInfoJsonStr() {
+        if(additionInfo != null) {
+            return additionInfo.toJSONString();
+        }
+        return null;
+    }
+    public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+        if(jsonStr != null) {
+            JSONParser parser = new JSONParser();
+            additionInfo = (JSONObject) parser.parse(jsonStr);
+        }
+    }
+
     // declarations for additionInfo
     private JSONObject additionInfo;
     public JSONObject getAdditionInfo() {
@@ -128,18 +145,18 @@ public class JobPlanTasksContext extends V3TaskContext {
      * Re-declaring/Redefining the variables from {@link V3TaskContext }, for handling the properties in additionInfo.
      */
     // definition of getter and setter for options
-    public List<String> getOptions() {
-        if(super.getOptions() == null && getAdditionInfo().containsKey("options")){
-            return  (List<String>) getAdditionInfo().get("options");
-        }
-        return super.getOptions();
-    }
-    public void setOptions(List<String> options) {
-        if(options != null && !options.isEmpty()) {
-            addAdditionInfo("options",options);
-        }
-        super.setOptions(options);
-    }
+//    public List<String> getOptions() {
+//        if(super.getOptions() == null && getAdditionInfo().containsKey("options")){
+//            return  (List<String>) getAdditionInfo().get("options");
+//        }
+//        return super.getOptions();
+//    }
+//    public void setOptions(List<String> options) {
+//        if(options != null && !options.isEmpty()) {
+//            addAdditionInfo("options",options);
+//        }
+//        super.setOptions(options);
+//    }
 
     // declarations for enableInput
     private Boolean enableInput;
@@ -259,5 +276,8 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.maxSafeLimit = maxSafeLimit;
     }
 
+    @Getter
+    @Setter
+    private List<Map<String, Object>> inputOptions;
 }
 

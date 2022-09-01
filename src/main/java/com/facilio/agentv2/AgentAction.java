@@ -107,7 +107,7 @@ public class AgentAction extends AgentActionV2 {
             FacilioContext context = new FacilioContext();
             constructListContext(context);
             AgentBean agentBean = getAgentBean();
-            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false,querySearch,getPagination());
+            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false,querySearch,getPagination(),defaultIds);
             // agentBean.listFacilioAgents(context);
             int offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
@@ -197,6 +197,9 @@ public class AgentAction extends AgentActionV2 {
 	public void setQuerySearch(String querySearch) {
 		this.querySearch = querySearch;
 	}
+    private List<Long> defaultIds;
+    public List<Long> getDefaultIds(){return  defaultIds; }
+    public void setDefaultIds(List<Long> defaultIds){this.defaultIds = defaultIds;}
 
     public String listPoints() {
         JSONArray pointData = new JSONArray();

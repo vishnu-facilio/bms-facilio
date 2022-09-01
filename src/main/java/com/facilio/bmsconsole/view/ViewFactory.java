@@ -1075,7 +1075,76 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getWorkflowLog().setOrder(order++));
 		viewsMap.put(FacilioConstants.Workflow.WORKFLOW_LOG, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getMiscController().setOrder(order++));
+		viewsMap.put("misccontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getBacnetController().setOrder(order++));
+		viewsMap.put("bacnetipcontroller", views);
+
+//		order = 1;
+//		views = new LinkedHashMap<>();
+//		views.put("all", getBacnetmstController().setOrder(order++));
+//		viewsMap.put("bacnetmstpcontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getNiagaraController().setOrder(order++));
+		viewsMap.put("niagaracontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getModbusTcpController().setOrder(order++));
+		viewsMap.put("modbustcpcontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getModbusRtuontroller().setOrder(order++));
+		viewsMap.put("modbusrtucontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getOpcUaController().setOrder(order++));
+		viewsMap.put("opcuacontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getOpcXmldaController().setOrder(order++));
+		viewsMap.put("opcxmldacontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getLonWorksController().setOrder(order++));
+		viewsMap.put("lonworkscontroller", views);
+
+//		order = 1;
+//		views = new LinkedHashMap<>();
+//		views.put("all", getKnxController().setOrder(order++));
+//		viewsMap.put("knxcontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getCustomController().setOrder(order++));
+		viewsMap.put("customcontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getRestController().setOrder(order++));
+		viewsMap.put("restcontroller", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getSystemController().setOrder(order++));
+		viewsMap.put("systemController", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getRdmController().setOrder(order++));
+		viewsMap.put("rdmcontroller", views);
 		
 		return viewsMap;
 	}
@@ -9356,5 +9425,229 @@ public class ViewFactory {
 		Criteria rfqStatusCriteria = new Criteria();
 		rfqStatusCriteria.addAndCondition(discardedCondition);
 		return rfqStatusCriteria;
+	}
+	private static FacilioView getMiscController() {
+
+		FacilioModule miscControlerModule = ModuleFactory.getMisccontrolerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Misc Controller");
+		allView.setModuleName(miscControlerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getBacnetController() {
+
+		FacilioModule bacnetControllerModule = ModuleFactory.getBacnetipcontrollerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All BACnet Controller");
+		allView.setModuleName(bacnetControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+//	private static FacilioView getBacnetmstController() {
+//
+//		FacilioModule bacnetipcontrollerModule = ModuleFactory.getBacnetmstControllerModule();
+//
+//		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+//
+//		FacilioView allView = new FacilioView();
+//		allView.setName("all");
+//		allView.setDisplayName("All BACnet Controller");
+//		allView.setModuleName(bacnetipcontrollerModule.getName());
+//		allView.setSortFields(sortFields);
+//
+//		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+//
+//		return allView;
+//	}
+	private static FacilioView getNiagaraController() {
+
+		FacilioModule niagaraControllerModule = ModuleFactory.getNiagaraControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Niagara Controller");
+		allView.setModuleName(niagaraControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getModbusTcpController() {
+
+		FacilioModule modbusTcpControllerModule = ModuleFactory.getModbusTcpControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All ModbusTcp Controller");
+		allView.setModuleName(modbusTcpControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getModbusRtuontroller() {
+
+		FacilioModule modbusRtuControllerModule = ModuleFactory.getModbusRtuControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All ModbusRtu Controller");
+		allView.setModuleName(modbusRtuControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getOpcUaController() {
+
+		FacilioModule opcUaControllerModule = ModuleFactory.getOpcUaControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All OPC UA Controller");
+		allView.setModuleName(opcUaControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getOpcXmldaController() {
+
+		FacilioModule opcXmlDaControllerModule = ModuleFactory.getOpcXmlDaControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All OPC XML DA Controller");
+		allView.setModuleName(opcXmlDaControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getLonWorksController() {
+
+		FacilioModule lonWorksontrollerModule = ModuleFactory.getLonWorksontrollerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Lon Works Controller");
+		allView.setModuleName(lonWorksontrollerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+//	private static FacilioView getKnxController() {
+//
+//		FacilioModule bacnetipcontrollerModule = ModuleFactory.getKnxControllerModule();
+//
+//		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+//
+//		FacilioView allView = new FacilioView();
+//		allView.setName("all");
+//		allView.setDisplayName("All BACnet Controller");
+//		allView.setModuleName(bacnetipcontrollerModule.getName());
+//		allView.setSortFields(sortFields);
+//
+//		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+//
+//		return allView;
+//	}
+	private static FacilioView getCustomController() {
+
+		FacilioModule customControllerModule = ModuleFactory.getCustomControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Custom Controller");
+		allView.setModuleName(customControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getRestController() {
+
+		FacilioModule restControllerModule = ModuleFactory.getRestControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Rest Controller");
+		allView.setModuleName(restControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getSystemController() {
+
+		FacilioModule systemControllerModule = ModuleFactory.getSystemControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All System Controller");
+		allView.setModuleName(systemControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getRdmController() {
+
+		FacilioModule rdmControllerModule = ModuleFactory.getRdmControllerModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All RDM Controller");
+		allView.setModuleName(rdmControllerModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
 	}
 }

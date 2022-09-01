@@ -344,6 +344,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		
 		FacilioChain addView = FacilioChainFactory.getViewGroupsCustomizeChain();
 		addView.execute(context);

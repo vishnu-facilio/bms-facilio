@@ -10,12 +10,14 @@ import com.facilio.qa.context.RuleHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.Predicate;
 
 import java.util.Map;
 
 @Getter
 @Setter
+@Log4j
 public abstract class RuleCondition {
     private Long id;
     private Long ruleId;
@@ -57,7 +59,7 @@ public abstract class RuleCondition {
 	private boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp, QuestionContext question){
 
 		RuleHandler ruleHandler = question.getQuestionType().getRuleHandler();
-		return ruleHandler.evalMisc(ruleCondition, answerProp);
+        return ruleHandler.evalMisc(ruleCondition, answerProp);
 	}
 
 
@@ -71,7 +73,8 @@ public abstract class RuleCondition {
     }
 
     private boolean evaluateCriteria (Map<String, Object> answerProp) {
-        return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
+
+       return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
     }
 
     public void copyDefaultProps (RuleCondition newCondition) {

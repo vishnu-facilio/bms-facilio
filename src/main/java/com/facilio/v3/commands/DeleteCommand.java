@@ -3,7 +3,6 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -52,11 +51,12 @@ public class DeleteCommand extends FacilioCommand {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .module(module)
                 .beanClass(beanClass)
-                .select(Collections.singletonList(bean.getPrimaryField(moduleName)))
+                .select(bean.getAllFields(moduleName))
                 .andCondition(CriteriaAPI.getIdCondition(recordIds, module));
         List<ModuleBaseWithCustomFields> deletedRecords = builder.get();
 
         Constants.setDeletedRecords(context, deletedRecords);
+
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
         recordMap.put(moduleName,deletedRecords);
         Constants.setRecordMap(context, recordMap);

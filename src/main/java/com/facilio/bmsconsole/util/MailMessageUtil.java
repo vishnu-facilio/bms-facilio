@@ -24,6 +24,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
@@ -82,9 +83,15 @@ public class MailMessageUtil {
 			String address = email.substring(email.indexOf('<')+1, email.indexOf('>'));
 			return Pair.of(address, name);
 		}
-		else {
-			return Pair.of(email, null);
+		return Pair.of(email, null);
+	};
+
+	// reverse process of @method getUserNameAndEmailAddress
+	public static Function<Map.Entry<String, String>, String> getOriginalEmailAddress = (en) -> {
+		if(StringUtils.isEmpty(en.getValue())) {
+			return en.getKey();
 		}
+		return en.getValue() + " <" + en.getKey() + ">";
 	};
 
 	public static Function<String,String> getEmailFromPrettifiedFromAddress = (messageIDs) -> {

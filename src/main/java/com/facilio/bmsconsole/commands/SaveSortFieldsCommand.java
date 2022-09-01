@@ -68,7 +68,7 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 
 			if (orderChanged || columnChanged) {
 				if (view.getId() == -1) {
-					long viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null, null);
+					long viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null, null, appId);
 					view.setId(viewId);
 				}
 				FacilioField field = modBean.getField(orderByColName, moduleName);
