@@ -611,7 +611,6 @@ public class ImportAPI {
 
 				if (AssetsAPI.isAssetsModule(facilioModule)) {
 
-					fields.remove("space");
 					fields.remove("resourceType");
 					fields.remove("localId");
 					if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() && importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
