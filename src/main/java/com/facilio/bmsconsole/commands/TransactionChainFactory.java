@@ -42,6 +42,7 @@ import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationD
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.classification.command.UpdateClassificationStatusCommand;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.*;
@@ -3264,6 +3265,13 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForServices());
 			chain.addCommand(new AddOrUpdateServiceCommand());
 			return chain;
+		}
+
+		public static FacilioChain getChangeStatusForClassificationChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateClassificationStatusCommand());
+
+			return c;
 		}
 
 		public static FacilioChain getServiceDeleteChain() {

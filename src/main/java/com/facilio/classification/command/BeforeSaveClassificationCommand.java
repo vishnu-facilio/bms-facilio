@@ -39,6 +39,8 @@ public class BeforeSaveClassificationCommand extends FacilioCommand {
             validateClassification(classificationContext);
 
             classificationContext.setLinkName(generateLinkName(classificationContext.getName()));
+            classificationContext.setStatus(true);
+
         }
         return false;
     }
