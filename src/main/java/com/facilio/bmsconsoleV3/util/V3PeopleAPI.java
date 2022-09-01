@@ -477,7 +477,7 @@ public class V3PeopleAPI {
             appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
             AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
             if(appDomain != null) {
-                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
                 if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
@@ -489,6 +489,8 @@ public class V3PeopleAPI {
                         user.setRoleId(roleId);
 
                         ApplicationApi.addUserInApp(user, false);
+                        V3PeopleAPI.enableUser(user);
+
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -497,6 +499,7 @@ public class V3PeopleAPI {
                 else {
                     if(user != null) {
                         ApplicationApi.deleteUserFromApp(user, appId);
+                        V3PeopleAPI.disableUser(existingPeople.getId(),user);
                     }
                 }
             }
@@ -551,7 +554,7 @@ public class V3PeopleAPI {
             long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
             appDomain = ApplicationApi.getAppDomainForApplication(appId);
             if(appDomain != null) {
-                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
                 if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
@@ -567,6 +570,7 @@ public class V3PeopleAPI {
 							user.setInviteAcceptStatus(true);
 						}
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+                        V3PeopleAPI.enableUser(user);
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId);
@@ -575,6 +579,7 @@ public class V3PeopleAPI {
                 else {
                     if(user != null) {
                         ApplicationApi.deleteUserFromApp(user, appId);
+                        V3PeopleAPI.disableUser(existingPeople.getId(),user);
                     }
                 }
             }
@@ -596,7 +601,7 @@ public class V3PeopleAPI {
             long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
             appDomain = ApplicationApi.getAppDomainForApplication(appId);
             if(appDomain != null) {
-                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
                 if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
@@ -607,6 +612,7 @@ public class V3PeopleAPI {
                         user.setRoleId(roleId);
                         user.setApplicationId(appId);
                         ApplicationApi.addUserInApp(user, false);
+                        V3PeopleAPI.enableUser(user);
                     }
                     else {
                         User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -616,6 +622,7 @@ public class V3PeopleAPI {
                 else {
                     if(user != null) {
                         ApplicationApi.deleteUserFromApp(user, appId);
+                        V3PeopleAPI.disableUser(existingPeople.getId(),user);
                     }
                 }
             }
@@ -640,7 +647,7 @@ public class V3PeopleAPI {
             appDomain = ApplicationApi.getAppDomainForApplication(appId);
 
             if(appDomain != null) {
-                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
                 if((linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && existingPeople.isAppAccess())) {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
@@ -657,6 +664,7 @@ public class V3PeopleAPI {
 							user.setInviteAcceptStatus(true);
 						}	
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+                        V3PeopleAPI.enableUser(user);
                     }
                     else {
                         addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
@@ -665,6 +673,7 @@ public class V3PeopleAPI {
                 else {
                     if(user != null) {
                         ApplicationApi.deleteUserFromApp(user, appId);
+                        V3PeopleAPI.disableUser(existingPeople.getId(),user);
                     }
                 }
             }
@@ -673,6 +682,38 @@ public class V3PeopleAPI {
             }
         }
 
+    }
+
+    public static boolean enableUser(V3PeopleContext people, User user) throws Exception {
+        return enableUser(user);
+    }
+    public static boolean enableUser(User user) throws Exception {
+        AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid());
+        return true;
+    }
+    //temp handling should be removed soon
+    public static boolean disableUser(V3PeopleContext people,User user) throws Exception {
+        return disableUser(people.getId(),user);
+    }
+    //temp handling should be removed soon
+    public static boolean disableUser(long peopleId,User user) throws Exception {
+        V3TenantContactContext tc = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT,peopleId,V3TenantContactContext.class);
+        if(user.getUserStatus() != null && user.getUserStatus() == true) {
+            if (tc != null && !tc.isTenantPortalAccess()) {
+                AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid());
+                return true;
+            }
+            V3EmployeeContext emp = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, peopleId, V3EmployeeContext.class);
+            if (emp != null && !emp.isEmployeePortalAccess()) {
+                AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid());
+                return true;
+            }
+            if (emp == null && tc == null) {
+                AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid());
+                return true;
+            }
+        }
+        return false;
     }
 
     public static User addAppUser(V3PeopleContext existingPeople, String linkName, Long roleId, boolean isEmailVerificationNeeded) throws Exception {
