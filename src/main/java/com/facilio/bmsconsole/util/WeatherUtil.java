@@ -101,7 +101,6 @@ public class WeatherUtil {
 	}
 
 	public static synchronized HttpURLConnection getHttpURLConnection(String requestURL) throws Exception {
-
 		URL request = new URL(requestURL);
 		HttpURLConnection connection = (HttpURLConnection) request.openConnection();
 
@@ -137,11 +136,11 @@ public class WeatherUtil {
 		return apiKeys[currentKey];
 	}
 
-	public static String getForecastURL(double lat, double longitude) {
-		return getForecastURLOrig(lat, longitude, null);
+	public static String getDarkSkyForecastURL(double lat, double longitude) {
+		return getDarkSkyForecastURL(lat, longitude, null);
 	}
 
-	public static String getForecastURLOrig(double lat, double longitude, Long time) {
+	public static String getDarkSkyForecastURL(double lat, double longitude, Long time) {
 
 		StringBuilder url = new StringBuilder(weatherURL);
 		url.append(getAPIKey());
@@ -170,10 +169,45 @@ public class WeatherUtil {
 		if (lat == null || lng == null) {
 			return null;
 		}
-		String weatherURL = WeatherAPI.getWeatherURL(lat, lng, time);
-//		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
-//		String response = WeatherUtil.getResponse(connection);
-		String response = WeatherAPI.doGet(weatherURL);
+		return getWeatherData(lat, lng, time);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getWeatherData(WeatherStationContext weatherStation, Long time) throws Exception {
+		Double lat = weatherStation.getLat();
+		Double lng = weatherStation.getLng();
+		if (lat == null || lng == null) {
+			return null;
+		}
+		return getWeatherData(lat, lng, time);
+	}
+
+	public static Map<String, Object> getWeatherData(double lat, double lng, Long time) throws Exception {
+		if(weatherURL.contains("darksky")) {   // temp fix for darkSky
+			String url = getDarkSkyForecastURL(lat, lng, time);
+			return getDarkSkyWeatherData(url);
+		}
+		String url = WeatherAPI.getWeatherURL(lat, lng, time);
+		String response = WeatherAPI.doGet(url);
+		if (StringUtils.isEmpty(response)) {
+			LOGGER.log(Level.INFO, "The response is null from the weather server");
+			return null;
+		}
+		JSONObject weatherData;
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject jsonResponse = (JSONObject) parser.parse(response);
+			weatherData = (JSONObject) jsonResponse.get("data");
+		} catch (Exception e) {
+			LOGGER.error("Parsing failed in WeatherDataJob ::"+response, e);
+			throw new Exception(response, e);
+		}
+		return weatherData;
+	}
+
+	public static Map<String, Object> getDarkSkyWeatherData(String weatherURL) throws Exception {
+		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
+		String response = WeatherUtil.getResponse(connection);
 		if (StringUtils.isEmpty(response)) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
@@ -181,47 +215,18 @@ public class WeatherUtil {
 		JSONObject weatherData = null;
 		JSONParser parser = new JSONParser();
 		try {
-			JSONObject jsonResponse = (JSONObject) parser.parse(response);
-			weatherData = (JSONObject) jsonResponse.get("data");
+			weatherData = (JSONObject) parser.parse(response);
 		} catch (Exception e) {
-			LOGGER.error("Parsing failed in WeatherDataJob ::"+response, e);
-//			throw new Exception(response, e);
-		}
-		return weatherData;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static Map<String, Object> getWeatherData(WeatherStationContext weatherStation, Long time) throws Exception {
-
-		Double lat = weatherStation.getLat();
-		Double lng = weatherStation.getLng();
-		if (lat == null || lng == null) {
-			return null;
-		}
-		String weatherURL = WeatherAPI.getWeatherURL(lat, lng, time);
-//		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
-//		String response = WeatherUtil.getResponse(connection);
-		String response = WeatherAPI.doGet(weatherURL);
-		if (response == null) {
-			LOGGER.log(Level.INFO, "The response is null from the weather server");
-			return null;
-		}
-		JSONObject weatherData = null;
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsonResponse = (JSONObject) parser.parse(response);
-			weatherData = (JSONObject) jsonResponse.get("data");
-		} catch (Exception e) {
+			LOGGER.error("Parsing failed in darkSky WeatherDataJob ::"+response, e);
 			throw new Exception(response, e);
 		}
 		return weatherData;
-
 	}
+
 
 	@SuppressWarnings("unchecked")
 	public static Map<Long, Map<String, Object>> getWeatherDataMap(List<WeatherStationContext> weatherStations,
-			Long time) throws Exception {
+																   Long time) throws Exception {
 
 		Map<Long, Map<String, Object>> dataMap = new HashMap<Long, Map<String, Object>>();
 		for (WeatherStationContext weatherStation : weatherStations) {
@@ -286,7 +291,7 @@ public class WeatherUtil {
 	}
 
 	public static Double getDegreeDays(String ddName, String temperatureField, Double ddBaseTemp,
-			List<Map<String, Object>> weatherReadings) {
+									   List<Map<String, Object>> weatherReadings) {
 
 		int size = weatherReadings.size();
 		Double totalTemp = new Double(0);
@@ -309,7 +314,7 @@ public class WeatherUtil {
 			}
 		}
 		Double dd = totalTemp / size; // if the data is missing, we have to calculate with available data.. hence
-										// dividing with size.
+		// dividing with size.
 		return dd;
 	}
 
@@ -330,7 +335,7 @@ public class WeatherUtil {
 	}
 
 	public static Map<Long, List<ReadingContext>> getWeatherReading(String moduleName,
-			Map<Long, List<ReadingContext>> readingsMap) throws Exception {
+																	Map<Long, List<ReadingContext>> readingsMap) throws Exception {
 
 		for (Map.Entry<Long, List<ReadingContext>> siteReadings : readingsMap.entrySet()) {
 
@@ -353,7 +358,7 @@ public class WeatherUtil {
 	}
 
 	private static Map<Long, ReadingContext> getWeatherReadingForSite(String moduleName, long parentId,
-			List<ReadingContext> readingList) throws Exception {
+																	  List<ReadingContext> readingList) throws Exception {
 		Condition parentCondition = CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId),
 				NumberOperators.EQUALS);
 		Condition ttimeCondition = CriteriaAPI.getCondition("TTIME", "ttime", getTtimeList(readingList),
@@ -428,7 +433,7 @@ public class WeatherUtil {
 	}
 
 	public static List<ReadingContext> getDailyForecastReadings(long siteId, String moduleName,
-			Map<String, Object> weatherData, boolean forecast) throws Exception {
+																Map<String, Object> weatherData, boolean forecast) throws Exception {
 
 		List<ReadingContext> dailyForecastReadings = new ArrayList<ReadingContext>();
 
@@ -489,7 +494,7 @@ public class WeatherUtil {
 	}
 
 	public static List<ReadingContext> getHourlyForecastReadings(long siteId, String moduleName,
-			Map<String, Object> weatherData, boolean forecast) throws Exception {
+																 Map<String, Object> weatherData, boolean forecast) throws Exception {
 		List<ReadingContext> hourlyForecastReadings = new ArrayList<ReadingContext>();
 
 		Map<String, Object> hourlyWeather = (JSONObject) weatherData.get("hourly");
@@ -573,7 +578,7 @@ public class WeatherUtil {
 	}
 
 	public static ReadingContext getDailyReadingOld(long siteId, String moduleName, Map<String, Object> dailyWeather,
-			boolean forecast) throws Exception {
+													boolean forecast) throws Exception {
 
 		if (dailyWeather == null) {
 			return null;
@@ -788,7 +793,7 @@ public class WeatherUtil {
 		return new GenericSelectRecordBuilder().select(FieldFactory.getOrgWeatherStationFields())
 				.table(ModuleFactory.getOrgWeatherStationModule().getTableName()).orderBy(FacilioConstants.ContextNames.ORGID).get();
 	}
-	
+
 	public static Map<Long, Map<Long, List<Long>>> getOrgVsSiteVsWeatherStation() throws Exception {
 		List<Map<String, Object>> props = getOrgWeatherStation();
 		Map<Long, Map<Long, List<Long>>> orgWeatherMap = new HashMap<>();
@@ -812,7 +817,7 @@ public class WeatherUtil {
 		}
 		return orgWeatherMap;
 	}
-	
+
 	public static List<SiteContext> getAllSites(boolean fetchLocation) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -820,11 +825,11 @@ public class WeatherUtil {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
-																	.select(fields)
-																	.module(module)
-																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("location"), CommonOperators.IS_NOT_EMPTY))
+				.select(fields)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("location"), CommonOperators.IS_NOT_EMPTY))
 //																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("weatherStation"), CommonOperators.IS_EMPTY))
-																	.beanClass(SiteContext.class);
+				.beanClass(SiteContext.class);
 		if (fetchLocation) {
 			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
 		}
