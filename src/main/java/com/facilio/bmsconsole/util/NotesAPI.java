@@ -4,7 +4,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.CommentsSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.PortalCommentsSharingContext;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -24,7 +26,14 @@ import java.util.stream.Collectors;
 public class NotesAPI {
 	
 	public static List<NoteContext> fetchNotes(long parentId, String moduleName) throws Exception {
-		List<NoteContext> noteListContext = getListBuilder(parentId, moduleName).get();
+		List<NoteContext> noteListContext = new ArrayList<>();
+		if(AccountUtil.getCurrentApp().getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
+			noteListContext = getCommetsSharingListBuilder(parentId, moduleName).get();
+		}
+		else
+		{
+			noteListContext = addPortalCommentSharing(getListBuilder(parentId, moduleName).get());
+		}
 		return getNotes(Collections.singletonList(parentId), moduleName, noteListContext);
 		
 	}
@@ -104,11 +113,36 @@ public class NotesAPI {
 			{
 				cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
 			}
-			
+
 			selectBuilder.andCriteria(cri);
 		}
 		return selectBuilder;
 	}
+
+	private static SelectRecordsBuilder<NoteContext> getCommetsSharingListBuilder (long parentId, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule notesModule = modBean.getModule(moduleName);
+
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
+		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
+		Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(allFields);
+
+		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
+				.select(fields)
+				.module(notesModule)
+				.beanClass(NoteContext.class)
+				.leftJoin(commentsSharingModule.getTableName())
+				.on(notesModule.getTableName()+".ID="+commentsSharingModule.getTableName()+".PARENT_ID AND "+notesModule.getTableName()+".MODULEID="+commentsSharingModule.getTableName()+".PARENT_MODULE_ID")
+				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("appId"), String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+
+		return selectBuilder;
+	}
+
+
 	public static List<NoteContext> fetchNote (List<Long> parentIds, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -194,6 +228,72 @@ public class NotesAPI {
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
 		}
+	}
+
+	public static List<NoteContext> addPortalCommentSharing(List<NoteContext> notes) throws Exception {
+		FacilioModule module = ModuleFactory.getCommentsSharingModule();
+		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(module);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		List<Long> ids= new ArrayList<>();
+		List<ApplicationContext> allPortals = ApplicationApi.getAllLicensedPortal();
+		for(NoteContext note : notes)
+		{
+			ids.add(note.getId());
+		}
+		if(ids.size()>0) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(allFields)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ids, NumberOperators.EQUALS));
+			List<Map<String, Object>> props = selectBuilder.get();
+			List<CommentsSharingContext> commentsSharingContexts = new ArrayList<>();
+			if (props != null && !props.isEmpty()) {
+				commentsSharingContexts = FieldUtil.getAsBeanListFromMapList(props, CommentsSharingContext.class);
+			}
+			if (commentsSharingContexts.size() > 0) {
+				for (NoteContext note : notes) {
+					List<ApplicationContext> appPortals = new ArrayList<>();
+					appPortals.addAll(allPortals);
+					List<PortalCommentsSharingContext> portalAppSharing = new ArrayList<>();
+					String message = "The Shared Portals are <br>";
+					for (CommentsSharingContext commentsSharing : commentsSharingContexts) {
+						if (note.getId() == commentsSharing.getParentId()) {
+							ApplicationContext app = ApplicationApi.getApplicationForId(commentsSharing.getAppId());
+							appPortals.removeIf(portal -> portal.getId() == app.getId());
+							PortalCommentsSharingContext temp = new PortalCommentsSharingContext();
+							temp.setAppId(commentsSharing.getAppId());
+							temp.setAppSelected(true);
+							temp.setAppName(app.getName());
+							portalAppSharing.add(temp);
+							message = message + app.getName() + "<br>";
+						}
+					}
+					List<PortalCommentsSharingContext> UnSelectedPortalApp = new ArrayList<>();
+					for (ApplicationContext app : appPortals) {
+						PortalCommentsSharingContext temp = new PortalCommentsSharingContext();
+						temp.setAppId(app.getId());
+						temp.setAppSelected(false);
+						temp.setAppName(app.getName());
+						UnSelectedPortalApp.add(temp);
+					}
+					if (portalAppSharing.size() > 0) {
+						portalAppSharing.addAll(UnSelectedPortalApp);
+						note.setSelectedPortalApp(portalAppSharing);
+						note.setSharingPublic(true);
+						note.setSharedMessage(message);
+					} else {
+						portalAppSharing.addAll(UnSelectedPortalApp);
+						note.setSelectedPortalApp(portalAppSharing);
+						note.setSharingPublic(false);
+						note.setSharedMessage("Private Comment");
+					}
+					if (note.getCreatedBy().getId() == AccountUtil.getCurrentUser().getId()) {
+						note.setEditAvailable(true);
+					}
+				}
+			}
+		}
+		return notes;
 	}
 
 }

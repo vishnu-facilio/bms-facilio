@@ -2675,4 +2675,28 @@ public class ApplicationApi {
         AccountUtil.getUserBean().addToORGUsersApps(superAdmin, false);
         return superAdmin;
     }
+
+    public static List<ApplicationContext> getAllLicensedPortal() throws Exception {
+        List<FacilioField> allFields = FieldFactory.getApplicationFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("appCategory"), String.valueOf(ApplicationContext.AppCategory.PORTALS.getIndex()), NumberOperators.EQUALS));
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
+        List<ApplicationContext> portalApplications = new ArrayList<>();
+        portalApplications.addAll(applications);
+        for(ApplicationContext portal : applications) {
+            if ((!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR)) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+                portalApplications.remove(portal);
+            }
+            if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
+                portalApplications.remove(portal);
+            }
+            if ((!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+                portalApplications.remove(portal);
+            }
+        }
+        return portalApplications;
+    }
 }

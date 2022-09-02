@@ -4,6 +4,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.MarkDownUtil;
 
+import java.util.List;
+
 
 public class NoteContext extends ModuleBaseWithCustomFields {
 	
@@ -87,4 +89,46 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	public void setParent(ModuleBaseWithCustomFields parent) {
 		this.parent = parent;
 	}
+
+
+	public Boolean getSharingPublic() {
+		return isSharingPublic;
+	}
+
+	public void setSharingPublic(Boolean sharingPublic) {
+		isSharingPublic = sharingPublic;
+	}
+
+	private Boolean isSharingPublic=false;
+
+
+	public List<PortalCommentsSharingContext> getSelectedPortalApp() {
+		return selectedPortalApp;
+	}
+
+	public void setSelectedPortalApp(List<PortalCommentsSharingContext> selectedPortalApp) {
+		this.selectedPortalApp = selectedPortalApp;
+	}
+
+	private List<PortalCommentsSharingContext> selectedPortalApp = null;
+
+	public String getSharedMessage() {
+		return sharedMessage;
+	}
+
+	public void setSharedMessage(String sharedMessage) {
+		this.sharedMessage = sharedMessage;
+	}
+
+	private String sharedMessage=null;
+
+	public Boolean getEditAvailable() {
+		return editAvailable;
+	}
+
+	public void setEditAvailable(Boolean editAvailable) {
+		this.editAvailable = editAvailable;
+	}
+
+	private Boolean editAvailable=false;
 }

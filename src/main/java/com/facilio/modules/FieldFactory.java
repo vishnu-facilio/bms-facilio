@@ -10982,6 +10982,15 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getCommentsSharingFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField("id", "ID", module));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.LOOKUP));
+        fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.LOOKUP));
+        return fields;
+    }
+
 
 
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {

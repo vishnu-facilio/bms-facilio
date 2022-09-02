@@ -5196,4 +5196,12 @@ public class ModuleFactory {
 		RDM_Controller.setTableName("RDM_Controller");
 		return RDM_Controller;
 	}
+
+	public static FacilioModule getCommentsSharingModule() {
+		FacilioModule commentsSharing = new FacilioModule();
+		commentsSharing.setName("commentsSharing");
+		commentsSharing.setDisplayName("Comments Sharing");
+		commentsSharing.setTableName("Comments_Sharing");
+		return commentsSharing;
+	}
 }

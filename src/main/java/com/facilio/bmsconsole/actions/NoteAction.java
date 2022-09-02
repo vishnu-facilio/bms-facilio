@@ -332,6 +332,28 @@ public class NoteAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	private String updateSharingForNotes() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+		ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
+		parent.setId(note.getParentId());
+		note.setParent(parent);
+
+		String parentModuleName = this.parentModuleName;
+		if (parentModuleName == null) {
+			parentModuleName = ticketModuleName;
+		}
+
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+		context.put(FacilioConstants.ContextNames.NOTE, note);
+		FacilioChain addNote = TransactionChainFactory.updateNotesSharing();
+		addNote.execute(context);
+		setResult("Notes", note);
+
+
+		return SUCCESS;
+	}
 	
 	/******************      V2 Api    ******************/
 
@@ -347,6 +369,13 @@ public class NoteAction extends FacilioAction {
 		addNote();
 		setResult(FacilioConstants.ContextNames.NOTE, noteId);
 		setResult("Notes", note);
+		return SUCCESS;
+	}
+
+	public String v2Update() throws Exception {
+		updateSharingForNotes();
+		setResult(FacilioConstants.ContextNames.NOTE, note);
+
 		return SUCCESS;
 	}
  }

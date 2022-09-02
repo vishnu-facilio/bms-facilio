@@ -1922,6 +1922,9 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
 		</action>
+		<action name="updateSharing"
+				class="com.facilio.bmsconsole.actions.NoteAction" method="v2Update">
+		</action>
 	</package>
 
 	<package name="noteApiListv2" namespace="/api/v2/notes/parent"
