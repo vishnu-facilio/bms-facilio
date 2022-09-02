@@ -3,6 +3,7 @@ package com.facilio.mailtracking.commands;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import lombok.extern.log4j.Log4j;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class SendMailCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        JSONObject mailJson = constructMailJson(context);
+        JSONObject mailJson = this.constructMailJson(context);
         Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
         EmailClient emailClient = EmailFactory.getEmailClient();
         String messageId = emailClient.sendEmailFromWMS(mailJson, files);
@@ -34,13 +35,8 @@ public class SendMailCommand extends FacilioCommand {
         mailJson.put(MailConstants.Params.HEADER, header);
 
         //updating content as message if available
-        if(mailJson.get("htmlContent") != null) {
-            mailJson.put(EmailClient.MESSAGE, mailJson.remove("htmlContent"));
-        } else if(mailJson.get("textContent") != null) {
-            mailJson.put(EmailClient.MESSAGE, mailJson.remove("textContent"));
-        }
+        OutgoingMailAPI.restoreMailMessage(mailJson);
         return mailJson;
     }
-
 
 }

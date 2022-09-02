@@ -34,9 +34,9 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule mailModule = constructOGMailModule(modBean, MailMessageUtil.BASE_MAIL_MESSAGE_MODULE_NAME);
-        FacilioModule mailAttachmentsModule = constructOGMailAttachmentsModule(mailModule);
-        FacilioModule recipientModule = constructOGRecipientModule(mailModule);
+        FacilioModule mailModule = this.constructOGMailModule(modBean, MailMessageUtil.BASE_MAIL_MESSAGE_MODULE_NAME);
+        FacilioModule mailAttachmentsModule = this.constructOGMailAttachmentsModule(mailModule);
+        FacilioModule recipientModule = this.constructOGRecipientModule(mailModule);
 
         List<FacilioModule> modules = new ArrayList<>();
         modules.add(mailModule);
@@ -47,7 +47,7 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
 
-        addRecipientStatusRollUpFields(mailModule, recipientModule);
+        this.addRecipientStatusRollUpFields(mailModule, recipientModule);
 
         LOGGER.info("OutgoingMail related modules added successfully");
     }
