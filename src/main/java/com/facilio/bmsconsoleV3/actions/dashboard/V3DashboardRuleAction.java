@@ -134,6 +134,9 @@ public class V3DashboardRuleAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put("action_meta", action_meta);
         chain.execute();
+        if(context.containsKey("result")) {
+            setData("result", context.get("result"));
+        }
         return SUCCESS;
     }
 

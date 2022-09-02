@@ -1849,7 +1849,7 @@ public class ModuleFactory {
 	}
 	public static FacilioModule getDashboardRuleTargetWidgetModule() {
 		FacilioModule dashboardRule = new FacilioModule();
-		dashboardRule.setTableName("Dashboard_Trigger_And_Target_Widget_Mapping");
+		dashboardRule.setTableName("Dashboard_Target_Widget_Mapping");
 		return dashboardRule;
 	}
 	public static FacilioModule getDashboardModule() {

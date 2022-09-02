@@ -10423,7 +10423,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("actionId","ACTION_ID", module,FieldType.NUMBER));
         fields.add(getField("scriptId","SCRIPT_ID", module,FieldType.NUMBER));
-        fields.add(getField("action_deatils","ACTION_META", module,FieldType.NUMBER));
+        fields.add(getField("action_detailStr","ACTION_META", module,FieldType.STRING));
         fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.STRING));
         return fields;
     }
