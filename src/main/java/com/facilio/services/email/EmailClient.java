@@ -420,4 +420,8 @@ public abstract class EmailClient extends BaseEmailClient {
         getEmailAddresses(mailJson, CC, false);
         getEmailAddresses(mailJson, BCC, false);
     }
+
+    public void resetActiveCheck() {
+        this.viaActiveCheck = false;
+    }
 }

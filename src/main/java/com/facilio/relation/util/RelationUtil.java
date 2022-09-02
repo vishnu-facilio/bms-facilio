@@ -14,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
@@ -110,12 +111,50 @@ public class RelationUtil {
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
+        return getAllRelations(module, false, null, null);
+    }
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString) throws Exception {
+
+        Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
+        Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+
+        StringBuilder joinCondition = new StringBuilder();
+        joinCondition = joinCondition.append(relationFields.get("id").getCompleteColumnName() + " = " + mappingFields.get("relationId").getCompleteColumnName());
+        if(isSetupPage) {
+            joinCondition.append(" AND ((")
+                    .append(mappingFields.get("fromModuleId").getCompleteColumnName()).append(" = ").append(mappingFields.get("toModuleId").getCompleteColumnName()).append(" AND ")
+                    .append(mappingFields.get("position").getCompleteColumnName()).append(" = ").append(RelationMappingContext.Position.LEFT.getIndex()).append(") OR (")
+                    .append(mappingFields.get("fromModuleId").getCompleteColumnName()).append(" != ").append(mappingFields.get("toModuleId").getCompleteColumnName() + ")")
+                    .append(")");
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getRelationModule().getTableName())
                 .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
-                .on(ModuleFactory.getRelationModule().getTableName() + ".ID = " + ModuleFactory.getRelationMappingModule().getTableName() + ".RELATION_ID")
+                .on(joinCondition.toString())
                 .select(FieldFactory.getRelationFields())
-                .andCondition(CriteriaAPI.getCondition("FROM_MODULE_ID", "fromModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+        if (StringUtils.isNotEmpty(searchString)) {
+            builder.andCondition(CriteriaAPI.getCondition(relationFields.get("name"), searchString, StringOperators.CONTAINS));
+        }
+
+        StringBuilder orderBy = new StringBuilder().append(relationFields.get("id").getCompleteColumnName()).append(" DESC");
+        builder.orderBy(orderBy.toString());
+
+        if (pagination != null) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page-1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
+            builder.offset(offset);
+            builder.limit(perPage);
+        }
+
         List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
         RelationUtil.fillRelation(relationList);
         List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, module.getModuleId());
@@ -172,40 +211,80 @@ public class RelationUtil {
 
     public static List<RelationRequestContext> convertToRelationRequest(List<RelationContext> relations, long moduleId) throws Exception {
         List<RelationRequestContext> requests = new ArrayList<>();
+        List<Long> sameModuleRelationIds = new ArrayList<>();
         for (RelationContext relation : relations) {
             RelationRequestContext request = new RelationRequestContext();
-
-            request.setId(relation.getId());
-            request.setName(relation.getName());
-            request.setDescription(relation.getDescription());
-            request.setLinkName(relation.getLinkName());
-            request.setRelationModule(relation.getRelationModule());
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
+            fillRelationMetaInfo(request, relation);
+            boolean isSameModule = false;
             for (RelationMappingContext mapping : relation.getMappings()) {
-                if (mapping.getFromModuleId() == moduleId) { // this will get mapping for current module
-                    FacilioModule fromModule = modBean.getModule(mapping.getFromModuleId());
-                    request.setFromModule(fromModule);
-                    request.setFromModuleId(mapping.getFromModuleId());
-                    request.setFromModuleName(fromModule.getName());
-                    FacilioModule toModule = modBean.getModule(mapping.getToModuleId());
-                    request.setToModule(toModule);
-                    request.setToModuleId(mapping.getToModuleId());
-                    request.setToModuleName(toModule.getName());
-                    request.setRelationName(mapping.getRelationName());
-                    request.setForwardRelationLinkName(mapping.getMappingLinkName());
-                    request.setRelationType(mapping.getRelationTypeEnum());
-                    request.setPosition(mapping.getPositionEnum());
-                    request.setReversePositionFieldName(mapping.getReversePosition().getFieldName());
-                } else { // this will fetch reverse mapping
-                    request.setReverseRelationName(mapping.getRelationName());
-                    request.setReverseRelationLinkName(mapping.getMappingLinkName());
+                if (mapping.getFromModuleId() != mapping.getToModuleId()) {
+                    if (mapping.getFromModuleId() == moduleId) { // this will get mapping for current module
+                        fillForwardMappingDatainRequest(request, mapping);
+                    } else { // this will fetch reverse mapping
+                        fillReverseMappingDataInRequest(request, mapping);
+                    }
                 }
+                else {
+                    isSameModule = true;
+                    if(sameModuleRelationIds.contains(relation.getId())) {
+                        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
+                            fillReverseMappingDataInRequest(request, mapping);
+                        } else {
+                            fillForwardMappingDatainRequest(request, mapping);
+                        }
+                    }
+                    else {
+                        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
+                            fillForwardMappingDatainRequest(request, mapping);
+                        } else {
+                            fillReverseMappingDataInRequest(request, mapping);
+                        }
+                    }
+                }
+            }
+            if(isSameModule) {
+                sameModuleRelationIds.add(relation.getId());
             }
             requests.add(request);
         }
 
         return requests;
+    }
+
+    private static void fillSameModuleRelationRequest(RelationRequestContext request, RelationContext relation, RelationMappingContext forwardMapping, RelationMappingContext reverseMapping) throws Exception{
+        fillRelationMetaInfo(request, relation);
+        fillForwardMappingDatainRequest(request, forwardMapping);
+        fillReverseMappingDataInRequest(request, reverseMapping);
+    }
+
+    private static void fillRelationMetaInfo(RelationRequestContext request, RelationContext relation) throws Exception {
+        request.setId(relation.getId());
+        request.setName(relation.getName());
+        request.setDescription(relation.getDescription());
+        request.setLinkName(relation.getLinkName());
+        request.setRelationModule(relation.getRelationModule());
+    }
+
+    private static void fillForwardMappingDatainRequest(RelationRequestContext request, RelationMappingContext mapping) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule fromModule = modBean.getModule(mapping.getFromModuleId());
+        request.setFromModule(fromModule);
+        request.setFromModuleId(mapping.getFromModuleId());
+        request.setFromModuleName(fromModule.getName());
+        FacilioModule toModule = modBean.getModule(mapping.getToModuleId());
+        request.setToModule(toModule);
+        request.setToModuleId(mapping.getToModuleId());
+        request.setToModuleName(toModule.getName());
+        request.setRelationName(mapping.getRelationName());
+        request.setForwardRelationLinkName(mapping.getMappingLinkName());
+        request.setRelationType(mapping.getRelationTypeEnum());
+        request.setPosition(mapping.getPositionEnum());
+        request.setReversePositionFieldName(mapping.getReversePosition().getFieldName());
+    }
+
+    private static void fillReverseMappingDataInRequest(RelationRequestContext request, RelationMappingContext mapping) throws Exception {
+        request.setReverseRelationName(mapping.getRelationName());
+        request.setReverseRelationLinkName(mapping.getMappingLinkName());
     }
 
     public static RelationContext convertToRelationContext(RelationRequestContext relationRequest) {

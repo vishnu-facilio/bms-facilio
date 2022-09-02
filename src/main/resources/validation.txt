@@ -2719,6 +2719,9 @@
 /api/v2/application/relatedApps/delete
 /api/v2/application/relatedApps/add
 /api/v3/approval/:moduleName/view/:viewName
+/api/v3/dashboard/rule/create
+/api/v3/dashboard/rule/update
+/api/v3/dashboard/rule/runMigrationForWidgetLinkName
 
 
 /api/v3/file/preview/public

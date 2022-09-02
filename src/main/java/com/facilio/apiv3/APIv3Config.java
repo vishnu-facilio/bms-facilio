@@ -1149,7 +1149,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .update()
-                .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getTenantContactBeforeFetchChain())
@@ -1170,7 +1170,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .update()
-                .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getVendorContactBeforeFetchChain())
@@ -1191,7 +1191,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                 .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
                 .update()
-                .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getUpdateEmployeeBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getEmployeeBeforeFetchChain())
@@ -2307,6 +2307,7 @@ public class APIv3Config {
         return () -> new V3Config(WorkOrderFailureClassRelationship.class, null)
                 .create()
                 .list()
+                .beforeFetch(new FetchSubModuleRelationSupplements())
                 .summary()
                 .update()
                 .delete()
@@ -2318,6 +2319,7 @@ public class APIv3Config {
         return () -> new V3Config(CustomModuleDataFailureClassRelationship.class, null)
                 .create()
                 .list()
+                .beforeFetch(new FetchSubModuleRelationSupplements())
                 .summary()
                 .update()
                 .delete()
@@ -2354,12 +2356,6 @@ public class APIv3Config {
                 .afterSave(ClassificationChain.getAfterSaveChain())
                 .update()
                 .beforeSave(ClassificationChain.getBeforeUpdateChain())
-                .afterSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        throw new IllegalArgumentException("Should throw error");
-                    }
-                })
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.CLASSIFICATION, "parentClassification")
                 .afterFetch(ClassificationChain.getAfterSummaryChain())

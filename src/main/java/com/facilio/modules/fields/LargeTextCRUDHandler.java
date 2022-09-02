@@ -45,7 +45,7 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
                 Long fileId = (Long) record.get(FILE_ID_FIELD_NAME);
                 FileStore fs = FacilioFactory.getFileStore();
                 
-                LOGGER.info("Large Text File ID : "+ fileId);              
+                LOGGER.trace("Large Text File ID : "+ fileId);
                 String value = null;
                 try (InputStream is = fs.readFile(fileId)) {
                 	if(is!=null) {

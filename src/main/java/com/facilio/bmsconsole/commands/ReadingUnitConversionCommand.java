@@ -85,7 +85,7 @@ public class ReadingUnitConversionCommand extends FacilioCommand {
 					}
 				}
 			}
-            LOGGER.info("Time taken for Unit conversion is : " + (System.currentTimeMillis() - startTime) + ", modules: " + readingMap.keySet());
+            LOGGER.debug("Time taken for Unit conversion is : " + (System.currentTimeMillis() - startTime) + ", modules: " + readingMap.keySet());
 		}
 		return false;
 	}

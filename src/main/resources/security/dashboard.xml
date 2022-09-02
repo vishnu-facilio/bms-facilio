@@ -331,5 +331,26 @@
             <property name="dashboardTabId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/rule/:dashboard_rule_id" method="GET">
+        <urlparams>
+            <property name="dashboard_rule_id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/rule/:dashboardId/list" method="GET">
+        <urlparams>
+            <property name="dashboardId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/rule/:dashboardId/list/:dashboardTabId" method="GET">
+        <urlparams>
+            <property name="dashboardId" type="number" mandatory="true"/>
+            <property name="dashboardTabId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/rule/delete/:dashboard_rule_id" method="DELETE">
+        <urlparams>
+            <property name="dashboard_rule_id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 
 </config>

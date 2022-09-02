@@ -15,6 +15,18 @@ import java.util.Map;
 public class SendMailCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        JSONObject mailJson = constructMailJson(context);
+        Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
+        EmailClient emailClient = EmailFactory.getEmailClient();
+        String messageId = emailClient.sendEmailFromWMS(mailJson, files);
+        context.put(MailConstants.Params.MESSAGE_ID, messageId);
+        LOGGER.info("OG_MAIL_LOG :: email sent successfully for mapperId "+ context.get(MailConstants.Params.MAPPER_ID));
+        emailClient.resetActiveCheck();
+        resetOriginalAddresses(mailJson);
+        return false;
+    }
+
+    private JSONObject constructMailJson(Context context) {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
 
         // updating header with extra tracking info
@@ -23,13 +35,13 @@ public class SendMailCommand extends FacilioCommand {
         header.put(MailConstants.Params.REGION, FacilioProperties.getRegion());
         mailJson.put(MailConstants.Params.HEADER, header);
 
-        Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
-        EmailClient emailClient = EmailFactory.getEmailClient();
-        String messageId = emailClient.sendEmailFromWMS(mailJson, files);
-        context.put(MailConstants.Params.MESSAGE_ID, messageId);
-        LOGGER.info("OG_MAIL_LOG :: email sent successfully for mapperId "+ context.get(MailConstants.Params.MAPPER_ID));
-        resetOriginalAddresses(mailJson);
-        return false;
+        //updating content as message if available
+        if(mailJson.get("htmlContent") != null) {
+            mailJson.put(EmailClient.MESSAGE, mailJson.remove("htmlContent"));
+        } else if(mailJson.get("textContent") != null) {
+            mailJson.put(EmailClient.MESSAGE, mailJson.remove("textContent"));
+        }
+        return mailJson;
     }
 
     private void resetOriginalAddresses(JSONObject mailJson) {

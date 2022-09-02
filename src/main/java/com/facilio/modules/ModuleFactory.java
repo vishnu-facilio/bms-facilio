@@ -1819,6 +1819,39 @@ public class ModuleFactory {
 		dashboardWigetModule.setDisplayName("Dashboard Folder");
 		return dashboardWigetModule;
 	}
+
+	public static FacilioModule getDashboardRuleModule() {
+		FacilioModule dashboardRule = new FacilioModule();
+		dashboardRule.setTableName("Dashboard_Rules");
+		return dashboardRule;
+	}
+
+	public static FacilioModule getDashboardTriggerWidgetModule() {
+		FacilioModule dashboardTriggerWidget = new FacilioModule();
+		dashboardTriggerWidget.setTableName("Dashboard_Trigger_Widgets");
+		return dashboardTriggerWidget;
+	}
+
+	public static FacilioModule getDashboardRuleActionModule() {
+		FacilioModule dashboardRule = new FacilioModule();
+		dashboardRule.setTableName("Dashboard_Rule_Action");
+		return dashboardRule;
+	}
+	public static FacilioModule getDashboardTriggerWidgetsModule() {
+		FacilioModule dashboardRule = new FacilioModule();
+		dashboardRule.setTableName("Dashboard_Trigger_Widgets");
+		return dashboardRule;
+	}
+	public static FacilioModule getDashboardRuleActionMetaModule() {
+		FacilioModule dashboardRule = new FacilioModule();
+		dashboardRule.setTableName("Dashboard_Rules_Action_Meta");
+		return dashboardRule;
+	}
+	public static FacilioModule getDashboardRuleTargetWidgetModule() {
+		FacilioModule dashboardRule = new FacilioModule();
+		dashboardRule.setTableName("Dashboard_Trigger_And_Target_Widget_Mapping");
+		return dashboardRule;
+	}
 	public static FacilioModule getDashboardModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard");

@@ -8,13 +8,7 @@ import org.bouncycastle.util.Strings;
 @Data
 public class Shift extends V3Context {
 
-    private long toSeconds(String timeStr) {
-        // guaranteed to have two shards, hence 0 index is used.
-        String hour = Strings.split(timeStr, ':')[0];
-        long time = FacilioUtil.parseLong(hour);
-        // converting to second of the day
-        return time * 60 * 60;
-    }
+
 
     private String name;
     private Boolean isDefaultShift;
@@ -22,13 +16,9 @@ public class Shift extends V3Context {
     private String colorCode;
     private Long endTime;
 
-    public void setEndTime(String endTime) {
-        this.endTime = toSeconds(endTime);
-    }
+
 
     private Long startTime;
 
-    public void setStartTime(String startTime) {
-        this.startTime = toSeconds(startTime);
-    }
+
 }

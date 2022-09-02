@@ -7,6 +7,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.relation.context.RelationRequestContext;
+import org.json.simple.JSONObject;
 
 public class RelationAction extends FacilioAction {
 
@@ -60,6 +61,14 @@ public class RelationAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getRelationListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", getPage());
+        pagination.put("perPage", getPerPage());
+        if (getPerPage() < 0) {
+            pagination.put("perPage", 5000);
+        }
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.RELATION_LIST, context.get(FacilioConstants.ContextNames.RELATION_LIST));

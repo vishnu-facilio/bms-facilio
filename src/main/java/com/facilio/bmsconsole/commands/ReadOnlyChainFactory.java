@@ -37,7 +37,7 @@ import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.command.GetNewReadingRulesCommand;
-import com.facilio.relation.command.GetAllRelationCommand;
+import com.facilio.relation.command.GetAllRelationForSetupPageCommand;
 import com.facilio.relation.command.ViewRelationCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -2382,7 +2382,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain getRelationListChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetAllRelationCommand());
+		chain.addCommand(new GetAllRelationForSetupPageCommand());
 		return chain;
 	}
 

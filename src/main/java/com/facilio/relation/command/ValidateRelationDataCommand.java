@@ -69,6 +69,10 @@ public class ValidateRelationDataCommand extends FacilioCommand {
             throw new IllegalArgumentException("Only one relation is allowed");
         }
 
+        if(relationMapping.getFromModuleId() == relationMapping.getToModuleId() && idset.contains(parentId)) {
+            throw new IllegalArgumentException("Same record cannot be related");
+        }
+
         Criteria relationDataCriteria = new Criteria();
         relationDataCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
 

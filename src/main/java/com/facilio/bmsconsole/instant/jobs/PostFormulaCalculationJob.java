@@ -89,7 +89,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 		}
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
 
-		LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals + ", Live intervals Post Formulas of modules : " + formula + " live reading: " + reading);
+		LOGGER.debug("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals + ", Live intervals Post Formulas of modules : " + formula + " live reading: " + reading);
 		if (intervals != null) { //No need to calculate if RDM time is greater
 			long startTime = System.currentTimeMillis();
 			if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
