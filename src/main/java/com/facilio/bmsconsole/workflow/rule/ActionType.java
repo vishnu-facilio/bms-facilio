@@ -594,10 +594,14 @@ public enum ActionType {
 			}
 		}
 
-		private void performActionForV3WO(Context context, Object currentRecord, long userID, long groupID) {
+		private void performActionForV3WO(Context context, Object currentRecord, long userID, long groupID) throws Exception {
 
 			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
 			V3WorkOrderContext updateWO = new V3WorkOrderContext();
+
+			List<FacilioField> fields = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER));
 
 			boolean userAssigned = false;
 			if (userID != -1 &&
@@ -606,6 +610,7 @@ public enum ActionType {
 				user.setOuid(userID);
 				workOrder.setAssignedTo(user);
 				updateWO.setAssignedTo(user);
+				fields.add(fieldMap.get("assignedTo"));
 				userAssigned = true;
 			}
 
@@ -615,6 +620,7 @@ public enum ActionType {
 				group.setId(groupID);
 				workOrder.setAssignmentGroup(group);
 				updateWO.setAssignmentGroup(group);
+				fields.add(fieldMap.get("assignmentGroup"));
 				userAssigned = true;
 			}
 			try {
@@ -627,10 +633,9 @@ public enum ActionType {
 					workOrder.setAssignedBy(AccountUtil.getCurrentUser());
 					updateWO.setAssignedBy(AccountUtil.getCurrentUser());
 
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 					UpdateRecordBuilder<V3WorkOrderContext> updateBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
-							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+							.module(woModule).fields(fields)
 							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
 					updateBuilder.update(updateWO);
 
@@ -643,18 +648,18 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
-			// TODO Auto-generated method stub
+								  Object currentRecord) throws Exception {
+
 			long assignedToUserId = -1, assignGroupId = -1;
 
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
 			if (currentRecord instanceof V3WorkOrderContext) {
-				LOGGER.info("v3 WO instance");
+				LOGGER.trace("performing assignment action for v3 WO context");
 				performActionForV3WO(context, currentRecord, assignedToUserId, assignGroupId);
 			} else {
-				LOGGER.info("WO instance");
+				LOGGER.trace("performing assignment action for v2 WO context");
 				performActionForWO(context, currentRecord, assignedToUserId, assignGroupId);
 			}
 		}
