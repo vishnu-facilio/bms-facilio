@@ -4,11 +4,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.CommentsSharingContext;
+import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.PortalCommentsSharingContext;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -26,16 +26,8 @@ import java.util.stream.Collectors;
 public class NotesAPI {
 	
 	public static List<NoteContext> fetchNotes(long parentId, String moduleName) throws Exception {
-		List<NoteContext> noteListContext = new ArrayList<>();
-		if(AccountUtil.getCurrentApp().getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
-			noteListContext = getCommetsSharingListBuilder(parentId, moduleName).get();
-		}
-		else
-		{
-			noteListContext = addPortalCommentSharing(getListBuilder(parentId, moduleName).get());
-		}
+		List<NoteContext> noteListContext = getListBuilder(parentId, moduleName).get();
 		return getNotes(Collections.singletonList(parentId), moduleName, noteListContext);
-		
 	}
 	
 	
@@ -79,18 +71,24 @@ public class NotesAPI {
 	private static SelectRecordsBuilder<NoteContext> getListBuilder (long parentId, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		
+		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
+		ApplicationContext currentApp = AccountUtil.getCurrentApp();
+
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
 				.select(fields)
 				.module(module)
 				.beanClass(NoteContext.class)
 				.maxLevel(0);
 
-		if (parentId > 0) {
+		if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
+			selectBuilder.leftJoin(commentsSharingModule.getTableName())
+					.on(module.getTableName() + ".ID=" + commentsSharingModule.getTableName() + ".PARENT_ID AND " + module.getTableName() + ".MODULEID=" + commentsSharingModule.getTableName() + ".PARENT_MODULE_ID");
+		}
 
+		if (parentId > 0) {
 			Criteria criteria = new Criteria();
 			if (fieldMap.containsKey("parentId")) {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
@@ -100,48 +98,37 @@ public class NotesAPI {
 				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
 			}
 
-			if(!criteria.isEmpty()){
+			if (!criteria.isEmpty()) {
 				selectBuilder.andCriteria(criteria);
 			}
 		}
-		
-		ApplicationContext currentApp = AccountUtil.getCurrentApp();
-		if (AccountUtil.getCurrentUser().isPortalUser() && currentApp != null && !currentApp.getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
-			Criteria cri = new Criteria();
-			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
-			if(!moduleName.equalsIgnoreCase("insurancenotes"))
-			{
-				cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
-			}
 
-			selectBuilder.andCriteria(cri);
+		Criteria notifyRequesterCriteria = null;
+		Condition portalSharingCondition = null;
+		if (AccountUtil.getCurrentUser().isPortalUser() && currentApp != null && !currentApp.getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+			notifyRequesterCriteria = new Criteria();
+			notifyRequesterCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
+			if (!moduleName.equalsIgnoreCase("insurancenotes")) {
+				notifyRequesterCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
+			}
+		}
+		if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
+			List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
+			Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(allFields);
+			portalSharingCondition = CriteriaAPI.getCondition(sharingFieldMap.get("appId"), String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS);
+		}
+		if (notifyRequesterCriteria != null && portalSharingCondition != null) {
+			Criteria criteria = new Criteria();
+			criteria.andCriteria(notifyRequesterCriteria);
+			criteria.addOrCondition(portalSharingCondition);
+			selectBuilder.andCriteria(criteria);
+		} else if (notifyRequesterCriteria != null) {
+			selectBuilder.andCriteria(notifyRequesterCriteria);
+		} else if (portalSharingCondition != null) {
+			selectBuilder.andCondition(portalSharingCondition);
 		}
 		return selectBuilder;
 	}
-
-	private static SelectRecordsBuilder<NoteContext> getCommetsSharingListBuilder (long parentId, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule notesModule = modBean.getModule(moduleName);
-
-		List<FacilioField> fields = modBean.getAllFields(moduleName);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
-		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
-		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
-		Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(allFields);
-
-		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
-				.select(fields)
-				.module(notesModule)
-				.beanClass(NoteContext.class)
-				.leftJoin(commentsSharingModule.getTableName())
-				.on(notesModule.getTableName()+".ID="+commentsSharingModule.getTableName()+".PARENT_ID AND "+notesModule.getTableName()+".MODULEID="+commentsSharingModule.getTableName()+".PARENT_MODULE_ID")
-				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("appId"), String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
-
-		return selectBuilder;
-	}
-
 
 	public static List<NoteContext> fetchNote (List<Long> parentIds, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -181,7 +168,6 @@ public class NotesAPI {
 		}
 		return null;
 	}
-
 	
 	public static void updateNotesCount(Collection<Long> parentIds, String parentModule, String moduleString) throws Exception {
 		if (StringUtils.isNoneEmpty(parentModule) && CollectionUtils.isNotEmpty(parentIds)) {
@@ -230,70 +216,25 @@ public class NotesAPI {
 		}
 	}
 
-	public static List<NoteContext> addPortalCommentSharing(List<NoteContext> notes) throws Exception {
-		FacilioModule module = ModuleFactory.getCommentsSharingModule();
-		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(module);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-		List<Long> ids= new ArrayList<>();
-		List<ApplicationContext> allPortals = ApplicationApi.getAllLicensedPortal();
-		for(NoteContext note : notes)
-		{
-			ids.add(note.getId());
-		}
-		if(ids.size()>0) {
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(allFields)
-					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ids, NumberOperators.EQUALS));
-			List<Map<String, Object>> props = selectBuilder.get();
-			List<CommentsSharingContext> commentsSharingContexts = new ArrayList<>();
-			if (props != null && !props.isEmpty()) {
-				commentsSharingContexts = FieldUtil.getAsBeanListFromMapList(props, CommentsSharingContext.class);
-			}
-			if (commentsSharingContexts.size() > 0) {
-				for (NoteContext note : notes) {
-					List<ApplicationContext> appPortals = new ArrayList<>();
-					appPortals.addAll(allPortals);
-					List<PortalCommentsSharingContext> portalAppSharing = new ArrayList<>();
-					String message = "The Shared Portals are <br>";
-					for (CommentsSharingContext commentsSharing : commentsSharingContexts) {
-						if (note.getId() == commentsSharing.getParentId()) {
-							ApplicationContext app = ApplicationApi.getApplicationForId(commentsSharing.getAppId());
-							appPortals.removeIf(portal -> portal.getId() == app.getId());
-							PortalCommentsSharingContext temp = new PortalCommentsSharingContext();
-							temp.setAppId(commentsSharing.getAppId());
-							temp.setAppSelected(true);
-							temp.setAppName(app.getName());
-							portalAppSharing.add(temp);
-							message = message + app.getName() + "<br>";
-						}
-					}
-					List<PortalCommentsSharingContext> UnSelectedPortalApp = new ArrayList<>();
-					for (ApplicationContext app : appPortals) {
-						PortalCommentsSharingContext temp = new PortalCommentsSharingContext();
-						temp.setAppId(app.getId());
-						temp.setAppSelected(false);
-						temp.setAppName(app.getName());
-						UnSelectedPortalApp.add(temp);
-					}
-					if (portalAppSharing.size() > 0) {
-						portalAppSharing.addAll(UnSelectedPortalApp);
-						note.setSelectedPortalApp(portalAppSharing);
-						note.setSharingPublic(true);
-						note.setSharedMessage(message);
-					} else {
-						portalAppSharing.addAll(UnSelectedPortalApp);
-						note.setSelectedPortalApp(portalAppSharing);
-						note.setSharingPublic(false);
-						note.setSharedMessage("Private Comment");
-					}
-					if (note.getCreatedBy().getId() == AccountUtil.getCurrentUser().getId()) {
-						note.setEditAvailable(true);
-					}
-				}
-			}
-		}
-		return notes;
-	}
+	public static List<CommentSharingContext> getNoteSharing(long noteId, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
 
+		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
+		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(allFields)
+				.table(commentsSharingModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(noteId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<CommentSharingContext> commentsSharingContexts = null;
+		if (props != null && !props.isEmpty()) {
+			commentsSharingContexts = FieldUtil.getAsBeanListFromMapList(props, CommentSharingContext.class);
+		}
+		return commentsSharingContexts;
+	}
 }

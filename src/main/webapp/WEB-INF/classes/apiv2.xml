@@ -1923,7 +1923,7 @@
 			class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
 		</action>
 		<action name="updateSharing"
-				class="com.facilio.bmsconsole.actions.NoteAction" method="v2Update">
+				class="com.facilio.bmsconsole.actions.NoteAction" method="v2SharingUpdate">
 		</action>
 	</package>
 

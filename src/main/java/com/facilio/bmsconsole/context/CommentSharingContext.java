@@ -1,10 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class CommentsSharingContext extends ModuleBaseWithCustomFields {
+public class CommentSharingContext extends ModuleBaseWithCustomFields {
+
     private static final long serialVersionUID = 1L;
+
     private long parentId = -1;
 
     public long getParentId() {

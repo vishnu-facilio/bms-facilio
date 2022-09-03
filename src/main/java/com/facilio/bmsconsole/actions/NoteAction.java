@@ -305,11 +305,11 @@ public class NoteAction extends FacilioAction {
 	}
 	
 	private String getNotesList(String moduleName) throws Exception {
-		
+
 		FacilioContext context = new FacilioContext();
-		if (notesIds != null && !notesIds.isEmpty()) {			
+		if (notesIds != null && !notesIds.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.NOTE_IDS, notesIds);
-			}
+		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
 		if (this.module.equals("cmdnotes")) {
@@ -324,33 +324,10 @@ public class NoteAction extends FacilioAction {
 		getRelatedNoteChain.execute(context);
 		if (notesIds != null && !notesIds.isEmpty()) {
 			setNotesLists((Map<Long, List<NoteContext>>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
-			
-		}
-		else {
+
+		} else {
 			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
 		}
-		
-		return SUCCESS;
-	}
-
-	private String updateSharingForNotes() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-		ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
-		parent.setId(note.getParentId());
-		note.setParent(parent);
-
-		String parentModuleName = this.parentModuleName;
-		if (parentModuleName == null) {
-			parentModuleName = ticketModuleName;
-		}
-
-		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
-		context.put(FacilioConstants.ContextNames.NOTE, note);
-		FacilioChain addNote = TransactionChainFactory.updateNotesSharing();
-		addNote.execute(context);
-		setResult("Notes", note);
-
 
 		return SUCCESS;
 	}
@@ -372,8 +349,28 @@ public class NoteAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String v2Update() throws Exception {
-		updateSharingForNotes();
+	public String v2SharingUpdate() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+
+		String parentModuleName = this.parentModuleName;
+		if (parentModuleName == null) {
+			parentModuleName = ticketModuleName;
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+		context.put(FacilioConstants.ContextNames.NOTE, note);
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
+		if (this.module.equals("cmdnotes")) {
+			String customModuleNotes = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.NOTES);
+			if (customModuleNotes != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleNotes);
+			}
+		}
+
+		FacilioChain updateNotesSharingChain = TransactionChainFactory.updateNotesSharing();
+		updateNotesSharingChain.execute(context);
+
 		setResult(FacilioConstants.ContextNames.NOTE, note);
 
 		return SUCCESS;

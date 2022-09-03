@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -2676,25 +2674,28 @@ public class ApplicationApi {
         return superAdmin;
     }
 
-    public static List<ApplicationContext> getAllLicensedPortal() throws Exception {
+    public static List<ApplicationContext> getLicensedPortalApps() throws Exception {
+
         List<FacilioField> allFields = FieldFactory.getApplicationFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName())
                 .select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("appCategory"), String.valueOf(ApplicationContext.AppCategory.PORTALS.getIndex()), NumberOperators.EQUALS));
+
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
         List<ApplicationContext> portalApplications = new ArrayList<>();
-        portalApplications.addAll(applications);
-        for(ApplicationContext portal : applications) {
-            if ((!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR)) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
-                portalApplications.remove(portal);
-            }
-            if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
-                portalApplications.remove(portal);
-            }
-            if ((!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
-                portalApplications.remove(portal);
+
+        if (applications != null) {
+            for (ApplicationContext portal : applications) {
+                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+                    portalApplications.add(portal);
+                } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+                    portalApplications.add(portal);
+                } else if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)) {
+                    portalApplications.add(portal);
+                }
             }
         }
         return portalApplications;

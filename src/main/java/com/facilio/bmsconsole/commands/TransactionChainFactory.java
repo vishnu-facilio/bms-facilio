@@ -131,7 +131,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
-			c.addCommand(new CommentsSharingCommand());
+			c.addCommand(new AddCommentSharingCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteNoteWorkflowCommand()));
 			c.addCommand(new AddActivitiesCommand());
@@ -141,7 +141,8 @@ public class TransactionChainFactory {
 		public  static FacilioChain updateNotesSharing()
 		{
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UpdateNotesPortalSharingCommand());
+			c.addCommand(new DeleteCommentSharingCommand());
+			c.addCommand(new AddCommentSharingCommand());
 			return c;
 		}
 
