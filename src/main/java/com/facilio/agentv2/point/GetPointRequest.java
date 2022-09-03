@@ -192,7 +192,7 @@ public class GetPointRequest {
             selectRecordBuilder.andCriteria(criteria);
         }
         if (limit > 0) {
-        	selectRecordBuilder.limit(limit);
+        	selectRecordBuilder.limit(limit).offset(offset);
         }
         
         

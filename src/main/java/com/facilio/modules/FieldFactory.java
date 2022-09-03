@@ -733,6 +733,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
         fields.add(getField(AgentConstants.DISCOVER_CONTROLLERS_TIMEOUT,"DISCOVER_CONTROLLERS_TIMEOUT",module,FieldType.NUMBER));
         fields.add(getField(AgentConstants.DISCOVER_POINTS_TIMEOUT,"DISCOVER_POINTS_TIMEOUT",module,FieldType.NUMBER));
+        fields.add(getField("commandMaxRetryCount","COMMAND_MAX_RETRY_COUNT",module,FieldType.NUMBER));
         return fields;
     }
 
