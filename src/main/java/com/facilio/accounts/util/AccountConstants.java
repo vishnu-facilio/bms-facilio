@@ -649,7 +649,7 @@ public class AccountConstants {
 
 	public static FacilioModule getGroupModule() {
 		FacilioModule groupModule = new FacilioModule();
-		groupModule.setName("peopleGroup");
+		groupModule.setName("groups");
 		groupModule.setDisplayName("People Group");
 		groupModule.setTableName("FacilioGroups");
 

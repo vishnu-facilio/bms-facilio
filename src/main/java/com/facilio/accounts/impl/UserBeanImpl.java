@@ -22,6 +22,7 @@ import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -976,11 +977,14 @@ public class UserBeanImpl implements UserBean {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupMemberModule().getTableName())
 				.fields(AccountConstants.getGroupMemberFields());
+		long moduleid = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER).getModuleId();
 		for (Long group : groups) {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
 			props.put("groupId", group);
 			props.put("memberRole", GroupMemberRole.MEMBER.getMemberRole());
+			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
+			props.put("moduleId",moduleid);
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
