@@ -18,6 +18,8 @@ classes:
 
   # security policy
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SecurityPolicy
+  # Oauth2
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.EnableOauth2
 
     #Add DeleteJobRecords entry
   - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
