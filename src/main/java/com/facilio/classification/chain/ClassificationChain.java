@@ -14,7 +14,7 @@ public class ClassificationChain {
     public static FacilioChain getAfterSummaryChain() {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GetClassificationAppliedModulesCommand());
-        chain.addCommand(new GetClassificationAttributesCommand());
+        chain.addCommand(new GetClassificationAssociatedAttributesCommand());
         chain.addCommand(new ResolveClassificationPathCommand());
         return chain;
     }
@@ -22,6 +22,7 @@ public class ClassificationChain {
     public static FacilioChain getAfterListChain() {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new ResolveClassificationPathCommand());
+        chain.addCommand(new GetHasChildCommand());
         return chain;
     }
 

@@ -577,6 +577,13 @@ public class ModuleFactory {
 		module.setTableName("Classification_Attribute");
 		return module;
 	}
+	public static FacilioModule getClassificationAttributeRelModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("classificationAttributeRel");
+		module.setDisplayName("Classification Attribute Rel");
+		module.setTableName("Classification_Attribute_Rel");
+		return module;
+	}
 
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
