@@ -25,7 +25,6 @@ import java.util.*;
 
 public class BmsPointsTaggingUtil {
     private static final Logger LOGGER = LogManager.getLogger(BmsPointsTaggingUtil.class.getName());
-    public static JSONObject orgInfo = MLServiceUtil.getOrgInfo();
 
     private static HashMap<String, String> getSplitterMap() throws Exception {
         HashMap<String, String> splitterMap = new HashMap<>();
@@ -77,8 +76,9 @@ public class BmsPointsTaggingUtil {
     public static void tagPointListV1(List<HashMap<String, Object>> pointsMapList) throws Exception {
         LOGGER.info("tagPointListV1 pointsMapList to Tag :" + pointsMapList.toString());
         HashMap<String, String> splitterMap = BmsPointsTaggingUtil.getSplitterMap();
-        List<String> pointNameList = convertToList(pointsMapList, splitterMap);
-        predictApi(pointNameList,pointsMapList,null);
+        List<String> newPointNameList = convertToList(pointsMapList,
+                splitterMap);
+        predictApi(newPointNameList,pointsMapList,null);
         //tagPointList(resultMap);
         //tagPointList(pointNameList, pointsMapList, null);
     }
@@ -90,7 +90,7 @@ public class BmsPointsTaggingUtil {
         postObj.put("pointsMapList", pointsMapList);
         postObj.put("pointsMap", pointsMap);
         //postObj.put("splitter",splitter);
-        postObj.put("org_id", orgInfo.get("orgId"));
+        postObj.put("org_id", MLServiceUtil.getOrgInfo().get("orgId"));
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String postURL = FacilioProperties.getAnomalyPredictAPIURL() + "/getMetaDataV1";
@@ -110,9 +110,8 @@ public class BmsPointsTaggingUtil {
         resultMap.remove("remote_ip");
         resultMap.remove("responseName");
         resultMap.remove("orgid");
+        resultMap.remove("agentId");
         List<String> pointNameList = (List<String>) resultMap.get("metaData").get("pointNameList");
-        List<HashMap<String, Object>> pointsMap = (List<HashMap<String, Object>>) resultMap.get("metaData").get("pointsMap");
-        Map<String, String> pointNameMap = (Map<String, String>) resultMap.get("metaData").get("pointNameMap");
         resultMap.remove("metaData");
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("mlBmsPointsTagging");
@@ -140,7 +139,6 @@ public class BmsPointsTaggingUtil {
                     currMap.put("categoryName", (String) EachMap.get("categoryName"));
                     currMap.put("readingName", (String) EachMap.get("readingName"));
                     currMap.put("assetName", (String) EachMap.get("assetName"));
-
                     clusterMap.put(clusterName, currMap);
                 }
             }
@@ -153,22 +151,15 @@ public class BmsPointsTaggingUtil {
                     //resultMap.get(newPointName).put("assetName", new ArrayList<String>(Arrays.asList(clusterMap.get(clusterName).get("assetName").split(","))));
                 }
             }
-
         }
-        String controllerName = null;
-        List<String> keyList = new ArrayList<>(resultMap.keySet());
-        if (pointsMap != null) {
-            controllerName = (String) pointsMap.get(0).get("controller");
-            for (String key : keyList) {
-                String splitter = resultMap.get(key).get("splitter").toString();
-                resultMap.put(key.replace(controllerName + splitter, ""), resultMap.remove(key));
-            }
-        } else {
-            for (String key : keyList) {
-                resultMap.put((String) pointNameMap.get(key), resultMap.remove(key));
-            }
+        Map<String, Map<String, Object>> newResultMap = new HashMap<>();
+        for(String key:resultMap.keySet()){
+            String splitter  = resultMap.get(key).get("splitter").toString();
+            String controllerName  = key.split(splitter)[0];
+            resultMap.get(key).put("controllerName",controllerName);
+            newResultMap.put(key.replace(controllerName+splitter,"") , resultMap.get(key));
         }
-        insertRecords(resultMap, module, fields, controllerName);
+        insertRecords(newResultMap, module, fields);
     }
 
 
@@ -190,9 +181,9 @@ public class BmsPointsTaggingUtil {
     }
 
     public static void insertRecords(Map<String, Map<String, Object>> resultMap, FacilioModule
-            module, List<FacilioField> fields, String controllerName) throws Exception {
+            module, List<FacilioField> fields) throws Exception {
         List<String> keyList = new ArrayList<>(resultMap.keySet());
-        Map<String, Map<String, Object>> updatePointMap = getTaggedPointListFromPoint(keyList, controllerName);
+        Map<String, Map<String, Object>> updatePointMap = getTaggedPointListFromPoint(keyList, null);
         for (String key : updatePointMap.keySet()) {
             keyList.remove(key);
             updatePointMap.put(key, resultMap.remove(key));
@@ -201,7 +192,8 @@ public class BmsPointsTaggingUtil {
         for (String key : keyList) {
             Map<String, Object> row = new HashMap<>();
             String splitter = resultMap.get(key).get("splitter").toString();
-            row.put("pointName", key.replace(controllerName + splitter, ""));
+            String controllerName= resultMap.get(key).get("controllerName").toString();
+            row.put("pointName", key.replace( controllerName+ splitter, ""));
             row.put("controllerName", controllerName);
             row.put("moduleId", module.getModuleId());
             row.put("clusterName", resultMap.get(key).get("cluster_name"));
@@ -349,7 +341,7 @@ public class BmsPointsTaggingUtil {
     private static void updateApi(Map<String, Map<String, String>> wronglyPredictedMap) throws Exception {
         JSONObject postObj = new JSONObject();
         postObj.put("data", wronglyPredictedMap);
-        postObj.put("org_id", orgInfo.get("orgId"));
+        postObj.put("org_id", MLServiceUtil.getOrgInfo().get("orgId"));
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String postURL = FacilioProperties.getAnomalyPredictAPIURL() + "/updateMetaDataV1";
@@ -373,19 +365,29 @@ public class BmsPointsTaggingUtil {
                 continue;
             }
             Map<String, Object> predictionMap = predictedMap.get(key);
-            String categoryId = resultMap.get("category").keySet().toArray()[0].toString();
-            String fieldId = resultMap.get("reading").keySet().toArray()[0].toString();
-            String assetId = resultMap.get("assetName").keySet().toArray()[0].toString();
-
+            String categoryId="-1",fieldId="-1",assetId = "-1";
+            if(resultMap.get("category")!= null) {
+                categoryId = resultMap.get("category").keySet().toArray()[0].toString();
+            } if(resultMap.get("reading")!= null) {
+                fieldId = resultMap.get("reading").keySet().toArray()[0].toString();
+            }if(resultMap.get("assetName")!= null) {
+                assetId = resultMap.get("assetName").keySet().toArray()[0].toString();
+            }
             if (!(categoryId.equalsIgnoreCase((String) predictionMap.get("categoryName"))) || (!fieldId.equalsIgnoreCase((String) predictionMap.get("ReadingName")))) {
                 Map<String, String> updateIdMap = new HashMap<String, String>();
                 Map<String, String> updateNameMap = new HashMap<>();
                 updateIdMap.put("categoryName", categoryId);
                 updateIdMap.put("readingName", fieldId);
                 updateIdMap.put("assetName", assetId);
-                updateNameMap.put("categoryName", resultMap.get("category").get(Long.parseLong(categoryId)));
-                updateNameMap.put("readingName", resultMap.get("reading").get(Long.parseLong(fieldId)));
-                updateNameMap.put("assetName", resultMap.get("assetName").get(Long.parseLong(assetId)));
+                if(resultMap.get("category")!= null) {
+                    updateNameMap.put("categoryName", resultMap.get("category").get(Long.parseLong(categoryId)));
+                }else {updateNameMap.put("categoryName","");}
+                if(resultMap.get("reading")!= null) {
+                    updateNameMap.put("readingName", resultMap.get("reading").get(Long.parseLong(fieldId)));
+                }else {updateNameMap.put("readingName","");}
+                if(resultMap.get("assetName")!= null) {
+                    updateNameMap.put("assetName", resultMap.get("assetName").get(Long.parseLong(assetId)));
+                }else {updateNameMap.put("assetName","");}
                 wronglyPredictedMap.put(key, updateNameMap);
                 wronglyPredictedFieldMap.put(key, updateIdMap);
             }
