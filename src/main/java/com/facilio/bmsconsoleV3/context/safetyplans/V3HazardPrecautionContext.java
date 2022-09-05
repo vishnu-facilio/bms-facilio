@@ -1,22 +1,20 @@
 package com.facilio.bmsconsoleV3.context.safetyplans;
 
-import com.facilio.bmsconsole.context.HazardContext;
-import com.facilio.bmsconsole.context.PrecautionContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3HazardPrecautionContext extends V3Context {
-    private PrecautionContext precaution;
-    private HazardContext hazard;
-    public HazardContext getHazard() {
+    private V3PrecautionContext precaution;
+    private V3HazardContext hazard;
+    public V3HazardContext getHazard() {
         return hazard;
     }
-    public void setHazard(HazardContext hazard) {
+    public void setHazard(V3HazardContext hazard) {
         this.hazard = hazard;
     }
-    public PrecautionContext getPrecaution() {
+    public V3PrecautionContext getPrecaution() {
         return precaution;
     }
-    public void setPrecaution(PrecautionContext precaution) {
+    public void setPrecaution(V3PrecautionContext precaution) {
         this.precaution = precaution;
     }
 }

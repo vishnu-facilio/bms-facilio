@@ -156,6 +156,7 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
@@ -2499,6 +2500,14 @@ public class APIv3Config {
                 .create()
                 .list()
                 .beforeFetch(new V3LoadHazardPrecautionLookUpsCommand())
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD)
+    public static Supplier<V3Config> getSafetyPlanHazard() {
+        return () -> new V3Config(V3SafetyPlanHazardContext.class, null)
+                .create()
+                .list()
                 .delete()
                 .build();
     }
