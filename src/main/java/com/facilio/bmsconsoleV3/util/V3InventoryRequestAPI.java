@@ -5,7 +5,10 @@ import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -29,6 +32,44 @@ public class V3InventoryRequestAPI {
             return false;
         }
         throw new IllegalArgumentException("Please request approval for the item before using it");
+    }
+    public static boolean checkQuantityForWoItemNeedingApprovalV3(V3ItemTypesContext itemType, V3InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
+        if (lineItem != null) {
+            lineItem = getLineItem(lineItem.getId());
+            if (woItemQuantity <= (lineItem.getIssuedQuantity())) {
+                updateRequestUsedQuantity(lineItem, woItemQuantity);
+                return true;
+            }
+            return false;
+        }
+        throw new IllegalArgumentException("Please request approval for the item before using it");
+    }
+    public static boolean checkQuantityForWoToolNeedingApprovalV3(V3ToolTypesContext toolType, V3InventoryRequestLineItemContext lineItem, V3WorkorderToolsContext woTool) throws Exception {
+        if(lineItem != null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+            SelectRecordsBuilder<V3InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<V3InventoryRequestLineItemContext>()
+                    .module(module)
+                    .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module))
+
+                    ;
+            List<V3InventoryRequestLineItemContext> lineItems = builder.get();
+            if(CollectionUtils.isNotEmpty(lineItems)) {
+                if(!toolType.isRotating() && woTool.getQuantity() <= (lineItems.get(0).getIssuedQuantity())) {
+                    return true;
+                }
+                else if(toolType.isRotating() && checkRotatingToolCountForWorkOrder(woTool.getTool().getId(), woTool.getParentId()) <= lineItems.get(0).getIssuedQuantity()) {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        throw new IllegalArgumentException("Please request approval for the tool before using it");
     }
     public static boolean checkQuantityForWoToolNeedingApproval(ToolTypesContext toolType, V3InventoryRequestLineItemContext lineItem, WorkorderToolsContext woTool) throws Exception {
         if(lineItem != null) {

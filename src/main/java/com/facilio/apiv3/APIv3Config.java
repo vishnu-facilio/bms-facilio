@@ -122,6 +122,9 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -1695,6 +1698,51 @@ public class APIv3Config {
         return () -> new V3Config(WorkOrderPlannedServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workorderItem")
+    public static Supplier<V3Config> getWorkOrderItems() {
+        return () -> new V3Config(V3WorkorderItemContext.class, null)
+                .create()
+                .beforeSave(new SetWorkOrderItemsCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderItemsChainV3())
+                .update()
+                .beforeSave(new SetWorkOrderItemsCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderItemsChainV3())
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workorderTools")
+    public static Supplier<V3Config> getWorkOrderTools() {
+        return () -> new V3Config(V3WorkorderToolsContext.class, null)
+                .create()
+                .beforeSave(new SetWorkOrderToolsCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderToolsChainV3())
+                .update()
+                .beforeSave(new SetWorkOrderToolsCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderToolsChainV3())
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workorderService")
+    public static Supplier<V3Config> getWorkOrderServices() {
+        return () -> new V3Config(V3WorkOrderServiceContext.class, null)
+                .create()
+                .beforeSave(new SetWorkOrderServicesCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
+                .update()
+                .beforeSave(new SetWorkOrderServicesCommandV3())
+                .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
                 .list()
                 .summary()
                 .delete()

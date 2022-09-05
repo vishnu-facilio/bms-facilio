@@ -33,6 +33,9 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRe
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.tasks.*;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.AddOrUpdateWorkorderCostCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservedQuantityCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotalCostCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
@@ -2165,6 +2168,38 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateWorkOrderPlannedItemsCommandV3());
         c.addCommand(new SetIsReservedCommandV3());
+        return c;
+    }
+    public static FacilioChain getAddOrUdpateWorkorderItemsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateTransactionEventTypeCommand());
+        c.addCommand(new UpdateReservedQuantityCommandV3());
+        c.addCommand(new LoadWorkorderItemLookUpCommand());
+        c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
+        c.addCommand(new AddActivitiesCommand());
+        c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getAddOrUdpateWorkorderToolsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateTransactionEventTypeCommand());
+        c.addCommand(new LoadWorkorderToolLookupCommand());
+        c.addCommand(getUpdatetoolQuantityRollupChain());
+        c.addCommand(new AddActivitiesCommand());
+        c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getAddOrUdpateWorkorderServiceChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateTransactionEventTypeCommand());
+        c.addCommand(new LoadWorkOrderServiceLookUpCommand());
+        c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        c.addCommand(new UpdateWorkorderTotalCostCommandV3());
         return c;
     }
     public static FacilioChain getPeopleGroupAndMembersChain() {
