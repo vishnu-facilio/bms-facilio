@@ -16,5 +16,6 @@ public class DashboardTriggerWidgetContext {
     public Long trigger_widget_id;
     public Long criteriaId;
     public Criteria criteria;
+    public String moduleName;
     public DashboardWidgetContext.WidgetType widgetType;
 }

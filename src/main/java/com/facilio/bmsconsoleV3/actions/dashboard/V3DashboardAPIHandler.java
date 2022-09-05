@@ -200,7 +200,7 @@ public class V3DashboardAPIHandler {
             for(DashboardTriggerWidgetContext trigger_widget : trigger_widgets)
             {
                 trigger_widget.setDashboard_rule_id(dashboard_rule_Id);
-                long criteriaId = V3DashboardAPIHandler.generateCriteriaId(trigger_widget.getCriteria());
+                Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(trigger_widget.getCriteria() , trigger_widget.getModuleName());
                 if(criteriaId > 0){
                     trigger_widget.setCriteriaId(criteriaId);
                 }
@@ -243,7 +243,7 @@ public class V3DashboardAPIHandler {
         if(dashboard_actions_meta != null)
         {
             dashboard_actions_meta.setActionId(actionId);
-            long criteriaId = V3DashboardAPIHandler.generateCriteriaId(dashboard_actions_meta.getCriteria());
+            Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(dashboard_actions_meta.getCriteria(), dashboard_actions_meta.getModuleName());
             if(criteriaId > 0){
                 dashboard_actions_meta.setCriteriaId(criteriaId);
             }
@@ -266,8 +266,7 @@ public class V3DashboardAPIHandler {
             for(DashboardTriggerAndTargetWidgetContext target_widget : target_widgets)
             {
                 target_widget.setActionId(actionId);
-
-                long criteriaId = V3DashboardAPIHandler.generateCriteriaId(target_widget.getCriteria());
+                Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(target_widget.getCriteria(), target_widget.getModuleName());
                 if(criteriaId > 0){
                     target_widget.setCriteriaId(criteriaId);
                 }
@@ -281,17 +280,6 @@ public class V3DashboardAPIHandler {
                 target_widget.setId((Long) props.get("id"));
             }
         }
-    }
-
-    public static long generateCriteriaId(Criteria criteria)throws Exception
-    {
-        if(criteria != null) {
-            long criteriaId = CriteriaAPI.addCriteria(criteria);
-            if (criteriaId > 0) {
-                return criteriaId;
-            }
-        }
-        return -1;
     }
 
     public static DashboardRuleContext getDashboardRule(Long dashboard_rule_id, Integer triggerType)throws Exception
@@ -1004,4 +992,20 @@ public class V3DashboardAPIHandler {
         return widget_header_text;
     }
 
+    public static Long generateDashboardCriteriaId(Criteria criteria, String moduleName)throws Exception
+    {
+        if(criteria != null) {
+            criteria.validatePattern();
+            if (moduleName != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                for (String key : criteria.getConditions().keySet()) {
+                    Condition condition = criteria.getConditions().get(key);
+                    FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+                    condition.setField(field);
+                }
+            }
+            return CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
+        }
+        return -1l;
+    }
 }

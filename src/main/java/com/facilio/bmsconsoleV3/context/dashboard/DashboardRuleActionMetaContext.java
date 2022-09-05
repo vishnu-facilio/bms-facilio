@@ -19,6 +19,7 @@ public class DashboardRuleActionMetaContext {
     public Long actionId;
     public JSONObject action_detail;
     public Long criteriaId;
+    public String moduleName;
     public Criteria criteria;
     public Long scriptId;
     @JSON(serialize=false)
