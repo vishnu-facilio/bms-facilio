@@ -5889,7 +5889,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new CommissionedPointsMLMigration());
 		chain.addCommand(new ConfiguredPointsMlMigration());
-		chain.addCommand(new MLUpdateTaggedPointsCommand());
+//		chain.addCommand(new MLUpdateTaggedPointsCommand());
 
 //		chain.addCommand(new MLTagPointListCommand());
 		return chain;
