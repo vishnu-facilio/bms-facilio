@@ -87,14 +87,11 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultWoStateflowCommand());
 			c.addCommand(new AddEventModuleCommand());					//eventModule.sql
 			c.addCommand(new AddOrgInfoCommand());
-			c.addCommand(new AddAllModulePermissionCommand());
-			c.addCommand(new AddSpecialTypeModulePermissionCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
-			c.addCommand(new AddAllModulePermissionCommand());
 			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceApplicationLayout());
@@ -1262,7 +1259,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddModulesCommand());
 //			c.addCommand(new SetColumnNameForNewCFsCommand());
 			c.addCommand(new AddFieldsCommand());
-			c.addCommand(new AddModulePermissionCommand());
 			return c;
 		}
 

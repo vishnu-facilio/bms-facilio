@@ -82,7 +82,7 @@ public class V3PeopleAPI {
     public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
         return getTenantContacts(tenantId, fetchOnlyPrimaryContact, fetchOnlyWithAccess, false);
     }
-        public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess,boolean fetchDeleted) throws Exception {
+    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess,boolean fetchDeleted) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -139,7 +139,7 @@ public class V3PeopleAPI {
                 .module(module)
                 .beanClass(V3PeopleContext.class)
                 .select(fields)
-        ;
+                ;
         List<V3PeopleContext> records = builder.get();
         return records;
 
@@ -249,10 +249,10 @@ public class V3PeopleAPI {
         V3PeopleContext records = builder.fetchFirst();
         return records;
     }
-    
+
     public static List<V3PeopleContext> getPeopleByPeopleTypes(List<V3PeopleContext.PeopleType> peopleTypes) throws Exception {
-    	if(CollectionUtils.isNotEmpty(peopleTypes)) {        	
-        	String peopletypeids = peopleTypes.stream().map(type -> type.getIndex().toString()).collect(Collectors.joining(","));
+        if(CollectionUtils.isNotEmpty(peopleTypes)) {
+            String peopletypeids = peopleTypes.stream().map(type -> type.getIndex().toString()).collect(Collectors.joining(","));
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
             List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
@@ -261,15 +261,15 @@ public class V3PeopleAPI {
                     .beanClass(V3PeopleContext.class)
                     .select(fields)
                     .andCondition(CriteriaAPI.getCondition("PEOPLE_TYPE", "peopleType", peopletypeids, NumberOperators.EQUALS));
-        	List<V3PeopleContext> record = builder.get();
+            List<V3PeopleContext> record = builder.get();
 
             if(CollectionUtils.isNotEmpty(record)) {
                 return record;
             }
-    	}
+        }
         return null;
     }
-    
+
     public static V3PeopleContext getPeopleById(Long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
@@ -281,7 +281,7 @@ public class V3PeopleAPI {
                 .andCondition(CriteriaAPI.getIdCondition(id, module));
 
         if(id != null && id != -1l) {
-        	V3PeopleContext record = builder.fetchFirst();
+            V3PeopleContext record = builder.fetchFirst();
             return record;
         }
 
@@ -430,7 +430,7 @@ public class V3PeopleAPI {
         return getTenantForUser(ouId, false);
     }
 
-        public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
+    public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
         V3PeopleContext peopleExisiting = getPeople(people.getEmail());
         if(peopleExisiting != null && people.getId() != peopleExisiting.getId()) {
             return true;
@@ -509,9 +509,9 @@ public class V3PeopleAPI {
         }
     }
     public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
-		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
-	}
-    
+        return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
+    }
+
     public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, Long roleId) throws Exception {
         if(StringUtils.isEmpty(linkName)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid link name");
@@ -523,7 +523,7 @@ public class V3PeopleAPI {
         user.setPhone(existingPeople.getPhone());
         user.setName(existingPeople.getName());
         user.setUserVerified(verifyUser);
-		user.setInviteAcceptStatus(verifyUser);
+        user.setInviteAcceptStatus(verifyUser);
         user.setInvitedTime(System.currentTimeMillis());
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -546,9 +546,9 @@ public class V3PeopleAPI {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
         boolean isSsoEnabled = isSsoEnabledForApplication(linkName),verifyUser = false;
-		if(isSsoEnabled){
-			verifyUser = true;
-		}
+        if(isSsoEnabled){
+            verifyUser = true;
+        }
         if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
             AppDomain appDomain = null;
             long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
@@ -565,10 +565,10 @@ public class V3PeopleAPI {
                         user.setApplicationId(appId);
                         user.setRoleId(roleId);
                         if(isSsoEnabled)
-						{
-							user.setUserVerified(true);
-							user.setInviteAcceptStatus(true);
-						}
+                        {
+                            user.setUserVerified(true);
+                            user.setInviteAcceptStatus(true);
+                        }
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         V3PeopleAPI.enableUser(user);
                     }
@@ -635,7 +635,7 @@ public class V3PeopleAPI {
     public static void updateEmployeeAppPortalAccess(V3EmployeeContext person, String linkname) throws Exception {
 
         V3EmployeeContext existingPeople = (V3EmployeeContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId(),  V3EmployeeContext.class);
-		boolean isSsoEnabled = isSsoEnabledForApplication(linkname);
+        boolean isSsoEnabled = isSsoEnabledForApplication(linkname);
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
@@ -659,11 +659,11 @@ public class V3PeopleAPI {
                         user.setAppDomain(appDomain);
                         user.setRoleId(roleId);
                         if(isSsoEnabled)
-						{
-							user.setUserVerified(true);
-							user.setInviteAcceptStatus(true);
-						}	
-						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+                        {
+                            user.setUserVerified(true);
+                            user.setInviteAcceptStatus(true);
+                        }
+                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         V3PeopleAPI.enableUser(user);
                     }
                     else {
@@ -727,7 +727,7 @@ public class V3PeopleAPI {
         user.setPhone(existingPeople.getPhone());
         user.setName(existingPeople.getName());
         user.setUserVerified(!isEmailVerificationNeeded);
-		user.setInviteAcceptStatus(!isEmailVerificationNeeded);
+        user.setInviteAcceptStatus(!isEmailVerificationNeeded);
         user.setInvitedTime(System.currentTimeMillis());
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.USER.getValue());
@@ -881,7 +881,7 @@ public class V3PeopleAPI {
         }
         return null;
     }
-        public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
+    public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
 
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

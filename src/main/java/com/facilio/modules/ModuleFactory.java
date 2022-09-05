@@ -1230,22 +1230,6 @@ public class ModuleFactory {
 		return criteriaModule;
 	}
 
-	public static FacilioModule getModulePermissionModule() {
-		FacilioModule criteriaModule = new FacilioModule();
-		criteriaModule.setName("modulePermission");
-		criteriaModule.setDisplayName("Module Permission");
-		criteriaModule.setTableName("ModulePermission");
-		return criteriaModule;
-	}
-
-	public static FacilioModule getModulePermissionChildModule() {
-		FacilioModule criteriaModule = new FacilioModule();
-		criteriaModule.setName("modulePermissionChild");
-		criteriaModule.setDisplayName("Module Permission Child");
-		criteriaModule.setTableName("ModulePermissionChild");
-		return criteriaModule;
-	}
-
 	public static FacilioModule getModuleAppPermissionModule() {
 		FacilioModule criteriaModule = new FacilioModule();
 		criteriaModule.setName("moduleAppPermission");

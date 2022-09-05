@@ -3812,87 +3812,6 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> modulePermissionFields() {
-        FacilioModule module = ModuleFactory.getModulePermissionModule();
-        List<FacilioField> fields = new ArrayList<>();
-
-        FacilioField moduleId = new FacilioField();
-        moduleId.setName("moduleId");
-        moduleId.setDataType(FieldType.NUMBER);
-        moduleId.setColumnName("MODULE_ID");
-        moduleId.setModule(module);
-        fields.add(moduleId);
-
-        FacilioField specialLinkName = new FacilioField();
-        specialLinkName.setName("specialLinkName");
-        specialLinkName.setDataType(FieldType.STRING);
-        specialLinkName.setColumnName("SPECIAL_LINK_NAME");
-        specialLinkName.setModule(module);
-        fields.add(specialLinkName);
-
-        FacilioField permission1 = new FacilioField();
-        permission1.setName("permission1");
-        permission1.setDataType(FieldType.NUMBER);
-        permission1.setColumnName("PERMISSION1");
-        permission1.setModule(module);
-        fields.add(permission1);
-
-        FacilioField permission2 = new FacilioField();
-        permission2.setName("permission2");
-        permission2.setDataType(FieldType.NUMBER);
-        permission2.setColumnName("PERMISSION2");
-        permission2.setModule(module);
-        fields.add(permission2);
-
-        FacilioField displayName = new FacilioField();
-        displayName.setName("displayName");
-        displayName.setDataType(FieldType.STRING);
-        displayName.setColumnName("DISPLAY_NAME");
-        displayName.setModule(module);
-        fields.add(displayName);
-
-        fields.add(getIdField(module));
-
-        return fields;
-    }
-
-    public static List<FacilioField> modulePermissionChildFields() {
-        FacilioModule module = ModuleFactory.getModulePermissionChildModule();
-        List<FacilioField> fields = new ArrayList<>();
-
-        FacilioField parentId = new FacilioField();
-        parentId.setName("parentId");
-        parentId.setDataType(FieldType.NUMBER);
-        parentId.setColumnName("PARENT_ID");
-        parentId.setModule(module);
-        fields.add(parentId);
-
-        FacilioField displayName = new FacilioField();
-        displayName.setName("displayName");
-        displayName.setDataType(FieldType.STRING);
-        displayName.setColumnName("DISPLAY_NAME");
-        displayName.setModule(module);
-        fields.add(displayName);
-
-        FacilioField permission1 = new FacilioField();
-        permission1.setName("childPermission1");
-        permission1.setDataType(FieldType.NUMBER);
-        permission1.setColumnName("CHILD_PERMISSIONS_VALUE_1");
-        permission1.setModule(module);
-        fields.add(permission1);
-
-        FacilioField permission2 = new FacilioField();
-        permission2.setName("childPermission2");
-        permission2.setDataType(FieldType.NUMBER);
-        permission2.setColumnName("CHILD_PERMISSIONS_VALUE_2");
-        permission2.setModule(module);
-        fields.add(permission2);
-
-        fields.add(getIdField(module));
-
-        return fields;
-    }
-
     public static List<FacilioField> moduleAppPermissionFields() {
         FacilioModule module = ModuleFactory.getModuleAppPermissionModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -3939,13 +3858,6 @@ public class FieldFactory extends BaseFieldFactory {
         displayName.setModule(module);
         fields.add(displayName);
 
-        FacilioField modulePermissionParentId = new FacilioField();
-        modulePermissionParentId.setName("modulePermissionParentId");
-        modulePermissionParentId.setDataType(FieldType.NUMBER);
-        modulePermissionParentId.setColumnName("MODULE_PERMISSION_PARENT_ID");
-        modulePermissionParentId.setModule(module);
-        fields.add(modulePermissionParentId);
-
         fields.add(getIdField(module));
 
         return fields;
@@ -3982,13 +3894,6 @@ public class FieldFactory extends BaseFieldFactory {
         permission2.setColumnName("CHILD_PERMISSIONS_VALUE_2");
         permission2.setModule(module);
         fields.add(permission2);
-
-        FacilioField modulePermissionChildId = new FacilioField();
-        modulePermissionChildId.setName("modulePermissionChildId");
-        modulePermissionChildId.setDataType(FieldType.NUMBER);
-        modulePermissionChildId.setColumnName("MODULE_PERMISSION_CHILD_ID");
-        modulePermissionChildId.setModule(module);
-        fields.add(modulePermissionChildId);
 
         fields.add(getIdField(module));
 
