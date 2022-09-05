@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.mailtracking.context.MailSourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
@@ -80,7 +81,9 @@ public enum AccountEmailTemplate {
 			EmailUtil.sendEmail(getTemplate(placeHolders));
 		} else {
 		}*/
-		FacilioFactory.getEmailClient().sendEmail(getTemplate(isFtl, placeHolders));
+		JSONObject mailJson = getTemplate(isFtl, placeHolders);
+		mailJson.put("sourceType", MailSourceType.INVITE_MAIL.name());
+		FacilioFactory.getEmailClient().sendEmail(mailJson);
 	}
 	
 	public static AccountEmailTemplate getEmailTemplate(int val) {

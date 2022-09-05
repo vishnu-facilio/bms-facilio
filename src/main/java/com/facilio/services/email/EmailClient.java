@@ -21,6 +21,7 @@ import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.email.BaseEmailClient;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -49,9 +50,6 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
     public static final String mailDomain = FacilioProperties.getMailDomain();
-
-    private boolean viaActiveCheck = false;
-
     public static final String ERROR_MAIL_FROM="mlerror@" + mailDomain;
     public static final String ERROR_MAIL_TO="ai@" + mailDomain;
     public static final String ERROR_AT_FACILIO="error@" + mailDomain;
@@ -73,37 +71,63 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     public long sendEmailWithActiveUserCheck(JSONObject mailJson, boolean handleUserDelegation) throws Exception {
-        viaActiveCheck = true;
+        return sendEmailWithActiveUserCheck(mailJson, null, handleUserDelegation);
+    }
+
+    public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+        return sendEmailWithActiveUserCheck(mailJson, files, true);
+    }
+
+    private long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation) throws Exception {
         if (removeInActiveUsers(mailJson)) {
             if (handleUserDelegation) {
                 checkUserDelegation(mailJson);
             }
-            return sendEmail(mailJson);
+            return sendEmail(mailJson, files, true);
         }
         return -1;
     }
 
-    private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
-        boolean isTrackingConfNotFound = StringUtils.isEmpty(DBConf.getInstance().getMailTrackingConfName());
-        ModuleBean modBean = Constants.getModBean();
-        boolean isSignUp = modBean.getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
-        boolean doTracking = (boolean) mailJson.getOrDefault("_tracking", true);
-        if(!doTracking || isSignUp || isTrackingConfNotFound) { // normal behaviour for production env
-            if(files == null) {
-                sendEmailImpl(mailJson);
-            } else {
-                sendEmailImpl(mailJson, files);
+    private long sendEmail(JSONObject mailJson, Map<String, String> files, boolean isActive) throws Exception {
+        if(canTrack(mailJson)) {
+            if(!isActive) {
+                preserveOriginalEmailAddress(mailJson);
             }
-            return -1;
+            return pushEmailToQueue(mailJson, files);
         }
+        return sendMailWithoutTracking(mailJson, files);
+    }
 
-        //new behaviour for non-prod env
-        FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
-        FacilioContext context = chain.getContext();
-        context.put(MailConstants.Params.MAIL_JSON, mailJson);
-        context.put(MailConstants.Params.FILES, files);
-        chain.execute();
-        return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
+    private boolean canTrack(JSONObject mailJson) throws Exception {
+        boolean trackingConfFound = StringUtils.isNotEmpty(DBConf.getInstance().getMailTrackingConfName());
+        boolean isSignUp = Constants.getModBean().getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
+        boolean doTracking = (boolean) mailJson.getOrDefault("_tracking", true);
+        return trackingConfFound && !isSignUp && doTracking;
+    }
+
+    private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
+        try {
+            //new behaviour for non-prod env
+            FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
+            FacilioContext context = chain.getContext();
+            context.put(MailConstants.Params.MAIL_JSON, mailJson);
+            context.put(MailConstants.Params.FILES, files);
+            chain.execute();
+            return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
+        } catch (Exception e) {
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed before pushing to queue. So sending in normal flow", e);
+            OutgoingMailAPI.restoreMailMessage(mailJson);
+            return sendMailWithoutTracking(mailJson, files);
+        }
+    }
+
+    public long sendMailWithoutTracking(JSONObject mailJson, Map<String, String> files) throws Exception {
+        if(files == null) {
+            sendEmailImpl(mailJson);
+        } else {
+            sendEmailImpl(mailJson, files);
+        }
+        return -1;
     }
 
 
@@ -156,16 +180,7 @@ public abstract class EmailClient extends BaseEmailClient {
     		
     		return toEmailsList.stream().collect(Collectors.toSet());
     	}
-    	return null;
-    }
-
-    public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
-        viaActiveCheck = true;
-        if (removeInActiveUsers(mailJson)) {
-            checkUserDelegation(mailJson);
-            return sendEmail(mailJson, files);
-        }
-        return -1;
+        return null;
     }
 
     private String combineEmailsAgain (Set<String> emailAddresses) { //TODO Have to handle this better
@@ -223,14 +238,11 @@ public abstract class EmailClient extends BaseEmailClient {
      */
     @Deprecated
     public long sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
-        if(!viaActiveCheck) {
-            preserveOriginalEmailAddress(mailJson);
-        }
-        return pushEmailToQueue(mailJson, files);
+        return sendEmail(mailJson, files, false);
     }
 
     protected abstract String sendEmailImpl(JSONObject mailJson) throws Exception;
-    
+
     protected abstract String sendEmailImpl(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
@@ -421,7 +433,4 @@ public abstract class EmailClient extends BaseEmailClient {
         getEmailAddresses(mailJson, BCC, false);
     }
 
-    public void resetActiveCheck() {
-        this.viaActiveCheck = false;
-    }
 }

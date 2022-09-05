@@ -10,6 +10,7 @@ import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.mailtracking.context.Bounce;
 import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -17,7 +18,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -88,11 +90,18 @@ public class MailTrackBeanImpl implements MailBean {
     private void initMailTracking(JSONObject mailJson) throws Exception {
         FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
         FacilioContext context = chain.getContext();
-        context.put(MailConstants.Params.MAIL_JSON, mailJson);
-        context.put(MailConstants.Params.FILES, mailJson.get(MailConstants.Params.FILES));
-        context.put(MailConstants.Params.LOGGER_ID, mailJson.get(MailConstants.Params.LOGGER_ID));
-        context.put(MailConstants.Params.MAPPER_ID, mailJson.get(MailConstants.Params.MAPPER_ID));
-        chain.execute();
+        try {
+            context.put(MailConstants.Params.MAIL_JSON, mailJson);
+            context.put(MailConstants.Params.FILES, mailJson.get(MailConstants.Params.FILES));
+            context.put(MailConstants.Params.LOGGER_ID, mailJson.get(MailConstants.Params.LOGGER_ID));
+            context.put(MailConstants.Params.MAPPER_ID, mailJson.get(MailConstants.Params.MAPPER_ID));
+            chain.execute();
+        } catch (Exception e) {
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue. So sending in normal flow", e);
+            OutgoingMailAPI.restoreMailJson(mailJson);
+            EmailFactory.getEmailClient().sendMailWithoutTracking(mailJson, (Map<String, String>)mailJson.get(MailConstants.Params.FILES));
+            return;
+        }
 
         chain = MailTransactionChainFactory.updateOutgoingMailChain();
         chain.setContext(context);

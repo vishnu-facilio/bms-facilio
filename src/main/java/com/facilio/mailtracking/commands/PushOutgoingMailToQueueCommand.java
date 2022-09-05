@@ -3,6 +3,7 @@ package com.facilio.mailtracking.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
@@ -24,7 +25,14 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         message.setContent(mailJson);
         SessionManager.getInstance().sendMessage(message);
         LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms");
-
+        this.resetMailJson(mailJson);
         return false;
     }
+
+    private void resetMailJson(JSONObject mailJson) {
+        mailJson.remove("originalTo");
+        mailJson.remove("originalCc");
+        mailJson.remove("originalBcc");
+    }
+
 }

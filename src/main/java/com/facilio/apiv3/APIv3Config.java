@@ -178,6 +178,7 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
+import com.facilio.mailtracking.commands.FilterOutFailedMailLogsCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
@@ -2246,6 +2247,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getOutgoingMailLogger() {
         return () -> new V3Config(V3OutgoingMailLogContext.class, null)
                 .list()
+                .beforeFetch(new FilterOutFailedMailLogsCommand())
                 .afterFetch(new UpdateMailRecordsModuleNameCommand())
                 .summary()
                 .afterFetch(new FetchMailAttachmentsCommand())
