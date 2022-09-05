@@ -983,7 +983,7 @@ public class UserBeanImpl implements UserBean {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
 			props.put("groupId", group);
-			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
+//			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
 			props.put("moduleId",module.getModuleId());
 			props.put("memberRole", GroupMemberRole.MEMBER.getMemberRole());
 			insertBuilder.addRecord(props);

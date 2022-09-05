@@ -34,6 +34,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -122,6 +123,9 @@ public class PeopleAPI {
 			pplId =emp.getId();
 		}
 		updatePeopleIdInOrgUsers(pplId, user.getOuid());
+		if (user.getGroups() != null) {
+			updatePeopleIdInGroupMembers(pplId, user.getOuid());
+		}
 		
 	}
 	
@@ -213,6 +217,34 @@ public class PeopleAPI {
 			log.error("Exception while inviting user" + e);
 		}
 	
+	}
+
+	public static void updatePeopleIdInGroupMembers(long pplId, long ouId) throws Exception {
+		try {
+			FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+			FacilioField peopleId = new FacilioField();
+			peopleId.setName("people");
+			peopleId.setDataType(FieldType.LOOKUP);
+			peopleId.setColumnName("PEOPLE_ID");
+			peopleId.setModule(module);
+
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(peopleId);
+
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(module.getTableName())
+					.fields(fields);
+
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("people", pplId);
+			updateBuilder.update(props);
+		}
+		catch (Exception e){
+			log.error("Exception while inviting user" + e);
+		}
+
 	}
 	
 	public static List<TenantContactContext> getTenantContacts(Long tenantId, boolean fetchPrimarycontact) throws Exception {
