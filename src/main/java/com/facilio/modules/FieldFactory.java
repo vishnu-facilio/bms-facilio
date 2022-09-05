@@ -461,7 +461,6 @@ public class FieldFactory extends BaseFieldFactory {
                 "sourceType",
                 "recipientCount",
                 "inProgressCount",
-                "sentCount",
                 "deliveredCount",
                 "bouncedCount"
         }));
