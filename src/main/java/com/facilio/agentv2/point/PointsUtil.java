@@ -87,29 +87,7 @@ public class PointsUtil
             if (incomingCount == 0) {
                 throw new Exception(" pointJSON cant be empty");
             }
-            // Controller controller;
-           /* int deviceType = device.getControllerType();
 
-            GetControllerRequest getControllerRequest = new GetControllerRequest()
-                    .forDevice(device.getId()).ofType(FacilioControllerType.valueOf(deviceType));
-            if (deviceType == FacilioControllerType.MODBUS_RTU.asInt()) {
-                JSONObject controllerProps = (JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER);
-                long agentId = device.getAgentId();
-                String comPort;
-                if (controllerProps.containsKey(AgentConstants.NETWORK)) {
-                    JSONObject network = (JSONObject) controllerProps.get(AgentConstants.NETWORK);
-                    comPort = network.get(AgentConstants.COM_PORT).toString();
-                } else {
-                    comPort = controllerProps.get(AgentConstants.COM_PORT).toString();
-                }
-                RtuNetworkContext network = RtuNetworkContext.getRtuNetworkContext(agentId, comPort);
-                if (network != null) {
-                    controllerProps.put(AgentConstants.NETWORK_ID, network.getId());
-                }
-                getControllerRequest.withControllerProperties((JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER), FacilioControllerType.MODBUS_RTU)
-                        .withAgentId(device.getAgentId());
-            }
-            controller = getControllerRequest.getController();*/
 
             //getting points name
             List<String>pointName = (List<String>) pointsJSON.stream().map(x -> ((JSONObject)x).get(AgentConstants.NAME).toString()).collect(Collectors.toList());
@@ -119,6 +97,7 @@ public class PointsUtil
                     .map(name -> name.get(AgentConstants.NAME).toString())
                     .collect(Collectors.toList());
 
+            LOGGER.info("Existing Points count : " + existingPoints.size());
 
             List<Map<String,Object>> points = new ArrayList<>();
             for (Object o : pointsJSON) {
@@ -128,7 +107,8 @@ public class PointsUtil
                 pointJSON.put(AgentConstants.POINT_TYPE, controller.getControllerType());
                 pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
-                    if(!existingPoints.contains(pointJSON.get(AgentConstants.NAME))){
+                    Object pName = pointJSON.get(AgentConstants.NAME);
+                    if(!existingPoints.contains(pName)){
                         Point point = PointsAPI.getPointFromJSON(pointJSON);
                         if (!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
                             point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
@@ -155,7 +135,9 @@ public class PointsUtil
                             points.add(pointMap);
 
                         }
-                }
+                    }else{
+                        LOGGER.info("Point already exists : " + pName);
+                    }
                 } catch (Exception e) {
                     LOGGER.info("Exception occurred while getting point",e);
                 }
