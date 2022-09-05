@@ -81,6 +81,10 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isPortalUser()){
 					note.setNotifyRequester(true);
 				}
+				if(note.getCommentSharing() != null && note.getCommentSharing().size()>0)
+				{
+					note.setNotifyRequester(true);
+				}
 				
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();

@@ -39,12 +39,14 @@ public class GetNotesCommand extends FacilioCommand {
 					}
 				}
 			    context.put(FacilioConstants.ContextNames.NOTE_LIST, map);
+				context.put(FacilioConstants.ContextNames.NEED_COMMENT_SHARING, false);
 			    
 			}
 			else {
 				
 			noteListContext = NotesAPI.fetchNotes(parentId, moduleName);
 			context.put(FacilioConstants.ContextNames.NOTE_LIST, noteListContext);
+			context.put(FacilioConstants.ContextNames.NEED_COMMENT_SHARING, true);
 			}
 		
 		}

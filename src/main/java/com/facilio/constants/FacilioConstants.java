@@ -826,6 +826,7 @@ public class FacilioConstants {
 		public static final String NOTE = "note";
 		public static final String NOTE_ID = "noteId";
 		public static final String NOTE_LIST = "notes";
+		public static final String NEED_COMMENT_SHARING = "needCommentSharing";
 		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
 		public static final String NOTIFY_REQUESTER = "notifyRequester";
