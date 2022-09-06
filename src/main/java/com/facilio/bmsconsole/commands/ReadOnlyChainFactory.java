@@ -3079,4 +3079,15 @@ public class ReadOnlyChainFactory {
 
 		return chain;
 	}
+	
+	public static FacilioChain getServiceRequestSubModulesChain() {
+
+		FacilioChain c = getDefaultChain();
+
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GetServiceRequestSubModules());
+
+		return c;
+
+	}
 }
