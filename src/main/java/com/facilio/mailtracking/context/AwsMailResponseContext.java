@@ -7,8 +7,8 @@ import org.json.simple.JSONObject;
 public class AwsMailResponseContext {
 
     private String eventType;
-    private JSONObject mail;
-    private JSONObject delivery;
-    private JSONObject bounce;
+    private Long mapperId;
+
+    private JSONObject response;
 
 }

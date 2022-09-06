@@ -16,9 +16,9 @@ public class V3OutgoingMailLogContext extends BaseMailMessageContext {
     private MailSourceType sourceType;
 
     //to keep original mail format
-    private Map<String, String> originalTo;
-    private Map<String, String> originalCc;
-    private Map<String, String> originalBcc;
+    private String originalTo;
+    private String originalCc;
+    private String originalBcc;
 
     //record id module name
     private String recordsModuleName;

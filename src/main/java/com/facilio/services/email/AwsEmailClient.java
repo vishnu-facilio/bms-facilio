@@ -54,6 +54,8 @@ class AwsEmailClient extends EmailClient {
                 LOGGER.info("Error message: "+ex.getMessage());
                 throw ex;
             }
+        } else {
+            LOGGER.info("Can't send email. Because the TO address is empty");
         }
         return null;
     }

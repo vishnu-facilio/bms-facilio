@@ -1,6 +1,5 @@
 package com.facilio.mailtracking.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
 

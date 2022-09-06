@@ -5098,6 +5098,15 @@ public class ModuleFactory {
 		mailMapperModule.setTableName("Outgoing_Mail_Mapper");
 		return mailMapperModule;
 	}
+
+	public static FacilioModule getMailResponseModule() {
+		FacilioModule mailMapperModule = new FacilioModule();
+		mailMapperModule.setName("outgoingMailResponses");
+		mailMapperModule.setDisplayName("Outgoing Mail Responses");
+		mailMapperModule.setTableName("Outgoing_Mail_Responses");
+		return mailMapperModule;
+	}
+
 	public static FacilioModule getMisccontrolerModule() {
 		FacilioModule miscController = new FacilioModule();
 		miscController.setName("misccontroller");

@@ -1,6 +1,7 @@
 package com.facilio.mailtracking.bean;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.transaction.NewTransactionService;
@@ -35,17 +36,26 @@ public class MailTrackBeanImpl implements MailBean {
         V3Util.throwRestException(CollectionUtils.isEmpty(recipientsArr), ErrorCode.VALIDATION_ERROR,
                 "recipients cant be empty");
 
+        recipientsArr = recipientsArr.stream().map(email -> extractEmailAddress(email)).collect(Collectors.toList());
+
         Integer deliveryStatus = MailStatus.DELIVERED.getValue();
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId, StringUtils.join(recipientsArr, ", "));
+        if(oldRecords.isEmpty()) {
+            LOGGER.info("OG_MAIL_LOG :: [delivery status] Given mail addresses not found :: " +recipientsArr + " for mapperID :: "+mapperId);
+            return;
+        }
         oldRecords = oldRecords.stream().filter(oldRecord -> !oldRecord.getStatus().equals(deliveryStatus)).collect(Collectors.toList());
 
         if(oldRecords.isEmpty()) {
             LOGGER.info("OG_MAIL_LOG :: Already updated [delivery status] all the given email addresses");
             return;
         }
-
         OutgoingMailAPI.updateRecipientStatus(oldRecords, deliveryStatus);
+        LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperId);
+    }
 
+    private String extractEmailAddress(String address) {
+        return MailMessageUtil.getUserNameAndEmailAddress.apply(address).getKey();
     }
 
     @Override
@@ -60,8 +70,13 @@ public class MailTrackBeanImpl implements MailBean {
         Integer bounceStatus = MailStatus.BOUNCED.getValue();
         for(Map<String, String> recipient : recipientsArr) {
             String bouncedEmail = recipient.get("emailAddress");
+            bouncedEmail = this.extractEmailAddress(bouncedEmail);
 
             List<V3OutgoingRecipientContext> bounceRecords = OutgoingMailAPI.getRecipients(loggerId, bouncedEmail);
+            if(CollectionUtils.isEmpty(bounceRecords)) {
+                LOGGER.info("OG_MAIL_LOG :: [bounce status] Given mail addresses not found :: " +bouncedEmail + " for mapperID :: "+mapperId);
+                continue;
+            }
             V3OutgoingRecipientContext oldRecord = bounceRecords.get(0);
             if(oldRecord.getStatus().equals(bounceStatus)) {
                 LOGGER.info("OG_MAIL_LOG :: Skipping bounce status update for "+bouncedEmail+", since its already updated");
@@ -76,6 +91,7 @@ public class MailTrackBeanImpl implements MailBean {
 
             OutgoingMailAPI.updateV3(moduleName, oldRecord);
         }
+        LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for mapperId  : "+mapperId);
     }
 
     @Override

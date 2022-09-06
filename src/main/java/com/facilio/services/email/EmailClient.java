@@ -60,7 +60,7 @@ public abstract class EmailClient extends BaseEmailClient {
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
         if (user == null) {
-        	LOGGER.info("Sending email to user who is not in the org  - " + email);
+            LOGGER.info("Sending email to user who is not in the org  - " + email);
 //        	return false;
         }
         return (user == null || user.getUserStatus());
@@ -133,53 +133,53 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private void checkUserDelegation(JSONObject mailJson) throws Exception {
 
-    	Set<String> toEmails = getEmailAddresses(mailJson, TO);
-    	
-    	Set<String> modifiedToEmailList = changeEmailToDelegatedUserEmail(toEmails);
-    	
-    	if(!CollectionUtils.isEmpty(modifiedToEmailList)) {
-    		mailJson.put(TO, combineEmailsAgain(modifiedToEmailList));
-    	}
-    	
-    	Set<String> toCCEmails = getEmailAddresses(mailJson, CC);
-    	
-    	Set<String> modifiedToCCEmailList = changeEmailToDelegatedUserEmail(toCCEmails);
-    	
-    	if(!CollectionUtils.isEmpty(modifiedToCCEmailList)) {
-    		mailJson.put(CC, combineEmailsAgain(modifiedToCCEmailList));
-    	}
-    	
-    	Set<String> toBCCEmails = getEmailAddresses(mailJson, BCC);
-    	
-    	Set<String> modifiedToBCCEmailList = changeEmailToDelegatedUserEmail(toBCCEmails);
-    	
-    	if(!CollectionUtils.isEmpty(modifiedToBCCEmailList)) {
-    		mailJson.put(BCC, combineEmailsAgain(modifiedToBCCEmailList));
-    	}
+        Set<String> toEmails = getEmailAddresses(mailJson, TO);
+
+        Set<String> modifiedToEmailList = changeEmailToDelegatedUserEmail(toEmails);
+
+        if(!CollectionUtils.isEmpty(modifiedToEmailList)) {
+            mailJson.put(TO, combineEmailsAgain(modifiedToEmailList));
+        }
+
+        Set<String> toCCEmails = getEmailAddresses(mailJson, CC);
+
+        Set<String> modifiedToCCEmailList = changeEmailToDelegatedUserEmail(toCCEmails);
+
+        if(!CollectionUtils.isEmpty(modifiedToCCEmailList)) {
+            mailJson.put(CC, combineEmailsAgain(modifiedToCCEmailList));
+        }
+
+        Set<String> toBCCEmails = getEmailAddresses(mailJson, BCC);
+
+        Set<String> modifiedToBCCEmailList = changeEmailToDelegatedUserEmail(toBCCEmails);
+
+        if(!CollectionUtils.isEmpty(modifiedToBCCEmailList)) {
+            mailJson.put(BCC, combineEmailsAgain(modifiedToBCCEmailList));
+        }
     }
-    
+
     private Set<String> changeEmailToDelegatedUserEmail(Set<String> toEmails) throws Exception {
-    	
-    	if(!CollectionUtils.isEmpty(toEmails)) {
-    		
-    		List<String> toEmailsList = toEmails.stream().collect(Collectors.toList());
-    		
-    		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-    		
-    		for(int i=0;i<toEmailsList.size();i++) {
-        		
-    			String email = toEmailsList.get(i);
-    			
-    			User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
-    			if(user != null) {
-    				User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
-        			
-        			toEmailsList.set(i, delegatedUser.getEmail());
-    			}
-        	}
-    		
-    		return toEmailsList.stream().collect(Collectors.toSet());
-    	}
+
+        if(!CollectionUtils.isEmpty(toEmails)) {
+
+            List<String> toEmailsList = toEmails.stream().collect(Collectors.toList());
+
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+
+            for(int i=0;i<toEmailsList.size();i++) {
+
+                String email = toEmailsList.get(i);
+
+                User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+                if(user != null) {
+                    User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
+
+                    toEmailsList.set(i, delegatedUser.getEmail());
+                }
+            }
+
+            return toEmailsList.stream().collect(Collectors.toSet());
+        }
         return null;
     }
 
@@ -255,61 +255,61 @@ public abstract class EmailClient extends BaseEmailClient {
     public static String getNoReplyFromEmail() {
         return getFromEmail("noreply");
     }
-    
+
     public static String getSystemFromAddress(EmailFromAddress.SourceType sourceType) {
-        
-    	String emailAddress = getNoReplyFromEmail();
-		try {
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
-			
-			SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
-					.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
-					.beanClass(EmailFromAddress.class)
-					.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("creationType"), EmailFromAddress.CreationType.DEFAULT.getIntValue()+"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), sourceType.getIntValue()+"", NumberOperators.EQUALS));
-			
-			EmailFromAddress fromAddress = select.fetchFirst();
-			if(fromAddress != null) {
-				emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
-			}
-		} catch (Exception e) {
-			LOGGER.error("unable to fetch email address", e);
-		}
-		return emailAddress;
-    	
+
+        String emailAddress = getNoReplyFromEmail();
+        try {
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+
+            SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+                    .moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+                    .beanClass(EmailFromAddress.class)
+                    .select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("creationType"), EmailFromAddress.CreationType.DEFAULT.getIntValue()+"", NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), sourceType.getIntValue()+"", NumberOperators.EQUALS));
+
+            EmailFromAddress fromAddress = select.fetchFirst();
+            if(fromAddress != null) {
+                emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
+            }
+        } catch (Exception e) {
+            LOGGER.error("unable to fetch email address", e);
+        }
+        return emailAddress;
+
     }
-    
+
     public static String getNotificationFromAddressEmailFromName(String name) throws Exception {
-        
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
-		
-		SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
-				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
-				.beanClass(EmailFromAddress.class)
-				.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), EmailFromAddress.SourceType.NOTIFICATION.getIndex()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("activeStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
-		
-		EmailFromAddress fromAddress = select.fetchFirst();
-		if(fromAddress != null) {
-			String emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
-			return emailAddress;
-		}
-		
-		return null;
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+
+        SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+                .moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+                .beanClass(EmailFromAddress.class)
+                .select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), EmailFromAddress.SourceType.NOTIFICATION.getIndex()+"", NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("activeStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
+
+        EmailFromAddress fromAddress = select.fetchFirst();
+        if(fromAddress != null) {
+            String emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
+            return emailAddress;
+        }
+
+        return null;
     }
 
     public static String getFromEmail(String localPart) {
         StringBuilder builder = new StringBuilder(localPart)
-                                        .append("@");
+                .append("@");
         if (AccountUtil.getCurrentOrg() != null) {
             builder.append(AccountUtil.getCurrentOrg().getDomain()).append(".");
         }
@@ -397,34 +397,33 @@ public abstract class EmailClient extends BaseEmailClient {
         String emailAddressString = (String)mailJson.get(key);
         Set<String> emailAddress = new HashSet<>();
         if(StringUtils.isNotEmpty(emailAddressString)) {
-            JSONObject emailMetaJson = new JSONObject();
-            for(String address : FacilioUtil.splitByComma(emailAddressString)) {
-                Pair<String, String> emailMeta = MailMessageUtil.getUserNameAndEmailAddress.apply(address);
-                address = emailMeta.getKey();
+            Set<String> originalEmailAddresses = new HashSet<>();
+            for(String origAddr : FacilioUtil.splitByComma(emailAddressString)) {
+                Pair<String, String> emailMeta = MailMessageUtil.getUserNameAndEmailAddress.apply(origAddr);
+                String address = emailMeta.getKey();
                 if(!FacilioProperties.isProduction()) {
                     if (address != null && address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
-                        emailMetaJson.put(address, emailMeta.getValue());
+                        originalEmailAddresses.add(origAddr);
                     }
                 } else {
                     if (address != null && address.contains("@") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
-                        emailMetaJson.put(address, emailMeta.getValue());
+                        originalEmailAddresses.add(origAddr);
                     }
                 }
             }
-            preserveOriginalEmailAddress(mailJson, key, emailMetaJson);
+            preserveOriginalEmailAddress(mailJson, key, originalEmailAddresses);
         }
-
         return emailAddress;
     }
 
-    private void preserveOriginalEmailAddress(JSONObject mailJson, String key, JSONObject emailMetaJson) {
+    private void preserveOriginalEmailAddress(JSONObject mailJson, String key, Set<String> emailAddresses) {
         String originalKey = "original"+StringUtils.capitalize(key);
         if(mailJson.containsKey(originalKey)) {
             return;
         }
-        mailJson.put(originalKey, emailMetaJson);
+        mailJson.put(originalKey, combineEmailsAgain(emailAddresses));
     }
 
     private void preserveOriginalEmailAddress(JSONObject mailJson) throws Exception {

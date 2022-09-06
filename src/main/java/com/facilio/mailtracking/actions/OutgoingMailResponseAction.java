@@ -28,20 +28,23 @@ public class OutgoingMailResponseAction extends ActionSupport {
     @Override
     public String execute() throws Exception {
         JSONObject requestJson = null;
+        AwsMailResponseContext awsMailResponseContext = null;
         try {
             LOGGER.info("OG_MAIL_LOG :: I am in OutgoingMailResponseAction entry point");
             requestJson = parseRequestData();
-            AwsMailResponseContext awsMailResponseContext = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
+            awsMailResponseContext = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
             V3Util.throwRestException(
                     awsMailResponseContext == null || awsMailResponseContext.getEventType() == null,
                     ErrorCode.RESOURCE_NOT_FOUND,
                     "eventType :: not found (look for SubscribeURL in data)"
             );
+            awsMailResponseContext.setResponse(requestJson);
             String mapperId = OutgoingMailAPI.parseMailResponse(awsMailResponseContext);
             status = "Successfully parsed and updated aws mail responses for mapperId :: "+mapperId;
             LOGGER.info("OG_MAIL_LOG :: "+status);
             return SUCCESS;
         } catch (Exception e) {
+            logRequestJson(awsMailResponseContext, requestJson);
             LOGGER.error("OG_MAIL_ERROR :: OutgoingMailResponse parsing failed.. ");
             String subUrl = (String) requestJson.getOrDefault("SubscribeURL", "-1");
             if(!subUrl.equals("-1")) {
@@ -52,6 +55,14 @@ public class OutgoingMailResponseAction extends ActionSupport {
             parserErrorMsg(e, requestJson);
             return ERROR;
         }
+    }
+
+    private void logRequestJson(AwsMailResponseContext awsMailResponseContext, JSONObject requestJson) throws Exception {
+        if(awsMailResponseContext == null) {
+            awsMailResponseContext = new AwsMailResponseContext();
+        }
+        awsMailResponseContext.setResponse(requestJson);
+        OutgoingMailAPI.logResponses(null, awsMailResponseContext);
     }
 
     private void parserErrorMsg(Exception e, JSONObject requestJson) {
