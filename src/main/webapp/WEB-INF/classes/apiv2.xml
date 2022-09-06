@@ -6892,4 +6892,10 @@
 		</action>
 
 	</package>
+	<package name="servicerequests" namespace="/api/v2/servicerequests" extends="v2Api">
+
+		<action name="fetchSubModules" class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServcieRequestSubModules" />
+
+	</package>
+
 </struts>
