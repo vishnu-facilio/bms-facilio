@@ -22,6 +22,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -218,24 +219,6 @@ public class SetManualToolTransactionsCommandV3  extends FacilioCommand {
             return stockedTools.get(0);
         }
         return null;
-    }
-
-    private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<V3ToolTransactionContext> tools)
-            throws Exception {
-        InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
-                .module(module).fields(fields).addRecords(tools);
-        readingBuilder.save();
-    }
-
-    private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, V3ToolTransactionContext tool)
-            throws Exception {
-
-        UpdateRecordBuilder<V3ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<V3ToolTransactionContext>()
-                .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-        updateBuilder.update(tool);
-
-        System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
-
     }
 
     public static int getEstimatedWorkDuration(long issueTime, long returnTime) {

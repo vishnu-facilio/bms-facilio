@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -441,7 +442,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		GRAPHICS(5,"graphics",WidgetGraphicsContext.class),
 		CARD(6,"card",WidgetCardContext.class),
 		SECTION(7,"section", WidgetSectionContext.class),
-		FILTER(8,"filter", DashboardWidgetContext.class);
+		FILTER(8,"filter", WidgetDashboardFilterContext.class);
 		
 		private int value;
 		private String name;

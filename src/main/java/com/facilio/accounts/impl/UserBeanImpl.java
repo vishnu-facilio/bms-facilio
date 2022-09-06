@@ -977,8 +977,6 @@ public class UserBeanImpl implements UserBean {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupMemberModule().getTableName())
 				.fields(AccountConstants.getGroupMemberFields());
-		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
-
 		for (Long group : groups) {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
@@ -986,6 +984,8 @@ public class UserBeanImpl implements UserBean {
 //			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
 			props.put("moduleId",module.getModuleId());
 			props.put("memberRole", GroupMemberRole.MEMBER.getMemberRole());
+			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
+			props.put("moduleId",moduleid);
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();

@@ -34,7 +34,7 @@ public class InsertOutgoingMailAttachmentsCommand extends FacilioCommand {
         }
         OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS, records);
         if(FacilioProperties.isDevelopment()) {
-            this.updateFilePath(files);
+            updateFilePath(files);
         }
         return false;
     }

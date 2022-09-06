@@ -113,7 +113,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									addReadingChain.execute();
 									
 								}
-								LOGGER.debug("Readings Added for : "+formula.getName() + ", time taken : " + (System.currentTimeMillis() - formulaExecStTime));
+								LOGGER.info("Readings Added for : "+formula.getName() + ", time taken : " + (System.currentTimeMillis() - formulaExecStTime)  + ", frequency : " + formula.getFrequency()  + ", No of included resources : " + formula.getIncludedResources().size() );
 
 							}
 							catch (Exception e) {

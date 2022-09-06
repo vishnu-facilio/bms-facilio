@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
+import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -23,7 +25,9 @@ public class V3DashboardRuleAction extends V3Action {
     public DashboardRuleContext dashboard_rule;
     private Long dashboard_rule_id;
     private Long dashboardId;
+    private String dashboard_link_name;
     private Long dashboardTabId;
+    private DashboardExecuteMetaContext action_meta = new DashboardExecuteMetaContext();
 
     public String create()throws Exception
     {
@@ -120,6 +124,32 @@ public class V3DashboardRuleAction extends V3Action {
     public String runMigrationForWidgetLinkName()throws Exception
     {
         V3DashboardAPIHandler.runMigrationForWidgetLinkName();
+        return SUCCESS;
+    }
+
+
+    public String execute()throws Exception{
+
+        FacilioChain chain = TransactionChainFactoryV3.getDashboardRuleExecuteChain();
+        FacilioContext context = chain.getContext();
+        context.put("action_meta", action_meta);
+        chain.execute();
+        return SUCCESS;
+    }
+
+    public String getTriggerWidgets()throws Exception{
+        if(dashboardId != null){
+            FacilioChain chain = TransactionChainFactoryV3.getDashboardWidgetsChain();
+            FacilioContext context = chain.getContext();
+            context.put("dashboardId", dashboardId);
+            chain.execute();
+            if(context.containsKey("widgets")){
+                List widgets = (ArrayList) context.get("widgets");
+                setData("widgets" , widgets);
+            }else{
+                setData("error" , "error");
+            }
+        }
         return SUCCESS;
     }
 }

@@ -18,6 +18,7 @@ public class ClassificationContext extends V3Context {
     private ClassificationContext parentClassification;
     private Boolean extendAttribute;
     private Set<Long> appliedModuleIds;
+    private Boolean status;
 
     private String classificationPath;
     public void setClassificationPath(String classificationPath) {

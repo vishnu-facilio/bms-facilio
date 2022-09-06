@@ -4,6 +4,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.MarkDownUtil;
 
+import java.util.List;
+
 
 public class NoteContext extends ModuleBaseWithCustomFields {
 	
@@ -86,5 +88,15 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	}
 	public void setParent(ModuleBaseWithCustomFields parent) {
 		this.parent = parent;
+	}
+
+	private List<CommentSharingContext> commentSharing;
+	
+	public List<CommentSharingContext> getCommentSharing() {
+		return commentSharing;
+	}
+
+	public void setCommentSharing(List<CommentSharingContext> commentSharing) {
+		this.commentSharing = commentSharing;
 	}
 }

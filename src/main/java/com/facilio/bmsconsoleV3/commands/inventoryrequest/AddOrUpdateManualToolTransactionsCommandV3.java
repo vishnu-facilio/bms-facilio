@@ -14,6 +14,11 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -36,11 +41,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -262,18 +262,12 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
 
     private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<V3ToolTransactionContext> tools)
             throws Exception {
-        InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
-                .module(module).fields(fields).addRecords(tools);
-        readingBuilder.save();
+        V3Util.createRecordList(module, FieldUtil.getAsMapList(tools,V3ToolTransactionContext.class),null,null);
     }
 
     private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, V3ToolTransactionContext tool)
             throws Exception {
-
-        UpdateRecordBuilder<V3ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<V3ToolTransactionContext>()
-                .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-        updateBuilder.update(tool);
-
+        V3Util.updateBulkRecords(module.getName(), FacilioUtil.getAsMap(FieldUtil.getAsJSON(tool)), Collections.singletonList(tool.getId()),false);
         System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 
     }

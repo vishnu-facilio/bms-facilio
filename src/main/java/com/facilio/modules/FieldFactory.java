@@ -466,7 +466,7 @@ public class FieldFactory extends BaseFieldFactory {
         }));
 
     }
-    
+        
     public static List<FacilioField> getFormFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFormModule();
@@ -732,6 +732,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
         fields.add(getField(AgentConstants.DISCOVER_CONTROLLERS_TIMEOUT,"DISCOVER_CONTROLLERS_TIMEOUT",module,FieldType.NUMBER));
         fields.add(getField(AgentConstants.DISCOVER_POINTS_TIMEOUT,"DISCOVER_POINTS_TIMEOUT",module,FieldType.NUMBER));
+        fields.add(getField("commandMaxRetryCount","COMMAND_MAX_RETRY_COUNT",module,FieldType.NUMBER));
         return fields;
     }
 
@@ -10978,6 +10979,15 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("userId","USERID",module));
         fields.add(getField("keyName", "KEY_NAME", module, FieldType.STRING));
         fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
+        return fields;
+    }
+
+    public static List<FacilioField> getCommentsSharingFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField("id", "ID", module));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.LOOKUP));
+        fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.LOOKUP));
         return fields;
     }
 

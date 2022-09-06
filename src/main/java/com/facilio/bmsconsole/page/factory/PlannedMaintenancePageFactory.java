@@ -18,13 +18,13 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         addPlannerTab(page);
 
         // Executed WorkOrders
-        addExecutedWorkOrdersTab(page);
+        //addExecutedWorkOrdersTab(page);
 
         // Scheduler
-        addSchedulerTab(page);
+        //addSchedulerTab(page);
 
         // History
-        addHistoryTab(page);
+        //addHistoryTab(page);
 
         return page;
     }
@@ -70,7 +70,7 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         plannerTab.addSection(plannerTabSection);
 
         PageWidget pmPlannerDetailsWidget = new PageWidget(PageWidget.WidgetType.PM_PLANNER_DETAILS);
-        pmPlannerDetailsWidget.addToLayoutParams(plannerTabSection, 24, 18);
+        pmPlannerDetailsWidget.addToLayoutParams(plannerTabSection, 24, 13);
         pmPlannerDetailsWidget.addToWidgetParams("card", "pmPlannerDetails");
         plannerTabSection.addWidget(pmPlannerDetailsWidget);
 
@@ -85,7 +85,7 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         executedWorkOrdersTab.addSection(executedWorkOrdersSection);
 
         PageWidget pmExecutedWorkOrdersDetailsWidget = new PageWidget(PageWidget.WidgetType.PM_EXECUTED_WORKORDERS_DETAILS);
-        pmExecutedWorkOrdersDetailsWidget.addToLayoutParams(executedWorkOrdersSection, 24, 24);
+        pmExecutedWorkOrdersDetailsWidget.addToLayoutParams(executedWorkOrdersSection, 24, 13);
         pmExecutedWorkOrdersDetailsWidget.addToWidgetParams("card", "pmExecutedWorkOrdersDetails");
         executedWorkOrdersSection.addWidget(pmExecutedWorkOrdersDetailsWidget);
     }
@@ -98,7 +98,7 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         schedulerTab.addSection(schedulerSection);
 
         PageWidget schedulerDetailsWidget = new PageWidget(PageWidget.WidgetType.PM_SCHEDULER_DETAILS);
-        schedulerDetailsWidget.addToLayoutParams(schedulerSection, 24, 24);
+        schedulerDetailsWidget.addToLayoutParams(schedulerSection, 24, 13);
         schedulerDetailsWidget.addToWidgetParams("card", "pmSchedulerDetails");
         schedulerSection.addWidget(schedulerDetailsWidget);
     }

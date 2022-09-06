@@ -11,7 +11,9 @@ import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemConte
 import com.facilio.bmsconsoleV3.util.V3StoreroomApi;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -49,9 +51,7 @@ public class UpdateToolTransactionCommandV3 extends FacilioCommand {
                         woTool = setWorkorderToolObj(quantityTransferred, tool, toolType,transferRequests.get(0).getId());
                         toolTransactiosnToBeAdded.add(woTool);
                     }
-                    InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
-                            .module(toolTransactionsModule).fields(toolTransactionsFields).addRecords(toolTransactiosnToBeAdded);
-                    readingBuilder.save();
+                V3Util.createRecordList(toolTransactionsModule, FieldUtil.getAsMapList(toolTransactiosnToBeAdded,V3ToolTransactionContext.class),null,null);
             }
         }
         return false;

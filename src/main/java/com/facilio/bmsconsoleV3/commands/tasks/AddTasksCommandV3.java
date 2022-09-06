@@ -93,9 +93,11 @@ public class AddTasksCommandV3 extends FacilioCommand implements PostTransaction
                 task.setInputValue(isPrerequest ? null : task.getDefaultValue());
                 if (StringUtils.isNotEmpty(task.getInputValue()) && StringUtils.isNotEmpty(task.getFailureValue())) {
                     if (task.getInputTypeEnum() == V3TaskContext.InputType.NUMBER) {
-                        FacilioModulePredicate predicate =
-                                task.getDeviationOperator().getPredicate("inputValue", task.getFailureValue());
-                        task.setFailed(predicate.evaluate(task));
+                        if (task.getDeviationOperator() != null) {
+                            FacilioModulePredicate predicate =
+                                    task.getDeviationOperator().getPredicate("inputValue", task.getFailureValue());
+                            task.setFailed(predicate.evaluate(task));
+                        }
                     } else if (task.getFailureValue().equals(task.getInputValue())) {
                         task.setFailed(true);
                     } else {

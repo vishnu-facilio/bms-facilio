@@ -11,6 +11,7 @@ import org.apache.commons.chain.Context;
 
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class FillTasksAndPrerequisitesCommand extends FacilioCommand {
         V3WorkOrderContext workOrderContext = wos.get(0);
 
         // allTasks stores all the tasks. [ This has to be added to tasksString in V3WorkOrderContext ]
-        Map<String, List<V3TaskContext>> allTasks = new HashMap<>();
+        LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();
 
         // Get the JobPlanContext
         JobPlanContext jobPlan = workOrderContext.getJobPlan(); // jobPlanContext will be available in workOrderContext

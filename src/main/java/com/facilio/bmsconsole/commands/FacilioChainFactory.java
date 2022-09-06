@@ -350,6 +350,7 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteNotesChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new FetchNoteCommand());
+		c.addCommand(new DeleteCommentSharingCommand());
 		c.addCommand(new DeleteNoteCommand());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
@@ -1744,6 +1745,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getNotesChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetNotesCommand());
+		c.addCommand(new FetchCommentSharingCommand());
 		return c;
 	}
 	

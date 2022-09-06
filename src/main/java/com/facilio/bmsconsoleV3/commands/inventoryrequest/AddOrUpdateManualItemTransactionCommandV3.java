@@ -15,6 +15,11 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -33,11 +38,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -298,17 +298,13 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
 
     private void addWorkorderParts(FacilioModule module, List<FacilioField> fields, List<V3ItemTransactionsContext> parts)
             throws Exception {
-        InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                .module(module).fields(fields).addRecords(parts);
-        readingBuilder.save();
+        V3Util.createRecordList(module, FieldUtil.getAsMapList(parts,V3ItemTransactionsContext.class),null,null);
     }
 
     private void updateWorkorderItems(FacilioModule module, List<FacilioField> fields, V3ItemTransactionsContext item)
             throws Exception {
-
-        UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
-                .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
-        updateBuilder.update(item);
+        Long itemId = item.getId();
+        V3Util.updateBulkRecords(module.getName(), FacilioUtil.getAsMap(FieldUtil.getAsJSON(item)), Collections.singletonList(itemId),false);
 
         System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 

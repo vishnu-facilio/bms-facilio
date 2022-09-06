@@ -49,6 +49,7 @@ public class FacilioAgent implements Serializable {
     private String messageSource;
     private long messageSourceId = -1;
     private String subscribeTopics;
+    private long commandMaxRetryCount;
     
     Map<String, Object> params;
 
@@ -227,6 +228,14 @@ public class FacilioAgent implements Serializable {
 
     public void setDiscoverPointsTimeOut(long discoverPointsTimeOut) {
         this.discoverPointsTimeOut = discoverPointsTimeOut;
+    }
+
+    public void setCommandMaxRetryCount(long count){
+        this.commandMaxRetryCount = count;
+    }
+
+    public long getCommandMaxRetryCount(long count){
+        return this.commandMaxRetryCount;
     }
 
     /*public HashSet<ControllerContext> getControllers() {

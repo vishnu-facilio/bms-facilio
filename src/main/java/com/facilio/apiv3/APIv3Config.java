@@ -52,10 +52,8 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
-import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
@@ -63,6 +61,10 @@ import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCom
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionBeforeFetchCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskBeforeFetchCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
@@ -151,6 +153,8 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
+import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
+import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
@@ -898,6 +902,7 @@ public class APIv3Config {
                 .afterSave(new UpdateItemTransactionsCommandV3())
                 .update()
                 .list()
+                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
                 .summary()
                 .build();
     }
@@ -910,6 +915,7 @@ public class APIv3Config {
                 .afterSave(new UpdateToolTransactionsCommandV3())
                 .update()
                 .list()
+                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
                 .summary()
                 .build();
     }
@@ -1586,6 +1592,38 @@ public class APIv3Config {
                 .afterFetch(TransactionChainFactoryV3.getJobPlanSummaryAfterFetchChain())
                 .delete()
                 .beforeDelete(TransactionChainFactoryV3.getDeleteJobPlanBeforeChain())
+                .build();
+    }
+
+    @Module("jobplansection")
+    public static Supplier<V3Config> getJobPlanSection(){
+        return () -> new V3Config(JobPlanTaskSectionContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new AddCriteriaForJobPlanSectionBeforeFetchCommand())
+                .build();
+    }
+
+    @Module("jobplantask")
+    public static Supplier<V3Config> getJobPlanTask(){
+        return () -> new V3Config(JobPlanTasksContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new AddCriteriaForJobPlanTaskBeforeFetchCommand())
+                .build();
+    }
+
+    @Module("jobPlanTaskInputOptions")
+    public static Supplier<V3Config> getJobPlanTaskInputOptions(){
+        return () -> new V3Config(TaskInputOptionsContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new AddCriteriaForJobPlanTaskInputOptionsBeforeFetchCommand())
+                .build();
+    }
+
+    @Module("jobPlanSectionInputOptions")
+    public static Supplier<V3Config> getJobPlanSectionInputOptions(){
+        return () -> new V3Config(SectionInputOptionsContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand())
                 .build();
     }
 
