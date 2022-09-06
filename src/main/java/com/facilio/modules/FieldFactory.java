@@ -10849,6 +10849,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getMailResponsesFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMailResponseModule();
+        fields.add(getIdField(module));
+        fields.add(getField("mapperId", "MAPPER_ID", module, FieldType.NUMBER));
+        fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.STRING));
+        fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
+        fields.add(getSystemField("sysCreatedTime", module));
+        return fields;
+    }
+
     public  static List<FacilioField> getScatterGraphMetaFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getScatterGraphLineModule();

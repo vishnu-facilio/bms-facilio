@@ -2334,7 +2334,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getOutgoingMailLogger() {
         return () -> new V3Config(V3OutgoingMailLogContext.class, null)
                 .list()
-                .beforeFetch(new FilterOutFailedMailLogsCommand())
+//                .beforeFetch(new FilterOutFailedMailLogsCommand())
                 .afterFetch(new UpdateMailRecordsModuleNameCommand())
                 .summary()
                 .afterFetch(new FetchMailAttachmentsCommand())

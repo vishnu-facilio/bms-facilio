@@ -18,27 +18,34 @@ import java.util.Map;
 public class ParseMailResponseCommand {
 
     public static String executeCommand(AwsMailResponseContext awsResponses) throws Exception {
-        JSONObject mail = awsResponses.getMail();
-        JSONObject delivery = awsResponses.getDelivery();
-        JSONObject bounce = awsResponses.getBounce();
+        JSONObject response = awsResponses.getResponse();
+        String eventType = awsResponses.getEventType();
+
+        JSONObject mail = (JSONObject) response.get("mail");
+        V3Util.throwRestException(mail.isEmpty(), ErrorCode.VALIDATION_ERROR, "mail can't be null");
 
         Map<String, Object> tags = (Map<String, Object>) mail.get("tags");
-        V3Util.throwRestException(tags.isEmpty(), ErrorCode.VALIDATION_ERROR, "Tags can't be null");
+        V3Util.throwRestException(tags.isEmpty(), ErrorCode.VALIDATION_ERROR, "tags can't be null");
 
         List<String> mapperIdList = (List<String>) tags.get(MailConstants.Params.MAPPER_ID);
         V3Util.throwRestException(CollectionUtils.isEmpty(mapperIdList), ErrorCode.VALIDATION_ERROR, "mapperId can't be null");
 
         String mapperId = mapperIdList.get(0);
+        OutgoingMailAPI.logResponses(mapperId, awsResponses);
         MailBean mailBean = getMailBeanWithCurrentOrg(mapperId);
 
-        if(!(delivery == null || delivery.isEmpty())) {
-            mailBean.updateDeliveryStatus(mapperId, delivery);
-            LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperIdList);
-        }
-
-        if(!(bounce == null || bounce.isEmpty())) {
-            mailBean.updateBounceStatus(mapperId, bounce);
-            LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for mapperId  : "+mapperIdList);
+        switch(eventType) {
+            case "Delivery" :
+                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("delivery"), false);
+                break;
+            case "DeliveryDelay" :
+                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("deliveryDelay"), true);
+                break;
+            case "Bounce" :
+                mailBean.updateBounceStatus(mapperId, (JSONObject) response.get("bounce"));
+                break;
+            default:
+                LOGGER.info("OG_MAIL_NOTIFY :: Unknown eventType detected :: "+eventType);
         }
         return mapperId;
     }

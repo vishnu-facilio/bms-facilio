@@ -184,4 +184,17 @@ public class OutgoingMailAPI {
             mailJson.put(key, emailList.stream().collect(Collectors.joining(",")));
         }
     }
+
+    public static void logResponses(String mapperId, AwsMailResponseContext awsResponses) throws Exception {
+        if(mapperId!=null) {
+            awsResponses.setMapperId(Long.valueOf(mapperId));
+        }
+
+        Map<String, Object> row = FieldUtil.getAsJSON(awsResponses);
+        row.put("sysCreatedTime", System.currentTimeMillis());
+        row.put("response", awsResponses.getResponse());
+        FacilioModule module = ModuleFactory.getMailResponseModule();
+        List<FacilioField> fields = FieldFactory.getMailResponsesFields();
+        OutgoingMailAPI.insert(module, fields, row);
+    }
 }

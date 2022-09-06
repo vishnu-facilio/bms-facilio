@@ -26,26 +26,45 @@ import java.util.stream.Collectors;
 public class MailTrackBeanImpl implements MailBean {
 
     @Override
-    public void updateDeliveryStatus(String mapperId, JSONObject delivery) throws Exception {
+    public void updateDeliveryStatus(String mapperId, JSONObject delivery, boolean delayed) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
         V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR,
                 "LoggerId is not found for given mapperId :: "+mapperId);
 
-        List<String> recipientsArr = (List<String>) delivery.get("recipients");
+        String eventType = delayed ? "deliveryDelay" : "delivery";
+        List<String> recipientsArr = this.extractRecipients(delivery, eventType);
         V3Util.throwRestException(CollectionUtils.isEmpty(recipientsArr), ErrorCode.VALIDATION_ERROR,
                 "recipients cant be empty");
 
         Integer deliveryStatus = MailStatus.DELIVERED.getValue();
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId, StringUtils.join(recipientsArr, ", "));
+        if(oldRecords.isEmpty()) {
+            LOGGER.info("OG_MAIL_LOG :: [delivery status] Given mail addresses not found :: " +recipientsArr + " for mapperID :: "+mapperId);
+            return;
+        }
         oldRecords = oldRecords.stream().filter(oldRecord -> !oldRecord.getStatus().equals(deliveryStatus)).collect(Collectors.toList());
 
         if(oldRecords.isEmpty()) {
             LOGGER.info("OG_MAIL_LOG :: Already updated [delivery status] all the given email addresses");
             return;
         }
-
         OutgoingMailAPI.updateRecipientStatus(oldRecords, deliveryStatus);
+        LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperId);
+    }
 
+
+    private List<String> extractRecipients(JSONObject data, String eventType) throws Exception {
+        if(eventType.equals("delivery")) {
+            return (List<String>) data.get("recipients");
+        }
+        if(eventType.equals("deliveryDelay")) {
+            List<Map<String, String>> recipientsArr = (List<Map<String, String>>) data.get("delayedRecipients");
+            if(CollectionUtils.isEmpty(recipientsArr)) {
+                return null;
+            }
+            return recipientsArr.stream().map(row -> row.get("emailAddress")).collect(Collectors.toList());
+        }
+        return null;
     }
 
     @Override
@@ -62,6 +81,10 @@ public class MailTrackBeanImpl implements MailBean {
             String bouncedEmail = recipient.get("emailAddress");
 
             List<V3OutgoingRecipientContext> bounceRecords = OutgoingMailAPI.getRecipients(loggerId, bouncedEmail);
+            if(CollectionUtils.isEmpty(bounceRecords)) {
+                LOGGER.info("OG_MAIL_LOG :: [bounce status] Given mail addresses not found :: " +bouncedEmail + " for mapperID :: "+mapperId);
+                continue;
+            }
             V3OutgoingRecipientContext oldRecord = bounceRecords.get(0);
             if(oldRecord.getStatus().equals(bounceStatus)) {
                 LOGGER.info("OG_MAIL_LOG :: Skipping bounce status update for "+bouncedEmail+", since its already updated");
@@ -76,6 +99,7 @@ public class MailTrackBeanImpl implements MailBean {
 
             OutgoingMailAPI.updateV3(moduleName, oldRecord);
         }
+        LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for mapperId  : "+mapperId);
     }
 
     @Override
