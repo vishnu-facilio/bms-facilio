@@ -1,7 +1,6 @@
 package com.facilio.mailtracking;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -25,7 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -175,26 +177,24 @@ public class OutgoingMailAPI {
     public static void restoreEmailAddress(JSONObject mailJson, String key) {
         String originalKey = "original"+ StringUtils.capitalize(key);
         if(mailJson.containsKey(originalKey)) {
-            JSONObject emailMetaJson = (JSONObject) mailJson.get(originalKey);
-            Set<Map.Entry> keys = emailMetaJson.entrySet();
-            List<String> emailList = new ArrayList<>();
-            for (Map.Entry en : keys) {
-                emailList.add(MailMessageUtil.getOriginalEmailAddress.apply(en));
-            }
-            mailJson.put(key, emailList.stream().collect(Collectors.joining(",")));
+            mailJson.put(key, mailJson.get(originalKey));
         }
     }
 
-    public static void logResponses(String mapperId, AwsMailResponseContext awsResponses) throws Exception {
-        if(mapperId!=null) {
-            awsResponses.setMapperId(Long.valueOf(mapperId));
-        }
+    public static void logResponses(String mapperId, AwsMailResponseContext awsResponses) {
+        try {
+            if (mapperId != null) {
+                awsResponses.setMapperId(Long.valueOf(mapperId));
+            }
 
-        Map<String, Object> row = FieldUtil.getAsJSON(awsResponses);
-        row.put("sysCreatedTime", System.currentTimeMillis());
-        row.put("response", awsResponses.getResponse());
-        FacilioModule module = ModuleFactory.getMailResponseModule();
-        List<FacilioField> fields = FieldFactory.getMailResponsesFields();
-        OutgoingMailAPI.insert(module, fields, row);
+            Map<String, Object> row = FieldUtil.getAsJSON(awsResponses);
+            row.put("sysCreatedTime", System.currentTimeMillis());
+            row.put("response", awsResponses.getResponse());
+            FacilioModule module = ModuleFactory.getMailResponseModule();
+            List<FacilioField> fields = FieldFactory.getMailResponsesFields();
+            OutgoingMailAPI.insert(module, fields, row);
+        } catch (Exception e) {
+            LOGGER.error("OG_MAIL_ERROR :: Not able log the mail responses. Exception ::", e);
+        }
     }
 }

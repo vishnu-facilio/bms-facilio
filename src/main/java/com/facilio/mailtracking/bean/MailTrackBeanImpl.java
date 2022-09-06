@@ -1,6 +1,7 @@
 package com.facilio.mailtracking.bean;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.transaction.NewTransactionService;
@@ -26,15 +27,16 @@ import java.util.stream.Collectors;
 public class MailTrackBeanImpl implements MailBean {
 
     @Override
-    public void updateDeliveryStatus(String mapperId, JSONObject delivery, boolean delayed) throws Exception {
+    public void updateDeliveryStatus(String mapperId, JSONObject delivery) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
         V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR,
                 "LoggerId is not found for given mapperId :: "+mapperId);
 
-        String eventType = delayed ? "deliveryDelay" : "delivery";
-        List<String> recipientsArr = this.extractRecipients(delivery, eventType);
+        List<String> recipientsArr = (List<String>) delivery.get("recipients");
         V3Util.throwRestException(CollectionUtils.isEmpty(recipientsArr), ErrorCode.VALIDATION_ERROR,
                 "recipients cant be empty");
+
+        recipientsArr = recipientsArr.stream().map(email -> extractEmailAddress(email)).collect(Collectors.toList());
 
         Integer deliveryStatus = MailStatus.DELIVERED.getValue();
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId, StringUtils.join(recipientsArr, ", "));
@@ -52,19 +54,8 @@ public class MailTrackBeanImpl implements MailBean {
         LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperId);
     }
 
-
-    private List<String> extractRecipients(JSONObject data, String eventType) throws Exception {
-        if(eventType.equals("delivery")) {
-            return (List<String>) data.get("recipients");
-        }
-        if(eventType.equals("deliveryDelay")) {
-            List<Map<String, String>> recipientsArr = (List<Map<String, String>>) data.get("delayedRecipients");
-            if(CollectionUtils.isEmpty(recipientsArr)) {
-                return null;
-            }
-            return recipientsArr.stream().map(row -> row.get("emailAddress")).collect(Collectors.toList());
-        }
-        return null;
+    private String extractEmailAddress(String address) {
+        return MailMessageUtil.getUserNameAndEmailAddress.apply(address).getKey();
     }
 
     @Override
@@ -79,6 +70,7 @@ public class MailTrackBeanImpl implements MailBean {
         Integer bounceStatus = MailStatus.BOUNCED.getValue();
         for(Map<String, String> recipient : recipientsArr) {
             String bouncedEmail = recipient.get("emailAddress");
+            bouncedEmail = this.extractEmailAddress(bouncedEmail);
 
             List<V3OutgoingRecipientContext> bounceRecords = OutgoingMailAPI.getRecipients(loggerId, bouncedEmail);
             if(CollectionUtils.isEmpty(bounceRecords)) {

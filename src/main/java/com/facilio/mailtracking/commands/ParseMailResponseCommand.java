@@ -34,18 +34,15 @@ public class ParseMailResponseCommand {
         OutgoingMailAPI.logResponses(mapperId, awsResponses);
         MailBean mailBean = getMailBeanWithCurrentOrg(mapperId);
 
-        switch(eventType) {
+        switch(eventType) { // handled event types
             case "Delivery" :
-                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("delivery"), false);
-                break;
-            case "DeliveryDelay" :
-                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("deliveryDelay"), true);
+                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("delivery"));
                 break;
             case "Bounce" :
                 mailBean.updateBounceStatus(mapperId, (JSONObject) response.get("bounce"));
                 break;
             default:
-                LOGGER.info("OG_MAIL_NOTIFY :: Unknown eventType detected :: "+eventType);
+                LOGGER.info("OG_MAIL_NOTIFY :: Unhandled eventType detected :: "+eventType);
         }
         return mapperId;
     }
