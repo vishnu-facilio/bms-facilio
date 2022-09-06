@@ -35,11 +35,4 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         mailJson.remove("originalBcc");
     }
 
-
-    private void resetMailJson(JSONObject mailJson) {
-        mailJson.remove("originalTo");
-        mailJson.remove("originalCc");
-        mailJson.remove("originalBcc");
-    }
-
 }
