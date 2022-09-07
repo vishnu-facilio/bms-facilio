@@ -52,7 +52,6 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
@@ -68,7 +67,7 @@ import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskIn
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
-import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.PeopleValidationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
@@ -80,7 +79,6 @@ import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
@@ -1160,7 +1158,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeUpdateChain())
+                .beforeSave(new PeopleValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getTenantContactBeforeFetchChain())
@@ -1181,7 +1179,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeUpdateChain())
+                .beforeSave(new PeopleValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getVendorContactBeforeFetchChain())
@@ -1202,7 +1200,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                 .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.getUpdateEmployeeBeforeUpdateChain())
+                .beforeSave(new PeopleValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getEmployeeBeforeFetchChain())
@@ -1222,7 +1220,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getClientContactBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getClientContactAfterSaveChain())
                 .update()
-                .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                .beforeSave(new PeopleValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getClientContactAfterSaveChain())
                 .list()
                 .beforeFetch(new LoadClientContactLookupCommandV3())
