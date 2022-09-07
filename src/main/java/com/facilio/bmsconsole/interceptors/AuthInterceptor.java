@@ -108,6 +108,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 					} catch (SecurityPolicyException secEx) {
 						SecurityPolicyException.ErrorCode errorCode = secEx.getErrorCode();
 						if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {
+							if(iamAccount != null){
+								LOGGER.error("[session expiry] Web_session_expiry" +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
+							}
 							return "sessionexpired";
 						}
 					} catch (Exception ex) {
@@ -115,6 +118,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 						if (cause instanceof SecurityPolicyException) {
 							SecurityPolicyException.ErrorCode errorCode = ((SecurityPolicyException) cause).getErrorCode();
 							if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {
+								if(iamAccount != null){
+									LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
+								}
 								return "sessionexpired";
 							}
 						}
