@@ -467,7 +467,8 @@ public class PageWidget {
 		PM_EXECUTED_WORKORDERS_DETAILS("pmExecutedWorkOrdersDetails"),
 		PM_SCHEDULER_DETAILS("pmSchedulerDetails"),
 
-		SPACE_BOOKING_FULL_SUMMARY("spaceBookingFullSummary");
+		SPACE_BOOKING_FULL_SUMMARY("spaceBookingFullSummary"),
+		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget");
 
 		private String name;
 

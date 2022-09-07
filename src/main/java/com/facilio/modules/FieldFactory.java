@@ -10915,7 +10915,47 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getCustomPageWidgetFields() {
+        FacilioModule module = ModuleFactory.getCustomPageWidgetModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField());
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
+        return fields;
+    }
+
+    public static List<FacilioField> getSummaryWidgetGroupFields() {
+        FacilioModule module = ModuleFactory.getSummaryWidgetGroupModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField());
+        fields.add(getNameField(module));
+        fields.add(getDisplayNameField(module));
+        fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("span", "SPAN", module, FieldType.NUMBER));
+        fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getSummaryWidgetGroupFieldsFields() {
+        FacilioModule module = ModuleFactory.getSummaryWidgetGroupFieldsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField());
+        fields.add(getNameField(module));
+        fields.add(getDisplayNameField(module));
+        fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("widgetGroupId", "GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {

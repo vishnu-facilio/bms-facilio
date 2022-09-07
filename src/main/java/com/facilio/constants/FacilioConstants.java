@@ -280,6 +280,13 @@ public class FacilioConstants {
 
 		public static final String EMPLOYEE_PORTAL_ACCESS = "employeePortalAccess";
 
+		public static final String CUSTOM_PAGE = "customPage";
+		public static final String CUSTOM_PAGE_WIDGET = "customPageWidget";
+		public static final String CUSTOM_WIDGET_GROUP = "customWidgetGroup";
+		public static final String CUSTOM_WIDGET_GROUP_FIELDS = "customWidgetGroupFields";
+		public static final String PAGE_ID = "pageId";
+		public static final String WIDGET_NAME = "widgetName";
+
 		public static class EmployeePortal {
 			public static final String EMPLOYEE_ADMIN_SCOPING_ID = "employeeadminscopingid";
 		}
@@ -723,6 +730,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD_FILTER = "dashboardFilter";
 		public static final String DASHBOARD_WIDGET_TIMELINE_FILTER = "widgetTimelineFilter";
 		public static final String WIDGET = "widget";
+
 		public static final String WIDGET_UPDATE_LIST = "widgetUpdateList";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
@@ -3012,6 +3020,10 @@ public class FacilioConstants {
 		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";
 		public static final String POINTS_DATA_MISSING_ALARM_JOB_NAME = "PointsDataMissingAlarmJob";
 
+	}
+
+	public static class WidgetNames {
+		public static final String MAIN_SUMMARY_WIDGET = "mainsummarywidget";
 	}
 
 	public static class Ticket {

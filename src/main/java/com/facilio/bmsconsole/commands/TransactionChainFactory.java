@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.GetCustomPageWidgetCommand;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -6556,6 +6557,13 @@ public class TransactionChainFactory {
 
 
 
+
+		return c;
+	}
+
+	public static FacilioChain getPageWidgetChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCustomPageWidgetCommand());
 
 		return c;
 	}
