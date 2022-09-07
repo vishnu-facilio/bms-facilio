@@ -43,6 +43,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.codecs.MySQLCodec;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class V3DashboardAPIHandler {
@@ -301,7 +302,7 @@ public class V3DashboardAPIHandler {
             V3DashboardAPIHandler.getDashboardRuleActions(dashboard_rule);
             return dashboard_rule;
         }
-      return null;
+        return null;
     }
 
     public static List<DashboardRuleContext> getDashboardRules(Long dashboardId, Long dashboardTabId)throws Exception
@@ -428,7 +429,7 @@ public class V3DashboardAPIHandler {
     {
         if(dashboard_rule_id != null && dashboard_rule_id > 0) {
             GenericDeleteRecordBuilder delete_builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getDashboardRuleModule().getTableName())
+                    .table(ModuleFactory.getDashboardRuleModule().getTableName())
                     .andCustomWhere("ID = ?", dashboard_rule_id);
             delete_builder.delete();
         }
@@ -499,6 +500,17 @@ public class V3DashboardAPIHandler {
 
     public static JSONArray executeDashboardRules(Long trigger_widget_Id, DashboardExecuteMetaContext dashboard_execute_meta)throws Exception
     {
+        JSONObject main_result_json = new JSONObject();
+        JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
+//        placeHolders.put("widget1.value", "3");
+//        placeHolders.put("widget2.value", "2");
+//        placeHolders.put("widget3.value", "14");
+//        JSONObject other_user_filter = new JSONObject();
+//        other_user_filter.put("1", "widget3.criteria");
+//        other_user_filter.put("2", "widget2.criteria");
+//        placeHolders.put("other_user_filter", other_user_filter);
+//        placeHolders.put("widget3.criteria", new JSONObject());
+//        placeHolders.put("widget2.criteria", new JSONObject());
         if(dashboard_execute_meta.getDashboardId() != null)
         {
             DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboard_execute_meta.getDashboardId());
@@ -529,49 +541,79 @@ public class V3DashboardAPIHandler {
                     global_timeline_filter_widget_map.put("TIMELINE_FILTER", timeline_filter);
                 }
             }
-
+            JSONArray result_json_arr = new JSONArray();
             JSONArray onload_result_array = new JSONArray();
             if (trigger_widget_Id != null && trigger_widget_Id > 0) {
-                return V3DashboardAPIHandler.executeDashboardActions(trigger_widget_Id, dashboard_execute_meta.getPlaceHolders(), 2 , global_timeline_filter_widget_map, global_filter_widget_map, timeline_widget_field_map);
+                Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id);
+                if(dashboard_rule_id != null && dashboard_rule_id > 0) {
+                    result_json_arr = V3DashboardAPIHandler.executeDashboardActions(dashboard_rule_id, trigger_widget_Id, dashboard_execute_meta.getPlaceHolders(), 2, global_timeline_filter_widget_map, global_filter_widget_map, timeline_widget_field_map);
+                }
             }
-            else if (filter_context != null)
+            if (filter_context != null)
             {
+                List<Long> rule_target_widget_ids = new ArrayList<>();
+                if(result_json_arr != null && result_json_arr.size() > 0){
+                    int result_json_len = result_json_arr.size();
+                    for(int i =0 ; i< result_json_len ;i++){
+                        JSONObject result_widget1 = (JSONObject) result_json_arr.get(i);
+                        if(result_widget1.containsKey("widget_id")){
+                            rule_target_widget_ids.add((Long)result_widget1.get("widget_id"));
+                        }
+                    }
+                }
                 timeline_widget_field_map = filter_context.getWidgetTimelineFilterMap();
                 List<DashboardWidgetContext> widgets_list = dashboard.getDashboardWidgets();
                 if (widgets_list != null && widgets_list.size() > 0) {
                     for (DashboardWidgetContext dashboardWidgetContext : widgets_list) {
                         Long widget_id = dashboardWidgetContext.getId();
+                        if(rule_target_widget_ids.contains(widget_id)){
+                            continue;
+                        }
                         if (dashboardWidgetContext != null && (dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.CHART ||
                                 dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.LIST_VIEW ||
                                 dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.CARD)) {
                             JSONObject widget_json = new JSONObject();
                             widget_json.put("widget_id", widget_id);
+                            widget_json.put("widgetType", dashboardWidgetContext.getWidgetType().getName());
                             widget_json.put("actionMeta", new JSONObject());
                             JSONObject actionMeta = new JSONObject();
                             if (timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
-                                actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
+                                if(placeHolders.containsKey("startTime}") && placeHolders.containsKey("endTime")){
+                                    JSONObject temp = new JSONObject();
+                                    temp.put("startTime", placeHolders.get("startTime"));
+                                    temp.put("endTime", placeHolders.get("endTime"));
+                                    actionMeta.put("TIMELINE_FILTER", temp);
+                                }
+                                else
+                                {
+                                    actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
+                                }
                             }
                             if (global_filter_widget_map != null && global_filter_widget_map.containsKey(widget_id)) {
+//                                if(placeHolders.containsKey("other_user_filters")){
+//                                    JSONObject other_user_filters = (JSONObject) placeHolders.get("other_user_filters");
+//                                    JSONObject user_filter_present = (JSONObject) global_filter_widget_map.get(widget_id);
+//                                }
                                 actionMeta.put("USER_FILTER", global_filter_widget_map.get(widget_id));
                             }
                             if (actionMeta != null && !actionMeta.isEmpty()) {
                                 widget_json.put("actionMeta", actionMeta);
                                 onload_result_array.add(widget_json);
+                                result_json_arr.add(widget_json);
                             } else {
-                                onload_result_array.add(widget_json);
+                                result_json_arr.add(widget_json);
                             }
                         }
                     }
                 }
-                return onload_result_array;
+                return result_json_arr;
             }
         }
         return null;
     }
 
-    public static JSONArray executeDashboardActions(Long trigger_widget_id , JSONObject placeHolders, Integer triggerType , JSONObject timeline_filter , JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+    public static JSONArray executeDashboardActions(Long dashboard_rule_id, Long trigger_widget_id , JSONObject placeHolders, Integer triggerType , JSONObject timeline_filter , JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
     {
-        Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_id);
         if(dashboard_rule_id != null && dashboard_rule_id > 0)
         {
             DashboardRuleContext rule_to_execute = V3DashboardAPIHandler.getDashboardRule(dashboard_rule_id, triggerType);
@@ -631,6 +673,44 @@ public class V3DashboardAPIHandler {
                 }
             }
         }
+    }
+
+    public static JSONObject constructUserFilterRepsonse(JSONObject user_filters_obj)throws Exception
+    {
+        if(user_filters_obj != null && !user_filters_obj.isEmpty())
+        {
+            JSONObject result_json = new JSONObject();
+            Set<Long> user_filter_set = user_filters_obj.keySet();
+            for(Long user_filter_id : user_filter_set)
+            {
+                if(user_filters_obj.containsKey(user_filter_id))
+                {
+                    Condition criteria_obj = (Condition) user_filters_obj.get(user_filter_id);
+                    JSONObject temp = new JSONObject();
+                    temp.put("operatorId", criteria_obj.getOperatorId());
+                    String value = criteria_obj.getValue();
+                    if(value != null && !"".equals(value))
+                    {
+                        String []val_arr =value.split(",");
+                        if(val_arr != null && val_arr.length > 0)
+                        {
+                            int val_len = val_arr.length;
+                            StringBuilder sb = new StringBuilder();
+                            for(int i=0;i<val_len;i++)
+                            {
+                                sb.append(val_arr[i]).append(",");
+                            }
+                            value = sb.toString();
+                            value = value.substring(0 , value.length() -1);
+                        }
+                    }
+                    temp.put("value", value);
+                    result_json.put(criteria_obj.getFieldName(), temp);
+                }
+            }
+            return result_json;
+        }
+        return null;
     }
 
     public static JSONObject setAndExecuteFilter(Map<String, Object> placeHolderValues, List<DashboardTriggerAndTargetWidgetContext> target_widgets ) throws Exception
