@@ -212,7 +212,10 @@ public class GroupBeanImpl implements GroupBean {
 			List<GroupMember> members = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			for(Map<String, Object> prop : props) {
-				prop.put("people",PeopleAPI.getPeopleForId((Long) prop.get("people")));
+				long peopleId = (long) prop.getOrDefault("people",-1);
+				if (peopleId > 0){
+					prop.put("people",PeopleAPI.getPeopleForId(peopleId));
+				}
 				prop.put("id", prop.get("ouid"));
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}

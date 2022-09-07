@@ -175,6 +175,9 @@ public class PeopleAPI {
 				RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 				pplId = people.getId();
 				updatePeopleIdInOrgUsers(pplId, user.getOuid());
+				if (user.getGroups() != null){
+					updatePeopleIdInGroupMembers(pplId,user.getOuid());
+				}
 
 			}
 		}
