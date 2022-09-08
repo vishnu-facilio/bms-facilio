@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -113,8 +114,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									addReadingChain.execute();
 									
 								}
-								LOGGER.info("Readings Added for : "+formula.getName() + ", time taken : " + (System.currentTimeMillis() - formulaExecStTime)  + ", frequency : " + formula.getFrequency()  + ", No of included resources : " + formula.getIncludedResources().size() );
-
+								 int matchedResourcesSize=0;
+								if(CollectionUtils.isNotEmpty(formula.getMatchedResourcesIds())) matchedResourcesSize = formula.getMatchedResourcesIds().size();
+								LOGGER.info("Readings Added for : "+formula.getName() + ", time taken : " + (System.currentTimeMillis() - formulaExecStTime)  + ", frequency : " + formula.getFrequency()  + ", No of matched resources : " + matchedResourcesSize);
 							}
 							catch (Exception e) {
 								LOGGER.error("Exception occurred: Schedule formula calculator job failed. formula : " + formula , e);
