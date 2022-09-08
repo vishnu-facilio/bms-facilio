@@ -8,7 +8,8 @@ public enum MailSourceType implements FacilioStringEnum {
     WORKFLOW ("Workflow Rule"),
     SCRIPT ("Facilio Script"),
     RULE_NOTIFICATION ("Notification"),
-    INVITE_MAIL ("Invitation Mail")
+    INVITE_MAIL ("Invitation Mail"),
+    SERVICE_REQUEST("Service Request")
     ;
 
     private final String moduleName;

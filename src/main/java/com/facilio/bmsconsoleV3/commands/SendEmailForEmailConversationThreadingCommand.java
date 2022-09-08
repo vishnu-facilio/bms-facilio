@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.mailtracking.context.MailSourceType;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -103,7 +104,9 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			mailJson.put(EmailClient.SUBJECT, subject);
 			mailJson.put(EmailClient.MESSAGE, message);
 			mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
-			
+			mailJson.put(FacilioConstants.ContextNames.SOURCE_TYPE,MailSourceType.SERVICE_REQUEST.name());
+			mailJson.put(FacilioConstants.ContextNames.MODULE_ID,emailConversation.getDataModuleId());
+			mailJson.put(FacilioConstants.ContextNames.RECORD_ID,emailConversation.getRecordId());
 			Map<String,String> attachements = getAttachments(emailConversation);
 			FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(mailJson,attachements);
 		}
@@ -225,11 +228,9 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment() && (AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 172l)) {
 			canSendMail = true;
 		}
-		
 		if(!canSendMail) {
 			return null;
 		}
-		
 		JSONObject mailJson = new JSONObject();
 		
 		String message = emailConversation.getHtmlContent();
@@ -243,6 +244,9 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
 		mailJson.put(EmailClient.MESSAGE, message);
 		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
+		mailJson.put(FacilioConstants.ContextNames.SOURCE_TYPE,MailSourceType.SERVICE_REQUEST.name());
+		mailJson.put(FacilioConstants.ContextNames.MODULE_ID,emailConversation.getDataModuleId());
+		mailJson.put(FacilioConstants.ContextNames.RECORD_ID,emailConversation.getRecordId());
 		
 		if(messageId != null) {
 			JSONObject HeaderJSON = new JSONObject();
