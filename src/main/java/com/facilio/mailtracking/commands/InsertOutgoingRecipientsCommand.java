@@ -8,6 +8,8 @@ import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -28,11 +30,11 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalCc()));
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalBcc()));
 
-        if(records.isEmpty()) {
-            LOGGER.error("OG_MAIL_ERROR :: No recipients found in the given outgoing mail record. So stopping here.. " +
-                    "\nwith mailJson : "+context.get(MailConstants.Params.MAIL_JSON));
-            return true;
-        }
+        V3Util.throwRestException(records.isEmpty(), ErrorCode.RESOURCE_NOT_FOUND,
+                "OG_MAIL_ERROR :: No recipients found in the given outgoing mail record. So stopping here.. " +
+                        "\nwith mailJson : "+context.get(MailConstants.Params.MAIL_JSON)
+        );
+
         OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER, records);
         return false;
     }

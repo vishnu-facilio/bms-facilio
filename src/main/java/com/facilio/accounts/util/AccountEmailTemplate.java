@@ -81,8 +81,12 @@ public enum AccountEmailTemplate {
 			EmailUtil.sendEmail(getTemplate(placeHolders));
 		} else {
 		}*/
+		String inviteUrl = (String) placeHolders.get("invitelink");
 		JSONObject mailJson = getTemplate(isFtl, placeHolders);
-		mailJson.put("sourceType", MailSourceType.INVITE_MAIL.name());
+		if(StringUtils.isNotEmpty(inviteUrl)) {
+			mailJson.put("sourceType", MailSourceType.INVITE_MAIL.name());
+			mailJson.put("maskUrl", inviteUrl);
+		}
 		FacilioFactory.getEmailClient().sendEmail(mailJson);
 	}
 	

@@ -19,6 +19,7 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
         V3OutgoingMailLogContext mailLogContext = OutgoingMailAPI.convertToMailLogContext(mailJson);
         long loggerId = NewTransactionService.newTransactionWithReturn(() -> OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext));
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
+        context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
         LOGGER.info("OG_MAIL_LOG :: loggerId inserted :: "+loggerId);
         return false;
     }
