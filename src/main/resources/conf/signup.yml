@@ -260,6 +260,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorInviteModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorLoggingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InviteVisitorModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.GroupInviteModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorLogModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitCustomResponseModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ContactModule

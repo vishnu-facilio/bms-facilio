@@ -54,6 +54,12 @@ public class LoadVisitorLoggingLookupCommandV3 extends FacilioCommand {
 		LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
 		additionaLookups.add(visitedSpaceField);
 
+		LookupField createdByField = (LookupField) fieldsAsMap.get("sysCreatedBy");
+		additionaLookups.add(createdByField);
+
+		LookupField modifiedByField = (LookupField) fieldsAsMap.get("sysModifiedBy");
+		additionaLookups.add(modifiedByField);
+
 		if (moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG)) {
 			additionaLookups.add((LookupField) fieldsAsMap.get("invite"));
 		}

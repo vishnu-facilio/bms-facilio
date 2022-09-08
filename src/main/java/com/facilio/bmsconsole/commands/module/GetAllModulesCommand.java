@@ -48,6 +48,7 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.VISITOR,
             ContextNames.VISITOR_LOG,
             ContextNames.INVITE_VISITOR,
+			ContextNames.GROUP_VISITOR_INVITE,
 			ContextNames.WATCHLIST,
             ContextNames.Tenant.ANNOUNCEMENT,
 			ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS,

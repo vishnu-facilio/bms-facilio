@@ -1021,12 +1021,17 @@ public class APIv3Config {
     public static Supplier<V3Config> getGroupInviteVisitor() {
         return () -> new V3Config(GroupInviteContextV3.class, null)
                 .create()
-                .afterTransaction(new UpdateChildInvitesAfterSaveCommand())
+                //.afterTransaction(new UpdateChildInvitesAfterSaveCommand())
                 .update()
                 .list()
+                .beforeFetch(new LoadGroupInvitesLookupCommand())
+                .afterFetch(new FetchVisitorTypeForGroupInvites())
                 .showStateFlowList()
                 .summary()
+                .beforeFetch(new LoadGroupInvitesLookupCommand())
                 .afterFetch(new GetChildInvitesForGroupInviteCommand())
+                .delete()
+                .beforeDelete(new DeleteGroupChildInvitesCommand())
                 .build();
     }
 

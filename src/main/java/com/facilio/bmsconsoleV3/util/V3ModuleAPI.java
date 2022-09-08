@@ -40,6 +40,7 @@ public class V3ModuleAPI {
         VISITOR(FacilioConstants.ContextNames.VISITOR,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         VISITOR_LOG(FacilioConstants.ContextNames.VISITOR_LOG,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         INVITE_VISITOR(FacilioConstants.ContextNames.INVITE_VISITOR,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
+        GROUP_VISITOR_INVITE(FacilioConstants.ContextNames.GROUP_VISITOR_INVITE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
         WATCHLIST(FacilioConstants.ContextNames.WATCHLIST,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         ANNOUNCEMENT(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         PEOPLE_ANNOUNCEMENTS(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS,Arrays.asList()),

@@ -43,9 +43,20 @@ public class GetChildInvitesForGroupInviteCommand extends FacilioCommand {
     				.module(module)
     				.select(modBean.getAllFields(module.getName()))
     				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupId"), ""+list.get(0).getId(), NumberOperators.EQUALS));
-    		List<InviteVisitorContextV3> childInvites = builder.get();	
+    		List<InviteVisitorContextV3> childInvites = builder.get();
+			long checkedIn=0;
+			for(InviteVisitorContextV3 invite : childInvites)
+			{
+				if(invite.hasCheckedIn())
+				{
+					checkedIn++;
+				}
+			}
     		if (childInvites != null && !childInvites.isEmpty()) {			
     			list.get(0).setGroupChildInvites(childInvites);
+				list.get(0).setTotalInvites((long) childInvites.size());
+				list.get(0).setCheckedInCount(checkedIn);
+				list.get(0).setNotCheckedInCount(childInvites.size()-checkedIn);
     		}
         }
         return false;
