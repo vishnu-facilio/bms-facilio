@@ -1624,7 +1624,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("assignedTo", "Team / Staff"));
 		columns.add(new ViewField("urgency", "Urgency"));
 		columns.add(new ViewField("moduleState", "Status"));
-		columns.add(new ViewField("classification", "Classification"));
+		columns.add(new ViewField("classificationType", "Classification Type"));
 		return columns;
 	}
 

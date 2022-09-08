@@ -99,10 +99,10 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 		this.urgency = priority;
 	}
 	
-	private Classification classification;
-	public int getClassification() {
-		if(classification != null) {
-			return classification.getIntVal();
+	private Classification classificationType;
+	public int getClassificationType() {
+		if(classificationType != null) {
+			return classificationType.getIntVal();
 		}
 		else {
 			return -1;
@@ -110,19 +110,19 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	}
 	
 	public String getClassificationVal() {
-		if(classification != null) {
-			return classification.getStringVal();
+		if(classificationType != null) {
+			return classificationType.getStringVal();
 		}
 		return null;
 	}
 	
-	public void setClassification(int type) {
-		this.classification = Classification.classificationType.get(type);
+	public void setClassificationType(int type) {
+		this.classificationType = Classification.classificationType.get(type);
 	}
 
 	
 	public Classification getClassificationEnum() {
-		return classification;
+		return classificationType;
 	}
 	
 	private ServiceRequestType requestType;
