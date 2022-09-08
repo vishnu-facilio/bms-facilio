@@ -22,19 +22,25 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
     public FacilioModule module;
     public Long dashboardFilterId;
     public Integer filterOrder;
-    public WidgetType widgetType = WidgetType.FILTER;
-    public Integer  type = WidgetType.FILTER.getValue();
+//    public WidgetType widgetType = WidgetType.FILTER;
+//    public Integer  type = WidgetType.FILTER.getValue();
 
     @Override
     public JSONObject widgetJsonObject(boolean optimize) {
         JSONObject resultJson = new JSONObject();
-        resultJson.put("moduleName", "moduleName");
-        resultJson.put("field", "moduleName");
-        resultJson.put("module", "moduleName");
-        resultJson.put("dashboardFilterId", "moduleName");
-        resultJson.put("filterOrder", "moduleName");
-        resultJson.put("widgetType",  widgetType);
-        resultJson.put("type", type);
+        resultJson.put("moduleName", moduleName);
+        resultJson.put("dashboardFilterId", getDashboardFilterId());
+        resultJson.put("filterOrder", getFilterOrder());
+        resultJson.put("widgetType",  getWidgetType());
+        resultJson.put("helpText",getLabel());
+        resultJson.put("type", getWidgetType().getName());
+        resultJson.put("x", getX());
+        resultJson.put("y", getY());
+        resultJson.put("w", getW());
+        resultJson.put("h", getH());
+        resultJson.put("minW", getMinW());
+        resultJson.put("maxW", getMaxW());
+        resultJson.put("link_name", getLinkName());
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("widget", resultJson);

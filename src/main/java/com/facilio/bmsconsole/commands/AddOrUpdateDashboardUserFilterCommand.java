@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
+import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -28,13 +32,12 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 			List<Long> existingFilterIds=new ArrayList<>();
 			if(existingfilters!=null)
 			{
-				existingFilterIds= existingfilters.stream().map(existingFilter->existingFilter.getId()).collect(Collectors.toList());	
+				existingFilterIds= existingfilters.stream().map(existingFilter->existingFilter.getId()).collect(Collectors.toList());
 			}
 		
 			
 			
 			List<Long> dashboardUserFilterRelIds=new ArrayList<>();
-			
 			List<DashboardUserFilterContext> currentDashboardUserFilters=dashboardFilterContext.getDashboardUserFilters();
 			if(currentDashboardUserFilters!=null)
 			{
@@ -53,11 +56,16 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 						DashboardFilterUtil.updateDashboardUserFilerRel(dashboardUserFilterRel);
 					}
 					else {
-						dashboardUserFilterRel.setId(DashboardFilterUtil.insertDashboardUserFilterRel(dashboardUserFilterRel));
-						
+						WidgetDashboardFilterContext filter_widget = new WidgetDashboardFilterContext();
+						Long widget_id = convertIntoDashboardWidget(filter_widget, dashboardUserFilterRel, dashboardFilterContext);
+						if(widget_id != null && widget_id > 0) {
+							dashboardUserFilterRel.setWidget_id(widget_id);
+							dashboardUserFilterRel.setId(DashboardFilterUtil.insertDashboardUserFilterRel(dashboardUserFilterRel));
+						}else{
+							dashboardUserFilterRel.setId(DashboardFilterUtil.insertDashboardUserFilterRel(dashboardUserFilterRel));
+						}
 					}
 					dashboardUserFilterRelIds.add(dashboardUserFilterRel.getId());
-					
 				}
 																
 			}
@@ -68,13 +76,39 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 			toRemove.removeAll(dashboardUserFilterRelIds);
 			if(!toRemove.isEmpty())
 			{
-				DashboardFilterUtil.deleteDashboardUserFilterRel(toRemove);
+				List<Long> deletedWidget_ids=new ArrayList<>();
+				for(DashboardUserFilterContext user_filter : existingfilters){
+					if(toRemove.contains(user_filter.getId())){
+						if(user_filter.getWidget_id() != null) {
+							deletedWidget_ids.add(user_filter.getWidget_id());
+						}
+					}
+				}
+				DashboardFilterUtil.deleteDashboardUserFilterRel(toRemove, deletedWidget_ids);
 			}
 			
 			
 								
 		}
 		return false;
+	}
+
+	public static Long convertIntoDashboardWidget(WidgetDashboardFilterContext filter_widget, DashboardUserFilterContext userFilterContext, DashboardFilterContext dashboard_filter)throws Exception
+	{
+		filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
+		filter_widget.setDashboardId(dashboard_filter.getDashboardId());
+		filter_widget.setHeaderText(userFilterContext.getLabel());
+		List<DashboardWidgetContext> widgets = new ArrayList<>();
+		widgets.add(filter_widget);
+		V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets, dashboard_filter.getDashboardId(), null);
+		FacilioChain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
+		filter_widget.setDashboardId(filter_widget.getDashboardId());
+		Context context = addWidgetChain.getContext();
+		context.put(FacilioConstants.ContextNames.WIDGET, filter_widget);
+		context.put(FacilioConstants.ContextNames.WIDGET_TYPE, filter_widget.getWidgetType());
+		context.put(FacilioConstants.ContextNames.DASHBOARD_ID, filter_widget.getDashboardId());
+		addWidgetChain.execute(context);
+		return filter_widget.getId();
 	}
 
 }

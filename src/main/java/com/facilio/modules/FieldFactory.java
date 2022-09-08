@@ -10379,6 +10379,7 @@ public class FieldFactory extends BaseFieldFactory {
 		 fields.add(getField("label", "LABEL", module, FieldType.STRING));
 		 fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
 		 fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+         fields.add(getField("widget_id", "WIDGET_ID", module, FieldType.NUMBER));
 		 
 		 
 		 

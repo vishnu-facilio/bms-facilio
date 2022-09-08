@@ -211,8 +211,14 @@ public class DashboardFilterUtil {
 				
 				
 				}
-				
-				
+
+				if(filter.getWidget_id() != null)
+				{
+					DashboardWidgetContext filter_widget = DashboardUtil.getWidget(filter.getWidget_id());
+					if(filter_widget != null){
+						filter.setLink_name(filter_widget.getLinkName());
+					}
+				}
 				
 				//filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 
@@ -257,12 +263,20 @@ public class DashboardFilterUtil {
 		builder.update(FieldUtil.getAsProperties(dashboardUserFilterRel));
 	}
 
-	public static void deleteDashboardUserFilterRel(List<Long> toRemove) throws Exception {
+	public static void deleteDashboardUserFilterRel(List<Long> toRemove, List<Long> deleted_widget_id) throws Exception {
 		FacilioModule module = ModuleFactory.getDashboardUserFilterModule();
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder().table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(toRemove, module));
 		builder.delete();
+
+		if(deleted_widget_id != null && deleted_widget_id.size() > 0) {
+			FacilioModule widgetModule = ModuleFactory.getWidgetModule();
+
+			GenericDeleteRecordBuilder widget_delete_builder = new GenericDeleteRecordBuilder().table(widgetModule.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(deleted_widget_id, widgetModule));
+			widget_delete_builder.delete();
+		}
 
 	}
 	public static boolean isCustomScriptWidget(DashboardWidgetContext widget)

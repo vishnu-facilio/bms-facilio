@@ -504,4 +504,28 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public void setWidget_field_mapping(List widget_field_mapping) {
 		this.filterPojo.setWidget_field_mapping(widget_field_mapping);
 	}
+
+	public Long getWidget_id() {
+		return widget_id;
+	}
+
+	public void setWidget_id(Long widget_id) {
+		this.widget_id = widget_id;
+	}
+
+	public Long widget_id;
+
+	public String getLink_name() {
+		return link_name;
+	}
+
+	public void setLink_name(String link_name) {
+		this.link_name = link_name;
+	}
+
+	public String link_name;
+
+
+
+
 }

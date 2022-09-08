@@ -536,8 +536,9 @@ public class V3DashboardAPIHandler {
                     DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);
                     DateRange dateRange = date_operator.getRange(null);
                     JSONObject timeline_filter = new JSONObject();
-                    timeline_filter.put("startTime", dateRange.getStartTime());
-                    timeline_filter.put("endTime", dateRange.getEndTime());
+                    timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
+                    timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());
+                    timeline_filter.put("dateOperator", placeHolders.containsKey("dateOperator") ? placeHolders.get("dateOperator") : operatorId);
                     global_timeline_filter_widget_map.put("TIMELINE_FILTER", timeline_filter);
                 }
             }
@@ -578,23 +579,11 @@ public class V3DashboardAPIHandler {
                             widget_json.put("actionMeta", new JSONObject());
                             JSONObject actionMeta = new JSONObject();
                             if (timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
-                                if(placeHolders.containsKey("startTime}") && placeHolders.containsKey("endTime")){
-                                    JSONObject temp = new JSONObject();
-                                    temp.put("startTime", placeHolders.get("startTime"));
-                                    temp.put("endTime", placeHolders.get("endTime"));
-                                    actionMeta.put("TIMELINE_FILTER", temp);
-                                }
-                                else
-                                {
-                                    actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
-                                }
+                                actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
                             }
                             if (global_filter_widget_map != null && global_filter_widget_map.containsKey(widget_id)) {
-//                                if(placeHolders.containsKey("other_user_filters")){
-//                                    JSONObject other_user_filters = (JSONObject) placeHolders.get("other_user_filters");
-//                                    JSONObject user_filter_present = (JSONObject) global_filter_widget_map.get(widget_id);
-//                                }
-                                actionMeta.put("USER_FILTER", global_filter_widget_map.get(widget_id));
+
+                                actionMeta.put("USER_FILTER", V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) global_filter_widget_map.get(widget_id)));
                             }
                             if (actionMeta != null && !actionMeta.isEmpty()) {
                                 widget_json.put("actionMeta", actionMeta);
@@ -692,19 +681,10 @@ public class V3DashboardAPIHandler {
                     if(value != null && !"".equals(value))
                     {
                         String []val_arr =value.split(",");
-                        if(val_arr != null && val_arr.length > 0)
-                        {
-                            int val_len = val_arr.length;
-                            StringBuilder sb = new StringBuilder();
-                            for(int i=0;i<val_len;i++)
-                            {
-                                sb.append(val_arr[i]).append(",");
-                            }
-                            value = sb.toString();
-                            value = value.substring(0 , value.length() -1);
-                        }
+                        temp.put("value", val_arr);
+                    }else {
+                        temp.put("value", value);
                     }
-                    temp.put("value", value);
                     result_json.put(criteria_obj.getFieldName(), temp);
                 }
             }

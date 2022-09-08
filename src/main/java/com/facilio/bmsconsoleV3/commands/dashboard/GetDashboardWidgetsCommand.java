@@ -47,7 +47,11 @@ public class GetDashboardWidgetsCommand extends FacilioCommand {
                         filter_widget.setModuleName(userFilterContext.getModuleName());
                         filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
                         filter_widget.setId(userFilterContext.getId());
-                        filter_widget.setWidgetType(DashboardWidgetContext.WidgetType.FILTER);
+                        filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getName());
+                        if(userFilterContext.getWidget_id() != null){
+                            DashboardWidgetContext user_filter_widget = DashboardUtil.getWidget(userFilterContext.getWidget_id());
+                            filter_widget.setLinkName(user_filter_widget.getLinkName());
+                        }
                         new_widget_list.add(filter_widget);
                     }
                 }

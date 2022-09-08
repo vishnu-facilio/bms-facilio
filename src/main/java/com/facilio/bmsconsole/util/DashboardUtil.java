@@ -638,7 +638,7 @@ public class DashboardUtil {
 				.leftJoin(ModuleFactory.getWidgetSectionModule().getTableName())
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetSectionModule().getTableName()+".ID")
 				;
-				
+		selectBuilder.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".TYPE != ?", WidgetType.FILTER.getValue());
 		if(dashboardId != null) {
 			selectBuilder.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		}
@@ -712,6 +712,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetWebFields());
 		fields.addAll(FieldFactory.getWidgetGraphicsFields());
 		fields.addAll(FieldFactory.getWidgetCardFields());
+		fields.addAll(FieldFactory.getDashboardUserFilterFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -728,8 +729,9 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetCardModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetCardModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getDashboardUserFilterModule().getTableName())
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardUserFilterModule().getTableName()+".WIDGET_ID")
 				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
-		
 		List<Map<String, Object>> props = selectBuilder.get();
 		DashboardWidgetContext dashboardWidgetContext = null;
 		if (props != null && !props.isEmpty()) {
