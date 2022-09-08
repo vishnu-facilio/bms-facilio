@@ -4,9 +4,15 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.bmsconsole.commands.CommissionedPointsMLMigration;
+import com.facilio.bmsconsole.commands.MLUpdateTaggedPointsCommand;
+import com.facilio.fw.BeanFactory;
 import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -61,7 +67,26 @@ public class MLResponseParser extends ActionSupport
 
 				JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(result);
+//				Long agentId = (Long)((JSONObject)((JSONObject)json.get("metaData")).get("pointsMap")).get("agentId");
+				Long agentId = null;
+				if(((JSONObject)((JSONArray)((JSONObject)((JSONObject)json.get("data")).get("metaData")).get("pointsMap")).get(0)).containsKey("agentId")){
+					agentId	 =(Long) ((JSONObject)((JSONArray)((JSONObject)((JSONObject)json.get("data")).get("metaData")).get("pointsMap")).get(0)).get("agentId");
+
+				}
+
 				BmsPointsTaggingUtil.tagPointList((Map<String, Map<String, Object>>) json.get("data"));
+				if(agentId!=null){
+					FacilioChain c = FacilioChain.getNonTransactionChain();
+//				c.getContext().put("agentId",(Long)((JSONObject)((JSONObject)json.get("metaData")).get("pointsMap")).get("agentId"));
+					c.getContext().put("agentId",agentId);
+					AgentBean bean = (AgentBean) BeanFactory.lookup("AgentBean");
+					FacilioAgent agent = bean.getAgent(agentId);
+					c.getContext().put("agent",agent);
+					c.addCommand(new CommissionedPointsMLMigration());
+					c.addCommand(new MLUpdateTaggedPointsCommand());
+					c.execute();
+				}
+
 			}
 			else{
 				LOGGER.info("Send appropriate responseName "+responseName);

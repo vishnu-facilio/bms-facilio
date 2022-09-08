@@ -1022,10 +1022,10 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultShiftColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("startTime", "Start Time"));
 		columns.add(new ViewField("endTime", "End Time"));
-		columns.add(new ViewField("defaultShift", "Is Default"));
+		columns.add(new ViewField("isDefaultShift", "Is Default"));
 		return columns;
 	}
 	

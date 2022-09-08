@@ -246,7 +246,6 @@ public class ValidateWOForUpdate extends FacilioCommand {
         }
         return false;
     }
-
     // site cannot be changed for WOs
     private boolean siteChangeBreach(V3WorkOrderContext wo, V3WorkOrderContext oldWo) {
         return wo.getSiteId() != oldWo.getSiteId();

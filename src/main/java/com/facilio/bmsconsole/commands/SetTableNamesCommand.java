@@ -35,6 +35,10 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("ticketstatus", "TicketStatus");
 	}
 	
+	public static SetTableNamesCommand getForServiceRequests() {
+		return new SetTableNamesCommand("serviceRequest", "Service_Requests");
+	}
+	
 	public static SetTableNamesCommand getForTicketPriority() {
 		return new SetTableNamesCommand("ticketpriority", "TicketPriority");
 	}
@@ -438,10 +442,6 @@ public class SetTableNamesCommand extends FacilioCommand {
 	
 	public static SetTableNamesCommand getForOccupants() {
 		return new SetTableNamesCommand("occupant", "Occupants");
-	}
-	
-	public static SetTableNamesCommand getForServiceRequests() {
-		return new SetTableNamesCommand("serviceRequest", "Service_Requests");
 	}
 	
 	public static SetTableNamesCommand getForSafetyPlan() {

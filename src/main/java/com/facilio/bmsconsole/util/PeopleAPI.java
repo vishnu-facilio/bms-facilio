@@ -53,44 +53,44 @@ public class PeopleAPI {
 		}
 		return false;
 	}
-	
+
 	public static PeopleContext getPeople(String email) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
 		SelectRecordsBuilder<PeopleContext> builder = new SelectRecordsBuilder<PeopleContext>()
-														.module(module)
-														.beanClass(PeopleContext.class)
-														.select(fields)
-														;
-		
+				.module(module)
+				.beanClass(PeopleContext.class)
+				.select(fields)
+				;
+
 		if(StringUtils.isNotEmpty(email)) {
 			builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
 		}
-		
+
 		PeopleContext records = builder.fetchFirst();
 		return records;
 	}
-	
+
 	public static PeopleContext getPeopleForId(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
 		SelectRecordsBuilder<PeopleContext> builder = new SelectRecordsBuilder<PeopleContext>()
-														.module(module)
-														.beanClass(PeopleContext.class)
-														.select(fields)
-														;
-		
+				.module(module)
+				.beanClass(PeopleContext.class)
+				.select(fields)
+				;
+
 		builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
-		
+
 		PeopleContext records = builder.fetchFirst();
 		return records;
 	}
 
-	
+
 	public static void addPeopleForUser(User user, boolean isSignup) throws Exception {
-		
+
 		PeopleContext peopleExisiting = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
@@ -106,7 +106,7 @@ public class PeopleAPI {
 			people.setIsAppAccess(true);
 			people.setUser(true);
 			people.setRoleId(user.getRoleId());
-			
+
 			people.setLanguage(user.getLanguage());
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			if(isSignup) {
@@ -128,20 +128,20 @@ public class PeopleAPI {
 		}
 		
 	}
-	
+
 	public static PeopleContext getOrAddRequester(String email) throws Exception {  //used only for service Request Module
-		
+
 		email = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(email);
-		
+
 		PeopleContext people = PeopleAPI.getPeople(email);
-		
+
 		if(people == null) {
 			people = new PeopleContext();
 			people.setEmail(email);
 			people.setPeopleType(PeopleType.OCCUPANT);
-			
+
 			people.setName(MailMessageUtil.getNameFromEmail.apply(people.getEmail()));
-			
+
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
@@ -153,8 +153,8 @@ public class PeopleAPI {
 		}
 		return people;
 	}
-	
-	
+
+
 	public static void addPeopleForRequester(User user) throws Exception {
 		try {
 			PeopleContext peopleExisiting = getPeople(user.getEmail());
@@ -188,10 +188,10 @@ public class PeopleAPI {
 //			pplId = emp.getId();
 //		}
 //		updatePeopleIdInOrgUsers(pplId, user.getOuid());
-		
-		
+
+
 	}
-	
+
 	public static void updatePeopleIdInOrgUsers(long pplId, long ouId) throws Exception {
 		try {
 			FacilioField peopleId = new FacilioField();
@@ -216,7 +216,7 @@ public class PeopleAPI {
 		catch (Exception e){
 			log.error("Exception while inviting user" + e);
 		}
-	
+
 	}
 
 	public static void updatePeopleIdInGroupMembers(long pplId, long ouId) throws Exception {
@@ -251,19 +251,19 @@ public class PeopleAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
-		
+
 		SelectRecordsBuilder<TenantContactContext> builder = new SelectRecordsBuilder<TenantContactContext>()
-														.module(module)
-														.beanClass(TenantContactContext.class)
-														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(tenantId), NumberOperators.EQUALS));
-														;
+				.module(module)
+				.beanClass(TenantContactContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(tenantId), NumberOperators.EQUALS));
+		;
 		if(fetchPrimarycontact) {
 			builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
 		}
 		List<TenantContactContext> records = builder.get();
 		return records;
-		
+
 	}
 
 	public static List<TenantContactContext> getTenantContactsList(List<Long> idList) throws Exception {
@@ -282,60 +282,60 @@ public class PeopleAPI {
 		return records;
 
 	}
-	
+
 	public static List<VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT);
-		
+
 		SelectRecordsBuilder<VendorContactContext> builder = new SelectRecordsBuilder<VendorContactContext>()
-														.module(module)
-														.beanClass(VendorContactContext.class)
-														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
-														;
-		
+				.module(module)
+				.beanClass(VendorContactContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
+				;
+
 		if(fetchPrimaryContact) {
 			builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
 		}
-	
-		
+
+
 		List<VendorContactContext> records = builder.get();
 		return records;
-		
+
 	}
-	
+
 	public static List<ClientContactContext> getClientContacts(long clientId, boolean fetchPrimaryContact) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT);
-		
+
 		SelectRecordsBuilder<ClientContactContext> builder = new SelectRecordsBuilder<ClientContactContext>()
-														.module(module)
-														.beanClass(ClientContactContext.class)
-														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS))
-														;
-		
+				.module(module)
+				.beanClass(ClientContactContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS))
+				;
+
 		if(fetchPrimaryContact) {
 			builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
 		}
-	
-		
+
+
 		List<ClientContactContext> records = builder.get();
 		return records;
-		
+
 	}
-	
+
 	public static void updateEmployeeAppPortalAccess(EmployeeContext person, String linkname) throws Exception {
-	   
+
 		EmployeeContext existingPeople = (EmployeeContext) RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId());
 		boolean isSsoEnabled = isSsoEnabledForApplication(linkname);
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
 		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
-		
+
 			AppDomain appDomain = null;
 			long appId = -1;
 			appId = ApplicationApi.getApplicationIdForLinkName(linkname);
@@ -357,12 +357,12 @@ public class PeopleAPI {
 						{
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
-						}		
+						}
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
 					}
-					else 
+					else
 					{
 						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
 					}
@@ -374,16 +374,16 @@ public class PeopleAPI {
 					}
 				}
 			}
-	        else {
-	        	throw new IllegalArgumentException("Invalid App Domain");
-	        }
-		}	
-		
+			else {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
+		}
+
 	}
 
 
 	public static void updateTenantContactAppPortalAccess(TenantContactContext person, String appLinkName) throws Exception {
-		
+
 		TenantContactContext existingPeople = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isTenantPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
@@ -401,11 +401,11 @@ public class PeopleAPI {
 					}
 				}
 				User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
-	        	if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
-	        		if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
-	        			throw new IllegalArgumentException("Role is mandatory");
+				if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
+					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
+						throw new IllegalArgumentException("Role is mandatory");
 					}
-	        		long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+					long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
 					if(user != null) {
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
@@ -427,9 +427,9 @@ public class PeopleAPI {
 					}
 				}
 			}
-	        else {
-	        	throw new IllegalArgumentException("Invalid App Domain");
-	        }
+			else {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
 		}
 	}
 
@@ -437,7 +437,7 @@ public class PeopleAPI {
 		updatePeoplePortalAccess(person, linkName, false);
 	}
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
-	
+
 		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
@@ -448,7 +448,7 @@ public class PeopleAPI {
 		}
 		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
 			AppDomain appDomain = null;
-			long appId = ApplicationApi.getApplicationIdForLinkName(linkName); 
+			long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			long secPolId = -1L;
 			if (person.getSecurityPolicyMap() != null) {
@@ -459,7 +459,7 @@ public class PeopleAPI {
 			}
 			if(appDomain != null) {
 				User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
-	        	if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
+				if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)){
 						throw new IllegalArgumentException("Role is mandatory");
 					}
@@ -474,7 +474,7 @@ public class PeopleAPI {
 						{
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
-						}		
+						}
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
@@ -515,16 +515,16 @@ public class PeopleAPI {
 					}
 				}
 			}
-	        else {
-	        	throw new IllegalArgumentException("Invalid App Domain");
-	        }
+			else {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
 		}
 	}
-	
+
 	public static void updateClientContactAppPortalAccess(ClientContactContext person, String linkName) throws Exception {
-		
+
 		ClientContactContext existingPeople = (ClientContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, person.getId());
-		
+
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isClientPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
@@ -533,8 +533,8 @@ public class PeopleAPI {
 			long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
-	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
-	        	if((linkName.equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP) && existingPeople.isClientPortalAccess())) {
+				User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+				if((linkName.equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP) && existingPeople.isClientPortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)){
 						throw new IllegalArgumentException("Role is mandatory");
 					}
@@ -556,25 +556,25 @@ public class PeopleAPI {
 						ApplicationApi.deleteUserFromApp(user, appId);
 					}
 				}
-		    }
-	        else {
-	        	throw new IllegalArgumentException("Invalid App Domain");
-	        }
-			
-		}	
+			}
+			else {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
+
+		}
 	}
-	
+
 	public static void updateVendorContactAppPortalAccess(VendorContactContext person, String linkName) throws Exception {
-		
+
 		VendorContactContext existingPeople = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, person.getId());
-		
+
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isVendorPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
 		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
 			AppDomain appDomain = null;
 			long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
-			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
 				long secPolId = -1L;
 				if (person.getSecurityPolicyMap() != null) {
@@ -584,7 +584,7 @@ public class PeopleAPI {
 					}
 				}
 				User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
-	        	if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
+				if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)){
 						throw new IllegalArgumentException("Role is mandatory");
 					}
@@ -603,7 +603,7 @@ public class PeopleAPI {
 					else {
 						User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), false, roleId, secPolId);
 						newUser.setAppDomain(appDomain);
-			    	}
+					}
 				}
 				else {
 					if(user != null) {
@@ -612,20 +612,20 @@ public class PeopleAPI {
 					}
 				}
 			}
-	        else {
-	        	throw new IllegalArgumentException("Invalid App Domain");
-	        }
-		}	
+			else {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
+		}
 	}
-	
+
 	public static void deletePeopleUsers(long peopleId) throws Exception {
 		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-									.select(fields)
-									.table("ORG_Users")
-									;
+				.select(fields)
+				.table("ORG_Users")
+				;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
 			AccountUtil.getUserBean().deleteUser((long)list.get(0).get("ouid"), false);
@@ -648,17 +648,17 @@ public class PeopleAPI {
 		}
 	}
 
-	
+
 	public static int deletePeopleForUser(long ouId) throws Exception {
 		long peopleId = PeopleAPI.getPeopleIdForUser(ouId);
 		if(peopleId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+
 			com.facilio.modules.DeleteRecordBuilder<PeopleContext> deleteBuilder = new com.facilio.modules.DeleteRecordBuilder<PeopleContext>()
 					.module(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
 			deleteBuilder.andCondition(CriteriaAPI.getIdCondition(peopleId, ModuleFactory.getPeopleModule()));
 			return deleteBuilder.markAsDelete();
-		
+
 		}
 		return -1;
 	}
@@ -680,15 +680,15 @@ public class PeopleAPI {
 		}
 		return null;
 	}
-	
+
 	public static long getPeopleIdForUser(long ouId) throws Exception {
 		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-									.select(fields)
-									.table("ORG_Users")
-									;
+				.select(fields)
+				.table("ORG_Users")
+				;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
 			if(list.get(0).get("peopleId") != null) {
@@ -697,9 +697,9 @@ public class PeopleAPI {
 		}
 		return -1;
 	}
-	
+
 	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId,boolean isEmailVerificationNeeded) throws Exception {
-		 		
+
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid Link name");
 		}
@@ -716,13 +716,13 @@ public class PeopleAPI {
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setRoleId(roleId);
 		user.setLanguage(existingPeople.getLanguage());
-		
+
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomainObj);
-		
+
 		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailVerificationNeeded, false);
 		return user;
-		
+
 	}
 
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
@@ -733,7 +733,7 @@ public class PeopleAPI {
 			throw new IllegalArgumentException("Invalid link name");
 		}
 		long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
-		
+
 		User user = new User();
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
@@ -748,7 +748,7 @@ public class PeopleAPI {
 		user.setSecurityPolicyId(securityPolicyId);
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
-		
+
 		if (!verifyUser) {
 			AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
 		} else {
@@ -757,22 +757,22 @@ public class PeopleAPI {
 
 		return user;
 	}
-	
+
 	public static void rollUpPrimarycontactFields(long parentId, PeopleContext people) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-		
+
 		if(people.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT) {
 			module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TENANT));
 			Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
-			
+
 			FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
 			FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
 			FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
-			
+
 			updatedfields.add(primaryEmailField);
 			updatedfields.add(primaryPhoneField);
 			updatedfields.add(primaryNameField);
@@ -781,21 +781,21 @@ public class PeopleAPI {
 			module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS));
 			Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
-			
+
 			FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
 			FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
 			FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
-			
+
 			updatedfields.add(primaryEmailField);
 			updatedfields.add(primaryPhoneField);
 			updatedfields.add(primaryNameField);
 		}
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-											.table(module.getTableName())
-											.fields(updatedfields)
-											.andCondition(CriteriaAPI.getIdCondition(parentId, module));
-									
+				.table(module.getTableName())
+				.fields(updatedfields)
+				.andCondition(CriteriaAPI.getIdCondition(parentId, module));
+
 		Map<String, Object> value = new HashMap<>();
 		value.put("primaryContactEmail", people.getEmail());
 		value.put("primaryContactPhone", people.getPhone());
@@ -803,15 +803,15 @@ public class PeopleAPI {
 		updateBuilder.update(value);
 
 	}
-	
+
 	public static int unMarkPrimaryContact(PeopleContext person, long parentId) throws Exception{
-        
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		com.facilio.db.criteria.Condition condition = null;
-		
+
 		if(person instanceof TenantContactContext) {
 			module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT));
@@ -819,8 +819,8 @@ public class PeopleAPI {
 			FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
 			updatedfields.add(primaryContactField);
 			condition = CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(parentId), NumberOperators.EQUALS);
-			
-			
+
+
 		}
 		else if(person instanceof VendorContactContext) {
 			module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
@@ -838,26 +838,26 @@ public class PeopleAPI {
 			updatedfields.add(primaryContactField);
 			condition = CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(parentId), NumberOperators.EQUALS);
 		}
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(updatedfields)
 				.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
-				
+
 				;
 
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "peopleId", String.valueOf(person.getId()), NumberOperators.NOT_EQUALS));
-		updateBuilder.andCondition(condition);							
-		
+		updateBuilder.andCondition(condition);
+
 		Map<String, Object> value = new HashMap<>();
 		value.put("isPrimaryContact", false);
 		int count = updateBuilder.update(value);
 		return count;
-			
+
 	}
-	
+
 	public static void addParentPrimaryContactAsPeople(PeopleContext tc, FacilioModule module, List<FacilioField> fields, long parentId, PeopleContext primaryContactForParent) throws Exception {
-		
+
 		if(primaryContactForParent != null) {
 			if(StringUtils.isNotEmpty(tc.getEmail())) {
 				if(StringUtils.isEmpty(primaryContactForParent.getEmail())) {
@@ -889,7 +889,7 @@ public class PeopleAPI {
 			RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
 			updateStateForPrimaryContact(tc);
 		}
-		
+
 	}
 
 	private static void updateStateForPrimaryContact(PeopleContext ppl) throws Exception {
@@ -918,20 +918,20 @@ public class PeopleAPI {
 			return;
 		}
 		throw new IllegalArgumentException("People with the same email id already exists");
-	
+
 	}
-	
+
 	public static void addPeopleRecord(PeopleContext ppl, FacilioModule module, List<FacilioField> fields, long parentId) throws Exception {
 		PeopleContext peopleExisting = getPeople(ppl.getEmail());
 		if(peopleExisting == null) {
 			RecordAPI.addRecord(true, Collections.singletonList(ppl), module, fields);
 			updateStateForPrimaryContact(ppl);
 			PeopleAPI.unMarkPrimaryContact(ppl, parentId);
-			
+
 			return;
 		}
 		throw new IllegalArgumentException("People with the same email id already exists");
-	
+
 	}
 
 	public static TenantContext getTenantForUser(long ouId) throws Exception {
@@ -955,7 +955,7 @@ public class PeopleAPI {
 		if (vc != null && vc.getVendor() != null && vc.getVendor().getId() > 0) {
 			return (VendorContext)RecordAPI.getRecord(FacilioConstants.ContextNames.VENDORS, vc.getVendor().getId());
 		}
-	
+
 		return null;
 
 	}
@@ -969,31 +969,31 @@ public class PeopleAPI {
 		if (cc != null && cc.getClient() != null && cc.getClient().getId() > 0) {
 			return (ClientContext)RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT, cc.getClient().getId());
 		}
-	
+
 		return null;
 
 	}
-	
+
 	public static void rollUpModulePrimarycontactFields(long id, String moduleName, String name, String email, String phone) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-		
+
 		FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
 		FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
 		FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
-		
+
 		updatedfields.add(primaryEmailField);
 		updatedfields.add(primaryPhoneField);
 		updatedfields.add(primaryNameField);
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-											.table(module.getTableName())
-											.fields(updatedfields)
-											.andCondition(CriteriaAPI.getIdCondition(id, module));
-									
+				.table(module.getTableName())
+				.fields(updatedfields)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+
 		Map<String, Object> value = new HashMap<>();
 		value.put("primaryContactEmail", email);
 		value.put("primaryContactPhone", phone);
@@ -1028,20 +1028,20 @@ public class PeopleAPI {
 
 
 	}
-	
+
 	private static boolean isSsoEnabledForApplication(String linkname) throws Exception
 	{
-        
+
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		if(linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))
 		{
 			AccountSSO accSso = IAMOrgUtil.getAccountSSO(orgId);
 			if(accSso != null)
 			{
-			   if(accSso.getIsActive())
-		       {
-		       	 return true;
-		       }
+				if(accSso.getIsActive())
+				{
+					return true;
+				}
 			}
 		}
 		else
@@ -1067,27 +1067,27 @@ public class PeopleAPI {
 			{
 				return false;
 			}
-	    	if(!CollectionUtils.isEmpty(domainSsoList))
-	    	{
-	    		for(Map<String,Object> domainSso : domainSsoList)
-	    		{
-	    			if(!domainSso.isEmpty())
-	    			{
-		    			DomainSSO sso = FieldUtil.getAsBeanFromMap(domainSso, DomainSSO.class);
-		    			if(sso.getIsActive() != null)
-		    			{
-		    				if(sso.getIsActive())
-		    				{
-		    					return true;
-		    				}
-		    			}
-	    			}
+			if(!CollectionUtils.isEmpty(domainSsoList))
+			{
+				for(Map<String,Object> domainSso : domainSsoList)
+				{
+					if(!domainSso.isEmpty())
+					{
+						DomainSSO sso = FieldUtil.getAsBeanFromMap(domainSso, DomainSSO.class);
+						if(sso.getIsActive() != null)
+						{
+							if(sso.getIsActive())
+							{
+								return true;
+							}
+						}
+					}
 
-	    		}
-	    	}
+				}
+			}
 		}
 		return false;
-		
+
 	}
 
 }

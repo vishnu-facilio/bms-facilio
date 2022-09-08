@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
@@ -187,11 +188,11 @@ public class V3ItemTransactionsContext extends V3Context {
         this.approvedState = ApprovalState.valueOf(approvedState);
     }
 
-    private TicketContext workorder;
-    public TicketContext getWorkorder() {
+    private V3TicketContext workorder;
+    public V3TicketContext getWorkorder() {
         return workorder;
     }
-    public void setWorkorder(TicketContext workorder) {
+    public void setWorkorder(V3TicketContext workorder) {
         this.workorder = workorder;
     }
 

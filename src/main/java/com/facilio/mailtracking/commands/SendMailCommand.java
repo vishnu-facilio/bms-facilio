@@ -39,9 +39,5 @@ public class SendMailCommand extends FacilioCommand {
         return mailJson;
     }
 
-    private void resetOriginalAddresses(JSONObject mailJson) {
-        mailJson.remove("originalTo");
-        mailJson.remove("originalCc");
-        mailJson.remove("originalBcc");
-    }
+
 }

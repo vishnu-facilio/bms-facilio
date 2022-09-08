@@ -26,13 +26,6 @@ sources:
       iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
       iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
 
-  - name: msk-ff #Frankfurt Region
-    type: kafka
-    configs:
-      broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096
-      auth: true
-
-
   - name: msk-uk #London Region
     type: kafka
     configs:
@@ -43,18 +36,6 @@ sources:
     type: kafka
     configs:
       broker: 172.31.86.53:9092
-
-  - name: msk-sp #Singapore Region
-    type: kafka
-    configs:
-      broker: b-2.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096
-      auth: true
-      
-  - name: msk-eu #eu region
-    type: kafka
-    configs:
-      broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096 
-      auth: true
 
   - name: msk-sg #Singapore Region
     type: kafka

@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
 import com.facilio.chain.FacilioContext;

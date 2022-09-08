@@ -14,6 +14,10 @@ public class DashboardRuleActionContext {
     public String actionType;
     public Integer type;
     public Long dashboard_rule_id;
+    public Long dashboardId;
+    public Long dashboardTabId;
     public DashboardRuleActionMetaContext action_meta = new DashboardRuleActionMetaContext();
     public List<DashboardTriggerAndTargetWidgetContext> target_widgets =  new ArrayList<>();
+
+
 }

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStatus;
@@ -497,11 +498,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.siteId = siteId;
 	}
 	
-	private ServiceRequestContext serviceRequest;
-	public ServiceRequestContext getServiceRequest() {
+	private V3ServiceRequestContext serviceRequest;
+	public V3ServiceRequestContext getServiceRequest() {
 		return serviceRequest;
 	}
-	public void setServiceRequest(ServiceRequestContext serviceRequest) {
+	public void setServiceRequest(V3ServiceRequestContext serviceRequest) {
 		this.serviceRequest = serviceRequest;
 	}
 }

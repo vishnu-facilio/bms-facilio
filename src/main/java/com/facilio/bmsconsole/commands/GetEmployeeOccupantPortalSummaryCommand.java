@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EmployeeContext;
-import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
@@ -167,10 +167,10 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         }
         FacilioStatus closedStatus = TicketAPI.getStatus(serviceReqModule, "closed");
         
-        SelectRecordsBuilder<ServiceRequestContext> srbuilder = new SelectRecordsBuilder<ServiceRequestContext>()
+        SelectRecordsBuilder<V3ServiceRequestContext> srbuilder = new SelectRecordsBuilder<V3ServiceRequestContext>()
                 .moduleName(serviceReqModule.getName())
                 .select(srFields)
-                .beanClass(ServiceRequestContext.class)
+                .beanClass(V3ServiceRequestContext.class)
                 .limit(count)
                 .fetchSupplements(srLookups);
         if(srstatusField != null && closedStatus != null) {
@@ -181,7 +181,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         	srbuilder.andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get("requester"), String.valueOf(recordId), PickListOperators.IS));
         }
 
-        List<ServiceRequestContext> srlist = srbuilder.get();
+        List<V3ServiceRequestContext> srlist = srbuilder.get();
         context.put(FacilioConstants.ContextNames.SERVICE_REQUEST, srlist);
         
         

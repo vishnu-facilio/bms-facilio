@@ -23,7 +23,7 @@ public class DashboardRuleCREDCommand extends FacilioCommand {
         }
         else if(isUpdate != null && isUpdate && dashboard_rule != null && dashboard_rule.getId() != null)
         {
-            DashboardRuleContext old_dashboard_rule = V3DashboardAPIHandler.getDashboardRule(dashboard_rule.getId());
+            DashboardRuleContext old_dashboard_rule = V3DashboardAPIHandler.getDashboardRule(dashboard_rule.getId(), null);
             if(old_dashboard_rule != null)
             {
                 V3DashboardAPIHandler.deleteOldDashboardRuleData(old_dashboard_rule);
@@ -40,7 +40,7 @@ public class DashboardRuleCREDCommand extends FacilioCommand {
         {
             Long dashboard_rule_id = (Long)context.get("dashboard_rule_id");
             if(dashboard_rule_id != null && dashboard_rule_id > 0) {
-                DashboardRuleContext dashboard_rule_context = V3DashboardAPIHandler.getDashboardRule(dashboard_rule_id);
+                DashboardRuleContext dashboard_rule_context = V3DashboardAPIHandler.getDashboardRule(dashboard_rule_id, null);
                 context.put("dashboard_rule", dashboard_rule_context);
             }
         }

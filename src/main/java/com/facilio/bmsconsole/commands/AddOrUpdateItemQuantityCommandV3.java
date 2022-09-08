@@ -135,7 +135,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 				Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
 				finalChangeMap.put(itemModule.getName(), changes);
 				
-				context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
+				//context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
 				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);

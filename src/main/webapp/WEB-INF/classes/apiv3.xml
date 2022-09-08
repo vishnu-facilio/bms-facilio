@@ -1045,24 +1045,4 @@
                 method="deleteChildren">
         </action>
     </package>
-
-    <package name="modulePermissions" namespace="/api/v3/modulePermissions"
-             extends="v3Api">
-        <action name="addOrUpdate"
-                class="com.facilio.bmsconsoleV3.actions.ModulePermissionAction"
-                method="addOrUpdate">
-        </action>
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.ModulePermissionAction"
-                method="list">
-        </action>
-        <action name="delete"
-                class="com.facilio.bmsconsoleV3.actions.ModulePermissionAction"
-                method="delete">
-        </action>
-        <action name="deleteChildren"
-                class="com.facilio.bmsconsoleV3.actions.ModulePermissionAction"
-                method="deleteChildren">
-        </action>
-    </package>
 </struts>

@@ -577,6 +577,13 @@ public class ModuleFactory {
 		module.setTableName("Classification_Attribute");
 		return module;
 	}
+	public static FacilioModule getClassificationAttributeRelModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("classificationAttributeRel");
+		module.setDisplayName("Classification Attribute Rel");
+		module.setTableName("Classification_Attribute_Rel");
+		return module;
+	}
 
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
@@ -1230,22 +1237,6 @@ public class ModuleFactory {
 		return criteriaModule;
 	}
 
-	public static FacilioModule getModulePermissionModule() {
-		FacilioModule criteriaModule = new FacilioModule();
-		criteriaModule.setName("modulePermission");
-		criteriaModule.setDisplayName("Module Permission");
-		criteriaModule.setTableName("ModulePermission");
-		return criteriaModule;
-	}
-
-	public static FacilioModule getModulePermissionChildModule() {
-		FacilioModule criteriaModule = new FacilioModule();
-		criteriaModule.setName("modulePermissionChild");
-		criteriaModule.setDisplayName("Module Permission Child");
-		criteriaModule.setTableName("ModulePermissionChild");
-		return criteriaModule;
-	}
-
 	public static FacilioModule getModuleAppPermissionModule() {
 		FacilioModule criteriaModule = new FacilioModule();
 		criteriaModule.setName("moduleAppPermission");
@@ -1849,7 +1840,7 @@ public class ModuleFactory {
 	}
 	public static FacilioModule getDashboardRuleTargetWidgetModule() {
 		FacilioModule dashboardRule = new FacilioModule();
-		dashboardRule.setTableName("Dashboard_Trigger_And_Target_Widget_Mapping");
+		dashboardRule.setTableName("Dashboard_Target_Widget_Mapping");
 		return dashboardRule;
 	}
 	public static FacilioModule getDashboardModule() {

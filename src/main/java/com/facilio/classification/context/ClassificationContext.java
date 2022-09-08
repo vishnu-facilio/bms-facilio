@@ -1,5 +1,6 @@
 package com.facilio.classification.context;
 
+import com.facilio.attribute.context.ClassificationAttributeContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,8 @@ public class ClassificationContext extends V3Context {
     private Boolean status;
 
     private String classificationPath;
+    private List<ClassificationAttributeContext> attributes;
+    private Boolean hasChild;
     public void setClassificationPath(String classificationPath) {
         if (StringUtils.isNotEmpty(classificationPath)) {
             this.classificationPath = "All / " + classificationPath;

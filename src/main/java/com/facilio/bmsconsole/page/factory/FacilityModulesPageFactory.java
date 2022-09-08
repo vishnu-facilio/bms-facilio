@@ -68,11 +68,13 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page page = new Page();
 
         Page.Tab tab1 = page.new Tab("summary");
+        tab1.setCustomFullPage(true);
         page.addTab(tab1);
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         PageWidget bookingFullSmmary = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_FULL_SUMMARY);
+        bookingFullSmmary.addToWidgetParams("hideBg", true);
         bookingFullSmmary.addToLayoutParams(tab1Sec1, 24, 10);
         tab1Sec1.addWidget(bookingFullSmmary);
 

@@ -2,6 +2,7 @@ package com.facilio.agentv2.commands;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import lombok.extern.log4j.Log4j;
@@ -22,8 +23,11 @@ public class MLTagPointListCommand extends AgentV2Command{
             HashMap<String,Object>pointsMap = new HashMap<>();
             pointsMap.put("pointName",pointNames);
             pointsMap.put("controller",controller.getName());
-            pointsMap.put("agentName",controller.getAgent().getName());
-            pointsMap.put("agentType", AgentType.valueOf(controller.getAgent().getAgentType()).toString() );
+            FacilioAgent agent = controller.getAgent();
+            pointsMap.put("agentName", agent.getName());
+            pointsMap.put("agentType", AgentType.valueOf(agent.getAgentType()).toString() );
+
+//            pointsMap.put("agentId",agent.getId());
                 BmsPointsTaggingUtil.tagPointListV1(Collections.singletonList(pointsMap));
             return false;
         }

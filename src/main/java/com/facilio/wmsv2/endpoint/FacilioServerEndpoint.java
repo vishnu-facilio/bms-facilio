@@ -2,6 +2,7 @@ package com.facilio.wmsv2.endpoint;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -44,6 +45,7 @@ public class FacilioServerEndpoint
     private static final String HANDSHAKE_REQUEST = "handshakereq";
     private static final String SESSION_TYPE = "type";
     private static final String SESSION_SOURCE = "source";
+	private static final String SESSION_APP = "app";
     private static final String AUTH_TOKEN = "token";
 
     private DefaultBroadcaster broadcaster = null;
@@ -66,7 +68,7 @@ public class FacilioServerEndpoint
     @OnOpen
     public void onOpen(Session session, @PathParam("id") long id) throws Exception
     {
-    	LiveSession liveSession = validateSession(id, session);
+    	LiveSession liveSession = validateSession(session);
     	if (liveSession != null) {
     		log.log(Level.INFO, "Session started => " + liveSession);
 
@@ -78,7 +80,7 @@ public class FacilioServerEndpoint
     	}
     }
     
-    private LiveSession validateSession(Long id, Session session) throws Exception {
+    private LiveSession validateSession(Session session) throws Exception {
     	
     	HandshakeRequest hreq = (HandshakeRequest) session.getUserProperties().get(HANDSHAKE_REQUEST);
 		
@@ -111,15 +113,16 @@ public class FacilioServerEndpoint
 				}
 			}
 
+			LiveSessionType sessionType = LiveSessionType.APP;
+			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
+
 			String userType = "web";
 			String deviceType = headers.containsKey("X-Device-Type") ? headers.get("X-Device-Type").get(0) : null;
 			if (!StringUtils.isEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				userType = "mobile";
+				sessionSource = LiveSession.LiveSessionSource.MOBILE;
 			}
-
-			LiveSessionType sessionType = LiveSessionType.APP;
-			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
 
 			if (params.containsKey(SESSION_TYPE)) {
 				sessionType = LiveSessionType.valueOf(params.get(SESSION_TYPE).get(0));
@@ -131,15 +134,25 @@ public class FacilioServerEndpoint
 
 			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, userType);
 			if (iamAccount != null) {
+				String currentOrgDomain = getUserCookie(hreq, "fc.currentOrg");
+				if (currentOrgDomain == null) {
+					currentOrgDomain = headers.containsKey("X-Current-Org") ? headers.get("X-Current-Org").get(0) : null;
+				}
+				Organization organization = null;
+				if (StringUtils.isNotBlank(currentOrgDomain)) {
+					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
+				}
+				else {
+					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
+				}
+				iamAccount.setOrg(organization);
+
 				Account currentAccount = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
-				if (params.containsKey("app")) {
-					List<String> apps = params.get("app");
-					if (CollectionUtils.isNotEmpty(apps)) {
-						String appName = apps.get(0);
-						ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", iamAccount.getOrg().getOrgId());
-						ApplicationContext applicationContext = moduleCRUD.getApplicationForLinkName(appName);
-						currentAccount.setApp(applicationContext);
-					}
+				if (params.containsKey(SESSION_APP) && StringUtils.isNotEmpty(params.get(SESSION_APP).get(0))) {
+					String appName = params.get(SESSION_APP).get(0);
+					ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", iamAccount.getOrg().getOrgId());
+					ApplicationContext applicationContext = moduleCRUD.getApplicationForLinkName(appName);
+					currentAccount.setApp(applicationContext);
 				}
 				LiveSession liveSession = new LiveSession().setId(session.getId()).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType);
 				return liveSession;

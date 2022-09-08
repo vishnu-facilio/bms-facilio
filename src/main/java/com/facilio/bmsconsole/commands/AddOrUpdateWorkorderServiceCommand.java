@@ -145,17 +145,17 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand {
 		}
 
 		woService.setParentId(parentId);
+		woService.setQuantity(workorderService.getQuantity());
+		if(workorderService.getQuantity() <= 0) {
+			woService.setQuantity(1);
+		}
 		double costOccured = 0;
 		if(service.getBuyingPrice() > 0) {
 			if (service.getPaymentTypeEnum() == ServiceContext.PaymentType.FIXED) {
-				woService.setQuantity(workorderService.getQuantity());
-				if(workorderService.getQuantity() <= 0) {
-					woService.setQuantity(1);
-				}
 				costOccured = service.getBuyingPrice() * woService.getQuantity();
 			}
 			else {
-				costOccured = service.getBuyingPrice() * duration;
+				costOccured = service.getBuyingPrice() * duration * woService.getQuantity();
 			}
 		}
 		woService.setCost(costOccured);

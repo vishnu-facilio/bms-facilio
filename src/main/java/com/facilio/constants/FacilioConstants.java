@@ -2516,7 +2516,7 @@ public class FacilioConstants {
 			classMap.put(OCCUPANT, OccupantsContext.class);
 			classMap.put(WEB_TAB_GROUP, WebTabGroupContext.class);
 
-			classMap.put(SERVICE_REQUEST, ServiceRequestContext.class);
+			classMap.put(SERVICE_REQUEST, V3ServiceRequestContext.class);
 			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
 			classMap.put(DOCUMENT, DocumentContext.class);
 

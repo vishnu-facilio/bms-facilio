@@ -6257,26 +6257,6 @@
 				class="com.facilio.cb.action.ChatBotAction" method="flushIntentAndModel" />
 	</package>
 	
-	<package name="servicerequests" namespace="/api/v2/servicerequests"
-		extends="v2Api">
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="addServiceRequest" />
-		<action name="details"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServiceRequestDetails" />
-		<action name="update"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="updateServiceRequests" />
-		<action name="delete"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="deleteServiceRequests" />	
-		<action name="fetchSubModules"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServcieRequestSubModules" />	
-	</package>
-	<package name="serviceRequestsList" namespace="/api/v2/servicerequests/view"
-		extends="v2Api">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServicerequestsList" >
-			<param name="viewName">{1}</param>
-		</action>
-	</package>
 	<package name="documents" namespace="/api/v2/documents"
 		extends="v2Api">
 		<action name="add"
@@ -6912,4 +6892,10 @@
 		</action>
 
 	</package>
+	<package name="servicerequests" namespace="/api/v2/servicerequests" extends="v2Api">
+
+		<action name="fetchSubModules" class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServcieRequestSubModules" />
+
+	</package>
+
 </struts>

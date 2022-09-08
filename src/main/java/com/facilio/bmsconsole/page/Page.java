@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Page {
 	private static final long serialVersionUID = 1L;
@@ -67,6 +69,7 @@ public class Page {
 		public Tab(String name) {
 			this(name, null);
 		}
+
 		
 		public Tab(String name, String component) {
 			this.name = name;
@@ -74,6 +77,10 @@ public class Page {
 		}
 		
 		private long orgId = -1;
+
+
+		@Getter @Setter
+		private Boolean customFullPage;
 		public long getOrgId() {
 			return orgId;
 		}

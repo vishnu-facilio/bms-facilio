@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.context;
 
 import java.io.Serializable;
 
-public class ModulePermisssionChild implements Serializable {
+public class ModuleAppPermissionChild implements Serializable {
 
     long parentId;
     long childPermission1;
@@ -22,7 +22,7 @@ public class ModulePermisssionChild implements Serializable {
         return parentId;
     }
 
-    public ModulePermisssionChild(long parentId, long childPermission1, long childPermission2, String displayName) {
+    public ModuleAppPermissionChild(long parentId, long childPermission1, long childPermission2, String displayName) {
         this.parentId = parentId;
         this.childPermission1 = childPermission1;
         this.childPermission2 = childPermission2;
@@ -57,6 +57,15 @@ public class ModulePermisssionChild implements Serializable {
         this.displayName = displayName;
     }
 
-    public ModulePermisssionChild() {
+    private long modulePermissionChildId;
+
+    public ModuleAppPermissionChild(){}
+
+    public long getModulePermissionChildId() {
+        return modulePermissionChildId;
+    }
+
+    public void setModulePermissionChildId(long modulePermissionChildId) {
+        this.modulePermissionChildId = modulePermissionChildId;
     }
 }

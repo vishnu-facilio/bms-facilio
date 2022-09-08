@@ -2300,36 +2300,6 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getServiceRequestsListChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(SetTableNamesCommand.getForServiceRequests());
-		chain.addCommand(new LoadAllFieldsCommand());
-		chain.addCommand(new LoadViewCommand());
-		chain.addCommand(new GenerateCriteriaFromFilterCommand());
-		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new LoadServiceRequestLookupCommand());
-		chain.addCommand(new GenericGetModuleDataListCommand());
-		chain.addCommand(new GetStateflowsForModuleDataListCommand());
-		return chain;
-	}
-
-	public static FacilioChain getServcieRequestDetailsChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new LoadServiceRequestLookupCommand());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
-
-		return c;
-	}
-	
-	public static FacilioChain getServiceRequestSubModulesChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new GetServiceRequestSubModules());
-		
-		return c;
-	}
-
 	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new copyAssetReadingCommand());
@@ -3108,5 +3078,16 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetCommissionedChainCommand());
 
 		return chain;
+	}
+	
+	public static FacilioChain getServiceRequestSubModulesChain() {
+
+		FacilioChain c = getDefaultChain();
+
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GetServiceRequestSubModules());
+
+		return c;
+
 	}
 }

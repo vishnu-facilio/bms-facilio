@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.facilio.accounts.dto.*;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.AppModulePermissionUtil;
-import com.facilio.bmsconsoleV3.util.ModulePermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;

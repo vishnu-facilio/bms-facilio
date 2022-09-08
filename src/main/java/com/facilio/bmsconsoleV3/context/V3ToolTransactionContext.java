@@ -185,11 +185,11 @@ public class V3ToolTransactionContext extends V3Context {
         this.approvedState = ApprovalState.valueOf(approvedState);
     }
 
-    private TicketContext workorder;
-    public TicketContext getWorkorder() {
+    private V3TicketContext workorder;
+    public V3TicketContext getWorkorder() {
         return workorder;
     }
-    public void setWorkorder(TicketContext workorder) {
+    public void setWorkorder(V3TicketContext workorder) {
         this.workorder = workorder;
     }
 

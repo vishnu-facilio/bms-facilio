@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1144,6 +1145,19 @@ public class AssetsAPI {
 		updateBuilder.update(asset);
 
    }
+	public static void updateAssetV3(V3AssetContext asset, long assetId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+
+		UpdateRecordBuilder<V3AssetContext> updateBuilder = new UpdateRecordBuilder<V3AssetContext>()
+				.module(assetModule)
+				.fields(assetFields)
+				.andCondition(CriteriaAPI.getIdCondition(assetId, assetModule));
+
+		updateBuilder.update(asset);
+
+	}
    public static boolean isWithInLocation (String location, double lat, double lng, int boundaryRadius) {
 		if (StringUtils.isEmpty(location)) {
 			return false;
