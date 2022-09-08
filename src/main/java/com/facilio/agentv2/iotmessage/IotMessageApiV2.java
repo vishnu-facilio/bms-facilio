@@ -304,7 +304,7 @@ public class IotMessageApiV2 {
 
     public static void publishToAwsIot(String client, JSONObject object) throws Exception {
         String topic = client+"/msgs";
-        LOGGER.info(FacilioProperties.getIotEndPoint() +" " + client+"-facilio" + " " + topic + " " + object);
+        LOGGER.info(FacilioProperties.getIotEndPoint() +" " + "facilio-"+client + " " + topic + " " + object);
         AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), "facilio-"+client, FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
         try {
             if (AccountUtil.getCurrentOrg().getOrgId() == 486) {
