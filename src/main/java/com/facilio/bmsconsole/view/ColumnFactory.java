@@ -1033,7 +1033,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("startTime", "Start Time"));
 		columns.add(new ViewField("endTime", "End Time"));
-		columns.add(new ViewField("isDefaultShift", "Is Default"));
+		columns.add(new ViewField("defaultShift", "Is Default"));
 		return columns;
 	}
 	
