@@ -164,16 +164,6 @@ public class OutgoingMailAPI {
         }
     }
 
-    public static void restoreMailJson(JSONObject mailJson) {
-        JSONObject header = (JSONObject) mailJson.getOrDefault(MailConstants.Params.HEADER, new JSONObject());
-        if(!header.isEmpty()) {
-            header.remove(MailConstants.Params.MAPPER_ID);
-            header.remove(MailConstants.Params.REGION);
-            mailJson.put(MailConstants.Params.HEADER, header);
-        }
-        restoreMailMessage(mailJson);
-    }
-
     public static void restoreEmailAddress(JSONObject mailJson, String key) {
         String originalKey = "original"+ StringUtils.capitalize(key);
         if(mailJson.containsKey(originalKey)) {

@@ -106,18 +106,20 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
+        FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
+        FacilioContext context = chain.getContext();
         try {
             //new behaviour for non-prod env
-            FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
-            FacilioContext context = chain.getContext();
             context.put(MailConstants.Params.MAIL_JSON, mailJson);
             context.put(MailConstants.Params.FILES, files);
             chain.execute();
             return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
         } catch (Exception e) {
-            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed before pushing to queue. So sending in normal flow", e);
-            OutgoingMailAPI.restoreMailMessage(mailJson);
-            return sendMailWithoutTracking(mailJson, files);
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed before pushing to queue. So sending in normal flow :: "+mailJson, e);
+            chain = MailTransactionChainFactory.getNoTrackingChain();
+            chain.setContext(context);
+            chain.execute();
+            return -1;
         }
     }
 

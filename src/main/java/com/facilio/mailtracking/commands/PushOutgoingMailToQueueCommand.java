@@ -33,6 +33,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         mailJson.remove("originalTo");
         mailJson.remove("originalCc");
         mailJson.remove("originalBcc");
+        mailJson.remove("maskUrl");
     }
 
 }

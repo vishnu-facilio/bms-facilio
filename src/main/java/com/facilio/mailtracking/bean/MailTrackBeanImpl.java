@@ -96,7 +96,7 @@ public class MailTrackBeanImpl implements MailBean {
 
     @Override
     public void trackAndSendMail(JSONObject mailJson) throws Exception {
-        if("development".equals(FacilioProperties.getEnvironment())) {
+        if(FacilioProperties.isDevelopment()) {
             NewTransactionService.newTransaction(() -> initMailTracking(mailJson));
         } else {
             initMailTracking(mailJson);
@@ -113,13 +113,18 @@ public class MailTrackBeanImpl implements MailBean {
             context.put(MailConstants.Params.MAPPER_ID, mailJson.get(MailConstants.Params.MAPPER_ID));
             chain.execute();
         } catch (Exception e) {
-            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue. So sending in normal flow", e);
-            OutgoingMailAPI.restoreMailJson(mailJson);
-            EmailFactory.getEmailClient().sendMailWithoutTracking(mailJson, (Map<String, String>)mailJson.get(MailConstants.Params.FILES));
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue. So sending in normal flow :: "+mailJson, e);
+            chain = MailTransactionChainFactory.getNoTrackingChain();
+            chain.setContext(context);
+            chain.execute();
             return;
         }
 
         chain = MailTransactionChainFactory.updateOutgoingMailChain();
+        chain.setContext(context);
+        chain.execute();
+
+        chain = MailTransactionChainFactory.triggerMailHandlerChain();
         chain.setContext(context);
         chain.execute();
     }

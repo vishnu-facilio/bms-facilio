@@ -13,7 +13,7 @@ import org.json.simple.JSONObject;
 import java.util.Map;
 
 @Log4j
-public class SendMailCommand extends FacilioCommand {
+public class SendMailWithTrackingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = this.constructMailJson(context);

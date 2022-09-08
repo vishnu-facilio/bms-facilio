@@ -50,7 +50,7 @@
                                 <div>
                                     <a href="${invitelink}"
                                         style="font-weight: normal; font-stretch: normal; font-style: normal; line-height:
-                                    1.54; letter-spacing: 0.5px; word-break:break-all; color: #581dfb;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;text-decoration: none;font-size: 13px;">
+                                    1.54; letter-spacing: 0.5px; word-break:break-all; color: #581dfb;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;text-decoration: none;font-size: 13px;" class="facilio-masked-url-email-log">
                                         ${invitelink}
                                     </a>
                                 </div>
