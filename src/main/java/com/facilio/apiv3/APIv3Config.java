@@ -124,7 +124,9 @@ import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCom
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.*;
@@ -164,6 +166,8 @@ import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
+import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
+import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -184,7 +188,6 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
-import com.facilio.mailtracking.commands.FilterOutFailedMailLogsCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
@@ -2509,6 +2512,29 @@ public class APIv3Config {
         return () -> new V3Config(V3SafetyPlanHazardContext.class, null)
                 .create()
                 .list()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN)
+    public static Supplier<V3Config> getWorkOrderLabourPlan() {
+        return () -> new V3Config(V3WorkOrderLabourPlanContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .list()
+                .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                .update()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.WO_LABOUR)
+    public static Supplier<V3Config> getWorkOrderLabour() {
+        return () -> new V3Config(V3WorkOrderLabourContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new ValidateWorkOrderLabourPlanCommandV3())
+                .list()
+                .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                .update()
                 .delete()
                 .build();
     }

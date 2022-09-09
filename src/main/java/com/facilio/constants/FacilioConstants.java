@@ -1,6 +1,5 @@
 package com.facilio.constants;
 
-import com.facilio.accounts.dto.Group;
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
@@ -2132,6 +2131,10 @@ public class FacilioConstants {
 
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
+		}
+
+		public static class WorkOrderLabourPlan {
+			public static final String WORKORDER_LABOUR_PLAN = "workorderLabourPlan";
 		}
 
 		public static final String VALUE_GENERATORS = "valueGenerators";
