@@ -37,6 +37,8 @@ public class CacheUtil {
 
 	public static final String AGENT_NAME = "agentName";
 
+	public static final String APP_ID = "appId";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -114,6 +116,14 @@ public class CacheUtil {
 
 	public static String AGENT_KEY(long orgId, String actualAgentName) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + AGENT_NAME + KEY_SEPARATOR + actualAgentName;
+	};
+
+	public static String APPID_KEY(long appId) {
+		return APP_ID + KEY_SEPARATOR + appId;
+	}
+
+	public static String GLOBAL_SCOPE_VARIABLE_KEY(long orgId, long appId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + APPID_KEY(appId);
 	};
 
 	public static boolean isCacheEnabled() {

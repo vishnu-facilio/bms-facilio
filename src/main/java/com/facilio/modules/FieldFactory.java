@@ -10968,6 +10968,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("valueGeneratorId", "VALUE_GENERATOR_ID", module, FieldType.NUMBER));
         fields.add(getField("showSwitch", "SHOW_SWITCH", module, FieldType.BOOLEAN));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
         fields.add(getSystemField("sysModifiedTime", module));

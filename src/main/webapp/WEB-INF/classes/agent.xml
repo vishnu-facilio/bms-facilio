@@ -86,6 +86,8 @@
                          class="com.facilio.interceptors.FacilioBeanValidationInterceptor"/>
             <interceptor name="validationinterceptor"
                          class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+            <interceptor name="globalscopevariableinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
             <interceptor-stack name="validator">
                 <interceptor-ref name="defaultStack"/>
                 <interceptor-ref name="json">
@@ -95,6 +97,7 @@
                 <interceptor-ref name="beanValidation"/>
                 <interceptor-ref name="datasourceinterceptor"/>
                 <interceptor-ref name="scopeinterceptor"/>
+                <interceptor-ref name="globalscopevariableinterceptor"/>
                 <interceptor-ref name="cacheinterceptor"/>
                 <interceptor-ref name="validationinterceptor"/>
             </interceptor-stack>
