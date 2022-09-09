@@ -1,9 +1,21 @@
 package com.facilio.events.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,10 +28,8 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventContext;
 import com.facilio.modules.FieldUtil;
 
 public class GetEventListCommand extends FacilioCommand {
@@ -38,46 +48,60 @@ public class GetEventListCommand extends FacilioCommand {
 		
 		long alarmId = (long) context.get(EventConstants.EventContextNames.ALARM_ID);
 		
-		List<EventContext> events = new ArrayList<>();
+		List<BaseEventContext> events = new ArrayList<>();
 		try {
-			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-					.select(EventConstants.EventFieldFactory.getEventFields())
-					.table("Event")
-					.andCustomWhere("Event.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-					.orderBy("CREATED_TIME desc");
-			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule baseEventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+			ArrayList<FacilioField> fields = new ArrayList<>();
+			fields.add(modBean.getField("resource", baseEventModule.getName()));
+			fields.add(modBean.getField("severity", baseEventModule.getName()));
+			fields.add(modBean.getField("eventMessage", baseEventModule.getName()));
+			fields.add(modBean.getField("createdTime", baseEventModule.getName()));
+
+			SelectRecordsBuilder<BaseEventContext> selectBuilder = new SelectRecordsBuilder<BaseEventContext>()
+					.module(baseEventModule)
+					.beanClass(BaseEventContext.class)
+					.select(fields);
+
 			if(alarmId != -1)
 			{
-				selectBuider.andCustomWhere("Event.ALARM_ID = ?", alarmId);
+				selectBuilder.andCondition(CriteriaAPI.getCondition("BaseEvent.ALARM_ID","baseAlarm",String.valueOf(alarmId), NumberOperators.EQUALS));
 			}
+
 			if (view != null) {
 				Criteria criteria = view.getCriteria();
-				selectBuider.andCriteria(criteria);
+				selectBuilder.andCriteria(criteria);
 			}
 			
 			if (pagination != null) {
-				selectBuider.offset((int) pagination.get("offset"));
-				selectBuider.limit((int) pagination.get("limit"));
+				selectBuilder.offset((int) pagination.get("offset"));
+				selectBuilder.limit((int) pagination.get("limit"));
 			}
 	
-			List<Map<String, Object>> eventList = selectBuider.get();
+			List<BaseEventContext> eventList = selectBuilder.get();
 			List<Long> resourceIds = new ArrayList<>();
-			for(Map<String, Object> eventMap : eventList)
-			{
-				EventContext event = FieldUtil.getAsBeanFromMap(eventMap, EventContext.class);
+			List<Long> severityIds = new ArrayList<>();
+			for(BaseEventContext event : eventList){
 				events.add(event);
-				
-				if (event.getResourceId() != -1) {
-					resourceIds.add(event.getResourceId());
+				if (event.getResource().getId() != -1) {
+					resourceIds.add(event.getResource().getId());
+				}
+				if (event.getSeverity().getId() != -1) {
+					severityIds.add(event.getSeverity().getId());
 				}
 			}
 			
 			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+			Map<Long, AlarmSeverityContext> severity = AlarmAPI.getAlarmSeverityMap(severityIds);
 			
-			for (EventContext event : events) {
-				if (event.getResourceId() != -1) {
-					event.setResource(resources.get(event.getResourceId()));
+			for (BaseEventContext event : events) {
+				if (event.getResource().getId() != -1) {
+					event.setResource(resources.get(event.getResource().getId()));
 				}
+				if (event.getSeverity().getId() != -1) {
+					event.setSeverity(severity.get(event.getSeverity().getId()));
+				}
+				event.setCreatedTime(event.getCreatedTime());
 			}
 		}
 		catch (Exception e) {
