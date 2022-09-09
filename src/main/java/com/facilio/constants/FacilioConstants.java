@@ -2989,10 +2989,10 @@ public class FacilioConstants {
 		public static final String TABLE_NAME = "Workorders";
 	}
 	
-	public static class WorkOrderMultiResource {
-		public static final String DISPLAY_NAME = "WorkOrder Multi Resource";
-		public static final String NAME = "workorderMultiResource";
-		public static final String TABLE_NAME = "WorkOrder_Multi_Resource";
+	public static class MultiResource {
+		public static final String DISPLAY_NAME = "Multi Resource";
+		public static final String NAME = "multiResource";
+		public static final String TABLE_NAME = "Multi_Resource";
 	}
 
 	public static class WorkOrderRquest {

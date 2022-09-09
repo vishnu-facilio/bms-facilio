@@ -2016,11 +2016,13 @@ public class APIv3Config {
                 .build();
     }
     
-    @Module(FacilioConstants.WorkOrderMultiResource.NAME)
-	public static Supplier<V3Config> getWorkOrderMultiResource() {
-		return () -> new V3Config(WorkOrderMultiResourceContext.class, null)
+    @Module(FacilioConstants.MultiResource.NAME)
+	public static Supplier<V3Config> getMultiResource() {
+		return () -> new V3Config(MultiResourceContext.class, null)
 							 .create()
 							 .list()
+							 .beforeFetch(new LoadMultiResourcesLookUpFieldsCommandV3())
+				             .afterFetch(new SortMultiResourceDataCommandV3())
 							 .delete()
 							 .build();
 	}

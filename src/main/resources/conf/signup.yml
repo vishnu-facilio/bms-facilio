@@ -115,7 +115,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.ToolScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderMultiResourceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddMultiResourceModule
 
 
     # Adding default ML params
