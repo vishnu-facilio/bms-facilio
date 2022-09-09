@@ -80,7 +80,7 @@ public class V3DashboardRuleAction extends V3Action {
             chain.execute();
             if(context.containsKey("dashboard_rule"))
             {
-                setData("dashboard_rule", dashboard_rule);
+                setData("dashboard_rule", context.get("dashboard_rule"));
             }
         }
         catch (Exception e)

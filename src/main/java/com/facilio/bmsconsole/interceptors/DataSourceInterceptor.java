@@ -24,6 +24,7 @@ import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
+
 public class DataSourceInterceptor extends AbstractInterceptor {
 	private static final long serialVersionUID = 1L;
 	private static HashMap customdomains = null; 
@@ -107,6 +108,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
 			if (sessionExpired) {
+				LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
 				return "sessionexpired";
 			}
 		}

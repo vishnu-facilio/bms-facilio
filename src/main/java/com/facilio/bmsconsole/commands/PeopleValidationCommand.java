@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +17,9 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class CheckForPeopleDuplicationCommand extends FacilioCommand {
+public class PeopleValidationCommand extends FacilioCommand {
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -22,6 +27,9 @@ public class CheckForPeopleDuplicationCommand extends FacilioCommand {
 		List<PeopleContext> peopleList = (List<PeopleContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(peopleList)) {
 			for (PeopleContext people : peopleList) {
+				if(StringUtils.isNotEmpty(people.getEmail()) && !VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()) {
+					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
+				}
 				if(StringUtils.isNotEmpty(people.getEmail()) && PeopleAPI.checkForDuplicatePeople(people)) {
 					throw new IllegalArgumentException("People with the same email id already exists");
 				}

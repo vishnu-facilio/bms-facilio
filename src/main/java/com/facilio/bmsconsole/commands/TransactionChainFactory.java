@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.GetCustomPageWidgetCommand;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -5507,7 +5508,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addPeopleChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPeople());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new AddPeopleAccessCommand());
 		c.addCommand(new UpdateScopingForPeopleCommand());
@@ -5517,7 +5518,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addTenantContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new CheckForMandatoryTenantIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
@@ -5538,7 +5539,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addVendorContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new CheckForMandatoryVendorIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
@@ -5558,7 +5559,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
@@ -5583,7 +5584,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateTenantContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
@@ -5603,7 +5604,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateVendorContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
@@ -5625,7 +5626,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
@@ -5646,7 +5647,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updatePeopleChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPeople());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new AddPeopleAccessCommand());
 		c.addCommand(new UpdateScopingForPeopleCommand());
@@ -5944,7 +5945,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new CheckForMandatoryClientIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
@@ -5956,7 +5957,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
@@ -6523,7 +6524,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addPortalEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePortalAccessCommand());
@@ -6542,7 +6543,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updatePortalEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
-		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new PeopleValidationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateEmployeePortalAccessCommand());
@@ -6556,6 +6557,13 @@ public class TransactionChainFactory {
 
 
 
+
+		return c;
+	}
+
+	public static FacilioChain getPageWidgetChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCustomPageWidgetCommand());
 
 		return c;
 	}

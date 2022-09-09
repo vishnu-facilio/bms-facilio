@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -570,10 +572,23 @@ public class PageFactory {
 			}
 		}
 		else {
-			PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-			detailsWidget.addToLayoutParams(section, 24, 7);
-			detailsWidget.addToWidgetParams("orderType", orderType.getIndex());
-			section.addWidget(detailsWidget);
+			boolean isNewSummaryWidget = false;
+			Organization organization = AccountUtil.getCurrentOrg();
+			if((organization != null) && (organization.getId() == 173l)){
+				CustomPageWidget pageWidget = CustomPageAPI.getMainSummaryWidget(module.getModuleId());
+				if(pageWidget != null){
+					isNewSummaryWidget = true;
+					PageWidget newSummaryFieldsWidget = new PageWidget(WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);
+					newSummaryFieldsWidget.addToLayoutParams(section, 24, 7);
+					section.addWidget(newSummaryFieldsWidget);
+				}
+			}
+			if(!isNewSummaryWidget) {
+				PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+				detailsWidget.addToLayoutParams(section, 24, 7);
+				detailsWidget.addToWidgetParams("orderType", orderType.getIndex());
+				section.addWidget(detailsWidget);
+			}
 		}
 	}
 	

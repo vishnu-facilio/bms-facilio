@@ -147,6 +147,10 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.REQUEST_FOR_QUOTATION, getRequestForQuotationModule());
 		moduleMap.put(ContextNames.TRANSACTION, getTransactionModule());
 		moduleMap.put(ContextNames.VENDOR_QUOTES, getVendorQuotesModule());
+		moduleMap.put("customPageWidget", getCustomPageWidgetModule());
+		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
+		moduleMap.put("customWidgetGroupFields", getSummaryWidgetGroupFieldsModule());
+
 		return moduleMap;
 	}
 	
@@ -5203,5 +5207,27 @@ public class ModuleFactory {
 		commentsSharing.setDisplayName("Comments Sharing");
 		commentsSharing.setTableName("Comments_Sharing");
 		return commentsSharing;
+	}
+
+	public static FacilioModule getCustomPageWidgetModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("customPageWidget");
+		module.setDisplayName("CustomPageWidget");
+		module.setTableName("Custom_Page_Widget");
+		return module;
+	}
+	public static FacilioModule getSummaryWidgetGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("summaryWidgetGroup");
+		module.setDisplayName("SummaryWidgetGroup");
+		module.setTableName("Summary_Widget_Group");
+		return module;
+	}
+	public static FacilioModule getSummaryWidgetGroupFieldsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("summaryWidgetGroupFields");
+		module.setDisplayName("SummaryWidgetGroupFields");
+		module.setTableName("Summary_Widget_Group_Fields");
+		return module;
 	}
 }
