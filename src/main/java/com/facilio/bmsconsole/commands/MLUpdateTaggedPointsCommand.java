@@ -34,7 +34,12 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
         for (Map<String, Object> point : points) {
             if (point.containsKey("resourceId") && point.containsKey("fieldId")) {
                 Map<String, Map<Long, String>> pointMap = new HashMap<>();
-                pointMap.put("category", Collections.singletonMap((Long) point.get("categoryId"), assetCategory.get(point.get("categoryId"))));
+                if(point.get("categoryId")!=null){
+                    pointMap.put("category", Collections.singletonMap((Long) point.get("categoryId"), assetCategory.get(point.get("categoryId"))));
+                }
+                else{
+                    pointMap.put("category",null);
+                }
                 if(point.get("resourceId")!=null){
                     pointMap.put("assetName", Collections.singletonMap((Long) point.get("resourceId"), resources.get(point.get("resourceId"))));
                 }else{
