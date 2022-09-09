@@ -28,6 +28,7 @@ public class PMPlannerHandler extends BaseHandler {
 
     @Override
     public Message processOutgoingMessage(Message message) {
+        // TODO(1): After publishing
         try {
             LOGGER.error(message.toString());
             long plannerId = getPlannerId(message);

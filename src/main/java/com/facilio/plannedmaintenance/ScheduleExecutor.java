@@ -34,7 +34,7 @@ public class ScheduleExecutor extends ExecutorBase {
         List<Long> nextExecutionTimes = new ArrayList<>();
         calculateEndTime(trigger, cutOffTime);
 
-        while (nextExecutionTime.getLeft() <= (trigger.getEndTime()/1000)) {
+        while (nextExecutionTime.getLeft() <= (trigger.getEndTime())) { // inconsistency, endpoint set via computeEndtimeUsingTriggerType() is in seconds so /1000 isn't required. -Now Fixed
             if (nextExecutionTime.getLeft() < cutOffTime / 1000) {
                 nextExecutionTime = schedule.nextExecutionTime(nextExecutionTime);
                 continue;
@@ -57,7 +57,7 @@ public class ScheduleExecutor extends ExecutorBase {
 
         long endTime = triggerV2.getPlanEndTime();
         if (triggerV2.getEndTime() <= 0 && triggerV2.getPlanEndTime() <= 0) {
-            computeEndtimeUsingTriggerType(triggerV2, cutOffTime);
+            endTime = computeEndtimeUsingTriggerType(triggerV2, cutOffTime); // endtime isn't assigned here, and again set at line:68, where endpoint is 0. -Now Fixed
         } else if (triggerV2.getPlanEndTime() > 0 && triggerV2.getEndTime() <= 0) {
             endTime = triggerV2.getPlanEndTime();
         } else if (triggerV2.getEndTime() > 0 && triggerV2.getPlanEndTime() <= 0) {

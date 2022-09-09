@@ -29,6 +29,7 @@ import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
@@ -1467,6 +1468,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void schedulePM(long plannerId) throws Exception {
+		// TODO(2):
 		PMPlanner pmPlanner = getPmPlanners(plannerId);
 		PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", pmPlanner.getPmId(), new HashMap<>());
 
@@ -1487,10 +1489,29 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 		ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
 		pmPlanner.setResourcePlanners(pmResourcePlanners);
-		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner);
+		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner); //  scheduleExecutor.execute returns no WOs
 		List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrders.stream().map(i-> (ModuleBaseWithCustomFields)i).collect(Collectors.toList());
 
-		V3Util.createRecord(workOrderModule, moduleBaseWithCustomFields);
+//		V3Util.createRecord(workOrderModule, moduleBaseWithCustomFields);
+		//Map<String, Object> workOrderDataMap = new HashMap<>();
+		//workOrderDataMap.put(workOrderModule.getName(), moduleBaseWithCustomFields);
+		List<Map<String, Object>> dataList= new ArrayList<>();
+		for(ModuleBaseWithCustomFields object: moduleBaseWithCustomFields){
+			Map<String, Object> objectMap = FieldUtil.getAsProperties(object);
+			dataList.add(objectMap);
+		}
+		//dataList.add(workOrderDataMap);
+		// context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true); // need to check by adding this for resolving #undefined local ID issue
+		V3Util.preCreateRecord(workOrderModule.getName(), dataList, null,null);
+		/*
+			After preCreateRecord following checks has to be done:
+			- WOs has to be created in PRE_OPEN state.
+			- IN WorkOrders table ensure the following cols
+		    	- PM_RESOURCE_PLANNER
+		   	 	- PM_V2_ID
+		   	 	- PM_V2_TRIGGER_ID
+		 */
+
 		updateLastGeneratedTimeInPlanner(plannerId, pmPlanner.getTrigger().getEndTime() * 1000);
 	}
 
