@@ -1495,11 +1495,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<Map<String, Object>> dataList= new ArrayList<>();
 		for(ModuleBaseWithCustomFields object: moduleBaseWithCustomFields){
 			Map<String, Object> objectMap = FieldUtil.getAsProperties(object);
-			dataList.add(objectMap);
+			// NOTE: adding preCreateRecord here so that, WO command creates its section and tasks properly, as the command handles the same for the first workorder in the list.
+			V3Util.preCreateRecord(workOrderModule.getName(), Collections.singletonList(objectMap), null,null);
+			//dataList.add(objectMap);
 		}
 		//dataList.add(workOrderDataMap);
 		// context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true); // need to check by adding this for resolving #undefined local ID issue
-		V3Util.preCreateRecord(workOrderModule.getName(), dataList, null,null);
+		//V3Util.preCreateRecord(workOrderModule.getName(), dataList, null,null);
 		/*
 			After preCreateRecord following checks has to be done:
 			- WOs has to be created in PRE_OPEN state.
