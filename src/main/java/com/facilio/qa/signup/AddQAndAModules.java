@@ -177,6 +177,7 @@ public class AddQAndAModules extends SignUpData {
                 true);
 
         List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING,true));
         LookupField templateField = (LookupField) FieldFactory.getDefaultField("template", "Parent Template", "TEMPLATE_ID", FieldType.LOOKUP);
         templateField.setLookupModule(qAndA);
         fields.add(templateField);

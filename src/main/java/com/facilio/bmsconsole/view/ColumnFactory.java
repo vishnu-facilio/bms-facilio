@@ -306,6 +306,8 @@ public class ColumnFactory {
 		
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("name", "Name"));
+
 		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
@@ -833,6 +835,8 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInspectionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("name", "Name"));
+		
 		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
@@ -879,6 +883,7 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultInductionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
 		
 		columns.add(new ViewField("siteId", "Site"));
 		columns.add(new ViewField("responseStatus", "Completion Status"));
