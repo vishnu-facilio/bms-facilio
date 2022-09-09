@@ -23,10 +23,10 @@ public class ParseMailResponseCommand {
 
         switch(eventType) { // handled event types
             case "Delivery" :
-                mailBean.updateDeliveryStatus(mapperId, (JSONObject) response.get("delivery"));
+                mailBean.updateDeliveryStatus(mapperId, (Map<String, Object>) response.get("delivery"));
                 break;
             case "Bounce" :
-                mailBean.updateBounceStatus(mapperId, (JSONObject) response.get("bounce"));
+                mailBean.updateBounceStatus(mapperId, (Map<String, Object>) response.get("bounce"));
                 break;
             default:
                 LOGGER.info("OG_MAIL_NOTIFY :: Unhandled eventType detected :: "+eventType);

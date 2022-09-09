@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class MailTrackBeanImpl implements MailBean {
 
     @Override
-    public void updateDeliveryStatus(String mapperId, JSONObject delivery) throws Exception {
+    public void updateDeliveryStatus(String mapperId, Map<String, Object> delivery) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
         V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR,
                 "LoggerId is not found for given mapperId :: "+mapperId);
@@ -57,7 +57,7 @@ public class MailTrackBeanImpl implements MailBean {
     }
 
     @Override
-    public void updateBounceStatus(String mapperId, JSONObject bounce) throws Exception {
+    public void updateBounceStatus(String mapperId, Map<String, Object> bounce) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
         V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR, "LoggerId is not found for given mapperId :: "+mapperId);
 

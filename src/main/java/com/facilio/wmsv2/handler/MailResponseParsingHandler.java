@@ -28,8 +28,7 @@ public class MailResponseParsingHandler extends BaseHandler {
                 awsMailResponse.setResponse(content);
                 OutgoingMailAPI.logResponses(awsMailResponse);
 
-                ParseMailResponseCommand
-                        .executeCommand(awsMailResponse);
+                ParseMailResponseCommand.executeCommand(awsMailResponse);
                 LOGGER.info("OG_MAIL_LOG :: Successfully parsed and updated aws mail responses for mapperId :: "+
                         awsMailResponse.getMapperId());
             }
