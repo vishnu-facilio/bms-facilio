@@ -4,7 +4,13 @@ import com.facilio.accounts.util.AccountUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -15,9 +21,19 @@ public class DashboardExecuteMetaContext {
     public Long dashboardId;
     public JSONObject trigger_meta;
     public JSONObject placeHolders= new JSONObject();
-
+    public JSONObject placeHoldersMeta= new JSONObject();
     public void setPlaceHoldersValues(){
         placeHolders.put("CURRENT_USER", AccountUtil.getCurrentUser().getId());
         placeHolders.put("CURRENT_DASHBOARD", dashboardId);
     }
+
+
+
+
+    public JSONObject global_filter_widget_map = new JSONObject();
+    public JSONObject global_timeline_filter_widget_map = new JSONObject();
+    public Map<Long, Map<String, String>> timeline_widget_field_map = new HashMap<>();
+    public List<Long> rule_applied_widget_ids = new ArrayList<>();
+
+    public JSONArray main_result_array = new JSONArray();
 }

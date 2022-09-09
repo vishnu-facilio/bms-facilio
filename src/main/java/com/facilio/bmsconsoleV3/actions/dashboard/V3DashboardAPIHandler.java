@@ -4,10 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DashboardFilterUtil;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.FormRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
@@ -27,6 +24,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.util.ReportUtil;
@@ -35,6 +33,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.Level;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,6 +41,7 @@ import org.json.simple.parser.JSONParser;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.codecs.MySQLCodec;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -500,60 +500,31 @@ public class V3DashboardAPIHandler {
 
     public static JSONArray executeDashboardRules(Long trigger_widget_Id, DashboardExecuteMetaContext dashboard_execute_meta)throws Exception
     {
-        JSONObject main_result_json = new JSONObject();
-        JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
-//        placeHolders.put("widget1.value", "3");
-//        placeHolders.put("widget2.value", "2");
-//        placeHolders.put("widget3.value", "14");
-//        JSONObject other_user_filter = new JSONObject();
-//        other_user_filter.put("1", "widget3.criteria");
-//        other_user_filter.put("2", "widget2.criteria");
-//        placeHolders.put("other_user_filter", other_user_filter);
-//        placeHolders.put("widget3.criteria", new JSONObject());
-//        placeHolders.put("widget2.criteria", new JSONObject());
         if(dashboard_execute_meta.getDashboardId() != null)
         {
-            DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboard_execute_meta.getDashboardId());
-            FacilioChain getDashboardFilterChain = ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
-            FacilioContext getDashboardFilterContext = getDashboardFilterChain.getContext();
-            getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-            getDashboardFilterChain.execute();
+            JSONArray result_json_arr = dashboard_execute_meta.getMain_result_array();
+            /**code to construct dashboard data*/
+            DashboardContext dashboard = V3DashboardAPIHandler.constructDashboardData(dashboard_execute_meta.getDashboardId());
+            DashboardFilterContext dashboard_filter = dashboard.getDashboardFilter();
 
-            DashboardFilterContext filter_context = dashboard.getDashboardFilter();
-            JSONObject global_filter_widget_map = new JSONObject();
-            JSONObject global_timeline_filter_widget_map = new JSONObject();
-            Map<Long, Map<String, String>> timeline_widget_field_map = new JSONObject();
-            if (filter_context != null)
+            /**code to set default and live datetime and user filter details in these objects*/
+            V3DashboardAPIHandler.constructTimelineAndUserFilter(dashboard_filter, dashboard_execute_meta);
+
+            if (trigger_widget_Id != null && trigger_widget_Id > 0)
             {
-                timeline_widget_field_map = filter_context.getWidgetTimelineFilterMap();
-                if (filter_context.getDashboardUserFilters() != null) {
-                    for (DashboardUserFilterContext user_filter : filter_context.getDashboardUserFilters()) {
-                        V3DashboardAPIHandler.constructDefaultUserFilterValues(user_filter, global_filter_widget_map);
-                    }
-                }
-                if (filter_context.getIsTimelineFilterEnabled()) {
-                    long operatorId = filter_context.getDateOperator();
-                    DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);
-                    DateRange dateRange = date_operator.getRange(null);
-                    JSONObject timeline_filter = new JSONObject();
-                    timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
-                    timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());
-                    timeline_filter.put("dateOperator", placeHolders.containsKey("dateOperator") ? placeHolders.get("dateOperator") : operatorId);
-                    global_timeline_filter_widget_map.put("TIMELINE_FILTER", timeline_filter);
-                }
-            }
-            JSONArray result_json_arr = new JSONArray();
-            JSONArray onload_result_array = new JSONArray();
-            if (trigger_widget_Id != null && trigger_widget_Id > 0) {
+                /** code to construct dashboard rules data for trigger widget id*/
                 Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id);
                 if(dashboard_rule_id != null && dashboard_rule_id > 0) {
-                    result_json_arr = V3DashboardAPIHandler.executeDashboardActions(dashboard_rule_id, trigger_widget_Id, dashboard_execute_meta.getPlaceHolders(), 2, global_timeline_filter_widget_map, global_filter_widget_map, timeline_widget_field_map);
+                    result_json_arr = V3DashboardAPIHandler.executeDashboardActions(dashboard_rule_id, trigger_widget_Id, dashboard_execute_meta, 2 );
+                    dashboard_execute_meta.setMain_result_array(result_json_arr);
                 }
             }
-            if (filter_context != null)
+            if (dashboard_filter != null)
             {
-                List<Long> rule_target_widget_ids = new ArrayList<>();
-                if(result_json_arr != null && result_json_arr.size() > 0){
+                dashboard_execute_meta.setTimeline_widget_field_map(dashboard_filter.getWidgetTimelineFilterMap());
+                List<Long> rule_target_widget_ids = dashboard_execute_meta.getRule_applied_widget_ids();
+                if(result_json_arr != null && result_json_arr.size() > 0)
+                {
                     int result_json_len = result_json_arr.size();
                     for(int i =0 ; i< result_json_len ;i++){
                         JSONObject result_widget1 = (JSONObject) result_json_arr.get(i);
@@ -562,46 +533,89 @@ public class V3DashboardAPIHandler {
                         }
                     }
                 }
-                timeline_widget_field_map = filter_context.getWidgetTimelineFilterMap();
+                /** code to set user/timelinefilter data for response widgets*/
                 List<DashboardWidgetContext> widgets_list = dashboard.getDashboardWidgets();
-                if (widgets_list != null && widgets_list.size() > 0) {
-                    for (DashboardWidgetContext dashboardWidgetContext : widgets_list) {
-                        Long widget_id = dashboardWidgetContext.getId();
-                        if(rule_target_widget_ids.contains(widget_id)){
-                            continue;
-                        }
-                        if (dashboardWidgetContext != null && (dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.CHART ||
-                                dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.LIST_VIEW ||
-                                dashboardWidgetContext.getWidgetType() == DashboardWidgetContext.WidgetType.CARD)) {
-                            JSONObject widget_json = new JSONObject();
-                            widget_json.put("widget_id", widget_id);
-                            widget_json.put("widgetType", dashboardWidgetContext.getWidgetType().getName());
-                            widget_json.put("actionMeta", new JSONObject());
-                            JSONObject actionMeta = new JSONObject();
-                            if (timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
-                                actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
-                            }
-                            if (global_filter_widget_map != null && global_filter_widget_map.containsKey(widget_id)) {
-
-                                actionMeta.put("USER_FILTER", V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) global_filter_widget_map.get(widget_id)));
-                            }
-                            if (actionMeta != null && !actionMeta.isEmpty()) {
-                                widget_json.put("actionMeta", actionMeta);
-                                onload_result_array.add(widget_json);
-                                result_json_arr.add(widget_json);
-                            } else {
-                                result_json_arr.add(widget_json);
-                            }
-                        }
-                    }
+                if (widgets_list != null && widgets_list.size() > 0)
+                {
+                    V3DashboardAPIHandler.constructWidgetsCriteriaResp(widgets_list, dashboard_execute_meta);
                 }
-                return result_json_arr;
+                return dashboard_execute_meta.getMain_result_array();
             }
         }
         return null;
     }
 
-    public static JSONArray executeDashboardActions(Long dashboard_rule_id, Long trigger_widget_id , JSONObject placeHolders, Integer triggerType , JSONObject timeline_filter , JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+    public static void constructWidgetsCriteriaResp(List<DashboardWidgetContext> widgets, DashboardExecuteMetaContext dashboard_execute_data)throws Exception
+    {
+        for (DashboardWidgetContext dashboardWidgetContext : widgets)
+        {
+            Long widget_id = dashboardWidgetContext.getId();
+            if(dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id)){
+                continue;
+            }
+            JSONObject widget_json = new JSONObject();
+            widget_json.put("widget_id", widget_id);
+            widget_json.put("widgetType", dashboardWidgetContext.getWidgetType().getName());
+            widget_json.put("actionMeta", new JSONObject());
+            JSONObject actionMeta = new JSONObject();
+            V3DashboardAPIHandler.setTimeLineFilterResp(actionMeta, widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
+            V3DashboardAPIHandler.setUserFilterResp(actionMeta, widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
+            if (actionMeta != null && !actionMeta.isEmpty()) {
+                widget_json.put("actionMeta", actionMeta);
+                dashboard_execute_data.getMain_result_array().add(widget_json);
+            } else {
+                dashboard_execute_data.getMain_result_array().add(widget_json);
+            }
+        }
+    }
+    public static DashboardContext constructDashboardData(Long dashboardId)throws Exception
+    {
+        DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+        FacilioChain getDashboardFilterChain = ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
+        FacilioContext getDashboardFilterContext = getDashboardFilterChain.getContext();
+        getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+        getDashboardFilterChain.execute();
+        return dashboard;
+    }
+    public static void constructTimelineAndUserFilter(DashboardFilterContext dashboard_filter, DashboardExecuteMetaContext dashboard_execute_data)throws Exception
+    {
+        if (dashboard_filter != null)
+        {
+            JSONObject placeHolders = dashboard_execute_data.getPlaceHolders();
+            dashboard_execute_data.setTimeline_widget_field_map(dashboard_filter.getWidgetTimelineFilterMap());
+            if (dashboard_filter.getDashboardUserFilters() != null) {
+                for (DashboardUserFilterContext user_filter : dashboard_filter.getDashboardUserFilters()) {
+                    V3DashboardAPIHandler.constructDefaultUserFilterValues(user_filter, dashboard_execute_data);
+                }
+            }
+            if (dashboard_filter.getIsTimelineFilterEnabled())
+            {
+                long operatorId = dashboard_filter.getDateOperator();
+                DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);
+                DateRange dateRange = date_operator.getRange(null);
+                JSONObject timeline_filter = new JSONObject();
+                timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
+                timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());
+                timeline_filter.put("dateOperator", placeHolders.containsKey("dateOperator") ? placeHolders.get("dateOperator") : operatorId);
+                dashboard_execute_data.getGlobal_timeline_filter_widget_map().put("TIMELINE_FILTER", timeline_filter);
+            }
+        }
+    }
+    public static void setTimeLineFilterResp(JSONObject actionMeta , Long widget_id, Map<Long, Map<String, String>> timeline_widget_field_map, JSONObject global_timeline_filter_widget_map)throws Exception
+    {
+        if (global_timeline_filter_widget_map != null && timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
+            actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
+        }
+    }
+
+    public static void setUserFilterResp(JSONObject actionMeta, Long widget_id , JSONObject global_filter_widget_map, JSONObject placeHolders)throws Exception
+    {
+        if (global_filter_widget_map != null && global_filter_widget_map.containsKey(widget_id))
+        {
+            actionMeta.put("USER_FILTER", V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) global_filter_widget_map.get(widget_id), placeHolders));
+        }
+    }
+    public static JSONArray executeDashboardActions(Long dashboard_rule_id, Long trigger_widget_id , DashboardExecuteMetaContext dashboard_execute_meta, Integer triggerType)throws Exception
     {
         if(dashboard_rule_id != null && dashboard_rule_id > 0)
         {
@@ -612,7 +626,7 @@ public class V3DashboardAPIHandler {
             else if (rule_to_execute.getTrigger_type() == 2 && rule_to_execute.getActions() != null)
             {
                 for (DashboardRuleActionContext dashboard_rule_action : rule_to_execute.getActions()) {
-                    DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).performAction(rule_to_execute, dashboard_rule_action, placeHolders, trigger_widget_id, timeline_filter, user_filter, timeline_widget_field_map);
+                    DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).performAction(rule_to_execute, dashboard_rule_action, dashboard_execute_meta, trigger_widget_id);//, dashboard_execute_meta.getGlobal_timeline_filter_widget_map(), dashboard_execute_meta.getGlobal_filter_widget_map(), dashboard_execute_meta.getTimeline_widget_field_map());
                 }
             }
             return rule_to_execute.getResult_json();
@@ -621,50 +635,63 @@ public class V3DashboardAPIHandler {
 
     }
 
-    public static void constructDefaultUserFilterValues(DashboardUserFilterContext user_filter, JSONObject global_filter_widget_map )throws Exception{
+    public static void constructDefaultUserFilterValues(DashboardUserFilterContext user_filter, DashboardExecuteMetaContext dashboard_executed_data )throws Exception
+    {
         String []default_values = user_filter.getDefaultValues();
         FacilioField field = user_filter.getField();
+        JSONObject placeHolders = dashboard_executed_data.getPlaceHolders();
         if(field == null || (field != null && field.getDataTypeEnum() != FieldType.DATE_TIME))
         {
-            if (default_values != null && default_values.length > 0 && !(default_values[0].equals("all") || default_values[0].equals("ALL")|| default_values[0].equals("All"))) {
-                Map<Long, FacilioField> widget_field_map = user_filter.getWidgetFieldMap();
-                for(Map.Entry<Long, FacilioField> widget_and_field : widget_field_map.entrySet())
+            if (placeHolders.containsKey(String.valueOf(user_filter.getLink_name())))
+            {
+                HashMap selected_filter_map = (HashMap) placeHolders.get(String.valueOf(user_filter.getLink_name()));
+                List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
+                if(selected_filter_values != null && selected_filter_values.size() > 0 && !"".equals(selected_filter_values.get(0)))
                 {
-                    Long widget_id = widget_and_field.getKey();
-                    FacilioField applied_widget_field = widget_and_field.getValue();
-                    Operator operator = Operator.getOperator(36);
-                    Condition condition = new Condition();
-                    condition.setField(applied_widget_field);
-                    condition.setOperatorId(operator.getOperatorId());
-
-                    StringBuilder values = new StringBuilder();
-                    Integer value_len = default_values.length;
-                    for(int i = 0 ;i < value_len ; i++)
-                    {
-                        values.append(default_values[i]);
-                        values.append(",");
-                    }
-                    String filter_value = values.toString();
-                    if(filter_value != null && !"".equals(filter_value))
-                    {
-                        filter_value = filter_value.substring(0 , filter_value.length()-1);
-                        condition.setValue(filter_value);
-                    }
-
-                    if(global_filter_widget_map.containsKey(widget_id)){
-                        JSONObject criteria_obj = (JSONObject)global_filter_widget_map.get(widget_id);
-                        criteria_obj.put(user_filter.getId(), condition);
-                    }else {
-                        JSONObject criteria_obj = new JSONObject();
-                        criteria_obj.put(user_filter.getId(), condition);
-                        global_filter_widget_map.put(widget_id, criteria_obj);
-                    }
+                    V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data);
                 }
+            }
+            else if (default_values != null && default_values.length > 0 && !( default_values[0].equals("all") || default_values[0].equals("ALL")|| default_values[0].equals("All")))
+            {
+                V3DashboardAPIHandler.setUserFilterValues(user_filter, Arrays.asList(default_values), dashboard_executed_data);
             }
         }
     }
 
-    public static JSONObject constructUserFilterRepsonse(JSONObject user_filters_obj)throws Exception
+    public static void setUserFilterValues(DashboardUserFilterContext user_filter, List<String> selected_values, DashboardExecuteMetaContext dashboard_executed_data)throws Exception
+    {
+        Map<Long, FacilioField> widget_field_map = user_filter.getWidgetFieldMap();
+        for (Map.Entry<Long, FacilioField> widget_and_field : widget_field_map.entrySet())
+        {
+            Long widget_id = widget_and_field.getKey();
+            FacilioField applied_widget_field = widget_and_field.getValue();
+            Operator operator = Operator.getOperator(36);
+            Condition condition = new Condition();
+            condition.setField(applied_widget_field);
+            condition.setOperatorId(operator.getOperatorId());
+
+            StringBuilder values = new StringBuilder();
+            for (String value : selected_values) {
+                values.append(value);
+                values.append(",");
+            }
+            String filter_value = values.toString();
+            if (filter_value != null && !"".equals(filter_value)) {
+                filter_value = filter_value.substring(0, filter_value.length() - 1);
+                condition.setValue(filter_value);
+            }
+
+            if (dashboard_executed_data.getGlobal_filter_widget_map().containsKey(widget_id)) {
+                JSONObject criteria_obj = (JSONObject) dashboard_executed_data.getGlobal_filter_widget_map().get(widget_id);
+                criteria_obj.put(user_filter.getId(), condition);
+            } else {
+                JSONObject criteria_obj = new JSONObject();
+                criteria_obj.put(user_filter.getId(), condition);
+                dashboard_executed_data.getGlobal_filter_widget_map().put(widget_id, criteria_obj);
+            }
+        }
+    }
+    public static JSONObject constructUserFilterRepsonse(JSONObject user_filters_obj , JSONObject placeHolders)throws Exception
     {
         if(user_filters_obj != null && !user_filters_obj.isEmpty())
         {
@@ -691,124 +718,6 @@ public class V3DashboardAPIHandler {
             return result_json;
         }
         return null;
-    }
-
-    public static JSONObject setAndExecuteFilter(Map<String, Object> placeHolderValues, List<DashboardTriggerAndTargetWidgetContext> target_widgets ) throws Exception
-    {
-        JSONObject result_json = new JSONObject();
-        if(placeHolderValues != null && !placeHolderValues.isEmpty())
-        {
-            for(DashboardTriggerAndTargetWidgetContext target_widget : target_widgets)
-            {
-                Long target_widget_id = target_widget.getTarget_widget_id();
-
-                Long criteriaId = target_widget.getCriteriaId();
-                if(criteriaId != null  && criteriaId > 0)
-                {
-                    Criteria target_widget_criteria = CriteriaAPI.getCriteria(criteriaId);
-                    if(target_widget_criteria != null)
-                    {
-                        for(String key : target_widget_criteria.getConditions().keySet())
-                        {
-                            Condition condition = target_widget_criteria.getConditions().get(key);
-                            if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-                                String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolderValues, condition.getValue());
-                                condition.setValue(value);
-                                condition.setComputedWhereClause(null);
-                            }
-                        }
-
-                    }
-                    DashboardWidgetContext widget = DashboardUtil.getWidget(target_widget_id);
-                    if(widget != null && widget.getWidgetType().getName().equals(DashboardWidgetContext.WidgetType.FILTER))
-                    {
-                        result_json.put(target_widget_id , target_widget_criteria);
-                    }
-                    else if(widget != null && widget.getWidgetType().getName().equals(DashboardWidgetContext.WidgetType.CHART))
-                    {
-                        WidgetChartContext chart_Widget = (WidgetChartContext) widget;
-                        if(chart_Widget.getReportId() != null && chart_Widget.getReportId() > 0)
-                        {
-                            ReportContext report =  ReportUtil.getReport(chart_Widget.getReportId());
-                            if(report.getTypeEnum().equals(ReportContext.ReportType.READING_REPORT))
-                            {
-                                if(result_json.containsKey(target_widget_id))
-                                {
-                                    JSONObject temp = new JSONObject();
-                                    JSONArray temp_arr = new JSONArray();
-                                    temp.put("component_type", "reading_report");
-                                    JSONObject temp_datapoint = new JSONObject();
-                                    temp_datapoint.put("datapoint_id", target_widget.getDatapoint_id());
-                                    temp_datapoint.put("criteria", target_widget_criteria);
-                                    temp_arr.add(temp_datapoint);
-                                    temp.put("criteria", temp_arr);
-                                    result_json.put(target_widget_id , temp);
-                                }else{
-                                    JSONObject temp = new JSONObject();
-                                    JSONArray temp_arr = (JSONArray) temp.get("criteria");
-                                    temp.put("datapoint_id", target_widget.getDatapoint_id());
-                                    temp.put("criteria" ,target_widget_criteria);
-                                    temp_arr.add(temp);
-                                }
-//                                  List<ReportDataPointContext> report_data_points = report.getDataPoints();
-//                                  for(ReportDataPointContext report_data_point : report_data_points)
-//                                  {
-//                                      if(report_data_point.getyAxis() != null && report_data_point.getyAxis().getField() != null)
-//                                      {
-//                                          FacilioField field = report_data_point.getyAxis().getField();
-//                                          if(field != null &&  field.getFieldId() > 0) {
-//                                              Long assetCategoryId = report_data_point.getAssetCategoryId();
-//                                              if (assetCategoryId != null && assetCategoryId > 0) {
-//                                                  if (target_widget_criteria != null) {
-//                                                      List<Long> categoryIds = null;
-//                                                      if (assetCategoryId != null && assetCategoryId > 0) {
-//                                                          categoryIds = new ArrayList<>();
-//                                                          categoryIds.add(assetCategoryId);
-//                                                      }
-//                                                      JSONObject assetsObj = AssetsAPI.getAssetsWithReadingsForSpecificCategory(null, categoryIds, false, target_widget_criteria);
-//                                                      if (assetsObj != null && assetsObj.containsKey("categoryWithFields")) {
-//                                                          JSONObject categoryWithFields = (JSONObject) assetsObj.get("categoryWithFields");
-//                                                          Long field_id = field.getFieldId();
-//                                                          if(categoryWithFields != null && categoryWithFields.containsKey(assetCategoryId))
-//                                                          {
-//                                                                JSONObject fields_vs_asset = (JSONObject) categoryWithFields.get(assetCategoryId);
-//                                                                if(fields_vs_asset != null && fields_vs_asset.containsKey(field_id))
-//                                                                {
-//                                                                    JSONArray datapoint_asset_list = (JSONArray) fields_vs_asset.get(field_id);
-//                                                                    if(datapoint_asset_list != null && datapoint_asset_list.size() > 10)
-//                                                                    {
-//                                                                        LOGGER.debug("No of assets in this building with this data point are exceeding the limit 10");
-//                                                                        return;
-//                                                                    }
-//                                                                    else
-//                                                                    {
-//                                                                        String chart_state = report.getChartState();
-//                                                                        if(chart_state != null) {
-//                                                                            JSONParser parser = new JSONParser();
-//                                                                            JSONObject chart_json = (JSONObject) parser.parse(chart_state);
-//                                                                        }
-//                                                                    }
-//
-//                                                                }
-//                                                          }
-//
-//                                                      }
-//                                                  }
-//                                              }
-//                                          }
-//                                      }
-//                                  }
-                            }
-                            else
-                            {
-                                result_json.put(target_widget_id, target_widget_criteria);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result_json;
     }
 
     public static Long checkIsDashboardRuleApplied(Long trigger_widget_id)throws Exception
@@ -1067,5 +976,22 @@ public class V3DashboardAPIHandler {
             return CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
         }
         return -1l;
+    }
+    public static Map<String, Object> fetchTriggerWidgetSuppliments(String moduleName, Long recordId)throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        List<FacilioField> supplementFields = fields.stream().filter(f -> f instanceof SupplementRecord).collect(Collectors.toList());
+
+        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                .select(fields)
+                .module(module)
+                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                .fetchSupplements(supplementFields)
+                .andCondition(CriteriaAPI.getIdCondition(recordId, module));
+        ModuleBaseWithCustomFields moduleData = builder.fetchFirst();
+        Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
+        return params;
     }
 }
