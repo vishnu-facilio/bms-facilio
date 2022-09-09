@@ -116,9 +116,7 @@ public abstract class EmailClient extends BaseEmailClient {
             return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
         } catch (Exception e) {
             LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed before pushing to queue. So sending in normal flow :: "+mailJson, e);
-            chain = MailTransactionChainFactory.getNoTrackingChain();
-            chain.setContext(context);
-            chain.execute();
+            OutgoingMailAPI.triggerFallbackMailSendChain(context);
             return -1;
         }
     }

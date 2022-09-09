@@ -27,7 +27,7 @@ class AwsEmailClient extends EmailClient {
 
     @Override
     public String sendEmailImpl(JSONObject mailJson) throws Exception  {
-        return sendEmailViaAws(mailJson, null);
+        return sendEmailImpl(mailJson, null);
     }
     public static EmailClient getClient(){
         return INSTANCE;

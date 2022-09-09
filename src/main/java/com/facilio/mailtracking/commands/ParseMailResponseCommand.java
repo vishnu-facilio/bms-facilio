@@ -8,30 +8,17 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.List;
 import java.util.Map;
 
 @Log4j
 public class ParseMailResponseCommand {
 
-    public static String executeCommand(AwsMailResponseContext awsResponses) throws Exception {
-        JSONObject response = awsResponses.getResponse();
-        String eventType = awsResponses.getEventType();
-
-        JSONObject mail = (JSONObject) response.get("mail");
-        V3Util.throwRestException(mail.isEmpty(), ErrorCode.VALIDATION_ERROR, "mail can't be null");
-
-        Map<String, Object> tags = (Map<String, Object>) mail.get("tags");
-        V3Util.throwRestException(tags.isEmpty(), ErrorCode.VALIDATION_ERROR, "tags can't be null");
-
-        List<String> mapperIdList = (List<String>) tags.get(MailConstants.Params.MAPPER_ID);
-        V3Util.throwRestException(CollectionUtils.isEmpty(mapperIdList), ErrorCode.VALIDATION_ERROR, "mapperId can't be null");
-
-        String mapperId = mapperIdList.get(0);
-        OutgoingMailAPI.logResponses(mapperId, awsResponses);
+    public static void executeCommand(AwsMailResponseContext awsMailResponse) throws Exception {
+        JSONObject response = awsMailResponse.getResponse();
+        String eventType = awsMailResponse.getEventType();
+        String mapperId = String.valueOf(awsMailResponse.getMapperId());
         MailBean mailBean = getMailBeanWithCurrentOrg(mapperId);
 
         switch(eventType) { // handled event types
@@ -44,7 +31,6 @@ public class ParseMailResponseCommand {
             default:
                 LOGGER.info("OG_MAIL_NOTIFY :: Unhandled eventType detected :: "+eventType);
         }
-        return mapperId;
     }
 
     private static MailBean getMailBeanWithCurrentOrg(String mapperId) throws Exception {

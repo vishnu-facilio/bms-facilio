@@ -1,6 +1,5 @@
 package com.facilio.mailtracking.bean;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -11,7 +10,6 @@ import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.mailtracking.context.Bounce;
 import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
-import com.facilio.services.email.EmailFactory;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -96,15 +94,26 @@ public class MailTrackBeanImpl implements MailBean {
 
     @Override
     public void trackAndSendMail(JSONObject mailJson) throws Exception {
-        if(FacilioProperties.isDevelopment()) {
-            NewTransactionService.newTransaction(() -> initMailTracking(mailJson));
-        } else {
-            initMailTracking(mailJson);
+        FacilioContext context = NewTransactionService.newTransactionWithReturn(() -> prepareOutgoingMailContext(mailJson));
+        FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
+        if(context!=null) {
+            try {
+                chain.setContext(context);
+                chain.execute();
+            } catch (Exception e) {
+                LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue [SENDMAIL COMMAND]. So sending in normal flow :: "+mailJson, e);
+                OutgoingMailAPI.triggerFallbackMailSendChain(context);
+                return ;
+            }
+
+            chain = MailTransactionChainFactory.triggerMailHandlerChain();
+            chain.setContext(context);
+            chain.execute();
         }
     }
 
-    private void initMailTracking(JSONObject mailJson) throws Exception {
-        FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
+    private FacilioContext prepareOutgoingMailContext(JSONObject mailJson) throws Exception {
+        FacilioChain chain = MailTransactionChainFactory.outgoingMailPreChain();
         FacilioContext context = chain.getContext();
         try {
             context.put(MailConstants.Params.MAIL_JSON, mailJson);
@@ -112,22 +121,12 @@ public class MailTrackBeanImpl implements MailBean {
             context.put(MailConstants.Params.LOGGER_ID, mailJson.get(MailConstants.Params.LOGGER_ID));
             context.put(MailConstants.Params.MAPPER_ID, mailJson.get(MailConstants.Params.MAPPER_ID));
             chain.execute();
+            return context;
         } catch (Exception e) {
-            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue. So sending in normal flow :: "+mailJson, e);
-            chain = MailTransactionChainFactory.getNoTrackingChain();
-            chain.setContext(context);
-            chain.execute();
-            return;
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue [PRE-SENDMAIL COMMAND]. So sending in normal flow :: "+mailJson, e);
+            OutgoingMailAPI.triggerFallbackMailSendChain(context);
+            return null;
         }
-
-        chain = MailTransactionChainFactory.updateOutgoingMailChain();
-        chain.setContext(context);
-        chain.execute();
-
-        chain = MailTransactionChainFactory.triggerMailHandlerChain();
-        chain.setContext(context);
-        chain.execute();
     }
-
 
 }

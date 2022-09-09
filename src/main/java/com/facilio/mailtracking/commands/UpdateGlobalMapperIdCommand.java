@@ -11,7 +11,6 @@ public class UpdateGlobalMapperIdCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         V3OutgoingMailLogContext mailLogContext = OutgoingMailAPI.convertToMailLogContext(mailJson);
         OutgoingMailAPI.updateV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext);
