@@ -117,6 +117,20 @@ public class V3Config implements V3Builder {
         return this.createHandler;
     }
 
+    public PreCreateHandler preCreate() {
+        if (this.preCreateHandler == null) {
+            this.preCreateHandler = new PreCreateHandler(this);
+        }
+        return this.preCreateHandler;
+    }
+
+    public PostCreateHandler postCreate() {
+        if (this.postCreateHandler == null) {
+            this.postCreateHandler = new PostCreateHandler(this);
+        }
+        return this.postCreateHandler;
+    }
+
     public DeleteHandler delete() {
         if (this.deleteHandler == null) {
             this.deleteHandler = new DeleteHandler(this);
@@ -207,6 +221,14 @@ public class V3Config implements V3Builder {
         @Override
         public UpdateBuilder update() {
             return this.parent.update();
+        }
+
+        public PreCreateBuilder preCreate() {
+            return this.parent.preCreate();
+        }
+
+        public PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
         }
 
         @Override
@@ -441,6 +463,12 @@ public class V3Config implements V3Builder {
         public CreateBuilder create() {
             return this.parent.create();
         }
+        public PreCreateBuilder preCreate(){
+            return this.parent.preCreate();
+        }
+        public  PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
+        }
 
         @Override
         public DeleteBuilder delete() {
@@ -552,6 +580,13 @@ public class V3Config implements V3Builder {
         @Override
         public ListBuilder list() {
             return this.parent.list();
+        }
+
+        public PreCreateBuilder preCreate(){
+            return this.parent.preCreate();
+        }
+        public  PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
         }
 
         @Override
@@ -675,6 +710,12 @@ public class V3Config implements V3Builder {
         public CreateBuilder create() {
             return this.parent.create();
         }
+        public PreCreateBuilder preCreate(){
+            return this.parent.preCreate();
+        }
+        public  PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
+        }
 
         @Override
         public DeleteBuilder delete() {
@@ -777,6 +818,12 @@ public class V3Config implements V3Builder {
         @Override
         public CreateBuilder create() {
             return this.parent.create();
+        }
+        public PreCreateBuilder preCreate(){
+            return this.parent.preCreate();
+        }
+        public  PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
         }
 
         public List<SupplementRecord> getSupplementFields() {
