@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.plannedmaintenance.ScheduleExecutor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
@@ -1594,7 +1595,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		selectRecordsBuilder.select(pmPlannerFields);
 		selectRecordsBuilder.beanClass(PMPlanner.class);
 		selectRecordsBuilder.module(pmPlannerModule);
-		selectRecordsBuilder.fetchSupplements(Collections.singletonList((LookupField) fieldMap.get("trigger")));
+
+		// add supplement to be fetched
+		List<SupplementRecord> supplementList = new ArrayList<>();
+		supplementList.add((LookupField) fieldMap.get("trigger"));
+
+		selectRecordsBuilder.fetchSupplements(supplementList);
 		selectRecordsBuilder.andCondition(CriteriaAPI.getIdCondition(plannerId, pmPlannerModule));
 		List<PMPlanner> pmPlanners = selectRecordsBuilder.get();
 
@@ -1616,6 +1622,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.beanClass(PMResourcePlanner.class)
 				.module(pmPlannerModule)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("planner"), pmPlannerId+"", NumberOperators.EQUALS));
+
+		// add supplements to be fetched
+		List<SupplementRecord> supplementList = new ArrayList<>();
+		supplementList.add((LookupField) fieldMap.get("resource"));
+		selectRecordsBuilder.fetchSupplements(supplementList);
 
 		return selectRecordsBuilder.get();
 	}

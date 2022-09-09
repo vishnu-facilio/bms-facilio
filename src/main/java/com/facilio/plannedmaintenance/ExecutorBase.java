@@ -35,7 +35,7 @@ public abstract class ExecutorBase implements Executor {
 
                 ResourceContext resourceContext = new ResourceContext();
                 resourceContext.setId(pmResourcePlanner.getResource().getId());
-                resourceContext.setSiteId(pmResourcePlanner.getSiteId());
+                resourceContext.setSiteId(pmResourcePlanner.getResource().getSiteId());
                 workOrderCopy.setScheduledStart(nextExecutionTime * 1000);
                 workOrderCopy.setResource(resourceContext);
                 workOrderCopy.setPmV2(pmResourcePlanner.getPmId());
