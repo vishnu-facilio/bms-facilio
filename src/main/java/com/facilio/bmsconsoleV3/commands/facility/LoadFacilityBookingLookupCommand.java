@@ -37,6 +37,13 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
         FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
         FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
 
+        LookupField createdByField = (LookupField) fieldsAsMap.get("sysCreatedBy");
+        fetchLookupsList.add(createdByField);
+
+        LookupField modifiedByField = (LookupField) fieldsAsMap.get("sysModifiedBy");
+        fetchLookupsList.add(modifiedByField);
+
+
         List<FacilioField> selectFieldsList = new ArrayList<>();
         selectFieldsList.add(emailField);
         selectFieldsList.add(phoneField);
