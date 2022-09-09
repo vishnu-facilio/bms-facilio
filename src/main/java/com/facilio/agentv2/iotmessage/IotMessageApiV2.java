@@ -183,12 +183,19 @@ public class IotMessageApiV2 {
             iotMessage.setParentId(parentId);
             iotMessage.setStatus(Status.MESSAGE_SENT.asInt());
             iotMessage.setSentTime(createdTime);
-            long id = builder.insert(FieldUtil.getAsProperties(iotMessage));
+            builder.addRecord(FieldUtil.getAsProperties(iotMessage));
+        }
+        builder.save();
+        List<Map<String, Object>> records = builder.getRecords();
+        for (int i = 0; i < records.size(); i++) {
+            IotMessage iotMessage = messages.get(i);
+            long id = (long) records.get(i).get(AgentConstants.ID);
             iotMessage.setId(id);
             if (iotMessage.getControlIds() != null) {
             	messageVsControls.put(id, iotMessage.getControlIds());
             }
         }
+
         if (!messageVsControls.isEmpty()) {
         	ControlActionUtil.updateControlMessageId(messageVsControls);
         }
@@ -203,13 +210,14 @@ public class IotMessageApiV2 {
             throw new Exception(" unexpected result, cant have this many records ->"+result + ", id: " + id);
         }
     }
-        private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
-            FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(iotMessageModule.getTableName())
-                    .select(FieldFactory.getIotMessageFields())
-                    .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
-            List<Map<String, Object>> records = builder.get();
+
+    private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(iotMessageModule.getTableName())
+                .select(FieldFactory.getIotMessageFields())
+                .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
+        List<Map<String, Object>> records = builder.get();
         if (records.isEmpty()) {
             return new ArrayList<>();
         } else {
