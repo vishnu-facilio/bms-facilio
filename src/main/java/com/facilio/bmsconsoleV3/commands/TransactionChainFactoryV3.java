@@ -2165,4 +2165,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetDashboardWidgetsCommand());
         return c;
     }
+
+    public static FacilioChain addOrUpdateScopeVariable() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateScopeVariable());
+        return c;
+    }
+
 }

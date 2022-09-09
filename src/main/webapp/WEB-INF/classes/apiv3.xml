@@ -74,6 +74,9 @@
                          class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
             <interceptor name="validationinterceptor"
                          class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+            <interceptor name="globalscopevariableinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+
             <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
             <interceptor-stack name="defaultInterceptor">
                 <interceptor-ref name="defaultStack" />
@@ -81,6 +84,7 @@
                 <interceptor-ref name="apiKeyInterceptor" />
                 <interceptor-ref name="datasourceinterceptor" />
                 <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="globalscopevariableinterceptor" />
                 <interceptor-ref name="cacheinterceptor" />
                 <interceptor-ref name="validationinterceptor" />
                 <interceptor-ref name="json">
@@ -1049,6 +1053,13 @@
         <action name="deleteChildren"
                 class="com.facilio.bmsconsoleV3.actions.ApplicationPermissionAction"
                 method="deleteChildren">
+        </action>
+    </package>
+
+    <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
+        <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
+        </action>
+        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
         </action>
     </package>
 </struts>

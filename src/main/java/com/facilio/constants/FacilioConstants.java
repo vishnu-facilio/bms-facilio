@@ -2308,6 +2308,8 @@ public class FacilioConstants {
 		public static final String BILL_UTILITY = "custom_utilityaccounts_1";
 		//
 
+		public static final String SCOPE_VARIABLE = "scopeVariable";
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
 		private static Map<String, Class> initClassMap() {

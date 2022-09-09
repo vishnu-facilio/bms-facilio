@@ -33,6 +33,7 @@ public class LRUCache {
 	private static FacilioCache<String, Boolean> proxyUsersPS = new PubSubLRUCache<>("proxyUsers", 1000);
 	private static FacilioCache<String, Object> agentCache = new PubSubLRUCache<>("agentCache", 1000);
 
+
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
 	}

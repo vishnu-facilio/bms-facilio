@@ -166,3 +166,5 @@ classes:
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanCraftModule
   - com.facilio.bmsconsoleV3.signup.labour.AddLabourModuleFields
 
+    #Add System Value Generators
+  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
