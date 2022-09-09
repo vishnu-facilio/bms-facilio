@@ -1,14 +1,20 @@
 package com.facilio.mailtracking.actions;
 
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
 import com.facilio.modules.FieldUtil;
 import com.facilio.security.SecurityRequestWrapper;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,6 +22,8 @@ import org.json.simple.parser.JSONParser;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Log4j
@@ -28,41 +36,57 @@ public class OutgoingMailResponseAction extends ActionSupport {
     @Override
     public String execute() throws Exception {
         JSONObject requestJson = null;
-        AwsMailResponseContext awsMailResponseContext = null;
+        AwsMailResponseContext awsMailResponse = null;
         try {
-            LOGGER.info("OG_MAIL_LOG :: I am in OutgoingMailResponseAction entry point");
-            requestJson = parseRequestData();
-            awsMailResponseContext = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
+            requestJson = this.parseRequestData();
+            awsMailResponse = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
             V3Util.throwRestException(
-                    awsMailResponseContext == null || awsMailResponseContext.getEventType() == null,
+                    awsMailResponse == null || StringUtils.isEmpty(awsMailResponse.getEventType()),
                     ErrorCode.RESOURCE_NOT_FOUND,
                     "eventType :: not found (look for SubscribeURL in data)"
             );
-            awsMailResponseContext.setResponse(requestJson);
-            String mapperId = OutgoingMailAPI.parseMailResponse(awsMailResponseContext);
-            status = "Successfully parsed and updated aws mail responses for mapperId :: "+mapperId;
+
+            JSONObject mail = (JSONObject) requestJson.get("mail");
+            V3Util.throwRestException(mail == null || mail.isEmpty(), ErrorCode.VALIDATION_ERROR, "mail can't be null");
+
+            Map<String, Object> tags = (Map<String, Object>) mail.get("tags");
+            V3Util.throwRestException(tags == null || tags.isEmpty(), ErrorCode.VALIDATION_ERROR, "tags can't be null");
+
+            List<String> mapperIdList = (List<String>) tags.get(MailConstants.Params.MAPPER_ID);
+            V3Util.throwRestException(CollectionUtils.isEmpty(mapperIdList), ErrorCode.VALIDATION_ERROR,
+                    "mapperIdList can't be null");
+
+            String mapperId = mapperIdList.get(0);
+            V3Util.throwRestException(StringUtils.isEmpty(mapperId), ErrorCode.VALIDATION_ERROR, "mapperId can't be null");
+
+            requestJson.put(MailConstants.Params.MAPPER_ID, mapperId);
+            SessionManager.getInstance().sendMessage(new Message()
+                            .setTopic(Topics.Mail.mailResponse)
+                            .setContent(requestJson));
+            status = "Successfully pushed outgoing  MAIL-RESPONSE for mapperId :: "+mapperId
+                    + " with eventType :: "+awsMailResponse.getEventType();
             LOGGER.info("OG_MAIL_LOG :: "+status);
             return SUCCESS;
         } catch (Exception e) {
-            logRequestJson(awsMailResponseContext, requestJson);
+            this.logRequestJson(awsMailResponse, requestJson);
             LOGGER.error("OG_MAIL_ERROR :: OutgoingMailResponse parsing failed.. ");
             String subUrl = (String) requestJson.getOrDefault("SubscribeURL", "-1");
             if(!subUrl.equals("-1")) {
                 LOGGER.error("OG_MAIL_ERROR :: SubscribeURL detected from aws. Please sign up :: "+subUrl);
-                parserErrorMsg(e, requestJson);
+                this.parserErrorMsg(e, requestJson);
                 return SUCCESS;
             }
-            parserErrorMsg(e, requestJson);
+            this.parserErrorMsg(e, requestJson);
             return ERROR;
         }
     }
 
-    private void logRequestJson(AwsMailResponseContext awsMailResponseContext, JSONObject requestJson) throws Exception {
-        if(awsMailResponseContext == null) {
-            awsMailResponseContext = new AwsMailResponseContext();
+    private void logRequestJson(AwsMailResponseContext awsMailResponse, JSONObject requestJson) throws Exception {
+        if(awsMailResponse == null) {
+            awsMailResponse = new AwsMailResponseContext();
         }
-        awsMailResponseContext.setResponse(requestJson);
-        OutgoingMailAPI.logResponses(null, awsMailResponseContext);
+        awsMailResponse.setResponse(requestJson);
+        OutgoingMailAPI.logResponses(awsMailResponse);
     }
 
     private void parserErrorMsg(Exception e, JSONObject requestJson) {
@@ -73,7 +97,6 @@ public class OutgoingMailResponseAction extends ActionSupport {
             status = e.getMessage() + " at "+ e.getStackTrace()[1];
         }
         LOGGER.error("OG_MAIL_ERROR :: " + status, e);
-
     }
 
     private JSONObject parseRequestData() throws Exception {

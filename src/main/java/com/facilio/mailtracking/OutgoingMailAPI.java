@@ -1,13 +1,15 @@
 package com.facilio.mailtracking;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.mailtracking.commands.ParseMailResponseCommand;
+import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
@@ -119,10 +121,6 @@ public class OutgoingMailAPI {
         return -1;
     }
 
-    public static String parseMailResponse(AwsMailResponseContext awsMailResponseContext) throws Exception {
-        return ParseMailResponseCommand.executeCommand(awsMailResponseContext);
-    }
-
     public static List<V3OutgoingRecipientContext> getRecipients(long loggerId) throws Exception {
         return getRecipients(loggerId, null);
     }
@@ -171,20 +169,26 @@ public class OutgoingMailAPI {
         }
     }
 
-    public static void logResponses(String mapperId, AwsMailResponseContext awsResponses) {
+    public static void logResponses(AwsMailResponseContext awsMailResponse) {
         try {
-            if (mapperId != null) {
-                awsResponses.setMapperId(Long.valueOf(mapperId));
-            }
-
-            Map<String, Object> row = FieldUtil.getAsJSON(awsResponses);
+            Map<String, Object> row = FieldUtil.getAsJSON(awsMailResponse);
             row.put("sysCreatedTime", System.currentTimeMillis());
-            row.put("response", awsResponses.getResponse());
+            row.put("response", awsMailResponse.getResponse());
             FacilioModule module = ModuleFactory.getMailResponseModule();
             List<FacilioField> fields = FieldFactory.getMailResponsesFields();
             OutgoingMailAPI.insert(module, fields, row);
         } catch (Exception e) {
             LOGGER.error("OG_MAIL_ERROR :: Not able log the mail responses. Exception ::", e);
         }
+    }
+
+    public static void triggerFallbackMailSendChain(FacilioContext context) throws Exception {
+        FacilioChain chain = MailTransactionChainFactory.getNoTrackingChain();
+        chain.setContext(context);
+        chain.execute();
+
+        chain = MailTransactionChainFactory.triggerMailHandlerChain();
+        chain.setContext(context);
+        chain.execute();
     }
 }

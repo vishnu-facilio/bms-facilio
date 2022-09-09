@@ -19,11 +19,11 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         mailJson.put(MailConstants.Params.LOGGER_ID, context.get(MailConstants.Params.LOGGER_ID));
 
         long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
-        Message message = new Message();
-        message.setTopic("__sendmail__/org/"+orgId);
-        message.setOrgId(orgId);
-        message.setContent(mailJson);
-        SessionManager.getInstance().sendMessage(message);
+
+        SessionManager.getInstance().sendMessage(new Message()
+                .setTopic("__sendmail__/org/"+orgId)
+                .setOrgId(orgId)
+                .setContent(mailJson));
         LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms");
         this.resetMailJson(mailJson);
         return false;

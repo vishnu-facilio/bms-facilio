@@ -14,12 +14,14 @@ public class MaskConfidentialUrlCommand extends FacilioCommand {
         if(mailJson.containsKey("maskUrl")) {
             String url = (String) mailJson.get("maskUrl");
             V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
-            if(mailLogContext.getHtmlContent()!=null) {
-                mailLogContext.setHtmlContent(this.getMaskedMessage(mailLogContext.getHtmlContent(), url));
-            } else if(mailLogContext.getTextContent()!=null) {
-                mailLogContext.setTextContent(this.getMaskedMessage(mailLogContext.getTextContent(), url));
+            if(mailLogContext!=null) {
+                if (mailLogContext.getHtmlContent() != null) {
+                    mailLogContext.setHtmlContent(this.getMaskedMessage(mailLogContext.getHtmlContent(), url));
+                } else if (mailLogContext.getTextContent() != null) {
+                    mailLogContext.setTextContent(this.getMaskedMessage(mailLogContext.getTextContent(), url));
+                }
+                OutgoingMailAPI.updateV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext);
             }
-            OutgoingMailAPI.updateV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext);
         }
         return false;
     }

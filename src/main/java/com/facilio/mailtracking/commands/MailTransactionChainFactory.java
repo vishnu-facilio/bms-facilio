@@ -15,20 +15,26 @@ public class MailTransactionChainFactory {
         return c;
     }
 
-    public static FacilioChain sendOutgoingMailChain() {
+    public static FacilioChain outgoingMailPreChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateGlobalMapperIdCommand());
         c.addCommand(new InsertOutgoingMailAttachmentsCommand());
         c.addCommand(new InsertOutgoingRecipientsCommand());
-        c.addCommand(new SendMailWithTrackingCommand());
         return c;
     }
 
-    public static FacilioChain updateOutgoingMailChain() {
+    public static FacilioChain sendOutgoingMailChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateMailMessageIdCommand());
-        c.addCommand(new MaskConfidentialUrlCommand());
+        c.addCommand(new SendMailWithTrackingCommand());
+        c.addCommand(outgoingMailPostChain());
+        return c;
+    }
+
+    private static FacilioChain outgoingMailPostChain() {
+        FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateRecipientStatusCommand());
+        c.addCommand(new MaskConfidentialUrlCommand());
+        c.addCommand(new UpdateMailMessageIdCommand());
         return c;
     }
 
@@ -41,7 +47,7 @@ public class MailTransactionChainFactory {
     public static FacilioChain getNoTrackingChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SendMailWithoutTrackingCommand());
-        c.addCommand(new MaskConfidentialUrlCommand());
+        c.addCommand(outgoingMailPostChain());
         return c;
     }
 

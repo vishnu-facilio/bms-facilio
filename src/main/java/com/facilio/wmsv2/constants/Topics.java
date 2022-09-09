@@ -27,5 +27,6 @@ public interface Topics {
 
     interface Mail {
         String outgoingMail = "__sendmail__/org";
+        String mailResponse = "__mailresponse__";
     }
 }
