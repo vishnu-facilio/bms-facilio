@@ -498,9 +498,9 @@ public class CommonCommandUtil {
                     .table(accessibleSpaceMod.getTableName())
                     .andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
 
-            Condition userDelegation = getUserDelegationCondition();
-            if (userDelegation != null) {
-                selectAccessibleBuilder.orCondition(userDelegation);
+            Criteria userDelegation = getUserDelegationCondition();
+            if (userDelegation != null && !userDelegation.isEmpty()) {
+                selectAccessibleBuilder.orCriteria(userDelegation);
             }
             List<Map<String, Object>> props = selectAccessibleBuilder.get();
             Set<Long> siteIds = new HashSet<>();
@@ -547,9 +547,9 @@ public class CommonCommandUtil {
                         .table(accessibleSpaceMod.getTableName())
                         .andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
 
-                Condition userDelegation = getUserDelegationCondition();
-                if (userDelegation != null) {
-                    selectAccessibleBuilder.orCondition(userDelegation);
+                Criteria userDelegation = getUserDelegationCondition();
+                if (userDelegation != null && !userDelegation.isEmpty()) {
+                    selectAccessibleBuilder.orCriteria(userDelegation);
                 }
                 List<Map<String, Object>> props = selectAccessibleBuilder.get();
 
@@ -596,16 +596,18 @@ public class CommonCommandUtil {
         }
     }
 
-    private static Condition getUserDelegationCondition() throws Exception {
+    private static Criteria getUserDelegationCondition() throws Exception {
         //handling user delegation
         try {
             List<User> delegatedUsers = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
             if (CollectionUtils.isNotEmpty(delegatedUsers)) {
+                Criteria criteria = new Criteria();
                 for (User delegatedUser : delegatedUsers) {
                     if (delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
-                        return CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS);
+                        criteria.addOrCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS));
                     }
                 }
+                return criteria;
             }
         } catch (Exception e) {
             e.printStackTrace();
