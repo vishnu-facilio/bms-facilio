@@ -124,11 +124,15 @@ public class ControllerMessenger {
 	            		JSONArray pointsData = MessengerUtil.getPointsData(points);
 	            		for (Object pointsDatumObject : pointsData) {
 	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;
-                            String actionName = points.get(pointsData.indexOf(pointdatum)).getActionName();
-                            if (actionName == null || actionName.equals(AgentConstants.OVERRIDE) || actionName.equals(AgentConstants.EMERGENCY_OVERRIDE)) {
-                                pointdatum.put(AgentConstants.VALUE,points.get(pointsData.indexOf(pointdatum)).getValue());
+	            			Point point = points.get(pointsData.indexOf(pointdatum));
+                            String actionName = point.getActionName();
+                            if(actionName == null || actionName.equals(AgentConstants.OVERRIDE) || actionName.equals(AgentConstants.EMERGENCY_OVERRIDE)) {
+                                pointdatum.put(AgentConstants.VALUE, point.getValue());
                             }
-	            			pointdatum.put("controlId",points.get(pointsData.indexOf(pointdatum)).getControlActionId());
+	            			pointdatum.put("controlId", point.getControlActionId());
+	            			if(point.getCommandRetryCount() != null) {
+	            				pointdatum.put("retryCount", point.getCommandRetryCount());
+	            			}
                             if(actionName != null) {
                                 pointdatum.put(AgentConstants.ACTION_NAME, actionName);
                             }

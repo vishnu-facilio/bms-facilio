@@ -96,25 +96,27 @@ public class IotMessageApiV2 {
             long pendingCount = getPendingCount(iotMessages);
             if(pendingCount == 0){
                 WmsPublishResponse wmsPublishResponse = new WmsPublishResponse();
-                wmsPublishResponse.publish(IotMessageApiV2.getIotData(iotMessage.getParentId()),null);
+                wmsPublishResponse.publish(IotMessageApiV2.getIotData(iotMessage.getParentId(), true),null);
                 // send notification
             }
         }
         //send notification
     }
 
-    private static IotData getIotData(long parentId) throws Exception {
+    public static IotData getIotData(long id, boolean fetchMessages) throws Exception {
         FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(iotDataModule.getTableName())
                 .select(FieldFactory.getIotDataFields())
-                .andCondition(CriteriaAPI.getIdCondition(parentId,iotDataModule));
+                .andCondition(CriteriaAPI.getIdCondition(id,iotDataModule));
         Map<String, Object> map = selectRecordBuilder.fetchFirst();
         IotData iotData = FieldUtil.getAsBeanFromMap(map, IotData.class);
-        IotMessage iotMessage = new IotMessage();
-        iotMessage.setParentId(parentId);
-        List<IotMessage> siblingIotMessages = getSiblingIotMessages(iotMessage);
-        iotData.setMessages(siblingIotMessages);
+        if (fetchMessages) {
+        	IotMessage iotMessage = new IotMessage();
+        	iotMessage.setParentId(id);
+        	List<IotMessage> siblingIotMessages = getSiblingIotMessages(iotMessage);
+        	iotData.setMessages(siblingIotMessages);
+        }
         return iotData;
     }
 

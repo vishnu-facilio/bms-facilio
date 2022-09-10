@@ -31,7 +31,6 @@ public class GetPointsdataCommand extends FacilioCommand {
     Long controllerId;
     Long agentId;
     String status;
-    boolean fetchCount = false;
     
     private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields(true));
     private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
@@ -59,7 +58,7 @@ public class GetPointsdataCommand extends FacilioCommand {
         controllerId = (Long) context.get("controllerId");
         controllerType = (Integer) context.get("controllerType");
         agentId = (Long) context.get("agentId");
-        fetchCount = context.containsKey(FacilioConstants.ContextNames.FETCH_COUNT);
+        boolean fetchCount = context.containsKey(FacilioConstants.ContextNames.FETCH_COUNT);
 
         GetPointRequest point = new GetPointRequest();
         if (filterCriteria != null){
@@ -98,7 +97,7 @@ public class GetPointsdataCommand extends FacilioCommand {
             point.withControllerId(controllerId);
         }
         Criteria criteria = new Criteria();
-        if (controllerType == FacilioControllerType.BACNET_IP.asInt() && !fetchCount) {
+        if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
             criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),
                     FILETR_JOIN, NumberOperators.EQUALS));
             point.withCriteria(criteria);

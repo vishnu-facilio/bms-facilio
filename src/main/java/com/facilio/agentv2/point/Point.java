@@ -69,6 +69,8 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private int interval;
     @Getter @Setter
     private Long controlActionId;
+    @Getter @Setter
+    private Integer commandRetryCount;
 
     private boolean dataMissing;
 
