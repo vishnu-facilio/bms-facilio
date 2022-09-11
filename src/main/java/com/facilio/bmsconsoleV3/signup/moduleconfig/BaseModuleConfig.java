@@ -1,9 +1,12 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import java.util.*;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +33,9 @@ public abstract class BaseModuleConfig extends SignUpData {
     protected void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
+    public String getModuleName() {
+        return moduleName;
+    }
 
     protected FacilioModule getModule() throws Exception {
         if (module == null) {
@@ -49,12 +55,17 @@ public abstract class BaseModuleConfig extends SignUpData {
         addModuleAndFields();
         addTriggers();
         addForms();
-        addViews();
         addMisc();
     }
     protected void addModuleAndFields() throws Exception {};
     protected void addForms() throws Exception {};
-    protected void addViews() throws Exception {};
+    @Override
+    public void addViews(List<ApplicationContext> allApplications) throws Exception {
+        boolean addViews = false;
+        if (addViews) {
+            AddModuleViewsAndGroups.addViews(getModuleName(), getModule(), getViewsAndGroups(), allApplications);
+        }
+    };
     protected void addMisc() throws Exception {};
     protected void addTriggers() throws Exception {
         addTrigger("Create", EventType.CREATE);

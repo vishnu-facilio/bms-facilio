@@ -1,33 +1,25 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class FloorModule extends SignUpData {
+public class FloorModule extends BaseModuleConfig {
+
+    public FloorModule() throws Exception{
+        setModuleName(FacilioConstants.ContextNames.FLOOR);
+    }
 
     @Override
-    public void addData() {
+    public void addData() throws Exception {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule floorModule = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
@@ -104,5 +96,36 @@ public class FloorModule extends SignUpData {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> floor = new ArrayList<FacilioView>();
+        floor.add(getAllFloors().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.FLOOR);
+        groupDetails.put("views", floor);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private static FacilioView getAllFloors() {
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Floors");
+        allView.setSortFields(sortFields);
+
+        return allView;
     }
 }

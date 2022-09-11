@@ -1,30 +1,21 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class SiteModule extends SignUpData {
+public class SiteModule extends BaseModuleConfig {
+    public SiteModule(){
+        setModuleName(FacilioConstants.ContextNames.SITE);
+    }
 
     @Override
     public void addData() {
@@ -69,6 +60,7 @@ public class SiteModule extends SignUpData {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -118,5 +110,44 @@ public class SiteModule extends SignUpData {
 //        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
 //        createSiteDefaultForm(modBean, siteModule);
+    }
+
+    @Override
+    protected void addForms() throws Exception {
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> site = new ArrayList<FacilioView>();
+        site.add(getAllSites().setOrder(order++));
+
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.SITE);
+        groupDetails.put("views", site);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private static FacilioView getAllSites() {
+
+        FacilioModule siteModule = ModuleFactory.getSiteModule();
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Sites");
+        allView.setSortFields(sortFields);
+
+        return allView;
     }
 }

@@ -13,7 +13,7 @@ public class CustomizeViewCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
+		long appId = (long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1L);
 		List<FacilioView> views = (List<FacilioView>)context.get(FacilioConstants.ContextNames.VIEW_LIST);
 		if(views != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

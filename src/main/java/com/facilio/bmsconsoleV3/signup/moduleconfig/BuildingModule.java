@@ -1,31 +1,20 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class BuildingModule extends SignUpData {
+public class BuildingModule extends BaseModuleConfig {
+
+    public BuildingModule() throws Exception{
+        setModuleName(FacilioConstants.ContextNames.BUILDING);
+    }
 
     @Override
     public void addData() throws Exception {
@@ -36,13 +25,13 @@ public class BuildingModule extends SignUpData {
         activeStatus.setStatus("active");
         activeStatus.setDisplayName("Active");
         activeStatus.setTypeCode(1);
-        TicketAPI.addStatus(activeStatus, buildingModule);
+//        TicketAPI.addStatus(activeStatus, buildingModule);
 
         FacilioStatus inactiveStatus = new FacilioStatus();
         inactiveStatus.setStatus("inactive");
         inactiveStatus.setDisplayName("In Active");
         inactiveStatus.setTypeCode(2);
-        TicketAPI.addStatus(inactiveStatus, buildingModule);
+//        TicketAPI.addStatus(inactiveStatus, buildingModule);
 
         StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
         stateFlowRuleContext.setName("Default Stateflow");
@@ -54,7 +43,7 @@ public class BuildingModule extends SignUpData {
         stateFlowRuleContext.setDefaltStateFlow(true);
         stateFlowRuleContext.setDefaultStateId(activeStatus.getId());
         stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
-        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+//        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
 
         StateflowTransitionContext activeToInactive = new StateflowTransitionContext();
         activeToInactive.setName("Mark as Inactive");
@@ -68,6 +57,37 @@ public class BuildingModule extends SignUpData {
         activeToInactive.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
         activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
         activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
-        WorkflowRuleAPI.addWorkflowRule(activeToInactive);
+//        WorkflowRuleAPI.addWorkflowRule(activeToInactive);
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> building = new ArrayList<FacilioView>();
+        building.add(getAllSpaces().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.BUILDING);
+        groupDetails.put("views", building);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private static FacilioView getAllSpaces() {
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Spaces");
+        allView.setSortFields(sortFields);
+
+        return allView;
     }
 }

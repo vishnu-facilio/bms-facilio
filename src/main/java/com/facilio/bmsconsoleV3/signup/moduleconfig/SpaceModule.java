@@ -1,31 +1,21 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class SpaceModule extends SignUpData {
+public class SpaceModule extends BaseModuleConfig {
+    public SpaceModule(){
+        setModuleName(FacilioConstants.ContextNames.SPACE);
+    }
 
     @Override
     public void addData() {
@@ -71,6 +61,7 @@ public class SpaceModule extends SignUpData {
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
 
+
             // adding form
 //            FacilioForm defaultForm = new FacilioForm();
 //            defaultForm.setName("standard");
@@ -106,5 +97,40 @@ public class SpaceModule extends SignUpData {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    @Override
+    protected void addForms() throws Exception {
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> people = new ArrayList<FacilioView>();
+        people.add(getAllSpaces().setOrder(order++));
+
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.SPACE);
+        groupDetails.put("views", people);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private static FacilioView getAllSpaces() {
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Spaces");
+        allView.setSortFields(sortFields);
+
+        return allView;
     }
 }

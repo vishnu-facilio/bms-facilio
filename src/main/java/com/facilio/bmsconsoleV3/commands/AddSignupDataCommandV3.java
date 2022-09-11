@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.modules.FacilioIntEnum;
@@ -63,9 +65,13 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        List<ApplicationContext> allApplications = ApplicationApi.getAllApplications();
         if(CollectionUtils.isNotEmpty(SIGN_UP_CHAIN)){
             for(SignUpData signUpData : SIGN_UP_CHAIN){
                 signUpData.addData();
+            }
+            for(SignUpData signUpData : SIGN_UP_CHAIN){
+                signUpData.addViews(allApplications);
             }
         }
         return false;

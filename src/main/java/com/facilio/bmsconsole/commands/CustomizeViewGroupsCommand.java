@@ -25,7 +25,7 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
+		long appId = (long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1L);
 		List<ViewGroups> viewGroups = (List<ViewGroups>)context.get(FacilioConstants.ContextNames.GROUP_VIEWS);
 		if(viewGroups != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

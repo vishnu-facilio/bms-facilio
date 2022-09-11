@@ -62,6 +62,16 @@ public class FacilioView {
 		this.ownerId = view.ownerId;
 		this.isLocked = view.isLocked;
 		this.isEditable = view.isEditable;
+		this.appLinkNames = view.appLinkNames;
+	}
+	private List<String> appLinkNames;
+
+	public List<String> getAppLinkNames() {
+		return appLinkNames;
+	}
+
+	public void setAppLinkNames(List<String> appLinkNames) {
+		this.appLinkNames = appLinkNames;
 	}
 	private Long ownerId = -1L;
 	public Long getOwnerId() { return ownerId;}

@@ -3,14 +3,11 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.util.SharingAPI;
-import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -44,6 +41,7 @@ public class LoadViewCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		long startTime = System.currentTimeMillis();
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -55,9 +53,9 @@ public class LoadViewCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			long moduleId = module.getModuleId();
 			if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-				view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId(), appId);
+				view = ViewAPI.getView(viewName, -1, moduleName, orgId, appId);
 			} else {
-				view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId(), appId);
+				view = ViewAPI.getView(viewName, moduleId, moduleName, orgId, appId);
 			}
 			
 			if(view == null) {

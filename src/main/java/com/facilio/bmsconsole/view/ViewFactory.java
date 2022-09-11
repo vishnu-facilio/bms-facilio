@@ -6806,7 +6806,7 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setDefault(true);
 
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+//		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 
 		return allView;

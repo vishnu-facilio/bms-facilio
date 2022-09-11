@@ -593,7 +593,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
 				view.setCriteriaId(criteriaId);
 			}
-			
+
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
 			FacilioModule viewModule = ModuleFactory.getViewsModule();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -981,5 +981,54 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		}
 
 		return viewGroup;
+	}
+
+	public static FacilioView getView(String name, long moduleId, String moduleName, long orgId, long appId) throws Exception{
+		List<FacilioField> allFields = FieldFactory.getViewFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
+
+		try {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getViewFields())
+					.table("Views")
+					.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), name, StringOperators.IS));
+
+			if (moduleId > 0) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+			}
+			else if (moduleName != null) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleName"), moduleName, StringOperators.IS));
+			}
+
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			Criteria appCriteria = new Criteria();
+			appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+			if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), CommonOperators.IS_EMPTY));
+			}
+			builder.andCriteria(appCriteria);
+
+			List<Map<String, Object>> viewProps = builder.get();
+			FacilioView view = getViewDetails(viewProps, orgId);
+
+			if ((view == null) && LoadViewCommand.HIDDEN_VIEW_NAMES.contains(name)) {
+				ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+				if (app.getId() != mainApp.getId()) {
+					view = getView(name, moduleId, moduleName, orgId, mainApp.getId());
+					if (view != null) {
+						view.setId(-1);
+						view.setAppId(app.getId());
+					}
+				}
+			}
+
+			return view;
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
 	}
 }
