@@ -38,8 +38,8 @@ public class SummaryWidgetUtil {
             ApplicationContext application = AccountUtil.getCurrentApp();
             if (application == null) {
                 application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-                appId = application.getId();
             }
+            appId = application.getId();
         }
 
         CustomPageWidget pageWidget = CustomPageAPI.getCustomPageWidget(appId, widgetId, widgetName, moduleId);
