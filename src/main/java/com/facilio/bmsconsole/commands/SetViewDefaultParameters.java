@@ -14,17 +14,10 @@ public class SetViewDefaultParameters extends FacilioCommand {
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.NEW_CV);
 
         view.setOwnerId(AccountUtil.getCurrentUser().getId());
-        if (view.getIsLocked() == null)
+        if (view.getIsLocked() == null) {
             view.setLocked(false);
-
-        if (view.getViewSharing() == null || view.getViewSharing().size() == 0) {
-            SharingContext<SingleSharingContext> viewSharing = new SharingContext<SingleSharingContext>();
-            SingleSharingContext sharingContext = new SingleSharingContext();
-            sharingContext.setType(SingleSharingContext.SharingType.USER);
-            sharingContext.setUserId(view.getOwnerId());
-            viewSharing.add(sharingContext);
-            view.setViewSharing(viewSharing);
         }
+
         return false;
     }
 }
