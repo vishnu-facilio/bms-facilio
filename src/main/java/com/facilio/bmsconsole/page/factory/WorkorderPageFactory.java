@@ -458,7 +458,7 @@ public class WorkorderPageFactory extends PageFactory {
                 // !SP & PR
                 addPrerequisiteTab(page, workorder);
             }
-        } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+        } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN) && workorder.getSafetyPlan() != null) {
             // SP & !PR
             addSafetyPlanTab(page, workorder);
         }

@@ -177,6 +177,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN) && moduleName.equals("workorder") &&  (form.getName().equals("web_pm") || form.getName().equals("mobile_default") || form.getName().equals("default_workorder_web"))) {
 			fields.add(new FormField("safetyPlan", FieldDisplayType.LOOKUP_SIMPLE, "Safety Plan", Required.OPTIONAL,"safetyPlan", 12, 1));
+			FormsAPI.setFieldDetails(modBean,fields,moduleName);
 		}
 
 		

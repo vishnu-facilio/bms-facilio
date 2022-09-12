@@ -762,6 +762,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderHazardPrecautionsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllSites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.SITE, views);
 
@@ -8087,6 +8092,16 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Workorder Hazards");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderHazardPrecautionsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Workorder Hazard Precautions");
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;

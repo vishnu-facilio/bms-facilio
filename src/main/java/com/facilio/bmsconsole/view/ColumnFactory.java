@@ -211,6 +211,9 @@ public class ColumnFactory {
 		columnMap.put("hazardPrecaution-all", getAllHazardPrecautionsColumns());
 		columnMap.put("hazardPrecaution-associatedprecautions", getHazardPrecautionsColumns());
 		columnMap.put("hazardPrecaution-associatedhazards", getAssociatedHazardPrecautionsColumns());
+		columnMap.put("workorderHazardPrecaution-all", getAssociatedWorkOrderHazardPrecautionsColumns());
+		columnMap.put("precaution-all", getPrecautionsColumns());
+		columnMap.put("hazard-all", getHazardColumns());
 
 		// site,building,space columns
 		columnMap.put("site-default", getDefaultSiteViewColumns());
@@ -1680,10 +1683,40 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	public static  List<ViewField> getAssociatedWorkOrderHazardPrecautionsColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("precaution", "Precaution"));
+		columns.add(new ViewField("description", "Description", "precaution"));
+		columns.add(new ViewField("workorderHazard", "Hazard"));
+		return columns;
+	}
+
 	public static  List<ViewField> getHazardPrecautionsColumns() {
 		List<ViewField> columns = new ArrayList<>();
 		columns.add(new ViewField("precaution", "Precaution"));
 		columns.add(new ViewField("description", "Description", "precaution"));
+		return columns;
+	}
+
+	public static  List<ViewField> getPrecautionsColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("name", "Precaution"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+		return columns;
+	}
+
+	public static  List<ViewField> getHazardColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("name", "Hazard"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
 		return columns;
 	}
 
