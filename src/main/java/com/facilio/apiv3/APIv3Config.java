@@ -2589,4 +2589,14 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
+    @Module(FacilioConstants.ContextNames.ASSET_HAZARD)
+    public static Supplier<V3Config> getAssetHazard() {
+        return () -> new V3Config(V3AssetHazardContext.class, null)
+                .create()
+                .list()
+                .beforeFetch(new V3LoadAssetHazardLookUpsCommand())
+                .delete()
+                .build();
+    }
 }

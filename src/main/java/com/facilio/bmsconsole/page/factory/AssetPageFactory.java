@@ -248,12 +248,7 @@ public class AssetPageFactory extends PageFactory {
 
 			FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
-				Tab tab10 = page.new Tab("safety");
-				page.addTab(tab10);
-				Section tab5Sec1 = page.new Section();
-				tab10.addSection(tab5Sec1);
-				addRelatedListWidget(tab5Sec1, "assetHazard", assetModule.getModuleId(), "Hazards");
-				addSafetyPlanHazardsWidget(tab5Sec1);
+				addSafetyPlanTab(page, asset);
 			}
 
 
@@ -596,6 +591,11 @@ public class AssetPageFactory extends PageFactory {
 		widget.addToLayoutParams(section, 24, 10);
 		section.addWidget(widget);
 	}
+	private static void addAssetHazardWidget(Section section) {
+		PageWidget widget = new PageWidget(WidgetType.LIST, "commonHazardList");
+		widget.addToLayoutParams(section, 24, 10);
+		section.addWidget(widget);
+	}
 	public static void addRelatedListWidget(Section section, String moduleName, long parenModuleId, String moduleDisplayName) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -615,5 +615,24 @@ public class AssetPageFactory extends PageFactory {
 				section.addWidget(relatedListWidget);
 			}
 		}
+	}
+	private static Page.Section addSafetyPlanTab(Page page, AssetContext asset) throws Exception {
+		Page.Tab safetyPlanTab = page.new Tab("safety plan");
+		page.addTab(safetyPlanTab);
+
+		Page.Section safetyPlanSection = page.new Section();
+		safetyPlanTab.addSection(safetyPlanSection);
+
+		// hazards widget
+		PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
+		hazards.addToLayoutParams(0, 0, 24, 8);
+		safetyPlanSection.addWidget(hazards);
+
+		// precautions widget
+		PageWidget widget = new PageWidget(WidgetType.LIST, "safetyPlanPrecautions");
+		widget.addToLayoutParams(safetyPlanSection, 24, 10);
+		safetyPlanSection.addWidget(widget);
+
+		return safetyPlanSection;
 	}
 }

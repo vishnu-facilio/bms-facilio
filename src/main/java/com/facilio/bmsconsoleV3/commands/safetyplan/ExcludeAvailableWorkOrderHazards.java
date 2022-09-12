@@ -23,26 +23,45 @@ public class ExcludeAvailableWorkOrderHazards extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> queryMap = (Map<String, List>) context.get("queryParams");
-        List excludeAvailableWorkOrderHazards = queryMap.get("excludeAvailableWorkOrderHazards");
-        List<Long> hazardIds = new ArrayList<>();
-        if(excludeAvailableWorkOrderHazards != null && excludeAvailableWorkOrderHazards.size() > 0) {
-            String workorderId = (String) excludeAvailableWorkOrderHazards.get(0);
+        List excludeAvailableParentAssociatedHazards = queryMap.get("excludeAvailableParentAssociatedHazards");
+        List parentModule = queryMap.get("parentModuleName");
+        if (excludeAvailableParentAssociatedHazards != null && parentModule != null && parentModule.size() > 0 && excludeAvailableParentAssociatedHazards.size() > 0) {
+            String parentId = (String) excludeAvailableParentAssociatedHazards.get(0);
+            String parentModuleName = (String) queryMap.get("parentModuleName").get(0);
+            List<Long> parentIds = fetchAvailableIds(parentId,parentModuleName);
+            if (CollectionUtils.isNotEmpty(parentIds)) {
+                Condition hazardCondition = CriteriaAPI.getCondition("ID", "id",
+                        StringUtils.join(parentIds, ','), NumberOperators.NOT_EQUALS);
+                context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, hazardCondition);
+            }
+        }
+        return false;
+    }
+    public static List<Long> fetchAvailableIds(String parentId,String parentModuleName) throws Exception{
+        List<Long> parentIds = new ArrayList<>();
+        if(parentModuleName.equals("workorderHazard")) {
             Criteria criteria = new Criteria();
-            Condition condition = CriteriaAPI.getCondition("WORKORDER_ID", "workorder", workorderId, NumberOperators.EQUALS);
+            Condition condition = CriteriaAPI.getCondition("WORKORDER_ID", "workorder", parentId, NumberOperators.EQUALS);
             criteria.addAndCondition(condition);
             Map<Long, V3WorkorderHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD, null, V3WorkorderHazardContext.class, criteria, null);
-            if(props != null){
-                for (V3WorkorderHazardContext workorderHazard : props.values()){
+            if (props != null) {
+                for (V3WorkorderHazardContext workorderHazard : props.values()) {
                     HazardContext hazard = workorderHazard.getHazard();
-                    hazardIds.add(hazard.getId());
+                    parentIds.add(hazard.getId());
+                }
+            }
+        }else if(parentModuleName.equals("assetHazard")){
+            Criteria criteria = new Criteria();
+            Condition condition = CriteriaAPI.getCondition("ASSET_ID", "asset", parentId, NumberOperators.EQUALS);
+            criteria.addAndCondition(condition);
+            Map<Long, V3AssetHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.ASSET_HAZARD, null, V3AssetHazardContext.class, criteria, null);
+            if (props != null) {
+                for (V3AssetHazardContext assetHazard : props.values()) {
+                    V3HazardContext hazard = assetHazard.getHazard();
+                    parentIds.add(hazard.getId());
                 }
             }
         }
-        if (CollectionUtils.isNotEmpty(hazardIds)) {
-            Condition hazardCondition = CriteriaAPI.getCondition("ID", "id",
-                    StringUtils.join(hazardIds, ','), NumberOperators.NOT_EQUALS);
-            context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, hazardCondition);
-        }
-        return false;
+        return parentIds;
     }
 }
