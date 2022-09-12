@@ -41,4 +41,15 @@ public class ImportFileSheetsContext {
     public long getRowCount() {
         return rowCount;
     }
+
+    private long moduleId = -1;
+
+    public void setModuleId(long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public long getModuleId() {
+        return moduleId;
+    }
+
 }

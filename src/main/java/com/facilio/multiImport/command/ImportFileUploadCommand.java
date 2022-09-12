@@ -63,11 +63,14 @@ public class ImportFileUploadCommand extends FacilioCommand {
         insertRecordBuilder.save();
 
         for (int i=0;i< fileContextList.size();i++) {
-            fileContextList.get(i).setId((Long) props.get(i).get("id"));
+            ImportFileContext fileContext = fileContextList.get(i);
+            fileContext.setId((Long) props.get(i).get("id"));
             File file = fileContextList.get(i).getFile();
             long importFileId = fileContextList.get(i).getId();
             Workbook workbook = WorkbookFactory.create(file);
             ImportFileSheetsContext importFileSheets;
+            List<ImportFileSheetsContext> importFileSheetsContextList = new ArrayList<>(workbook.getNumberOfSheets());
+            fileContext.setImportFileSheetsContext(importFileSheetsContextList);
             for(int j=0;j< workbook.getNumberOfSheets();j++){
                 String sheetName = workbook.getSheetName(j);
                 Sheet sheets = workbook.getSheetAt(j);
@@ -80,8 +83,9 @@ public class ImportFileUploadCommand extends FacilioCommand {
                         break;
                     }
                 }
+
                 importFileSheets = addImportFileSheets(sheetName,importFileId,rowCount);
-                fileContextList.get(j).setImportFileSheetsContext(importFileSheets);
+                fileContext.getImportFileSheetsContext().add(importFileSheets);
             }
 
         }

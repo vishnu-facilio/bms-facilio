@@ -3,6 +3,7 @@ package com.facilio.multiImport.context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;
+import java.util.List;
 
 public class ImportFileContext {
     private long id = -1;
@@ -45,14 +46,14 @@ public class ImportFileContext {
         return fileName;
     }
 
-    ImportFileSheetsContext importFileSheetsContext;
+    List<ImportFileSheetsContext> importFileSheetsContext;
 
-    public void setImportFileSheetsContext(ImportFileSheetsContext importFileSheetsContext) {
-        this.importFileSheetsContext = importFileSheetsContext;
+    public List<ImportFileSheetsContext> getImportFileSheetsContext() {
+        return importFileSheetsContext;
     }
 
-    public ImportFileSheetsContext getImportFileSheetsContext() {
-        return importFileSheetsContext;
+    public void setImportFileSheetsContext(List<ImportFileSheetsContext> importFileSheetsContext) {
+        this.importFileSheetsContext = importFileSheetsContext;
     }
 
     File file;

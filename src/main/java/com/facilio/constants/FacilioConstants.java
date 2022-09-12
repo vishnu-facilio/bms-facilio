@@ -661,6 +661,8 @@ public class FacilioConstants {
 		public static final String FILE_NAME = "fileName";
 
 		public static final String IMPORT_ID = "importId";
+
+		public static final String IMPORT_SHEET_LIST = "importSheetList";
 		public static final String PUBLIC_FILE = "publicFile";
 		public static final String PUBLIC_FILE_URL = "publicFileUrl";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
@@ -1116,6 +1118,8 @@ public class FacilioConstants {
 		public static final String IMPORT_DATA_DETAILS = "importDataDetails";
 
 		public static final String IMPORT_FILE_DETAILS = "importFileDetails";
+
+		public static final String IMPORT_SHEETS = "importSheets";
 
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";

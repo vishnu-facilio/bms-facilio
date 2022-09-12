@@ -3292,6 +3292,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("name","NAME",module));
         fields.add(getNumberField("importFileId","IMPORT_FILE_ID",module));
         fields.add(getNumberField("rowCount","ROW_COUNT",module));
+        fields.add(getNumberField("moduleId","MODULE_ID",module));
         return fields;
     }
 

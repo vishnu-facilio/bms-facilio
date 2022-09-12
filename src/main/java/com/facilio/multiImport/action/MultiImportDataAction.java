@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.multiImport.context.ImportFileSheetsContext;
 
 import java.io.File;
 import java.util.List;
@@ -52,6 +53,16 @@ public class MultiImportDataAction extends FacilioAction {
         this.fileUploadContentType = fileUploadContentType;
     }
 
+    List<ImportFileSheetsContext> importSheetList;
+
+    public void setImportSheetList(List<ImportFileSheetsContext> importSheetList) {
+        this.importSheetList = importSheetList;
+    }
+
+    public List<ImportFileSheetsContext> getImportSheetList() {
+        return importSheetList;
+    }
+
     public String createImportDataDetails() throws Exception{
         FacilioChain chain = MultiImportChain.getCreateImportDataChain();
         FacilioContext context = chain.getContext();
@@ -70,6 +81,16 @@ public class MultiImportDataAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.IMPORT_FILE_DETAILS,context.get(FacilioConstants.ContextNames.IMPORT_FILE_DETAILS));
+        return SUCCESS;
+    }
+
+    public String sheetMapping() throws Exception{
+        FacilioChain chain = MultiImportChain.getImportSheetMappingChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.IMPORT_SHEET_LIST,importSheetList);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.IMPORT_SHEETS,context.get(FacilioConstants.ContextNames.IMPORT_SHEETS));
         return SUCCESS;
     }
 }
