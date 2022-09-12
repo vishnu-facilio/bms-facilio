@@ -108,35 +108,36 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
             producer = new FacilioKafkaProducer();
 
-            consumer = new KafkaConsumer<>(getProperties(groupId, client));
-            consumer.subscribe(Collections.singletonList(topic));
+            if (FacilioProperties.isWMSConsumerEnable()) {
+                consumer = new KafkaConsumer<>(getProperties(groupId, client));
+                consumer.subscribe(Collections.singletonList(topic));
 
-            executor = Executors.newScheduledThreadPool(1);
-            executor.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    final JSONParser parser = new JSONParser();
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-                    for (ConsumerRecord<String, String> record : records) {
-                        String value = record.value();
-                        try {
-                            Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
-                            incomingMessage(message);
-                        } catch (Exception ex) {
-                            LOGGER.error("Exception while parsing data to JSON ", ex);
-                        }
-                        finally {
-                            consumer.commitSync();
+                executor = Executors.newScheduledThreadPool(1);
+                executor.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        final JSONParser parser = new JSONParser();
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                        for (ConsumerRecord<String, String> record : records) {
+                            String value = record.value();
+                            try {
+                                Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
+                                incomingMessage(message);
+                            } catch (Exception ex) {
+                                LOGGER.error("Exception while parsing data to JSON ", ex);
+                            } finally {
+                                consumer.commitSync();
+                            }
                         }
                     }
-                }
-            }, 0, 3, TimeUnit.SECONDS);
+                }, 0, 3, TimeUnit.SECONDS);
+            }
         }
 
         public void sendMessage(Message message) throws Exception {
             JSONObject data = message.toJson();
 
-            String partitionKey = this.topic;
+            String partitionKey = message.getTopic();
             LOGGER.debug("Outgoing message: " + message);
             RecordMetadata future = (RecordMetadata) producer.putRecord(this.topic, new FacilioRecord(partitionKey, data));
         }
