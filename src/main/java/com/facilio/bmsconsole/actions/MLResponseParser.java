@@ -75,7 +75,7 @@ public class MLResponseParser extends ActionSupport
 				}
 
 				BmsPointsTaggingUtil.tagPointList((Map<String, Map<String, Object>>) json.get("data"));
-				if(agentId!=null){
+				if(isDone && agentId!=null){
 					FacilioChain c = FacilioChain.getNonTransactionChain();
 //				c.getContext().put("agentId",(Long)((JSONObject)((JSONObject)json.get("metaData")).get("pointsMap")).get("agentId"));
 					c.getContext().put("agentId",agentId);
@@ -137,6 +137,7 @@ public class MLResponseParser extends ActionSupport
 	String error;
 
 	String responseName;
+	Boolean isDone=false;
 	public void setResult(String result)
 	{
 		this.result = result;
@@ -187,6 +188,14 @@ public class MLResponseParser extends ActionSupport
 	public String getResponseName()
 	{
 		return this.responseName;
+	}
+	public void setIsDone(boolean isDone)
+	{
+		this.isDone = isDone;
+	}
+	public boolean getIsDone()
+	{
+		return this.isDone;
 	}
 
 }
