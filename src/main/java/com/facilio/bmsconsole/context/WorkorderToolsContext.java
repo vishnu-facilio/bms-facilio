@@ -43,7 +43,14 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 	public double getDuration() {
 		return duration;
 	}
-	
-	
-	
+
+	private Double rate;
+
+	public Double getRate() {
+		return rate;
+	}
+
+	public void setRate(Double rate) {
+		this.rate = rate;
+	}
 }

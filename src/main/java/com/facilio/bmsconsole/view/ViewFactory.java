@@ -323,7 +323,25 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllToolTypes().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TOOL_TYPES, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderItems().setOrder(order++));
+		views.put("details", getAllWorkOrderItemsDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderTools().setOrder(order++));
+		views.put("details",getAllWorkOrderToolsDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_TOOLS,views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderService().setOrder(order++));
+		views.put("details",getAllWorkOrderServiceDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WO_SERVICE,views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
@@ -4283,8 +4301,86 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
-		private static FacilioView getAllVendors() {
+
+	private static FacilioView getAllWorkOrderItems() {
+
+		FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Items");
+		allView.setModuleName(workOrderItemsModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getAllWorkOrderItemsDetailsView() {
+		FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Items");
+		detailsView.setModuleName(workOrderItemsModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+
+	private static FacilioView getAllWorkOrderTools() {
+
+		FacilioModule workOrderToolsModule = ModuleFactory.getWorkOrderToolsModule();
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Tools");
+		allView.setModuleName(workOrderToolsModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderToolsDetailsView() {
+		FacilioModule workOrderToolsModule = ModuleFactory.getWorkOrderToolsModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Tools");
+		detailsView.setModuleName(workOrderToolsModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+
+	private static FacilioView getAllWorkOrderService() {
+
+		FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Service");
+		allView.setModuleName(workOrderServiceModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderServiceDetailsView() {
+		FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Service");
+		detailsView.setModuleName(workOrderServiceModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+	private static FacilioView getAllVendors() {
 
 		FacilioModule itemsModule = ModuleFactory.getVendorsModule();
 

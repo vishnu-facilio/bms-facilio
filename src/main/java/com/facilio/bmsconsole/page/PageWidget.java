@@ -444,7 +444,8 @@ public class PageWidget {
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),
 		TOOL_TRANSACTIONS("transactionstool"),
-
+		ACTUALS_COST("actualsCost"),
+		ACTUALS("actuals"),
 		TENANT_UNIT_OVERVIEW("tenantunitoverview"),
 		TENANT_UNIT_SPECIAL_WIDGET("tenantunitspecialwidget"),
 		TENANT_UNIT_TENANT("tenantunittenant"),

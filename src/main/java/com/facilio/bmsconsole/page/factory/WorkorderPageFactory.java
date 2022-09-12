@@ -290,6 +290,22 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += 7;
     }
 
+    private static void addActualsTab(Page page){
+        Page.Tab actualsTab = page.new Tab("Actuals");
+        page.addTab(actualsTab);
+
+        Page.Section actualsSection = page.new Section();
+        actualsTab.addSection(actualsSection);
+
+        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
+        actualsCostWidget.addToLayoutParams(actualsSection,4,8);
+        actualsSection.addWidget(actualsCostWidget);
+
+        PageWidget actualsWidget = new PageWidget(PageWidget.WidgetType.ACTUALS);
+        actualsWidget.addToLayoutParams(actualsSection,20,15);
+        actualsSection.addWidget(actualsWidget);
+    }
+
     private static void addFailureReportTab(Page page){
         Page.Tab failureReportTab = page.new Tab("Failure Report");
         page.addTab(failureReportTab);
@@ -481,8 +497,12 @@ public class WorkorderPageFactory extends PageFactory {
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
             addInventoryTab(page);
         }
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
+                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
             addPlansTab(page);
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)){
+            addActualsTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
         addMetricandTimelogTab(page, workorder.getId());

@@ -1758,6 +1758,18 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("workorderCost")
+    public static Supplier<V3Config> getWorkOrderCost() {
+        return () -> new V3Config(V3WorkorderCostContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())

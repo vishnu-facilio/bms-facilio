@@ -8,6 +8,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
+import javax.swing.text.View;
 import java.util.*;
 
 public class ColumnFactory {
@@ -60,6 +61,12 @@ public class ColumnFactory {
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
 		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
+		columnMap.put("workorderItem-default",getDefaultWorkOrderItemColumns());
+		columnMap.put("workorderItem-details",getWorkOrderItemDetailsColumns());
+		columnMap.put("workorderTools-default",getDefaultWorkOrderToolsColumns());
+		columnMap.put("workorderTools-details",getWorkOrderToolsDetailsColumns());
+		columnMap.put("workorderService-default",getDefaultWorkOrderServiceColumns());
+		columnMap.put("workorderService-details",getWorkOrderServiceDetailsColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("workOrderPlannedItems-all", getAllWorkOrderPlannedItemsColumns());
 		columnMap.put("workOrderPlannedItems-details", getWorkOrderPlannedItemsDetailsColumns());
@@ -648,7 +655,80 @@ public class ColumnFactory {
 		
 		return columns;
 	}
-	
+
+	private static List<ViewField> getWorkOrderItemDetailsColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("asset","Asset"));
+		columns.add(new ViewField("isReturnable","Returnable"));
+		columns.add(new ViewField("issuedTo","Issued To"));
+		columns.add(new ViewField("itemType","Item Type"));
+		columns.add(new ViewField("remainingQuantity","Remaining Quantity"));
+		columns.add(new ViewField("sysCreatedBy","Created By"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+
+		return columns;
+	}
+	private static List<ViewField> getDefaultWorkOrderItemColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("item","Item"));
+		columns.add(new ViewField("storeRoom","StoreRoom"));
+		columns.add(new ViewField("transactionState","Transaction State"));
+		columns.add(new ViewField("quantity","Quantity"));
+		columns.add(new ViewField("unitPrice","Unit Price"));
+		columns.add(new ViewField("cost","Total Amount"));
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultWorkOrderToolsColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("tool","Tool"));
+		columns.add(new ViewField("storeRoom","StoreRoom"));
+		columns.add(new ViewField("issueTime","Issue Time"));
+		columns.add(new ViewField("returnTime","Return Time"));
+		columns.add(new ViewField("duration","duration"));
+		columns.add(new ViewField("quantity","Quantity"));
+		columns.add(new ViewField("rate","Rate"));
+		columns.add(new ViewField("cost","Cost"));
+		return columns;
+	}
+
+	private static List<ViewField> getWorkOrderToolsDetailsColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("asset","Asset"));
+		columns.add(new ViewField("toolType","Tool Type"));
+		columns.add(new ViewField("transactionState","Transaction State"));
+		columns.add(new ViewField("issuedTo","Issued To"));
+		columns.add(new ViewField("remainingQuantity","Remaining Quantity"));
+		columns.add(new ViewField("sysCreatedBy","Created By"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultWorkOrderServiceColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("service","Service"));
+		columns.add(new ViewField("startTime","Start Time"));
+		columns.add(new ViewField("endTime","End Time"));
+		columns.add(new ViewField("duration","duration"));
+		columns.add(new ViewField("quantity","Quantity"));
+		columns.add(new ViewField("unitPrice","Unit Price"));
+		columns.add(new ViewField("cost","Cost"));
+		return columns;
+	}
+
+	private static List<ViewField> getWorkOrderServiceDetailsColumns(){
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("sysCreatedBy","Created By"));
+		columns.add(new ViewField("sysCreatedTime","Created Time"));
+		columns.add(new ViewField("sysModifiedBy","Modified By"));
+		columns.add(new ViewField("sysModifiedTime","Modified Time"));
+		columns.add(new ViewField("unitPrice","Unit Price"));
+		columns.add(new ViewField("vendor","Vendor"));
+
+		return columns;
+	}
+
 	private static List<ViewField> getDefaultVendorsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		

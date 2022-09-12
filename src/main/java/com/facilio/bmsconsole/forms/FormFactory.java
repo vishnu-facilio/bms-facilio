@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.forms;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -47,6 +48,7 @@ public class FormFactory {
 		forms.put("tenant", getTenantForm());
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
+		forms.put("workorderItem-form",getWorkOrderItemForm());
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("location_form", getLocationForm());
@@ -578,6 +580,7 @@ public class FormFactory {
 		List<FacilioForm> jobPlanForm = Arrays.asList(getJobPlanForm());
 		List<FacilioForm> plannedmaintenance = Arrays.asList(getPlannedMaintenanceForm());
 		List<FacilioForm> shiftForm = Arrays.asList(getShiftForm());
+		List<FacilioForm> workOrderItemForm = Arrays.asList(getWorkOrderItemForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -666,6 +669,7 @@ public class FormFactory {
 				.put(ContextNames.JOB_PLAN, getFormMap(jobPlanForm))
 				.put(ContextNames.PLANNEDMAINTENANCE, getFormMap(plannedmaintenance))
 				.put(ContextNames.SHIFT, getFormMap(shiftForm))
+				.put(ContextNames.WORKORDER_ITEMS,getFormMap(workOrderItemForm))
 				.build();
 	}
 	
@@ -1269,6 +1273,17 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolTypesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+	public static FacilioForm getWorkOrderItemForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("New Work Order Item");
+		form.setName("default_workorderItem_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WORKORDER_ITEMS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkOrderItemFields());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
@@ -1892,6 +1907,14 @@ public class FormFactory {
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.NUMBER, "Minimum Quantity", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("isRotating", FieldDisplayType.DECISION_BOX, "Is Rotating", Required.OPTIONAL, 6, 2));
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 3));
+		return fields;
+	}
+
+	private static List<FormField> getWorkOrderItemFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 2,true));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 1, 3,true));
+		fields.add(new FormField("quantity", FieldDisplayType.TEXTBOX, "Quantity", Required.OPTIONAL, 2, 2));
 		return fields;
 	}
 	
