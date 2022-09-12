@@ -395,6 +395,8 @@ public class PageWidget {
 		PREREQUISITES("prerequisites"),
 		TASKS_MONOLITH("taskMonolith"),
 		ITEMS_AND_LABOR("itemsAndLabor"),
+		PLANS("plans"),
+		PLANS_COST("plansCost"),
 		QUOTATION("quotation"),
 		INVENTORY_ITEMS("inventoryItems"),
 		INVENTORY_SERVICES("inventoryServices"),

@@ -147,6 +147,9 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.REQUEST_FOR_QUOTATION, getRequestForQuotationModule());
 		moduleMap.put(ContextNames.TRANSACTION, getTransactionModule());
 		moduleMap.put(ContextNames.VENDOR_QUOTES, getVendorQuotesModule());
+		moduleMap.put(ContextNames.WO_PLANNED_ITEMS, getWorkOrderPlannedItemsModule());
+		moduleMap.put(ContextNames.WO_PLANNED_TOOLS, getWorkOrderPlannedToolsModule());
+		moduleMap.put(ContextNames.WO_PLANNED_SERVICES, getWorkOrderPlannedServicesModule());
 		moduleMap.put("customPageWidget", getCustomPageWidgetModule());
 		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
 		moduleMap.put("customWidgetGroupFields", getSummaryWidgetGroupFieldsModule());
@@ -3027,7 +3030,27 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Vendors");
 		return inventoryModule;
 	}
-	
+	public static FacilioModule getWorkOrderPlannedItemsModule() {
+		FacilioModule plannedItemsModule = new FacilioModule();
+		plannedItemsModule.setName(ContextNames.WO_PLANNED_ITEMS);
+		plannedItemsModule.setDisplayName("WorkOrder Planned Items");
+		plannedItemsModule.setTableName("Work_Order_Planned_Items");
+		return plannedItemsModule;
+	}
+	public static FacilioModule getWorkOrderPlannedToolsModule() {
+		FacilioModule plannedToolsModule = new FacilioModule();
+		plannedToolsModule.setName(ContextNames.WO_PLANNED_TOOLS);
+		plannedToolsModule.setDisplayName("WorkOrder Planned Tools");
+		plannedToolsModule.setTableName("Work_Order_Planned_Tools");
+		return plannedToolsModule;
+	}
+	public static FacilioModule getWorkOrderPlannedServicesModule() {
+		FacilioModule plannedServicesModule = new FacilioModule();
+		plannedServicesModule.setName(ContextNames.WO_PLANNED_SERVICES);
+		plannedServicesModule.setDisplayName("WorkOrder Planned Services");
+		plannedServicesModule.setTableName("Work_Order_Planned_Services");
+		return plannedServicesModule;
+	}
 	public static FacilioModule getInventryModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM);

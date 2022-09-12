@@ -125,6 +125,8 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.LoadPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
@@ -1676,11 +1678,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderPlannedItems() {
         return () -> new V3Config(WorkOrderPlannedItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetWorkOrderPlannedItemsCommandV3())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
                 .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
+                .beforeFetch(new LoadPlannedItemsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getReserveValidationChainV3())
                 .summary()
+                .beforeFetch(new LoadPlannedItemsCommandV3())
                 .delete()
                 .build();
     }

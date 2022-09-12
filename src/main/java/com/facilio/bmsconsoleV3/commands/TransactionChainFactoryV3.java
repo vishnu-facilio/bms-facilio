@@ -2117,6 +2117,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ReserveItemsCommandV3());
         return c;
     }
+    public static FacilioChain getCostChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlansCostCommandV3());
+        return c;
+    }
     //    public static FacilioChain getUnReserveItemsChainV3(){
 //        FacilioChain c = getDefaultChain();
 //        c.addCommand(new UnReserveItemsCommandV3());
@@ -2159,6 +2164,16 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new LoadWorkOrderServiceLookUpCommand());
         c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
         c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getReserveValidationChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReservationValidationCommandV3());
+        return c;
+    }
+    public static FacilioChain getReserveChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReservationSummaryCommandV3());
         return c;
     }
     public static FacilioChain getPeopleGroupAndMembersChain() {

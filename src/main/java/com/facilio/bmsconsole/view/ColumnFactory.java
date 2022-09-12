@@ -61,6 +61,12 @@ public class ColumnFactory {
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
 		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
+		columnMap.put("workOrderPlannedItems-all", getAllWorkOrderPlannedItemsColumns());
+		columnMap.put("workOrderPlannedItems-details", getWorkOrderPlannedItemsDetailsColumns());
+		columnMap.put("workOrderPlannedTools-all", getAllWorkOrderPlannedToolsColumns());
+		columnMap.put("workOrderPlannedTools-details", getWorkOrderPlannedToolsDetailsColumns());
+		columnMap.put("workOrderPlannedServices-all", getAllWorkOrderPlannedServicesColumns());
+		columnMap.put("workOrderPlannedServices-details", getWorkOrderPlannedServicesDetailsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
 		columnMap.put("tool-default", getDefaultToolColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
@@ -657,6 +663,76 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	private static List<ViewField> getAllWorkOrderPlannedItemsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("itemType", "Items"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("unitPrice", "Unit Price"));
+		columns.add(new ViewField("totalCost", "Total Amount"));
+		columns.add(new ViewField("reservationType", "Reservation Type"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getWorkOrderPlannedItemsDetailsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("isReserved", "Reserved"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+
+		return columns;
+	}
+	private static List<ViewField> getAllWorkOrderPlannedToolsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("toolType", "Tools"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("duration", "Duration"));
+		columns.add(new ViewField("rate", "Unit Price"));
+		columns.add(new ViewField("totalCost", "Total Amount"));
+
+		return columns;
+	}
+	private static List<ViewField> getWorkOrderPlannedToolsDetailsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+
+		return columns;
+	}
+	private static List<ViewField> getAllWorkOrderPlannedServicesColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("service", "Services"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("duration", "Duration"));
+		columns.add(new ViewField("unitPrice", "Unit Price"));
+		columns.add(new ViewField("totalCost", "Total Amount"));
+
+		return columns;
+	}
+	private static List<ViewField> getWorkOrderPlannedServicesDetailsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+
+		return columns;
+	}
 	private static List<ViewField> getPortalVendorsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 

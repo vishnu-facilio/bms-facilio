@@ -442,6 +442,21 @@ public class WorkorderPageFactory extends PageFactory {
         prerequisites.addToWidgetParams("hideBg", true);
         prerequisiteSection.addWidget(prerequisites);
     }
+    private static void addPlansTab(Page page){
+        Page.Tab plans = page.new Tab("plans");
+        page.addTab(plans);
+
+        Page.Section planSection = page.new Section();
+        plans.addSection(planSection);
+
+        PageWidget plansCostWidget = new PageWidget(PageWidget.WidgetType.PLANS_COST);
+        plansCostWidget.addToLayoutParams(planSection, 4, 8);
+        planSection.addWidget(plansCostWidget);
+
+        PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.PLANS);
+        plansWidget.addToLayoutParams(planSection, 20, 15);
+        planSection.addWidget(plansWidget);
+    }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
         Page page = new Page();
@@ -465,6 +480,9 @@ public class WorkorderPageFactory extends PageFactory {
         addTasksTab(page);
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
             addInventoryTab(page);
+        }
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
+            addPlansTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
         addMetricandTimelogTab(page, workorder.getId());
