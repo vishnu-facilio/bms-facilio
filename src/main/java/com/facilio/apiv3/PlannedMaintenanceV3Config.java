@@ -20,6 +20,7 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPlannedMaintenance() {
         return () -> new V3Config(PlannedMaintenance.class, null)
                 .update()
+                    .beforeSave(new PMBeforeCreateCommand())
                     .afterSave(new PMAfterPatchCommand())
                 .create()
                     .beforeSave(new PMBeforeCreateCommand())

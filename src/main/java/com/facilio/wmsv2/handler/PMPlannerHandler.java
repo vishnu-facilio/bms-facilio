@@ -30,6 +30,7 @@ public class PMPlannerHandler extends BaseHandler {
     public Message processOutgoingMessage(Message message) {
         // TODO(1): After publishing
         try {
+            LOGGER.error("PM Planner handler entry");
             LOGGER.error(message.toString());
             long plannerId = getPlannerId(message);
             ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());

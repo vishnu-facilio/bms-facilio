@@ -25,7 +25,7 @@ public class PublishPMCommand extends FacilioCommand {
             throw new IllegalArgumentException("Pm ids cannot be empty");
         }
 
-        List<Long> plannerIds = PlannedMaintenanceAPI.getPlanners(pmIds);
+        List<Long> plannerIds = PlannedMaintenanceAPI.getPlannerIds(pmIds);
         if (CollectionUtils.isEmpty(plannerIds)) {
             LOGGER.error("Planner is missing");
             return false;

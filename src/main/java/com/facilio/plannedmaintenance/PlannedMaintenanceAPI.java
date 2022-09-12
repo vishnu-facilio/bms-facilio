@@ -58,7 +58,12 @@ public class PlannedMaintenanceAPI {
         );
     }
 
-    public static List<Long> getPlanners(List<Long> pmIds) throws Exception {
+    public static List<Long> getPlannerIds(List<Long> pmIds) throws Exception {
+        List<PMPlanner> pmPlanners = getPmPlanners(pmIds);
+        return pmPlanners.stream().map(PMPlanner::getId).collect(Collectors.toList());
+    }
+
+    public static List<PMPlanner> getPmPlanners(List<Long> pmIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule pmPlannerModule = modBean.getModule("pmPlanner");
         List<FacilioField> pmPlannerFields = modBean.getAllFields("pmPlanner");
@@ -70,7 +75,6 @@ public class PlannedMaintenanceAPI {
                 .module(pmPlannerModule)
                 .beanClass(PMPlanner.class)
                 .andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
-        List<PMPlanner> pmPlanners = records.get();
-        return pmPlanners.stream().map(PMPlanner::getId).collect(Collectors.toList());
+        return records.get();
     }
 }

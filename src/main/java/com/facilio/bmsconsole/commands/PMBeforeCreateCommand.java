@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
@@ -21,6 +22,15 @@ public class PMBeforeCreateCommand extends FacilioCommand {
             PlannedMaintenance pm = (PlannedMaintenance) record;
             pm.setSourceType(V3TicketContext.SourceType.PM_TEMPLATE.getIntVal());
             pm.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED.getValue());
+
+            if (pm.getAssignmentTypeEnum() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY) {
+                pm.setAssetCategory(null);
+            } else if (pm.getAssignmentTypeEnum() == PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY) {
+                pm.setSpaceCategory(null);
+            } else {
+                pm.setSpaceCategory(null);
+                pm.setAssetCategory(null);
+            }
         }
         return false;
     }

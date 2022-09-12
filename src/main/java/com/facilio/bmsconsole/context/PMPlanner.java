@@ -14,4 +14,5 @@ public class PMPlanner extends V3Context {
     private PMJobPlan preReqJobPlan;
     private List<PMResourcePlanner> resourcePlanners;
     private long generatedUpto;
+    private Long resourceCount;
 }

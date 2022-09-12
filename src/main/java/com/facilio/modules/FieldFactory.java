@@ -329,7 +329,11 @@ public class FieldFactory extends BaseFieldFactory {
                 "spaceCategory",
                 "assetCategory",
                 "isActive",
-                "subject"
+                "subject",
+                "tenant",
+                "vendor",
+                "subject",
+                "description"
         }));
 
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {

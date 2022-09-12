@@ -405,6 +405,7 @@ public class ColumnFactory {
 
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("type", "Maintenance Type"));
 		columns.add(new ViewField("assignmentType", "Scope Category"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("spaceCategory", "Space Category"));

@@ -1946,6 +1946,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getPublishPM() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidatePublishCommand());
         c.addCommand(new MarkPMAsActiveCommand());
         c.addCommand(new PublishPMCommand());
         return c;

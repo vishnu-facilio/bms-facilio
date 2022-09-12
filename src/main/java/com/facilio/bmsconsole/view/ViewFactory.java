@@ -7209,7 +7209,7 @@ public class ViewFactory {
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
 		allView.setName("inactive");
-		allView.setDisplayName("Inactive");
+		allView.setDisplayName("Unpublished");
 		allView.setCriteria(criteria);
 
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
@@ -7232,7 +7232,7 @@ public class ViewFactory {
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
 		allView.setName("active");
-		allView.setDisplayName("Active");
+		allView.setDisplayName("Published");
 		allView.setCriteria(criteria);
 
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
