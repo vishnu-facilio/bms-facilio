@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -85,45 +87,13 @@ public class ScheduleWOStatusChange extends FacilioJob {
 				}
             }
 
-			handlePMV1Scheduling(workOrderContexts); // This is PM V1 version
-			handlePMV2Scheduling(v3WorkOrderContexts); // TODO(3) This is PM V2 (revamped PM) version: flow should happen into this
+			updateJobStatus(wos);
 		} catch (Exception e) {
             CommonCommandUtil.emailException("ScheduleWOStatusChange", ""+jc.getJobId(), e);
             LOGGER.error("PM Execution failed: ", e);
             throw e;
         }
     }
-
-	private void handlePMV2Scheduling(List<V3WorkOrderContext> v3WorkOrderContexts) throws Exception {
-		// TODO(3a): ensure "N" WorkOrders get into next job queue
-		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
-			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
-				try {
-					// TODO(3b):WOs for next 30 mins is set to Job here.
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				} catch (Exception e) { //Delete job entry if any and try again
-					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduleWOV2");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				}
-			}
-			updateV3JobStatus(v3WorkOrderContexts);
-		}
-	}
-
-	private void handlePMV1Scheduling(List<WorkOrderContext> workOrderContexts) throws Exception {
-		if (CollectionUtils.isNotEmpty(workOrderContexts)) {
-			modifyWorkflowBasedOnRule(workOrderContexts);
-			for (WorkOrderContext wo : workOrderContexts) {
-				try {
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
-				} catch (Exception e) { //Delete job entry if any and try again
-					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
-				}
-			}
-			updateJobStatus(workOrderContexts);
-		}
-	}
 
 	private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
     	
