@@ -35,21 +35,20 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 NumberField field = FieldFactory.getField(FacilioConstants.ReadingKpi.READING_KPI_RESULT, kpiName, "RESULT", null, FieldType.DECIMAL);
 
                 String customUnit = kpi.getCustomUnit();
-                if (field != null && field instanceof NumberField) {
-                    if (customUnit != null) {
-                        field.setUnit(customUnit);
-                        field.setMetric(0);
-                    } else {
-                        Integer unitId = 0;
-                        if (kpi.getUnitId() != null) {
-                            unitId = kpi.getUnitId();
-                        }
-                        if (unitId > 0) {
-                            field.setUnitId(unitId);
-                            field.setMetric(kpi.getMetricId());
-                        }
+                if (customUnit != null) {
+                    field.setUnit(customUnit);
+                    field.setMetric(0);
+                } else {
+                    Integer unitId = 0;
+                    if (kpi.getUnitId() != null) {
+                        unitId = kpi.getUnitId();
+                    }
+                    if (unitId > 0) {
+                        field.setUnitId(unitId);
+                        field.setMetric(kpi.getMetricId());
                     }
                 }
+
                 field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
                 kpi.setReadingField(field);
                 context.put(FacilioConstants.ContextNames.MODULE_FIELD, kpi.getReadingField());
@@ -91,7 +90,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, kpi.getNs().getWorkflowContext());
         context.put(NamespaceConstants.NAMESPACE_FIELDS, kpi.getNs().getFields());
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());
-        kpi.getNs().setExecInterval(kpi.getFrequency());
+        kpi.getNs().setExecInterval(kpi.getFrequencyEnum().getMs());
         kpi.getNs().setType(NSType.KPI_RULE.getIndex());
     }
 }

@@ -1,12 +1,13 @@
 package com.facilio.readingkpi.context;
 
 import java.util.List;
+
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.bmsconsoleV3.signup.AddKPIModules;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class ReadingKPIContext extends V3Context {
     private String name;
     private String description;
     private Long kpiCategory;
-    private Long frequency;
+    private NamespaceFrequency frequency;
     private KPIType kpiType;
     private String customUnit;
     private Integer metricId;
@@ -69,4 +70,15 @@ public class ReadingKPIContext extends V3Context {
         this.kpiType = KPIType.valueOf(type);
     }
 
+    public NamespaceFrequency getFrequencyEnum() {
+        return this.frequency;
+    }
+
+    public void setFrequency(Integer type) {
+        this.frequency = NamespaceFrequency.valueOf(type);
+    }
+
+    public int getFrequency() {
+        return frequency != null? frequency.getIndex() : -1;
+    }
 }

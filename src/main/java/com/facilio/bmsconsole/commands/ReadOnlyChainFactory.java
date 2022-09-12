@@ -35,6 +35,9 @@ import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
+import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
+import com.facilio.readingkpi.readingslist.FetchKpiReadingsCommand;
 import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.command.GetNewReadingRulesCommand;
 import com.facilio.relation.command.GetAllRelationForSetupPageCommand;
@@ -3089,5 +3092,21 @@ public class ReadOnlyChainFactory {
 
 		return c;
 
+	}
+	public static FacilioChain getKpiReadings(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new FetchKpiReadingsCommand());
+		return chain;
+	}
+	public static FacilioChain getKpiNames(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchKpiNamesCommand());
+		return chain;
+	}
+	public static FacilioChain getReadingKpiAssetNames(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchAssetNamesCommand());
+		return chain;
 	}
 }
