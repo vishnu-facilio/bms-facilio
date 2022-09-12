@@ -2002,12 +2002,17 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getListMyApps() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ListMyAppsCommandV3());
+        return c;
+    }
+
     public static FacilioChain setDefaultAppForUser() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetDefaultAppForUserCommandV3());
         return c;
     }
-
     public static FacilioChain getBreakAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddBreakShiftRelationshipCommand());
@@ -2141,4 +2146,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetDashboardWidgetsCommand());
         return c;
     }
+
+    public static FacilioChain addOrUpdateScopeVariable() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateScopeVariable());
+        return c;
+    }
+
 }

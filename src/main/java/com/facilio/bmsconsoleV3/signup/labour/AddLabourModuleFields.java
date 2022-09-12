@@ -49,6 +49,7 @@ public class AddLabourModuleFields extends SignUpData {
 
         FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        chain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
     }

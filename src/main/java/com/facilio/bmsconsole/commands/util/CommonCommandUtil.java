@@ -483,11 +483,11 @@ public class CommonCommandUtil {
     //will be changed soon
     public static List<Long> getMySiteIds() throws Exception {
         if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-            List<SiteContext> sites = SpaceAPI.getAllSites();
+            List<BaseSpaceContext> sites = getMyAccessibleSites();
             List<Long> siteIds = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(sites)) {
-                for (SiteContext site : sites) {
-                    siteIds.add(site.getSiteId());
+                for (BaseSpaceContext site : sites) {
+                    siteIds.add(site.getId());
                 }
             }
             return siteIds;
@@ -515,6 +515,53 @@ public class CommonCommandUtil {
             List<Long> toArray = new ArrayList<>(siteIds);
             return toArray;
         }
+    }
+
+    private static List<BaseSpaceContext> getMyAccessibleSites() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+
+        List<Long> siteIds = new ArrayList<>();
+
+        if (AccountUtil.getCurrentUser() != null) {
+            FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+            GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+                    .select(AccountConstants.getAccessbileSpaceFields())
+                    .table(accessibleSpaceMod.getTableName())
+                    .andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+
+            List<Map<String, Object>> props = selectAccessibleBuilder.get();
+
+            if (props != null && !props.isEmpty()) {
+                for(Map<String, Object> prop : props) {
+                    Long siteId = (Long) prop.get("siteId");
+                    if (siteId != null) {
+                        siteIds.add(siteId);
+                    }
+                }
+            }
+        }
+
+        SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+                .select(fields)
+                .module(module)
+                .skipScopeCriteria()
+                .beanClass(BaseSpaceContext.class)
+                .andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS));
+
+        List<BaseSpaceContext> accessibleBaseSpace;
+        if (siteIds.isEmpty()) {
+            accessibleBaseSpace = selectBuilder.get();
+        } else {
+            accessibleBaseSpace = selectBuilder.andCondition(CriteriaAPI.getIdCondition(siteIds, module)).get();
+        }
+
+        if (accessibleBaseSpace == null || accessibleBaseSpace.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return accessibleBaseSpace;
     }
 
     public static List<BaseSpaceContext> getMySites() throws Exception{

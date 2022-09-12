@@ -5209,6 +5209,30 @@ public class ModuleFactory {
 		return commentsSharing;
 	}
 
+	public static FacilioModule getValueGeneratorModule(){
+		FacilioModule valueGenModule = new FacilioModule();
+		valueGenModule.setName("valueGenerator");
+		valueGenModule.setDisplayName("Value Generator");
+		valueGenModule.setTableName("Value_Generators");
+		return valueGenModule;
+	}
+
+	public static FacilioModule getGlobalScopeVariableModule(){
+		FacilioModule scopeVariableModule = new FacilioModule();
+		scopeVariableModule.setName("globalscopeVariable");
+		scopeVariableModule.setDisplayName("Global Scope Variable");
+		scopeVariableModule.setTableName("Global_Scope_Variable");
+		return scopeVariableModule;
+	}
+
+	public static FacilioModule getGlobalScopeVariableModulesFieldsModule(){
+		FacilioModule scopeVariableModulesFieldsModule = new FacilioModule();
+		scopeVariableModulesFieldsModule.setName("globalscopeVariableModulesFields");
+		scopeVariableModulesFieldsModule.setDisplayName("Global Scope Variable Modules Fields");
+		scopeVariableModulesFieldsModule.setTableName("Global_Scope_Variable_Modules_Fields");
+		return scopeVariableModulesFieldsModule;
+	}
+
 	public static FacilioModule getCustomPageWidgetModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("customPageWidget");

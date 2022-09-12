@@ -17,15 +17,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 
-public class WorkOrderMultiResourceModule extends SignUpData {
+public class AddMultiResourceModule extends SignUpData {
 	@Override
 	public void addData() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	    
 	    List<FacilioModule> modules = new ArrayList<>();
 	    
-	    FacilioModule workOrderMultiAssetModule = constructWorkOrderMultiResourceModule();
-	    modules.add(workOrderMultiAssetModule);
+	    FacilioModule multiResourceModule = constructMultiResourceModule();
+	    modules.add(multiResourceModule);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -33,13 +33,13 @@ public class WorkOrderMultiResourceModule extends SignUpData {
         addModuleChain.execute();
 	}
 	
-	public FacilioModule constructWorkOrderMultiResourceModule() throws Exception{
+	public FacilioModule constructMultiResourceModule() throws Exception{
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean",AccountUtil.getCurrentOrg().getOrgId());
 
-		FacilioModule module = new FacilioModule(FacilioConstants.WorkOrderMultiResource.NAME,
-				FacilioConstants.WorkOrderMultiResource.DISPLAY_NAME,
-				FacilioConstants.WorkOrderMultiResource.TABLE_NAME,
+		FacilioModule module = new FacilioModule(FacilioConstants.MultiResource.NAME,
+				FacilioConstants.MultiResource.DISPLAY_NAME,
+				FacilioConstants.MultiResource.TABLE_NAME,
                 FacilioModule.ModuleType.BASE_ENTITY
                 );
 
@@ -56,11 +56,13 @@ public class WorkOrderMultiResourceModule extends SignUpData {
 		LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);
 		space.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SPACE));
 		
-		fields.add(space);
+		fields.add(space);	
 		
-		LookupField workorderParent = FieldFactory.getDefaultField("parent","Parent Id","PARENT_ID",FieldType.LOOKUP);
-		workorderParent.setLookupModule(bean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		fields.add(workorderParent);	
+		NumberField parentModuleIdField = (NumberField) FieldFactory.getDefaultField("parentModuleId", "Parent_Module_Id", "PARENT_MODULE_ID", FieldType.NUMBER,true);
+        fields.add(parentModuleIdField);
+        
+        NumberField parentRecordIdField = (NumberField) FieldFactory.getDefaultField("parentRecordId", "Parent_Record_Id", "PARENT_RECORD_ID", FieldType.NUMBER);
+        fields.add(parentRecordIdField);
 		
 		fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
 		

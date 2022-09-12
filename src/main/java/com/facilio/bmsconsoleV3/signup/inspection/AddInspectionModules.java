@@ -1118,11 +1118,10 @@ public class AddInspectionModules extends SignUpData {
         module.setCriteriaId(criteriaID);
 
         List<FacilioField> fields = new ArrayList<>();
-        
         NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteField);
         
-        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP,true);
+        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
         parentField.setLookupModule(inspection);
         fields.add(parentField);
         

@@ -1,5 +1,9 @@
 package com.facilio.accounts.dto;
 
+import com.facilio.accounts.bean.RoleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
+
 import java.io.Serializable;
 
 public class OrgUserApp implements Serializable {
@@ -15,7 +19,26 @@ public class OrgUserApp implements Serializable {
 	private long roleId;
 	private long scopingId;
 	private Boolean isDefaultApp;
-	
+	private ApplicationContext application;
+
+	private Role role;
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public ApplicationContext getApplication() {
+		return application;
+	}
+
+	public void setApplication(ApplicationContext application) {
+		this.application = application;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -51,11 +74,11 @@ public class OrgUserApp implements Serializable {
 		this.scopingId = scopingId;
 	}
 
-	public Boolean getDefaultApp() {
+	public Boolean getIsDefaultApp() {
 		return isDefaultApp;
 	}
 
-	public void setDefaultApp(Boolean defaultApp) {
-		isDefaultApp = defaultApp;
+	public void setIsDefaultApp(Boolean isDefaultApp) {
+		this.isDefaultApp = isDefaultApp;
 	}
 }

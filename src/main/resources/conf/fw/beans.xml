@@ -30,4 +30,9 @@
 	<bean name="BundleBean" class="com.facilio.bundle.bean.BundleBeanImpl" />
 
 	<bean name="MailBean" class="com.facilio.mailtracking.bean.MailTrackBeanImpl" />
+
+	<bean name="ScopeBean" class="com.facilio.beans.GlobalScopeBeanCacheImpl"></bean>
+
+	<bean name="ValueGeneratorBean" class="com.facilio.beans.ValueGeneratorCacheBeanImpl"></bean>
+
 </beans>

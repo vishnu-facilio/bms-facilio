@@ -10,6 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -28,10 +29,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PointsDataMissingAlarmJob extends FacilioJob {
 
@@ -44,14 +43,16 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
             AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
             FacilioAgent agent = agentBean.getAgent(jobId);
 
-            long dataMissingPoints = updatePointsDataMissing(jobId, agent);
+            Collection<Long> missingPointsIds = getPointsDataMissing(jobId, agent);
+            long pointsMissingCount = missingPointsIds.size();
 
-            if (dataMissingPoints > 0) {
-                LOGGER.info("Data missing for " + dataMissingPoints + " points in agent " + agent.getName());
-                AgentUtilV2.raisePointAlarm(agent, dataMissingPoints);
+            if (pointsMissingCount > 0) {
+                LOGGER.info("Data missing for " + pointsMissingCount + " commissioned points in agent " + agent.getDisplayName());
+                updatePointsDataMissing(jobId, missingPointsIds);
+                AgentUtilV2.raisePointAlarm(agent, pointsMissingCount);
             }
             else {
-                LOGGER.info("Data arriving for all points in agent " + agent.getName());
+                LOGGER.info("Data arriving for all the commissioned points in agent " + agent.getDisplayName());
                 long activeAlarms = getActiveAlarms(agent);
                 if (activeAlarms > 0) {
                     AgentUtilV2.clearPointAlarm(agent);
@@ -109,16 +110,30 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
 
     }
 
-    private long updatePointsDataMissing(long jobId, FacilioAgent agent) throws SQLException {
+    private Collection<Long> getPointsDataMissing(long jobId, FacilioAgent agent) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .select(FieldFactory.getPointFields())
+                .andCriteria(getPointsDataMissingCriteria(fieldMap, jobId, agent));
+
+        List<Map<String, Object>> rows = select.get();
+
+        return rows.stream().map(row -> (Long) row.get(AgentConstants.ID)).collect(Collectors.toList());
+    }
+
+    private void updatePointsDataMissing(long agentId, Collection<Long> pointIds) throws SQLException {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getPointModule().getTableName())
                 .fields(FieldFactory.getPointFields())
-                .andCriteria(getPointsDataMissingCriteria(fieldMap, jobId, agent));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getIdCondition(pointIds, ModuleFactory.getPointModule()));
         Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.DATA_MISSING, true);
-        return builder.update(toUpdate);
+        builder.update(toUpdate);
     }
 
 }

@@ -14,6 +14,8 @@ public interface DeleteBuilder {
     UpdateBuilder update();
 
     CreateBuilder create();
+    PreCreateBuilder preCreate();
+    PostCreateBuilder postCreate();
 
     ListBuilder list();
 

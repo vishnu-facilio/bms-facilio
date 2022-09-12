@@ -38,6 +38,11 @@ import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
+// creates a job - collects WOs for next 30 mins and create a job for every WOs that has to be executed
+/*
+   Check in Job Table
+   This is 30 mins Job
+ */
 public class ScheduleWOStatusChange extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(ScheduleWOStatusChange.class.getName());
     @Override
@@ -80,15 +85,47 @@ public class ScheduleWOStatusChange extends FacilioJob {
 				}
             }
 
-            updateJobStatus(wos);
-        } catch (Exception e) {
+			handlePMV1Scheduling(workOrderContexts); // This is PM V1 version
+			handlePMV2Scheduling(v3WorkOrderContexts); // TODO(3) This is PM V2 (revamped PM) version: flow should happen into this
+		} catch (Exception e) {
             CommonCommandUtil.emailException("ScheduleWOStatusChange", ""+jc.getJobId(), e);
             LOGGER.error("PM Execution failed: ", e);
             throw e;
         }
     }
 
-    private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
+	private void handlePMV2Scheduling(List<V3WorkOrderContext> v3WorkOrderContexts) throws Exception {
+		// TODO(3a): ensure "N" WorkOrders get into next job queue
+		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
+			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
+				try {
+					// TODO(3b):WOs for next 30 mins is set to Job here.
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
+				} catch (Exception e) { //Delete job entry if any and try again
+					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduleWOV2");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
+				}
+			}
+			updateV3JobStatus(v3WorkOrderContexts);
+		}
+	}
+
+	private void handlePMV1Scheduling(List<WorkOrderContext> workOrderContexts) throws Exception {
+		if (CollectionUtils.isNotEmpty(workOrderContexts)) {
+			modifyWorkflowBasedOnRule(workOrderContexts);
+			for (WorkOrderContext wo : workOrderContexts) {
+				try {
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
+				} catch (Exception e) { //Delete job entry if any and try again
+					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
+				}
+			}
+			updateJobStatus(workOrderContexts);
+		}
+	}
+
+	private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
     	
     	if(wos == null) {
     		return;

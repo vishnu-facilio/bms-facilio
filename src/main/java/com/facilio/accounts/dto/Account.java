@@ -1,15 +1,13 @@
 package com.facilio.accounts.dto;
 
 import java.io.Serializable;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.logging.FacilioLogHandler;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,6 +76,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, ScopingConfigContext> scopingMap;
 	private Map<String, String> valueGenerators;
+	private Map<String, GlobalScopeVariableContext> globalScopeVariableValues;
 
 	private Boolean shouldApplySwitchScope;
 
@@ -720,6 +719,14 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 
 	public void setValueGenerators(Map<String, String> valueGenerators) {
 		this.valueGenerators = valueGenerators;
+	}
+
+	public Map<String, GlobalScopeVariableContext> getGlobalScopeVariableValues() {
+		return globalScopeVariableValues;
+	}
+
+	public void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableContext> globalScopeVariableValues) {
+		this.globalScopeVariableValues = globalScopeVariableValues;
 	}
 }
 

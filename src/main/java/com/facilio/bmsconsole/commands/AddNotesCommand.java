@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -17,10 +18,12 @@ import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.facilio.util.MarkDownUtil;
 
@@ -78,19 +81,19 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 
 				//setting notifyRequester to true if comment is added by portal user .This is done because only then the comments added by one portal user will be visible to others as well.
 				//in the case of community features
-				if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isPortalUser()){
+				//Replacing the NotifyRequester flow with Comment Sharing Public
+				/*if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isPortalUser()){
 					note.setNotifyRequester(true);
 				}
-				if(note.getCommentSharing() != null && note.getCommentSharing().size()>0)
-				{
-					note.setNotifyRequester(true);
-				}
-				
+				*/
+
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
 				info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
 				info.put("notifyRequester", note.getNotifyRequester());
-				isNotifyRequester = note.getNotifyRequester();
+				JSONArray sahringJson=FieldUtil.getAsJSONArray(note.getCommentSharing(), CommentSharingContext.class);
+				info.put("commentSharing",sahringJson);
+				isNotifyRequester = (note.getCommentSharing()!=null && note.getCommentSharing().size() > 0) || note.getNotifyRequester();
 				
 				info.put("addedBy", note.getCreatedBy().getOuid());
 	     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {

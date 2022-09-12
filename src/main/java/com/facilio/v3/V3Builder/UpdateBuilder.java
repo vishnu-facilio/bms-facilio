@@ -14,6 +14,8 @@ public interface UpdateBuilder {
     UpdateBuilder activitySaveCommand(Command... activitySaveCommand);
 
     CreateBuilder create();
+    PreCreateBuilder preCreate();
+    PostCreateBuilder postCreate();
 
     DeleteBuilder delete();
 

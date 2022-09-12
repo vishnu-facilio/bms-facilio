@@ -44,7 +44,7 @@ public class ControlActionCommandContext extends V3Context {
 	ControlScheduleContext schedule;
 	ControlScheduleExceptionContext exception;
 	ControlGroupRoutineContext routine;
-	Long retriedCount;
+	Integer retriedCount;
 	
 	public ControlActionCommandContext() {
 		
@@ -335,8 +335,7 @@ public class ControlActionCommandContext extends V3Context {
 		this.group = group;
 	}
 
-	public Long getRetriedCount() {return retriedCount;}
+	public Integer getRetriedCount() {return retriedCount;}
 
-	public void setRetriedCount(Long retriedCount) {this.retriedCount = retriedCount;}
-
+	public void setRetriedCount(Integer retriedCount) {this.retriedCount = retriedCount;}
 }

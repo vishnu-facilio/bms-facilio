@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -34,7 +35,7 @@ public class GetExportValueField extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int type= (int) context.get(EventConstants.EventContextNames.TYPE);
-		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
+		List<BaseEventContext> events = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		List<Long> fieldIds = (List<Long>) context.get(EventConstants.EventContextNames.FIELD_ID);
 		long parentId = (long) context.get(EventConstants.EventContextNames.PARENT_ID);
 		ModuleBean  modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -103,7 +104,7 @@ public class GetExportValueField extends FacilioCommand {
 		return fieldMap;
 	}
 	
-	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<EventContext> events, Map<Long, Map<String, Object>> readings, long parentId) throws Exception {
+	private Map<String,Object> exportFormatObject (List<FacilioField> fieldList,List<BaseEventContext> events, Map<Long, Map<String, Object>> readings, long parentId) throws Exception {
 		new HashMap<Long, ReadingContext>();
 		List<Object> records = new ArrayList<Object>();
 		List<String> header = new ArrayList<String>();
@@ -125,13 +126,13 @@ public class GetExportValueField extends FacilioCommand {
   				headerFields.put(field.getDisplayName(), field);
   			}
 		}
-		for (EventContext event : events) {
+		for (BaseEventContext event : events) {
 			HashMap<String, Object> hmap = new HashMap<String, Object>();
 		      hmap.put("Event Message", event.getEventMessage());
 		      hmap.put("Event Id", String.valueOf(event.getId()));
 		      hmap.put("Created Time", DateTimeUtil.getFormattedTime(event.getCreatedTime()));
 		      hmap.put("Asset Name", resource.getName());
-		      hmap.put("Severity", event.getSeverity());
+		      hmap.put("Severity", event.getSeverity().getDisplayName());
 		      records.add(hmap);
 		      Map<String, Object> maps = readings.get(event.getCreatedTime());
 		    

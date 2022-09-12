@@ -1,13 +1,12 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -21,6 +20,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ScopeHandlerImpl extends ScopeHandler {
 
@@ -184,6 +184,20 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		Criteria criteria = null;
 
 		for(FacilioModule module : joinModules) {
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+				Pair<List<FacilioField>, Criteria> fieldsAndCriteria = constructScopeVariableCriteria(module);
+				if (fieldsAndCriteria != null) {
+					if (CollectionUtils.isNotEmpty(fieldsAndCriteria.getLeft())) {
+						fields.addAll(fieldsAndCriteria.getLeft());
+					}
+					if(!isInsert) {
+						if (criteria == null) {
+							criteria = new Criteria();
+						}
+						criteria.andCriteria(fieldsAndCriteria.getRight());
+					}
+				}
+			}
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
 			ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
 			if(moduleScoping != null) {
@@ -197,5 +211,19 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			}
 		}
 		return ScopeFieldsAndCriteria.of(fields, criteria);
+	}
+
+	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module) throws Exception {
+		Map<String, GlobalScopeVariableContext> globalScopeVariableList = AccountUtil.getGlobalScopeVariableValues();
+		if(globalScopeVariableList != null && !globalScopeVariableList.isEmpty()){
+			for(Map.Entry<String,GlobalScopeVariableContext> entry : globalScopeVariableList.entrySet()){
+				GlobalScopeVariableContext globalScopeVariable = entry.getValue();
+				if(module != null) {
+					Pair<List<FacilioField>, Criteria> criteriaAndFields = globalScopeVariable.getGlobalScopeVariableCriteriaForModule(module.getName());
+					return criteriaAndFields;
+				}
+			}
+		}
+		return null;
 	}
 }

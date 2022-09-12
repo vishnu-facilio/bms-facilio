@@ -822,7 +822,7 @@ public class AddSurveyModules extends SignUpData {
 		NumberField ruleField = (NumberField) FieldFactory.getDefaultField("ruleId", "Rule Id", "RULE_ID", FieldType.NUMBER);
 		fields.add(ruleField);
 
-        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP,true);
+        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
         parentField.setLookupModule(survey);
         fields.add(parentField);
         

@@ -268,6 +268,7 @@ public class RoleAction extends ActionSupport {
         Command addRole = FacilioChainFactory.getAddWebTabRoleCommmand();
         addRole.execute(context);
         setRoleId(role.getRoleId());
+        addAuditLogs(roleId,"added");
 
         return SUCCESS;
     }
@@ -282,6 +283,8 @@ public class RoleAction extends ActionSupport {
 		updateRole.execute(context);
 
         setRoleId(role.getRoleId());
+        addAuditLogs(roleId,"updated");
+
         return SUCCESS;
 	}
     private void addAuditLogs(long roleId , String action) throws Exception {

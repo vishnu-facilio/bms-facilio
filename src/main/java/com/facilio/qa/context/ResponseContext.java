@@ -39,6 +39,8 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     }
 
     private Integer totalAnswered;
+    
+    private String name;
 
     @JsonIgnore
     private ResponseStatus resStatus;

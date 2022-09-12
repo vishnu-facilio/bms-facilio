@@ -96,25 +96,27 @@ public class IotMessageApiV2 {
             long pendingCount = getPendingCount(iotMessages);
             if(pendingCount == 0){
                 WmsPublishResponse wmsPublishResponse = new WmsPublishResponse();
-                wmsPublishResponse.publish(IotMessageApiV2.getIotData(iotMessage.getParentId()),null);
+                wmsPublishResponse.publish(IotMessageApiV2.getIotData(iotMessage.getParentId(), true),null);
                 // send notification
             }
         }
         //send notification
     }
 
-    private static IotData getIotData(long parentId) throws Exception {
+    public static IotData getIotData(long id, boolean fetchMessages) throws Exception {
         FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(iotDataModule.getTableName())
                 .select(FieldFactory.getIotDataFields())
-                .andCondition(CriteriaAPI.getIdCondition(parentId,iotDataModule));
+                .andCondition(CriteriaAPI.getIdCondition(id,iotDataModule));
         Map<String, Object> map = selectRecordBuilder.fetchFirst();
         IotData iotData = FieldUtil.getAsBeanFromMap(map, IotData.class);
-        IotMessage iotMessage = new IotMessage();
-        iotMessage.setParentId(parentId);
-        List<IotMessage> siblingIotMessages = getSiblingIotMessages(iotMessage);
-        iotData.setMessages(siblingIotMessages);
+        if (fetchMessages) {
+        	IotMessage iotMessage = new IotMessage();
+        	iotMessage.setParentId(id);
+        	List<IotMessage> siblingIotMessages = getSiblingIotMessages(iotMessage);
+        	iotData.setMessages(siblingIotMessages);
+        }
         return iotData;
     }
 
@@ -183,12 +185,19 @@ public class IotMessageApiV2 {
             iotMessage.setParentId(parentId);
             iotMessage.setStatus(Status.MESSAGE_SENT.asInt());
             iotMessage.setSentTime(createdTime);
-            long id = builder.insert(FieldUtil.getAsProperties(iotMessage));
+            builder.addRecord(FieldUtil.getAsProperties(iotMessage));
+        }
+        builder.save();
+        List<Map<String, Object>> records = builder.getRecords();
+        for (int i = 0; i < records.size(); i++) {
+            IotMessage iotMessage = messages.get(i);
+            long id = (long) records.get(i).get(AgentConstants.ID);
             iotMessage.setId(id);
             if (iotMessage.getControlIds() != null) {
             	messageVsControls.put(id, iotMessage.getControlIds());
             }
         }
+
         if (!messageVsControls.isEmpty()) {
         	ControlActionUtil.updateControlMessageId(messageVsControls);
         }
@@ -203,13 +212,14 @@ public class IotMessageApiV2 {
             throw new Exception(" unexpected result, cant have this many records ->"+result + ", id: " + id);
         }
     }
-        private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
-            FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(iotMessageModule.getTableName())
-                    .select(FieldFactory.getIotMessageFields())
-                    .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
-            List<Map<String, Object>> records = builder.get();
+
+    private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(iotMessageModule.getTableName())
+                .select(FieldFactory.getIotMessageFields())
+                .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
+        List<Map<String, Object>> records = builder.get();
         if (records.isEmpty()) {
             return new ArrayList<>();
         } else {
@@ -304,7 +314,7 @@ public class IotMessageApiV2 {
 
     public static void publishToAwsIot(String client, JSONObject object) throws Exception {
         String topic = client+"/msgs";
-        LOGGER.info(FacilioProperties.getIotEndPoint() +" " + client+"-facilio" + " " + topic + " " + object);
+        LOGGER.info(FacilioProperties.getIotEndPoint() +" " + "facilio-"+client + " " + topic + " " + object);
         AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), "facilio-"+client, FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
         try {
             if (AccountUtil.getCurrentOrg().getOrgId() == 486) {

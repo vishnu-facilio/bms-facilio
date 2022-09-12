@@ -10,6 +10,8 @@ public interface SummaryBuilder {
     UpdateBuilder update();
 
     CreateBuilder create();
+    PreCreateBuilder preCreate();
+    PostCreateBuilder postCreate();
 
     DeleteBuilder delete();
 

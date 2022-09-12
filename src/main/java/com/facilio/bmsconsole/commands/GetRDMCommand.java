@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -122,10 +123,18 @@ public class GetRDMCommand extends FacilioCommand {
 			List<ReadingDataMeta> readingMetaList = ReadingsAPI.getReadingDataFromProps(props, null);
 			
 			if(readingMetaList != null) {
-				for(ReadingDataMeta readingMeta :readingMetaList) {
+				Iterator<ReadingDataMeta> iterator = readingMetaList.iterator();
+				while(iterator.hasNext()) {
+					ReadingDataMeta readingMeta = iterator.next();
+					// TODO needs to get asset as a list
 					AssetContext asset = AssetsAPI.getAssetInfo(readingMeta.getResourceId());
-					asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
-					readingMeta.setResourceContext(asset);
+					if (asset != null) { // Asset might have been deleted
+						asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
+						readingMeta.setResourceContext(asset);
+					}
+					else {
+						iterator.remove();
+					}
 				}
 			}
 			

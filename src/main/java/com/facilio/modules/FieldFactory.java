@@ -10379,6 +10379,7 @@ public class FieldFactory extends BaseFieldFactory {
 		 fields.add(getField("label", "LABEL", module, FieldType.STRING));
 		 fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
 		 fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+         fields.add(getField("widget_id", "WIDGET_ID", module, FieldType.NUMBER));
 		 
 		 
 		 
@@ -10938,6 +10939,39 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("span", "SPAN", module, FieldType.NUMBER));
         fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
+        return fields;
+    }
+    public static List<FacilioField> getValueGeneratorFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getValueGeneratorModule();
+        fields.add(getIdField(module));
+        fields.add(getField("specialModuleName", "SPECIAL_MODULE_NAME", module, FieldType.STRING));
+        fields.add(getModuleIdField(module));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("isConstant", "IS_CONSTANT", module, FieldType.BOOLEAN));
+        fields.add(getField("isHidden", "IS_HIDDEN", module, FieldType.BOOLEAN));
+        fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
+        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getGlobalScopeVariableFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getGlobalScopeVariableModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("applicableModuleName", "APPLICABLE_MODULE_NAME", module, FieldType.STRING));
+        fields.add(getField("applicableModuleId", "APPLICABLE_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("valueGeneratorId", "VALUE_GENERATOR_ID", module, FieldType.NUMBER));
+        fields.add(getField("showSwitch", "SHOW_SWITCH", module, FieldType.BOOLEAN));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysModifiedBy", module));
 
         return fields;
     }
@@ -10953,7 +10987,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("widgetGroupId", "GROUP_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+        return fields;
+    }
 
+    public static List<FacilioField> getGlobalScopeVariableModulesFieldsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getGlobalScopeVariableModulesFieldsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getModuleIdField(module));
+        fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+        fields.add(getField("scopeVariableId", "SCOPE_VARIABLE_ID", module, FieldType.NUMBER));
         return fields;
     }
 

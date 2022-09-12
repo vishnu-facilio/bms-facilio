@@ -617,6 +617,7 @@ public class IoTMessageAPI {
 				point.setValue(command.getConvertedValue() != null ? command.getConvertedValue() : command.getValue());
 			}
 			point.setControlActionId(command.getId());
+			point.setCommandRetryCount(command.getRetriedCount());
 			if (command.getActionName() != null) {
 				point.setActionName(command.getActionName());
 			}

@@ -177,12 +177,11 @@ public class GetPointRequest {
 
     public List<Map<String, Object>> getPointsData() throws Exception {
     	GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(POINT_MODULE.getTableName());
-		if (fetchCount) {
-			selectRecordBuilder.select(new ArrayList<>())
-	    		.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, POINT_MAP.get(AgentConstants.ID));
-		}
-		else if (controllerType != null) {
+		if (controllerType != null) {
 			joinExtendedTable(selectRecordBuilder);
+		}
+		else if (fetchCount) {
+			setCountAggregate(selectRecordBuilder);
 		}
 		else {
 			selectRecordBuilder.select(new ArrayList<>(POINT_FIELDS));
@@ -271,13 +270,22 @@ public class GetPointRequest {
 		return this;
 	}
 
-    private GenericSelectRecordBuilder joinExtendedTable(GenericSelectRecordBuilder builder) throws Exception {
+    private void joinExtendedTable(GenericSelectRecordBuilder builder) throws Exception {
         
 		FacilioModule extendedModule = PointsAPI.getPointModule(controllerType);
-        builder.select(PointsAPI.getChildPointFields(controllerType))
-        	.innerJoin(extendedModule.getTableName())
+        builder.innerJoin(extendedModule.getTableName())
         	.on(AgentConstants.POINTS_TABLE + ".ID=" + extendedModule.getTableName() + ".ID");
-        return builder;
+        if (!fetchCount) {
+        	builder.select(PointsAPI.getChildPointFields(controllerType));
+        }
+        else {
+        	setCountAggregate(builder);
+        }
+    }
+    
+    private void setCountAggregate(GenericSelectRecordBuilder builder) throws Exception {
+    	builder.select(new ArrayList<>())
+    			.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, POINT_MAP.get(AgentConstants.ID));
     }
 
     public GetPointRequest pagination(FacilioContext context){

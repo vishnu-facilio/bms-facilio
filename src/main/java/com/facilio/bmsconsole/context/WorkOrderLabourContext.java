@@ -1,68 +1,20 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsoleV3.context.CraftContext;
+import com.facilio.bmsconsoleV3.context.SkillsContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter@Setter
 public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private double cost = -1;
-
-	public double getCost() {
-		return cost;
-	}
-
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
-
 	private long startTime = -1;
-
-	public long getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-
 	private long endTime = -1;
-
-	public long getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(long endTime) {
-		this.endTime = endTime;
-	}
-
 	private double duration = 0;
-
-	public void setDuration(double duration) {
-		this.duration = duration;
-	}
-
-	public double getDuration() {
-		return duration;
-	}
-	
 	private long parentId = -1;
-	
-	public long getParentId() {
-		return parentId;
-	}
-
-	public void setParentId(long parentId) {
-		this.parentId = parentId;
-	}
-
-	public LabourContext getLabour() {
-		return labour;
-	}
-
-	public void setLabour(LabourContext labour) {
-		this.labour = labour;
-	}
-
 	private LabourContext labour ;
 
 	public void calculate() {
@@ -80,13 +32,8 @@ public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 	}
 
 	private WorkOrderContext parent;
-	public WorkOrderContext getParent() {
-		return parent;
-	}
+	private CraftContext craft;
+	private SkillsContext skill;
+	private Integer type;
 
-	public void setParent(WorkOrderContext parent) {
-		this.parent = parent;
-	}
-	
-	
 }

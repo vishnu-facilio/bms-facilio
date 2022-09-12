@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import com.facilio.accounts.bean.*;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -506,8 +507,8 @@ public class AccountUtil {
 		PLANNED_INVENTORY(80, 65536, LicenseMapping.GROUP2LICENSE),
 		PM_PLANNER(81, 131072, new String[]{ContextNames.PLANNEDMAINTENANCE} , LicenseMapping.GROUP2LICENSE),
 		RESOURCES(82,262144,LicenseMapping.GROUP2LICENSE), //2^18
-		NEW_TAB_PERMISSIONS(83,524288,LicenseMapping.GROUP2LICENSE)
-		;
+		NEW_TAB_PERMISSIONS(83,524288,LicenseMapping.GROUP2LICENSE),
+		SCOPE_VARIABLE(83,1048576,LicenseMapping.GROUP2LICENSE);
 		public int featureId;
 		private long license;
 		private String[] modules;
@@ -690,6 +691,20 @@ public class AccountUtil {
 			return currentAccount.get().getShouldApplySwitchScope();
 		}
 		return true;
+	}
+
+	public static Map<String, GlobalScopeVariableContext> getGlobalScopeVariableValues() {
+		Account account = getCurrentAccount();
+		if(account != null) {
+			return account.getGlobalScopeVariableValues();
+		}
+		return null;
+	}
+
+	public static void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableContext> globalScopeVariableValues) {
+		if(getCurrentAccount() != null) {
+			getCurrentAccount().setGlobalScopeVariableValues(globalScopeVariableValues);
+		}
 	}
 
 	public static Boolean applyDBScoping(FacilioModule module) {

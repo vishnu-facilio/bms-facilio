@@ -3,8 +3,11 @@ package com.facilio.fw.cache;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.collections.UniqueMap;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -32,6 +35,7 @@ public class LRUCache {
 	private static FacilioCache<String, Map<String, Map<String, Object>>> globalVariable = new PubSubLRUCache<>("globalVariable", 2000);
 	private static FacilioCache<String, Boolean> proxyUsersPS = new PubSubLRUCache<>("proxyUsers", 1000);
 	private static FacilioCache<String, Object> agentCache = new PubSubLRUCache<>("agentCache", 1000);
+	private static FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = new PubSubLRUCache<>("globalScopeVariableCache", 2000);
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
@@ -86,4 +90,8 @@ public class LRUCache {
 	}
 
 	public static FacilioCache<String, Object> getAgentCache() {return agentCache;}
+
+	public static FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> getGlobalScopeVariableCache() {
+		return globalScopeVariableCache;
+	}
 }

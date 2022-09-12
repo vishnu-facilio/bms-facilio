@@ -1,6 +1,5 @@
 package com.facilio.constants;
 
-import com.facilio.accounts.dto.Group;
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
@@ -256,8 +255,9 @@ public class FacilioConstants {
 		public static final String SIGNATURE_FILE_ID = "signatureFileId";
 		public static final String SIGNATURE = "signature";
 		public static final String SIGNATURE_DELETE = "signatureDelete";
-		
 
+
+		public static final String MY_APPS = "myApps";
 		public static final String APPLICATION = "application";
 		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";
@@ -2133,6 +2133,10 @@ public class FacilioConstants {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
 		}
 
+		public static class WorkOrderLabourPlan {
+			public static final String WORKORDER_LABOUR_PLAN = "workorderLabourPlan";
+		}
+
 		public static final String VALUE_GENERATORS = "valueGenerators";
 		public static final String RCA_RULE_IDS = "rca_rule_ids";
 		public static final String CALL_FROM_STORM = "req_from_storm_service";
@@ -2306,6 +2310,8 @@ public class FacilioConstants {
 		public static final String BILL_TARIFF = "custom_tariffinfo";
 		public static final String BILL_UTILITY = "custom_utilityaccounts_1";
 		//
+
+		public static final String SCOPE_VARIABLE = "scopeVariable";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
@@ -2989,10 +2995,10 @@ public class FacilioConstants {
 		public static final String TABLE_NAME = "Workorders";
 	}
 	
-	public static class WorkOrderMultiResource {
-		public static final String DISPLAY_NAME = "WorkOrder Multi Resource";
-		public static final String NAME = "workorderMultiResource";
-		public static final String TABLE_NAME = "WorkOrder_Multi_Resource";
+	public static class MultiResource {
+		public static final String DISPLAY_NAME = "Multi Resource";
+		public static final String NAME = "multiResource";
+		public static final String TABLE_NAME = "Multi_Resource";
 	}
 
 	public static class WorkOrderRquest {

@@ -60,11 +60,12 @@ public enum DashboardRuleActionType {
                 }
 
                 DashboardWidgetContext widget  = DashboardUtil.getWidget(target_widget_id);
-                if(target_widget.getWidgetType() == DashboardWidgetContext.WidgetType.FILTER)
+                DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
+                if(widgetType != null && widgetType == DashboardWidgetContext.WidgetType.FILTER)
                 {
-                    setResult(result_json, target_widget.getWidgetType(), target_widget_id, target_widget_criteria, timeline_filter,user_filter, placeHolders, timeline_widget_field_map);
+                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, timeline_filter,user_filter, placeHolders, timeline_widget_field_map);
                 }
-                else if(widget != null && widget.getWidgetType() == DashboardWidgetContext.WidgetType.CHART)
+                else if(widget != null && widgetType == DashboardWidgetContext.WidgetType.CHART)
                 {
                     WidgetChartContext chart_Widget = (WidgetChartContext) widget;
                     if(chart_Widget.getNewReportId() != null && chart_Widget.getNewReportId() > 0)
@@ -103,7 +104,7 @@ public enum DashboardRuleActionType {
                         }
                         else
                         {
-                            setResult(result_json, widget.getWidgetType(), target_widget_id, target_widget_criteria, timeline_filter, user_filter, placeHolders, timeline_widget_field_map);
+                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, timeline_filter, user_filter, placeHolders, timeline_widget_field_map);
                         }
                     }
                 }
@@ -116,18 +117,21 @@ public enum DashboardRuleActionType {
         private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria , JSONObject timeline_filter, JSONObject user_filter , JSONObject placeHolders, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
         {
             result_json.put("widgetType" , widgetType);
-            result_json.put("actionType" , "filter");
             result_json.put("widget_id", target_widget_id);
             JSONObject actionData = new JSONObject();
             JSONObject temp = new JSONObject();
             temp.put("criteria", criteria);
             actionData.put("FILTER", temp);
-            if(timeline_filter != null && timeline_widget_field_map.containsKey(target_widget_id))
+            if(timeline_filter != null && timeline_widget_field_map != null && timeline_widget_field_map.containsKey(target_widget_id))
             {
                 actionData.put("TIMELINE_FILTER", timeline_filter.get("TIMELINE_FILTER"));
             }
-            if(user_filter != null && user_filter.containsKey(target_widget_id)){
-                actionData.put("USER_FILTER", user_filter.get(target_widget_id));
+            if(user_filter != null && user_filter.containsKey(target_widget_id))
+            {
+               JSONObject user_filter_result = V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) user_filter.get(target_widget_id));
+               if(user_filter_result != null && !user_filter_result.isEmpty()) {
+                   actionData.put("USER_FILTER", user_filter_result);
+               }
             }
             result_json.put("actionData" , actionData);
         }
@@ -144,7 +148,9 @@ public enum DashboardRuleActionType {
                     JSONObject result_json = new JSONObject();
                     String url = (String) action_details.get("url");
                     String replaced_url = FormRuleAPI.replacePlaceHoldersAndGetResult(placeholder_json, url);
-                    result_json.put("actionType", DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).getName());
+                    DashboardWidgetContext widget  = DashboardUtil.getWidget(trigger_widget_id);
+                    DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
+                    result_json.put("widgetType", widgetType);
                     result_json.put("widget_id", trigger_widget_id);
                     JSONObject actionMeta = new JSONObject();
                     JSONObject url_action = new JSONObject();

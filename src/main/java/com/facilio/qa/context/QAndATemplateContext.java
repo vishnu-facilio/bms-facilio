@@ -59,6 +59,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
 
     public R constructResponse() {
         R response = newResponseObject();
+		response.setName(name);
         response.setQAndAType(this.qAndAType);
         response.setParent(this);
         response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
@@ -71,7 +72,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     	List<R> responses = newResponseObjects(resources);
     	if(responses != null) {
     		for(R response : responses) {
-        		
+        		response.setName(name);
         		response.setQAndAType(this.qAndAType);
                 response.setParent(this);
                 response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);

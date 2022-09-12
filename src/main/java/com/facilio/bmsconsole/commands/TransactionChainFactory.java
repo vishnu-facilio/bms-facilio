@@ -4190,14 +4190,21 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-
 		public static FacilioChain getExecuteControlActionCommandChain() {
+			return getExecuteControlActionCommandChain(true);
+		}
+
+		public static FacilioChain getExecuteControlActionCommandChain(boolean addAction) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FillRDMForControlActionCommand());
 			c.addCommand(new FillDefaultValuesForControlActionCommand());
-			c.addCommand(new AddControlActionCommand());
+			if (addAction) {
+				c.addCommand(new AddControlActionCommand());
+			}
 			c.addCommand(new PublishIOTMessageControlActionCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			if (addAction) {
+				c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			}
 			return c;
 		}
 
