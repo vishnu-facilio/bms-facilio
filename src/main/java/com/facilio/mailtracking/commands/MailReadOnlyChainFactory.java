@@ -14,4 +14,15 @@ public class MailReadOnlyChainFactory {
         return c;
     }
 
+    public static FacilioChain runHistoricChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RunHistoricalMailCommand());
+        return c;
+    }
+
+    public static FacilioChain pushToMailTemp() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PushOutgoingMailToQueueCommand());
+        return c;
+    }
 }

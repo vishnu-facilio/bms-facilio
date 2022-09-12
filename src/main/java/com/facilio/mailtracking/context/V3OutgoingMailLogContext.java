@@ -3,8 +3,6 @@ package com.facilio.mailtracking.context;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 public class V3OutgoingMailLogContext extends BaseMailMessageContext {
     private static final long serialVersionUID = 1L;

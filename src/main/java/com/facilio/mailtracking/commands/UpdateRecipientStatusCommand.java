@@ -17,7 +17,10 @@ public class UpdateRecipientStatusCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
-        if(mailLogContext.getOriginalTo() == null) { // skipping update status since TO address is empty
+        if(mailLogContext == null) {
+            return false;
+        }
+        if(mailLogContext.getTo() == null) { // skipping update status since TO address is empty
             return false;
         }
         Long loggerId = FacilioUtil.parseLong(context.get(MailConstants.Params.LOGGER_ID));
