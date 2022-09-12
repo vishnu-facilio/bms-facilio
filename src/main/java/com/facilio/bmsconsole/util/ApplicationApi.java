@@ -2700,4 +2700,35 @@ public class ApplicationApi {
         }
         return portalApplications;
     }
+
+    public static List<OrgUserApp> getApplicationListForUser(long ouId, AppDomain appDomainObj) throws Exception {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.addAll(AccountConstants.getOrgUserAppsFields());
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table("ORG_User_Apps")
+                .innerJoin(ModuleFactory.getApplicationModule().getTableName())
+                .on("ORG_User_Apps.APPLICATION_ID = Application.ID")
+                .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "ouid", String.valueOf(ouId),
+                        NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Application.DOMAIN_TYPE", "domainType",
+                        String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS));
+        ;
+
+        selectBuilder.orderBy("ID asc");
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            List<OrgUserApp> appsList = FieldUtil.getAsBeanListFromMapList(props, OrgUserApp.class);
+            for (OrgUserApp app : appsList) {
+                app.setApplication(ApplicationApi.getApplicationForId(app.getApplicationId()));
+                app.setRole(AccountUtil.getRoleBean().getRole(app.getRoleId()));
+            }
+            return appsList;
+        }
+        return null;
+
+    }
+
 }

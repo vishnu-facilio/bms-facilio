@@ -2032,6 +2032,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getListMyAppsForUser() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ListMyAppsForUserCommandV3());
+        return c;
+    }
+
     public static FacilioChain setDefaultAppForUser() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetDefaultAppForUserCommandV3());
