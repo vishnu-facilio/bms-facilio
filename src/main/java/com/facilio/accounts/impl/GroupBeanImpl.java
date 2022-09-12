@@ -420,11 +420,15 @@ public class GroupBeanImpl implements GroupBean {
 
 		if (CollectionUtils.isNotEmpty(filteredSiteId) ) {
 			filteredSiteId.retainAll(siteIds);
-			if(CollectionUtils.isEmpty(filteredSiteId))
+			if(CollectionUtils.isEmpty(filteredSiteId)) {
 				return null;
+			}
 			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(filteredSiteId, ',') + "))";
 		}
 		else{
+			if (CollectionUtils.isEmpty(siteIds)){
+				return null;
+			}
 			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
 		}
 
