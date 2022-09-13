@@ -10818,6 +10818,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("space2", "SPACE_ID2", module, FieldType.NUMBER));
         fields.add(getField("space3", "SPACE_ID3", module, FieldType.NUMBER));
         fields.add(getField("space4", "SPACE_ID4", module, FieldType.NUMBER));
+        fields.add(getField("space5", "SPACE_ID5", module, FieldType.NUMBER));
         fields.add(getDeletedTimeField(module));
         return fields;
     }

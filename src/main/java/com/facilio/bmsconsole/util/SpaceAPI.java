@@ -286,6 +286,11 @@ public class SpaceAPI {
 					spaceContext.setSpaceId3(parentSpace.getSpaceId3());
 					if(parentSpace.getSpaceId4() != -1) {
 						spaceContext.setSpaceId4(parentSpace.getSpaceId4());
+						if (parentSpace.getSpaceId5() != -1) {
+							spaceContext.setSpaceId5(parentSpace.getSpaceId5());
+						}else {
+							spaceContext.setSpaceId5(parentSpace.getId());
+						}
 					}else {
 						spaceContext.setSpaceId4(parentSpace.getId());
 					}
@@ -525,7 +530,9 @@ public class SpaceAPI {
 		if(space.getSpaceId4() > 0){
 			space.setSpace4(getSpace(space.getSpaceId4()));
 		}
-
+		if(space.getSpaceId5() > 0){
+			space.setSpace5(getSpace(space.getSpaceId5()));
+		}
 		return space;
 	}
 	
@@ -1413,6 +1420,7 @@ public static long getSitesCount() throws Exception {
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID2", "SPACE_ID2", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID3", "SPACE_ID3", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID4", "SPACE_ID4", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID5", "SPACE_ID5", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
 
 				Criteria criteria = new Criteria();
 				criteria.groupOrConditions(conditions);
@@ -1827,7 +1835,8 @@ public static long getSitesCount() throws Exception {
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID2", "SPACE_ID2", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID3", "SPACE_ID3", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
 				conditions.add(CriteriaAPI.getCondition("SPACE_ID4", "SPACE_ID4", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
-				
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID5", "SPACE_ID5", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));
+
 				Criteria criteria = new Criteria();
 				criteria.groupOrConditions(conditions);
 				newSelectBuilder.andCriteria(criteria);
@@ -2033,7 +2042,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.module(module)
 				.beanClass(SpaceContext.class)
 				.select(fields);
-		List<String> propFields =  Arrays.asList("site","building","floor", "space1", "space2", "space3", "space4");
+		List<String> propFields =  Arrays.asList("site","building","floor", "space1", "space2", "space3", "space4","space5");
 		for (String propField: propFields) {
 			if (props.containsKey(propField)) {
 				HashMap<String, Object> value = (HashMap<String, Object>) props.get(propField);
@@ -2086,6 +2095,9 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		if(space.getSpaceId4() > 0){
 			parentIds.add(space.getSpaceId4());
 		}
+		if(space.getSpaceId5() > 0){
+			parentIds.add(space.getSpaceId5());
+		}
 	}
 	public static void v3UpdateSiteAndBuildingId(V3SpaceContext space) throws Exception {
 		boolean parentAvailable = false;
@@ -2108,7 +2120,15 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			space._setSiteId(spaces.getSiteId());
 			space.setBuilding(spaces.getBuilding());
 			space.setFloorId(spaces.getFloorId());
-			if (spaces.getSpaceId3() != null && spaces.getSpaceId3() > 0) {
+
+			if (spaces.getSpace4() != null && spaces.getSpaceId4() > 0) {
+				space.setSpaceId5(spaceId);
+				space.setSpaceId4(spaces.getSpaceId4());
+				space.setSpaceId3(spaces.getSpaceId3());
+				space.setSpaceId2(spaces.getSpaceId2());
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else if (spaces.getSpaceId3() != null && spaces.getSpaceId3() > 0) {
 				space.setSpaceId4(spaceId);
 				space.setSpaceId3(spaces.getSpaceId3());
 				space.setSpaceId2(spaces.getSpaceId2());

@@ -229,6 +229,17 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
                 spaceIds.add(assetLocation.getSpaceId4());
             }
         }
+        if (assetLocation.getSpaceId5() != null && assetLocation.getSpaceId5() > 0){
+            if (assetLocation.getSpaceId5() == assetLocation.getId()) {
+                V3SpaceContext space = new V3SpaceContext();
+                space.setId(assetLocation.getSpaceId5());
+                space.setName(assetLocation.getName());
+                assetLocation.setSpace5(space);
+            }
+            else {
+                spaceIds.add(assetLocation.getSpaceId5());
+            }
+        }
         if (CollectionUtils.isNotEmpty(spaceIds)) {
             Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
             if (spaceMap.containsKey(assetLocation.getSiteId())) {
@@ -278,6 +289,12 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
                 space.setId(assetLocation.getSpaceId4());
                 space.setName(spaceMap.get(assetLocation.getSpaceId4()).getName());
                 assetLocation.setSpace4(space);
+            }
+            if (spaceMap.containsKey(assetLocation.getSpaceId5())) {
+                V3SpaceContext space = new V3SpaceContext();
+                space.setId(assetLocation.getSpaceId5());
+                space.setName(spaceMap.get(assetLocation.getSpaceId5()).getName());
+                assetLocation.setSpace5(space);
             }
         }
         if(asset.getCurrentLocation() == null && currentLocation != null) {

@@ -291,7 +291,31 @@ public class BaseSpaceContext extends ResourceContext {
 		this.space4 = space4;
 		this.spaceId4 = space4 != null ? space4.getId() : -1;
 	}
-	
+
+	private SpaceContext space5;
+
+	public SpaceContext getSpace5(){return space5;}
+	public void setSpace5(SpaceContext space5) {
+		this.space5 = space5;
+		this.spaceId5 = space5 != null ? space5.getId() : -1;
+	}
+
+	private long spaceId5 = -1;
+	public long getSpaceId5(){
+		return spaceId5;
+	}
+	public void setSpaceId5(long spaceId5){
+		this.spaceId5 = spaceId5;
+
+		if (spaceId5 > -1) {
+			if (space5 == null) {
+				space5 = new SpaceContext();
+			}
+			space5.setId(spaceId5);
+		}else {
+			space5 = null;
+		}
+	}
 
 	@Override
 	public ResourceType getResourceTypeEnum() {

@@ -101,6 +101,12 @@ public class GetSpaceCommand extends FacilioCommand {
 					SpaceContext childSpaces1 = SpaceAPI.getSpace(tempSpace4.getId());
 					space.setSpace4(childSpaces1);
 				}
+				long spaceI5 = space.getSpaceId5();
+				if (spaceI5 > 0) {
+					SpaceContext childSpaces5 = SpaceAPI.getSpace(spaceI5);
+					space.setSpace5(childSpaces5);
+				}
+
 				LocationContext location = space.getLocation();
 				if(location != null) {
 					 Map<Long, LocationContext> locationMap = LocationAPI.getLocationMap(Collections.singletonList(location.getId()));

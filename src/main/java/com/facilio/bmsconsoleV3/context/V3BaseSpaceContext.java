@@ -282,7 +282,32 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		this.space4 = space4;
 		this.spaceId4 = space4 != null ? space4.getId() : -1;
 	}
-	
+
+	private V3SpaceContext space5;
+
+	public V3SpaceContext getSpace5(){return space5;}
+	public void setSpace5(V3SpaceContext space5) {
+		this.space5 = space5;
+		this.spaceId5 = space5 != null ? space5.getId() : -1;
+	}
+
+	private Long spaceId5;
+	public Long getSpaceId5(){
+		return spaceId5;
+	}
+	public void setSpaceId5(Long spaceId5){
+		this.spaceId5 = spaceId5;
+
+		if (spaceId5 > -1) {
+			if (space5 == null) {
+				space5 = new V3SpaceContext();
+			}
+			space5.setId(spaceId5);
+		}else {
+			space5 = null;
+		}
+	}
+
 
 	@Override
 	public ResourceType getResourceTypeEnum() {
