@@ -130,6 +130,8 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
             }
         }
 
+        Double unitPrice = service.getBuyingPrice();
+        woService.setUnitPrice(unitPrice);
         woService.setParentId(parentId);
         woService.setQuantity(workorderService.getQuantity());
         if(workorderService.getQuantity()==null || workorderService.getQuantity() <= 0) {

@@ -1716,7 +1716,7 @@ public class APIv3Config {
 
     @Module("workorderItem")
     public static Supplier<V3Config> getWorkOrderItems() {
-        return () -> new V3Config(V3WorkorderItemContext.class, null)
+        return () -> new V3Config(V3WorkorderItemContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new SetWorkOrderItemsCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderItemsChainV3())
@@ -1731,7 +1731,7 @@ public class APIv3Config {
 
     @Module("workorderTools")
     public static Supplier<V3Config> getWorkOrderTools() {
-        return () -> new V3Config(V3WorkorderToolsContext.class, null)
+        return () -> new V3Config(V3WorkorderToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new SetWorkOrderToolsCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderToolsChainV3())
@@ -1746,7 +1746,7 @@ public class APIv3Config {
 
     @Module("workorderService")
     public static Supplier<V3Config> getWorkOrderServices() {
-        return () -> new V3Config(V3WorkOrderServiceContext.class, null)
+        return () -> new V3Config(V3WorkOrderServiceContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new SetWorkOrderServicesCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())

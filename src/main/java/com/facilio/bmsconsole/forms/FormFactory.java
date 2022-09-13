@@ -2465,9 +2465,6 @@ public class FormFactory {
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 2));
 		fields.add(new FormField("reservationType", FieldDisplayType.SELECTBOX, "Reservation Type", Required.REQUIRED, 3, 3));
 		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.REQUIRED, 4, 2));
-		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 5, 3);
-		totalCost.setIsDisabled(true);
-		fields.add(totalCost);
 		return fields;
 	}
 	private static List<FormField> getPlannedToolsFormFields() {

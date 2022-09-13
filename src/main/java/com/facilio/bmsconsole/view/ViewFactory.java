@@ -4318,8 +4318,8 @@ public class ViewFactory {
 		FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
 
 		FacilioView detailsView = new FacilioView();
-		detailsView.setName("all");
-		detailsView.setDisplayName("All Work Order Items");
+		detailsView.setName("details");
+		detailsView.setDisplayName("Work Order Items Details");
 		detailsView.setModuleName(workOrderItemsModule.getName());
 
 		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
@@ -4345,8 +4345,8 @@ public class ViewFactory {
 		FacilioModule workOrderToolsModule = ModuleFactory.getWorkOrderToolsModule();
 
 		FacilioView detailsView = new FacilioView();
-		detailsView.setName("all");
-		detailsView.setDisplayName("All Work Order Tools");
+		detailsView.setName("details");
+		detailsView.setDisplayName("Work Order Tools Details");
 		detailsView.setModuleName(workOrderToolsModule.getName());
 
 		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
@@ -4372,8 +4372,8 @@ public class ViewFactory {
 		FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
 
 		FacilioView detailsView = new FacilioView();
-		detailsView.setName("all");
-		detailsView.setDisplayName("All Work Order Service");
+		detailsView.setName("details");
+		detailsView.setDisplayName("Work Order Service Details");
 		detailsView.setModuleName(workOrderServiceModule.getName());
 
 		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
