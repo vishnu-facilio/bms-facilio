@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -95,6 +96,7 @@ public class FacilioProperties {
     private static List<String> stageDomains;
 
     private static String wmsBroadcaster;
+    private static boolean wmsConsumerEnabled;
 
     private static String emailClient;
     private static String fileStore;
@@ -324,6 +326,7 @@ public class FacilioProperties {
             esIndex = PROPERTIES.getProperty("es.index");
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
+            wmsConsumerEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("wms.enableConsumer", "true"));
 
             proxyUrl = PROPERTIES.getProperty("proxyUrl");
             portalProxyUserUrl = PROPERTIES.getProperty("portalProxyUrl");
@@ -369,6 +372,10 @@ public class FacilioProperties {
     }
     public static String getLocalFileStorePath() {
         return localFileStorePath;
+    }
+
+    public static boolean isWMSConsumerEnable() {
+        return wmsConsumerEnabled;
     }
 
     public static Long getMessageReprocessInterval() {
