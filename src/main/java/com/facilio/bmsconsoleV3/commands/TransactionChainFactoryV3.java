@@ -417,6 +417,10 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkOrderBeforeSavePreCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalModuleIdCommand());
+        c.addCommand(new SetWorkOrderSourceType());
+        c.addCommand(new ValidateWorkOrderFieldsPreCreateChainCommandV3());
+        c.addCommand(new AddFailureClassFromResource());
+        // Attachment Command has to be added after its fixes are done
         return c;
     }
 
