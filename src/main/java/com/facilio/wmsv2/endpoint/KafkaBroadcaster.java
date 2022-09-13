@@ -72,6 +72,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         props.put("enable.auto.commit", "false");
         props.put("session.timeout.ms", "300000");
         props.put("auto.offset.reset", "latest");
+        props.put("max.poll.records", 50);
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
 
