@@ -409,7 +409,6 @@ public class TransactionChainFactory {
 			chain.addCommand(new AddActivitiesCommand());
 			return chain;
 		}
-
 		public static FacilioChain getAddNewTasksChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());

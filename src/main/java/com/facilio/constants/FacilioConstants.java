@@ -630,6 +630,7 @@ public class FacilioConstants {
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";
 
+		public static final String IMPORT_ID = "importId";
 		public static final String PUBLIC_FILE = "publicFile";
 		public static final String PUBLIC_FILE_URL = "publicFileUrl";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
@@ -1074,6 +1075,10 @@ public class FacilioConstants {
 		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
 		public static final String REQUEST_EMAIL_ID = "requestEmailId";
 		public static final String EMAIL_SETTING = "emailSetting";
+
+		public static final String IMPORT_DATA_DETAILS = "importDataDetails";
+
+		public static final String IMPORT_FILE_DETAILS = "importFileDetails";
 
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";
