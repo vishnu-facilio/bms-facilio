@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -189,6 +190,12 @@ public class TaskAction extends FacilioAction {
 		setTaskId(task.getId());
 		setResult(FacilioConstants.ContextNames.TASK, task.getId());
 		setTaskActionExecuted(context);
+			sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Task with id #{%d} of Work Order with id #{%d} has been Added",task.getId(),task.getParentTicketId()),
+					null,
+					AuditLogHandler.RecordType.MODULE,
+					"Task", task.getId())
+					.setActionType(AuditLogHandler.ActionType.ADD)
+			);
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
@@ -826,6 +833,12 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK, task);
 		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, task.getModifiedTime());
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Task with id #{%d} of Work Order with id #{%d} has been Updated",task.getId(),task.getParentTicketId()),
+				null,
+				AuditLogHandler.RecordType.MODULE,
+				"Task", task.getId())
+				.setActionType(AuditLogHandler.ActionType.UPDATE)
+		);
 		return SUCCESS;
 	}
 	

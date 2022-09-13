@@ -1572,6 +1572,15 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioChain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
 		deleteWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		for(long workOrderId : id){
+			sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Work Order with id #{%d} has been Deleted",workOrderId),
+					null,
+					AuditLogHandler.RecordType.MODULE,
+					"WorkOrder", workOrderId)
+					.setActionType(AuditLogHandler.ActionType.DELETE)
+			);
+		}
+
 		return SUCCESS;
 	}
 
