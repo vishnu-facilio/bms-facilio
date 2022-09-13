@@ -432,11 +432,13 @@ public class GroupBeanImpl implements GroupBean {
 			filteredSiteId.retainAll(siteIds);
 			if (CollectionUtils.isNotEmpty(filteredSiteId)) {
 				siteCriteria = new Criteria();
-				siteCriteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(filteredSiteId, ","), NumberOperators.EQUALS));
+				siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", "NULL", CommonOperators.IS_EMPTY));
+				siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(filteredSiteId, ","), NumberOperators.EQUALS));
 			}
 		} else if (CollectionUtils.isNotEmpty(siteIds)) {
 			siteCriteria = new Criteria();
-			siteCriteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(siteIds, ","), NumberOperators.EQUALS));
+			siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", "NULL", CommonOperators.IS_EMPTY));
+			siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(siteIds, ","), NumberOperators.EQUALS));
 		}
 
 		if (siteCriteria != null) {
