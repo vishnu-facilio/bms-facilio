@@ -20,6 +20,7 @@ import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -96,11 +97,11 @@ public class OpenScheduleWOV2 extends FacilioJob {
 
             List<UpdateChangeSet> changeSetList = currentChangeSet.get(wo.getId());
             JSONObject addWO = new JSONObject();
-            List<Object> wolist = new ArrayList<Object>();
+            JSONArray wolist = new JSONArray();
 
             JSONObject newinfo = new JSONObject();
             newinfo.put("pmidV2", wo.getPmV2());
-            wolist.add(newinfo);
+            wolist.put(newinfo);
 
             for (UpdateChangeSet changeset : changeSetList) {
                 long fieldid = changeset.getFieldId();
@@ -113,7 +114,7 @@ public class OpenScheduleWOV2 extends FacilioJob {
                 info.put("displayName", field.getDisplayName());
                 info.put("oldValue", oldValue);
                 info.put("newValue", newValue);
-                wolist.add(info);
+                wolist.put(info);
             }
 
             addWO.put("addPMWO", wolist);
