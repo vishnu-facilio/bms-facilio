@@ -1156,6 +1156,8 @@ public class APIv3Config {
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .delete()
+                .postCreate()
+                .afterSave(TransactionChainFactoryV3.getWorkOrderAfterSavePostCreateChain())
                 .build();
     }
 

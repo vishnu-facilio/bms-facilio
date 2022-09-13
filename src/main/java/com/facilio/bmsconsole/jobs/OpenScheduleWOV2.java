@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -66,11 +67,11 @@ public class OpenScheduleWOV2 extends FacilioJob {
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             /* TODO(5): Send only WorkOrder object for Post Create */
-            FacilioChain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
-            c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
-            c.execute(context);
+//            FacilioChain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
+//            c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+//            c.execute(context);
             //post create call
-            //V3Util.postCreateRecord(module.getName(), , null, null);
+            V3Util.postCreateRecord(module.getName(), Collections.singletonList(wo.getId()) , null, null, null);
         } catch (Exception e) {
             CommonCommandUtil.emailException("OpenScheduledWOV2", ""+jobContext.getJobId(), e);
             LOGGER.error("WorkOrder Status Change failed: ", e);

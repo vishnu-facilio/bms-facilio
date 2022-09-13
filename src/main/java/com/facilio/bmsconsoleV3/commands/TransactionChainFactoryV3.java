@@ -434,6 +434,15 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getWorkOrderAfterSavePostCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillContextAfterAddingWorkOrderPostCreateChainCommandV3());
+        c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
+        c.addCommand(new AddTicketActivityCommandV3());
+        c.addCommand(new AddPrerequisiteApproversCommandV3());
+        return c;
+    }
+
     public static FacilioChain getWorkOrderWorkflowsChainV3(boolean sendNotification) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_CUSTOM_CHANGE));
