@@ -18,6 +18,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -415,31 +416,33 @@ public class GroupBeanImpl implements GroupBean {
 				}
 			}
 		}
-		
-		String siteCondition = "";
-
-		if (CollectionUtils.isNotEmpty(filteredSiteId) ) {
-			filteredSiteId.retainAll(siteIds);
-			if(CollectionUtils.isEmpty(filteredSiteId)) {
-				return null;
-			}
-			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(filteredSiteId, ',') + "))";
-		}
-		else{
-			if (CollectionUtils.isEmpty(siteIds)){
-				return null;
-			}
-			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
-		}
-
 
 		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
 		SelectRecordsBuilder<Group> selectBuilder = new SelectRecordsBuilder<Group>()
 				.select(Constants.getModBean().getAllFields(module.getName()))
 				.module(module)
 				.beanClass(Group.class)
-				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true"+siteCondition, orgId);
-		
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE","isActive", true+"", BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("ORGID","orgId",orgId+"",NumberOperators.EQUALS));
+
+
+		Criteria siteCriteria = null;
+
+		if (CollectionUtils.isNotEmpty(filteredSiteId)) {
+			filteredSiteId.retainAll(siteIds);
+			if (CollectionUtils.isNotEmpty(filteredSiteId)) {
+				siteCriteria = new Criteria();
+				siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(filteredSiteId, ","), NumberOperators.EQUALS));
+			}
+		} else if (CollectionUtils.isNotEmpty(siteIds)) {
+			siteCriteria = new Criteria();
+			siteCriteria.addOrCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(siteIds, ","), NumberOperators.EQUALS));
+		}
+
+		if (siteCriteria != null) {
+			selectBuilder.andCriteria(siteCriteria);
+		}
+
 		if(perPage > 0 && offset >= 0) {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
