@@ -11028,7 +11028,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
         fields.add(getField("widgetGroupId", "GROUP_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("rowIndex", "ROW_INDEX", module, FieldType.NUMBER));
+        fields.add(getField("colIndex", "COL_INDEX", module, FieldType.NUMBER));
+        fields.add(getField("colSpan", "COL_SPAN", module, FieldType.NUMBER));
         return fields;
     }
 

@@ -14,6 +14,8 @@ public class SummaryWidgetGroupFields {
     private String widgetId;
     private long widgetGroupId;
     private long fieldId;
-    private int sequenceNumber;
+    private int rowIndex;
+    private int colIndex;
+    private int colSpan;
     private FacilioField field;
 }
