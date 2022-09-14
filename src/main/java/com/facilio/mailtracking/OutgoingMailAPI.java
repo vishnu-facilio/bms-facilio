@@ -17,7 +17,6 @@ import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.email.EmailClient;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
@@ -25,7 +24,6 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -56,19 +54,6 @@ public class OutgoingMailAPI {
     public static void updateV3(String moduleName, V3Context record) throws Exception {
         Map<String, Object> row = FieldUtil.getAsJSON(record);
         V3Util.processAndUpdateSingleRecord(moduleName, record.getId(), row, null, null, null, null, null,null);
-    }
-
-    public static V3OutgoingMailLogContext convertToMailLogContext(JSONObject mailJson) throws IOException {
-        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
-        Object recModuleVal = mailJson.get("moduleId");
-        if(mailJson.get("moduleId")!=null) {
-            mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(recModuleVal));
-        }
-        Object loggerId = mailJson.get(MailConstants.Params.LOGGER_ID);
-        if(loggerId!=null) {
-            mailLogContext.setId(FacilioUtil.parseLong(loggerId));
-        }
-        return mailLogContext;
     }
 
     public static List<V3OutgoingMailAttachmentContext> getMailAttachments(long mailId) throws Exception {

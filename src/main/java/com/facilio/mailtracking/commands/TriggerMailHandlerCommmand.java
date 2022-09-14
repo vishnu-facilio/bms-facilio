@@ -69,7 +69,7 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Object val = context.get(MailConstants.Params.RECORD_MODULE_ID);
+        Object val = context.get(MailConstants.Params.RECORDS_MODULE_ID);
         if(val == null) {
             return false;
         }

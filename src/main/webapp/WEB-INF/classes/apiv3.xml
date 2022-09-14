@@ -983,7 +983,11 @@
 
     <package name="weather" namespace="/api/v3/weather" extends="v3Api">
         <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
-        </package>
+    </package>
+
+    <package name="ogmail" namespace="/api/v3/historymail" extends="v3Api">
+        <action name="rerun" class="com.facilio.mailtracking.actions.HistoricalMailAction" method="pushMailsToWms"/>
+    </package>
 
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">
         <action name="list"

@@ -1,5 +1,6 @@
 package com.facilio.mailtracking.bean;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -28,7 +29,7 @@ public class MailTrackBeanImpl implements MailBean {
     public void updateDeliveryStatus(String mapperId, Map<String, Object> delivery) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
         V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR,
-                "LoggerId is not found for given mapperId :: "+mapperId);
+                "LOGGER_ID is not found for given MAPPER_ID :: "+mapperId);
 
         List<String> recipientsArr = (List<String>) delivery.get("recipients");
         V3Util.throwRestException(CollectionUtils.isEmpty(recipientsArr), ErrorCode.VALIDATION_ERROR,
@@ -39,7 +40,7 @@ public class MailTrackBeanImpl implements MailBean {
         Integer deliveryStatus = MailStatus.DELIVERED.getValue();
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId, StringUtils.join(recipientsArr, ", "));
         if(oldRecords.isEmpty()) {
-            LOGGER.info("OG_MAIL_LOG :: [delivery status] Given mail addresses not found :: " +recipientsArr + " for mapperID :: "+mapperId);
+            LOGGER.info("OG_MAIL_LOG :: [delivery status] Given mail addresses not found :: " +recipientsArr + " for MAPPER_ID :: "+mapperId);
             return;
         }
         oldRecords = oldRecords.stream().filter(oldRecord -> !oldRecord.getStatus().equals(deliveryStatus)).collect(Collectors.toList());
@@ -49,7 +50,7 @@ public class MailTrackBeanImpl implements MailBean {
             return;
         }
         OutgoingMailAPI.updateRecipientStatus(oldRecords, deliveryStatus);
-        LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperId);
+        LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for MAPPER_ID  : "+mapperId);
     }
 
     private String extractEmailAddress(String address) {
@@ -59,7 +60,7 @@ public class MailTrackBeanImpl implements MailBean {
     @Override
     public void updateBounceStatus(String mapperId, Map<String, Object> bounce) throws Exception {
         long loggerId = OutgoingMailAPI.getLoggerId(mapperId);
-        V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR, "LoggerId is not found for given mapperId :: "+mapperId);
+        V3Util.throwRestException(loggerId == -1, ErrorCode.VALIDATION_ERROR, "LOGGER_ID is not found for given MAPPER_ID :: "+mapperId);
 
         String bounceType = (String) bounce.get("bounceType");
         List<Map<String, String>> recipientsArr = (List<Map<String, String>>) bounce.get("bouncedRecipients");
@@ -72,7 +73,7 @@ public class MailTrackBeanImpl implements MailBean {
 
             List<V3OutgoingRecipientContext> bounceRecords = OutgoingMailAPI.getRecipients(loggerId, bouncedEmail);
             if(CollectionUtils.isEmpty(bounceRecords)) {
-                LOGGER.info("OG_MAIL_LOG :: [bounce status] Given mail addresses not found :: " +bouncedEmail + " for mapperID :: "+mapperId);
+                LOGGER.info("OG_MAIL_LOG :: [bounce status] Given mail addresses not found :: " +bouncedEmail + " for MAPPER_ID :: "+mapperId);
                 continue;
             }
             V3OutgoingRecipientContext oldRecord = bounceRecords.get(0);
@@ -89,26 +90,16 @@ public class MailTrackBeanImpl implements MailBean {
 
             OutgoingMailAPI.updateV3(moduleName, oldRecord);
         }
-        LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for mapperId  : "+mapperId);
+        LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for MAPPER_ID  : "+mapperId);
     }
 
     @Override
     public void trackAndSendMail(JSONObject mailJson) throws Exception {
         FacilioContext context = NewTransactionService.newTransactionWithReturn(() -> prepareOutgoingMailContext(mailJson));
-        FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
-        if(context!=null) {
-            try {
-                chain.setContext(context);
-                chain.execute();
-            } catch (Exception e) {
-                LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue [SENDMAIL COMMAND]. So sending in normal flow :: "+mailJson, e);
-                OutgoingMailAPI.triggerFallbackMailSendChain(context);
-                return ;
-            }
-
-            chain = MailTransactionChainFactory.triggerMailHandlerChain();
-            chain.setContext(context);
-            chain.execute();
+        if(FacilioProperties.isDevelopment()) {
+            NewTransactionService.newTransaction(() -> sentOutgoingMail(context, mailJson));
+        } else {
+            sentOutgoingMail(context, mailJson);
         }
     }
 
@@ -126,6 +117,24 @@ public class MailTrackBeanImpl implements MailBean {
             LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue [PRE-SENDMAIL COMMAND]. So sending in normal flow :: "+mailJson, e);
             OutgoingMailAPI.triggerFallbackMailSendChain(context);
             return null;
+        }
+    }
+
+    private void sentOutgoingMail(FacilioContext context, JSONObject mailJson) throws Exception {
+        FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
+        if(context!=null) {
+            try {
+                chain.setContext(context);
+                chain.execute();
+            } catch (Exception e) {
+                LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed in queue [SENDMAIL COMMAND]. So sending in normal flow :: "+mailJson, e);
+                OutgoingMailAPI.triggerFallbackMailSendChain(context);
+                return ;
+            }
+
+            chain = MailTransactionChainFactory.triggerMailHandlerChain();
+            chain.setContext(context);
+            chain.execute();
         }
     }
 

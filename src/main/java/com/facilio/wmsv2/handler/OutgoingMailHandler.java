@@ -29,20 +29,20 @@ public class OutgoingMailHandler extends BaseHandler {
     @Override
     public Message processOutgoingMessage(Message message) {
         Long orgId = message.getOrgId();
+        Long mapperId = null;
         try {
             if(orgId != null && orgId > 0) {
                 JSONObject mailJson = message.getContent();
 
-                Long mapperId = NewTransactionService.newTransactionWithReturn(() -> registerOutgoingMailMapper(orgId));
-                LOGGER.info("OG_MAIL_LOG :: mapperId inserted :: "+mapperId);
+                mapperId = NewTransactionService.newTransactionWithReturn(() -> registerOutgoingMailMapper(orgId));
+                LOGGER.info("OG_MAIL_LOG :: MAPPER_ID inserted :: "+mapperId);
                 mailJson.put(MailConstants.Params.MAPPER_ID, mapperId);
 
                 MailBean mailBean = MailConstants.getMailBean(orgId);
                 mailBean.trackAndSendMail(mailJson);
-                LOGGER.info("OG_MAIL_LOG :: Processing mail from queue for mapperId :: "+mapperId);
             }
         } catch (Exception e) {
-            LOGGER.info("OG_MAIL_ERROR :: ERROR IN OutgoingMailHandler for orgId "+ orgId, e);
+            LOGGER.info("OG_MAIL_ERROR :: ERROR IN [OutgoingMailHandler] for ORGID "+ orgId + " with MAPPER_ID ::"+mapperId, e);
         }
         return null;
     }

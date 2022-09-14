@@ -19,7 +19,7 @@ public class UpdateMailRecordsModuleNameCommand extends FacilioCommand {
             for(V3OutgoingMailLogContext record : outgoingMailContexts) {
                 Long recordModId = record.getRecordsModuleId();
                 if(recordModId != null && !recordModId.equals(-1L)) {
-                    record.setRecordsModuleName(modBean.getModule(record.getRecordsModuleId()).getName());
+                    record.setRecordsModuleName(modBean.getModule(record.getRecordsModuleId()).getDisplayName());
                 }
             }
         }

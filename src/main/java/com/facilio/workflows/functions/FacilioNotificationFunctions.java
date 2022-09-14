@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
 
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
@@ -41,7 +42,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 				sender = EmailFactory.getEmailClient().getSystemFromAddress(EmailFromAddress.SourceType.NOTIFICATION);
 			}
 			sendMailMap.put("sender", sender);
-			sendMailMap.put("sourceType", MailSourceType.SCRIPT.name());
+			sendMailMap.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.SCRIPT.name());
 
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
 			

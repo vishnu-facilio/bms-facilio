@@ -29,11 +29,9 @@ public class MailResponseParsingHandler extends BaseHandler {
                 OutgoingMailAPI.logResponses(awsMailResponse);
 
                 ParseMailResponseCommand.executeCommand(awsMailResponse);
-                LOGGER.info("OG_MAIL_LOG :: Successfully parsed and updated aws mail responses for mapperId :: "+
-                        awsMailResponse.getMapperId());
             }
         } catch (Exception e) {
-            LOGGER.info("OG_MAIL_ERROR :: ERROR IN MailResponseParsingHandler for mapperId "
+            LOGGER.info("OG_MAIL_ERROR :: ERROR IN MailResponseParsingHandler for MAPPER_ID "
                     + awsMailResponse.getMapperId(), e);
         }
         return null;

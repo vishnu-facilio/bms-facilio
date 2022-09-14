@@ -11,8 +11,8 @@ public class MaskConfidentialUrlCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
-        if(mailJson.containsKey("maskUrl")) {
-            String url = (String) mailJson.get("maskUrl");
+        if(mailJson.containsKey(MailConstants.Params.MASK_URL)) {
+            String url = (String) mailJson.get(MailConstants.Params.MASK_URL);
             V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
             if(mailLogContext!=null) {
                 if (mailLogContext.getHtmlContent() != null) {

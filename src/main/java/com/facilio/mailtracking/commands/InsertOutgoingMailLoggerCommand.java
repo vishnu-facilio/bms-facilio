@@ -5,6 +5,7 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
+import com.facilio.modules.FieldUtil;
 import com.facilio.services.email.EmailClient;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -16,12 +17,12 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         this.preprocessMailJson(mailJson);
-        V3OutgoingMailLogContext mailLogContext = OutgoingMailAPI.convertToMailLogContext(mailJson);
+        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
         long loggerId = NewTransactionService.newTransactionWithReturn(() ->
                 OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext));
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
         context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
-        LOGGER.info("OG_MAIL_LOG :: loggerId inserted :: "+loggerId);
+        LOGGER.info("OG_MAIL_LOG :: LOGGER_ID inserted :: "+loggerId);
         return false;
     }
 

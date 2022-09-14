@@ -1,19 +1,26 @@
 package com.facilio.mailtracking.commands;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
 
+@Log4j
 public class SendMailWithoutTrackingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        MailStatus status = (MailStatus) context.get(MailConstants.Params.STATUS);
+        if(status!=null && status == MailStatus.SENT) {
+            LOGGER.info("Skipping SendMailWithoutTrackingCommand since its already sent");
+            return false;
+        }
         JSONObject mailJson = this.constructMailJson(context);
         Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
         EmailClient emailClient = EmailFactory.getEmailClient();

@@ -509,8 +509,8 @@ public class AccountUtil {
 		RESOURCES(82,262144,LicenseMapping.GROUP2LICENSE), //2^18
 		NEW_TAB_PERMISSIONS(83,524288,LicenseMapping.GROUP2LICENSE), //2^19
 		SCOPE_VARIABLE(84,1048576,LicenseMapping.GROUP2LICENSE), //2^20
-		NEW_KPI(85,2097152,LicenseMapping.GROUP2LICENSE) //2^21
-		;
+		NEW_KPI(85,2097152,LicenseMapping.GROUP2LICENSE), //2^21
+		EMAIL_TRACKING(85,4194304,LicenseMapping.GROUP2LICENSE); // 2^22
 
 		public int featureId;
 		private long license;

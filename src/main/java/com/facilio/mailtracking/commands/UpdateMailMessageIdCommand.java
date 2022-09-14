@@ -14,9 +14,10 @@ public class UpdateMailMessageIdCommand extends FacilioCommand {
         String messageId = (String) context.get(MailConstants.Params.MESSAGE_ID);
         if(StringUtils.isNotEmpty(messageId)) {
             V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
-            mailLogContext.setMessageId(messageId);
-            OutgoingMailAPI.updateV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext);
-
+            if(mailLogContext!=null) {
+                mailLogContext.setMessageId(messageId);
+                OutgoingMailAPI.updateV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext);
+            }
         }
         return false;
     }
