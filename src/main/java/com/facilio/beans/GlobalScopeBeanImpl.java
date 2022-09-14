@@ -107,6 +107,7 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
         Map<String, Object> props = selectRecordBuilder.fetchFirst();
         if (props != null && !props.isEmpty()) {
             GlobalScopeVariableContext scopeVariable = FieldUtil.getAsBeanFromMap(props, GlobalScopeVariableContext.class);
+            scopeVariable.setScopeVariableModulesFieldsList(getScopeVariableModulesFields(id));
             return scopeVariable;
         }
         return null;
@@ -173,5 +174,14 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                     .andCondition(CriteriaAPI.getCondition(fieldsMap.get("scopeVariableId"), Collections.singletonList(scopeVariableId), NumberOperators.EQUALS));
             deleteBuilder.delete();
         }
+    }
+
+    @Override
+    public void deleteScopeVariable(Long id) throws Exception {
+        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getGlobalScopeVariableFields());
+        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("id"), Collections.singletonList(id), NumberOperators.EQUALS));
+        deleteBuilder.delete();
     }
 }

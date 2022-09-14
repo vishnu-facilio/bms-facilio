@@ -34,6 +34,16 @@ public class ScopeVariableAction extends V3Action {
         return V3Action.SUCCESS;
     }
 
+    public String delete() throws Exception {
+        if(scopeVariable == null) {
+            throw new IllegalArgumentException("Scope variable cannot be empty");
+        }
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        scopeBean.deleteScopeVariable(scopeVariable.getId());
+        setMessage("Global Scope Varibale Deleted");
+        return V3Action.SUCCESS;
+    }
+
     public String list() throws Exception {
         GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
         setData(FacilioConstants.ContextNames.SCOPE_VARIABLE,scopeBean.getAllScopeVariable());
