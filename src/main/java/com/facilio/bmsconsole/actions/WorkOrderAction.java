@@ -2791,6 +2791,14 @@ public class WorkOrderAction extends FacilioAction {
 		else {
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
+		for(long workOrderId : id) {
+			sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Work Order with id #{%d} has been Updated", workOrderId),
+					null,
+					AuditLogHandler.RecordType.MODULE,
+					"WorkOrder", workOrderId)
+					.setActionType(AuditLogHandler.ActionType.UPDATE)
+			);
+		}
 		return SUCCESS;
 	}
 	
