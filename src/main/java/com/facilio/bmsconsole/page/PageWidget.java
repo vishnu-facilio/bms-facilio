@@ -395,6 +395,8 @@ public class PageWidget {
 		PREREQUISITES("prerequisites"),
 		TASKS_MONOLITH("taskMonolith"),
 		ITEMS_AND_LABOR("itemsAndLabor"),
+		PLANS("plans"),
+		PLANS_COST("plansCost"),
 		QUOTATION("quotation"),
 		INVENTORY_ITEMS("inventoryItems"),
 		INVENTORY_SERVICES("inventoryServices"),
@@ -442,7 +444,8 @@ public class PageWidget {
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),
 		TOOL_TRANSACTIONS("transactionstool"),
-
+		ACTUALS_COST("actualsCost"),
+		ACTUALS("actuals"),
 		TENANT_UNIT_OVERVIEW("tenantunitoverview"),
 		TENANT_UNIT_SPECIAL_WIDGET("tenantunitspecialwidget"),
 		TENANT_UNIT_TENANT("tenantunittenant"),

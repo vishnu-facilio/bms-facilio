@@ -507,8 +507,11 @@ public class AccountUtil {
 		PLANNED_INVENTORY(80, 65536, LicenseMapping.GROUP2LICENSE),
 		PM_PLANNER(81, 131072, new String[]{ContextNames.PLANNEDMAINTENANCE} , LicenseMapping.GROUP2LICENSE),
 		RESOURCES(82,262144,LicenseMapping.GROUP2LICENSE), //2^18
-		NEW_TAB_PERMISSIONS(83,524288,LicenseMapping.GROUP2LICENSE),
-		SCOPE_VARIABLE(83,1048576,LicenseMapping.GROUP2LICENSE);
+		NEW_TAB_PERMISSIONS(83,524288,LicenseMapping.GROUP2LICENSE), //2^19
+		SCOPE_VARIABLE(84,1048576,LicenseMapping.GROUP2LICENSE), //2^20
+		NEW_KPI(85,2097152,LicenseMapping.GROUP2LICENSE) //2^21
+		;
+
 		public int featureId;
 		private long license;
 		private String[] modules;

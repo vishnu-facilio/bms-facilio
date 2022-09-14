@@ -37,11 +37,12 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
     }
 
     @Override
-    public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen() throws Exception {
+    public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen(Long appId) throws Exception {
         List<FacilioField> fieldList = FieldFactory.getValueGeneratorFields();
         fieldList.add(FieldFactory.getField("scopeVariableLinkName", "LINK_NAME", ModuleFactory.getGlobalScopeVariableModule(), FieldType.STRING));
         fieldList.add(FieldFactory.getField("status", "STATUS", ModuleFactory.getGlobalScopeVariableModule(), FieldType.BOOLEAN));
         fieldList.add(FieldFactory.getField("scopeVariableId", "ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
+        fieldList.add(FieldFactory.getField("appId", "APP_ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
@@ -49,6 +50,7 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                 .innerJoin(ModuleFactory.getValueGeneratorModule().getTableName())
                 .on("Value_Generators.ID = Global_Scope_Variable.VALUE_GENERATOR_ID");
         selectRecordBuilder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
+        selectRecordBuilder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
@@ -97,20 +99,17 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
     }
 
     @Override
-    public List<GlobalScopeVariableContext> getScopeVariable(Long id) throws Exception {
+    public GlobalScopeVariableContext getScopeVariable(Long id) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
                 .select(FieldFactory.getGlobalScopeVariableFields())
                 .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getGlobalScopeVariableModule()));
-        List<Map<String, Object>> props = selectRecordBuilder.get();
-        if (CollectionUtils.isNotEmpty(props)) {
-            List<GlobalScopeVariableContext> scopeVariableList = FieldUtil.getAsBeanListFromMapList(props, GlobalScopeVariableContext.class);
-            for (GlobalScopeVariableContext scopeVariable : scopeVariableList) {
-                scopeVariable.setScopeVariableModulesFieldsList(getScopeVariableModulesFields(scopeVariable.getId()));
-            }
-            return scopeVariableList;
+        Map<String, Object> props = selectRecordBuilder.fetchFirst();
+        if (props != null && !props.isEmpty()) {
+            GlobalScopeVariableContext scopeVariable = FieldUtil.getAsBeanFromMap(props, GlobalScopeVariableContext.class);
+            return scopeVariable;
         }
-        return new ArrayList<>();
+        return null;
     }
 
     @Override

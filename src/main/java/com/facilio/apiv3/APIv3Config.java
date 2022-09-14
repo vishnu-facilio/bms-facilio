@@ -80,6 +80,8 @@ import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdComman
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.safetyplan.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
@@ -123,12 +125,15 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.LoadPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
 import com.facilio.bmsconsoleV3.context.asset.*;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
@@ -153,10 +158,7 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContex
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3PrecautionContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.*;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
@@ -1151,6 +1153,7 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
+                .delete()
                 .build();
     }
 
@@ -1676,11 +1679,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderPlannedItems() {
         return () -> new V3Config(WorkOrderPlannedItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetWorkOrderPlannedItemsCommandV3())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
                 .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
+                .beforeFetch(new LoadPlannedItemsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getReserveValidationChainV3())
                 .summary()
+                .beforeFetch(new LoadPlannedItemsCommandV3())
                 .delete()
                 .build();
     }
@@ -1751,6 +1758,18 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
+    @Module("workorderCost")
+    public static Supplier<V3Config> getWorkOrderCost() {
+        return () -> new V3Config(V3WorkorderCostContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
 
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
@@ -2481,6 +2500,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new ExcludeAvailableWorkOrderHazardPrecautions())
                 .summary()
                 .delete()
                 .afterDelete(new DeleteHazardPrecautionCommand())
@@ -2493,6 +2513,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchSafetyPlanChain())
                 .summary()
                 .delete()
                 .build();
@@ -2507,6 +2528,18 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
+    @Module(FacilioConstants.ContextNames.SAFETY_PLAN)
+    public static Supplier<V3Config> getSafetyPlans() {
+        return () -> new V3Config(V3SafetyPlanContext.class, null)
+                .create()
+                .list()
+                .update()
+                .summary()
+                .delete()
+                .build();
+    }
+
     @Module(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD)
     public static Supplier<V3Config> getSafetyPlanHazard() {
         return () -> new V3Config(V3SafetyPlanHazardContext.class, null)
@@ -2518,23 +2551,51 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN)
     public static Supplier<V3Config> getWorkOrderLabourPlan() {
-        return () -> new V3Config(V3WorkOrderLabourPlanContext.class, new ModuleCustomFieldCount30())
+            return () -> new V3Config(V3WorkOrderLabourPlanContext.class, new ModuleCustomFieldCount30())
+                            .create()
+                            .list()
+                            .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                            .update()
+                            .delete()
+                            .build();
+    }
+    @Module(FacilioConstants.ContextNames.WORKORDER_HAZARD)
+    public static Supplier<V3Config> getWorkOrderHazard() {
+        return () -> new V3Config(V3WorkorderHazardContext.class, null)
                 .create()
                 .list()
-                .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
-                .update()
+                .beforeFetch(new FetchWorkOrderHazardSupplements())
                 .delete()
                 .build();
     }
 
     @Module(FacilioConstants.ContextNames.WO_LABOUR)
     public static Supplier<V3Config> getWorkOrderLabour() {
-        return () -> new V3Config(V3WorkOrderLabourContext.class, new ModuleCustomFieldCount30())
+            return () -> new V3Config(V3WorkOrderLabourContext.class, new ModuleCustomFieldCount30())
+                            .create()
+                            .beforeSave(new ValidateWorkOrderLabourPlanCommandV3())
+                            .list()
+                            .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                            .update()
+                            .delete()
+                            .build();
+    }
+    @Module(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION)
+    public static Supplier<V3Config> getWorkOrderHazardPrecaution() {
+        return () -> new V3Config(V3WorkorderHazardPrecautionContext.class, null)
                 .create()
-                .beforeSave(new ValidateWorkOrderLabourPlanCommandV3())
                 .list()
-                .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
-                .update()
+                .beforeFetch(new FetchWorkOrderHazardPrecautionSupplements())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.ASSET_HAZARD)
+    public static Supplier<V3Config> getAssetHazard() {
+        return () -> new V3Config(V3AssetHazardContext.class, null)
+                .create()
+                .list()
+                .beforeFetch(new V3LoadAssetHazardLookUpsCommand())
                 .delete()
                 .build();
     }

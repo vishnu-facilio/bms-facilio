@@ -28,36 +28,45 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
         Map<Long, String> assetCategory = AssetsAPI.getCategoryList().stream().collect(Collectors.toMap(AssetCategoryContext::getId, AssetCategoryContext::getName));
         Map<Long, String> resources = CommissioningApi.getResources(points.stream().map(x -> (Long) x.get("resourceId")).filter(Objects::nonNull).collect(Collectors.toSet()));
         Map<Long, Map<String, Object>> fields = CommissioningApi.getFields(points.stream().map(x -> (Long) x.get("fieldId")).filter(Objects::nonNull).collect(Collectors.toSet()));
+            Map<String,Map<String, Map<String, Map<Long, String>>>> controllerNameMap = new HashMap<>();
 
-        Map<String, Map<String, Map<Long, String>>> updateMap = new HashMap<>();
 
         for (Map<String, Object> point : points) {
             if (point.containsKey("resourceId") && point.containsKey("fieldId")) {
                 Map<String, Map<Long, String>> pointMap = new HashMap<>();
                 pointMap.put("category", Collections.singletonMap((Long) point.get("categoryId"), assetCategory.get(point.get("categoryId"))));
-                if(point.get("resourceId")!=null){
+                if (point.get("resourceId") != null) {
                     pointMap.put("assetName", Collections.singletonMap((Long) point.get("resourceId"), resources.get(point.get("resourceId"))));
-                }else{
-                    pointMap.put("assetName",null);
+                } else {
+                    pointMap.put("assetName", null);
                 }
-                if(point.get("fieldId")!=null){
+                if (point.get("fieldId") != null) {
                     pointMap.put("reading", Collections.singletonMap((Long) point.get("fieldId"), (String) fields.get(point.get("fieldId")).get("name")));
-                }else{
-                    pointMap.put("reading",null);
+                } else {
+                    pointMap.put("reading", null);
                 }
-                if(agent.getAgentType()== AgentType.NIAGARA.getKey()){
-                    updateMap.put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
-                }
-                else{
-                    updateMap.put((String) point.get(AgentConstants.NAME), pointMap);
-
+                if (!controllerNameMap.containsKey(point.get("deviceName"))) {
+                    Map<String, Map<String, Map<Long, String>>>pointsMap = new HashMap<>();
+                        if (agent.getAgentType() == AgentType.NIAGARA.getKey()) {
+                            pointsMap.put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
+                        }
+                        else{
+                            pointsMap.put((String) point.get(AgentConstants.NAME), pointMap);
+                        }
+                        controllerNameMap.put((String) point.get("deviceName"), pointsMap);
+                    } else {
+                        if (agent.getAgentType() == AgentType.NIAGARA.getKey()) {
+                            ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
+                        } else {
+                            ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.NAME), pointMap);
+                        }
+                    }
                 }
             }
-        }
 
-        if (updateMap != null && !updateMap.isEmpty()) {
+        if (controllerNameMap != null && !controllerNameMap.isEmpty()) {
 
-            BmsPointsTaggingUtil.updateTaggedPointList(updateMap);
+            BmsPointsTaggingUtil.updateTaggedPointList(controllerNameMap);
             return false;
 
         }

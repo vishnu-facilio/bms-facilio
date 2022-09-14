@@ -147,6 +147,12 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.REQUEST_FOR_QUOTATION, getRequestForQuotationModule());
 		moduleMap.put(ContextNames.TRANSACTION, getTransactionModule());
 		moduleMap.put(ContextNames.VENDOR_QUOTES, getVendorQuotesModule());
+		moduleMap.put(ContextNames.WO_PLANNED_ITEMS, getWorkOrderPlannedItemsModule());
+		moduleMap.put(ContextNames.WO_PLANNED_TOOLS, getWorkOrderPlannedToolsModule());
+		moduleMap.put(ContextNames.WO_PLANNED_SERVICES, getWorkOrderPlannedServicesModule());
+		moduleMap.put(ContextNames.WORKORDER_ITEMS,getWorkOrderItemsModule());
+		moduleMap.put(ContextNames.WORKORDER_TOOLS,getWorkOrderToolsModule());
+		moduleMap.put(ContextNames.WO_SERVICE,getWorkOrderServiceModule());
 		moduleMap.put("customPageWidget", getCustomPageWidgetModule());
 		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
 		moduleMap.put("customWidgetGroupFields", getSummaryWidgetGroupFieldsModule());
@@ -3019,7 +3025,27 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Tool_types");
 		return inventoryModule;
 	}
-	
+	public static FacilioModule getWorkOrderItemsModule() {
+		FacilioModule workOrderItemsModule = new FacilioModule();
+		workOrderItemsModule.setName(ContextNames.WORKORDER_ITEMS);
+		workOrderItemsModule.setDisplayName("Work Order Items");
+		workOrderItemsModule.setTableName("Workorder_items");
+		return workOrderItemsModule;
+	}
+	public static FacilioModule getWorkOrderToolsModule() {
+		FacilioModule workOrderToolsModule = new FacilioModule();
+		workOrderToolsModule.setName(ContextNames.WORKORDER_TOOLS);
+		workOrderToolsModule.setDisplayName("Work Order Tools");
+		workOrderToolsModule.setTableName("Workorder_tools");
+		return workOrderToolsModule;
+	}
+	public static FacilioModule getWorkOrderServiceModule() {
+		FacilioModule workOrderServiceModule = new FacilioModule();
+		workOrderServiceModule.setName(ContextNames.WO_SERVICE);
+		workOrderServiceModule.setDisplayName("Work Order Service");
+		workOrderServiceModule.setTableName("Workorder_service");
+		return workOrderServiceModule;
+	}
 	public static FacilioModule getVendorsModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.VENDORS);
@@ -3027,7 +3053,27 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Vendors");
 		return inventoryModule;
 	}
-	
+	public static FacilioModule getWorkOrderPlannedItemsModule() {
+		FacilioModule plannedItemsModule = new FacilioModule();
+		plannedItemsModule.setName(ContextNames.WO_PLANNED_ITEMS);
+		plannedItemsModule.setDisplayName("WorkOrder Planned Items");
+		plannedItemsModule.setTableName("Work_Order_Planned_Items");
+		return plannedItemsModule;
+	}
+	public static FacilioModule getWorkOrderPlannedToolsModule() {
+		FacilioModule plannedToolsModule = new FacilioModule();
+		plannedToolsModule.setName(ContextNames.WO_PLANNED_TOOLS);
+		plannedToolsModule.setDisplayName("WorkOrder Planned Tools");
+		plannedToolsModule.setTableName("Work_Order_Planned_Tools");
+		return plannedToolsModule;
+	}
+	public static FacilioModule getWorkOrderPlannedServicesModule() {
+		FacilioModule plannedServicesModule = new FacilioModule();
+		plannedServicesModule.setName(ContextNames.WO_PLANNED_SERVICES);
+		plannedServicesModule.setDisplayName("WorkOrder Planned Services");
+		plannedServicesModule.setTableName("Work_Order_Planned_Services");
+		return plannedServicesModule;
+	}
 	public static FacilioModule getInventryModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM);

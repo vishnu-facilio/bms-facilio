@@ -70,7 +70,8 @@ public class AddKPIModules extends SignUpData {
         NumberField readingFieldId = (NumberField) FieldFactory.getDefaultField("readingFieldId", "Reading Field ID", "READING_FIELD_ID", FieldType.NUMBER);
         fields.add(readingFieldId);
 
-        NumberField frequency = (NumberField) FieldFactory.getDefaultField("frequency", "Frequency", "FREQUENCY", FieldType.NUMBER);
+        SystemEnumField frequency = (SystemEnumField) FieldFactory.getDefaultField("frequency", "Frequency", "FREQUENCY", FieldType.SYSTEM_ENUM);
+        frequency.setEnumName("NamespaceFrequency");
         fields.add(frequency);
 
         NumberField siteId = (NumberField) FieldFactory.getDefaultField("siteId", "Site ID", "SITE_ID", FieldType.NUMBER);

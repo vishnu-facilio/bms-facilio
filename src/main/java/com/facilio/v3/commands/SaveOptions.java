@@ -1,6 +1,5 @@
 package com.facilio.v3.commands;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;

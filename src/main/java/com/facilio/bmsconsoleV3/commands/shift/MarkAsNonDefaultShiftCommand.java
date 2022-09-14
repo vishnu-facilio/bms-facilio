@@ -16,7 +16,7 @@ public class MarkAsNonDefaultShiftCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<Shift> shifts = recordMap.get(moduleName);
         for (Shift s : shifts) {
-            s.setIsDefaultShift(false);
+            s.setDefaultShift(false);
         }
         return false;
     }

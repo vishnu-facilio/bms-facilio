@@ -232,6 +232,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setIsReturnable(false);
 		double costOccured = 0;
+		Double unitPrice = null;
 		if(workOrderItem.getWorkOrderPlannedItem()!=null){
 			woItem.setWorkOrderPlannedItem(workOrderItem.getWorkOrderPlannedItem());
 		}
@@ -239,6 +240,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 			woItem.setPurchasedItem(purchasedItem);
 			if (purchasedItem.getUnitcost() >= 0) {
 				costOccured = purchasedItem.getUnitcost() * quantity;
+				unitPrice = purchasedItem.getUnitcost();
 			}
 		}
 		woItem.setStoreRoom(item.getStoreRoom());
@@ -264,11 +266,13 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 			woItem.setAsset(asset);
 			if(asset.getUnitPrice() >= 0) {
 				costOccured = asset.getUnitPrice() * quantity;
+				unitPrice = Double.valueOf(asset.getUnitPrice());
 			}
 		}
 		woItem.setRemainingQuantity(quantity);
 		
 		woItem.setCost(costOccured);
+		woItem.setUnitPrice(unitPrice);
 		if (wo != null) {
 			woItem.setWorkorder(wo);
 			if (wo.getAssignedTo() != null) {

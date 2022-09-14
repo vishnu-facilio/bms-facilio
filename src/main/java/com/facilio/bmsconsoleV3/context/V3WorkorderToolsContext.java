@@ -44,4 +44,13 @@ public class V3WorkorderToolsContext extends V3ToolTransactionContext{
         return duration;
     }
 
+    private Double rate;
+
+    public Double getRate() {
+        return rate;
+    }
+
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
 }

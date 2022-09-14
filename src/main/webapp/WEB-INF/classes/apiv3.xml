@@ -856,12 +856,16 @@
 		</action>
 	</package>
 
+    <package name="KpiReadingsList" namespace="/api/v3/readingKpi" extends="v3Api">
+        <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchReadings"/>
+        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames"/>
+        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames"/>
+    </package>
+
     <package name="licensinginfo" namespace="/api/v3/licensinginfo" extends="v3Api">
 
         <action name="add"
-
                 class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
-
                 method="add"></action>
 
         <action name="list"
@@ -1064,6 +1068,31 @@
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
         </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
+        </action>
+    </package>
+    <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
+             extends="v3Api">
+        <action name="reserve"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
+                method="reserve">
+        </action>
+        <action name="cost"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
+                method="cost">
+        </action>
+    </package>
+    <package name="workOrderPlannedTools" namespace="/api/v3/workOrderPlannedTools"
+             extends="v3Api">
+        <action name="cost"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
+                method="cost">
+        </action>
+    </package>
+    <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
+             extends="v3Api">
+        <action name="cost"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
+                method="cost">
         </action>
     </package>
 </struts>

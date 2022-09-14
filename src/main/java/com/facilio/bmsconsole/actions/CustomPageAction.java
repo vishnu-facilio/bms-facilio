@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 
 import java.util.logging.Logger;
 
-public class CustomPageAction {
+public class CustomPageAction extends FacilioAction {
     private static Logger LOGGER = Logger.getLogger(CustomPageAction.class.getName());
     private long appId = -1;
     private String moduleName;

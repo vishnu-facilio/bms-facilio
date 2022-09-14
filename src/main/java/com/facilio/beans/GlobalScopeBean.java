@@ -13,7 +13,7 @@ public interface GlobalScopeBean {
 
     public List<ScopeVariableModulesFields> getScopeVariableModulesFields(Long id) throws Exception;
 
-    public List<GlobalScopeVariableContext> getScopeVariable(Long id) throws Exception;
+    public GlobalScopeVariableContext getScopeVariable(Long id) throws Exception;
 
     public GlobalScopeVariableContext getScopeVariable(String linkName) throws Exception;
 
@@ -25,6 +25,6 @@ public interface GlobalScopeBean {
 
     public void deleteScopeVariableModulesFieldsByScopeVariableId(Long scopeVariableId) throws Exception;
 
-    public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen() throws Exception;
+    public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen(Long appId) throws Exception;
 
 }

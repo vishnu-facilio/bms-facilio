@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.forms;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -47,6 +48,7 @@ public class FormFactory {
 		forms.put("tenant", getTenantForm());
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
+		forms.put("workorderItem-form",getWorkOrderItemForm());
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("location_form", getLocationForm());
@@ -571,10 +573,14 @@ public class FormFactory {
 		List<FacilioForm> spaceCategoryForm = Arrays.asList(getSpaceCategoryForm());
 		List<FacilioForm> rfqForm = Arrays.asList(getRequestForQuotationForm());
 		List<FacilioForm> vendorQuotesForm = Arrays.asList(getVendorQuotesForm());
+		List<FacilioForm> plannedItemsForm = Arrays.asList(getPlannedItemsForm());
+		List<FacilioForm> plannedToolsForm = Arrays.asList(getPlannedToolsForm());
+		List<FacilioForm> plannedServicesForm = Arrays.asList(getPlannedServicesForm());
 		List<FacilioForm> labourForm = Arrays.asList(getLabourForm());
 		List<FacilioForm> jobPlanForm = Arrays.asList(getJobPlanForm());
 		List<FacilioForm> plannedmaintenance = Arrays.asList(getPlannedMaintenanceForm());
 		List<FacilioForm> shiftForm = Arrays.asList(getShiftForm());
+		List<FacilioForm> workOrderItemForm = Arrays.asList(getWorkOrderItemForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -656,10 +662,14 @@ public class FormFactory {
 				.put(ContextNames.TOOL, getFormMap(toolFormsList))
 				.put(ContextNames.REQUEST_FOR_QUOTATION, getFormMap(rfqForm))
 				.put(ContextNames.VENDOR_QUOTES, getFormMap(vendorQuotesForm))
+				.put(ContextNames.WO_PLANNED_ITEMS, getFormMap(plannedItemsForm))
+				.put(ContextNames.WO_PLANNED_TOOLS, getFormMap(plannedToolsForm))
+				.put(ContextNames.WO_PLANNED_SERVICES, getFormMap(plannedServicesForm))
 				.put(ContextNames.LABOUR, getFormMap(labourForm))
 				.put(ContextNames.JOB_PLAN, getFormMap(jobPlanForm))
 				.put(ContextNames.PLANNEDMAINTENANCE, getFormMap(plannedmaintenance))
 				.put(ContextNames.SHIFT, getFormMap(shiftForm))
+				.put(ContextNames.WORKORDER_ITEMS,getFormMap(workOrderItemForm))
 				.build();
 	}
 	
@@ -1263,6 +1273,17 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolTypesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+	public static FacilioForm getWorkOrderItemForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("New Work Order Item");
+		form.setName("default_workorderItem_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WORKORDER_ITEMS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkOrderItemFields());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
@@ -1888,6 +1909,14 @@ public class FormFactory {
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 3));
 		return fields;
 	}
+
+	private static List<FormField> getWorkOrderItemFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 2,true));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 1, 3,true));
+		fields.add(new FormField("quantity", FieldDisplayType.TEXTBOX, "Quantity", Required.OPTIONAL, 2, 2));
+		return fields;
+	}
 	
 	private static List<FormField> getVendorsFormField() {
 		List<FormField> fields = new ArrayList<>();
@@ -2239,6 +2268,37 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+	public static FacilioForm getPlannedItemsForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK ORDER PLANNED ITEMS");
+		form.setName("default_workOrderPlannedItems_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WO_PLANNED_ITEMS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getPlannedItemsFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	public static FacilioForm getPlannedToolsForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK ORDER PLANNED TOOLS");
+		form.setName("default_workOrderPlannedTools_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WO_PLANNED_TOOLS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getPlannedToolsFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+	public static FacilioForm getPlannedServicesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK ORDER PLANNED SERVICES");
+		form.setName("default_workOrderPlannedServices_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WO_PLANNED_SERVICES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getPlannedServicesFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	public static FacilioForm getTransferRequestForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("TRANSFER REQUEST");
@@ -2397,6 +2457,38 @@ public class FormFactory {
 		fields.add(vendorField);
 		fields.add(new FormField("replyDate", FieldDisplayType.DATE, "Reply Date", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField(expRepDateField.getId(),"expectedReplyDate",FieldDisplayType.DATE,"Expected Reply Date",Required.OPTIONAL,2,2,true));
+		return fields;
+	}
+	private static List<FormField> getPlannedItemsFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 2));
+		fields.add(new FormField("reservationType", FieldDisplayType.SELECTBOX, "Reservation Type", Required.REQUIRED, 3, 3));
+		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.REQUIRED, 4, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 5, 3);
+		totalCost.setIsDisabled(true);
+		fields.add(totalCost);
+		return fields;
+	}
+	private static List<FormField> getPlannedToolsFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 2));
+		fields.add(new FormField("rate", FieldDisplayType.NUMBER, "Rate", Required.REQUIRED, 4, 3));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 5, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 6, 3);
+		totalCost.setIsDisabled(true);
+		fields.add(totalCost);
+		return fields;
+	}
+	private static List<FormField> getPlannedServicesFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
+		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.REQUIRED, 2, 3));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 3, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 4, 3);
+		totalCost.setIsDisabled(true);
+		fields.add(totalCost);
 		return fields;
 	}
 	private static List<FormField> getTransferRequestFormFields() {

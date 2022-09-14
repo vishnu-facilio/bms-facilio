@@ -3,10 +3,9 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetHazardContext;
-import com.facilio.bmsconsole.context.SafetyPlanContext;
-import com.facilio.bmsconsole.context.SafetyPlanHazardContext;
-import com.facilio.bmsconsole.context.WorkorderHazardContext;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,7 +33,23 @@ public class HazardsAPI {
 		return list;
 			                 
 	}
-	
+
+	public static List<V3HazardPrecautionContext> fetchAssociatedPrecautions(Long hazardId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.HAZARD_PRECAUTION);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<V3HazardPrecautionContext> builder = new SelectRecordsBuilder<V3HazardPrecautionContext>()
+				.module(module)
+				.beanClass(V3HazardPrecautionContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("HAZARD_ID", "hazard", String.valueOf(hazardId),NumberOperators.EQUALS));
+		;
+
+		List<V3HazardPrecautionContext> list = builder.get();
+		return list;
+
+	}
+
 	public static List<WorkorderHazardContext> fetchWorkorderAssociatedHazards(Long workorderId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_HAZARD);
@@ -50,7 +65,23 @@ public class HazardsAPI {
 		return list;
 			                 
 	}
-	
+
+	public static List<V3WorkorderHazardContext> fetchV3WorkorderAssociatedHazards(Long workorderId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_HAZARD);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<V3WorkorderHazardContext> builder = new SelectRecordsBuilder<V3WorkorderHazardContext>()
+				.module(module)
+				.beanClass(V3WorkorderHazardContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("WORKORDER_ID", "workorder", String.valueOf(workorderId),NumberOperators.EQUALS));
+		;
+
+		List<V3WorkorderHazardContext> list = builder.get();
+		return list;
+
+	}
+
 	public static List<AssetHazardContext> fetchAssetAssociatedHazards(Long assetId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_HAZARD);

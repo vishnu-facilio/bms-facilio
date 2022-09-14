@@ -211,8 +211,10 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
 		woTool.setIsReturnable(false);
+		Double rate = null;
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
+			rate= purchasedtool.getRate();
 		} 
 		if(asset!=null) {
 			woTool.setAsset(asset);
@@ -225,6 +227,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		woTool.setToolType(tool.getToolType());
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(parentId);
+		woTool.setRate(rate);
 		double costOccured = 0;
 		if (tool.getRate() > 0) {
 			costOccured = tool.getRate() * duration * woTool.getQuantity();

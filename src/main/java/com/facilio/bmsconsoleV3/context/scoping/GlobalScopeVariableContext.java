@@ -36,6 +36,8 @@ public class GlobalScopeVariableContext implements Serializable {
     private long sysModifiedBy = -1L;
     private Boolean showSwitch;
     private Boolean status;
+    private Long appId;
+
     private List<ScopeVariableModulesFields> scopeVariableModulesFieldsList;
     private List<Long> values;
 
@@ -149,6 +151,14 @@ public class GlobalScopeVariableContext implements Serializable {
 
     public void setValues(List<Long> values) {
         this.values = values;
+    }
+
+    public Long getAppId() {
+        return appId;
+    }
+
+    public void setAppId(Long appId) {
+        this.appId = appId;
     }
 
     public GlobalScopeVariableContext(String linkName, List<ScopeVariableModulesFields> scopeVariableModulesFieldsList) {

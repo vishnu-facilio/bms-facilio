@@ -19,6 +19,9 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupComma
 import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
+import com.facilio.bmsconsoleV3.commands.safetyplan.AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3;
+import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableHazards;
+import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHazards;
 import com.facilio.bmsconsoleV3.commands.shift.AddBreakShiftRelationshipCommand;
 import com.facilio.bmsconsoleV3.commands.shift.RemoveBreakShiftRelationshipCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ValidateBreakCommand;
@@ -444,6 +447,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddTaskOptions());
         c.addCommand(new FillContextAfterWorkorderAddCommandV3());
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
+        c.addCommand(new AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
         c.addCommand(new AddTicketActivityCommandV3());
         // c.addCommand(getAddTasksChainV3());
@@ -2081,9 +2085,22 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchFailureClassSupplements());
         return c;
     }
+
+    public static FacilioChain getBeforeFetchSafetyPlanChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExcludeAvailableHazards());
+        c.addCommand(new ExcludeAvailableWorkOrderHazards());
+        return c;
+    }
+
     public static FacilioChain getReserveItemsChainV3(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReserveItemsCommandV3());
+        return c;
+    }
+    public static FacilioChain getCostChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlansCostCommandV3());
         return c;
     }
     //    public static FacilioChain getUnReserveItemsChainV3(){
@@ -2128,6 +2145,16 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new LoadWorkOrderServiceLookUpCommand());
         c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
         c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getReserveValidationChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReservationValidationCommandV3());
+        return c;
+    }
+    public static FacilioChain getReserveChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReservationSummaryCommandV3());
         return c;
     }
     public static FacilioChain getPeopleGroupAndMembersChain() {

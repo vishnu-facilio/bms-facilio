@@ -43,36 +43,41 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
     }
 
     public static String computeScopeVariable(ActionInvocation invocation) throws Exception {
-        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
-        JSONObject switchMap = getFilterRecordIdMapFromHeader();
-        Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen();
-        if (scopeVsValueGen != null && !scopeVsValueGen.isEmpty()) {
-            if(scopeVsValueGen != null && switchMap != null && !scopeVsValueGen.keySet().containsAll(switchMap.keySet())) {
-                return "invalid"; //Invalid switch variable linkname given. Throws 400 Bad Request.
-            }
-            for (Map.Entry<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> entry : scopeVsValueGen.entrySet()) {
-                Pair<GlobalScopeVariableContext,ValueGeneratorContext> scopeVariableValGenPair = entry.getValue();
-                ValueGeneratorContext valueGeneratorContext = scopeVariableValGenPair.getRight();
-                String ValueGenLinkName = valueGeneratorContext.getLinkName();
-                GlobalScopeVariableContext scopeVariable = scopeVariableValGenPair.getLeft();
-                List<Long> switchValues = getFilterRecordIdFromHeader(switchMap, entry.getKey());
-                List<Long> computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
-                if (CollectionUtils.isNotEmpty(switchValues)) {
-                    if (CollectionUtils.isNotEmpty(computedValGenIds)) { //When empty list all values are accessible
-                        if (!computedValGenIds.containsAll(switchValues)) {
-                            return "invalid"; //Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request.
+        Long appId = null;
+        if(AccountUtil.getCurrentApp() != null){
+            appId = AccountUtil.getCurrentApp().getId();
+        }
+        if(appId != null && appId > 0) {
+            GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+            JSONObject switchMap = getFilterRecordIdMapFromHeader();
+            Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(appId);
+            if (scopeVsValueGen != null && !scopeVsValueGen.isEmpty()) {
+                if (scopeVsValueGen != null && switchMap != null && !scopeVsValueGen.keySet().containsAll(switchMap.keySet())) {
+                    return "invalid"; //Invalid switch variable linkname given. Throws 400 Bad Request.
+                }
+                for (Map.Entry<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> entry : scopeVsValueGen.entrySet()) {
+                    Pair<GlobalScopeVariableContext, ValueGeneratorContext> scopeVariableValGenPair = entry.getValue();
+                    ValueGeneratorContext valueGeneratorContext = scopeVariableValGenPair.getRight();
+                    String ValueGenLinkName = valueGeneratorContext.getLinkName();
+                    GlobalScopeVariableContext scopeVariable = scopeVariableValGenPair.getLeft();
+                    List<Long> switchValues = getFilterRecordIdFromHeader(switchMap, entry.getKey());
+                    List<Long> computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
+                    if (CollectionUtils.isNotEmpty(switchValues)) {
+                        if (CollectionUtils.isNotEmpty(computedValGenIds)) { //When empty list all values are accessible
+                            if (!computedValGenIds.containsAll(switchValues)) {
+                                return "invalid"; //Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request.
+                            }
                         }
+                        scopeVariable.setValues(switchValues);
+                    } else {
+                        scopeVariable.setValues(computedValGenIds);
                     }
-                    scopeVariable.setValues(switchValues);
+                    setGlobalScopeVariableValues(scopeVariable);
                 }
-                else {
-                    scopeVariable.setValues(computedValGenIds);
+            } else {
+                if (switchMap != null) {
+                    return "invalid"; //When no scope variable is active and value from switch throw 400.
                 }
-                setGlobalScopeVariableValues(scopeVariable);
-            }
-        } else {
-            if(switchMap != null){
-                return "invalid"; //When no scope variable is active and value from switch throw 400.
             }
         }
         return invocation.invoke();

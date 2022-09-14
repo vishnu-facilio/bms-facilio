@@ -6,6 +6,13 @@ public class V3WorkorderItemContext extends V3ItemTransactionsContext {
     private static final long serialVersionUID = 1L;
 
     private Double cost;
+    private Double unitPrice;
+    public Double getUnitPrice() {
+        return unitPrice;
+    }
+    public void setUnitPrice(Double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
     public Double getCost() {
         return cost;
     }

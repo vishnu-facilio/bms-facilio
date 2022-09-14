@@ -11,6 +11,16 @@ public class WorkorderItemContext extends ItemTransactionsContext{
 		this.cost = cost;
 		this.setTransactionCost(cost);
 	}
-	
+
+	public Double getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(Double unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+	private Double unitPrice;
+
 	
 }

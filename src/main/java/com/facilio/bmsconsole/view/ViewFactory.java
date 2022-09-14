@@ -323,13 +323,49 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllToolTypes().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TOOL_TYPES, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderItems().setOrder(order++));
+		views.put("details", getAllWorkOrderItemsDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderTools().setOrder(order++));
+		views.put("details",getAllWorkOrderToolsDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_TOOLS,views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderService().setOrder(order++));
+		views.put("details",getAllWorkOrderServiceDetailsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WO_SERVICE,views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderPlannedItems().setOrder(order++));
+		views.put("details", getWorkOrderPlannedItemsDetails().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderPlannedTools().setOrder(order++));
+		views.put("details", getWorkOrderPlannedToolsDetails().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderPlannedServices().setOrder(order++));
+		views.put("details", getWorkOrderPlannedServicesDetails().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
@@ -759,6 +795,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkOrderHazardsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderHazardPrecautionsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -4260,8 +4301,86 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
-		private static FacilioView getAllVendors() {
+
+	private static FacilioView getAllWorkOrderItems() {
+
+		FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Items");
+		allView.setModuleName(workOrderItemsModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	private static FacilioView getAllWorkOrderItemsDetailsView() {
+		FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Items");
+		detailsView.setModuleName(workOrderItemsModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+
+	private static FacilioView getAllWorkOrderTools() {
+
+		FacilioModule workOrderToolsModule = ModuleFactory.getWorkOrderToolsModule();
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Tools");
+		allView.setModuleName(workOrderToolsModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderToolsDetailsView() {
+		FacilioModule workOrderToolsModule = ModuleFactory.getWorkOrderToolsModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Tools");
+		detailsView.setModuleName(workOrderToolsModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+
+	private static FacilioView getAllWorkOrderService() {
+
+		FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Order Service");
+		allView.setModuleName(workOrderServiceModule.getName());
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderServiceDetailsView() {
+		FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
+
+		FacilioView detailsView = new FacilioView();
+		detailsView.setName("all");
+		detailsView.setDisplayName("All Work Order Service");
+		detailsView.setModuleName(workOrderServiceModule.getName());
+
+		detailsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return detailsView;
+	}
+	private static FacilioView getAllVendors() {
 
 		FacilioModule itemsModule = ModuleFactory.getVendorsModule();
 
@@ -4281,8 +4400,127 @@ public class ViewFactory {
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		return allView;
 	}
-		
+	private static FacilioView getAllWorkOrderPlannedItems() {
 
+		FacilioModule plannedItemsModule = ModuleFactory.getWorkOrderPlannedItemsModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedItemsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All WorkOrder Planned Items");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
+
+	private static FacilioView getWorkOrderPlannedItemsDetails() {
+
+		FacilioModule plannedItemsModule = ModuleFactory.getWorkOrderPlannedItemsModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedItemsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("details");
+		allView.setDisplayName("WorkOrder Planned Item Details");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
+	private static FacilioView getAllWorkOrderPlannedTools() {
+
+		FacilioModule plannedToolsModule = ModuleFactory.getWorkOrderPlannedToolsModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedToolsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All WorkOrder Planned Tools");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
+	private static FacilioView getWorkOrderPlannedToolsDetails() {
+
+		FacilioModule plannedToolsModule = ModuleFactory.getWorkOrderPlannedToolsModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedToolsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("details");
+		allView.setDisplayName("WorkOrder Planned Tool Details");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
+	private static FacilioView getAllWorkOrderPlannedServices() {
+
+		FacilioModule plannedServicesModule = ModuleFactory.getWorkOrderPlannedServicesModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedServicesModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All WorkOrder Planned Services");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
+	private static FacilioView getWorkOrderPlannedServicesDetails() {
+
+		FacilioModule plannedServicesModule = ModuleFactory.getWorkOrderPlannedServicesModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(plannedServicesModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("WorkOrder Planned Service Details");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return allView;
+	}
 		public static Condition getMyNonInsuredVendorsCondition() {
 			FacilioField hasInsuranceField = new LookupField();
 			hasInsuranceField.setName("hasInsurance");
@@ -6971,7 +7209,7 @@ public class ViewFactory {
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
 		allView.setName("inactive");
-		allView.setDisplayName("Inactive");
+		allView.setDisplayName("Unpublished");
 		allView.setCriteria(criteria);
 
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
@@ -6994,7 +7232,7 @@ public class ViewFactory {
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
 		allView.setName("active");
-		allView.setDisplayName("Active");
+		allView.setDisplayName("Published");
 		allView.setCriteria(criteria);
 
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
@@ -8087,6 +8325,16 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Workorder Hazards");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderHazardPrecautionsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Workorder Hazard Precautions");
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;

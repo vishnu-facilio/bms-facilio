@@ -267,6 +267,10 @@ enums:
 
   - name: KPIType
     enumClassName: com.facilio.readingkpi.context.KPIType
+
+  - name: NamespaceFrequency
+    enumClassName: com.facilio.ns.context.NamespaceFrequency
+
   - name: ReservationType
     enumClassName: com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext$ReservationType
 

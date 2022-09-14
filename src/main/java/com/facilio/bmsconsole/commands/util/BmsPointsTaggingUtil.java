@@ -152,25 +152,27 @@ public class BmsPointsTaggingUtil {
                 }
             }
         }
-        Map<String, Map<String, Object>> newResultMap = new HashMap<>();
+        //Map<String, Map<String, Object>> newResultMap = new HashMap<>();
         for(String key:resultMap.keySet()){
             String splitter  = resultMap.get(key).get("splitter").toString();
             String controllerName  = key.split(splitter)[0];
             resultMap.get(key).put("controllerName",controllerName);
-            newResultMap.put(key.replace(controllerName+splitter,"") , resultMap.get(key));
+            //newResultMap.put(key.replaceFirst(controllerName+splitter,"") , resultMap.get(key));
         }
-        insertRecords(newResultMap, module, fields);
+        insertRecords(resultMap, module, fields);
     }
 
 
     public static void updateRecords(Map<String, Map<String, Object>> resultMap, FacilioModule
-            module, List<FacilioField> fields) throws Exception {
+            module, List<FacilioField> fields,long currentTime) throws Exception {
         List<String> keyList = new ArrayList<>(resultMap.keySet());
         for (String key : resultMap.keySet()) {
+
             Map<String, Object> row = new HashMap<>();
             row.put("categoryName", String.join(",", (List<String>) resultMap.get(key).get("categoryName")));
             row.put("readingName", String.join(",", (List<String>) resultMap.get(key).get("readingName")));
             row.put("assetName", String.join(",", (List<String>) resultMap.get(key).get("assetName")));
+            row.put("modifiedTime",currentTime);
 
             GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
                     .table(module.getTableName())
@@ -188,12 +190,13 @@ public class BmsPointsTaggingUtil {
             keyList.remove(key);
             updatePointMap.put(key, resultMap.remove(key));
         }
-        updateRecords(updatePointMap, module, fields);
+        long currentTime = System.currentTimeMillis();
+        updateRecords(updatePointMap, module, fields,currentTime);
         for (String key : keyList) {
             Map<String, Object> row = new HashMap<>();
             String splitter = resultMap.get(key).get("splitter").toString();
             String controllerName= resultMap.get(key).get("controllerName").toString();
-            row.put("pointName", key.replace( controllerName+ splitter, ""));
+            row.put("pointName", key);
             row.put("controllerName", controllerName);
             row.put("moduleId", module.getModuleId());
             row.put("clusterName", resultMap.get(key).get("cluster_name"));
@@ -202,7 +205,7 @@ public class BmsPointsTaggingUtil {
             row.put("assetName", String.join(",", (List<String>) resultMap.get(key).get("assetName")));
             row.put("updated", false);
             row.put("splitter", splitter);
-            row.put("createdTime", System.currentTimeMillis());
+            row.put("createdTime", currentTime);
             row.put("logs", ((Map<String, Object>) resultMap.get(key).get("logs")).toString());
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(module.getTableName())
@@ -210,8 +213,11 @@ public class BmsPointsTaggingUtil {
             builder.insert(row);
         }
     }
+    public static Map<String, Map<String, Object>> getTaggedPointList(List<String> controllerNameList) throws Exception {
+     return getTaggedPointListV1(controllerNameList , true);
+    }
 
-    public static Map<String, Map<String, Object>> getTaggedPointList(List<String> controllerNameList) throws
+    public static Map<String, Map<String, Object>> getTaggedPointListV1(List<String> controllerNameList,Boolean filterControllerName) throws
             Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("mlBmsPointsTagging");
@@ -244,8 +250,12 @@ public class BmsPointsTaggingUtil {
             map.put("categoryIds", categoryList);
             map.put("assetIds", assetList);
             map.put("readingIds", readingList);
-            recordMap.put((String) pointNameMap.remove("pointName"), map);
-        }
+            String newPointName =(String) pointNameMap.get("pointName");
+            if(filterControllerName) {
+                newPointName = newPointName.replaceFirst((String) pointNameMap.get("controllerName") + (String) pointNameMap.get("splitter"), "");
+            }
+            recordMap.put(newPointName, map);
+            }
         return recordMap;
     }
 
@@ -268,8 +278,8 @@ public class BmsPointsTaggingUtil {
         List<Map<String, Object>> predictedPointNameList = genericSelectBuilder.get();
         Map<String, Map<String, Object>> recordMap = new HashMap<>();
         for (Map<String, Object> pointNameMap : predictedPointNameList) {
-            String newPointName = (String) pointNameMap.get("controllerName") + (String) pointNameMap.get("splitter") + (String) pointNameMap.get("pointName");
-            pointNameMap.put("newPointName", newPointName);
+            //String newPointName = (String) pointNameMap.get("controllerName") + (String) pointNameMap.get("splitter") + (String) pointNameMap.get("pointName");
+            //pointNameMap.put("newPointName", newPointName);
             recordMap.put((String) pointNameMap.remove("pointName"), pointNameMap);
         }
         return recordMap;
@@ -282,8 +292,10 @@ public class BmsPointsTaggingUtil {
         FacilioModule module = modBean.getModule("mlBmsPointsTagging");
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         List<String> updatedClusterNames = new ArrayList<>();
+        Long modifiedTime = System.currentTimeMillis();
         for (String key : actualTaggedMap.keySet()) {
-            String clusterName = ((String) map.get(key).get("newPointName")).replaceAll("[0-9]", "");
+            //String clusterName = ((String) map.get(key).get("newPointName")).replaceAll("[0-9]", "");
+            String clusterName = key.replaceAll("[0-9]", "");
             Map<String, Object> assetNameMap = new HashMap<>();
             assetNameMap.put("assetName", actualTaggedMap.get(key).get("assetName"));
             assetNameMap.put("updated", true);
@@ -296,7 +308,7 @@ public class BmsPointsTaggingUtil {
                 Map<String, Object> row = new HashMap<String, Object>();
                 row.put("categoryName", actualTaggedMap.get(key).get("categoryName"));
                 row.put("readingName", actualTaggedMap.get(key).get("readingName"));
-                row.put("modifiedTime", System.currentTimeMillis());
+                row.put("modifiedTime", modifiedTime);
                 GenericUpdateRecordBuilder builder2 = new GenericUpdateRecordBuilder()
                         .table(module.getTableName())
                         .fields(fields)
@@ -330,7 +342,7 @@ public class BmsPointsTaggingUtil {
         Map<String, Object> pointNameObj = new HashMap<>();
         Map<String, String> pointNameMap = new HashMap<>();
         for (Map<String, Object> each : records) {
-            pointNameList.add("splitter#" + (String) each.get("splitter") + "#" + (String) each.get("controllerName") + (String) each.get("splitter") + (String) each.get("pointName"));
+            pointNameList.add("splitter#" + (String) each.get("splitter") + "#" + (String) each.get("pointName"));
             pointNameMap.put((String) each.get("controllerName") + (String) each.get("splitter") + (String) each.get("pointName"), (String) each.get("pointName"));
         }
         pointNameObj.put("pointNameList", pointNameList);
@@ -350,13 +362,44 @@ public class BmsPointsTaggingUtil {
             LOGGER.fatal("Error_updateMetaDataV1 api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
         }
     }
+    private static Map<String, String> getSplitterForControllers(List<String> controllerList)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule("mlBmsPointsTagging");
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        FacilioField pointNameField = fieldsMap.get("controllerName");
+        FacilioField splitter = fieldsMap.get("splitter");
+        List<FacilioField> requiredFields = new ArrayList<>();
+        requiredFields.add(pointNameField);
+        requiredFields.add(splitter);
+        GenericSelectRecordBuilder genericSelectBuilder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(requiredFields)
+                .andCondition(CriteriaAPI.getCondition(pointNameField, StringUtils.join(controllerList, ","), StringOperators.IS));
 
-    public static void updateTaggedPointList(Map<String, Map<String, Map<Long, String>>> actualTaggedMap) throws
+        List<Map<String, Object>> records = genericSelectBuilder.get();
+        Map <String,String> controllerVssplitter  = new HashMap<>();
+        for(Map<String,Object> eachRecord : records){
+            controllerVssplitter.put((String) eachRecord.get("controllerName") ,(String) eachRecord.get("splitter"));
+        }
+        return controllerVssplitter;
+    }
+
+    public static void updateTaggedPointList(Map<String , Map<String, Map<String, Map<Long, String>>>> actualTaggedMapWithController) throws
             Exception {
-        LOGGER.info("updateTaggedPointList method actualTaggedMap :" + actualTaggedMap.toString());
+        LOGGER.info("updateTaggedPointList method actualTaggedMap :" + actualTaggedMapWithController.toString());
 
         //Map<String, String> concatnatedPointNameMap = getConcatenatedPointMap(new ArrayList<String>(actualTaggedMap.keySet()));
-        Map<String, Map<String, Object>> predictedMap = getTaggedPointListFromPoint(new ArrayList<String>(actualTaggedMap.keySet()), null);
+        //Map<String, Map<String, Object>> predictedMap = getTaggedPointListFromPoint(new ArrayList<String>(actualTaggedMap.keySet()), null);
+        List<String> controllerNameList = new ArrayList<String>(actualTaggedMapWithController.keySet());
+        Map<String, Map<String, Object>> predictedMap = getTaggedPointListV1(controllerNameList,false);
+        Map<String, String> controllerVsSplitter = getSplitterForControllers(controllerNameList);
+        Map<String, Map<String, Map<Long, String>>> actualTaggedMap = new HashMap<>();
+        for(String controllerName : controllerNameList){
+            for(String pointName : actualTaggedMapWithController.get(controllerName).keySet()){
+                actualTaggedMap.put(controllerName+controllerVsSplitter.get(controllerName)+pointName , actualTaggedMapWithController.get(controllerName).get(pointName));
+            }
+        }
         Map<String, Map<String, String>> wronglyPredictedMap = new HashMap<String, Map<String, String>>();
         Map<String, Map<String, String>> wronglyPredictedFieldMap = new HashMap<String, Map<String, String>>();
         for (String key : actualTaggedMap.keySet()) {
@@ -373,7 +416,12 @@ public class BmsPointsTaggingUtil {
             }if(resultMap.get("assetName")!= null) {
                 assetId = resultMap.get("assetName").keySet().toArray()[0].toString();
             }
-            if (!(categoryId.equalsIgnoreCase((String) predictionMap.get("categoryName"))) || (!fieldId.equalsIgnoreCase((String) predictionMap.get("ReadingName")))) {
+            String predictedCatId= predictionMap.get("categoryIds").toString().replace("[","").replace("]","");
+            String predictedreadId= predictionMap.get("readingIds").toString().replace("[","").replace("]","");
+            String predictedassetId= predictionMap.get("assetIds").toString().replace("[","").replace("]","");
+
+
+            if (!(categoryId.equalsIgnoreCase(predictedCatId)) || (!assetId.equalsIgnoreCase(predictedassetId))||(!fieldId.equalsIgnoreCase(predictedreadId))) {
                 Map<String, String> updateIdMap = new HashMap<String, String>();
                 Map<String, String> updateNameMap = new HashMap<>();
                 updateIdMap.put("categoryName", categoryId);
@@ -398,13 +446,6 @@ public class BmsPointsTaggingUtil {
         List<String> notUpdatedPointList = (List<String>) notUpdatedPointObj.get("pointNameList");
         if (notUpdatedPointList.size() > 0) {
             predictApi(notUpdatedPointList,null,(Map<String, String>) notUpdatedPointObj.get("pointNameMap"));
-            //Map<String, Map<String, Object>> resultMap =
-            //tagPointList(notUpdatedPointList, null, (Map<String, String>) notUpdatedPointObj.get("pointNameMap"));
-                /*
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule("mlBmsPointsTagging");
-                List<FacilioField> fields = modBean.getAllFields(module.getName());
-                updateRecords(resultMap, module, fields);*/
         }
     }
 
