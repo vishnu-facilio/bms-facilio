@@ -56,8 +56,10 @@ movablecommit=" $(echo "${productioncommit[@]}" | tr ' ' '\n' | sort -u | tr '\n
 for lastcommit in $movablecommit
 do
   git checkout production
+  git fetch --all
   git pull
-  echo $lastcommit
+  git cherry-pick -x $lastcommit 
+  git push -v --tags origin production
   git checkout master
 done;
 fi;
