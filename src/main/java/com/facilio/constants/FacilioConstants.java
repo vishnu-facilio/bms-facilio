@@ -2799,7 +2799,13 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_SURVEY_TEMPLATE = "workOrderSurveyTemplate";
 		public static final String WORK_ORDER_SURVEY_RESPONSE = "workOrderSurveyResponse";
 	}
-
+	
+	public static class Routes {
+		public static final String DISPLAY_NAME = "Routes";
+		public static final String NAME = "routes";
+		public static final String TABLE_NAME = "Routes";
+	}
+	
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";

@@ -491,6 +491,7 @@ public class TransactionChainFactoryV3 {
             }
         });
         c.addCommand(getWorkOrderWorkflowsChainV3(true));
+        c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
@@ -540,6 +541,7 @@ public class TransactionChainFactoryV3 {
                 .addCommand(new ExecuteTaskFailureActionCommand()));
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
+        c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         c.addCommand(new AddActivitiesCommand());
         return c;
     }

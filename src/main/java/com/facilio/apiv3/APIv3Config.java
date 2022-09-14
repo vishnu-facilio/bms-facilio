@@ -2301,6 +2301,17 @@ public class APIv3Config {
 							 .delete()
 							 .build();
 	}
+	
+	@Module(FacilioConstants.Routes.NAME)
+    public static Supplier<V3Config> getRoute() {
+        return () -> new V3Config(RoutesContext.class, null)
+                .create()
+                .update()
+                .delete()
+                .list()
+                .summary()
+                .build();
+    }
 
     @Module(FacilioConstants.CraftAndSKills.CRAFT)
     public static Supplier<V3Config> getCrafts() {
