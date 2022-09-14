@@ -171,8 +171,11 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					if(!fieldObject.getName().equals("template") && !fieldObject.getName().equals("sysCreatedTime")) {
 						fields.add(fieldObject);
 					}
-				} else if (moduleName.equals(ContextNames.PLANNEDMAINTENANCE)) {
-					if (FieldFactory.Fields.PM_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+				}
+				else if (moduleName.equals(ContextNames.PLANNEDMAINTENANCE)) {
+					if (!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					} else if (!FieldFactory.Fields.PM_FIELDS_EXCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
