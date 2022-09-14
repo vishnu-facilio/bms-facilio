@@ -80,7 +80,6 @@ import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdComman
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.safetyplan.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
@@ -2596,6 +2595,16 @@ public class APIv3Config {
                 .create()
                 .list()
                 .beforeFetch(new V3LoadAssetHazardLookUpsCommand())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.BASESPACE_HAZARD)
+    public static Supplier<V3Config> getBaseSpaceHazard() {
+        return () -> new V3Config(V3BaseSpaceHazardContext.class, null)
+                .create()
+                .list()
+                .beforeFetch(new V3LoadBaseSpaceHazardLookUpsCommand())
                 .delete()
                 .build();
     }

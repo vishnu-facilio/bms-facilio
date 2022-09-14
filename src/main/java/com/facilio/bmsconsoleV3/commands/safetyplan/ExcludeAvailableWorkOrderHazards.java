@@ -2,8 +2,8 @@ package com.facilio.bmsconsoleV3.commands.safetyplan;
 
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.V3BaseSpaceHazardContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -58,6 +58,17 @@ public class ExcludeAvailableWorkOrderHazards extends FacilioCommand {
             if (props != null) {
                 for (V3AssetHazardContext assetHazard : props.values()) {
                     V3HazardContext hazard = assetHazard.getHazard();
+                    parentIds.add(hazard.getId());
+                }
+            }
+        }else if(parentModuleName.equals("spaceHazard")){
+            Criteria criteria = new Criteria();
+            Condition condition = CriteriaAPI.getCondition("BASESPACE_ID", "space", parentId, NumberOperators.EQUALS);
+            criteria.addAndCondition(condition);
+            Map<Long, V3BaseSpaceHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BASESPACE_HAZARD, null, V3BaseSpaceHazardContext.class, criteria, null);
+            if (props != null) {
+                for (V3BaseSpaceHazardContext spaceHazard : props.values()) {
+                    V3HazardContext hazard = spaceHazard.getHazard();
                     parentIds.add(hazard.getId());
                 }
             }

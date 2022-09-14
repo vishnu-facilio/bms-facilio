@@ -1983,6 +1983,9 @@ public class FacilioConstants {
 		public static final String ASSET_HAZARD = "assetHazard";
 		public static final String ASSET_HAZARDS = "assetHazards";
 
+		public static final String BASESPACE_HAZARD = "spaceHazard";
+		public static final String BASESPACE_HAZARDS = "spaceHazards";
+
 		public static final String TIME_DIFF = "timeDiff";
 		public static final String NEED_CRITERIAREPORT = "needCriteriaReport";
 		public static final String FILL_CATALOG_FORM = "fillCatalogForm";
