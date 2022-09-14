@@ -68,7 +68,7 @@ public class ScheduleExecutor extends ExecutorBase {
      *  - Case 3: trigger endTime is configured but not planEndtime -> we chose trigger end time
      *  - Case 4: both are configured - > we chose earliest of the two
      * @param triggerV2
-     * @param cutOffTime - System.currentTimeMillis()
+     * @param cutOffTime - Time from which schedule generation should be calculated.
      * @throws Exception
      */
     private void calculateEndTime(PMTriggerV2 triggerV2, long cutOffTime) throws Exception {
@@ -98,7 +98,7 @@ public class ScheduleExecutor extends ExecutorBase {
     /**
      * Helper method to set endTime based on @param scheduleInfo's FrequencyType.
      * @param scheduleInfo
-     * @param cutOffTime - System.currentTimeMillis()
+     * @param cutOffTime - Time from which schedule generation should be calculated.
      * @return trigger's endtime
      */
     private long computeEndtimeUsingTriggerType(ScheduleInfo scheduleInfo, long cutOffTime) {
