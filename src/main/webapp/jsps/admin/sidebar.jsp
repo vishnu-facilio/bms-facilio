@@ -248,14 +248,6 @@ if (buildinfo == null) {
 <%--	        </tr>--%>
 	        <tr>
 	            <td>
-	                Client Ver:
-	            </td>
-	            <td>
-	                <%= ClientAppUtil.getClientBuildInfo(request).getVersion() %>
-	            </td>
-	        </tr>
-	        <tr>
-	            <td>
 	                Serving IP:
 	            </td>
 	            <td>

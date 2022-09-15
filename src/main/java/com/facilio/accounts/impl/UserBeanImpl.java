@@ -1310,6 +1310,16 @@ public class UserBeanImpl implements UserBean {
 //				}
 			hostname = hostname + "/auth";
 		}
+
+		String logMessage = "username: " + user.getUserName();
+		logMessage += " userObject: " + FieldUtil.getAsJSON(user);
+		if (appDomainObj != null) {
+			logMessage += " appDomain: " + appDomainObj.getDomain();
+			logMessage += " domain: " + FieldUtil.getAsJSON(appDomainObj);
+		}
+		logMessage += " isInviteTokenEmpty: " + StringUtils.isEmpty(inviteToken);
+		LOGGER.error("[inviteTokenEmptyLog] " + logMessage);
+
 		return hostname + url + inviteToken;
 	}
 	
