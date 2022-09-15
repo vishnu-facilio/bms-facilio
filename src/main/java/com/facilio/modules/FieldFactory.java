@@ -15,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bouncycastle.math.raw.Mod;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -3198,6 +3199,41 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSystemField("sysModifiedBy", module));
         fields.add(getBooleanField("html","IS_HTML",module));
 
+        return fields;
+    }
+
+    public static List<FacilioField> getImportDataDetailsFields(){
+        FacilioModule module = ModuleFactory.getImportDataDetailsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("status","STATUS",module));
+        fields.add(getNumberField("createdTime","CREATED_TIME",module));
+        fields.add(getNumberField("modifiedTime","MODIFIED_TIME",module));
+        fields.add(getNumberField("createdBy","CREATED_BY",module));
+        fields.add(getNumberField("modifiedBy","MODIFIED_BY",module));
+        return fields;
+    }
+
+    public static List<FacilioField> getImportFileFields(){
+        FacilioModule module = ModuleFactory.getImportFileModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("importId","IMPORT_ID",module));
+        fields.add(getNumberField("fileId","FILE_ID",module));
+        fields.add(getStringField("fileName","FILE_NAME",module));
+        return fields;
+    }
+
+    public static List<FacilioField> getImportFileSheetsFields(){
+        FacilioModule module = ModuleFactory.getImportFileSheetsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getStringField("name","NAME",module));
+        fields.add(getNumberField("importFileId","IMPORT_FILE_ID",module));
+        fields.add(getNumberField("rowCount","ROW_COUNT",module));
         return fields;
     }
 
@@ -10818,6 +10854,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("space2", "SPACE_ID2", module, FieldType.NUMBER));
         fields.add(getField("space3", "SPACE_ID3", module, FieldType.NUMBER));
         fields.add(getField("space4", "SPACE_ID4", module, FieldType.NUMBER));
+        fields.add(getField("space5", "SPACE_ID5", module, FieldType.NUMBER));
         fields.add(getDeletedTimeField(module));
         return fields;
     }
@@ -10991,7 +11028,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
         fields.add(getField("widgetGroupId", "GROUP_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("rowIndex", "ROW_INDEX", module, FieldType.NUMBER));
+        fields.add(getField("colIndex", "COL_INDEX", module, FieldType.NUMBER));
+        fields.add(getField("colSpan", "COL_SPAN", module, FieldType.NUMBER));
         return fields;
     }
 

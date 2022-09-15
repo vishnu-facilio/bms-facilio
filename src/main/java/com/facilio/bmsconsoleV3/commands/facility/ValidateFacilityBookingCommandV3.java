@@ -48,22 +48,22 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                     }
                     Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
                     if (booking.getFacility() == null || booking.getFacility().getId() <= 0) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility is mandatory for a booking");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility cannot be empty");
                     }
                     if (MapUtils.isEmpty(subformMap) || !subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time slot cannot be empty");
                     }
                     FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
                     List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
                     if(CollectionUtils.isEmpty(slotList)){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time slot cannot be empty");
                     }
                     if (facility.getMaxSlotBookingAllowed() != null && slotList.size() > facility.getMaxSlotBookingAllowed()) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Max slots booking allowed is " + facility.getMaxSlotBookingAllowed());
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Maximum slots permitted for a booking have been utilized.");
                     }
                     for (BookingSlotsContext bookingSlot : slotList) {
                         if (bookingSlot == null) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time slot cannot be empty");
                         }
                         SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
                         if (slot != null) {
@@ -79,15 +79,14 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
 
                             int bookedCount = slot.getBookingCount() != null ? slot.getBookingCount() : 0;
                             if (slot.getBookingCount() != null && slot.getBookingCount() > 0 && !facility.isMultiBookingPerSlotAllowed()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this facility as a booking is already made in the slot " +  DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm"));
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Booking already exists in the selected slot ");
                             }
                             if (booking.getNoOfAttendees() != null && facility.getUsageCapacity() != null && booking.getNoOfAttendees() > (facility.getUsageCapacity() - bookedCount)) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the permitted bookings for the slot " + DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm"));
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the maximum number of bookings for the selected time slot");
                             }
                             if(slot.getSlotStartTime() <= System.currentTimeMillis()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Booking is not permitted for the past slot " +  DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm") + ". Please select the slots accordingly.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Booking is not allowed for earlier time slots; pick a suitable time slot instead " );
                             }
-
                             //setting booking count in slot
                             if (slot.getBookingCount() != null) {
                                 slot.setBookingCount(slot.getBookingCount() + booking.getNoOfAttendees());
@@ -98,10 +97,10 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         }
                     }
                     if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && (MapUtils.isEmpty(relations) || !relations.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE) || CollectionUtils.isEmpty(relations.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE).get(0).getData())))) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is mandatory for this facility");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee list cannot be empty");
                     }
                     if (facility.getMaxAttendeeCountPerBooking() != null && booking.getNoOfAttendees() > facility.getMaxAttendeeCountPerBooking()) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only " + facility.getMaxAttendeeCountPerBooking() + " attendees per booking is permitted");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Maximum number of attendees per booking reached");
                     }
                     int bookingAttendeesCount = 0;
                     if(facility.isAttendeeListNeeded()) {
@@ -115,7 +114,7 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                             }
                         }
                         if (bookingAttendeesCount != booking.getNoOfAttendees()) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The number of attendees does not match the specified count");
                         }
                     }
                 }

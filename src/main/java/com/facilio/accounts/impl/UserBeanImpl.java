@@ -841,6 +841,9 @@ public class UserBeanImpl implements UserBean {
 		if (space.getSpaceId4() != -1) {
 			parentIds.add(space.getSpaceId4());
 		}
+		if (space.getSpaceId5() != -1) {
+			parentIds.add(space.getSpaceId5());
+		}
 		parentIds.add(space.getId());
 		return parentIds;
 	}

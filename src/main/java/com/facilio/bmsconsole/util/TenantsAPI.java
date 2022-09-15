@@ -568,7 +568,7 @@ public class TenantsAPI {
 		        	  continue;
 		          }
 		          if(baseSpace.getSpaceTypeEnum() == SpaceType.SPACE) {
-		        	  if (spaceIds.contains(baseSpace.getSpaceId1()) || spaceIds.contains(baseSpace.getSpaceId2()) || spaceIds.contains(baseSpace.getSpaceId3()) || spaceIds.contains(baseSpace.getSpaceId4()) || spaceIds.contains(baseSpace.getFloorId()) || spaceIds.contains(baseSpace.getBuildingId())) {
+		        	  if (spaceIds.contains(baseSpace.getSpaceId1()) || spaceIds.contains(baseSpace.getSpaceId2()) || spaceIds.contains(baseSpace.getSpaceId3()) || spaceIds.contains(baseSpace.getSpaceId4()) || spaceIds.contains(baseSpace.getSpaceId5())|| spaceIds.contains(baseSpace.getFloorId()) || spaceIds.contains(baseSpace.getBuildingId())) {
 		        		  continue;
 		        	  }
 		          }

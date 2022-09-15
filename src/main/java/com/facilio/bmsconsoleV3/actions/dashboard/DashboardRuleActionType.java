@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
+import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.context.dashboard.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -21,6 +22,7 @@ import com.facilio.report.util.ReportUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -33,13 +35,17 @@ public enum DashboardRuleActionType {
 
     FILTER( 1, "filter") {
         @Override
-        public void performAction(DashboardRuleContext dashboardRule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeHolders, Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map) throws Exception
+        public void performAction(DashboardRuleContext dashboardRule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id) throws Exception
         {
             JSONObject result_json = null;
+
+            JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
+            JSONObject placeHoldersMeta = dashboard_execute_meta.getPlaceHoldersMeta();
             for(DashboardTriggerAndTargetWidgetContext target_widget : dashboard_rule_action.getTarget_widgets())
             {
                 result_json = new JSONObject();
                 Long target_widget_id = target_widget.getTarget_widget_id();
+                DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(trigger_widget_id);
                 Criteria target_widget_criteria = null;
                 Long criteriaId = target_widget.getCriteriaId();
                 if(criteriaId != null  && criteriaId > 0)
@@ -47,23 +53,62 @@ public enum DashboardRuleActionType {
                     target_widget_criteria = CriteriaAPI.getCriteria(criteriaId);
                     if (target_widget_criteria != null)
                     {
-                        for (String key : target_widget_criteria.getConditions().keySet()) {
-                            Condition condition = target_widget_criteria.getConditions().get(key);
-                            if (condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-                                String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, condition.getValue());
-                                condition.setValue(value);
-                                condition.setComputedWhereClause(null);
+                        Map<String, Object> placeholder_vs_value_map = new HashMap<>();
+                        String recordId = null;
+                        if(trigger_widget.getLinkName() != null && placeHoldersMeta  != null)
+                        {
+                            ArrayList value_arr = null;
+                            if(placeHolders.containsKey(trigger_widget.getLinkName()))
+                            {
+                                HashMap widget_value = (HashMap)  placeHolders.get(trigger_widget.getLinkName());
+                                if(widget_value != null && widget_value.containsKey("value"))
+                                {
+                                    value_arr = (ArrayList) widget_value.get("value");
+                                    if(value_arr.size() > 0 )
+                                    {
+                                        String value = (String)value_arr.get(0);
+                                        if(value != null  && !value.equals("") && !value.equals("all") && !value.equals("All") && !value.equals("ALL"))
+                                        {
+                                            recordId = value;
+                                        }
+                                    }
+                                }
                             }
+                            if(placeHoldersMeta.containsKey(trigger_widget.getLinkName()))
+                            {
+                                HashMap widget_meta = (HashMap) placeHoldersMeta.get(trigger_widget.getLinkName());
+                                if(widget_meta != null && widget_meta.containsKey("moduleName")){
+                                   String moduleName = (String) widget_meta.get("moduleName");
+                                   if(recordId != null ) {
+                                       placeholder_vs_value_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
+                                       if(value_arr != null && value_arr.size() > 1) {
+                                           placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), value_arr);
+                                       }
+                                   }
+                                }
+                            }
+                        }
+                        if(recordId != null && !recordId.equals(""))
+                        {
+                            for (String key : target_widget_criteria.getConditions().keySet()) {
+                                Condition condition = target_widget_criteria.getConditions().get(key);
+                                if (condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
+                                    String replaced_value = StringSubstitutor.replace(condition.getValue(), placeholder_vs_value_map);
+                                    condition.setValue(replaced_value);
+                                    condition.setComputedWhereClause(null);
+                                }
+                            }
+                        }else{
+                            target_widget_criteria = null;
                         }
 
                     }
                 }
-
                 DashboardWidgetContext widget  = DashboardUtil.getWidget(target_widget_id);
                 DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
                 if(widgetType != null && widgetType == DashboardWidgetContext.WidgetType.FILTER)
                 {
-                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, timeline_filter,user_filter, placeHolders, timeline_widget_field_map);
+                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta);
                 }
                 else if(widget != null && widgetType == DashboardWidgetContext.WidgetType.CHART)
                 {
@@ -104,7 +149,7 @@ public enum DashboardRuleActionType {
                         }
                         else
                         {
-                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, timeline_filter, user_filter, placeHolders, timeline_widget_field_map);
+                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta);
                         }
                     }
                 }
@@ -114,7 +159,7 @@ public enum DashboardRuleActionType {
             }
         }
 
-        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria , JSONObject timeline_filter, JSONObject user_filter , JSONObject placeHolders, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data)throws Exception
         {
             result_json.put("widgetType" , widgetType);
             result_json.put("widget_id", target_widget_id);
@@ -122,23 +167,15 @@ public enum DashboardRuleActionType {
             JSONObject temp = new JSONObject();
             temp.put("criteria", criteria);
             actionData.put("FILTER", temp);
-            if(timeline_filter != null && timeline_widget_field_map != null && timeline_widget_field_map.containsKey(target_widget_id))
-            {
-                actionData.put("TIMELINE_FILTER", timeline_filter.get("TIMELINE_FILTER"));
-            }
-            if(user_filter != null && user_filter.containsKey(target_widget_id))
-            {
-               JSONObject user_filter_result = V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) user_filter.get(target_widget_id));
-               if(user_filter_result != null && !user_filter_result.isEmpty()) {
-                   actionData.put("USER_FILTER", user_filter_result);
-               }
-            }
-            result_json.put("actionData" , actionData);
+            V3DashboardAPIHandler.setUserFilterResp(actionData, target_widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
+            V3DashboardAPIHandler.setTimeLineFilterResp(actionData, target_widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
+
+            result_json.put("actionMeta" , actionData);
         }
     },
     URL(2 , "url") {
         @Override
-        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeholder_json, Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id)throws Exception
         {
             JSONObject action_details = dashboard_rule_action.getAction_meta().getAction_detail();
             if(action_details != null )
@@ -147,7 +184,7 @@ public enum DashboardRuleActionType {
                 {
                     JSONObject result_json = new JSONObject();
                     String url = (String) action_details.get("url");
-                    String replaced_url = FormRuleAPI.replacePlaceHoldersAndGetResult(placeholder_json, url);
+                    String replaced_url = FormRuleAPI.replacePlaceHoldersAndGetResult(dashboard_execute_meta.getPlaceHolders(), url);
                     DashboardWidgetContext widget  = DashboardUtil.getWidget(trigger_widget_id);
                     DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
                     result_json.put("widgetType", widgetType);
@@ -164,7 +201,7 @@ public enum DashboardRuleActionType {
     },
     SHOW_SECTIONS(3, "show_sections"){
         @Override
-        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeholder_json ,Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta ,Long trigger_widget_id)throws Exception
         {
             JSONObject action_details = dashboard_rule_action.getAction_meta().getAction_detail();
             if(action_details != null && action_details.containsKey("section_ids"))
@@ -191,7 +228,7 @@ public enum DashboardRuleActionType {
     },
     HIDE_SECTIONS(4, "hide_sections"){
         @Override
-        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeholder_json, Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id)throws Exception
         {
             JSONObject action_details = dashboard_rule_action.getAction_meta().getAction_detail();
             if(action_details != null && action_details.containsKey("section_ids"))
@@ -219,7 +256,7 @@ public enum DashboardRuleActionType {
 
     SCRIPT_ACTION(5, "script_action"){
         @Override
-        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeholder_json, Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id)throws Exception
         {
             DashboardRuleActionMetaContext dashboard_action_meta = dashboard_rule_action.getAction_meta();
             if(dashboard_action_meta != null)
@@ -232,7 +269,7 @@ public enum DashboardRuleActionType {
                     FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
                     FacilioContext context = chain.getContext();
                     context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(placeholder_json));
+                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(dashboard_execute_meta.getPlaceHolders()));
                     chain.execute();
                     List returnList = (List) workflow.getReturnValue();
                     JSONArray jsonArray = new JSONArray();
@@ -262,7 +299,7 @@ public enum DashboardRuleActionType {
     },
     TIMELINE_FILTER(10, "timeline_filter"){
         @Override
-        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, JSONObject placeholder_json, Long trigger_widget_id , JSONObject timeline_filter, JSONObject user_filter, Map<Long, Map<String, String>> timeline_widget_field_map)throws Exception
+        public void performAction(DashboardRuleContext dashboard_rule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id)throws Exception
         {
             Long dashboardId = dashboard_rule.getDashboardId();
             JSONObject result_json = new JSONObject();
@@ -297,7 +334,7 @@ public enum DashboardRuleActionType {
         this.val = val;
         this.name = name;
     }
-    abstract public void performAction(DashboardRuleContext dashboard_rule, DashboardRuleActionContext action, JSONObject client_json, Long trigger_widget_id, JSONObject timeline_filter, JSONObject user_filter , Map<Long, Map<String, String>> timeline_widget_field_map) throws Exception;
+    abstract public void performAction(DashboardRuleContext dashboard_rule, DashboardRuleActionContext action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id) throws Exception;
     private static final Map<Integer, DashboardRuleActionType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 
 

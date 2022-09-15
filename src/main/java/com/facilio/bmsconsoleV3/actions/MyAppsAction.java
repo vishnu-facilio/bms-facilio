@@ -15,11 +15,23 @@ import javax.servlet.http.HttpServletRequest;
 public class MyAppsAction extends V3Action {
 
     private Long ouId;
-    public Long getAppId() {
+
+    public Long getOuId() {
         return ouId;
     }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
+    private Long appId;
+
+    public Long getAppId() {
+        return appId;
+    }
+
     public void setAppId(Long appId) {
-        this.ouId = appId;
+        this.appId = appId;
     }
 
     public String listMyApps() throws Exception {
@@ -31,6 +43,20 @@ public class MyAppsAction extends V3Action {
 
         context.put(FacilioConstants.ContextNames.APP_DOMAIN, request.getServerName());
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, AccountUtil.getCurrentUser().getOuid());
+        chain.execute();
+
+
+        setData("myApps", context.get(FacilioConstants.ContextNames.MY_APPS));
+        return SUCCESS;
+    }
+
+    public String listMyAppsForUser() throws Exception {
+
+
+        FacilioChain chain = TransactionChainFactoryV3.getListMyAppsForUser();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ORG_USER_ID,ouId );
+        context.put(FacilioConstants.ContextNames.APPLICATION_ID,appId );
         chain.execute();
 
 

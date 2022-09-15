@@ -697,6 +697,30 @@ public class ModuleFactory {
 		return deviceModule;
 	}
 
+	public static FacilioModule getImportDataDetailsModule(){
+		FacilioModule importDataDetails = new FacilioModule();
+		importDataDetails.setName("importDataDetails");
+		importDataDetails.setDisplayName("Import Data Details");
+		importDataDetails.setTableName("ImportDataDetails");
+		return importDataDetails;
+	}
+
+	public static FacilioModule getImportFileModule(){
+		FacilioModule importFile = new FacilioModule();
+		importFile.setName("importFile");
+		importFile.setDisplayName("Import File");
+		importFile.setTableName("ImportFile");
+		return importFile;
+	}
+
+	public static FacilioModule getImportFileSheetsModule(){
+		FacilioModule importFileSheets = new FacilioModule();
+		importFileSheets.setName("importFileSheets");
+		importFileSheets.setDisplayName("Import File Sheets");
+		importFileSheets.setTableName("ImportFileSheets");
+		return importFileSheets;
+	}
+
 	public static FacilioModule getReadingRuleInclusionsExclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
 		readingRuleInclusionsExclusions.setName("readingruleInclusionsExclusions");

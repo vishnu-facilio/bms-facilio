@@ -4,6 +4,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
+import com.facilio.bmsconsoleV3.commands.budget.ValidationForScopeCommandV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
@@ -722,6 +723,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new ValidateBudgetAmountCommandV3());
+        c.addCommand(new ValidationForScopeCommandV3());
         return c;
 
     }
@@ -2009,6 +2011,12 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getListMyApps() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ListMyAppsCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getListMyAppsForUser() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ListMyAppsForUserCommandV3());
         return c;
     }
 

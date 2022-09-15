@@ -501,7 +501,8 @@ public class WorkorderPageFactory extends PageFactory {
                 && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
             addPlansTab(page);
         }
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)){
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
+                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)){
             addActualsTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());

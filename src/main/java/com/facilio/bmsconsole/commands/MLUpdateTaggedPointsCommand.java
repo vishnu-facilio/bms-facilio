@@ -6,12 +6,14 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.cacheimpl.AgentBeanImpl;
 import com.facilio.agentv2.commands.AgentV2Command;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -23,18 +25,21 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         try{
             FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-        List<Map<String, Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
-
-        Map<Long, String> assetCategory = AssetsAPI.getCategoryList().stream().collect(Collectors.toMap(AssetCategoryContext::getId, AssetCategoryContext::getName));
-        Map<Long, String> resources = CommissioningApi.getResources(points.stream().map(x -> (Long) x.get("resourceId")).filter(Objects::nonNull).collect(Collectors.toSet()));
-        Map<Long, Map<String, Object>> fields = CommissioningApi.getFields(points.stream().map(x -> (Long) x.get("fieldId")).filter(Objects::nonNull).collect(Collectors.toSet()));
+            List<Map<String, Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
+            Map<Long, String> assetCategory = AssetsAPI.getCategoryList().stream().collect(Collectors.toMap(AssetCategoryContext::getId, AssetCategoryContext::getName));
+            Map<Long, String> resources = CommissioningApi.getResources(points.stream().map(x -> (Long) x.get("resourceId")).filter(Objects::nonNull).collect(Collectors.toSet()));
+            Map<Long, Map<String, Object>> fields = CommissioningApi.getFields(points.stream().map(x -> (Long) x.get("fieldId")).filter(Objects::nonNull).collect(Collectors.toSet()));
             Map<String,Map<String, Map<String, Map<Long, String>>>> controllerNameMap = new HashMap<>();
-
 
         for (Map<String, Object> point : points) {
             if (point.containsKey("resourceId") && point.containsKey("fieldId")) {
                 Map<String, Map<Long, String>> pointMap = new HashMap<>();
-                pointMap.put("category", Collections.singletonMap((Long) point.get("categoryId"), assetCategory.get(point.get("categoryId"))));
+                if(point.get("categoryId")!=null){
+                    pointMap.put("category", Collections.singletonMap((Long) point.get("categoryId"), assetCategory.get(point.get("categoryId"))));
+                }
+                else{
+                    pointMap.put("category",null);
+                }
                 if (point.get("resourceId") != null) {
                     pointMap.put("assetName", Collections.singletonMap((Long) point.get("resourceId"), resources.get(point.get("resourceId"))));
                 } else {
@@ -54,7 +59,7 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
                             pointsMap.put((String) point.get(AgentConstants.NAME), pointMap);
                         }
                         controllerNameMap.put((String) point.get("deviceName"), pointsMap);
-                    } else {
+                } else {
                         if (agent.getAgentType() == AgentType.NIAGARA.getKey()) {
                             ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
                         } else {

@@ -37,6 +37,9 @@ public class ZoneAPI {
 			else if(child.getId() != child.getSpaceId4() && childrenIds.contains(child.getSpaceId4())) {
 				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
 			}
+			else if(child.getId() != child.getSpaceId5() && childrenIds.contains(child.getSpaceId5())) {
+				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
+			}
 		}
 	}
 	
@@ -59,7 +62,7 @@ public class ZoneAPI {
 		}
 		for(int i=0;i<children.size();i++)
 		{
-			Long id = children.get(i).getBuildingId() != -1 ? children.get(i).getBuildingId() : children.get(i).getFloorId() != -1 ? children.get(i).getFloorId() : children.get(i).getSpaceId1() != -1 ? children.get(i).getSpaceId1() : children.get(i).getSpaceId2() != -1 ? children.get(i).getSpaceId2() : children.get(i).getSpaceId3() != -1 ? children.get(i).getSpaceId3() : children.get(i).getSpaceId4() != -1 ? children.get(i).getSpaceId4() : -1;
+			Long id = children.get(i).getBuildingId() != -1 ? children.get(i).getBuildingId() : children.get(i).getFloorId() != -1 ? children.get(i).getFloorId() : children.get(i).getSpaceId1() != -1 ? children.get(i).getSpaceId1() : children.get(i).getSpaceId2() != -1 ? children.get(i).getSpaceId2() : children.get(i).getSpaceId3() != -1 ? children.get(i).getSpaceId3() : children.get(i).getSpaceId4() != -1 ? children.get(i).getSpaceId4() : children.get(i).getSpaceId5() != -1 ? children.get(i).getSpaceId5() : -1;
 			if(id != -1) {
 			parentMap.put(id, children.get(i));
 			}
@@ -68,7 +71,7 @@ public class ZoneAPI {
 			if (spacesMap.containsKey(newTenantChild.getId())) {
 				throw new IllegalArgumentException(newTenantChild.getName()+" occupied by another tenant");
 			}
-			else if(spacesMap.containsKey(newTenantChild.getBuildingId()) || spacesMap.containsKey(newTenantChild.getFloorId()) || spacesMap.containsKey(newTenantChild.getSpaceId1()) || spacesMap.containsKey(newTenantChild.getSpaceId2()) || spacesMap.containsKey(newTenantChild.getSpaceId3()) || spacesMap.containsKey(newTenantChild.getSpaceId4())) {
+			else if(spacesMap.containsKey(newTenantChild.getBuildingId()) || spacesMap.containsKey(newTenantChild.getFloorId()) || spacesMap.containsKey(newTenantChild.getSpaceId1()) || spacesMap.containsKey(newTenantChild.getSpaceId2()) || spacesMap.containsKey(newTenantChild.getSpaceId3()) || spacesMap.containsKey(newTenantChild.getSpaceId4()) || spacesMap.containsKey(newTenantChild.getSpaceId5())) {
 				throw new IllegalArgumentException("The Parent of "+newTenantChild.getName()+" is already occupied by another tenant");
 			}
 			else if(parentMap.containsKey(newTenantChild.getId())) {
