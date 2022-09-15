@@ -298,7 +298,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	public void setSpaceId5(Long spaceId5){
 		this.spaceId5 = spaceId5;
 
-		if (spaceId5 > -1) {
+		if (spaceId5 != null && spaceId5 > -1) {
 			if (space5 == null) {
 				space5 = new V3SpaceContext();
 			}
