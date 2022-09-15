@@ -1908,7 +1908,28 @@ public class ApplicationApi {
                 .select(FieldFactory.getApplicationFields());
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
-        return applications;
+        return getFilteredApplications(applications);
+    }
+
+    public static List<ApplicationContext> getFilteredApplications(List<ApplicationContext> applications) throws Exception {
+        List <ApplicationContext> apps = new ArrayList<>();
+
+        applications.forEach(app -> {
+            try {
+                if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS)) {
+                        apps.add(app);
+                    }
+                }
+                else {
+                    apps.add(app);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return apps;
     }
 
     public static void setThisAppForUser(User user, ApplicationContext app, boolean assignDefaultRole)
