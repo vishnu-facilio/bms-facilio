@@ -2172,6 +2172,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateWorkOrderPlannedItemsCommandV3());
         c.addCommand(new SetIsReservedCommandV3());
+        c.addCommand(new SetWorkOrderPlannedItemsCommandV3());
         return c;
     }
     public static FacilioChain getAddOrUdpateWorkorderItemsChainV3() {

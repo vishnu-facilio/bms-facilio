@@ -77,7 +77,7 @@ public class ReservationValidationCommandV3 extends FacilioCommand {
                         workOrderPlannedItem.setDatum("errorMessage", "Unit Price is null");
                     }
                     //reservation type validation
-                    if(workOrderPlannedItem.getReservationType()==null){
+                    if(workOrderPlannedItem.getReservationTypeEnum()==null || workOrderPlannedItem.getReservationType()<=0){
                         workOrderPlannedItem.setDatum("errorType", "Error Note");
                         workOrderPlannedItem.setDatum("errorMessage", "Reservation Type is null");
                     }

@@ -124,9 +124,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.LoadPlannedItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.UpdateWorkOrderPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
@@ -1700,7 +1698,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderPlannedTools() {
         return () -> new V3Config(WorkOrderPlannedToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
                 .update()
+                .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
                 .list()
                 .summary()
                 .delete()
@@ -1711,7 +1711,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderPlannedServices() {
         return () -> new V3Config(WorkOrderPlannedServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
                 .update()
+                .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
                 .list()
                 .summary()
                 .delete()

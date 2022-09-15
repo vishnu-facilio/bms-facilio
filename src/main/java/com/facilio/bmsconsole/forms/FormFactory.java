@@ -2462,18 +2462,21 @@ public class FormFactory {
 	private static List<FormField> getPlannedItemsFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 2));
-		fields.add(new FormField("reservationType", FieldDisplayType.SELECTBOX, "Reservation Type", Required.REQUIRED, 3, 3));
-		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.REQUIRED, 4, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 2, 2));
+		fields.add(new FormField("reservationType", FieldDisplayType.SELECTBOX, "Reservation Type", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.OPTIONAL, 4, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.OPTIONAL, 5, 3);
+		totalCost.setIsDisabled(true);
+		fields.add(totalCost);
 		return fields;
 	}
 	private static List<FormField> getPlannedToolsFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 2));
-		fields.add(new FormField("rate", FieldDisplayType.NUMBER, "Rate", Required.REQUIRED, 4, 3));
-		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 5, 2));
-		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 6, 3);
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 2, 2));
+		fields.add(new FormField("rate", FieldDisplayType.NUMBER, "Rate", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.OPTIONAL, 5, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.OPTIONAL, 6, 3);
 		totalCost.setIsDisabled(true);
 		fields.add(totalCost);
 		return fields;
@@ -2481,9 +2484,9 @@ public class FormFactory {
 	private static List<FormField> getPlannedServicesFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "Quantity", Required.REQUIRED, 1, 2));
-		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.REQUIRED, 2, 3));
-		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 3, 2));
-		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.REQUIRED, 4, 3);
+		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.OPTIONAL, 2, 3));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.OPTIONAL, 3, 2));
+		FormField totalCost = new FormField("totalCost", FieldDisplayType.NUMBER, "Total Cost", Required.OPTIONAL, 4, 3);
 		totalCost.setIsDisabled(true);
 		fields.add(totalCost);
 		return fields;
