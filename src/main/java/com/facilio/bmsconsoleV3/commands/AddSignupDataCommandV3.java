@@ -71,7 +71,7 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<ApplicationContext> allApplications = ApplicationApi.getAllApplications();
+        List<ApplicationContext> allApplications = ApplicationApi.getAllApplicationsWithOutFilter();
         if(CollectionUtils.isNotEmpty(SIGN_UP_CHAIN)){
             for(SignUpData signUpData : SIGN_UP_CHAIN){
                 signUpData.addData();
