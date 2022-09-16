@@ -99,13 +99,14 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private boolean canTrack(JSONObject mailJson) throws Exception {
-        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.EMAIL_TRACKING)) {
+        boolean isSignUp = Constants.getModBean().getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
+        if(isSignUp) {
             return false;
         }
+        boolean isLicenseEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.EMAIL_TRACKING);
         boolean trackingConfFound = StringUtils.isNotEmpty(DBConf.getInstance().getMailTrackingConfName());
-        boolean isSignUp = Constants.getModBean().getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
         boolean doTracking = (boolean) mailJson.getOrDefault("_tracking", true);
-        return trackingConfFound && !isSignUp && doTracking;
+        return isLicenseEnabled && trackingConfFound && doTracking;
     }
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
