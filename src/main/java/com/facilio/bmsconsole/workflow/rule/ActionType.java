@@ -41,6 +41,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -98,11 +99,11 @@ public enum ActionType {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty()) {
 						if(currentRecord instanceof ModuleBaseWithCustomFields) {
-							obj.put("recordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
-							obj.put("recordCreatedTime", ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
+							obj.put(MailConstants.Params.RECORD_ID, ((ModuleBaseWithCustomFields) currentRecord).getId());
+							obj.put(MailConstants.Params.RECORD_CREATED_TIME, ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
 						}
-						obj.put("moduleId", currentRule.getModuleId());
-						obj.put("sourceType", MailSourceType.RULE_NOTIFICATION.name());
+						obj.put(MailConstants.Params.RECORDS_MODULE_ID, currentRule.getModuleId());
+						obj.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.RULE_NOTIFICATION.name());
 						String attachmentsUrl = (String) obj.getOrDefault("attachmentsUrl", null);
 						String attachmentsNames = (String) obj.getOrDefault("attachmentsNames", null);
 						if(StringUtils.isNotEmpty(attachmentsUrl) && StringUtils.isNotEmpty(attachmentsNames)){
@@ -161,11 +162,11 @@ public enum ActionType {
 						toEmails = getTo(toAddr.toString());
 					}
 					if(currentRecord instanceof ModuleBaseWithCustomFields) {
-						obj.put("recordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
-						obj.put("recordCreatedTime", ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
+						obj.put(MailConstants.Params.RECORD_ID, ((ModuleBaseWithCustomFields) currentRecord).getId());
+						obj.put(MailConstants.Params.RECORD_CREATED_TIME, ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
 					}
-					obj.put("moduleId", currentRule.getModuleId());
-					obj.put("sourceType", MailSourceType.RULE_NOTIFICATION.name());
+					obj.put(MailConstants.Params.RECORDS_MODULE_ID, currentRule.getModuleId());
+					obj.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.RULE_NOTIFICATION.name());
 					if (toEmails != null && !toEmails.isEmpty()) {
 						Boolean sendAsSeparateMail = (Boolean) obj.getOrDefault("sendAsSeparateMail", false);
 						if (sendAsSeparateMail == null || !sendAsSeparateMail) {

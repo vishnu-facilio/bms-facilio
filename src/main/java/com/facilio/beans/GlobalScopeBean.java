@@ -27,4 +27,6 @@ public interface GlobalScopeBean {
 
     public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen(Long appId) throws Exception;
 
+    public void deleteScopeVariable(Long id) throws Exception;
+
 }

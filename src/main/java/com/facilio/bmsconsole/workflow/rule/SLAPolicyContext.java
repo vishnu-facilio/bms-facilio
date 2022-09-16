@@ -8,6 +8,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class SLAPolicyContext extends WorkflowRuleContext {
         }
     }
 
-    public static class SLAPolicyEntityEscalationContext {
+    public static class SLAPolicyEntityEscalationContext implements Serializable {
         private long slaEntityId = -1;
         public long getSlaEntityId() {
             return slaEntityId;

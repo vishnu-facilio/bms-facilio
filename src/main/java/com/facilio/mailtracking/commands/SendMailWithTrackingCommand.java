@@ -4,6 +4,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import lombok.extern.log4j.Log4j;
@@ -21,7 +22,8 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
         EmailClient emailClient = EmailFactory.getEmailClient();
         String messageId = emailClient.sendEmailFromWMS(mailJson, files);
         context.put(MailConstants.Params.MESSAGE_ID, messageId);
-        LOGGER.info("OG_MAIL_LOG :: email sent successfully for mapperId "+ context.get(MailConstants.Params.MAPPER_ID));
+        context.put(MailConstants.Params.STATUS, MailStatus.SENT);
+        LOGGER.info("OG_MAIL_LOG :: email sent successfully for MAPPER_ID "+ context.get(MailConstants.Params.MAPPER_ID));
         return false;
     }
 

@@ -227,6 +227,7 @@ public class ColumnFactory {
 		columnMap.put("workorderHazardPrecaution-all", getAssociatedWorkOrderHazardPrecautionsColumns());
 		columnMap.put("precaution-all", getPrecautionsColumns());
 		columnMap.put("hazard-all", getHazardColumns());
+		columnMap.put("spaceHazard-all", getAssociatedHazardPrecautionsColumns());
 
 		// site,building,space columns
 		columnMap.put("site-default", getDefaultSiteViewColumns());
@@ -1876,7 +1877,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("sysModifiedBy", "Modified By"));
 		return columns;
 	}
-
 	public static  List<ViewField> getAllHazardPrecautionsColumns() {
 		List<ViewField> columns = new ArrayList<>();
 		columns.add(new ViewField("precaution", "Precaution"));

@@ -11,6 +11,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,8 @@ public class AddWorkOrderModules extends SignUpData {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
+        
+        addRouteLookupField();
     }
 
     private FacilioModule getWorkOrderFailureClassRel() {
@@ -87,4 +91,14 @@ public class AddWorkOrderModules extends SignUpData {
         woFcRelMod.setFields(fields);
         return woFcRelMod;
     }
+    
+    private void addRouteLookupField() throws Exception{
+	    	ModuleBean moduleBean = Constants.getModBean();
+			FacilioModule workorderModule = moduleBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	    	LookupField routeField = FieldFactory.getDefaultField("route","Route","ROUTE_ID",FieldType.LOOKUP);
+	    	routeField.setLookupModule(moduleBean.getModule(FacilioConstants.Routes.NAME));
+	    	routeField.setModule(workorderModule);
+	    	routeField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+	    	moduleBean.addField(routeField);
+		}
 }

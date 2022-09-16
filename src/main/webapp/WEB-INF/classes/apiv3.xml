@@ -1071,6 +1071,8 @@
         </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
         </action>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
+        </action>
     </package>
     <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
              extends="v3Api">

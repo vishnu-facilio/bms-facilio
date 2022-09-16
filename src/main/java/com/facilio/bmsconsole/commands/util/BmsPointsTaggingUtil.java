@@ -397,6 +397,9 @@ public class BmsPointsTaggingUtil {
         Map<String, Map<String, Map<Long, String>>> actualTaggedMap = new HashMap<>();
         for(String controllerName : controllerNameList){
             for(String pointName : actualTaggedMapWithController.get(controllerName).keySet()){
+                Map<Long,String> splitterMap= new HashMap<>();
+                splitterMap.put(0L,controllerVsSplitter.get(controllerName));
+                actualTaggedMapWithController.get(controllerName).get(pointName).put("splitter" ,splitterMap);
                 actualTaggedMap.put(controllerName+controllerVsSplitter.get(controllerName)+pointName , actualTaggedMapWithController.get(controllerName).get(pointName));
             }
         }
@@ -436,7 +439,11 @@ public class BmsPointsTaggingUtil {
                 if(resultMap.get("assetName")!= null) {
                     updateNameMap.put("assetName", resultMap.get("assetName").get(Long.parseLong(assetId)));
                 }else {updateNameMap.put("assetName","");}
+                updateNameMap.put("splitter",resultMap.get("splitter").get(0l));
                 wronglyPredictedMap.put(key, updateNameMap);
+                if((categoryId.equalsIgnoreCase("-1")) ||(fieldId.equalsIgnoreCase("-1"))){
+                    continue;
+                }
                 wronglyPredictedFieldMap.put(key, updateIdMap);
             }
         }

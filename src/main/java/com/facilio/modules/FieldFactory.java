@@ -321,6 +321,13 @@ public class FieldFactory extends BaseFieldFactory {
                 "description"
         }));
 
+        public static final List<String> PM_FIELDS_EXCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+            "pmPlanner",
+            "pmResourcePlanner",
+            "pmTriggerV2",
+            "pmV2"
+        }));
+
         public static final List<String> PM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "name",
                 "type",

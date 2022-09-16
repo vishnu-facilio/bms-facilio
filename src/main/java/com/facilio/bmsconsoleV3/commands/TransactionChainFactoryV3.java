@@ -414,6 +414,35 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getWorkOrderBeforeSavePreCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalModuleIdCommand());
+        c.addCommand(new SetWorkOrderSourceType());
+        c.addCommand(new ValidateWorkOrderFieldsPreCreateChainCommandV3());
+        c.addCommand(new AddFailureClassFromResource());
+        // Attachment Command has to be added after its fixes are done
+        return c;
+    }
+
+    public static FacilioChain getWorkOrderAfterSavePreCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateTasksCommandV3());
+        c.addCommand(new FillTasksAndPrerequisitesCommand());
+        c.addCommand(new AddTaskSectionsV3());
+        c.addCommand(new AddTasksCommandV3());
+        c.addCommand(new AddTaskOptions());
+        return c;
+    }
+
+    public static FacilioChain getWorkOrderAfterSavePostCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillContextAfterAddingWorkOrderPostCreateChainCommandV3());
+        c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
+        c.addCommand(new AddTicketActivityCommandV3());
+        c.addCommand(new AddPrerequisiteApproversCommandV3());
+        return c;
+    }
+
     public static FacilioChain getWorkOrderWorkflowsChainV3(boolean sendNotification) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_CUSTOM_CHANGE));
@@ -462,6 +491,7 @@ public class TransactionChainFactoryV3 {
             }
         });
         c.addCommand(getWorkOrderWorkflowsChainV3(true));
+        c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
@@ -511,6 +541,7 @@ public class TransactionChainFactoryV3 {
                 .addCommand(new ExecuteTaskFailureActionCommand()));
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
+        c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         c.addCommand(new AddActivitiesCommand());
         return c;
     }

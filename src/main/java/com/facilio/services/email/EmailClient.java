@@ -99,6 +99,9 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private boolean canTrack(JSONObject mailJson) throws Exception {
+        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.EMAIL_TRACKING)) {
+            return false;
+        }
         boolean trackingConfFound = StringUtils.isNotEmpty(DBConf.getInstance().getMailTrackingConfName());
         boolean isSignUp = Constants.getModBean().getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
         boolean doTracking = (boolean) mailJson.getOrDefault("_tracking", true);
@@ -115,18 +118,14 @@ public abstract class EmailClient extends BaseEmailClient {
             chain.execute();
             return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
         } catch (Exception e) {
-            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed before pushing to queue. So sending in normal flow :: "+mailJson, e);
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed [BEFORE-QUEUE]. So sending in normal flow :: "+mailJson, e);
             OutgoingMailAPI.triggerFallbackMailSendChain(context);
             return -1;
         }
     }
 
     public long sendMailWithoutTracking(JSONObject mailJson, Map<String, String> files) throws Exception {
-        if(files == null) {
-            sendEmailImpl(mailJson);
-        } else {
-            sendEmailImpl(mailJson, files);
-        }
+        sendEmailFromWMS(mailJson, files);
         return -1;
     }
 

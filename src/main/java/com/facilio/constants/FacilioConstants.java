@@ -1983,6 +1983,9 @@ public class FacilioConstants {
 		public static final String ASSET_HAZARD = "assetHazard";
 		public static final String ASSET_HAZARDS = "assetHazards";
 
+		public static final String BASESPACE_HAZARD = "spaceHazard";
+		public static final String BASESPACE_HAZARDS = "spaceHazards";
+
 		public static final String TIME_DIFF = "timeDiff";
 		public static final String NEED_CRITERIAREPORT = "needCriteriaReport";
 		public static final String FILL_CATALOG_FORM = "fillCatalogForm";
@@ -2796,7 +2799,13 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_SURVEY_TEMPLATE = "workOrderSurveyTemplate";
 		public static final String WORK_ORDER_SURVEY_RESPONSE = "workOrderSurveyResponse";
 	}
-
+	
+	public static class Routes {
+		public static final String DISPLAY_NAME = "Routes";
+		public static final String NAME = "routes";
+		public static final String TABLE_NAME = "Routes";
+	}
+	
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";

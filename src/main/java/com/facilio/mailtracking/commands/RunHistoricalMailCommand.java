@@ -4,7 +4,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -24,11 +23,9 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Log4j
 public class RunHistoricalMailCommand extends FacilioCommand {
@@ -60,11 +57,12 @@ public class RunHistoricalMailCommand extends FacilioCommand {
                 .andCondition(endIdCond);
         List<V3OutgoingMailLogContext> rows = selectBuilder.get();
 
+
         Map<Long, Long> attachmentMapper = new HashMap<>();
-        attachmentMapper.put(16428L, 1195617L);
-        attachmentMapper.put(16462L, 1195768L);
-        attachmentMapper.put(16464L, 1195617L);
-        attachmentMapper.put(16577L, 1196297L);
+//        attachmentMapper.put(16428L, 1195617L);
+//        attachmentMapper.put(16462L, 1195768L);
+//        attachmentMapper.put(16464L, 1195617L);
+//        attachmentMapper.put(16577L, 1196297L);
 
         FileStore fs = FacilioFactory.getFileStore();
         for(V3OutgoingMailLogContext row : rows) {
@@ -72,7 +70,7 @@ public class RunHistoricalMailCommand extends FacilioCommand {
             try {
                 FacilioChain chain = MailReadOnlyChainFactory.pushToMailTemp();
                 FacilioContext newContext = chain.getContext();
-                JSONObject mailJson = RunHistoricalMailCommand.convertToMailJson(row);
+                JSONObject mailJson = convertToMailJson(row);
                 if (mailJson == null) {
                     continue;
                 }
@@ -89,7 +87,7 @@ public class RunHistoricalMailCommand extends FacilioCommand {
                 }
                 chain.execute();
             } catch (Exception e) {
-                LOGGER.error("Failed.. skipping loggerid :: "+loggerId, e);
+                LOGGER.error("Failed.. skipping LOGGER_ID :: "+loggerId, e);
             }
         }
         return false;
@@ -101,7 +99,7 @@ public class RunHistoricalMailCommand extends FacilioCommand {
             if(record.getHtmlContent()!=null) {
                 mailJson.put("mailType", "html");
             }
-            mailJson.put("sender", mailJson.get("to"));
+            mailJson.put("sender", mailJson.get("from"));
             mailJson.put("originalTo", mailJson.get("to"));
             mailJson.put("originalBcc", mailJson.get("bcc"));
             mailJson.put("originalCc", mailJson.get("cc"));

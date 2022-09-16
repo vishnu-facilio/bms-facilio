@@ -4,15 +4,12 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 
 import java.util.Arrays;
 
+import com.facilio.bmsconsole.context.*;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
@@ -96,6 +93,10 @@ public class SpaceManagementPageFactory extends PageFactory {
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
 
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+				addSafetyPlanTab(page);
+			}
+
 			Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
 			    Page.Section tab2Sec1 = page.new Section();
@@ -145,6 +146,10 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3,module, building);
 
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			addSafetyPlanTab(page);
+		}
+
 		Page.Tab tab2 = page.new Tab("History");
 	    page.addTab(tab2);
 	    Page.Section tab2Sec1 = page.new Section();
@@ -181,6 +186,10 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, module, floor);
+
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			addSafetyPlanTab(page);
+		}
 
 		Page.Tab tab3 = page.new Tab("History");
 	    page.addTab(tab3);
@@ -243,6 +252,10 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1Sec5.addWidget(unplannedWidget);
 		tab2.addSection(tab1Sec5);
 
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			addSafetyPlanTab(page);
+		}
+
 		Page.Tab tab3 = page.new Tab("History");;
 	    page.addTab(tab3);
 	    Page.Section tab3Sec1 = page.new Section();
@@ -253,6 +266,26 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    tab3Sec1.addWidget(activityWidget);
 
 		return page;
+	}
+
+	private static Page.Section addSafetyPlanTab(Page page) throws Exception {
+		Page.Tab safetyPlanTab = page.new Tab("safety plan");
+		page.addTab(safetyPlanTab);
+
+		Page.Section safetyPlanSection = page.new Section();
+		safetyPlanTab.addSection(safetyPlanSection);
+
+		// hazards widget
+		PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
+		hazards.addToLayoutParams(0, 0, 24, 8);
+		safetyPlanSection.addWidget(hazards);
+
+		// precautions widget
+		PageWidget widget = new PageWidget(WidgetType.LIST, "safetyPlanPrecautions");
+		widget.addToLayoutParams(safetyPlanSection, 24, 10);
+		safetyPlanSection.addWidget(widget);
+
+		return safetyPlanSection;
 	}
 
 	private static void addSecondaryDetailsWidget(Section section) {

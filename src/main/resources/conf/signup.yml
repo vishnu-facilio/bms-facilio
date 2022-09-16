@@ -116,6 +116,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddMultiResourceModule
+  - com.facilio.bmsconsoleV3.signup.routes.AddRouteModules
 
 
     # Adding default ML params

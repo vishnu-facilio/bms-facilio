@@ -761,4 +761,9 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     private LinkedHashMap<String, List<V3TaskContext>> tasksString;
+    
+    @Getter
+    @Setter
+    private RoutesContext route;
+
 }
