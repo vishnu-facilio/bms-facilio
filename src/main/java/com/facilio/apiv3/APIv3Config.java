@@ -1143,9 +1143,6 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getWorkorderAfterSaveChain())
-                .preCreate()
-                .beforeSave(TransactionChainFactoryV3.getWorkOrderBeforeSavePreCreateChain())
-                .afterSave(TransactionChainFactoryV3.getWorkOrderAfterSavePreCreateChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getWorkorderAfterUpdateChain(true))
@@ -1156,8 +1153,6 @@ public class APIv3Config {
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .delete()
-                .postCreate()
-                .afterSave(TransactionChainFactoryV3.getWorkOrderAfterSavePostCreateChain())
                 .build();
     }
 

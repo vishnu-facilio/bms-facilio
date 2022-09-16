@@ -241,13 +241,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				resourceIds = Collections.singletonList(workorderTemplate.getResourceIdVal());
 			}
 
-			for(Long resourceId :resourceIds) {
+			for (Long resourceId : resourceIds) {
 
 				Map<String, List<TaskContext>> taskMap = null;
 
-				if(resourcePlanners != null && resourcePlanners.containsKey(resourceId)) {
+				if (resourcePlanners != null && resourcePlanners.containsKey(resourceId)) {
 					PMResourcePlannerContext resourcePlanner = resourcePlanners.get(resourceId);
-					if (resourcePlanner.getAssignedToId() != null && resourcePlanner.getAssignedToId() > 0 ) {
+					if (resourcePlanner.getAssignedToId() != null && resourcePlanner.getAssignedToId() > 0) {
 						workorderTemplate.setAssignedToId(resourcePlanner.getAssignedToId());
 					}
 				}
@@ -256,7 +256,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 				wo.setJobStatus(WorkOrderContext.JobsStatus.COMPLETED);
 
-				int preRequisiteCount= workorderTemplate.getPreRequestSectionTemplates().size();
+				int preRequisiteCount = workorderTemplate.getPreRequestSectionTemplates().size();
 				wo.setPrerequisiteEnabled(preRequisiteCount != 0);
 				if (wo.getPrerequisiteEnabled()) {
 					wo.setPreRequestStatus(PreRequisiteStatus.NOT_STARTED.getValue());
@@ -267,14 +267,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				wo.setResource(ResourceAPI.getResource(resourceId));
 				taskMap = workorderTemplate.getTasks();
 
-				Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
+				Map<String, List<TaskContext>> taskMapForNewPmExecution = null;    // should be handled in above if too
 
 				boolean isNewPmType = false;
 
-				if(workorderTemplate.getSectionTemplates() != null) {
-					for(TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
-						if(sectiontemplate.getAssignmentType() < 0) {
-							isNewPmType =  false;
+				if (workorderTemplate.getSectionTemplates() != null) {
+					for (TaskSectionTemplate sectiontemplate : workorderTemplate.getSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
+						if (sectiontemplate.getAssignmentType() < 0) {
+							isNewPmType = false;
 							break;
 						} else {
 							isNewPmType = true;
@@ -285,9 +285,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
 				wo.setTrigger(pmTrigger);
 
-				if(isNewPmType) {
+				if (isNewPmType) {
 					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
-					if(woTemplateResourceId > 0) {
+					if (woTemplateResourceId > 0) {
 						Long currentTriggerId = null;
 						if (pmTrigger != null) {
 							currentTriggerId = pmTrigger.getId();
@@ -297,7 +297,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				} else {
 					taskMapForNewPmExecution = workorderTemplate.getTasks();
 				}
-				if(taskMapForNewPmExecution != null) {
+				if (taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
 				}
 				Map<String, List<TaskContext>> preRequestMap = workorderTemplate.getPreRequests();
@@ -346,7 +346,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 				if (AccountUtil.getCurrentOrg().getOrgId() == 218L) {
 					if (taskMapForNewPmExecution == null || taskMapForNewPmExecution.isEmpty()) {
-						LOGGER.log(Level.ERROR, "PMID : "+ pm.getId() + " No taskmap");
+						LOGGER.log(Level.ERROR, "PMID : " + pm.getId() + " No taskmap");
 					}
 				}
 
@@ -356,7 +356,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				addWOChain.execute(context);
 
 				// if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock
-					// incrementPMCount(pm);
+				// incrementPMCount(pm);
 				// }
 				workOrderContexts.add(wo);
 			}
@@ -374,7 +374,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 //			}
 //		}
 
-		pm.setCurrentExecutionCount(pm.getCurrentExecutionCount()+1);
+		pm.setCurrentExecutionCount(pm.getCurrentExecutionCount() + 1);
 		Map<String, Object> props = new HashMap<>();
 		props.put("currentExecutionCount", pm.getCurrentExecutionCount());
 
@@ -385,49 +385,44 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(FieldFactory.getPreventiveMaintenanceFields())
-														.table(module.getTableName())
+				.fields(FieldFactory.getPreventiveMaintenanceFields())
+				.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(pm.getId(), module))
-														;
+				.andCondition(CriteriaAPI.getIdCondition(pm.getId(), module));
 
 		updateBuilder.update(props);
 	}
 
-	public List<Map<String, Object>> CopyPlannedMaintenance() throws Exception
-	{
-		System.out.println("___________>>>>>>>>>>OrgID: "+AccountUtil.getCurrentOrg().getId());
+	public List<Map<String, Object>> CopyPlannedMaintenance() throws Exception {
+		System.out.println("___________>>>>>>>>>>OrgID: " + AccountUtil.getCurrentOrg().getId());
 
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 
 		FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(module.getTableName())
-														.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getId());
+				.select(fields)
+				.table(module.getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getId());
 
-	// selectBuilder.limit(1);
-	List<Map<String, Object>> props = selectBuilder.get();
+		// selectBuilder.limit(1);
+		List<Map<String, Object>> props = selectBuilder.get();
 
-	if(props != null && !props.isEmpty())
-	{
-	System.out.println("Number of Pm's in the Org:"+props.size());
-	for (Map<String, Object> prop : props) {
-		long templateId = (Long)prop.get("templateId");
-		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-		WorkorderTemplate woNewTemplate = new WorkorderTemplate();
-		Long categoryId = (Long)prop.get("categoryId");
-		if (categoryId != null)
-		{
-			prop.put("categoryName", TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), categoryId).getName());
-		}
-		else {
-			prop.put("categoryName", null);
-		}
-		woNewTemplate.setName(woTemplate.getName());
-		woNewTemplate.setTasks(woTemplate.getTasks());
-		prop.put("template", woNewTemplate);
+		if (props != null && !props.isEmpty()) {
+			System.out.println("Number of Pm's in the Org:" + props.size());
+			for (Map<String, Object> prop : props) {
+				long templateId = (Long) prop.get("templateId");
+				WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+				WorkorderTemplate woNewTemplate = new WorkorderTemplate();
+				Long categoryId = (Long) prop.get("categoryId");
+				if (categoryId != null) {
+					prop.put("categoryName", TicketAPI.getCategory(AccountUtil.getCurrentOrg().getId(), categoryId).getName());
+				} else {
+					prop.put("categoryName", null);
+				}
+				woNewTemplate.setName(woTemplate.getName());
+				woNewTemplate.setTasks(woTemplate.getTasks());
+				prop.put("template", woNewTemplate);
 		
 		
 		
@@ -449,53 +444,48 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 //			TemplateAPI.addPMWorkOrderTemplate(woTemplate);
 //		*/
 //		}
-	}
+			}
 
-	return props;
-	}
-	return null;
+			return props;
+		}
+		return null;
 	}
 
 	@Override
-	public PreventiveMaintenance CopyWritePlannedMaintenance(List<Map<String, Object>> props) throws Exception
-	{
+	public PreventiveMaintenance CopyWritePlannedMaintenance(List<Map<String, Object>> props) throws Exception {
 
-		System.out.println("___________>>>>>>>>>>New OrgID: "+AccountUtil.getCurrentOrg().getId());
+		System.out.println("___________>>>>>>>>>>New OrgID: " + AccountUtil.getCurrentOrg().getId());
 		for (Map<String, Object> prop : props) {
 			// System.out.println("$$$$$$$$$$woTemplate:"+prop.get("template"));
 
 			WorkorderTemplate woTemplate = (WorkorderTemplate) prop.get("template");
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			String category = (String) prop.get("categoryName");
-			if (category != null)
-			{
+			if (category != null) {
 
-			TicketCategoryContext categoryId = TicketAPI.getCategory(orgId, category);
+				TicketCategoryContext categoryId = TicketAPI.getCategory(orgId, category);
 
-			if (categoryId != null)
-			{
-			// System.out.println("+++++++++++++++++" +FieldUtil.getAsJSON(woTemplate));
-			 woTemplate.setCategoryId(categoryId.getId());
-			}
-			else
-			{
-				TicketCategoryContext record = new TicketCategoryContext();
-				record.setName(category);
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule("ticketcategory");
+				if (categoryId != null) {
+					// System.out.println("+++++++++++++++++" +FieldUtil.getAsJSON(woTemplate));
+					woTemplate.setCategoryId(categoryId.getId());
+				} else {
+					TicketCategoryContext record = new TicketCategoryContext();
+					record.setName(category);
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule("ticketcategory");
 
-				InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
-																							.module(module)
-																							.fields(modBean.getAllFields("ticketcategory"));
+					InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
+							.module(module)
+							.fields(modBean.getAllFields("ticketcategory"));
 
-				long id = insertRecordBuilder.insert(record);
+					long id = insertRecordBuilder.insert(record);
 
-				woTemplate.setCategoryId(id);
-			}
+					woTemplate.setCategoryId(id);
+				}
 			}
 			woTemplate.setOrgId(orgId);
 			long tempId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
-			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<" +tempId);
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<" + tempId);
 
 			PreventiveMaintenance newPm = new PreventiveMaintenance();
 
@@ -515,7 +505,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			builder.save();
 			long id = (long) pmProps.get("id");
 
-			System.out.println(">>>>>>>>>>>>>>>>>>>> PM ID: "+id);
+			System.out.println(">>>>>>>>>>>>>>>>>>>> PM ID: " + id);
 //			for(String key : prop.keySet()){
 ////		long templateId = (Long)prop.get("template");
 ////		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
@@ -527,8 +517,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public WorkOrderContext CloseAllWorkOrder() throws Exception
-	{
+	public WorkOrderContext CloseAllWorkOrder() throws Exception {
 		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
 		List<FacilioStatus> ticketStatus = new ArrayList<FacilioStatus>();
 		List<TaskContext> tasks = new ArrayList<TaskContext>();
@@ -545,7 +534,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		
 		workOrders = builder.get();*/
 
-		System.out.println("___________>>>>>>>>>>Number of workorders OverDue: "+workOrders.size());
+		System.out.println("___________>>>>>>>>>>Number of workorders OverDue: " + workOrders.size());
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(ModuleFactory.getTicketStatusIdField());
@@ -562,18 +551,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		ticketStatus.get(0).getId();
 
 
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@ Ticket Status Id" + ticketStatus.get(0).getId());
 
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@ Ticket Status Id"+ticketStatus.get(0).getId());
-
-		for (WorkOrderContext workOrder : workOrders)
-		{
+		for (WorkOrderContext workOrder : workOrders) {
 			SelectRecordsBuilder<TaskContext> taskbuilder = new SelectRecordsBuilder<TaskContext>()
-				.table("Tasks")
-				.moduleName(FacilioConstants.ContextNames.TASK)
-				.beanClass(TaskContext.class)
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-				.andCustomWhere("Tasks.PARENT_TICKET_ID = ?", workOrder.getId());
-
+					.table("Tasks")
+					.moduleName(FacilioConstants.ContextNames.TASK)
+					.beanClass(TaskContext.class)
+					.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+					.andCustomWhere("Tasks.PARENT_TICKET_ID = ?", workOrder.getId());
 
 
 			tasks = taskbuilder.get();
@@ -581,48 +567,44 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			// System.out.println("===============LLLLLLLLL FL "+modBean.getAllFields(FacilioConstants.ContextNames.TICKET));
 
 
-			if (tasks != null && !tasks.isEmpty())
-			{
+			if (tasks != null && !tasks.isEmpty()) {
 				new StringJoiner(",");
 				List<Long> taskIdList = new ArrayList<>();
-				System.out.println("@@@@@@@@@@@@@@@@@@@@@Number of Tasks in the Workorder: "+tasks.size()+ "for Workorder"+workOrder.getId());
+				System.out.println("@@@@@@@@@@@@@@@@@@@@@Number of Tasks in the Workorder: " + tasks.size() + "for Workorder" + workOrder.getId());
 				String questMark = "";
 				int idx = 0;
-				for (TaskContext task : tasks)
-				{
+				for (TaskContext task : tasks) {
 					taskIdList.add(task.getId());
 					if (idx == 0) {
 						questMark += "?";
-					}
-					else {
+					} else {
 						questMark += ", ?";
 					}
-					idx ++;
+					idx++;
 				}
-				System.out.println("===============LLLLLLLLLTask ID's"+taskIdList);
-				System.out.println("===============LLLLLLLLL"+questMark);
+				System.out.println("===============LLLLLLLLLTask ID's" + taskIdList);
+				System.out.println("===============LLLLLLLLL" + questMark);
 
-					UpdateRecordBuilder<TaskContext> updateTaskBuilder = new UpdateRecordBuilder<TaskContext>()
-					.moduleName(FacilioConstants.ContextNames.TASK)
-					.fields(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-					.andCustomWhere(" Tickets.ID in ( "+questMark+" )", taskIdList.toArray());
-
-
-					TaskContext ts = new TaskContext();
-					ts.setStatusNew(TaskStatus.CLOSED);
-
-					updateTaskBuilder.update(ts);
+				UpdateRecordBuilder<TaskContext> updateTaskBuilder = new UpdateRecordBuilder<TaskContext>()
+						.moduleName(FacilioConstants.ContextNames.TASK)
+						.fields(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+						.andCustomWhere(" Tickets.ID in ( " + questMark + " )", taskIdList.toArray());
 
 
-		}
-		System.out.println("===============LLLLLLLLL WO"+workOrder.getId());
+				TaskContext ts = new TaskContext();
+				ts.setStatusNew(TaskStatus.CLOSED);
 
+				updateTaskBuilder.update(ts);
+
+
+			}
+			System.out.println("===============LLLLLLLLL WO" + workOrder.getId());
 
 
 			UpdateRecordBuilder<WorkOrderContext> updateWOBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-				.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-				.andCustomWhere("Tickets.ID = ?", workOrder.getId());
+					.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+					.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+					.andCustomWhere("Tickets.ID = ?", workOrder.getId());
 
 			WorkOrderContext wo = new WorkOrderContext();
 			wo.setStatus(ticketStatus.get(0));
@@ -641,26 +623,25 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		FacilioModule extendedModule = module.getExtendModule();
-		while(extendedModule != null) {
+		while (extendedModule != null) {
 			module = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
 
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
+				.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-														;
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		deleteBuilder.delete();
 	}
 
 	@Override
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, FacilioRecord record, boolean adjustTime) throws Exception {
-			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, null, adjustTime);
+		TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, null, adjustTime);
 	}
 
 	@Override
-	public void processTimeSeries( FacilioRecord record) throws Exception {
+	public void processTimeSeries(FacilioRecord record) throws Exception {
 		try {
 			TimeSeriesAPI.processFacilioRecord(record);
 		} catch (AmazonS3Exception e) {
@@ -682,9 +663,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
         }
     }*/
 
-    @Override
+	@Override
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
-			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
+							  Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
 		if (partitionKey != null && !partitionKey.isEmpty()) {
 			ControllerContext controller = ControllerAPI.getActiveController(partitionKey);
 			long siteId = -1l;
@@ -753,46 +734,45 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.select(FieldFactory.getDeviceDetailsFields());
 		HashMap<String, Long> deviceData = new HashMap<>();
 		List<Map<String, Object>> data = builder.get();
-		for(Map<String, Object> obj : data) {
-			String deviceId = (String)obj.get("deviceId");
-			Long id = (Long)obj.get("id");
+		for (Map<String, Object> obj : data) {
+			String deviceId = (String) obj.get("deviceId");
+			Long id = (Long) obj.get("id");
 			deviceData.put(deviceId, id);
 		}
 		return deviceData;
 	}
 
-	public  List<Map<String,Object>> getAgentDataMap(String agentName, AgentType type) throws Exception{
-		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentDataFields());
+	public List<Map<String, Object>> getAgentDataMap(String agentName, AgentType type) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentDataFields());
 		FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields());
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-		if (agentName != null)
-		{
-			genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
+		if (agentName != null) {
+			genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule), agentName, StringOperators.IS)).get();
 		}
-		if(type != null){
-		 	genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_TYPE),type.getLabel(),StringOperators.IS));
+		if (type != null) {
+			genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_TYPE), type.getLabel(), StringOperators.IS));
 		}
 		return genericSelectRecordBuilder.get();
 
 	}
 
 	@Override
-	public Long addLog(Map<String, Object> logData) throws Exception{ // done transaction
+	public Long addLog(Map<String, Object> logData) throws Exception { // done transaction
 		FacilioModule logModule = ModuleFactory.getAgentLogModule();
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
-															.table(AgentKeys.AGENT_LOG_TABLE)
-															.fields(FieldFactory.getAgentLogFields());
+				.table(AgentKeys.AGENT_LOG_TABLE)
+				.fields(FieldFactory.getAgentLogFields());
 		return genericInsertRecordBuilder.insert(logData);
 	}
 
-    @Override
-    public int updateAgentMetrics(Map<String,Object> metrics, Criteria criteria) throws Exception { // done transaction
+	@Override
+	public int updateAgentMetrics(Map<String, Object> metrics, Criteria criteria) throws Exception { // done transaction
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-																.table(AgentKeys.METRICS_TABLE)
-																.fields(FieldFactory.getAgentMetricsFields())
+				.table(AgentKeys.METRICS_TABLE)
+				.fields(FieldFactory.getAgentMetricsFields())
 //																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
 				.andCriteria(criteria);
 																/*.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
@@ -800,86 +780,84 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(metricsmodule), String.valueOf(criteria.get(AgentKeys.ID)),NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getAgentMetricsFields()).get(AgentKeys.CREATED_TIME), String.valueOf(criteria.get(AgentKeys.CREATED_TIME)),NumberOperators.EQUALS));
 */
-                return genericUpdateRecordBuilder.update(metrics);
+		return genericUpdateRecordBuilder.update(metrics);
 
-
-    }
-    public long insertAgentMetrics(Map<String,Object> metrics)throws Exception{ // done transaction
-		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
-				.table(AgentKeys.METRICS_TABLE)
-				.fields(FieldFactory.getAgentMetricsFields());
-        try {
-            return genericInsertRecordBuilder.insert( metrics);
-        }catch (Exception e){
-            if(e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException){
-                LOGGER.info("Duplicate Metrics, insertion failed "+e.getMessage());
-            }
-            else {
-                LOGGER.info("Exception occurred ",e);
-            }
-        }
-        return -1L;
 
 	}
 
-    @Override
-    public List<Map<String, Object>> getMetrics(Long agentId,Integer publishType, Long createdTime) throws Exception {
+	public long insertAgentMetrics(Map<String, Object> metrics) throws Exception { // done transaction
+		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(AgentKeys.METRICS_TABLE)
+				.fields(FieldFactory.getAgentMetricsFields());
+		try {
+			return genericInsertRecordBuilder.insert(metrics);
+		} catch (Exception e) {
+			if (e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException) {
+				LOGGER.info("Duplicate Metrics, insertion failed " + e.getMessage());
+			} else {
+				LOGGER.info("Exception occurred ", e);
+			}
+		}
+		return -1L;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType, Long createdTime) throws Exception {
 		FacilioModule metricsModule = ModuleFactory.getAgentMetricsModule();
-		if(agentId != null && publishType != null) {
+		if (agentId != null && publishType != null) {
 			GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 					.table(AgentKeys.METRICS_TABLE)
 					.select(FieldFactory.getAgentMetricsFields())
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsModule), agentId.toString(), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsModule), publishType.toString(), NumberOperators.EQUALS))
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsModule))
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule),createdTime.toString(),NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule), createdTime.toString(), NumberOperators.EQUALS));
 			List<Map<String, Object>> rows = genericSelectRecordBuilder.get();
-			return rows	;
+			return rows;
 		}
 		return new ArrayList<>();
-    }
-
-	public Long addAgentMessage(Map<String,Object> map)throws Exception{ // transaction done
-		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-        try {
-            GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                    .table(messageModule.getTableName())
-                    .fields(FieldFactory.getAgentMessageFields());
-            return insertRecordBuilder.insert(map);
-    }catch (Exception e){
-            if(e instanceof MySQLIntegrityConstraintViolationException || e instanceof BatchUpdateException){
-                LOGGER.info("Duplicate Message,insertion failed "+e.getMessage());
-            }
-            else {
-                LOGGER.info("Exception Occurred "+e.getMessage());
-                throw e;
-            }
-    }
-       return -1L;
 	}
 
-	public Long updateAgentMessage(Map<String,Object> map) throws Exception{ // transaction done
+	public Long addAgentMessage(Map<String, Object> map) throws Exception { // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-		try{
+		try {
+			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+					.table(messageModule.getTableName())
+					.fields(FieldFactory.getAgentMessageFields());
+			return insertRecordBuilder.insert(map);
+		} catch (Exception e) {
+			if (e instanceof MySQLIntegrityConstraintViolationException || e instanceof BatchUpdateException) {
+				LOGGER.info("Duplicate Message,insertion failed " + e.getMessage());
+			} else {
+				LOGGER.info("Exception Occurred " + e.getMessage());
+				throw e;
+			}
+		}
+		return -1L;
+	}
+
+	public Long updateAgentMessage(Map<String, Object> map) throws Exception { // transaction done
+		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+		try {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(messageModule.getTableName())
 					.fields(new ArrayList<>(fieldMap.values()))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.MSG_STATUS),"0",NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.MSG_STATUS), "0", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), String.valueOf(map.get(AgentKeys.RECORD_ID)), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.PARTITION_ID), String.valueOf(map.get(AgentConstants.PARTITION_ID)), NumberOperators.EQUALS));
 
-			Integer rowsAffected= updateRecordBuilder.update(map);
+			Integer rowsAffected = updateRecordBuilder.update(map);
 			return Long.valueOf(rowsAffected);
-        }catch (Exception e){
-			if(e instanceof MySQLIntegrityConstraintViolationException){
-				LOGGER.info("Duplicate Message,updation failed "+e.getMessage());
-			}
-			else {
-				LOGGER.info("Exception Occurred "+e.getMessage());
+		} catch (Exception e) {
+			if (e instanceof MySQLIntegrityConstraintViolationException) {
+				LOGGER.info("Duplicate Message,updation failed " + e.getMessage());
+			} else {
+				LOGGER.info("Exception Occurred " + e.getMessage());
 				throw e;
 			}
-        }
+		}
 		return 0L;
 	}
 
@@ -899,7 +877,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if (context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)) {
 					selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());
 				}
-				if(context.containsKey(FacilioConstants.ContextNames.INNER_JOIN) && context.containsKey(FacilioConstants.ContextNames.ON_CONDITION)){
+				if (context.containsKey(FacilioConstants.ContextNames.INNER_JOIN) && context.containsKey(FacilioConstants.ContextNames.ON_CONDITION)) {
 					LOGGER.info("adding inner join ");
 					selectRecordBuilder.innerJoin(String.valueOf(context.get(ContextNames.INNER_JOIN))).on(String.valueOf(context.get(ContextNames.ON_CONDITION)));
 				}
@@ -908,30 +886,31 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					int page = (int) pagination.get("page");
 					int perPage = (int) pagination.get("perPage");
 
-					int offset = ((page-1) * perPage);
+					int offset = ((page - 1) * perPage);
 					if (offset < 0) {
 						offset = 0;
 					}
 
 					selectRecordBuilder.offset(offset);
 					selectRecordBuilder.limit(perPage);
-				}else {
+				} else {
 					if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
 						selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
-					}if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
-						LOGGER.info(" limit in get rows  is "+context.get(FacilioConstants.ContextNames.LIMIT_VALUE));
+					}
+					if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+						LOGGER.info(" limit in get rows  is " + context.get(FacilioConstants.ContextNames.LIMIT_VALUE));
 						selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
 					} else {
 						selectRecordBuilder.limit(1000);
 					}
 				}
 
-				if( ( context.containsKey(FacilioConstants.ContextNames.AGGREGATOR) && (((Boolean) context.get(ContextNames.AGGREGATOR))) ) && context.containsKey(ContextNames.MODULE)){
-					selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,FieldFactory.getIdField((FacilioModule) context.get(ContextNames.MODULE)));
+				if ((context.containsKey(FacilioConstants.ContextNames.AGGREGATOR) && (((Boolean) context.get(ContextNames.AGGREGATOR)))) && context.containsKey(ContextNames.MODULE)) {
+					selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField((FacilioModule) context.get(ContextNames.MODULE)));
 				}
 
 				rows.addAll(selectRecordBuilder.get());
-				context.put("query",selectRecordBuilder.toString());
+				context.put("query", selectRecordBuilder.toString());
 				//LOGGER.info(" rows obtained "+rows.size());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
@@ -943,22 +922,22 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return rows;
 	}
 
-	public Integer updateTable(FacilioContext context)throws Exception {
+	public Integer updateTable(FacilioContext context) throws Exception {
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
 
-		if(context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)){
+		if (context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)) {
 			updateRecordBuilder.table((String) context.get(FacilioConstants.ContextNames.TABLE_NAME));
 
-			if( context.containsKey(FacilioConstants.ContextNames.FIELDS)){
+			if (context.containsKey(FacilioConstants.ContextNames.FIELDS)) {
 				updateRecordBuilder.fields((List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS));
 
-				if(context.containsKey(FacilioConstants.ContextNames.CRITERIA)){
+				if (context.containsKey(FacilioConstants.ContextNames.CRITERIA)) {
 					updateRecordBuilder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
 				}
-				if(context.containsKey(FacilioConstants.ContextNames.TO_UPDATE_MAP)){
-					Integer rowsAffected= updateRecordBuilder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
+				if (context.containsKey(FacilioConstants.ContextNames.TO_UPDATE_MAP)) {
+					Integer rowsAffected = updateRecordBuilder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
 					return rowsAffected;
-				}else {
+				} else {
 					return 0;
 				}
 			}
@@ -969,10 +948,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public Integer deleteFromDb(FacilioContext context) throws Exception {
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		if(context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)){
+		if (context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)) {
 			deleteRecordBuilder.table(String.valueOf(context.get(FacilioConstants.ContextNames.TABLE_NAME)));
 
-			if(context.containsKey(FacilioConstants.ContextNames.CRITERIA)){
+			if (context.containsKey(FacilioConstants.ContextNames.CRITERIA)) {
 				deleteRecordBuilder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
 				return deleteRecordBuilder.delete();
 			}
@@ -986,32 +965,32 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long fieldsOptionType)
 			throws Exception {
 		// TODO Auto-generated method stub
-			FacilioContext context=new FacilioContext();
-			context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
-			context.put(ContextNames.FIELD_ID,fieldId);
-			context.put(ContextNames.ASSET_ID,assetId);
-			context.put(ContextNames.START_TTIME,startTtime);
-			context.put(ContextNames.END_TTIME,endTtime);
-			context.put(ContextNames.ADMIN_USER_EMAIL, email);
-			context.put(ContextNames.FIELD_OPTION_TYPE,fieldsOptionType );
+		FacilioContext context = new FacilioContext();
+		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+		context.put(ContextNames.FIELD_ID, fieldId);
+		context.put(ContextNames.ASSET_ID, assetId);
+		context.put(ContextNames.START_TTIME, startTtime);
+		context.put(ContextNames.END_TTIME, endTtime);
+		context.put(ContextNames.ADMIN_USER_EMAIL, email);
+		context.put(ContextNames.FIELD_OPTION_TYPE, fieldsOptionType);
 
-			if(fieldsOptionType == 1) {
-				FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDeltaCalculationChain();
-				readingToolsChain.execute(context);
-			}else {
-				FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDuplicateRemoveChain();
-				readingToolsChain.execute(context);
-			}
+		if (fieldsOptionType == 1) {
+			FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDeltaCalculationChain();
+			readingToolsChain.execute(context);
+		} else {
+			FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDuplicateRemoveChain();
+			readingToolsChain.execute(context);
+		}
 
 	}
 	@Override
 	public void deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId, long moduleId)
 			throws Exception {
 		// TODO Auto-generated method stub
-		FacilioContext context=new FacilioContext();
+		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
-		context.put(ContextNames.FIELD_ID,fieldId);
-		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.FIELD_ID, fieldId);
+		context.put(ContextNames.ASSET_ID, assetId);
 		context.put(ContextNames.START_TIME, startTtime);
 		context.put(ContextNames.END_TIME, endTtime);
 		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
@@ -1025,12 +1004,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void moveReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId, long duration, long type)
 			throws Exception {
 		// TODO Auto-generated method stub
-		FacilioContext context=new FacilioContext();
+		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
-		context.put(ContextNames.FIELD_ID,fieldId);
-		context.put(ContextNames.ASSET_ID,assetId);
-		context.put(ContextNames.START_TIME,startTtime);
-		context.put(ContextNames.END_TIME,endTtime);
+		context.put(ContextNames.FIELD_ID, fieldId);
+		context.put(ContextNames.ASSET_ID, assetId);
+		context.put(ContextNames.START_TIME, startTtime);
+		context.put(ContextNames.END_TIME, endTtime);
 		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
 		context.put(ContextNames.DURATION, duration);
 		context.put(ContextNames.TYPE, type);
@@ -1040,11 +1019,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void readingFieldsMigration(long orgId,long sourceFieldId,long assetId, long assetCategoryId,long targetFieldId)
+	public void readingFieldsMigration(long orgId, long sourceFieldId, long assetId, long assetCategoryId, long targetFieldId)
 			throws Exception {
-		FacilioContext context=new FacilioContext();
+		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
-		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.ASSET_ID, assetId);
 		context.put(ContextNames.CATEGORY_ID, assetCategoryId);
 		context.put(FacilioConstants.ContextNames.SOURCE_ID, sourceFieldId);
 		context.put(FacilioConstants.ContextNames.TARGET_ID, targetFieldId);
@@ -1058,7 +1037,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 
 		List<AssetCategoryContext> assetcategory = AssetsAPI.getCategoryList();
-		if(assetcategory != null) {
+		if (assetcategory != null) {
 			return assetcategory;
 		}
 		return null;
@@ -1069,7 +1048,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 
 		List<AssetContext> assetList = AssetsAPI.getAssetListOfCategory(category);
-		if(assetList != null) {
+		if (assetList != null) {
 			return assetList;
 		}
 		return null;
@@ -1081,7 +1060,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		reading.setParentCategoryId(parentCategoryId);
 		reading.getAssetReadings();
 		List<FacilioModule> newReading = reading.getReadings();
-		if(newReading != null) {
+		if (newReading != null) {
 			return newReading;
 		}
 		return null;
@@ -1095,13 +1074,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<WorkOrderContext> executedWorkorders = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioStatus preopenStatus = TicketAPI.getStatus(modBean.getModule(ContextNames.WORK_ORDER), "preopen");
-		
-		for(WorkOrderContext wo: workorders) {
+
+		for (WorkOrderContext wo : workorders) {
 			WorkOrderContext oldWo = oldWorkorders.get(wo.getId());
-			if (oldWo.getModuleState() == null || oldWo.getModuleState().getId() == preopenStatus.getId()) {	// Pre open state
+			if (oldWo.getModuleState() == null || oldWo.getModuleState().getId() == preopenStatus.getId()) {    // Pre open state
 				preopenWorkorders.add(wo);
-			}
-			else {
+			} else {
 				WorkOrderContext newWo = new WorkOrderContext();
 				if (wo.getDueDate() > 0) {
 					newWo.setDueDate(wo.getDueDate());
@@ -1119,9 +1097,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		FacilioContext context = new FacilioContext();
 		if (!preopenWorkorders.isEmpty()) {
-			for(WorkOrderContext wo: preopenWorkorders) {
+			for (WorkOrderContext wo : preopenWorkorders) {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-				context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);	// temp
+				context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);    // temp
 
 				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
 				updatePM.execute(context);
@@ -1130,11 +1108,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			}
 		}
 		if (!executedWorkorders.isEmpty()) {
-			for(WorkOrderContext wo: preopenWorkorders) {
+			for (WorkOrderContext wo : preopenWorkorders) {
 
 				EventType activityType = EventType.EDIT;
 				// Temp
-				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1)) {
+				if ((wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1)) {
 					activityType = EventType.ASSIGN_TICKET;
 				}
 
@@ -1230,7 +1208,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		if (context.containsKey(ContextNames.MODULE)) {
 			FacilioModule module = (FacilioModule) context.get(ContextNames.MODULE);
 			builder.table(module.getTableName());
-			if(context.containsKey(ContextNames.FIELDS)){
+			if (context.containsKey(ContextNames.FIELDS)) {
 				builder.fields((List<FacilioField>) context.get(ContextNames.FIELDS));
 			}
 		} else {
@@ -1244,7 +1222,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 							builder.fields(fields);
 						} else {
 							LOGGER.info(" Exception occurred Fields null or empty ");
-							throw new Exception("Fields cant be null or empty -> "+fields);
+							throw new Exception("Fields cant be null or empty -> " + fields);
 						}
 					} else {
 						LOGGER.info(" Exception occurred Fields missing ");
@@ -1252,11 +1230,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					}
 				} else {
 					LOGGER.info(" Exception occurred tableName is null or empty ");
-					throw new Exception("Table name is null or empty -> "+tableName);
+					throw new Exception("Table name is null or empty -> " + tableName);
 				}
 			} else {
 				LOGGER.info(" Exception occurred tableName missing from context ");
-				throw new Exception(" Table name is missing from context -> "+context.values());
+				throw new Exception(" Table name is missing from context -> " + context.values());
 			}
 		}
 		if (context.containsKey(ContextNames.TO_INSERT_MAP)) {
@@ -1264,8 +1242,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			if (map != null) {
 				try {
 					Long id = builder.insert(map);
-					LOGGER.info(" insertion ID "+id);
-					LOGGER.info("to insert map is "+map);
+					LOGGER.info(" insertion ID " + id);
+					LOGGER.info("to insert map is " + map);
 					context.put(ContextNames.ID, id);
 					return id;
 				} catch (Exception e) {
@@ -1274,37 +1252,37 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				}
 			} else {
 				LOGGER.info(" Exception occurred to insert map is null ");
-				throw new Exception(" toInsertMap can't be null or empty ->"+map);
+				throw new Exception(" toInsertMap can't be null or empty ->" + map);
 			}
 		} else {
 			LOGGER.info(" Exception occurred to insert map  missing from context ");
-			throw new Exception(" toInsertMap missing from context ->"+context.keySet());
+			throw new Exception(" toInsertMap missing from context ->" + context.keySet());
 		}
 	}
 
 	@Override
-	public void processNewTimeSeries(JSONObject payload,Controller controller) throws Exception {
+	public void processNewTimeSeries(JSONObject payload, Controller controller) throws Exception {
 		FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
 		FacilioContext context = chain.getContext();
-		context.put(AgentConstants.DATA,payload);
-		context.put(AgentConstants.CONTROLLER,controller);
+		context.put(AgentConstants.DATA, payload);
+		context.put(AgentConstants.CONTROLLER, controller);
 		chain.execute();
 	}
 
-	public boolean addPoint(Point point) throws Exception{
-		if(point != null) {
+	public boolean addPoint(Point point) throws Exception {
+		if (point != null) {
 			Map<String, Object> toInsertMap = point.getPointJSON();
 			LOGGER.info(" point as map " + toInsertMap);
 			FacilioModule pointModule = ModuleFactory.getPointModule();
 			FacilioContext context = new FacilioContext();
-			context.put(ContextNames.MODULE,pointModule);
+			context.put(ContextNames.MODULE, pointModule);
 		}
 		return false;
 	}
 
 	@Override
 	public FileInfo getFile(long fileId) throws Exception {
-		
+
 		FileStore fs = FacilioFactory.getFileStore();
 		FileInfo fileInfo = fs.getFileInfo(fileId);
 		return fileInfo;
@@ -1321,17 +1299,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}catch(Exception e) {
 			throw e;
 		}
-		
+
 	}
 
 
-	public boolean addMetrics(AgentMetrics metrics)throws Exception{
+	public boolean addMetrics(AgentMetrics metrics) throws Exception {
 		return MetricsApi.insertMetrics(metrics);
 	}
 
 	@Override
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception {
-		MetricsApi.updateMetrics(toUpdate,metricsId);
+		MetricsApi.updateMetrics(toUpdate, metricsId);
 		return false;
 	}
 
@@ -1340,17 +1318,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public List<Map<String, Object>> getOrgSpecificAgentList() throws Exception {
 		return new GenericSelectRecordBuilder().select(FieldFactory.getNewAgentFields()).table(ModuleFactory.getNewAgentModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get("deletedTime"), CommonOperators.IS_EMPTY))
-		 .get();
+				.get();
 	}
 
 	@Override
 	public void disableOrEnableAgent(long agentId, boolean disable) throws Exception {
 		FacilioModule module = ModuleFactory.getNewAgentModule();
-		Map<String,Object> prop = new HashMap<>();
+		Map<String, Object> prop = new HashMap<>();
 		prop.put("isDisable", disable);
-		if(disable) {
+		if (disable) {
 			prop.put("lastDisabledTime", System.currentTimeMillis());
-		}else {
+		} else {
 			prop.put("lastEnabledTime", System.currentTimeMillis());
 		}
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -1361,8 +1339,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	public void addOrUpdateWeatherData(Map<Long, List<Long>> siteAndStationMap, Map<Long, Map<String, Object>> dataMap) throws Exception {
-		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
-		{
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)) {
 			return;
 		}
 		FacilioChain context = TransactionChainFactory.addOrUpdateWeatherDataChain();
@@ -1373,8 +1350,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void addOrUpdateDailyWeatherData(Map<Long, List<Long>> siteAndStationMap, Map<Long, Map<String, Object>> dataMap) throws Exception {
-		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
-		{
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)) {
 			return;
 		}
 		FacilioChain context = TransactionChainFactory.addOrUpdateDailyWeatherDataChain();
@@ -1387,37 +1363,37 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public long getPendingDataCount() throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(new ArrayList<>()).table(DataPendingAlertJob.AGENT_MESSAGE_MODULE.getTableName())
-				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,DataPendingAlertJob.FIELD_MAP.get(AgentConstants.ID))
+				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, DataPendingAlertJob.FIELD_MAP.get(AgentConstants.ID))
 				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.MSG_STATUS), String.valueOf(0), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.START_TIME), String.valueOf(getLastTwohours()), NumberOperators.LESS_THAN));
 		return (long) builder.fetchFirst().get(AgentConstants.ID);
 	}
 
 	private long getLastTwohours() {
-		return DateTimeUtil.addHours(DateTimeUtil.getCurrenTime(),-2);
+		return DateTimeUtil.addHours(DateTimeUtil.getCurrenTime(), -2);
 	}
 
 	@Override
-	public List<Map<String,Object>> getMissingData() throws Exception {
+	public List<Map<String, Object>> getMissingData() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getAgentNameField(DataProcessingAlertJob.AGENT_MODULE));
 		fields.add(FieldFactory.getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", DataProcessingAlertJob.AGENT_MODULE, FieldType.NUMBER));
 		fields.add(FieldFactory.getIdField(DataProcessingAlertJob.AGENT_MODULE));
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields).table(DataProcessingAlertJob.AGENT_MODULE.getTableName())
-				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME),String.valueOf(getLastTwohours()),NumberOperators.LESS_THAN))
+				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME), String.valueOf(getLastTwohours()), NumberOperators.LESS_THAN))
 				.orderBy("ID DESC");
-		List<Map<String,Object>> props = builder.get();
+		List<Map<String, Object>> props = builder.get();
 		return CollectionUtils.isNotEmpty(props) ? props : Collections.emptyList();
 	}
 
 	@Override
-	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception {
+	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail, Long workOrderRequestEmailId) throws Exception {
 		long requestId = -1;
 		OrgBean orgBean = AccountUtil.getOrgBean();
 		if (orgBean.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg,workOrderRequestEmailId);
-			LOGGER.info("Added Email from Email Parser : " + requestId );
+			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg, workOrderRequestEmailId);
+			LOGGER.info("Added Email from Email Parser : " + requestId);
 		}
 		return requestId;
 	}
@@ -1432,6 +1408,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		return downloadStream;
 	}
+
 	@Override
 	public FileInfo getFileInfo(String namespace, long fileId) throws Exception {
 		FileStore fs = FacilioFactory.getFileStore();
@@ -1461,6 +1438,3 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return ApplicationApi.getApplicationForLinkName(appName);
 	}
 }
-
-
-
