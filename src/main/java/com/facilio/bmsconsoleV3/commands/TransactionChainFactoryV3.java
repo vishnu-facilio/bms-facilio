@@ -2240,4 +2240,10 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain fetchActivePeopleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInviteAcceptedUsersCommand());
+        return c;
+    }
+
 }

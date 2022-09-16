@@ -4,8 +4,10 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -20,9 +22,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FetchLabourAndUserContextForPeople extends FacilioCommand{
 	@Override
@@ -32,35 +32,19 @@ public class FetchLabourAndUserContextForPeople extends FacilioCommand{
 
 		if(CollectionUtils.isNotEmpty(peoples)){
 
-			for(V3PeopleContext people : peoples){
-				if(people.isLabour()){
+			for (V3PeopleContext people : peoples) {
+				if (people.isLabour()) {
 					people.setLabourContext(fetchLabour(people.getId()));
 				}
-				if(people.isUser()){
-					people.setUserContext(fetchUserContext(people.getId()));
+
+				List<User> user = V3PeopleAPI.fetchUserContext(Collections.singletonList(people.getId()), false);
+				if (CollectionUtils.isNotEmpty(user)) {
+					people.setUserContext(user.get(0));
 				}
 			}
 		}
 
 		return false;
-	}
-
-	private User fetchUserContext(long id) throws Exception{
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(id), NumberOperators.EQUALS));
-
-		GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
-		List<Map<String,Object>> props = builder.get();
-
-		if(CollectionUtils.isNotEmpty(props)){
-
-			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), true);
-			User user = UserBeanImpl.createUserFromProps(props.get(0), true, true, null);
-
-			return user;
-		}
-			return null;
 	}
 
 	private LabourContextV3 fetchLabour(long id) throws Exception{
