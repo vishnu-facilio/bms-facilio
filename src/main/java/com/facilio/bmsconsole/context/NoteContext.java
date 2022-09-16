@@ -99,4 +99,14 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	public void setCommentSharing(List<CommentSharingContext> commentSharing) {
 		this.commentSharing = commentSharing;
 	}
+
+	public boolean isEditAvailable() {
+		return editAvailable;
+	}
+
+	public void setEditAvailable(boolean editAvailable) {
+		this.editAvailable = editAvailable;
+	}
+
+	private boolean editAvailable = false;
 }

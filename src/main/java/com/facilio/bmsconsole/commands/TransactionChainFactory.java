@@ -141,6 +141,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteCommentSharingCommand());
 			c.addCommand(new AddCommentSharingCommand());
+			c.addCommand(new UpdateNotesCommand());
 			return c;
 		}
 

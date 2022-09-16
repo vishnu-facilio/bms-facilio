@@ -73,7 +73,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				if (StringUtils.isEmpty(note.getBody())) {
 					throw new IllegalArgumentException("Comment cannot be null/ empty");
 				}
-
+				note.setEditAvailable(true);
 				if (note.getCreatedTime() == -1) {
 					note.setCreatedTime(System.currentTimeMillis());
 				}

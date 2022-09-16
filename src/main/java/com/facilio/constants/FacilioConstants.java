@@ -2927,6 +2927,8 @@ public class FacilioConstants {
 		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
 		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
 		public static final String OMIT_BASESPACE_API = "omitBasespaceAPI";
+
+		public static final String NOTES_EDIT_AVAILABLE = "notesEditAvailable";
 	}
 
 	public static class Services {
