@@ -67,6 +67,13 @@ public class ViewAPI {
 		{
 			viewGroup.setGroupType(ViewGroupType.TABLE_GROUP.getIntVal());
 		}
+		if (viewGroup.getAppId() < 0) {
+			ApplicationContext app = viewGroup.getAppId() <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(viewGroup.getAppId());
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			viewGroup.setAppId(app.getId());
+		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getViewGroupsModule().getTableName())
 				.fields(FieldFactory.getViewGroupFields());
