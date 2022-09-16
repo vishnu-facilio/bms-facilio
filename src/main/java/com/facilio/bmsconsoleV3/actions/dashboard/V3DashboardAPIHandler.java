@@ -547,10 +547,16 @@ public class V3DashboardAPIHandler {
 
     public static void constructWidgetsCriteriaResp(List<DashboardWidgetContext> widgets, DashboardExecuteMetaContext dashboard_execute_data)throws Exception
     {
+        Boolean is_trigger_widget_type = false;
+        DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(dashboard_execute_data.getTrigger_widget_id());
+        if(trigger_widget != null && trigger_widget.getType() != Integer.valueOf(DashboardWidgetContext.WidgetType.FILTER.getValue())) {
+            is_trigger_widget_type = true;
+        }
+
         for (DashboardWidgetContext dashboardWidgetContext : widgets)
         {
             Long widget_id = dashboardWidgetContext.getId();
-            if(dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id)){
+            if(dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id) || (is_trigger_widget_type && !dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id))){
                 continue;
             }
             JSONObject widget_json = new JSONObject();
