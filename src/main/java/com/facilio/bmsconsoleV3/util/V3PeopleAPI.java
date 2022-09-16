@@ -482,10 +482,8 @@ public class V3PeopleAPI {
                         user.setAppDomain(appDomain);
                         user.setApplicationId(appId);
                         user.setRoleId(roleId);
-
-                        ApplicationApi.addUserInApp(user, false);
                         V3PeopleAPI.enableUser(user);
-
+                        ApplicationApi.addUserInApp(user, false);
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -564,8 +562,8 @@ public class V3PeopleAPI {
                             user.setUserVerified(true);
                             user.setInviteAcceptStatus(true);
                         }
-                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         V3PeopleAPI.enableUser(user);
+                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId);
@@ -606,8 +604,8 @@ public class V3PeopleAPI {
                         user.setAppDomain(appDomain);
                         user.setRoleId(roleId);
                         user.setApplicationId(appId);
-                        ApplicationApi.addUserInApp(user, false);
                         V3PeopleAPI.enableUser(user);
+                        ApplicationApi.addUserInApp(user, false);
                     }
                     else {
                         User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -658,8 +656,8 @@ public class V3PeopleAPI {
                             user.setUserVerified(true);
                             user.setInviteAcceptStatus(true);
                         }
-                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         V3PeopleAPI.enableUser(user);
+                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                     }
                     else {
                         addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);

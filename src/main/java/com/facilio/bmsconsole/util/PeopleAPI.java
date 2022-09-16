@@ -361,9 +361,10 @@ public class PeopleAPI {
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}
-						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+
 					}
 					else
 					{
@@ -415,9 +416,9 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setSecurityPolicyId(secPolId);
 						user.setLanguage(person.getLanguage());
-						ApplicationApi.addUserInApp(user, false);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						ApplicationApi.addUserInApp(user, false);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), false, roleId, secPolId);
@@ -478,9 +479,10 @@ public class PeopleAPI {
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}
-						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
@@ -599,9 +601,10 @@ public class PeopleAPI {
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
 						user.setSecurityPolicyId(secPolId);
-						ApplicationApi.addUserInApp(user, false);
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						ApplicationApi.addUserInApp(user, false);
+
 					}
 					else {
 						User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), false, roleId, secPolId);
