@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -71,6 +74,38 @@ public class CustomModulePageFactory extends PageFactory {
             tab2Sec1.addWidget(relatedListWidget);
         
         }
+
+		Organization organization = AccountUtil.getCurrentOrg();
+		if((organization != null) && (organization.getId() == 173l) && ("custom_relatedlistmodule").equalsIgnoreCase(module.getName())) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioModule> subModules =
+					modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY,
+							FacilioModule.ModuleType.Q_AND_A_RESPONSE,
+							FacilioModule.ModuleType.Q_AND_A
+					);
+			if (CollectionUtils.isNotEmpty(subModules)) {
+				for (FacilioModule subModule : subModules) {
+					if (subModule.isModuleHidden() || !subModule.getName().equals("custom_summarywidgetmodule")) {
+						continue;
+					}
+					List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+					List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId())).collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(fields)) {
+						for (FacilioField field : fields) {
+							PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.NEW_RELATED_LIST);
+							JSONObject relatedList = new JSONObject();
+							relatedList.put("module", subModule);
+							relatedList.put("field", field);
+							relatedList.put("summaryWidgetName", FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);
+							relatedListWidget.setRelatedList(relatedList);
+							relatedListWidget.addToLayoutParams(tab2Sec1, 24, 8);
+							tab2Sec1.addWidget(relatedListWidget);
+						}
+					}
+				}
+			}
+		}
+
 		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
 			tab2.addSection(tab2Sec1);
 		}

@@ -472,7 +472,8 @@ public class PageWidget {
 
 		SPACE_BOOKING_FULL_SUMMARY("spaceBookingFullSummary"),
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
-		CLASSIFICATION("classification");
+		CLASSIFICATION("classification"),
+		NEW_RELATED_LIST("newRelatedList");
 
 		private String name;
 
