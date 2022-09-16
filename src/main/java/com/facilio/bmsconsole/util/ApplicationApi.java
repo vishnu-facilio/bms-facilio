@@ -1502,7 +1502,7 @@ public class ApplicationApi {
 
             webTabs = new ArrayList<>();
 
-            webTabs.add(new WebTabContext("My Bookings", "my-bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("facilitybooking").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("My Bookings", "my-bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("spacebooking").getModuleId()), layout.getApplicationId(), null));
 
             groupNameVsWebTabsMap.put("booking", webTabs);
             webTabGroups.add(new WebTabGroupContext("Service Catalog", "servicecatalog", layout.getId(), 216, groupOrder++));

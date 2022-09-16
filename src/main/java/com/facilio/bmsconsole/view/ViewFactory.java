@@ -1191,6 +1191,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getRdmController().setOrder(order++));
 		viewsMap.put("rdmcontroller", views);
+
+		order =1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllSpaceBookingViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING,views);
 		
 		return viewsMap;
 	}
@@ -9479,6 +9484,24 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	private static FacilioView getAllSpaceBookingViews() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Space Booking");
+		allView.setModuleName(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
 	private static FacilioView getInventoryRequestIssued(String viewName, String viewDisplayName, boolean isIssued) {
 		FacilioModule irModule = ModuleFactory.getInventoryRequestModule();
 

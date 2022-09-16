@@ -19,6 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
@@ -294,6 +295,8 @@ public class PageFactory {
 				return JobPlanPageFactory.getJobPlanPage((JobPlanContext) record, module);
 			case ContextNames.PLANNEDMAINTENANCE:
 				return PlannedMaintenancePageFactory.getPlannedMaintenancePage((PlannedMaintenance) record);
+			case ContextNames.SPACE_BOOKING:
+				return  SpaceBookingPageFactory.getSpaceBookingPage((V3SpaceBookingContext) record, module);
 
 
 		}

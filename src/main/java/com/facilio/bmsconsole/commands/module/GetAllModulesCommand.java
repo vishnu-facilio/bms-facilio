@@ -91,7 +91,8 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.PRECAUTION,
 			ContextNames.SITE,
 			ContextNames.NEW_READING_ALARM,
-			ContextNames.BMS_ALARM
+			ContextNames.BMS_ALARM,
+			ContextNames.SPACE_BOOKING
 
 	});
 

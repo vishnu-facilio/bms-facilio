@@ -158,6 +158,9 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.SpaceBookingSupplementsCommand;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingCommand;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
@@ -2557,6 +2560,19 @@ public class APIv3Config {
                 .build();
     }
 
+
+    @Module(FacilioConstants.ContextNames.SPACE_BOOKING)
+    public static Supplier<V3Config> getSpaceBooking() {
+        return () -> new V3Config(V3SpaceBookingContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new V3ValidateSpaceBookingCommand())
+                .update()
+                .delete()
+                .list()
+                .beforeFetch(new SpaceBookingSupplementsCommand())
+                .summary()
+                .build();
+    }
     @Module(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD)
     public static Supplier<V3Config> getSafetyPlanHazard() {
         return () -> new V3Config(V3SafetyPlanHazardContext.class, null)
@@ -2623,6 +2639,15 @@ public class APIv3Config {
                 .create()
                 .list()
                 .beforeFetch(new V3LoadBaseSpaceHazardLookUpsCommand())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.SpaceBooking.EXTERNAL_ATTENDEE)
+    public static Supplier<V3Config> getExternalAttendee() {
+        return () -> new V3Config(V3ExternalAttendeeContext.class, null)
+                .create()
+                .list()
                 .delete()
                 .build();
     }

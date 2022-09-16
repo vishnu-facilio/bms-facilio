@@ -157,6 +157,7 @@ public class ModuleFactory {
 		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
 		moduleMap.put("customWidgetGroupFields", getSummaryWidgetGroupFieldsModule());
 
+		moduleMap.put(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION,getSpaceBookingFormRelationModule());
 		return moduleMap;
 	}
 	
@@ -5270,6 +5271,14 @@ public class ModuleFactory {
 		RDM_Controller.setDisplayName("RDM Controller");
 		RDM_Controller.setTableName("RDM_Controller");
 		return RDM_Controller;
+	}
+
+	public static FacilioModule getSpaceBookingFormRelationModule(){
+		FacilioModule spaceBookingFormRelationModule = new FacilioModule();
+		spaceBookingFormRelationModule.setName(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION);
+		spaceBookingFormRelationModule.setDisplayName("Space Category Form Relation");
+		spaceBookingFormRelationModule.setTableName("Space_Category_Form_Relation");
+		return spaceBookingFormRelationModule;
 	}
 
 	public static FacilioModule getCommentsSharingModule() {

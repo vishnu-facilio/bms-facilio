@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.view;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingInternalAttendeeContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.modules.FieldType;
@@ -323,6 +326,8 @@ public class ColumnFactory {
 
 
 		columnMap.put("transaction-all", getBudgetTransactionColumns());
+		columnMap.put(FacilioConstants.ContextNames.SPACE_BOOKING + "-default", getDefaultSpaceBookingColumns());
+
 		return columnMap;
 	}
 	
@@ -2427,5 +2432,19 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	private static List<ViewField> getDefaultSpaceBookingColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("space", "Space"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("reservedBy", "Reserved By"));
+		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
+		columns.add(new ViewField("bookingStartTime", "Booking Start Time"));
+		columns.add(new ViewField("bookingEndTime", "Booking End Time"));
+		columns.add(new ViewField("internalAttendees", "Internal Attendees"));
+
+		return columns;
+	}
 
 }
