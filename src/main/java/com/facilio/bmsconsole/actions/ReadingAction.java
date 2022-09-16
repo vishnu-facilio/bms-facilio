@@ -1574,10 +1574,15 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
 
-		
-		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
-		latestAssetData.execute(context);
-		
+		if (getRelMapLinkName() != null) {
+			context.put(ContextNames.RELATION_MAPPING, getRelMapLinkName());
+			FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestRelationReadingDataChain();
+			latestAssetData.execute(context);
+		} else {
+			FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+			latestAssetData.execute(context);
+		}
+
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
 		}
@@ -1755,7 +1760,10 @@ public class ReadingAction extends FacilioAction {
 	public void setReadingType(String readingType) {
 		this.readingType = readingType;
 	}
-	
+
+	@Getter @Setter
+	private String relMapLinkName;
+
 	private Boolean fetchCount;
 	public boolean isFetchCount() {
 		if (fetchCount == null) {
