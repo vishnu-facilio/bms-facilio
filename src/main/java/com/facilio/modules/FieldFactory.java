@@ -4183,6 +4183,14 @@ public class FieldFactory extends BaseFieldFactory {
         isLocked.setModule(module);
         fields.add(isLocked);
 
+        FacilioField excludeModuleCriteria = new FacilioField();
+        excludeModuleCriteria.setName("excludeModuleCriteria");
+        excludeModuleCriteria.setDataType(FieldType.BOOLEAN);
+        excludeModuleCriteria.setColumnName("EXCLUDE_MODULE_CRITERIA");
+        excludeModuleCriteria.setModule(module);
+        fields.add(excludeModuleCriteria);
+
+
         return fields;
 
     }
@@ -9029,7 +9037,6 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getStringField("configJson", "CONFIG_JSON", module));
         list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
         list.add(getNumberField("groupCriteriaId", "GROUP_BY_CRITERIA_ID", module));
-        list.add(getField("excludeModuleCriteria", "EXCLUDE_MODULE_CRITERIA", module, FieldType.BOOLEAN));
 
         return list;
     }
