@@ -50,6 +50,8 @@ public class FormFactory {
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("workorderItem-form",getWorkOrderItemForm());
+		forms.put("workorderTool-form",getWorkOrderToolForm());
+		forms.put("workorderService-form",getWorkOrderServiceForm());
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("location_form", getLocationForm());
@@ -610,6 +612,8 @@ public class FormFactory {
 		List<FacilioForm> plannedmaintenance = Arrays.asList(getPlannedMaintenanceForm());
 		List<FacilioForm> shiftForm = Arrays.asList(getShiftForm());
 		List<FacilioForm> workOrderItemForm = Arrays.asList(getWorkOrderItemForm());
+		List<FacilioForm> workOrderToolForm = Arrays.asList(getWorkOrderToolForm());
+		List<FacilioForm> workOrderServiceForm = Arrays.asList(getWorkOrderServiceForm());
 
 		List<FacilioForm> spaceBookingFormsList = Arrays.asList(getSpaceBookingForm(),getSpaceBookingPortalForm(),getDeskBookingForm(),getDeskBookingPortalForm(),getNewParkingBookingForm(),getNewParkingBookingPortalForm());
 		List<FacilioForm> spaceBookingExternalAttendeeFormList = Arrays.asList(getSpaceBookingExternalAttendeeForm());
@@ -705,6 +709,8 @@ public class FormFactory {
 				.put(ContextNames.WORKORDER_ITEMS,getFormMap(workOrderItemForm))
 				.put(ContextNames.SpaceBooking.SPACE_BOOKING, getFormMap(spaceBookingFormsList))
 				.put(ContextNames.SpaceBooking.EXTERNAL_ATTENDEE, getFormMap(spaceBookingExternalAttendeeFormList))
+				.put(ContextNames.WORKORDER_TOOLS,getFormMap(workOrderToolForm))
+				.put(ContextNames.WO_SERVICE,getFormMap(workOrderServiceForm))
 				.build();
 	}
 
@@ -1325,7 +1331,26 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-
+	public static FacilioForm getWorkOrderToolForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("New Work Order Tool");
+		form.setName("default_workorderTool_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WORKORDER_TOOLS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkOrderToolFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	public static FacilioForm getWorkOrderServiceForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("New Work Order Service");
+		form.setName("default_workorderService_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.WO_SERVICE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkOrderServiceFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	public static FacilioForm getVendorsForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW VENDOR");
@@ -1955,7 +1980,25 @@ public class FormFactory {
 		fields.add(new FormField("quantity", FieldDisplayType.TEXTBOX, "Quantity", Required.OPTIONAL, 2, 2));
 		return fields;
 	}
-
+	private static List<FormField> getWorkOrderToolFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 2,true));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 1, 3,true));
+		fields.add(new FormField("issueTime",FieldDisplayType.DATETIME,"Issue Time",Required.OPTIONAL,2,2));
+		fields.add(new FormField("returnTime",FieldDisplayType.DATETIME,"Return Time",Required.OPTIONAL,2,3));
+		fields.add(new FormField("duration",FieldDisplayType.TEXTBOX,"Duration",Required.OPTIONAL,3,2));
+		fields.add(new FormField("quantity", FieldDisplayType.TEXTBOX, "Quantity", Required.OPTIONAL, 3, 3));
+		return fields;
+	}
+	private static List<FormField> getWorkOrderServiceFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("service", FieldDisplayType.LOOKUP_SIMPLE, "Service", Required.REQUIRED, "Service", 1, 2,true));
+		fields.add(new FormField("startTime",FieldDisplayType.DATETIME,"Start Time",Required.OPTIONAL,2,2));
+		fields.add(new FormField("endTime",FieldDisplayType.DATETIME,"End Time",Required.OPTIONAL,2,3));
+		fields.add(new FormField("duration",FieldDisplayType.TEXTBOX,"Duration",Required.OPTIONAL,3,2));
+		fields.add(new FormField("quantity", FieldDisplayType.TEXTBOX, "Quantity", Required.OPTIONAL, 4, 2));
+		return fields;
+	}
 	private static List<FormField> getVendorsFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));

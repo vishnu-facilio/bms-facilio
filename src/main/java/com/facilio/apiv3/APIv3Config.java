@@ -121,6 +121,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkOrderServiceLookupCommand;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
@@ -1763,6 +1764,7 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderServicesCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
                 .list()
+                .beforeFetch(new LoadWorkOrderServiceLookupCommand())
                 .summary()
                 .delete()
                 .build();

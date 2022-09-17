@@ -184,6 +184,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
 			
 		}
+
 		double duration = 0;
 		if (woTool.getDuration() <= 0) {
 //			if (woTool.getIssueTime() <= 0) {

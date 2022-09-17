@@ -102,6 +102,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                             // update
                             wTool.setId(workorderTool.getId());
                             workorderToolslist.add(wTool);
+                            toolsToBeAdded.add(wTool);
                         }
                     }
                 } else {
@@ -143,6 +144,8 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                 }
             }
             if (CollectionUtils.isNotEmpty(toolsToBeAdded)) {
+                Map<String,Object> data = workOrderTools.get(0).getData();
+                toolsToBeAdded.get(0).setData(data);
                 recordMap.put(moduleName, toolsToBeAdded);
             }
             if(CollectionUtils.isNotEmpty(workorderToolslist)) {
