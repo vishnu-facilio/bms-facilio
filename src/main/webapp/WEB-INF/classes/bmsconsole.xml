@@ -2856,7 +2856,7 @@
 			method="addNote">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">^note.*</param>
+				<param name="root">result</param>
 			</result>
 		</action>
 		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction"
