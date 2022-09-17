@@ -319,7 +319,7 @@ public class ColumnFactory {
 		columnMap.put("opcxmldacontroller-default",getObcXmldaControllerColumns());
 		columnMap.put("lonworkscontroller-default",getLonWorksontrollerColumns());
 //		columnMap.put("knxcontroller-default",getKnxControllerColumns());
-		columnMap.put("customcontroller-default",getCustomControllerColumns());
+		columnMap.put("customController-default",getCustomControllerColumns());
 		columnMap.put("restcontroller-default",getRestControllerColumns());
 		columnMap.put("systemController-default",getSystemControllerColumns());
 		columnMap.put("rdmcontroller-default",getRdmControllerColumns());

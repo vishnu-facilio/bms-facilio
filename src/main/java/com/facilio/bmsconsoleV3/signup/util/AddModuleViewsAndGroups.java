@@ -161,8 +161,14 @@ public class AddModuleViewsAndGroups {
     public static void addColumnsAndSortField(String moduleName, ModuleBean modBean, FacilioView view, List<FacilioField> fields) throws Exception {
         // Add Columns
         LOGGER.info(String.format("Started adding ViewColumns for ViewId - %d ViewName - %s", view.getId(), view.getName()));
-        List<ViewField> viewFields = ColumnFactory.getColumns(moduleName, view.getName());
+        List<ViewField> viewFields = new ArrayList<>();
         Map<String, FacilioField> fieldMap = fields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),(name1, name2) -> { return name1; }));
+
+        if (CollectionUtils.isNotEmpty(view.getFields())){
+            viewFields = view.getFields();
+        } else {
+            viewFields = ColumnFactory.getColumns(moduleName, view.getName());
+        }
 
         if (viewFields != null && !viewFields.isEmpty()) {
             for (ViewField viewField : viewFields) {
@@ -174,6 +180,7 @@ public class AddModuleViewsAndGroups {
                         FacilioField childField = modBean.getField(viewField.getName(), parentField.getLookupModule().getName());
                         viewField.setFieldId(childField.getFieldId());
                         viewField.setParentField(parentField);
+                        viewField.setParentFieldId(parentField.getFieldId());
                     }
                 } else {
                     FacilioField field = null;
@@ -197,9 +204,19 @@ public class AddModuleViewsAndGroups {
                     viewField.setFieldId(field.getFieldId());
                 }
             }
-            ViewAPI.customizeViewColumns(view.getId(), viewFields);
-            LOGGER.info(String.format("Completed adding ViewColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));
+        } else {
+            viewFields = new ArrayList<>();
+            for (FacilioField field : fields) {
+                ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+                viewField.setField(field);
+                viewField.setViewId(view.getId());
+                viewField.setFieldName(field.getName());
+                viewField.setFieldId(field.getFieldId());
+                viewFields.add(viewField);
+            }
         }
+        ViewAPI.customizeViewColumns(view.getId(), viewFields);
+        LOGGER.info(String.format("Completed adding ViewColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));
 
         // Add Sort Fields
         LOGGER.info(String.format("Started adding SortColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));
