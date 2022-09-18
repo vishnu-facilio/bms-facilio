@@ -1,10 +1,15 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -55,5 +60,33 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         detailsView.setModuleName(workOrderToolsModule.getName());
 
         return detailsView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workOrderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+
+        FacilioForm workOrderToolsModuleForm = new FacilioForm();
+        workOrderToolsModuleForm.setDisplayName("New Work Order Tool");
+        workOrderToolsModuleForm.setName("default_workorderTool_web");
+        workOrderToolsModuleForm.setModule(workOrderToolsModule);
+        workOrderToolsModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        workOrderToolsModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> workOrderToolsModuleFormFields = new ArrayList<>();
+        workOrderToolsModuleFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", FormField.Required.REQUIRED, "toolTypes", 1, 2,true));
+        workOrderToolsModuleFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 1, 3,true));
+        workOrderToolsModuleFormFields.add(new FormField("issueTime", FacilioField.FieldDisplayType.DATETIME,"Issue Time", FormField.Required.OPTIONAL,2,2));
+        workOrderToolsModuleFormFields.add(new FormField("returnTime", FacilioField.FieldDisplayType.DATETIME,"Return Time", FormField.Required.OPTIONAL,2,3));
+        workOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.TEXTBOX,"Duration", FormField.Required.OPTIONAL,3,2));
+        workOrderToolsModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, 3, 3));
+
+        FormSection workOrderToolsModuleFormSection = new FormSection("Default", 1, workOrderToolsModuleFormFields, false);
+        workOrderToolsModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        workOrderToolsModuleForm.setSections(Collections.singletonList(workOrderToolsModuleFormSection));
+
+        return Collections.singletonList(workOrderToolsModuleForm);
     }
 }

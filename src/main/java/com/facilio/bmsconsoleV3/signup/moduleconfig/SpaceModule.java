@@ -156,6 +156,8 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSiteFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site Associated", FormField.Required.REQUIRED,"site", 5, 1,true));
         defaultSpaceWebSiteFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
         defaultSpaceWebSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        defaultSpaceWebSiteFormFields.add(new FormField("amenities",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
 
         try {
             if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
@@ -165,8 +167,6 @@ public class SpaceModule extends BaseModuleConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        defaultSpaceWebSiteForm.setFields(defaultSpaceWebSiteFormFields);
 
         FormSection defaultSpaceWebSiteFormSection = new FormSection("Default", 1, defaultSpaceWebSiteFormFields, false);
         defaultSpaceWebSiteFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -189,6 +189,8 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebBuildingFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
         defaultSpaceWebBuildingFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
         defaultSpaceWebBuildingFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        defaultSpaceWebBuildingFormFields.add(new FormField("amenities",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
 
         try {
             if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
@@ -198,7 +200,6 @@ public class SpaceModule extends BaseModuleConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        defaultSpaceWebBuildingForm.setFields(defaultSpaceWebBuildingFormFields);
 
         FormSection defaultSpaceWebBuildingFormSection = new FormSection("Default", 1, defaultSpaceWebBuildingFormFields, false);
         defaultSpaceWebBuildingFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -221,6 +222,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebFloorFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
         defaultSpaceWebFloorFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
         defaultSpaceWebFloorFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        defaultSpaceWebFloorFormFields.add(new FormField("amenities",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
         try {
             if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
                 defaultSpaceWebFloorFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
@@ -229,7 +231,6 @@ public class SpaceModule extends BaseModuleConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        defaultSpaceWebFloorForm.setFields(defaultSpaceWebFloorFormFields);
 
         FormSection defaultSpaceWebFloorFormSection = new FormSection("Default", 1, defaultSpaceWebFloorFormFields, false);
         defaultSpaceWebFloorFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -252,6 +253,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSpaceFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
         defaultSpaceWebSpaceFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
         defaultSpaceWebSpaceFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        defaultSpaceWebSpaceFormFields.add(new FormField("amenities",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
         try {
             if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
                 defaultSpaceWebSpaceFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
@@ -261,7 +263,6 @@ public class SpaceModule extends BaseModuleConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        defaultSpaceWebSpaceForm.setFields(defaultSpaceWebSpaceFormFields);
 
         FormSection defaultSpaceWebSpaceFormSection = new FormSection("Default", 1, defaultSpaceWebSpaceFormFields, false);
         defaultSpaceWebSpaceFormSection.setSectionType(FormSection.SectionType.FIELDS);
