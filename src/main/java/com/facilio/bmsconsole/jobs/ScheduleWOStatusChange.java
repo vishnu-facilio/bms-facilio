@@ -70,8 +70,13 @@ public class ScheduleWOStatusChange extends FacilioJob {
             if (wos == null || wos.isEmpty()) {
                 return;
             }
-            
+
+			List<Long> workOrderIds = wos.stream().map(WorkOrderContext::getId).collect(Collectors.toList());
+			LOGGER.info("execute() -> workOrderProps size: " + workOrderIds.size() + ". WorkOrder IDs = " + workOrderIds);
+
+			LOGGER.info("Before modifyWorkflowBasedOnRule() call.");
             modifyWorkflowBasedOnRule(wos);
+			LOGGER.info("After modifyWorkflowBasedOnRule() call.");
 
             for (WorkOrderContext wo : wos) {
 //            	TicketAPI.loadRelatedModules(wo);
@@ -82,6 +87,8 @@ public class ScheduleWOStatusChange extends FacilioJob {
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
 				}
 				catch (Exception e) { //Delete job entry if any and try again
+					CommonCommandUtil.emailException("ScheduleWOStatusChange", "OpenScheduledWO | workOrder= " + wo, e);
+					LOGGER.error("PM Execution failed in OpenScheduledWO:", e);
 					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
 				}
@@ -96,7 +103,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     }
 
 	private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
-    	
+		LOGGER.info("modifyWorkflowBasedOnRule():");
     	if(wos == null) {
     		return;
     	}
@@ -171,7 +178,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
     
     private void compareAndRemoveTask(Map<Integer, List<TaskContext>> child,Map<Integer, List<TaskContext>> parent, List<Integer> uniqueIds) throws Exception {
-		
+		LOGGER.info("compareAndRemoveTask():");
     	List<TaskContext> deleteTasks = new ArrayList<>();
 		for(Integer uniqueId :uniqueIds) {
 			List<TaskContext> childTasks = child.get(uniqueId);
@@ -193,6 +200,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
 
 	public Map<Integer,List<TaskContext>> getUniqueMapFromWO(WorkOrderContext wo) {
+		LOGGER.info("getUniqueMapFromWO():");
     	Map<Integer,List<TaskContext>> uniqueIdVsParentIdMap = new HashMap<>();
     	if(wo.getTasks() != null) {
     		for(List<TaskContext> tasks :wo.getTasks().values()) {
@@ -212,6 +220,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     }
 
 	private void updateJobStatus(List<WorkOrderContext> wos) throws Exception {
+		LOGGER.info("updateJobStatus():");
         if (wos == null || wos.isEmpty()) {
             return;
         }
