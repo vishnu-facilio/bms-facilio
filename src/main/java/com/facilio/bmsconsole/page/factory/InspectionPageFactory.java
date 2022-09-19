@@ -53,7 +53,7 @@ public class InspectionPageFactory extends PageFactory {
         secondaryDetailsWidget.setWidgetParams(widgetParams);
         
         if(AccountUtil.getCurrentOrg().getOrgId() == 17l) {
-        	if(record.getData().get("picklist") != null) {
+        	if(record!=null && record.getData()!=null && record.getData().get("picklist") != null) {
         		long actionTypeValue = Long.parseLong(record.getData().get("picklist").toString());
         		if(actionTypeValue == 1) {
         			SummarySec.addWidget(secondaryDetailsWidget);
