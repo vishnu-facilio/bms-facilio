@@ -11028,10 +11028,14 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("showSwitch", "SHOW_SWITCH", module, FieldType.BOOLEAN));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
         fields.add(getSystemField("sysModifiedTime", module));
         fields.add(getSystemField("sysModifiedBy", module));
+        fields.add(getIsDeletedField(module));
+        fields.add(getSysDeletedByField(module));
+        fields.add(getSysDeletedTimeField(module));
 
         return fields;
     }

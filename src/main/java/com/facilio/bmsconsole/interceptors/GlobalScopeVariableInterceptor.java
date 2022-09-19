@@ -61,9 +61,12 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                     String ValueGenLinkName = valueGeneratorContext.getLinkName();
                     GlobalScopeVariableContext scopeVariable = scopeVariableValGenPair.getLeft();
                     List<Long> switchValues = getFilterRecordIdFromHeader(switchMap, entry.getKey());
-                    List<Long> computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
+                    List<Long> computedValGenIds = null;
+                    if(scopeVariable.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()){
+                        computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
+                    }
                     if (CollectionUtils.isNotEmpty(switchValues)) {
-                        if (CollectionUtils.isNotEmpty(computedValGenIds)) { //When empty list all values are accessible
+                        if (computedValGenIds != null) { //When empty list all values are accessible
                             if (!computedValGenIds.containsAll(switchValues)) {
                                 return "invalid"; //Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request.
                             }
@@ -89,10 +92,8 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
             if (globalScopeVariableValues == null) {
                 globalScopeVariableValues = new HashMap<>();
             }
-            if (scopeVariable.getValues() != null) {
-                globalScopeVariableValues.put(scopeVariable.getLinkName(), scopeVariable);
-                AccountUtil.setGlobalScopeVariableValues(globalScopeVariableValues);
-            }
+            globalScopeVariableValues.put(scopeVariable.getLinkName(), scopeVariable);
+            AccountUtil.setGlobalScopeVariableValues(globalScopeVariableValues);
         }
     }
 
@@ -122,7 +123,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                 return ids;
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
