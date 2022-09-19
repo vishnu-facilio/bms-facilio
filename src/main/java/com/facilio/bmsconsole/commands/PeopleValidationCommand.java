@@ -27,12 +27,15 @@ public class PeopleValidationCommand extends FacilioCommand {
 		List<PeopleContext> peopleList = (List<PeopleContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(peopleList)) {
 			for (PeopleContext people : peopleList) {
-				if(StringUtils.isNotEmpty(people.getEmail()) && !VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
-				}
-				if(StringUtils.isNotEmpty(people.getEmail()) && PeopleAPI.checkForDuplicatePeople(people)) {
-					throw new IllegalArgumentException("People with the same email id already exists");
-				}
+				if(StringUtils.isNotEmpty(people.getEmail())){
+					String trimmedEmail = people.getEmail().trim();
+					people.setEmail(trimmedEmail);
+					if(!VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()){
+						throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
+					}
+					if(PeopleAPI.checkForDuplicatePeople(people)) {
+						throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
+					}}
 				//setting tenant's site to all the contacts
 				if(people instanceof TenantContactContext && ((TenantContactContext)people).getTenant() != null && ((TenantContactContext)people).getTenant().getId() > 0) {
 					TenantContext tenant = (TenantContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, ((TenantContactContext)people).getTenant().getId());

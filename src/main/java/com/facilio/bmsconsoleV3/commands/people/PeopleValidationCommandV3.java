@@ -28,11 +28,15 @@ public class PeopleValidationCommandV3 extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(peopleList)) {
             for (V3PeopleContext people : peopleList) {
-                if(StringUtils.isNotEmpty(people.getEmail()) && !VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
-                }
-                if(StringUtils.isNotEmpty(people.getEmail()) && V3PeopleAPI.checkForDuplicatePeople(people)) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
+                if(StringUtils.isNotEmpty(people.getEmail())){
+                    String trimmedEmail = people.getEmail().trim();
+                    people.setEmail(trimmedEmail);
+                    if(!VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
+                    }
+                    if(V3PeopleAPI.checkForDuplicatePeople(people)) {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
+                    }
                 }
                 //setting tenant's site to all the contacts
                 if(people instanceof V3TenantContactContext && ((V3TenantContactContext)people).getTenant() != null && ((V3TenantContactContext)people).getTenant().getId() > 0) {
