@@ -1396,7 +1396,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(iamUser != null) {
 			return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 		}
-		return "";
+		throw new IllegalArgumentException("Cannot generate token for invalid user");
 	}
 
 	

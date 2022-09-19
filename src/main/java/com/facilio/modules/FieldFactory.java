@@ -509,6 +509,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("hideInList", "HIDE_IN_LIST", module, FieldType.BOOLEAN));
         fields.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("primaryForm","PRIMARY_FORM",module,FieldType.BOOLEAN));
+        fields.add(getField("isSystemForm","IS_SYSTEM_FORM",module,FieldType.BOOLEAN));
+        fields.add(getField("type","TYPE",module,FieldType.NUMBER));
 
 
         return fields;
@@ -4179,6 +4182,14 @@ public class FieldFactory extends BaseFieldFactory {
         isLocked.setColumnName("IS_LOCKED");
         isLocked.setModule(module);
         fields.add(isLocked);
+
+        FacilioField excludeModuleCriteria = new FacilioField();
+        excludeModuleCriteria.setName("excludeModuleCriteria");
+        excludeModuleCriteria.setDataType(FieldType.BOOLEAN);
+        excludeModuleCriteria.setColumnName("EXCLUDE_MODULE_CRITERIA");
+        excludeModuleCriteria.setModule(module);
+        fields.add(excludeModuleCriteria);
+
 
         return fields;
 
@@ -9026,7 +9037,6 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getStringField("configJson", "CONFIG_JSON", module));
         list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
         list.add(getNumberField("groupCriteriaId", "GROUP_BY_CRITERIA_ID", module));
-        list.add(getField("excludeModuleCriteria", "EXCLUDE_MODULE_CRITERIA", module, FieldType.BOOLEAN));
 
         return list;
     }
@@ -11035,6 +11045,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
         fields.add(getField("widgetGroupId", "GROUP_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("parentLookupFieldId", "PARENT_LOOKUP_FIELDID", module, FieldType.NUMBER));
         fields.add(getField("rowIndex", "ROW_INDEX", module, FieldType.NUMBER));
         fields.add(getField("colIndex", "COL_INDEX", module, FieldType.NUMBER));
         fields.add(getField("colSpan", "COL_SPAN", module, FieldType.NUMBER));
@@ -11049,6 +11060,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getModuleIdField(module));
         fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
         fields.add(getField("scopeVariableId", "SCOPE_VARIABLE_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+    public static List<FacilioField> getSpaceCategoryFormRelation(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSpaceBookingFormRelationModule();
+        fields.add(getIdField(module));
+        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("categoryId", "CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
         return fields;
     }
 

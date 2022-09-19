@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -70,10 +71,10 @@ public class SummaryWidgetUtil {
         for (SummaryWidgetGroup widgetGroup : widgetGroups) {
             long groupId = widgetGroup.getId();
             if (groupVsFieldsMap.containsKey(groupId)) {
-                widgetGroup.setWidgetGroupFields(groupVsFieldsMap.get(groupId));
+                widgetGroup.setFields(groupVsFieldsMap.get(groupId));
             }
         }
-        pageWidget.setWidgetGroups(widgetGroups);
+        pageWidget.setGroups(widgetGroups);
 
         return pageWidget;
     }
@@ -88,10 +89,24 @@ public class SummaryWidgetUtil {
         for (SummaryWidgetGroupFields groupField : allGroupFields){
             long fieldId = groupField.getFieldId();
             if (allModBeanFieldsMap.containsKey(fieldId)){
-                groupField.setField(allModBeanFieldsMap.get(fieldId));
+                FacilioField field = allModBeanFieldsMap.get(fieldId);
+                groupField.setField(field);
+
+                long parentLookupFieldId = groupField.getParentLookupFieldId();
+                if (parentLookupFieldId != -1){
+                    FacilioField parentLookupField = modBean.getField(parentLookupFieldId);
+                    groupField.setParentLookupField(parentLookupField);
+                    if(isLookupField(field)) {
+                        groupField.setSecondLevelLookup(true);
+                    }
+                }
             }
         }
 
         return allGroupFields;
+    }
+
+    public static boolean isLookupField(FacilioField field){
+        return field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP;
     }
 }

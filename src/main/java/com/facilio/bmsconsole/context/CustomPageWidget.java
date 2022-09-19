@@ -14,5 +14,5 @@ public class CustomPageWidget {
     private String displayName;
     private long moduleId = -1;
     private long appId;
-    private List<SummaryWidgetGroup> widgetGroups = new ArrayList<>();
+    private List<SummaryWidgetGroup> groups = new ArrayList<>();
 }

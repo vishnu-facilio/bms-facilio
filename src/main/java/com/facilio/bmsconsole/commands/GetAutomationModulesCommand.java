@@ -86,6 +86,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PURCHASE) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.REQUEST_FOR_QUOTATION)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
         }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TRANSFER_REQUEST)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST));
+        }
 
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));

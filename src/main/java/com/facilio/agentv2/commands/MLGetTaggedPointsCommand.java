@@ -47,10 +47,14 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
                         point.put("suggestedCategoryId", ((List<String>) pointMap.get("categoryIds")).stream().map(Long::parseLong).collect(Collectors.toList()));
                     }
                 });
-
-                resources.putAll(CommissioningApi.getResources(new HashSet<>(newResourceids)));
-                fieldMap.putAll(CommissioningApi.getFields(new HashSet<>(newFieldIds)));
-
+                Map<Long, String> newResources = CommissioningApi.getResources(new HashSet<>(newResourceids));
+                if(newResources!=null && !newResources.isEmpty()){
+                    resources.putAll(newResources);
+                }
+                Map<Long, Map<String, Object>> newFields = CommissioningApi.getFields(new HashSet<>(newFieldIds));
+                if(newFields!=null && !newFields.isEmpty()){
+                    fieldMap.putAll(newFields);
+                }
                 return false;
             }
             return true;

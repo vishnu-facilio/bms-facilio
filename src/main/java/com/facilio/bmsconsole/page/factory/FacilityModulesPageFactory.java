@@ -55,30 +55,7 @@ public class FacilityModulesPageFactory extends PageFactory{
         return page;
     }
     public static Page getFacilityBookingPage(V3FacilityBookingContext record, FacilioModule module) throws Exception {
-        if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
-            return getEmployeePortalBookingPage(record, module);
-        }
-        else {
-            return getMainAppFacilityBookingPage(record, module);
-        }
-    }
-
-    public static Page getEmployeePortalBookingPage(V3FacilityBookingContext record, FacilioModule module) throws Exception {
-
-        Page page = new Page();
-
-        Page.Tab tab1 = page.new Tab("summary");
-        tab1.setCustomFullPage(true);
-        page.addTab(tab1);
-
-        Page.Section tab1Sec1 = page.new Section();
-        tab1.addSection(tab1Sec1);
-        PageWidget bookingFullSmmary = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_FULL_SUMMARY);
-        bookingFullSmmary.addToWidgetParams("hideBg", true);
-        bookingFullSmmary.addToLayoutParams(tab1Sec1, 24, 10);
-        tab1Sec1.addWidget(bookingFullSmmary);
-
-        return page;
+        return getMainAppFacilityBookingPage(record, module);
     }
     public static Page getMainAppFacilityBookingPage(V3FacilityBookingContext record, FacilioModule module) throws Exception {
 

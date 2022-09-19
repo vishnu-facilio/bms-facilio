@@ -45,6 +45,7 @@ import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
@@ -455,6 +456,8 @@ public class FacilioConstants {
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 
 		public static final String WORK_ORDER = "workorder";
+
+		public static final String ACCOUNT_TYPE = "accounttype";
 		public static final String POINTS = "points";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
@@ -2139,6 +2142,7 @@ public class FacilioConstants {
 		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
 		public static final String SCOPING_ID = "scopingId";
 
+		public static final String SPACE_BOOKING = "spacebooking";
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
 		}
@@ -2314,6 +2318,29 @@ public class FacilioConstants {
 			public static final String PARKING_STALL = "Parking Stall";
 		}
 
+
+		public static class SpaceBooking {
+			public static final String SPACE_BOOKING = "spacebooking";
+			public static final String HOST = "host";
+			public static final String RESERVED_BY = "reservedBy";
+			public static final String BOOKING_START_TIME = "bookingStartTime";
+			public static final String BOOKING_END_TIME = "bookingEndTime";
+			public static final String DESK_BOOKING = "deskbooking";
+			public static final String PARKING_BOOKING = "parkingbooking";
+			public static final String EXTERNAL_ATTENDEE = "externalAttendee";
+			public static final String SPACE_BOOKING_EXTERNAL_ATTENDEE = "spaceBookingExternalAttendee";
+			public static final String SPACE_BOOKING_INTERNAL_ATTENDEE = "spaceBookingInternalAttendee";
+			public static final String FORM = "formId";
+			public static final String SPACE_MODULE_ID = "spaceModuleId";
+			public static final String AMENITY = "amenity";
+			public static final String SPACE_ID = "amenity";
+
+
+		}
+
+		public static class SpaceCategoryFormRelation{
+			public static final String SPACE_CATEGORY_FORM_RELATION = "spaceCategoryFormRelation";
+		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
 		public static final String BILL_INVOICE = "custom_invoices";
@@ -2712,6 +2739,8 @@ public class FacilioConstants {
 			classMap.put(WO_PLANNED_ITEMS, WorkOrderPlannedItemsContext.class);
 			classMap.put(WO_PLANNED_TOOLS, WorkOrderPlannedToolsContext.class);
 			classMap.put(WO_PLANNED_SERVICES, WorkOrderPlannedServicesContext.class);
+			classMap.put(SpaceBooking.SPACE_BOOKING, V3SpaceBookingContext.class);
+
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
@@ -2925,6 +2954,8 @@ public class FacilioConstants {
 		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
 		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
 		public static final String OMIT_BASESPACE_API = "omitBasespaceAPI";
+
+		public static final String NOTES_EDIT_AVAILABLE = "notesEditAvailable";
 	}
 
 	public static class Services {

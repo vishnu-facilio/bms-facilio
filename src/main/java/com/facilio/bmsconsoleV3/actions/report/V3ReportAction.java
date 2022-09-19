@@ -14,7 +14,9 @@ import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.V3DashboardActionContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
@@ -94,6 +96,7 @@ public class V3ReportAction extends V3Action {
     private ReportTemplateContext template;
     private List<Long> ids;
     ReportInfo reportInfo;
+    public V3DashboardActionContext ruleInfo;
 
     public JSONArray getyField(JSONArray yField) { return yField; }
     public void setyField(JSONArray yField) {
@@ -296,6 +299,14 @@ public class V3ReportAction extends V3Action {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Report.");
         }
         context.put(FacilioConstants.ContextNames.REPORT_DRILLDOWN_PARAMS, getDrilldownParams());
+        if(ruleInfo != null && ruleInfo.getCriteria() != null)
+        {
+            LOGGER.debug("CRITERIA INFO FOR DASHBOARD ACTION"+ ruleInfo.getCriteria());
+            context.put("rule_criteria", ruleInfo.getCriteria());
+            if(ruleInfo.getTrigger_widget_criteria() != null) {
+                context.put("trigger_widget_criteria", ruleInfo.getTrigger_widget_criteria());
+            }
+        }
     }
     public String execute() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getExecuteReportChain( getFilters() , needCriteriaData);

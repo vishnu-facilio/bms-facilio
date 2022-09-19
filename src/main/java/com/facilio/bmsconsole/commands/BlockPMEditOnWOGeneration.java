@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -78,7 +80,7 @@ public class BlockPMEditOnWOGeneration extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> prop: props) {
                 if ((Boolean) prop.get("woGenerationStatus")) {
-                    throw new IllegalStateException("The PPMs cannot be edited right now.");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Scheduling is under process, the PPMs cannot be edited right now.");
                 }
             }
         }

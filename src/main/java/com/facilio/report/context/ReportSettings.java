@@ -71,7 +71,9 @@ public class ReportSettings  {
 	
 
 	public static enum ClickAction implements FacilioIntEnum {
-		NONE("None"), LIST("List"),DRILLDOWN("Drilldown");
+		NONE("None"), LIST("List"),DRILLDOWN("Drilldown"),
+		DASHBOARD_ACTION("Dashboard_Action");
+
 
 		public static ClickAction valueOf(int value) {
 			if (value > 0 && value <= values().length) {

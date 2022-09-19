@@ -58,12 +58,13 @@ public enum DashboardRuleActionType {
                         if(trigger_widget.getLinkName() != null && placeHoldersMeta  != null)
                         {
                             ArrayList value_arr = null;
+                            HashMap widget_value = null;
                             if(placeHolders.containsKey(trigger_widget.getLinkName()))
                             {
-                                HashMap widget_value = (HashMap)  placeHolders.get(trigger_widget.getLinkName());
-                                if(widget_value != null && widget_value.containsKey("value"))
+                                widget_value = (HashMap)  placeHolders.get(trigger_widget.getLinkName());
+                                if(widget_value != null && (widget_value.containsKey("value") || widget_value.containsKey("dimension")))
                                 {
-                                    value_arr = (ArrayList) widget_value.get("value");
+                                    value_arr = widget_value.containsKey("value") ? (ArrayList) widget_value.get("value") : (ArrayList) widget_value.get("dimension");
                                     if(value_arr.size() > 0 )
                                     {
                                         String value = (String)value_arr.get(0);
@@ -81,8 +82,35 @@ public enum DashboardRuleActionType {
                                    String moduleName = (String) widget_meta.get("moduleName");
                                    if(recordId != null ) {
                                        placeholder_vs_value_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
-                                       if(value_arr != null && value_arr.size() > 1) {
-                                           placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), value_arr);
+                                       if(value_arr != null && value_arr.size() > 1)
+                                       {
+                                           placeholder_vs_value_map = new HashMap<>();
+                                           StringBuilder sb = new StringBuilder();
+                                           for(Object val : value_arr){
+                                               sb.append(val).append(',');
+                                           }
+                                           String selected_val_string= sb.toString();
+                                           selected_val_string  = selected_val_string.substring(0, selected_val_string.length() -1);
+                                           if (widget_value != null && widget_value.containsKey("value")) {
+                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), selected_val_string);
+                                           } else if (widget_value != null && widget_value.containsKey("dimension")) {
+                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), selected_val_string);
+                                           }
+                                       }
+                                       else
+                                       {
+                                           if (widget_value != null && widget_value.containsKey("value")) {
+                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), recordId);
+                                           }
+                                           if (widget_value != null && widget_value.containsKey("dimension")) {
+                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), recordId);
+                                           }
+                                           if (widget_value != null && widget_value.containsKey("group_by")) {
+                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
+                                           }
+//                                           else if (widget_value != null && widget_value.containsKey("criteria")) {
+//                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
+//                                           }
                                        }
                                    }
                                 }
@@ -108,7 +136,7 @@ public enum DashboardRuleActionType {
                 DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
                 if(widgetType != null && widgetType == DashboardWidgetContext.WidgetType.FILTER)
                 {
-                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta);
+                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName());
                 }
                 else if(widget != null && widgetType == DashboardWidgetContext.WidgetType.CHART)
                 {
@@ -149,7 +177,7 @@ public enum DashboardRuleActionType {
                         }
                         else
                         {
-                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta);
+                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName());
                         }
                     }
                 }
@@ -159,13 +187,23 @@ public enum DashboardRuleActionType {
             }
         }
 
-        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data)throws Exception
+        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data, String trigger_widget_link_name)throws Exception
         {
             result_json.put("widgetType" , widgetType);
             result_json.put("widget_id", target_widget_id);
             JSONObject actionData = new JSONObject();
             JSONObject temp = new JSONObject();
             temp.put("criteria", criteria);
+            JSONObject placeHoldes = dashboard_execute_data.getPlaceHolders();
+            if(placeHoldes != null && placeHoldes.containsKey(trigger_widget_link_name))
+            {
+                JSONObject temp_rule_info= new JSONObject();
+                HashMap trigger_widget_obj = (HashMap) placeHoldes.get(trigger_widget_link_name);
+                if(trigger_widget_obj != null && trigger_widget_obj.containsKey("criteria")) {
+                    temp_rule_info.put("trigger_widget_criteria", trigger_widget_obj.get("criteria"));
+                }
+                temp.put("ruleInfo", temp_rule_info);
+            }
             actionData.put("FILTER", temp);
             V3DashboardAPIHandler.setUserFilterResp(actionData, target_widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
             V3DashboardAPIHandler.setTimeLineFilterResp(actionData, target_widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());

@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
@@ -10,38 +11,32 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
-import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.MultiLookupMeta;
-import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
-import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -907,5 +902,31 @@ public class V3PeopleAPI {
 
     }
 
+    public static List<User> fetchUserContext(List<Long> peopleIds, boolean isInvitedAcceptedUsers) throws Exception{
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId",StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+
+        if (isInvitedAcceptedUsers){
+            criteria.addAndCondition(CriteriaAPI.getCondition("INVITATION_ACCEPT_STATUS", "inviteAcceptStatus", true+"", BooleanOperators.IS));
+        }
+
+        GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
+        List<Map<String,Object>> props = builder.get();
+
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)){
+
+            List<User> users = new ArrayList<>();
+
+            for (Map<String,Object> prop : props){
+                IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+                User user = UserBeanImpl.createUserFromProps(prop, true, true, null);
+                users.add(user);
+            }
+
+            return users;
+        }
+        return null;
+    }
 
 }

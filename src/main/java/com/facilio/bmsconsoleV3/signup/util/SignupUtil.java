@@ -1,19 +1,32 @@
 package com.facilio.bmsconsoleV3.signup.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SignupUtil {
+
+
 	public static void addNotesAndAttachmentModule(FacilioModule module) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -43,7 +56,7 @@ public class SignupUtil {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-    	
+
 	}
 
         /**
@@ -156,5 +169,72 @@ public class SignupUtil {
                 FacilioChain addModulesChain = TransactionChainFactory.addSystemModuleChain();
                 addModulesChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Arrays.asList(modules));
                 addModulesChain.execute();
+        }
+        public static void addFormForModules(List<FacilioForm> forms,List<ApplicationContext> allApplications, String moduleName) throws Exception {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                Map<String,FacilioField> allFields = modBean.getAllFields(moduleName).stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),(name1, name2) -> { return name1; }));
+
+                Map<String, ApplicationContext> allApplicationMap = new HashMap<>();
+                if (CollectionUtils.isNotEmpty(allApplications)) {
+                        allApplicationMap = allApplications.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, Function.identity()));
+                }
+                for (FacilioForm form : forms) {
+                        List<FormSection> newSections = new ArrayList<>();
+                        for (FormSection section : form.getSections()) {
+                                List<FormField> formFields = FormsAPI.getFormFieldsFromSections(Collections.singletonList(section));
+                                List<FormField> newFormFields = new ArrayList<>();
+                                for (FormField formField : formFields) {
+                                        if (formField.getName() != null) {
+                                                FacilioField field = allFields.get(formField.getName());
+                                                if (field != null) {
+                                                        formField.setField(field);
+                                                        formField.setName(field.getName());
+                                                        formField.setFieldId(field.getId());
+                                                }
+                                                newFormFields.add(formField);
+                                        }
+                                }
+                                section.setFields(newFormFields);
+                                newSections.add(section);
+                        }
+                        form.setSections(newSections);
+                        form.setIsSystemForm(true);
+                        if (form.getAppLinkNamesForForm() == null || form.getAppLinkNamesForForm().isEmpty()) {
+                                form.setAppId(allApplicationMap.get(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+                                form.setAppLinkNamesForForm(Arrays.asList(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+                        }
+                        for (String linkName : form.getAppLinkNamesForForm()) {
+                                if (Objects.equals(linkName, "wokplace")) {
+                                        continue;
+                                }
+                                if (!Objects.equals(linkName, "newapp")) {
+                                        FacilioForm facilioForm = new FacilioForm();
+                                        facilioForm = FieldUtil.cloneBean(form, FacilioForm.class);
+                                        facilioForm.setAppLinkName(linkName);
+                                        if (!Objects.equals(linkName, "service")) {
+                                                if(Objects.equals(linkName, "employee")){
+                                                        facilioForm.setName(form.getName() + "_" + linkName +"_portal");
+                                                }else {
+                                                        facilioForm.setName(form.getName() + "_" + linkName);
+                                                }
+                                        }
+                                        facilioForm.setAppId(allApplicationMap.get(linkName).getId());
+                                        facilioForm.setType(1);
+                                        addForm(facilioForm);
+                                }else {
+                                        form.setAppLinkName(linkName);
+                                        form.setAppId(allApplicationMap.get(linkName).getId());
+                                        addForm(form);
+                                }
+                        }
+                }
+        }
+        public static void addForm(FacilioForm form) throws  Exception{
+                FacilioChain newForm = TransactionChainFactory.getAddFormCommand();
+                FacilioContext context=newForm.getContext();
+                FacilioModule module = form.getModule();
+                context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
+                context.put(FacilioConstants.ContextNames.FORM,form);
+                newForm.execute();
         }
 }

@@ -48,7 +48,7 @@ public class EncryptionUtil {
 			return res;
 		}
 		catch (Exception e) {
-			log.info("Exception occurred ", e);
+			log.info("Exception occurred while encoding", e);
 		}
 		return "";
 	}
@@ -80,7 +80,7 @@ public class EncryptionUtil {
 
 		}
 		catch (Exception e) {
-			log.info("Exception occurred ", e);
+			log.info("Exception occurred while decoding", e);
 		}
 		return null;
 	}

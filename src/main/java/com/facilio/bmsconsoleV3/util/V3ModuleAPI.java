@@ -89,7 +89,10 @@ public class V3ModuleAPI {
         AUDIENCE(FacilioConstants.ContextNames.AUDIENCE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         AMENITY(FacilioConstants.ContextNames.FacilityBooking.AMENITY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         FAULTS(FacilioConstants.ContextNames.NEW_READING_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        BMS_ALARMS(FacilioConstants.ContextNames.BMS_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        BMS_ALARMS(FacilioConstants.ContextNames.BMS_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        SPACE_BOOKING(FacilioConstants.ContextNames.SPACE_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
+        SERVICE_REQUEST_EMPLOYEE_PORTAL(FacilioConstants.ContextNames.SERVICE_REQUEST,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)),
+        FACILITY_BOOKING_EMPLOYEE_PORTAL(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         private String moduleName;
         private List<String> applicationLinkNames;

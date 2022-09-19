@@ -1,7 +1,10 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import com.facilio.command.FacilioCommand;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
@@ -12,13 +15,18 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AddSignupDataCommandV3 extends FacilioCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(AddSignupDataCommandV3.class.getName());
     private static final String DEFAULT_SIGNUP_CONF_PATH = FacilioUtil.normalizePath("conf/signup.yml");
-    private static final List<SignUpData> SIGN_UP_CHAIN = initSignUpChain();
+    public static final List<SignUpData> SIGN_UP_CHAIN = initSignUpChain();
+    public static final boolean createForms = false;
+    public static final boolean createViews = false;
     private static List<SignUpData> initSignUpChain() {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;
@@ -63,9 +71,24 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        List<ApplicationContext> allApplications = ApplicationApi.getAllApplicationsWithOutFilter();
         if(CollectionUtils.isNotEmpty(SIGN_UP_CHAIN)){
             for(SignUpData signUpData : SIGN_UP_CHAIN){
                 signUpData.addData();
+            }
+            if (createViews) {
+                for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                    if (signUpData instanceof BaseModuleConfig) {
+                        signUpData.addViews(allApplications);
+                    }
+                }
+            }
+            if(createForms) {
+                for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                    if(signUpData instanceof BaseModuleConfig) {
+                        signUpData.addForms(allApplications);
+                    }
+                }
             }
         }
         return false;

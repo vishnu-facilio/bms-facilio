@@ -119,7 +119,8 @@ public class NoteAction extends FacilioAction {
 		updateCurrentActivity(context, moduleName);
 		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);
-		
+		setResult("note", note);
+		setResult("noteId", note.getId());
 		setNoteId(note.getId());
 		
 		return SUCCESS;

@@ -208,6 +208,7 @@ public class AddSurveyModules extends SignUpData {
       defaultForm.setDisplayName("Standard");
       defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
       defaultForm.setShowInWeb(true);
+	  defaultForm.setIsSystemForm(true);
       
       Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(survey.getName()));
       

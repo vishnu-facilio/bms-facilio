@@ -62,6 +62,17 @@ public class FacilioView {
 		this.ownerId = view.ownerId;
 		this.isLocked = view.isLocked;
 		this.isEditable = view.isEditable;
+		this.excludeModuleCriteria=view.excludeModuleCriteria;
+		this.appLinkNames = view.appLinkNames;
+	}
+	private List<String> appLinkNames;
+
+	public List<String> getAppLinkNames() {
+		return appLinkNames;
+	}
+
+	public void setAppLinkNames(List<String> appLinkNames) {
+		this.appLinkNames = appLinkNames;
 	}
 	private Long ownerId = -1L;
 	public Long getOwnerId() { return ownerId;}
@@ -390,5 +401,17 @@ public class FacilioView {
 			}
 			return typeMap;
 		}
+
+	}
+
+	private Boolean excludeModuleCriteria;
+	public void setExcludeModuleCriteria(Boolean excludeModuleCriteria) {
+		this.excludeModuleCriteria = excludeModuleCriteria;
+	}
+	public boolean isExcludeModuleCriteria(){
+		if (excludeModuleCriteria != null){
+			return excludeModuleCriteria;
+		}
+		return false;
 	}
 }

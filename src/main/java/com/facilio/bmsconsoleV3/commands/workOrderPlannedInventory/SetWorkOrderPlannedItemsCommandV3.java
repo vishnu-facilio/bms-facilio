@@ -1,15 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,28 +22,19 @@ public class SetWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(workOrderPlannedItems)){
             for(WorkOrderPlannedItemsContext workOrderPlannedItem : workOrderPlannedItems){
                 if(workOrderPlannedItem.getDescription()==null){
-                    String description = getItemType(workOrderPlannedItem.getItemType().getId());
-                    workOrderPlannedItem.setDescription(description);
+                    V3ItemTypesContext itemType = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM_TYPES,workOrderPlannedItem.getItemType().getId(),V3ItemTypesContext.class);
+                    if(itemType.getDescription()!=null){
+                        String description = itemType.getDescription();
+                        workOrderPlannedItem.setDescription(description);
+                    }
+                }
+                if(workOrderPlannedItem.getUnitPrice()!=null && workOrderPlannedItem.getQuantity()!=null){
+                    Double totalCost = workOrderPlannedItem.getUnitPrice() * workOrderPlannedItem.getQuantity();
+                    workOrderPlannedItem.setTotalCost(totalCost);
                 }
             }
         }
 
         return false;
-    }
-    public String getItemType(Long id) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
-        String moduleName = FacilioConstants.ContextNames.ITEM_TYPES;
-        List<FacilioField> fields = modBean.getAllFields(moduleName);
-        SelectRecordsBuilder<V3ItemTypesContext> builder = new SelectRecordsBuilder<V3ItemTypesContext>()
-                .moduleName(moduleName)
-                .select(fields)
-                .beanClass(V3ItemTypesContext.class)
-                .andCondition(CriteriaAPI.getIdCondition(id,itemTypesModule));
-        List<V3ItemTypesContext> list = builder.get();
-        if(list.get(0).getDescription()!=null){
-            return list.get(0).getDescription();
-        }
-      return null;
     }
 }

@@ -1099,4 +1099,7 @@
                 method="cost">
         </action>
     </package>
+    <package name="peoplefilter" namespace="/api/v3/people/filters" extends="v3Api">
+        <action name="filter" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchActivePeoples"/>
+    </package>
 </struts>

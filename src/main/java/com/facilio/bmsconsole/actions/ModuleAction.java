@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.formFactory.FacilioFormChainFactory;
 import com.facilio.bmsconsole.forms.FieldFormUsage;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -82,6 +83,23 @@ public class ModuleAction extends FacilioAction {
 		moduleRecordsDuplicateChain.execute();
 		return SUCCESS;
 		
+	}
+	public String v2AddModuleDB() throws Exception {
+		FacilioChain addModulesChain = FacilioFormChainFactory.getAddModuleChain();
+		FacilioContext context = addModulesChain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, getModuleDisplayName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+
+		addModulesChain.execute();
+
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setResult("module", module);
+		setResult(FacilioConstants.ContextNames.FORM, context.get(FacilioConstants.ContextNames.FORM));
+		return SUCCESS;
 	}
 	
 	

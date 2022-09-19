@@ -1289,6 +1289,9 @@ public class UserBeanImpl implements UserBean {
 	
 	private String getUserLink(User user, String url, AppDomain appDomainObj) throws Exception {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
+		if (StringUtils.isEmpty(inviteToken)) {
+			throw new IllegalArgumentException("Unable to generate invite link for the user.");
+		}
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
 			long orgId = appDomainObj.getOrgId();  // using this when reset password link is called

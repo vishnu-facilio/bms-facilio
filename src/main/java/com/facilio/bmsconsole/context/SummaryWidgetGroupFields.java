@@ -18,4 +18,7 @@ public class SummaryWidgetGroupFields {
     private int colIndex;
     private int colSpan;
     private FacilioField field;
+    private boolean isSecondLevelLookup;
+    private long parentLookupFieldId = -1;
+    private FacilioField parentLookupField;
 }

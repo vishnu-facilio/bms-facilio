@@ -1502,7 +1502,7 @@ public class ApplicationApi {
 
             webTabs = new ArrayList<>();
 
-            webTabs.add(new WebTabContext("My Bookings", "my-bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("facilitybooking").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("My Bookings", "my-bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("spacebooking").getModuleId()), layout.getApplicationId(), null));
 
             groupNameVsWebTabsMap.put("booking", webTabs);
             webTabGroups.add(new WebTabGroupContext("Service Catalog", "servicecatalog", layout.getId(), 216, groupOrder++));
@@ -1902,6 +1902,35 @@ public class ApplicationApi {
 
     }
 
+    public static List<ApplicationContext> getAllApplicationsWithOutFilter() throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields());
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                ApplicationContext.class);
+        return getFilteredApplications(applications);
+    }
+
+    public static List<ApplicationContext> getFilteredApplications(List<ApplicationContext> applications) throws Exception {
+        List <ApplicationContext> apps = new ArrayList<>();
+
+        applications.forEach(app -> {
+            try {
+                if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS)) {
+                        apps.add(app);
+                    }
+                }
+                else {
+                    apps.add(app);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return apps;
+    }
     public static List<ApplicationContext> getAllApplications() throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName())

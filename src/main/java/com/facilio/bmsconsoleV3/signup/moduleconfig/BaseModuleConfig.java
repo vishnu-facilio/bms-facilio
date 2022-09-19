@@ -1,9 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import java.util.*;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +17,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.trigger.util.TriggerUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -29,6 +35,9 @@ public abstract class BaseModuleConfig extends SignUpData {
 
     protected void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+    public String getModuleName() {
+        return moduleName;
     }
 
     protected FacilioModule getModule() throws Exception {
@@ -48,13 +57,22 @@ public abstract class BaseModuleConfig extends SignUpData {
     public void addData() throws Exception {
         addModuleAndFields();
         addTriggers();
-        addForms();
-        addViews();
         addMisc();
     }
     protected void addModuleAndFields() throws Exception {};
-    protected void addForms() throws Exception {};
-    protected void addViews() throws Exception {};
+    public void addForms(List<ApplicationContext> allApplications) throws Exception {
+        List<FacilioForm> forms = getModuleForms();
+        if(CollectionUtils.isNotEmpty(forms)) {
+            SignupUtil.addFormForModules(forms, allApplications, getModuleName());
+        }
+    };
+    @Override
+    public void addViews(List<ApplicationContext> allApplications) throws Exception {
+        List<Map<String, Object>> viewsAndGroups = getViewsAndGroups();
+        if (CollectionUtils.isNotEmpty(viewsAndGroups)) {
+            AddModuleViewsAndGroups.addViews(getModuleName(), getModule(), viewsAndGroups, allApplications);
+        }
+    };
     protected void addMisc() throws Exception {};
     protected void addTriggers() throws Exception {
         addTrigger("Create", EventType.CREATE);

@@ -601,7 +601,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         }
 
-
+        if(globalContext != null && globalContext.containsKey("rule_criteria") && globalContext.get("rule_criteria") != null){
+            Criteria rule_criteria = (Criteria) globalContext.get("rule_criteria");
+            newSelectBuilder.andCriteria(rule_criteria);
+            if(globalContext.containsKey("trigger_widget_criteria") && globalContext.get("trigger_widget_criteria") != null){
+                newSelectBuilder.andCriteria((Criteria) globalContext.get("trigger_widget_criteria"));
+            }
+        }
         List<Map<String, Object>> props = new ArrayList<>();
 
         ReportFieldContext reportFieldContext = dp.getxAxis();

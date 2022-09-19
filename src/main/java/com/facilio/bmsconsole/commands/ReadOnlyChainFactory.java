@@ -242,6 +242,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ConvertUnitForLatestReadingDataCommand());
 		return c;
 	}
+
+	public static FacilioChain fetchLatestRelationReadingDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchRelatedParentIdsCommand());
+		c.addCommand(fetchLatestReadingDataChain());
+		return c;
+	}
 	
 	public static FacilioChain getAllAssetReadingsChain() {
 		FacilioChain c = getDefaultChain();

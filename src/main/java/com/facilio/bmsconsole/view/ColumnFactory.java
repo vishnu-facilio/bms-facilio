@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.view;
 
+import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingInternalAttendeeContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.modules.FieldType;
@@ -18,6 +22,9 @@ public class ColumnFactory {
 		String name = moduleName + "-" +viewName;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			name = moduleName;
+		}
+		if (LoadViewCommand.HIDDEN_VIEW_NAMES.contains(viewName) && !(columns.containsKey(name))){
+			name = moduleName + "-" + "all";
 		}
 		if (!columns.containsKey(name)) {
 			name = moduleName + "-default";
@@ -152,6 +159,9 @@ public class ColumnFactory {
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorinvite-invite_myInvites", getTenantPortalVisitorInvitesColumns());
 		columnMap.put("visitorinvite-invite_myExpired", getTenantPortalVisitorInvitesColumns());
+		columnMap.put("invitevisitor-default", getDefaultVisitorInvitesColumns());
+		columnMap.put("invitevisitor-invite_myInvites", getTenantPortalVisitorInvitesColumns());
+		columnMap.put("invitevisitor-invite_myExpired", getTenantPortalVisitorInvitesColumns());
 
 		columnMap.put("inventoryrequestlineitems-default", getDefaultInventoryRequestLineItemsColumns());
 
@@ -316,6 +326,8 @@ public class ColumnFactory {
 
 
 		columnMap.put("transaction-all", getBudgetTransactionColumns());
+		columnMap.put(FacilioConstants.ContextNames.SPACE_BOOKING + "-default", getDefaultSpaceBookingColumns());
+
 		return columnMap;
 	}
 	
@@ -1014,7 +1026,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInspectionResponseColumnsWithName() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("name", "Name", "parent"));
 		
 		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
@@ -1066,7 +1078,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInductionResponseColumnsWithName() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("name", "Name", "parent"));
 		
 		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
@@ -1666,7 +1678,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
-		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("contactType", "Contact Type"));
 		//columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
@@ -1677,7 +1689,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
-		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("tenant", "Tenant"));
 		//columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
@@ -1765,7 +1777,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
-		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		//columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
@@ -1776,7 +1788,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
-		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("email", "Email"));
 	//	columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
 		return columns;
@@ -2138,7 +2150,8 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("schedule", "Schedule"));
+//		columns.add(new ViewField("schedule", "Schedule"));
+		columns.add(new ViewField("controlSchedule", "Control Schedule", "parentGroup"));
 		
 		return columns;
 	}
@@ -2147,12 +2160,12 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("resource", "Asset"));
-		columns.add(new ViewField("field", "Reading"));
+//		columns.add(new ViewField("field", "Reading"));
 		columns.add(new ViewField("command", "Set Value"));
 		columns.add(new ViewField("executedTime", "Time"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("executedBy", "Executed By"));
-		columns.add(new ViewField("actinMode", "Mode"));
+//		columns.add(new ViewField("actinMode", "Mode"));
 		
 		return columns;
 
@@ -2419,5 +2432,19 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	private static List<ViewField> getDefaultSpaceBookingColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("space", "Space"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("reservedBy", "Reserved By"));
+		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
+		columns.add(new ViewField("bookingStartTime", "Booking Start Time"));
+		columns.add(new ViewField("bookingEndTime", "Booking End Time"));
+		columns.add(new ViewField("internalAttendees", "Internal Attendees"));
+
+		return columns;
+	}
 
 }

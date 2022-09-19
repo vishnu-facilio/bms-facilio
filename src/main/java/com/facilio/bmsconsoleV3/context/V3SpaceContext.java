@@ -2,6 +2,11 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 public class V3SpaceContext extends V3BaseSpaceContext{
 
@@ -88,4 +93,8 @@ public class V3SpaceContext extends V3BaseSpaceContext{
     public void setLocation(LocationContext location) {
         this.location = location;
     }
+
+	@Getter @Setter
+	private List<AmenitiesContext> amenities;
+
 }

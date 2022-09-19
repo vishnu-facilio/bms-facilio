@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.imports;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
+import com.facilio.bmsconsoleV3.commands.failureclass.WhitelistSystemFields;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
@@ -21,6 +23,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -144,6 +147,32 @@ public class ImportConfiguration {
                 .importHandler()
                 .lookupMainFieldMap("plannedmaintenance", "name")
                 .afterImportCommand(new HandleTasksImportCommand())
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "failureclass")
+    public static Supplier<ImportConfig> getFailureClassConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+                .parseHandler()
+                .beforeParseCommand(new WhitelistSystemFields())
+                .done()
+                .importHandler()
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "failurecode")
+    public static Supplier<ImportConfig> getFailureCodeConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+                .parseHandler()
+                .beforeParseCommand(new WhitelistSystemFields())
+                .done()
+                .importHandler()
                 .done()
                 .build();
     }
