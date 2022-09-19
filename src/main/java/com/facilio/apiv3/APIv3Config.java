@@ -2308,8 +2308,8 @@ public class APIv3Config {
 							 .delete()
 							 .build();
 	}
-	
-	@Module(FacilioConstants.Routes.NAME)
+
+    @Module(FacilioConstants.Routes.NAME)
     public static Supplier<V3Config> getRoute() {
         return () -> new V3Config(RoutesContext.class, null)
                 .create()
@@ -2650,6 +2650,17 @@ public class APIv3Config {
         return () -> new V3Config(V3ExternalAttendeeContext.class, null)
                 .create()
                 .list()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.WORK_ASSET)
+    public static Supplier<V3Config> getWorkAsset() {
+        return () -> new V3Config(V3WorkAssetContext.class, null)
+                .create()
+                .beforeSave(new AddSpaceAndAssetCommand())
+                .list()
+                .beforeFetch(new V3LoadWorkAssetLookUpsCommand())
                 .delete()
                 .build();
     }

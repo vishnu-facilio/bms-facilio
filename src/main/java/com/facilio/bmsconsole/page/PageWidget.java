@@ -440,6 +440,7 @@ public class PageWidget {
 		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
 		FAILURE_CLASS_DETAILS("failureclassdetails"),
 		FAILURE_REPORT("failurereports"),
+		WORK_ASSET("workAsset"),
 		FAILURE_CLASS_ASSOCIATED_PROBELMS("failureclassassociatedproblems"),
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),
