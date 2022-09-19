@@ -257,7 +257,7 @@ public class InspectionPageFactory extends PageFactory {
         
         
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
-        if(currentApp == null || currentApp.getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
+        //if(currentApp == null || currentApp.getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
         	
         	Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
             Page.Section notesAndAttachmentSec = page.new Section();
@@ -288,7 +288,7 @@ public class InspectionPageFactory extends PageFactory {
     		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets()) || isRelationshipNeeded) {
     			page.addTab(relatedList);
     		}
-        }
+        //}
         
         Page.Tab activityTab = page.new Tab("History");;
         Page.Section activitySec = page.new Section();
