@@ -33,6 +33,7 @@ import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -685,22 +686,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
     }*/
 
     @Override
-	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
-			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
-		if (partitionKey != null && !partitionKey.isEmpty()) {
-			ControllerContext controller = ControllerAPI.getActiveController(partitionKey);
-			long siteId = -1l;
-			if (controller != null) {
-				siteId = controller.getSiteId();
-				payLoad.put("controllerId", controller.getId());
-			}
-			if (siteId != -1) {
-				payLoad.put("siteId", siteId);
-			}
-
-		}
-
-		return EventAPI.processEvents(timeStamp, payLoad, eventRules, eventCountMap, lastEventTime);
+	public void processEvents(long timeStamp, JSONArray payLoad, List<EventRuleContext> eventRules) throws Exception {
+		EventAPI.processEvents(timeStamp, payLoad, eventRules);
 	}
 
 	@Override

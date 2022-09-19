@@ -24,7 +24,7 @@ public class ProcessEventCommand extends FacilioCommand {
 		JSONObject payload = (JSONObject) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
 		if(payload != null) {
 			List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();
-			EventAPI.populateProcessEventParams((FacilioContext) context, System.currentTimeMillis(), payload, ruleList, new HashMap<>(), -1);
+			EventAPI.populateProcessEventParams((FacilioContext) context, System.currentTimeMillis(), payload, ruleList);
 		}
 		return false;
 	}
