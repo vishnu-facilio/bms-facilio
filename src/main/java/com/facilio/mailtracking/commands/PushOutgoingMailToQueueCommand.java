@@ -18,6 +18,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         mailJson.put(MailConstants.Params.FILES, context.get(MailConstants.Params.FILES));
         mailJson.put(MailConstants.Params.LOGGER_ID, context.get(MailConstants.Params.LOGGER_ID));
         mailJson.put(MailConstants.Params.ID, context.get(MailConstants.Params.LOGGER_ID));
+        this.removeContent(mailJson);
 
         long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
 
@@ -29,6 +30,11 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms");
         this.resetMailJson(mailJson);
         return false;
+    }
+
+    private void removeContent(JSONObject mailJson) {
+        mailJson.remove(MailConstants.Email.HTML_CONTENT);
+        mailJson.remove(MailConstants.Email.TEXT_CONTENT);
     }
 
     private String getTopicIdentifier(JSONObject mailJson, long orgId) {
@@ -50,9 +56,9 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
     }
 
     private void resetMailJson(JSONObject mailJson) {
-        mailJson.remove(MailConstants.Params.ORIGINAL_TO);
-        mailJson.remove(MailConstants.Params.ORIGINAL_CC);
-        mailJson.remove(MailConstants.Params.ORIGINAL_BCC);
+        mailJson.remove(MailConstants.Email.ORIGINAL_TO);
+        mailJson.remove(MailConstants.Email.ORIGINAL_CC);
+        mailJson.remove(MailConstants.Email.ORIGINAL_BCC);
         mailJson.remove(MailConstants.Params.MASK_URL);
     }
 

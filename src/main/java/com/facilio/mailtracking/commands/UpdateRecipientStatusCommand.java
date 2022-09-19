@@ -3,7 +3,8 @@ package com.facilio.mailtracking.commands;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.util.FacilioUtil;
@@ -20,6 +21,13 @@ public class UpdateRecipientStatusCommand extends FacilioCommand {
         if(mailLogContext == null) {
             return false;
         }
+        MailStatus status = (MailStatus) context.get(MailConstants.Params.MAIL_STATUS);
+        if(status!=null) {
+            mailLogContext.setMailStatus(status);
+            if(status == MailStatus.FAILED) {
+                return false;
+            }
+        }
         if(mailLogContext.getTo() == null) { // skipping update status since TO address is empty
             return false;
         }
@@ -28,7 +36,7 @@ public class UpdateRecipientStatusCommand extends FacilioCommand {
         if(oldRecords==null || oldRecords.isEmpty()) {
             return false;
         }
-        OutgoingMailAPI.updateRecipientStatus(oldRecords, MailStatus.SENT.getValue());
+        OutgoingMailAPI.updateRecipientStatus(oldRecords, RecipientStatus.SENT.getValue());
         return false;
     }
 }

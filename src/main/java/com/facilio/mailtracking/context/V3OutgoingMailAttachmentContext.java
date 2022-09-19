@@ -7,4 +7,5 @@ import lombok.Data;
 public class V3OutgoingMailAttachmentContext extends V3Context {
     private V3OutgoingMailLogContext mailId;
     private String fileName;
+    private String fileUrl;
 }

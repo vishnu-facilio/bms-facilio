@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.util.FacilioUtil;
@@ -50,7 +50,7 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
             record.setLogger(mailLogContext);
             record.setName(emailMeta.getValue());
             record.setRecipient(emailMeta.getKey());
-            record.setStatus(MailStatus.IN_PROGRESS.getValue());
+            record.setStatus(RecipientStatus.IN_PROGRESS.getValue());
             records.add(record);
         }
         return records;

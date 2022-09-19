@@ -4,7 +4,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -20,12 +20,12 @@ public class OutgoingRecipientStatusFilterCommand extends FacilioCommand {
 
         String qStatus = (String) Constants.getQueryParam(context, "status");
         if(qStatus!=null && !qStatus.equals("all")) {
-            MailStatus status = null;
+            RecipientStatus status = null;
             if(qStatus.equals("inprogress")) {
-                status = MailStatus.IN_PROGRESS;
+                status = RecipientStatus.IN_PROGRESS;
             } else {
                 try {
-                    status = MailStatus.valueOf(qStatus.toUpperCase());
+                    status = RecipientStatus.valueOf(qStatus.toUpperCase());
                 } catch (Exception e) {
                     V3Util.throwRestException(true, ErrorCode.VALIDATION_ERROR, e.getMessage());
                 }

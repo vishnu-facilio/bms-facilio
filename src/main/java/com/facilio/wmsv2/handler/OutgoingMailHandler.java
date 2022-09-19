@@ -4,6 +4,7 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.bean.MailBean;
+import com.facilio.mailtracking.context.MailEnums;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -37,6 +38,7 @@ public class OutgoingMailHandler extends BaseHandler {
                 mapperId = NewTransactionService.newTransactionWithReturn(() -> registerOutgoingMailMapper(orgId));
                 LOGGER.info("OG_MAIL_LOG :: MAPPER_ID inserted :: "+mapperId);
                 mailJson.put(MailConstants.Params.MAPPER_ID, mapperId);
+                mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.IN_PROCESS.name());
 
                 MailBean mailBean = MailConstants.getMailBean(orgId);
                 mailBean.trackAndSendMail(mailJson);

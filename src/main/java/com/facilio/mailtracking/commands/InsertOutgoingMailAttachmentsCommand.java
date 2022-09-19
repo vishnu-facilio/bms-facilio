@@ -36,6 +36,7 @@ public class InsertOutgoingMailAttachmentsCommand extends FacilioCommand {
             V3OutgoingMailAttachmentContext record = new V3OutgoingMailAttachmentContext();
             record.setMailId(mailLogContext);
             record.setFileName(en.getKey());
+            record.setFileUrl(en.getValue());
             records.add(record);
         }
         OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_ATTACHMENTS, records);

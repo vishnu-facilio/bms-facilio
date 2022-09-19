@@ -25,4 +25,11 @@ public class MailReadOnlyChainFactory {
         c.addCommand(new PushOutgoingMailToQueueCommand());
         return c;
     }
+
+    public static FacilioChain getAfterFetchMailLoggerSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MaskConfidentialUrlCommand());
+        c.addCommand(new FetchMailAttachmentsCommand());
+        return c;
+    }
 }

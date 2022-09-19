@@ -188,10 +188,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
-import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
-import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
-import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.commands.*;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
@@ -2382,7 +2379,7 @@ public class APIv3Config {
 //                .beforeFetch(new FilterOutFailedMailLogsCommand())
                 .afterFetch(new UpdateMailRecordsModuleNameCommand())
                 .summary()
-                .afterFetch(new FetchMailAttachmentsCommand())
+                .afterFetch(MailReadOnlyChainFactory.getAfterFetchMailLoggerSummaryChain())
                 .build();
     }
 

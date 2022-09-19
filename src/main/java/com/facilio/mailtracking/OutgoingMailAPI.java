@@ -16,11 +16,12 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.email.EmailClient;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -106,6 +107,28 @@ public class OutgoingMailAPI {
         return -1;
     }
 
+    public static V3OutgoingMailLogContext getLoggerRecord(Long loggerId) throws Exception {
+        String moduleName = MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER;;
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        Condition idCond = CriteriaAPI.getCondition(FieldFactory.getIdField(module), loggerId+"", NumberOperators.EQUALS);
+        SelectRecordsBuilder<V3OutgoingMailLogContext> selectBuilder = new SelectRecordsBuilder<V3OutgoingMailLogContext>()
+                .beanClass(V3OutgoingMailLogContext.class)
+                .table(moduleName)
+                .module(module)
+                .select(fields)
+                .fetchSupplement((SupplementRecord) fieldMap.get(MailConstants.Email.HTML_CONTENT))
+                .fetchSupplement((SupplementRecord) fieldMap.get(MailConstants.Email.TEXT_CONTENT))
+                .andCondition(idCond);
+        List<V3OutgoingMailLogContext> rows = selectBuilder.get();
+        if(!CollectionUtils.isEmpty(rows)) {
+            return rows.get(0);
+        }
+        return null;
+    }
     public static List<V3OutgoingRecipientContext> getRecipients(long loggerId) throws Exception {
         return getRecipients(loggerId, null);
     }
@@ -140,10 +163,10 @@ public class OutgoingMailAPI {
     }
 
     public static void restoreMailMessage(JSONObject mailJson) {
-        if(mailJson.get("htmlContent") != null) {
-            mailJson.put(EmailClient.MESSAGE, mailJson.remove("htmlContent"));
-        } else if(mailJson.get("textContent") != null) {
-            mailJson.put(EmailClient.MESSAGE, mailJson.remove("textContent"));
+        if(mailJson.get(MailConstants.Email.HTML_CONTENT) != null) {
+            mailJson.put(MailConstants.Email.MESSAGE, mailJson.remove(MailConstants.Email.HTML_CONTENT));
+        } else if(mailJson.get(MailConstants.Email.TEXT_CONTENT) != null) {
+            mailJson.put(MailConstants.Email.MESSAGE, mailJson.remove(MailConstants.Email.TEXT_CONTENT));
         }
     }
 

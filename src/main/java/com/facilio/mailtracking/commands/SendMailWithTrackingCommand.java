@@ -4,7 +4,8 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import lombok.extern.log4j.Log4j;
@@ -20,9 +21,15 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
         JSONObject mailJson = this.constructMailJson(context);
         Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
         EmailClient emailClient = EmailFactory.getEmailClient();
-        String messageId = emailClient.sendEmailFromWMS(mailJson, files);
-        context.put(MailConstants.Params.MESSAGE_ID, messageId);
-        context.put(MailConstants.Params.STATUS, MailStatus.SENT);
+        try {
+            String messageId = emailClient.sendEmailFromWMS(mailJson, files);
+            context.put(MailConstants.Params.MESSAGE_ID, messageId);
+            context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.SENT);
+            context.put(MailConstants.Params.RECIPIENT_STATUS, RecipientStatus.SENT);
+        } catch (Exception e) {
+            context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.FAILED);
+            LOGGER.error("OG_MAIL_ERROR :: SendMailFailed with exception :: ", e);
+        }
         LOGGER.info("OG_MAIL_LOG :: email sent successfully for MAPPER_ID "+ context.get(MailConstants.Params.MAPPER_ID));
         return false;
     }

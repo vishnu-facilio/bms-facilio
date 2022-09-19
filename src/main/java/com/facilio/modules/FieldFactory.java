@@ -474,7 +474,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "recipientCount",
                 "inProgressCount",
                 "deliveredCount",
-                "bouncedCount"
+                "bouncedCount",
+                "mailStatus"
         }));
 
     }
