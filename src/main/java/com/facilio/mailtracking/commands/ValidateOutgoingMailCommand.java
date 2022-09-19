@@ -15,6 +15,7 @@ public class ValidateOutgoingMailCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
+        mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.TRIGGERED.name());
         this.validateAddresses(mailJson);
         return false;
     }

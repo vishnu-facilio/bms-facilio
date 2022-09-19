@@ -199,4 +199,12 @@ public class OutgoingMailAPI {
         chain.setContext(context);
         chain.execute();
     }
+
+    public static void resetMailJson(JSONObject mailJson) {
+        mailJson.remove(MailConstants.Email.ORIGINAL_TO);
+        mailJson.remove(MailConstants.Email.ORIGINAL_CC);
+        mailJson.remove(MailConstants.Email.ORIGINAL_BCC);
+        mailJson.remove(MailConstants.Params.MASK_URL);
+        mailJson.remove(MailConstants.Params.MAIL_STATUS);
+    }
 }

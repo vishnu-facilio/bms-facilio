@@ -5,7 +5,7 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.MailConstants.Email;
 import com.facilio.mailtracking.OutgoingMailAPI;
-import com.facilio.mailtracking.context.MailEnums;
+import com.facilio.mailtracking.context.MailEnums.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.modules.FieldUtil;
 import lombok.extern.log4j.Log4j;
@@ -18,17 +18,17 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         this.preprocessMailJson(mailJson);
-        boolean isValidationFailed = mailJson.containsKey(MailConstants.Params.MAIL_STATUS);
-        if(!isValidationFailed) {
-            mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.TRIGGERED.name());
-        }
         V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
         long loggerId = NewTransactionService.newTransactionWithReturn(() ->
                 OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext));
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
         context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
         LOGGER.info("OG_MAIL_LOG :: LOGGER_ID inserted :: "+loggerId);
-        return isValidationFailed;  // its invalid, so stopping here
+        if(mailLogContext.getMailStatus() == MailStatus.FAILED) {   // its invalid, so stopping here
+            OutgoingMailAPI.resetMailJson(mailJson);
+            return true;
+        }
+        return false;
     }
 
     private void preprocessMailJson(JSONObject mailJson) {
