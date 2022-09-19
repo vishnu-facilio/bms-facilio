@@ -1940,27 +1940,6 @@ public class ApplicationApi {
         return getFilteredApplications(applications);
     }
 
-    public static List<ApplicationContext> getFilteredApplications(List<ApplicationContext> applications) throws Exception {
-        List <ApplicationContext> apps = new ArrayList<>();
-
-        applications.forEach(app -> {
-            try {
-                if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS)) {
-                        apps.add(app);
-                    }
-                }
-                else {
-                    apps.add(app);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        return apps;
-    }
-
     public static void setThisAppForUser(User user, ApplicationContext app, boolean assignDefaultRole)
             throws Exception {
         AppDomain domain = app.getAppDomain();
