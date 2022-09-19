@@ -61,7 +61,7 @@ public class OutgoingMailResponseAction extends ActionSupport {
 
             requestJson.put(MailConstants.Params.MAPPER_ID, mapperId);
             SessionManager.getInstance().sendMessage(new Message()
-                            .setTopic(Topics.Mail.mailResponse)
+                            .setTopic(Topics.Mail.mailResponse+"/"+mapperId)
                             .setContent(requestJson));
             status = "Successfully pushed outgoing  MAIL-RESPONSE for MAPPER_ID :: "+mapperId
                     + " with eventType :: "+awsMailResponse.getEventType();
