@@ -968,6 +968,7 @@ public class FacilioConstants {
 		public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
 		public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";
 		public static final String RDM_CONTROLLER_MODULE_NAME = "rdmcontroller";
+		public static final String E2_CONTROLLER_MODULE_NAME = "e2controller";
 		public static final String CONTROLLER_MODULE_NAME = "controller";
 		public static final String AGENT_METRICS_MODULE = "agentMetrics";
 		public static final String CUSTOM_ACTIVITY = "customactivity";

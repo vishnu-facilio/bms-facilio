@@ -4384,6 +4384,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new GenericAddModuleDataCommand());
 		chain.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 		chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		chain.addCommand(new AddAgentServiceControllerCommand());
 		//chain.addCommand(new AddControllerCommand());
 		return chain;
 	}

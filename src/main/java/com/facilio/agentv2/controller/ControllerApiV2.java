@@ -3,6 +3,7 @@ package com.facilio.agentv2.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.E2.E2ControllerContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscControllerContext;
@@ -218,6 +219,9 @@ public class ControllerApiV2 {
             case RDM:
                 controller = FieldUtil.getAsBeanFromMap(map, RdmControllerContext.class);
                 break;
+            case E2:
+                controller = FieldUtil.getAsBeanFromMap(map,E2ControllerContext.class);
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + controllerType);
         }
@@ -255,6 +259,8 @@ public class ControllerApiV2 {
             	return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
             case RDM:
                 return FacilioConstants.ContextNames.RDM_CONTROLLER_MODULE_NAME;
+            case E2:
+                return E2ControllerContext.MODULENAME;
             default:
                 return null;
         }

@@ -5,9 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.workflows.context.WorkflowContext;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -35,6 +38,7 @@ public class CloudAgentUtil {
 		private static final String ADD_MESSAGE_SOURCE = "/api/v1/agent/addSource";
 		private static final String RUN_WORKFLOW = "/api/v1/agent/runWorkflow";
 		private static final String TOGGLE_JOB = "/api/v1/agent/toggleJob";
+		private static final String ADD_CONTROLLER ="/api/v1/controller/add";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -42,7 +46,14 @@ public class CloudAgentUtil {
 		doPost(Urls.ADD_AGENT, "agent", props);
 		
 	}
-	
+	public static void addController(Controller controller,int controllerType,String agentName)throws Exception{
+		JSONObject params = new JSONObject();
+		Map<String, Object> props = FieldUtil.getAsProperties(controller);
+		params.put("controller",props);
+		params.put("controllerType",controllerType);
+		params.put("agentName",agentName);
+		doPost(Urls.ADD_CONTROLLER,params);
+	}
 	public static void editServiceAgent(FacilioAgent agent) throws Exception{
 		Map<String, Object> props = FieldUtil.getAsProperties(agent);
 		doPost(Urls.EDIT_AGENT, "agent",props);
@@ -123,6 +134,10 @@ public class CloudAgentUtil {
 	private static Map<String, Object> doPost(String url, String key, Object props) throws Exception {
 		JSONObject body = new JSONObject();
 		body.put(key, props);
+		String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), getHeaders(), null, body);
+		return validateAndGetData(response);
+	}
+	private static Map<String, Object> doPost(String url, JSONObject body) throws Exception {
 		String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), getHeaders(), null, body);
 		return validateAndGetData(response);
 	}
