@@ -11,7 +11,7 @@ public class SummaryWidgetGroupFields {
     private long orgId;
     private String name;
     private String displayName;
-    private String widgetId;
+    private long widgetId;
     private long widgetGroupId;
     private long fieldId;
     private int rowIndex;
