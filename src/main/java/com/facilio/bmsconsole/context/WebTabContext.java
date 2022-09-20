@@ -190,7 +190,6 @@ public class WebTabContext implements Serializable {
         WORKORDER_CUSTOMIZATION("Customization",false,TabType.SETUP),
         PRIORITY("Priority",false,TabType.SETUP),
         TYPES("Types",false,TabType.SETUP),
-        AUDIT_LOG("Audit log",false,TabType.SETUP),
         SURVEY("Survey",false,TabType.SETUP),
         SPACE_ASSET_CUSTOMIZATION("Customization",false,TabType.SETUP),
         READINGS("Readings",false,TabType.SETUP),
@@ -225,7 +224,9 @@ public class WebTabContext implements Serializable {
         API_SETUP("API Setup",false,TabType.SETUP),
 
         BUNDLE("Bundle",false,TabType.SETUP),
-        INSTALL_BUNDLE("Install Bundle",false,TabType.SETUP);
+        INSTALL_BUNDLE("Install Bundle",false,TabType.SETUP),
+        EMAIL_LOGS("Email Logs",false,TabType.SETUP),
+        AUDIT_LOGS("Audit Logs",false,TabType.SETUP);
 
 
         public void setName(String name) {

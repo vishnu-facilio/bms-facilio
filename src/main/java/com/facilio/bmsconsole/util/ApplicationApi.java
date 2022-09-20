@@ -2507,7 +2507,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Customization", "category", WebTabContext.Type.WORKORDER_CUSTOMIZATION, null, appId, null));
             webTabs.add(new WebTabContext("Priority", "priority", WebTabContext.Type.PRIORITY, null, appId, null));
             webTabs.add(new WebTabContext("Types", "types", WebTabContext.Type.TYPES, null, appId, null));
-            webTabs.add(new WebTabContext("Audit log", "auditlog", WebTabContext.Type.AUDIT_LOG, null, appId, null));
             webTabs.add(new WebTabContext("Survey", "survey", WebTabContext.Type.SURVEY, null, appId, null));
 
             groupNameVsWebTabsMap.put("workordersettings", webTabs);
@@ -2583,6 +2582,14 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Install Bundle", "installBundle", WebTabContext.Type.INSTALL_BUNDLE, null, appId, null));
 
             groupNameVsWebTabsMap.put("developer", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext( "Logs","logs", layout.getId(),207, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null));
+            webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
+
+            groupNameVsWebTabsMap.put("logs", webTabs);
+
 
 
 
