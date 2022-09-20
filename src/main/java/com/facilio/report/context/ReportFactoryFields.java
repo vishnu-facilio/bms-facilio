@@ -1,11 +1,6 @@
 package com.facilio.report.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -796,14 +791,17 @@ public class ReportFactoryFields {
 		return modules;
 	}
 	public static Set<FacilioField> getMetricsList(String moduleName) throws Exception {
+		//List<String> column_names= Arrays.asList("STATE_FLOW_ID","SITE_ID","SLA_POLICY_ID","APPROVAL_FLOW_ID");
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(moduleName);
 		Set<FacilioField> metrics = modBean.getAllFields(moduleName)
 				.stream().filter(field -> field instanceof NumberField).collect(Collectors.toSet());
 		FacilioField idField = FieldFactory.getIdField(module);
 		if(idField != null) {
 			idField.setDisplayName("Number of "+module.getDisplayName());
 		}
+		idField.getModule().setFields(allFields);
 		metrics.add(idField);
 		return metrics;
 	}

@@ -1,6 +1,7 @@
 package com.facilio.report.context;
 
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioModule;
 
 public class ReportPivotFieldContext {
 
@@ -57,4 +58,13 @@ public class ReportPivotFieldContext {
 	}
 
 	private String displayName;
+	public FacilioModule getModule() {
+		return module;
+	}
+
+	public void setModule(FacilioModule module) {
+		this.module = module;
+	}
+
+	public FacilioModule module;
 }

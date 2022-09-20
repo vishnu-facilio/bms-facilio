@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
 import com.facilio.report.context.PivotValueColumnContext;
@@ -29,6 +33,19 @@ public class PivotValueColumnToDataAndFormulaColumn extends FacilioCommand {
         for(PivotValueColumnContext value : values){
             if(value.getValueType().equals(PivotValueColumnType.DATA.name())){
                 PivotDataColumnContext newData = value.getModuleMeasure();
+                if(newData != null && newData.getModuleName() != null && !"".equals(newData.getModuleName())){
+                    try {
+                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                        FacilioModule module = modBean.getModule(newData.getModuleName());
+                        List<FacilioField> allFields = modBean.getAllFields(newData.getModuleName());
+                        module.setFields(allFields);
+                        if(newData.getField() != null){
+                            newData.getField().setModule(module);
+                        }
+                    }catch (Exception e){
+                        System.out.print("error");
+                    }
+                }
                 data.add(newData);
             } else {
                 PivotFormulaColumnContext newFormula = value.getCustomMeasure();
