@@ -14,7 +14,7 @@ public class OutgoingRecipientStatusFilterCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String loggerId = (String) Constants.getQueryParam(context, "loggerId");
-        V3Util.throwRestException(loggerId==null, ErrorCode.VALIDATION_ERROR, "loggerId queryparam is missing");
+        V3Util.throwRestException(loggerId==null, ErrorCode.VALIDATION_ERROR, "OG_MAIL_ERROR :: loggerId queryparam is missing");
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("LOGGER", "logger", loggerId, NumberOperators.EQUALS));
 

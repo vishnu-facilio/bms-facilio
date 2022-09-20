@@ -23,6 +23,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
+import com.facilio.mailtracking.context.MailEnums;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -119,9 +120,16 @@ public abstract class EmailClient extends BaseEmailClient {
             chain.execute();
             return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
         } catch (Exception e) {
+            MailEnums.MailStatus mailStatus = MailEnums.MailStatus.valueOf(
+                    (String) mailJson.getOrDefault(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.TRIGGERED.name()));
+            if(mailStatus == MailEnums.MailStatus.INVALID) {
+                return -1;
+            }
             LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed [BEFORE-QUEUE]. So sending in normal flow :: "+mailJson, e);
             OutgoingMailAPI.triggerFallbackMailSendChain(context);
             return -1;
+        } finally {
+            OutgoingMailAPI.resetMailJson(mailJson);
         }
     }
 
@@ -419,8 +427,12 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private void preserveOriginalEmailAddress(JSONObject mailJson, String key, Set<String> emailAddresses) {
+        if(emailAddresses.isEmpty()) {
+            return;
+        }
         String originalKey = "original"+StringUtils.capitalize(key);
-        if(mailJson.containsKey(originalKey)) {
+        String originalAddress = (String) mailJson.get(originalKey);
+        if(StringUtils.isNotEmpty(originalAddress)) {
             return;
         }
         mailJson.put(originalKey, combineEmailsAgain(emailAddresses));

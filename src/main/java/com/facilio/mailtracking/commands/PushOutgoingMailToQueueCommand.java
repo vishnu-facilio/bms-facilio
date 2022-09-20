@@ -13,6 +13,9 @@ import org.json.simple.JSONObject;
 
 @Log4j
 public class PushOutgoingMailToQueueCommand extends FacilioCommand {
+
+    private String message;
+    
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
@@ -29,13 +32,14 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
                 .setOrgId(orgId)
                 .setContent(mailJson));
         LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms");
-        OutgoingMailAPI.resetMailJson(mailJson);
+        mailJson.put(MailConstants.Email.MESSAGE, this.message);
         return false;
     }
 
     private void removeContent(JSONObject mailJson) {
         mailJson.remove(MailConstants.Email.HTML_CONTENT);
         mailJson.remove(MailConstants.Email.TEXT_CONTENT);
+        this.message = (String) mailJson.remove(MailConstants.Email.MESSAGE);
     }
 
     private String getTopicIdentifier(JSONObject mailJson, long orgId) {
