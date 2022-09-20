@@ -156,6 +156,7 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContex
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
@@ -1715,6 +1716,17 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
                 .update()
                 .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("inventoryReservation")
+    public static Supplier<V3Config> getInventoryReservation() {
+        return () -> new V3Config(InventoryReservationContext.class, null)
+                .create()
+                .update()
                 .list()
                 .summary()
                 .delete()

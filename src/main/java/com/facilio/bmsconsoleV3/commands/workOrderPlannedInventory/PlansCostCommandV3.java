@@ -22,60 +22,66 @@ import java.util.Map;
 public class PlansCostCommandV3  extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
         Long workOrderId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-        if(workOrderId!=null && moduleName!=null){
-
+        if(workOrderId!=null){
+            // PLANNED ITEMS COST
+            String moduleName = FacilioConstants.ContextNames.WO_PLANNED_ITEMS;
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            List<FacilioField> fields = new ArrayList<>();
+
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
-
             FacilioField totalCost = fieldMap.get("totalCost");
-            fields.add(totalCost);
 
-            if(moduleName == FacilioConstants.ContextNames.WO_PLANNED_ITEMS){
-                SelectRecordsBuilder<WorkOrderPlannedItemsContext> recordsBuilder = new SelectRecordsBuilder<WorkOrderPlannedItemsContext>()
+
+            SelectRecordsBuilder<WorkOrderPlannedItemsContext> recordsBuilder = new SelectRecordsBuilder<WorkOrderPlannedItemsContext>()
                         .moduleName(moduleName)
                         .beanClass(WorkOrderPlannedItemsContext.class)
                         .andCondition(CriteriaAPI.getCondition("WORKORDER_ID", "workOrder", String.valueOf(workOrderId), NumberOperators.EQUALS));
 
-                recordsBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
-                List<WorkOrderPlannedItemsContext> recordList = recordsBuilder.get();
-                if(recordList.size()<1){
-                    context.put(FacilioConstants.ContextNames.COST, 0);
-                }else{
-                    context.put(FacilioConstants.ContextNames.COST, recordList.get(0).getTotalCost());
-                }
+            recordsBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
+            List<WorkOrderPlannedItemsContext> recordList = recordsBuilder.get();
+            if(recordList.size()<1){
+                    context.put(FacilioConstants.ContextNames.PLANNED_ITEMS_COST, 0);
+            }else{
+                    context.put(FacilioConstants.ContextNames.PLANNED_ITEMS_COST, recordList.get(0).getTotalCost());
             }
-            else if(moduleName == FacilioConstants.ContextNames.WO_PLANNED_TOOLS){
-                SelectRecordsBuilder<WorkOrderPlannedToolsContext> recordsBuilder = new SelectRecordsBuilder<WorkOrderPlannedToolsContext>()
+
+            // PLANNED TOOLS COST
+            moduleName = FacilioConstants.ContextNames.WO_PLANNED_TOOLS;
+            fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
+            totalCost = fieldMap.get("totalCost");
+
+            SelectRecordsBuilder<WorkOrderPlannedToolsContext> recordsBuilderTools = new SelectRecordsBuilder<WorkOrderPlannedToolsContext>()
                         .moduleName(moduleName)
                         .beanClass(WorkOrderPlannedToolsContext.class)
                         .andCondition(CriteriaAPI.getCondition("WORKORDER_ID", "workOrder", String.valueOf(workOrderId), NumberOperators.EQUALS));
 
-                recordsBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
-                List<WorkOrderPlannedToolsContext> recordList = recordsBuilder.get();
-                if(recordList.size()<1){
-                    context.put(FacilioConstants.ContextNames.COST, 0);
-                }else{
-                    context.put(FacilioConstants.ContextNames.COST, recordList.get(0).getTotalCost());
-                }
+            recordsBuilderTools.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
+            List<WorkOrderPlannedToolsContext> recordListTools = recordsBuilderTools.get();
+            if(recordListTools.size()<1){
+                    context.put(FacilioConstants.ContextNames.PLANNED_TOOLS_COST, 0);
+            }else{
+                    context.put(FacilioConstants.ContextNames.PLANNED_TOOLS_COST, recordListTools.get(0).getTotalCost());
             }
-            else if(moduleName == FacilioConstants.ContextNames.WO_PLANNED_SERVICES){
-                SelectRecordsBuilder<WorkOrderPlannedServicesContext> recordsBuilder = new SelectRecordsBuilder<WorkOrderPlannedServicesContext>()
+
+            // PLANNED SERVICES COST
+            moduleName = FacilioConstants.ContextNames.WO_PLANNED_SERVICES;
+            fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
+            totalCost = fieldMap.get("totalCost");
+
+            SelectRecordsBuilder<WorkOrderPlannedServicesContext> recordsBuilderServices = new SelectRecordsBuilder<WorkOrderPlannedServicesContext>()
                         .moduleName(moduleName)
                         .beanClass(WorkOrderPlannedServicesContext.class)
                         .andCondition(CriteriaAPI.getCondition("WORKORDER_ID", "workOrder", String.valueOf(workOrderId), NumberOperators.EQUALS));
 
-                recordsBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
-                List<WorkOrderPlannedServicesContext> recordList = recordsBuilder.get();
-                if(recordList.size()<1){
-                    context.put(FacilioConstants.ContextNames.COST, 0);
-                }else{
-                    context.put(FacilioConstants.ContextNames.COST, recordList.get(0).getTotalCost());
-                }
-
+            recordsBuilderServices.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
+            List<WorkOrderPlannedServicesContext> recordListServices = recordsBuilderServices.get();
+            if(recordListServices.size()<1){
+                    context.put(FacilioConstants.ContextNames.PLANNED_SERVICES_COST, 0);
+            }else{
+                    context.put(FacilioConstants.ContextNames.PLANNED_SERVICES_COST, recordListServices.get(0).getTotalCost());
             }
+
         }
         return false;
     }

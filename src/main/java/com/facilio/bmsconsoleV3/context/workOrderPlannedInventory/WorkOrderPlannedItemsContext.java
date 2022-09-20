@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.context.workOrderPlannedInventory;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
-import com.facilio.modules.FacilioIntEnum;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.v3.context.V3Context;
 
 public class WorkOrderPlannedItemsContext extends V3Context {
@@ -97,24 +97,24 @@ public class WorkOrderPlannedItemsContext extends V3Context {
         return reservationType;
     }
 
-    public enum ReservationType implements FacilioIntEnum{
-        HARD, SOFT;
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name();
-        }
-
-        public static ReservationType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
+//    public enum ReservationType implements FacilioIntEnum{
+//        HARD, SOFT;
+//
+//        @Override
+//        public Integer getIndex() {
+//            return ordinal() + 1;
+//        }
+//
+//        @Override
+//        public String getValue() {
+//            return name();
+//        }
+//
+//        public static ReservationType valueOf(int value) {
+//            if (value > 0 && value <= values().length) {
+//                return values()[value - 1];
+//            }
+//            return null;
+//        }
+//    }
 }

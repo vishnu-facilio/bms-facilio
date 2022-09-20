@@ -38,6 +38,7 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceReques
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.tasks.*;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.AddOrUpdateWorkorderCostCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservationRecordCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservedQuantityCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotalCostCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
@@ -2155,6 +2156,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getReserveItemsChainV3(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReserveItemsCommandV3());
+        c.addCommand(new CreateReservationCommandV3());
         return c;
     }
     public static FacilioChain getCostChainV3(){
@@ -2178,7 +2180,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddOrUdpateWorkorderItemsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTransactionEventTypeCommand());
-        c.addCommand(new UpdateReservedQuantityCommandV3());
+        c.addCommand(getInventoryReservationChainV3());
         c.addCommand(new LoadWorkorderItemLookUpCommand());
         c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
@@ -2186,6 +2188,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand());
         c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
         c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getInventoryReservationChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateReservedQuantityCommandV3());
+        c.addCommand(new UpdateReservationRecordCommandV3());
         return c;
     }
     public static FacilioChain getAddOrUdpateWorkorderToolsChainV3() {

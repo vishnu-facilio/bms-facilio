@@ -272,10 +272,15 @@ enums:
     enumClassName: com.facilio.ns.context.NamespaceFrequency
 
   - name: ReservationType
-    enumClassName: com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext$ReservationType
+    enumClassName: com.facilio.bmsconsoleV3.enums.ReservationType
 
   - name: MailSourceType
     enumClassName: com.facilio.mailtracking.context.MailSourceType
 
   - name: MailStatus
     enumClassName: com.facilio.mailtracking.context.MailEnums$MailStatus
+  - name: ReservationSource
+    enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$ReservationSource
+
+  - name: InventoryReservationStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$InventoryReservationStatus
