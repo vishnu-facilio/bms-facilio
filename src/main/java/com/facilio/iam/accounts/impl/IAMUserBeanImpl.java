@@ -37,6 +37,7 @@ import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
+import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -404,6 +405,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
 					fieldsToBeUpdated.add(fieldMap.get("pwdLastUpdatedTime"));
 					updateUserv2(user, fieldsToBeUpdated);
+					IAMUtil.getUserBean().savePreviousPassword(user.getUid(),user.getPassword());
 					return true;
 				}
 			}
@@ -1732,6 +1734,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		insertBuilder.save();
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
+//		in case of adduser, password will be null
+		if(StringUtils.isNotEmpty(user.getPassword())){
+			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().savePreviousPassword(user.getUid(),user.getPassword()));
+		}
 
 		if(!isUserMfaSettingsExists(userId)) {
 			initialiseUserMfaSettings(userId);
