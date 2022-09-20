@@ -3,7 +3,7 @@ sources:
   - name: docker-dev
     type: kafka
     configs:
-      broker: kafka1:9092  #For docker container deployment, refer docker-compose.yml (eg., kafka1:9092). For local deployment, use localhost:9092
+      broker: kafka1:9093  #For docker container deployment, refer docker-compose.yml
 
   - name: local
     type: kafka
