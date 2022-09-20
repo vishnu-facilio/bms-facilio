@@ -8,6 +8,8 @@ import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.MailEnums.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.modules.FieldUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -24,10 +26,8 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
         context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
         LOGGER.info("OG_MAIL_LOG :: LOGGER_ID inserted :: "+loggerId);
-        if(mailLogContext.getMailStatus() == MailStatus.FAILED) {   // its invalid, so stopping here
-            OutgoingMailAPI.resetMailJson(mailJson);
-            return true;
-        }
+        V3Util.throwRestException(mailLogContext.getMailStatus() == MailStatus.INVALID,
+                ErrorCode.VALIDATION_ERROR, "OG_MAIL_ERROR :: MailStatus is flagged as INVALID"); // its invalid, so throwing e
         return false;
     }
 
@@ -35,10 +35,10 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
         mailJson.put(Email.FROM, mailJson.get(Email.SENDER));
         if(mailJson.get(Email.MESSAGE)!=null) {
             if (mailJson.get(Email.MAIL_TYPE) != null && mailJson.get(Email.MAIL_TYPE).equals(Email.HTML)) {
-                mailJson.put(Email.HTML_CONTENT, mailJson.remove(Email.MESSAGE));
+                mailJson.put(Email.HTML_CONTENT, mailJson.get(Email.MESSAGE));
                 mailJson.put(Email.CONTENT_TYPE, Email.CONTENT_TYPE_TEXT_HTML);
             } else {
-                mailJson.put(Email.TEXT_CONTENT, mailJson.remove(Email.MESSAGE));
+                mailJson.put(Email.TEXT_CONTENT, mailJson.get(Email.MESSAGE));
                 mailJson.put(Email.CONTENT_TYPE, Email.CONTENT_TYPE_TEXT_PLAIN);
             }
         }

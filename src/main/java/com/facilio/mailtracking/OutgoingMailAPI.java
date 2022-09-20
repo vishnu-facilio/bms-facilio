@@ -206,5 +206,8 @@ public class OutgoingMailAPI {
         mailJson.remove(MailConstants.Email.ORIGINAL_BCC);
         mailJson.remove(MailConstants.Params.MASK_URL);
         mailJson.remove(MailConstants.Params.MAIL_STATUS);
+        mailJson.remove(MailConstants.Email.CONTENT_TYPE);
+        mailJson.remove(MailConstants.Email.TEXT_CONTENT);
+        mailJson.remove(MailConstants.Email.HTML_CONTENT);
     }
 }

@@ -34,8 +34,8 @@ public class ValidateOutgoingMailCommand extends FacilioCommand {
             try {
                 InternetAddress.parse((String) addresses);
             } catch (AddressException e) {
-                LOGGER.error("OG_MAIL_ERROR :: Invalid addresses found in :: "+node.replaceAll("oringal", "").toLowerCase());
-                LOGGER.error("OG_MAIL_ERROR :: email not sent");
+                LOGGER.error("OG_MAIL_ERROR :: Email not sent. Invalid addresses found in :: "+
+                        node.replaceAll("original", "").toLowerCase() + " :: "+addresses);
                 mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.INVALID.name());
                 break;
             }
