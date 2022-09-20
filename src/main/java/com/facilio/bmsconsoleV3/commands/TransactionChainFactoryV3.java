@@ -544,6 +544,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(TransactionChainFactory.getAddNotesChain());
         c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         c.addCommand(new AddActivitiesCommand());
+        c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
+        c.addCommand(new AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3());
         return c;
     }
 

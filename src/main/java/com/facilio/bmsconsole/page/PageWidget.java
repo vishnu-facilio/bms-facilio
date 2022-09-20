@@ -391,6 +391,7 @@ public class PageWidget {
 		WORKORDER_HISTORY("workorderHistory"),
 		WORKORDER_SIDEBAR("workorderSidebar"),
 		HAZARDS("hazards"),
+		WORKORDER_SAFETY_PLAN("workorderSafetyPlan"),
 		PRECAUTIONS("precautions"),
 		PREREQUISITES("prerequisites"),
 		TASKS_MONOLITH("taskMonolith"),

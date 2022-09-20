@@ -46,7 +46,7 @@ public class ExcludeAvailableWorkOrderHazards extends FacilioCommand {
             Map<Long, V3WorkorderHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD, null, V3WorkorderHazardContext.class, criteria, null);
             if (props != null) {
                 for (V3WorkorderHazardContext workorderHazard : props.values()) {
-                    HazardContext hazard = workorderHazard.getHazard();
+                    V3HazardContext hazard = workorderHazard.getHazard();
                     parentIds.add(hazard.getId());
                 }
             }
