@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.jobs.DataPendingAlertJob;
 import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -1454,7 +1455,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void schedulePM(long plannerId) throws Exception {
 		// TODO(2):
 		PMPlanner pmPlanner = getPmPlanners(plannerId);
-		PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", pmPlanner.getPmId(), new HashMap<>());
+
+		PlannedMaintenance plannedmaintenance = V3RecordAPI.getRecord("plannedmaintenance", pmPlanner.getPmId());
 
 		List<PMResourcePlanner> pmResourcePlanners = getPMResourcePlanner(plannerId);
 
@@ -1504,7 +1506,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public void extendPlanner(long plannerId, Duration duration) throws Exception {
 		PMPlanner pmPlanner = getPmPlanners(plannerId);
-		PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", pmPlanner.getPmId(), new HashMap<>());
+		PlannedMaintenance plannedmaintenance = V3RecordAPI.getRecord("plannedmaintenance", pmPlanner.getPmId());
 
 		List<PMResourcePlanner> pmResourcePlanners = getPMResourcePlanner(plannerId);
 
