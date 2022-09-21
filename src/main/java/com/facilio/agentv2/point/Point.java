@@ -64,9 +64,6 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private String lastRecordedValue;
     @JsonInclude
     private boolean agentWritable;
-    @Getter
-    @Setter
-    private int interval;
     @Getter @Setter
     private Long controlActionId;
     @Getter @Setter

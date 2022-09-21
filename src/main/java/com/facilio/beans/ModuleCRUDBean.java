@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.mail.util.MimeMessageParser;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -57,8 +58,7 @@ public interface ModuleCRUDBean {
 	
 	public void deleteAllData (String moduleName) throws Exception;
 	
-	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules, 
-			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception ;
+	public void processEvents(long timeStamp, JSONArray payLoad, List<EventRuleContext> eventRules) throws Exception ;
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, FacilioRecord record,
 			 boolean adjustTime) throws Exception;

@@ -276,3 +276,6 @@ enums:
 
   - name: MailSourceType
     enumClassName: com.facilio.mailtracking.context.MailSourceType
+
+  - name: MailStatus
+    enumClassName: com.facilio.mailtracking.context.MailEnums$MailStatus

@@ -290,5 +290,7 @@ public class AgentConstants
     public static final String WORKFLOW_SYNTAX_ERROR = "workflowSyntaxError";
     public static final String WORKFLOW_RESPONSE = "workflowResponse";
     public static final String MESSAGE_PARTITION = "messagePartition";
+    
+    public static final String EVENT_VERSION = "eventVersion";
 
 }

@@ -5334,4 +5334,12 @@ public class ModuleFactory {
 		module.setTableName("Summary_Widget_Group_Fields");
 		return module;
 	}
+	public static FacilioModule getE2ControllerModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("e2controller");
+		module.setDisplayName("E2 Controller");
+		module.setTableName("E2_Controller");
+		module.setExtendModule(getControllerModule());
+		return module;
+	}
 }

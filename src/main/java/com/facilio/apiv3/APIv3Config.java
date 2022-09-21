@@ -121,6 +121,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkOrderServiceLookupCommand;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
@@ -187,10 +188,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.commands.FetchMailAttachmentsCommand;
-import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
-import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
-import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.commands.*;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
@@ -1758,6 +1756,7 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderServicesCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
                 .list()
+                .beforeFetch(new LoadWorkOrderServiceLookupCommand())
                 .summary()
                 .delete()
                 .build();
@@ -2301,8 +2300,8 @@ public class APIv3Config {
 							 .delete()
 							 .build();
 	}
-	
-	@Module(FacilioConstants.Routes.NAME)
+
+    @Module(FacilioConstants.Routes.NAME)
     public static Supplier<V3Config> getRoute() {
         return () -> new V3Config(RoutesContext.class, null)
                 .create()
@@ -2375,7 +2374,7 @@ public class APIv3Config {
 //                .beforeFetch(new FilterOutFailedMailLogsCommand())
                 .afterFetch(new UpdateMailRecordsModuleNameCommand())
                 .summary()
-                .afterFetch(new FetchMailAttachmentsCommand())
+                .afterFetch(MailReadOnlyChainFactory.getAfterFetchMailLoggerSummaryChain())
                 .build();
     }
 
@@ -2643,6 +2642,17 @@ public class APIv3Config {
         return () -> new V3Config(V3ExternalAttendeeContext.class, null)
                 .create()
                 .list()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.WORK_ASSET)
+    public static Supplier<V3Config> getWorkAsset() {
+        return () -> new V3Config(V3WorkAssetContext.class, null)
+                .create()
+                .beforeSave(new AddSpaceAndAssetCommand())
+                .list()
+                .beforeFetch(new V3LoadWorkAssetLookUpsCommand())
                 .delete()
                 .build();
     }

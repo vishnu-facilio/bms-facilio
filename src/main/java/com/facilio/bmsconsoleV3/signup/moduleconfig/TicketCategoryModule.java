@@ -47,27 +47,10 @@ public class TicketCategoryModule extends BaseModuleConfig{
         createdTime.setModule(ticketCategoryMod);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
-        FacilioField nameField = new FacilioField();
-        nameField.setName("name");
-        nameField.setDataType(FieldType.STRING);
-        nameField.setColumnName("NAME");
-        nameField.setModule(ticketCategoryMod);
-        ViewField nameViewFiled = new ViewField();
-        nameViewFiled.setField(nameField);
-
-        FacilioField descField = new FacilioField();
-        descField.setName("description");
-        descField.setDataType(FieldType.STRING);
-        descField.setColumnName("DESCRIPTION");
-        descField.setModule(ticketCategoryMod);
-        ViewField descViewFiled = new ViewField();
-        descViewFiled.setField(nameField);
-
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All");
         allView.setSortFields(sortFields);
-        allView.setFields(Arrays.asList(nameViewFiled, descViewFiled));
 
         return allView;
     }

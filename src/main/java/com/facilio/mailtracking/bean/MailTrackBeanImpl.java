@@ -9,7 +9,7 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.mailtracking.context.Bounce;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -37,7 +37,7 @@ public class MailTrackBeanImpl implements MailBean {
 
         recipientsArr = recipientsArr.stream().map(email -> extractEmailAddress(email)).collect(Collectors.toList());
 
-        Integer deliveryStatus = MailStatus.DELIVERED.getValue();
+        Integer deliveryStatus = RecipientStatus.DELIVERED.getValue();
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId, StringUtils.join(recipientsArr, ", "));
         if(oldRecords.isEmpty()) {
             LOGGER.info("OG_MAIL_LOG :: [delivery status] Given mail addresses not found :: " +recipientsArr + " for MAPPER_ID :: "+mapperId);
@@ -66,7 +66,7 @@ public class MailTrackBeanImpl implements MailBean {
         List<Map<String, String>> recipientsArr = (List<Map<String, String>>) bounce.get("bouncedRecipients");
 
         String moduleName = MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER;
-        Integer bounceStatus = MailStatus.BOUNCED.getValue();
+        Integer bounceStatus = RecipientStatus.BOUNCED.getValue();
         for(Map<String, String> recipient : recipientsArr) {
             String bouncedEmail = recipient.get("emailAddress");
             bouncedEmail = this.extractEmailAddress(bouncedEmail);

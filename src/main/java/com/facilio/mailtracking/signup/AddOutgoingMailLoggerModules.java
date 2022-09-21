@@ -13,7 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.context.MailStatus;
+import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -34,7 +34,7 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule mailModule = this.constructOGMailModule(modBean, MailMessageUtil.BASE_MAIL_MESSAGE_MODULE_NAME);
+        FacilioModule mailModule = this.constructOGMailModule(modBean);
         FacilioModule mailAttachmentsModule = this.constructOGMailAttachmentsModule(mailModule);
         FacilioModule recipientModule = this.constructOGRecipientModule(mailModule);
 
@@ -52,14 +52,19 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         LOGGER.info("OutgoingMail related modules added successfully");
     }
 
-    private FacilioModule constructOGMailModule(ModuleBean modBean, String baseMailModuleName) throws Exception {
-        FacilioModule baseMailModule = modBean.getModule(baseMailModuleName);
+    private FacilioModule constructOGMailModule(ModuleBean modBean) throws Exception {
+        FacilioModule baseMailModule = modBean.getModule(MailMessageUtil.BASE_MAIL_MESSAGE_MODULE_NAME);
         FacilioModule module = new FacilioModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER,
                 "Outgoing Mail Logger", "Outgoing_Mail_Logger", FacilioModule.ModuleType.SUB_ENTITY, baseMailModule);
         module.setHideFromParents(true);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("mapperId", "Mapper ID", "MAPPER_ID", FieldType.NUMBER, true));
+        StringSystemEnumField mailStatusField =  FieldFactory.getDefaultField("mailStatus", "Mail Status", "MAIL_STATUS",
+                FieldType.STRING_SYSTEM_ENUM);
+        mailStatusField.setEnumName("MailStatus");
+        fields.add(mailStatusField);
+
         fields.add(FieldFactory.getDefaultField("recordId", "Record ID", "RECORD_ID", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("recordsModuleId", "Records Module ID", "RECORDS_MODULE_ID", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("recordCreatedTime", "Record Created Time", "RECORD_CREATED_TIME",
@@ -75,6 +80,7 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("sentCount", "Sent Count", "SENT_COUNT", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("deliveredCount", "Delivered Count", "DELIVERED_COUNT", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("bouncedCount", "Bounced Count", "BOUNCED_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("maskUrl", "Mask Url", "MASK_URL", FieldType.STRING));
 
         module.setFields(fields);
         return module;
@@ -114,6 +120,7 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         fields.add(logger);
 
         fields.add(FieldFactory.getDefaultField("fileName", "File Name", "FILE_NAME", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("fileUrl", "File Url", "FILE_URL", FieldType.STRING));
 
         module.setFields(fields);
         return module;
@@ -147,13 +154,13 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         List<RollUpField> rollUpFields = new ArrayList<>();
         rollUpFields.add(constructRollUpField("Total Recipient Counts", recipientModule, logger, mailModule, recipientCount, null));
         rollUpFields.add(constructRollUpField("In progress Recipient Counts", recipientModule, logger, mailModule, inProgressCount,
-                CriteriaAPI.getCondition(statusField, String.valueOf(MailStatus.IN_PROGRESS.getValue()), NumberOperators.EQUALS)));
+                CriteriaAPI.getCondition(statusField, String.valueOf(RecipientStatus.IN_PROGRESS.getValue()), NumberOperators.EQUALS)));
         rollUpFields.add(constructRollUpField("Sent Recipient Counts", recipientModule, logger, mailModule, sentCount,
-                CriteriaAPI.getCondition(statusField, String.valueOf(MailStatus.SENT.getValue()), NumberOperators.EQUALS)));
+                CriteriaAPI.getCondition(statusField, String.valueOf(RecipientStatus.SENT.getValue()), NumberOperators.EQUALS)));
         rollUpFields.add(constructRollUpField("Delivered Recipient Counts", recipientModule, logger, mailModule, deliveredCount,
-                CriteriaAPI.getCondition(statusField, String.valueOf(MailStatus.DELIVERED.getValue()), NumberOperators.EQUALS)));
+                CriteriaAPI.getCondition(statusField, String.valueOf(RecipientStatus.DELIVERED.getValue()), NumberOperators.EQUALS)));
         rollUpFields.add(constructRollUpField("Bounced Recipient Counts", recipientModule, logger, mailModule, bouncedCount,
-                CriteriaAPI.getCondition(statusField, String.valueOf(MailStatus.BOUNCED.getValue()), NumberOperators.EQUALS)));
+                CriteriaAPI.getCondition(statusField, String.valueOf(RecipientStatus.BOUNCED.getValue()), NumberOperators.EQUALS)));
         RollUpFieldUtil.addRollUpField(rollUpFields);
     }
 

@@ -228,6 +228,7 @@ public class ColumnFactory {
 		columnMap.put("vendors-myAll", getPortalVendorsColumns());
 
 		// safety plan submodules default columns
+		columnMap.put("safetyPlan-all", getSafetyPlanColumns());
 		columnMap.put("safetyPlanHazard-all", getSafetyPlanHazardColumns());
 		columnMap.put("assetHazard-all", getSafetyPlanHazardColumns());
 		columnMap.put("workorderHazard-all", getSafetyPlanHazardColumns());
@@ -238,6 +239,10 @@ public class ColumnFactory {
 		columnMap.put("precaution-all", getPrecautionsColumns());
 		columnMap.put("hazard-all", getHazardColumns());
 		columnMap.put("spaceHazard-all", getAssociatedHazardPrecautionsColumns());
+
+		// failure class
+		columnMap.put("failureclass-all", getFailureClassColumns());
+		columnMap.put("failurecode-all", getFailureCodeColumns());
 
 		// site,building,space columns
 		columnMap.put("site-default", getDefaultSiteViewColumns());
@@ -319,7 +324,7 @@ public class ColumnFactory {
 		columnMap.put("opcxmldacontroller-default",getObcXmldaControllerColumns());
 		columnMap.put("lonworkscontroller-default",getLonWorksontrollerColumns());
 //		columnMap.put("knxcontroller-default",getKnxControllerColumns());
-		columnMap.put("customcontroller-default",getCustomControllerColumns());
+		columnMap.put("customController-default",getCustomControllerColumns());
 		columnMap.put("restcontroller-default",getRestControllerColumns());
 		columnMap.put("systemController-default",getSystemControllerColumns());
 		columnMap.put("rdmcontroller-default",getRdmControllerColumns());
@@ -1837,6 +1842,17 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	public static  List<ViewField> getSafetyPlanColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+		return columns;
+	}
+
 	public static  List<ViewField> getSafetyPlanHazardColumns() {
 		List<ViewField> columns = new ArrayList<>();
 		columns.add(new ViewField("hazard", "Hazard"));
@@ -1896,6 +1912,29 @@ public class ColumnFactory {
 		columns.add(new ViewField("hazard", "Hazard"));
 		return columns;
 	}
+
+	public static  List<ViewField> getFailureClassColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+		return columns;
+	}
+
+	public static  List<ViewField> getFailureCodeColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("code", "Code"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysModifiedBy", "Modified By"));
+		return columns;
+	}
+
 	private static List<ViewField> getDefaultClientColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		

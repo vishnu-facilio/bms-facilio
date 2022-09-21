@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 
 @TopicHandler(
-        topic = Topics.Mail.mailResponse,
+        topic = Topics.Mail.mailResponse + "/#",
         sendToAllWorkers = false,
         priority = -5
 )

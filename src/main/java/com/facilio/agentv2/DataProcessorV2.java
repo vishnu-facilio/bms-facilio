@@ -27,6 +27,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
@@ -37,6 +38,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
+import com.facilio.util.FacilioUtil;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -75,7 +78,7 @@ public class DataProcessorV2 {
     }
 
 
-    public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil, FacilioAgent agent) {
+    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent) {
         boolean processStatus = false;
         try {
 
@@ -172,7 +175,17 @@ public class DataProcessorV2 {
                     if (ruleList != null) {
                         eventRules = ruleList;
                     }
-                    processStatus = eventUtil.processEvents(timeStamp, payload, partitionKey, orgId, eventRules);
+                    
+                    JSONArray events;
+                    if(payload.containsKey(AgentConstants.EVENT_VERSION) && FacilioUtil.parseInt(payload.get(AgentConstants.EVENT_VERSION)) == 2){
+                    	events = (JSONArray) payload.get(EventConstants.EventContextNames.EVENT_LIST);
+                    }
+                    else {
+                    	events = new JSONArray();
+                    	events.add(payload);
+                    }
+                    
+                    processStatus = eventUtil.processEvents(timeStamp, events, orgId, eventRules);
                     break;
                 default:
                     throw new Exception("No such Publish type " + publishType.name());

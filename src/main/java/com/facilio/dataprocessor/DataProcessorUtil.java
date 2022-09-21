@@ -350,12 +350,13 @@ public class DataProcessorUtil {
                 case event:
                     ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                     List<EventRuleContext> ruleList = bean.getActiveEventRules();
-                    boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, ruleList);
+                    /*boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad,, orgId, ruleList);
                     if (alarmCreated) {
 
-                        /*processRecordsInput.getCheckpointer().checkpoint(record);
-                         */
+                        processRecordsInput.getCheckpointer().checkpoint(record);
+                         
                     }
+                    */
                     break;
 
             }
@@ -429,7 +430,7 @@ public class DataProcessorUtil {
                 }
                 boolean processed = true;
                 for (JSONObject jsonObject : payloads) {
-                    processed = processed && dataProcessorV2.processRecord(jsonObject, partitionKey, eventUtil, agent);
+                    processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent);
                 }
                 if (processed) {
                     updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);

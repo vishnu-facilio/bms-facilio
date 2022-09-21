@@ -53,7 +53,7 @@ public class InspectionPageFactory extends PageFactory {
         secondaryDetailsWidget.setWidgetParams(widgetParams);
         
         if(AccountUtil.getCurrentOrg().getOrgId() == 17l) {
-        	if(record.getData().get("picklist") != null) {
+        	if(record!=null && record.getData()!=null && record.getData().get("picklist") != null) {
         		long actionTypeValue = Long.parseLong(record.getData().get("picklist").toString());
         		if(actionTypeValue == 1) {
         			SummarySec.addWidget(secondaryDetailsWidget);
@@ -257,7 +257,7 @@ public class InspectionPageFactory extends PageFactory {
         
         
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
-        if(currentApp == null || currentApp.getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
+        //if(currentApp == null || currentApp.getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
         	
         	Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
             Page.Section notesAndAttachmentSec = page.new Section();
@@ -288,7 +288,7 @@ public class InspectionPageFactory extends PageFactory {
     		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets()) || isRelationshipNeeded) {
     			page.addTab(relatedList);
     		}
-        }
+        //}
         
         Page.Tab activityTab = page.new Tab("History");;
         Page.Section activitySec = page.new Section();

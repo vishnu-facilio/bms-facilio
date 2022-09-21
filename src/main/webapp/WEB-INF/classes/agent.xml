@@ -489,6 +489,10 @@
         <action name="addController" class="com.facilio.agentv2.actions.RdmControllerAction" method="addController">
         </action>
     </package>
+    <package name="e2" namespace="/api/v2/e2" extends="agent">
+        <action name="addController" class="com.facilio.agentv2.actions.E2ControllerAction" method="addController">
+        </action>
+    </package>
 
     <package name="agentMetrics" namespace="/api/v2/agent/metrics" extends="agent">
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentMetrics">

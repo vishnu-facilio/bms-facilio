@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -12,6 +13,7 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -27,6 +29,7 @@ public class AddWeatherModules extends SignUpData {
         addWeatherModules();
         addWeatherSubModules();
         addDefaultWeatherService();
+        addRelationships();
         LOGGER.info("Weather related modules and config added successfully");
     }
 
@@ -167,6 +170,25 @@ public class AddWeatherModules extends SignUpData {
         return module;
     }
 
+    private void addRelationships() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule weatherStation = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
+        FacilioModule site = modBean.getModule(FacilioConstants.ContextNames.SITE);
+        RelationRequestContext siteVsStationRelation = new RelationRequestContext();
+        siteVsStationRelation.setName("weatherstation");
+        siteVsStationRelation.setDescription("Site Vs Weatherstation relationship");
+        siteVsStationRelation.setFromModuleId(site.getModuleId());
+        siteVsStationRelation.setToModuleId(weatherStation.getModuleId());
+        siteVsStationRelation.setRelationType(RelationRequestContext.RelationType.MANY_TO_ONE);
+        siteVsStationRelation.setRelationName("belongs to");
+        siteVsStationRelation.setReverseRelationName("being used by");
+
+        FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RELATION, siteVsStationRelation);
+        chain.execute();
+    }
+    
     private FacilioModule constructCDD() {
         FacilioModule module = new FacilioModule("cdd", "CDD", "CDD_Reading", FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA);
         module.setDataInterval(24 * 60);

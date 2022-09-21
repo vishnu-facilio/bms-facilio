@@ -50,7 +50,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 
         List<V3WorkorderItemContext> workorderItemslist = new ArrayList<>();
-//        List<V3WorkorderItemContext> itemToBeAdded = new ArrayList<>();
+        List<V3WorkorderItemContext> itemToBeAdded = new ArrayList<>();
 
         long itemTypesId = -1;
         ApprovalState approvalState = null;
@@ -101,6 +101,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                 // updatePurchasedItem(purchaseditem);
                                 wItem.setId(workorderitem.getId());
                                 workorderItemslist.add(wItem);
+                                itemToBeAdded.add(wItem);
                             }
                         }
                     }
@@ -129,7 +130,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                     updatePurchasedItem(asset);
                                     workorderItemslist.add(woItem);
-//                                    itemToBeAdded.add(woItem);
+                                    itemToBeAdded.add(woItem);
                                 }
                             }
                         } else {
@@ -151,7 +152,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
                                             approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                     workorderItemslist.add(woItem);
-//                                    itemToBeAdded.add(woItem);
+                                    itemToBeAdded.add(woItem);
                                 } else {
                                     double requiredQuantity = workorderitem.getQuantity();
                                     for (V3PurchasedItemContext purchaseitem : purchasedItem) {
@@ -166,7 +167,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                                 parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         workorderItemslist.add(woItem);
-//                                        itemToBeAdded.add(woItem);
+                                        itemToBeAdded.add(woItem);
                                         if (requiredQuantity <= 0) {
                                             break;
                                         }
@@ -178,8 +179,10 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 }
             }
 
-            if(CollectionUtils.isNotEmpty(workorderItemslist)){
-                recordMap.put(moduleName, workorderItemslist);
+            if(CollectionUtils.isNotEmpty(itemToBeAdded)){
+                Map<String,Object> data = workOrderItems.get(0).getData();
+                itemToBeAdded.get(0).setData(data);
+                recordMap.put(moduleName, itemToBeAdded);
             }
 
             if(CollectionUtils.isNotEmpty(workorderItemslist)) {
@@ -243,7 +246,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         woItem.setApprovedState(approvalState);
         if (asset != null) {
             woItem.setAsset(asset);
-            if(asset.getUnitPrice() >= 0) {
+            if(asset.getUnitPrice() != null) {
                 costOccured = asset.getUnitPrice() * quantity;
                 unitPrice = asset.getUnitPrice();
             }

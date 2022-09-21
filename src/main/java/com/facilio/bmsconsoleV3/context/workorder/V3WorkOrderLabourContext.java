@@ -15,7 +15,7 @@ public class V3WorkOrderLabourContext extends V3Context {
     private long startTime = -1;
     private long endTime = -1;
     private double duration = 0;
-    private long parentId = -1;
+    private Long parentId;
     private LabourContextV3 labour;
     private V3WorkOrderContext parent;
     private CraftContext craft;

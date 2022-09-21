@@ -5,12 +5,14 @@ import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -29,6 +31,8 @@ public class ValidateWorkOrderLabourPlanCommandV3 extends FacilioCommand {
         List<ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
 
         ModuleBean bean =Constants.getModBean();
+        FacilioModule module = bean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
+        List<FacilioField> fields = bean.getAllFields(module.getName());
 
         if (CollectionUtils.isNotEmpty(records)) {
 
@@ -40,7 +44,7 @@ public class ValidateWorkOrderLabourPlanCommandV3 extends FacilioCommand {
 
                 Objects.requireNonNull(labour, "Labour Should not be Empty while adding Workorder labour");
 
-                FacilioUtil.throwIllegalArgumentException(isLabourAssignedJobForGivenDuration(workOrderLabour.getStartTime(), labour.getId(), bean), "Job was assigned for this Labour for given Time.");
+                FacilioUtil.throwIllegalArgumentException(isLabourAssignedJobForGivenDuration(workOrderLabour, labour.getId(), module,fields), "Job was assigned for this Labour for given Time.");
 
             }
         }
@@ -48,16 +52,29 @@ public class ValidateWorkOrderLabourPlanCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private boolean isLabourAssignedJobForGivenDuration(long currentStartTime,long labourId, ModuleBean bean) throws Exception {
+    private boolean isLabourAssignedJobForGivenDuration(V3WorkOrderLabourContext workOrderLabour, long labourId, FacilioModule module, List<FacilioField> fields) throws Exception {
 
-        FacilioModule module = bean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
+        String startTime = workOrderLabour.getStartTime()+"";
+        String endTime = workOrderLabour.getEndTime()+"";
+
+        Criteria criteria = new Criteria();
+
+        criteria.addOrCondition(CriteriaAPI.getCondition("START_TIME",FacilioConstants.ContextNames.START_TIME,startTime,DateOperators.IS));
+        criteria.addOrCondition(CriteriaAPI.getCondition("END_TIME",FacilioConstants.ContextNames.END_TIME,endTime,DateOperators.IS));
+        criteria.addOrCondition(CriteriaAPI.getCondition("START_TIME",FacilioConstants.ContextNames.START_TIME,startTime+","+endTime,DateOperators.BETWEEN));
+        criteria.addOrCondition(CriteriaAPI.getCondition("END_TIME",FacilioConstants.ContextNames.END_TIME,startTime+","+endTime,DateOperators.BETWEEN));
+
+        Criteria criteria1 = new Criteria();
+        criteria1.addAndCondition(CriteriaAPI.getCondition("START_TIME",FacilioConstants.ContextNames.START_TIME,startTime,NumberOperators.LESS_THAN_EQUAL));
+        criteria1.addAndCondition(CriteriaAPI.getCondition("END_TIME",FacilioConstants.ContextNames.END_TIME,endTime,NumberOperators.GREATER_THAN_EQUAL));
 
         SelectRecordsBuilder<V3WorkOrderLabourContext> builder = new SelectRecordsBuilder<V3WorkOrderLabourContext>()
                 .module(module)
-                .select(bean.getAllFields(module.getName()))
+                .select(fields)
                 .beanClass(V3WorkOrderLabourContext.class)
                 .andCondition(CriteriaAPI.getCondition("LABOUR","labour",labourId+"", NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("END_TIME","endTime",currentStartTime+"", DateOperators.IS_AFTER));
+                .andCriteria(criteria1)
+                .orCriteria(criteria);
 
         List<V3WorkOrderLabourContext> props = builder.get();
 

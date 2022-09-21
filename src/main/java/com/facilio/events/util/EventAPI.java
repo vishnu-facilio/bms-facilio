@@ -60,31 +60,22 @@ public class EventAPI {
 	private static final FacilioModule SOURCE_TO_RESOURCE_MODULE = EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
 	private static final List<FacilioField> SOURCE_TO_RESOURCE_FIELDS = EventConstants.EventFieldFactory.getSourceToResourceMappingFields();
 
-	public static void populateProcessEventParams(FacilioContext context, long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) {
+	public static void populateProcessEventParams(FacilioContext context, long timestamp, JSONObject object, List<EventRuleContext> eventRules) {
     	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
     	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
     	context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, object);
-    	context.put(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP, lastEventTime);
-    	context.put(EventConstants.EventContextNames.EVENT_COUNT_MAP, eventCountMap);
 	}
 	 
-	 public static long processEvents(long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
-		FacilioContext context = new FacilioContext();
-		populateProcessEventParams(context, timestamp, object, eventRules, eventCountMap, lastEventTime);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			JSONArray jsonArray = new JSONArray();
-			object.put("controllerId", 23);
-			jsonArray.add(object);
-			context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, jsonArray);
-			FacilioChain c = TransactionChainFactory.getV2AddEventPayloadChain();
-			c.execute(context);
-			return System.currentTimeMillis();
-		}
-		else {
-			FacilioChain processEventChain = EventConstants.EventChainFactory.processEventChain();
-			processEventChain.execute(context);
-		}
-	    return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
+	 public static void processEvents(long timestamp, JSONArray events, List<EventRuleContext> eventRules) throws Exception {
+		
+		FacilioChain c = TransactionChainFactory.getV2AddEventPayloadChain();
+		FacilioContext context = c.getContext();
+		populateProcessEventParams(context, timestamp, null, eventRules);
+		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, events);
+		context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
+    	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
+		
+		c.execute();
 	 } 
 	 
 	public static EventContext transformEvent(EventContext event, JSONTemplate template, Map<String, Object> placeHolders) throws Exception {

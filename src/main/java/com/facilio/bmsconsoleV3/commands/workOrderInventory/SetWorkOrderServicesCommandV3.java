@@ -59,6 +59,7 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
 
                     woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), parentId, workorder, woService);
                     workorderServicelist.add(woService);
+                    woServiceToBeAdded.add(woService);
 
 //                    if (!eventTypes.contains(EventType.EDIT)) {
 //                        eventTypes.add(EventType.EDIT);
@@ -76,6 +77,8 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
             }
 
             if (CollectionUtils.isNotEmpty(woServiceToBeAdded)) {
+                Map<String,Object> data = workOrderServices.get(0).getData();
+                woServiceToBeAdded.get(0).setData(data);
                 recordMap.put(moduleName, woServiceToBeAdded);
             }
             if(CollectionUtils.isNotEmpty(workorderServicelist)) {

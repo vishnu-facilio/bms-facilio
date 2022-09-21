@@ -30,12 +30,25 @@ public class SafetyPlanPageFactory extends PageFactory{
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
+
         Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        addRelatedListWidget(tab1Sec2, "safetyPlanHazard", safetyPlan.getModuleId(), "Hazards");
-        addSafetyPlanHazardsWidget(tab1Sec2);
+        PageWidget workAsset = new PageWidget(WidgetType.WORK_ASSET);
+        workAsset.addToLayoutParams(tab1Sec2, 24, 6);
+        workAsset.addToWidgetParams("card", "workAssetWidget");
+        tab1Sec2.addWidget(workAsset);
 
-        addCommonSubModuleWidget(tab1Sec1, module, safetyPlan);
+        Section tab1Sec3 = page.new Section();
+        tab1.addSection(tab1Sec3);
+        addRelatedListWidget(tab1Sec3, "safetyPlanHazard", safetyPlan.getModuleId(), "Hazards");
+        addSafetyPlanHazardsWidget(tab1Sec3);
+
+        Tab tab2 = page.new Tab("Notes And Documents");
+        page.addTab(tab2);
+
+        Section tab2Sec1 = page.new Section();
+        tab2.addSection(tab2Sec1);
+        addCommonSubModuleWidget(tab2Sec1, module, safetyPlan);
 
         return page;
     }

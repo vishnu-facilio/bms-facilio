@@ -12,6 +12,8 @@ public class V3OutgoingMailLogContext extends BaseMailMessageContext {
     private Long recordsModuleId;
     private Long recordCreatedTime;
     private MailSourceType sourceType;
+    private MailEnums.MailStatus mailStatus;
+    private String maskUrl;
 
     //to keep original mail format
     private String originalTo;

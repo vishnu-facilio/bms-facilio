@@ -17,10 +17,6 @@ public enum MailSourceType implements FacilioStringEnum {
         this.moduleName = moduleName;
     }
 
-    public String getSourceType() {
-        return this.name();
-    }
-
     @Override
     public String getValue() {
         return this.moduleName;

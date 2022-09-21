@@ -12,7 +12,8 @@ public enum AgentType {
     REST(4, "rest", true, false, false),
     RDM(6, "RDM", false, true, false),
     CLOUD_ON_SERVICE(7, "cloud-on-service", true, true, false),
-    MQTT(8, "mqtt", true, true, false);
+    MQTT(8, "mqtt", true, true, false),
+    E2(9,"E2",false,true,false);
 
 
     private int key;
