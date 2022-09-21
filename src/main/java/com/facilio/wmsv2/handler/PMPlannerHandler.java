@@ -1,5 +1,7 @@
 package com.facilio.wmsv2.handler;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
@@ -28,7 +30,11 @@ public class PMPlannerHandler extends BaseHandler {
 
     @Override
     public Message processOutgoingMessage(Message message) {
-        // TODO(1): After publishing
+        if (FacilioProperties.isProduction()) {
+            LOGGER.info("Skipping pm planner for production.");
+            return null;
+        }
+
         try {
             LOGGER.error("PM Planner handler entry");
             LOGGER.error(message.toString());
