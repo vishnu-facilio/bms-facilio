@@ -32,12 +32,16 @@ public class ScheduleExecutor extends ExecutorBase {
         List<Long> nextExecutionTimes = new ArrayList<>();
         calculateEndTime(trigger, cutOffTime);
 
+        long maxNextExecutionCount = 100;
         while (nextExecutionTime.getLeft() <= (trigger.getEndTime())) { // inconsistency, endpoint set via computeEndtimeUsingTriggerType() is in seconds so /1000 isn't required. -Now Fixed
             if (nextExecutionTime.getLeft() < cutOffTime / 1000) {
                 nextExecutionTime = schedule.nextExecutionTime(nextExecutionTime);
                 continue;
             }
             nextExecutionTimes.add(nextExecutionTime.getLeft());
+            if (nextExecutionTimes.size() > maxNextExecutionCount) {
+                throw new IllegalArgumentException("Only 100 executions are allowed, this is to avoid OOMs and infinite looping.");
+            }
             nextExecutionTime = schedule.nextExecutionTime(nextExecutionTime);
         }
 
