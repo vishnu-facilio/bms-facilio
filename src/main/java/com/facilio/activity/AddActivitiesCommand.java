@@ -62,11 +62,15 @@ public class AddActivitiesCommand extends FacilioCommand {
 	
 	private FacilioModule getActivityModule (ModuleBean modBean, Context context) throws Exception {
 		String currentActivity = null;
-		if (StringUtils.isNotEmpty(activityModule)) {
-			currentActivity = activityModule;
-		}
-		else {
-			currentActivity = (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+		String scriptActivityModuleName = (String) context.get(FacilioConstants.ContextNames.ACTIVITY_MODULE_NAME_FROM_SCRIPT);
+		if(StringUtils.isNotEmpty(scriptActivityModuleName)){
+			currentActivity = scriptActivityModuleName;
+		} else {
+			if (StringUtils.isNotEmpty(activityModule)) {
+				currentActivity = activityModule;
+			} else {
+				currentActivity = (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+			}
 		}
 		if (StringUtils.isNotEmpty(currentActivity)) {
 			FacilioModule module = modBean.getModule(currentActivity);
