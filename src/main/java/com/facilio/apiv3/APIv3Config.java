@@ -2095,6 +2095,16 @@ public class APIv3Config {
                 .afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
+    @Module("assetSpareParts")
+    public static Supplier<V3Config> getAssetSpareparts() {
+        return () -> new V3Config(AssetSpareParts.class, new ModuleCustomFieldCount30())
+                .create()
+                .list()
+                .beforeFetch(new LoadSparePartsSupplementsCommand())
+                .update()
+                .delete()
+                .build();
+    }
 
     @Module("inventoryrequest")
     public static Supplier<V3Config> getInventoryRequest() {
