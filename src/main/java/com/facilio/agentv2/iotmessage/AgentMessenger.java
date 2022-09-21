@@ -22,10 +22,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AgentMessenger {
 
@@ -61,6 +58,9 @@ public class AgentMessenger {
             switch (command) {
                 case PING:
                     messageBody.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
+                    break;
+                case PROPERTY:
+                    messageBody.put(AgentConstants.PROPERTY, extraMsgContent.get(AgentConstants.PROPERTY));
                     break;
                 case DISCOVER_CONTROLLERS:
                     if(agent.getDiscoverControllersTimeOut()>0) {
@@ -103,7 +103,7 @@ public class AgentMessenger {
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
-        iotData.setAgent(agent);
+            iotData.setAgent(agent);
             return iotData;
     }
 
@@ -276,7 +276,6 @@ public class AgentMessenger {
         context.put(AgentConstants.DATA, controllerArray);
         return constructNewIotAgentMessage(FacilioCommand.ADD_CONTROLLER, agent, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
     }
-
     public static boolean sendAddModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {
         return sendControllerConfig(controllerContext);
     }
@@ -299,5 +298,13 @@ public class AgentMessenger {
 
     public static boolean sendRdmAddControllerCommand(RdmControllerContext rdmControllerContext) throws Exception {
         return sendControllerConfig(rdmControllerContext);
+    }
+
+    public static void setProperty(long agentId, String property, long value) throws Exception {
+        FacilioContext context = new FacilioContext();
+        Map<String, Long> props = Collections.singletonMap(property, value);
+        context.put(AgentConstants.PROPERTY, props);
+        IotData iotData = constructNewIotAgentMessage(agentId, FacilioCommand.PROPERTY, context, null);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 }

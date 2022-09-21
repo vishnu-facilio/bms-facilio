@@ -7,6 +7,7 @@ import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.*;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -47,7 +48,7 @@ public class CreateAgentCommand extends AgentV2Command {
             agent.setId(agentId);
             Organization currentOrg = AccountUtil.getCurrentOrg();
             createMessageTopic(currentOrg);
-            if (agentType.isMqttConnectionRequired()) {
+            if (agentType.isMqttConnectionRequired() && !FacilioProperties.isDevelopment()) {
                 createPolicy(agent, currentOrg, currentOrg.getDomain());
             }
             if (agentType == AgentType.CLOUD) {
