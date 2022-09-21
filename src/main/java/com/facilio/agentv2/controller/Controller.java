@@ -13,17 +13,20 @@ import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+@Getter
+@Setter
 
 public abstract class Controller extends AssetContext {
 
     public final String IDENTIFIER_SEPERATER = "-";
 
-    private long id;
     private long orgId;
 
     @JsonInclude

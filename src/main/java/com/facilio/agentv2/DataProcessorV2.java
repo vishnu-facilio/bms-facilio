@@ -51,6 +51,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataProcessorV2 {
 
@@ -276,6 +277,7 @@ public class DataProcessorV2 {
                 JSONArray controllerArray = (JSONArray) payload.get(AgentConstants.DATA);
                 if (controllerArray.size()==0){
                     agentUtil.clearControllerAlarm(agent);
+                    agentUtil.makeControllersActive(agent);
                 }
                 else{
                     List<Controller> listOfControllers = new ArrayList<>();
@@ -294,6 +296,8 @@ public class DataProcessorV2 {
                     }
                     if (listOfControllers.size()>0){
                         agentUtil.raiseControllerAlarm(agent,listOfControllers);
+                        List<Long> controllerIds = listOfControllers.stream().map(controller -> controller.getId()).collect(Collectors.toList());
+                        agentUtil.makeControllersActiveAndInactive(agent, controllerIds);
                     }
                 }
                 return true;

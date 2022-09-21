@@ -20,6 +20,7 @@ import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
@@ -40,6 +41,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class AgentUtilV2
@@ -442,5 +444,36 @@ public class AgentUtilV2
     public static AgentBean getAgentBean() throws Exception {
         AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
         return agentBean;
+    }
+
+    public void makeControllersActive(FacilioAgent agent) throws SQLException {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getNewControllerModule().getTableName())
+                .fields(FieldFactory.getControllersField())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agent.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ACTIVE), String.valueOf(false), BooleanOperators.IS));
+        Map<String, Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.ACTIVE, true);
+        updateBuilder.update(toUpdate);
+    }
+
+    public void makeControllersInActive(FacilioAgent agent, List<Long> controllerIds) throws SQLException {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getNewControllerModule().getTableName())
+                .fields(FieldFactory.getControllersField())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agent.getId()), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), controllerIds, StringOperators.IS));
+        Map<String, Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.ACTIVE, false);
+        updateBuilder.update(toUpdate);
+    }
+
+    public void makeControllersActiveAndInactive(FacilioAgent agent, List<Long> controllerIds) throws SQLException {
+        makeControllersActive(agent);
+        makeControllersInActive(agent, controllerIds);
     }
 }

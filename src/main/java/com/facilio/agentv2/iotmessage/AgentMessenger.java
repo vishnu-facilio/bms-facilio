@@ -13,7 +13,6 @@ import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
-import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
@@ -130,20 +129,20 @@ public class AgentMessenger {
     }
 
 
-    public static boolean shutDown(long agentId) { //TODO not yet tested
+    public static boolean restart(long agentId) { //TODO not yet tested
         if (agentId > 0) {
             try {
-                IotData shutDown = constructAgentShutDown(agentId);
-                MessengerUtil.addAndPublishNewAgentData(shutDown);
+                IotData restart = constructAgentRestart(agentId);
+                MessengerUtil.addAndPublishNewAgentData(restart);
                 return true;
             } catch (Exception e) {
-                LOGGER.info("Exception occurred while shutting agent down ->" + agentId + "-> ", e);
+                LOGGER.info("Exception occurred while restarting the agent ->" + agentId + "-> ", e);
             }
         }
         return false;
     }
 
-    private static IotData constructAgentShutDown(long agentId) throws Exception {
+    private static IotData constructAgentRestart(long agentId) throws Exception {
         return constructNewIotAgentMessage(agentId, FacilioCommand.SHUTDOWN, (FacilioContext) null, (FacilioControllerType) null);
     }
 
