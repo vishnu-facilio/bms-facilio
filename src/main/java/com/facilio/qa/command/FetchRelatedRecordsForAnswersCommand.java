@@ -26,8 +26,10 @@ public class FetchRelatedRecordsForAnswersCommand extends FacilioCommand{
 				QuestionContext question = answer.getQuestion();
 
 				question = questionMap.get(question.getId());
-
-				question.getQuestionType().getAnswerHandler().populateRelatedRecordsForAnswer(answer,question);
+				
+				if(question.getQuestionType().getAnswerHandler() != null) {
+					question.getQuestionType().getAnswerHandler().populateRelatedRecordsForAnswer(answer,question);
+				}
 
 			}
 		}

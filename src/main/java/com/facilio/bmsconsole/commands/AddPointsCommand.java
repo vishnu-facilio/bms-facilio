@@ -24,12 +24,13 @@ public class AddPointsCommand extends FacilioCommand {
     }
     public List<String> mlPointsToTag(List<Map<String,Object>>points, FacilioAgent agent){
         List<String>pointNames = new ArrayList<>();
-
-        if(agent.getAgentTypeEnum().allowAutoAddition()){
-            for (Map<String,Object>point: points){
+        for (Map<String,Object>point: points){
+            if((int) point.get(AgentConstants.CONFIGURE_STATUS)==3){
                 pointNames.add((String) point.get("name"));
             }
         }
+
+
         return pointNames;
     }
 }

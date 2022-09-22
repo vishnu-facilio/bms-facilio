@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,10 +20,10 @@ public class GetSafetyPlanHazardsCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		SafetyPlanContext safetyPlan = (SafetyPlanContext)context.get(FacilioConstants.ContextNames.RECORD);
 		if(safetyPlan != null) {
-			List<SafetyPlanHazardContext> safetyPlanHazards = HazardsAPI.fetchAssociatedHazards(safetyPlan.getId());
+			List<V3SafetyPlanHazardContext> safetyPlanHazards = HazardsAPI.fetchAssociatedHazards(safetyPlan.getId());
 			if(CollectionUtils.isNotEmpty(safetyPlanHazards)) {
 				List<Long> hazardIds = new ArrayList<Long>();
-				for(SafetyPlanHazardContext sfh : safetyPlanHazards) {
+				for(V3SafetyPlanHazardContext sfh : safetyPlanHazards) {
 					hazardIds.add(sfh.getHazard().getId());
 				}
 				safetyPlan.setHazardIds(hazardIds);

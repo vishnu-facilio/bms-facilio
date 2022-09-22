@@ -1,9 +1,15 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -53,5 +59,35 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         detailsView.setModuleName(workOrderServiceModule.getName());
 
         return detailsView;
+    }
+
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workOrderServiceModule = modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
+
+        FacilioForm workOrderServiceModuleForm = new FacilioForm();
+        workOrderServiceModuleForm.setDisplayName("New Work Order Service");
+        workOrderServiceModuleForm.setName("default_workorderService_web");
+        workOrderServiceModuleForm.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WO_SERVICE));
+        workOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        workOrderServiceModuleForm.setAppLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        workOrderServiceModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> workOrderServiceModuleFormFields = new ArrayList<>();
+        workOrderServiceModuleFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "Service", 1, 2,true));
+        workOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL,2,2));
+        workOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL,2,3));
+        workOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.TEXTBOX,"Duration", FormField.Required.OPTIONAL,3,2));
+        workOrderServiceModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, 4, 2));
+
+        FormSection workOrderServiceModuleFormSection = new FormSection("Default", 1, workOrderServiceModuleFormFields, false);
+        workOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        workOrderServiceModuleForm.setSections(Collections.singletonList(workOrderServiceModuleFormSection));
+
+        return Collections.singletonList(workOrderServiceModuleForm);
+
     }
 }

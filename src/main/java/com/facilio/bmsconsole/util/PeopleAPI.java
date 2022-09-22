@@ -361,8 +361,11 @@ public class PeopleAPI {
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}
+						String email = user.getEmail();
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
+						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 
 					}
@@ -416,8 +419,11 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setSecurityPolicyId(secPolId);
 						user.setLanguage(person.getLanguage());
+						String email = user.getEmail();
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
+						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false);
 					}
 					else {
@@ -479,8 +485,11 @@ public class PeopleAPI {
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}
+						String email = user.getEmail();
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
+						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 
 					}
@@ -504,9 +513,13 @@ public class PeopleAPI {
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}
-						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+						String email = user.getEmail();
 						AccountUtil.getUserBean().updateUser(user);
+
+						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
+						user.setEmail(email);
 						V3PeopleAPI.enableUser(user);
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
@@ -601,8 +614,11 @@ public class PeopleAPI {
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
 						user.setSecurityPolicyId(secPolId);
+						String email = user.getEmail();
 						AccountUtil.getUserBean().updateUser(user);
 						V3PeopleAPI.enableUser(user);
+						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
+						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false);
 
 					}

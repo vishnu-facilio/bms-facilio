@@ -25,9 +25,10 @@ public class FetchCommentSharingCommand extends FacilioCommand  {
             if (notes != null && notes.size() > 0) {
                 for (NoteContext note : notes) {
                     note.setCommentSharing(NotesAPI.getNoteSharing(note.getId(), moduleName));
-                    if((notesEditAvailable || note.getCreatedBy().getId() == AccountUtil.getCurrentUser().getId()) && !AccountUtil.getCurrentApp().getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS))
-                    {
-                        note.setEditAvailable(true);
+                    if(note.getCreatedBy() != null) {
+                        if ((notesEditAvailable || note.getCreatedBy().getId() == AccountUtil.getCurrentUser().getId()) && !AccountUtil.getCurrentApp().getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
+                            note.setEditAvailable(true);
+                        }
                     }
                 }
             }

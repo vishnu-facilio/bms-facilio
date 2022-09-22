@@ -307,15 +307,14 @@ public class WorkorderPageFactory extends PageFactory {
     }
 
     private static void addFailureReportTab(Page page){
-        Page.Tab failureReportTab = page.new Tab("Failure Report");
+        Page.Tab failureReportTab = page.new Tab("Failure Reporting");
         page.addTab(failureReportTab);
 
         Page.Section failureReportSection = page.new Section();
         failureReportTab.addSection(failureReportSection);
 
         PageWidget failureReport = new PageWidget(PageWidget.WidgetType.FAILURE_REPORT);
-        failureReport.addToLayoutParams(failureReportSection, 24, 8);
-        failureReport.addToWidgetParams("card", "failurereports");
+        failureReport.addToLayoutParams(0, 0, 24, 8);
         failureReportSection.addWidget(failureReport);
     }
 
@@ -422,15 +421,21 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Section safetyPlanSection = page.new Section();
         safetyPlanTab.addSection(safetyPlanSection);
 
-        // hazards widget
-        PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
-        hazards.addToLayoutParams(0, 0, 17, 8);
-        safetyPlanSection.addWidget(hazards);
+        PageWidget safetyPlan = new PageWidget(PageWidget.WidgetType.WORKORDER_SAFETY_PLAN);
+        safetyPlan.addToLayoutParams(0, 0, 17, 7);
+        safetyPlanSection.addWidget(safetyPlan);
 
-        // precautions widget
-        PageWidget precautions = new PageWidget(PageWidget.WidgetType.PRECAUTIONS);
-        precautions.addToLayoutParams(0, 8, 17, 8);
-        safetyPlanSection.addWidget(precautions);
+        if(workorder.getSafetyPlan() != null) {
+            // hazards widget
+            PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
+            hazards.addToLayoutParams(0, 0, 17, 8);
+            safetyPlanSection.addWidget(hazards);
+
+            // precautions widget
+            PageWidget precautions = new PageWidget(PageWidget.WidgetType.PRECAUTIONS);
+            precautions.addToLayoutParams(0, 8, 17, 8);
+            safetyPlanSection.addWidget(precautions);
+        }
 
         composeRightPanel(safetyPlanSection, workorder);
         return safetyPlanSection;
@@ -489,7 +494,7 @@ public class WorkorderPageFactory extends PageFactory {
                 // !SP & PR
                 addPrerequisiteTab(page, workorder);
             }
-        } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN) && workorder.getSafetyPlan() != null) {
+        } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
             // SP & !PR
             addSafetyPlanTab(page, workorder);
         }

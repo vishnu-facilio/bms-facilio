@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -49,7 +50,7 @@ public class ReserveItemsCommandV3 extends FacilioCommand {
                     Double newReservedQuantity = reservedQuantity + workOrderPlannedItem.getQuantity();
                     Map<String, Object> map = new HashMap<>();
                     map.put("reservedQuantity", newReservedQuantity);
-                    if (workOrderPlannedItem.getReservationTypeEnum().equals(WorkOrderPlannedItemsContext.ReservationType.HARD)) {
+                    if (workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
                         // to update available quantity in item module
                         Double availableQuantity = item.getQuantity() == null ? 0 : item.getQuantity();
                         Double newAvailableQuantity = availableQuantity - workOrderPlannedItem.getQuantity();
@@ -100,14 +101,14 @@ public class ReserveItemsCommandV3 extends FacilioCommand {
         updateBuilder.updateViaMap(map);
     }
 
-    private void addItemTransaction(WorkOrderPlannedItemsContext.ReservationType reservationType, V3ItemContext item,Double plannedItemQuantity,Long workOrderPlannedItemId) throws Exception {
+    private void addItemTransaction(ReservationType reservationType, V3ItemContext item,Double plannedItemQuantity,Long workOrderPlannedItemId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String itemModuleName = FacilioConstants.ContextNames.ITEM_TRANSACTIONS;
         FacilioModule module = modBean.getModule(itemModuleName);
         List<FacilioField> fields = modBean.getAllFields(itemModuleName);
 
         V3ItemTransactionsContext itemTransaction = new V3ItemTransactionsContext();
-        if(reservationType.equals(WorkOrderPlannedItemsContext.ReservationType.HARD)){
+        if(reservationType.equals(ReservationType.HARD)){
             itemTransaction.setItem(item);
             itemTransaction.setItemType(item.getItemType());
             itemTransaction.setStoreRoom(item.getStoreRoom());
@@ -115,10 +116,10 @@ public class ReserveItemsCommandV3 extends FacilioCommand {
             itemTransaction.setIsReturnable(false);
             itemTransaction.setParentId(workOrderPlannedItemId);
             itemTransaction.setTransactionType(TransactionType.RESERVATION);
-            if(reservationType.equals(WorkOrderPlannedItemsContext.ReservationType.HARD)) {
+            if(reservationType.equals(ReservationType.HARD)) {
                 itemTransaction.setTransactionState(TransactionState.HARD_RESERVE);
             }
-            else if(reservationType.equals(WorkOrderPlannedItemsContext.ReservationType.SOFT)){
+            else if(reservationType.equals(ReservationType.SOFT)){
                 itemTransaction.setTransactionState(TransactionState.SOFT_RESERVE);
             }
             InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()

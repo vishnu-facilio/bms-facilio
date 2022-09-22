@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -62,7 +63,7 @@ public class ValidateWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
                     if (items.size() < 1) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not Present in the given storeroom");
                     } else {
-                        if (items.get(0).getQuantity() < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(WorkOrderPlannedItemsContext.ReservationType.HARD)) {
+                        if (items.get(0).getQuantity() < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Available quantity in store is less than the requested quantity");
                         }
                     }

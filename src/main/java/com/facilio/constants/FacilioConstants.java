@@ -46,6 +46,7 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
@@ -1379,6 +1380,10 @@ public class FacilioConstants {
 		public static final String COST_FIRST_BILL_TIME = "costFirstBillTime";
 		public static final String COST_READINGS = "costReadings";
 
+		public static final String PLANNED_TOOLS_COST = "plannedToolsCost";
+		public static final String PLANNED_ITEMS_COST = "plannedItemsCost";
+		public static final String PLANNED_SERVICES_COST = "plannedServicesCost";
+
 		public static final String TIMESTAMP = "timestamp";
 		public static final String DEVICE_DATA = "deviceData";
 		public static final String BULK_DEVICE_DATA = "bulkData";
@@ -2107,6 +2112,8 @@ public class FacilioConstants {
 		public static final String WO_PLANNED_TOOLS = "workOrderPlannedTools";
 		public static final String WO_PLANNED_SERVICES = "workOrderPlannedServices";
 
+		public static final String INVENTORY_RESERVATION = "inventoryReservation";
+
 		public static final String AUDIENCE_SHARING = "audienceSharing";
 		public static final String AUDIENCE = "audience";
 
@@ -2187,6 +2194,9 @@ public class FacilioConstants {
 			public static final String CONTAINS_SITE = "Contains Current User Sites";
 			public static final String SITE_TENANT = "Tenants Of Current User Sites";
 			public static final String BASESPACE_HAVING = "Space Available in User Accessible Spaces";
+			public static final String VENDOR = "Is Current Vendor";
+			public static final String CURRENT_USER = "Is Current User";
+			public static final String CURRENT_ORG_USER_USER = "Is Current Org User";
 
 		}
 
@@ -2743,6 +2753,7 @@ public class FacilioConstants {
 			classMap.put(WO_PLANNED_TOOLS, WorkOrderPlannedToolsContext.class);
 			classMap.put(WO_PLANNED_SERVICES, WorkOrderPlannedServicesContext.class);
 			classMap.put(SpaceBooking.SPACE_BOOKING, V3SpaceBookingContext.class);
+			classMap.put(INVENTORY_RESERVATION, InventoryReservationContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {

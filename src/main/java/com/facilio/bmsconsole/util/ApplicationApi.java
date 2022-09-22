@@ -2317,7 +2317,7 @@ public class ApplicationApi {
         }
         appbuilder.orCondition(
                 CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
-        return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
+        return getFilteredApplications(FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class));
     }
 
     public static void addAppRoleMapping(long roleId, long appId) throws Exception {

@@ -1080,22 +1080,11 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
                 method="reserve">
         </action>
-        <action name="cost"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
-                method="cost">
-        </action>
     </package>
-    <package name="workOrderPlannedTools" namespace="/api/v3/workOrderPlannedTools"
+    <package name="workOrderPlansCost" namespace="/api/v3/workOrderPlansCost"
              extends="v3Api">
         <action name="cost"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
-                method="cost">
-        </action>
-    </package>
-    <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
-             extends="v3Api">
-        <action name="cost"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlansCostAction"
                 method="cost">
         </action>
     </package>

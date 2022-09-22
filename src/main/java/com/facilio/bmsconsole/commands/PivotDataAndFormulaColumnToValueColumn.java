@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
 import com.facilio.report.context.PivotValueColumnContext;
@@ -47,7 +51,21 @@ public class PivotDataAndFormulaColumnToValueColumn extends FacilioCommand {
            newValue.setValueType("DATA");
            newValue.setFieldDisplayName(getLabel(dataColumnContext.getAlias()));
            newValue.setAlias(dataColumnContext.getAlias());
+           if(dataColumnContext != null && dataColumnContext.getModuleName() != null && !"".equals(dataColumnContext.getModuleName())){
+               try {
+                   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                   FacilioModule module = modBean.getModule(dataColumnContext.getModuleName());
+                   List<FacilioField> allFields = modBean.getAllFields(dataColumnContext.getModuleName());
+                   module.setFields(allFields);
+                   if(dataColumnContext.getField() != null){
+                       dataColumnContext.getField().setModule(module);
+                   }
+               }catch (Exception e){
+                   System.out.print("error");
+               }
+           }
            newValue.setModuleMeasure(dataColumnContext);
+
            values.add(newValue);
         }
 

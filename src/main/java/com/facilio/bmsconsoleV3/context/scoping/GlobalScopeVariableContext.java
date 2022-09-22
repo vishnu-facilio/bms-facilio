@@ -1,13 +1,18 @@
 package com.facilio.bmsconsoleV3.context.scoping;
 
+import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.MultiFieldOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -32,14 +37,64 @@ public class GlobalScopeVariableContext implements Serializable {
     private Long applicableModuleId;
     private long sysCreatedTime = -1L;
     private long sysModifiedTime = -1L;
+    private long sysDeletedTime = -1L;
     private long sysCreatedBy = -1L;
     private long sysModifiedBy = -1L;
+    private long sysDeletedBy = -1L;
     private Boolean showSwitch;
     private Boolean status;
     private Long appId;
 
     private List<ScopeVariableModulesFields> scopeVariableModulesFieldsList;
     private List<Long> values;
+    private Boolean deleted;
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    private Type type;
+
+    public int getType() {
+        if (type != null) {
+            return type.getIndex();
+        }
+        return -1;
+    }
+
+    public void setType(int type) {
+        this.type = Type.valueOf(type);
+    }
+
+    public Type getTypeEnum() {
+        return type;
+    }
+
+    public enum Type implements FacilioIntEnum {
+        SCOPED, ALL;
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name();
+        }
+
+        public static Type valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
 
     public String getApplicableModuleName() {
         return applicableModuleName;
@@ -160,6 +215,22 @@ public class GlobalScopeVariableContext implements Serializable {
     public void setAppId(Long appId) {
         this.appId = appId;
     }
+    
+    public long getSysDeletedTime() {
+        return sysDeletedTime;
+    }
+
+    public void setSysDeletedTime(long sysDeletedTime) {
+        this.sysDeletedTime = sysDeletedTime;
+    }
+
+    public long getSysDeletedBy() {
+        return sysDeletedBy;
+    }
+
+    public void setSysDeletedBy(long sysDeletedBy) {
+        this.sysDeletedBy = sysDeletedBy;
+    }
 
     public GlobalScopeVariableContext(String linkName, List<ScopeVariableModulesFields> scopeVariableModulesFieldsList) {
         this.linkName = linkName;
@@ -172,7 +243,7 @@ public class GlobalScopeVariableContext implements Serializable {
         FacilioModule module = modBean.getModule(moduleName);
         List<Long> values = this.values;
         Criteria criteria = new Criteria();
-        if(CollectionUtils.isEmpty(values)){
+        if(values == null){
             return null;
         }
         if(module != null) {
@@ -181,17 +252,25 @@ public class GlobalScopeVariableContext implements Serializable {
                 for (ScopeVariableModulesFields scopeVariableModulesField : scopeVariableModulesFieldsList) {
                     if (scopeVariableModulesField.getModuleId() == module.getModuleId()) {
                         String fieldName = scopeVariableModulesField.getFieldName();
-                        if (fieldName != null && module != null && CollectionUtils.isNotEmpty(values)) {
+                        if (fieldName != null && module != null) {
                             FacilioField field = modBean.getField(fieldName, module.getName());
-                            Operator operator = PickListOperators.IS;
-                            if (field instanceof MultiLookupField) {
-                                operator = MultiFieldOperators.CONTAINS;
-                            } else if (field instanceof LookupField) {
-                                operator = PickListOperators.IS;
+                            if (CollectionUtils.isNotEmpty(values)) {
+                                Operator operator = PickListOperators.IS;
+                                if (field instanceof MultiLookupField) {
+                                    operator = MultiFieldOperators.CONTAINS;
+                                } else if (field instanceof LookupField) {
+                                    operator = PickListOperators.IS;
+                                }
+                                if (field != null) {
+                                    criteria.addAndCondition(CriteriaAPI.getCondition(field, values, operator));
+                                    fields.add(field);
+                                }
                             }
-                            if (field != null) {
-                                criteria.addAndCondition(CriteriaAPI.getCondition(field, values, operator));
-                                fields.add(field);
+                            else {
+                                if (field != null) {
+                                    criteria.addAndCondition(CriteriaAPI.getCondition(field, StringUtils.EMPTY, MultiFieldOperators.CONTAINS));
+                                    fields.add(field);
+                                }
                             }
                         }
                     }

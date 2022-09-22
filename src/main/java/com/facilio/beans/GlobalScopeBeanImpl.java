@@ -24,7 +24,8 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
     public List<GlobalScopeVariableContext> getAllScopeVariable() throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
-                .select(FieldFactory.getGlobalScopeVariableFields());
+                .select(FieldFactory.getGlobalScopeVariableFields())
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED","sysDeleted",String.valueOf(Boolean.FALSE),BooleanOperators.IS));
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List<GlobalScopeVariableContext> scopeVariableList = FieldUtil.getAsBeanListFromMapList(props, GlobalScopeVariableContext.class);
@@ -43,6 +44,8 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
         fieldList.add(FieldFactory.getField("status", "STATUS", ModuleFactory.getGlobalScopeVariableModule(), FieldType.BOOLEAN));
         fieldList.add(FieldFactory.getField("scopeVariableId", "ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
         fieldList.add(FieldFactory.getField("appId", "APP_ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
+        fieldList.add(FieldFactory.getField("sysDeleted", "SYS_DELETED", ModuleFactory.getGlobalScopeVariableModule(), FieldType.BOOLEAN));
+        fieldList.add(FieldFactory.getField("type", "TYPE", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
@@ -51,6 +54,7 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                 .on("Value_Generators.ID = Global_Scope_Variable.VALUE_GENERATOR_ID");
         selectRecordBuilder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
         selectRecordBuilder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+        selectRecordBuilder.andCondition(CriteriaAPI.getCondition("SYS_DELETED","sysDeleted",String.valueOf(Boolean.FALSE),BooleanOperators.IS));
 
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
@@ -59,6 +63,7 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                 ValueGeneratorContext valGenContext = FieldUtil.getAsBeanFromMap(prop,ValueGeneratorContext.class);
                 GlobalScopeVariableContext scopeVariableContext = new GlobalScopeVariableContext();
                 scopeVariableContext.setLinkName(String.valueOf(prop.get("scopeVariableLinkName")));
+                scopeVariableContext.setType((int) prop.get("type"));
                 scopeVariableContext.setScopeVariableModulesFieldsList(getScopeVariableModulesFields(Long.parseLong(String.valueOf(prop.get("scopeVariableId")))));
                 scopeVsValGen.put(String.valueOf(prop.get("scopeVariableLinkName")),Pair.of(scopeVariableContext,valGenContext));
             }
@@ -89,7 +94,9 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
                 .select(FieldFactory.getGlobalScopeVariableFields())
-                .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",linkName,StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",linkName,StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED","sysDeleted",String.valueOf(Boolean.FALSE),BooleanOperators.IS));
+
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List<GlobalScopeVariableContext> scopeVariableList = FieldUtil.getAsBeanListFromMapList(props, GlobalScopeVariableContext.class);
@@ -103,7 +110,8 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
                 .select(FieldFactory.getGlobalScopeVariableFields())
-                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getGlobalScopeVariableModule()));
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getGlobalScopeVariableModule()))
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED","sysDeleted",String.valueOf(Boolean.FALSE),BooleanOperators.IS));
         Map<String, Object> props = selectRecordBuilder.fetchFirst();
         if (props != null && !props.isEmpty()) {
             GlobalScopeVariableContext scopeVariable = FieldUtil.getAsBeanFromMap(props, GlobalScopeVariableContext.class);
@@ -142,7 +150,8 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
             GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                     .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
                     .fields(FieldFactory.getGlobalScopeVariableFields())
-                    .andCondition(CriteriaAPI.getIdCondition(scopeVariable.getId(),ModuleFactory.getGlobalScopeVariableModule()));
+                    .andCondition(CriteriaAPI.getIdCondition(scopeVariable.getId(),ModuleFactory.getGlobalScopeVariableModule()))
+                    .andCondition(CriteriaAPI.getCondition("SYS_DELETED","sysDeleted",String.valueOf(Boolean.FALSE),BooleanOperators.IS));
             updateBuilder.update(prop);
             if(prop != null){
                 if(prop.containsKey("id")){
@@ -175,13 +184,17 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
             deleteBuilder.delete();
         }
     }
-
     @Override
     public void deleteScopeVariable(Long id) throws Exception {
-        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getGlobalScopeVariableFields());
-        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+        GlobalScopeVariableContext globalScopeVariable = new GlobalScopeVariableContext();
+        globalScopeVariable.setSysDeletedBy(AccountUtil.getCurrentUser().getId());
+        globalScopeVariable.setSysDeletedTime(System.currentTimeMillis());
+        globalScopeVariable.setDeleted(true);
+        Map<String,Object> prop = FieldUtil.getAsProperties(globalScopeVariable);
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("id"), Collections.singletonList(id), NumberOperators.EQUALS));
-        deleteBuilder.delete();
+                .fields(FieldFactory.getGlobalScopeVariableFields())
+                .andCondition(CriteriaAPI.getIdCondition(id,ModuleFactory.getGlobalScopeVariableModule()));
+        updateBuilder.update(prop);
     }
 }

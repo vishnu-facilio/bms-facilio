@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -61,7 +62,7 @@ public class UnReserveItemsCommandV3 extends FacilioCommand {
                     Map<String, Object> map = new HashMap<>();
                     map.put("reservedQuantity", newReservedQuantity);
 
-                    if(workOrderPlannedItem.getReservationTypeEnum().equals(WorkOrderPlannedItemsContext.ReservationType.HARD)){
+                    if(workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)){
                         // to update available quantity in item module
                         Double availableQuantity = items.get(0).getQuantity()==null ? 0 : items.get(0).getQuantity();
                         Double newAvailableQuantity = availableQuantity + plannedItemQuantity;

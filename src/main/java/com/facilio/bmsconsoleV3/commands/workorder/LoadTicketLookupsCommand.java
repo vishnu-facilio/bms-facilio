@@ -40,6 +40,11 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
             fetchLookupsList.add(client);
         }
 
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+            LookupField safetyPlan = (LookupField) fieldsAsMap.get("safetyPlan");
+            fetchLookupsList.add(safetyPlan);
+        }
+
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }
