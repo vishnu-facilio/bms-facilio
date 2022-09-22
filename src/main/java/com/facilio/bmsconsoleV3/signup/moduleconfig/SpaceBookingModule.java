@@ -7,7 +7,6 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
@@ -134,13 +133,25 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleDeskBookingPortalForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         spaceBookingModuleDeskBookingPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
-        spaceBookingModuleDeskBookingPortalForm.setSections(Collections.singletonList(spaceBookingModuleDeskBookingFormSection));
+        List<FormField> spaceBookingModuleDeskBookingPortalFormFields = new ArrayList<>();
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Host", FormField.Required.REQUIRED,"people",3, 1));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("reservedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", FormField.Required.REQUIRED,"people",4, 1));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("desk", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Desk", FormField.Required.REQUIRED, "desks", 5, 2));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("noOfAttendees", FacilioField.FieldDisplayType.NUMBER, "Number Of Attendees", FormField.Required.REQUIRED,6, 1));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("bookingStartTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED,7, 2));
+        spaceBookingModuleDeskBookingPortalFormFields.add(new FormField("bookingEndTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED,7, 3));
+
+        FormSection spaceBookingModuleDeskBookingPortalFormSection = new FormSection("Default", 1, spaceBookingModuleDeskBookingPortalFormFields, false);
+        spaceBookingModuleDeskBookingPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        spaceBookingModuleDeskBookingPortalForm.setSections(Collections.singletonList(spaceBookingModuleDeskBookingPortalFormSection));
 
 
         FacilioForm spaceBookingModuleParkingBookingForm = new FacilioForm();
         spaceBookingModuleParkingBookingForm.setDisplayName("Parking Booking Form");
         spaceBookingModuleParkingBookingForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.PARKING_BOOKING +"_web");
-        spaceBookingModuleParkingBookingForm.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING));
+        spaceBookingModuleParkingBookingForm.setModule(spaceBookingModule);
         spaceBookingModuleParkingBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         spaceBookingModuleParkingBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
@@ -158,36 +169,26 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleParkingBookingFormSection.setSectionType(FormSection.SectionType.FIELDS);
         spaceBookingModuleParkingBookingForm.setSections(Collections.singletonList(spaceBookingModuleParkingBookingFormSection));
 
-
-
-        spaceBookingModuleParkingBookingForm.setSections(Collections.singletonList(spaceBookingModuleDeskBookingFormSection));
-
         FacilioForm spaceBookingModuleParkingBookingPortalForm = new FacilioForm();
         spaceBookingModuleParkingBookingPortalForm.setDisplayName("Parking Booking Form");
         spaceBookingModuleParkingBookingPortalForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.PARKING_BOOKING);
-        spaceBookingModuleParkingBookingPortalForm.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING));
+        spaceBookingModuleParkingBookingPortalForm.setModule(spaceBookingModule);
         spaceBookingModuleParkingBookingPortalForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         spaceBookingModuleParkingBookingPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
-        spaceBookingModuleParkingBookingPortalForm.setSections(Collections.singletonList(spaceBookingModuleParkingBookingFormSection));
+        List<FormField> spaceBookingModuleParkingBookingPortalFormFields = new ArrayList<>();
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Host", FormField.Required.REQUIRED,"people",3, 1));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("reservedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", FormField.Required.REQUIRED,"people",4, 1));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("parkingStall", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parking", FormField.Required.REQUIRED, "parkingstall", 5, 2));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("noOfAttendees", FacilioField.FieldDisplayType.NUMBER, "Number Of Attendees", FormField.Required.REQUIRED,6, 1));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("bookingStartTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED,7, 2));
+        spaceBookingModuleParkingBookingPortalFormFields.add(new FormField("bookingEndTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED,7, 3));
 
-
-        FacilioForm spaceBookingModuleExternalAttendeeForm = new FacilioForm();
-        spaceBookingModuleExternalAttendeeForm.setDisplayName("External Attendee");
-        spaceBookingModuleExternalAttendeeForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.EXTERNAL_ATTENDEE +"_web");
-        spaceBookingModuleExternalAttendeeForm.setModule(ModuleFactory.getModule( FacilioConstants.ContextNames.SpaceBooking.EXTERNAL_ATTENDEE));
-        spaceBookingModuleExternalAttendeeForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        spaceBookingModuleExternalAttendeeForm.setAppLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-
-        List<FormField> fields = new ArrayList<>();
-        fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
-        fields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED,2, 1));
-        fields.add(new FormField("Phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.OPTIONAL,3, 1));
-
-        FormSection spaceBookingModuleExternalAttendeeFormSection = new FormSection("Default", 1, fields, false);
-        spaceBookingModuleExternalAttendeeFormSection.setSectionType(FormSection.SectionType.FIELDS);
-        spaceBookingModuleExternalAttendeeForm.setSections(Collections.singletonList(spaceBookingModuleExternalAttendeeFormSection));
-
+        FormSection spaceBookingModuleParkingBookingPortalFormSection = new FormSection("Default", 1, spaceBookingModuleParkingBookingPortalFormFields, false);
+        spaceBookingModuleParkingBookingPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        spaceBookingModuleParkingBookingPortalForm.setSections(Collections.singletonList(spaceBookingModuleParkingBookingPortalFormSection));
 
         List<FacilioForm> spaceBookingModuleForms = new ArrayList<>();
         spaceBookingModuleForms.add(spaceBookingModuleForm);
@@ -196,7 +197,6 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleForms.add(spaceBookingModuleDeskBookingPortalForm);
         spaceBookingModuleForms.add(spaceBookingModuleParkingBookingForm);
         spaceBookingModuleForms.add(spaceBookingModuleParkingBookingPortalForm);
-        spaceBookingModuleForms.add(spaceBookingModuleExternalAttendeeForm);
 
         return spaceBookingModuleForms;
     }

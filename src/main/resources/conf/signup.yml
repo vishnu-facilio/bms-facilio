@@ -316,6 +316,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderPlannedItemsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderPlannedToolsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderPlannedServicesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceBookingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.ExternalAttendeeModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InspectionCategoryModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InspectionPriorityModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InspectionTemplateModule

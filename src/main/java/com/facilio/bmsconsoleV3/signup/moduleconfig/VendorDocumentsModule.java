@@ -73,15 +73,12 @@ public class VendorDocumentsModule extends BaseModuleConfig{
         vendorDocumentForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         vendorDocumentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
-//        --> THESE FormField IS COMMON FOR vendorDocumentForm AND portalVendorDocumentForm
         List<FormField> vendorDocumentFormFields = new ArrayList<>();
         vendorDocumentFormFields.add(new FormField("documentName", FacilioField.FieldDisplayType.TEXTBOX, "Document Name", FormField.Required.REQUIRED, 1, 1));
         FormField type = new FormField("documentType", FacilioField.FieldDisplayType.SELECTBOX, "Document Type", FormField.Required.OPTIONAL, 2, 1);
         type.setAllowCreateOptions(true);
         vendorDocumentFormFields.add(type);
         vendorDocumentFormFields.add(new FormField("document", FacilioField.FieldDisplayType.FILE, "Document", FormField.Required.REQUIRED,3, 1));
-//        --> THESE FormField IS COMMON FOR vendorDocumentForm AND portalVendorDocumentForm
-//        vendorDocumentForm.setFields(vendorDocumentFormFields);
 
         FormSection vendorDocumentFormSection = new FormSection("Default", 1, vendorDocumentFormFields, false);
         vendorDocumentFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -92,10 +89,16 @@ public class VendorDocumentsModule extends BaseModuleConfig{
         portalVendorDocumentForm.setName("default_vendorDocuments_portal");
         portalVendorDocumentForm.setModule(vendorDocumentsModule);
         portalVendorDocumentForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-//        portalVendorDocumentForm.setFields(vendorDocumentFormFields);
         portalVendorDocumentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection portalVendorDocumentFormSection = new FormSection("Default", 1, vendorDocumentFormFields, false);
+        List<FormField> portalVendorDocumentFormFields = new ArrayList<>();
+        portalVendorDocumentFormFields.add(new FormField("documentName", FacilioField.FieldDisplayType.TEXTBOX, "Document Name", FormField.Required.REQUIRED, 1, 1));
+        FormField typePortal = new FormField("documentType", FacilioField.FieldDisplayType.SELECTBOX, "Document Type", FormField.Required.OPTIONAL, 2, 1);
+        typePortal.setAllowCreateOptions(true);
+        portalVendorDocumentFormFields.add(typePortal);
+        portalVendorDocumentFormFields.add(new FormField("document", FacilioField.FieldDisplayType.FILE, "Document", FormField.Required.REQUIRED,3, 1));
+
+        FormSection portalVendorDocumentFormSection = new FormSection("Default", 1, portalVendorDocumentFormFields, false);
         portalVendorDocumentFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVendorDocumentForm.setSections(Collections.singletonList(portalVendorDocumentFormSection));
 

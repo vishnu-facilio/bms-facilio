@@ -126,7 +126,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilityBookingFormFields1.addAll(attendeeFields1);
 //        facilityBookingPortalForm.setFields(facilityBookingFormFields1);
 
-        FormSection defaultSection1 = new FormSection("DETAILS", 1, facilityBookingFormDefaultFields, false);
+        FormSection defaultSection1 = new FormSection("DETAILS", 1, facilityBookingPortalFormDefaultFields, false);
         defaultSection1.setSectionType(FormSection.SectionType.FIELDS);
 
         FormSection timeSlotSection1 = new FormSection("TIME SLOTS", 2, timeSlotFields1, false);
@@ -330,7 +330,6 @@ public class FacilityBookingModule extends BaseModuleConfig{
         List<FormField> parkingBookingPortalFormDefaultFields = new ArrayList<>();
         parkingBookingPortalFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));
         parkingBookingPortalFormDefaultFields.add(new FormField("reservedFor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", FormField.Required.REQUIRED,"user",2, 1));
-        parkingBookingPortalFormDefaultFields.add(new FormField("bookingslot", FacilioField.FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", FormField.Required.REQUIRED,4, 1));
         parkingBookingPortalFormDefaultFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.REQUIRED, "tenant", 6, 1));
 
         List<FormField> timeSlotFields7 = new ArrayList<>();
