@@ -2346,7 +2346,11 @@ public class FacilioConstants {
 			public static final String FORM = "formId";
 			public static final String SPACE_MODULE_ID = "spaceModuleId";
 			public static final String AMENITY = "amenity";
-			public static final String SPACE_ID = "amenity";
+			public static final String SPACE_ID = "space";
+			public static final String PARENT_MODULE_ID = "parentModuleId";
+			public static final String BUILDING_ID = "buildingId";
+			public static final String OPERATING_HOUR = "operatingHour";
+			public static final String CURRENT_TIME = "currentTime";
 
 
 		}

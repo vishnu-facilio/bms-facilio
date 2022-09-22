@@ -27,11 +27,12 @@ public class SpaceBookingSupplementsCommand extends FacilioCommand{
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule amenitiesModule = modBean.getModule(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING_INTERNAL_ATTENDEE);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         SupplementRecord space = (SupplementRecord) fieldsAsMap.get("space");
+        SupplementRecord desk = (SupplementRecord) fieldsAsMap.get("desk");
+        SupplementRecord parkingStall = (SupplementRecord) fieldsAsMap.get("parkingStall");
         SupplementRecord host = (SupplementRecord) fieldsAsMap.get("host");
         SupplementRecord reservedBy = (SupplementRecord) fieldsAsMap.get("reservedBy");
         SupplementRecord sysCreatedBy = (SupplementRecord) fieldsAsMap.get("sysCreatedBy");
@@ -40,8 +41,9 @@ public class SpaceBookingSupplementsCommand extends FacilioCommand{
 
         MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
 
-
         fetchLookupsList.add(space);
+        fetchLookupsList.add(desk);
+        fetchLookupsList.add(parkingStall);
         fetchLookupsList.add(host);
         fetchLookupsList.add(reservedBy);
         fetchLookupsList.add(sysCreatedBy);

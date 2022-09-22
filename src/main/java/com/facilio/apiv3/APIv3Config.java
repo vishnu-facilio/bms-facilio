@@ -158,6 +158,7 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingAvailability;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.spacebooking.SpaceBookingSupplementsCommand;
@@ -2576,7 +2577,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getSpaceBooking() {
         return () -> new V3Config(V3SpaceBookingContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new V3ValidateSpaceBookingCommand())
+                .beforeSave(TransactionChainFactoryV3.createSpaceBookingChain())
                 .update()
                 .delete()
                 .list()
