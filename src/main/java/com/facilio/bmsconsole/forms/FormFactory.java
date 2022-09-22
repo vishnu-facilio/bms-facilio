@@ -4192,7 +4192,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
 		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("desk", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.REQUIRED, "desks", 5, 2));
+		fields.add(new FormField("desk", FieldDisplayType.LOOKUP_SIMPLE, "Desk", Required.REQUIRED, "desks", 5, 2));
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
 		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
 		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
@@ -4213,7 +4213,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
 		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("desk", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.REQUIRED, "desks", 5, 2));
+		fields.add(new FormField("desk", FieldDisplayType.LOOKUP_SIMPLE, "Desk", Required.REQUIRED, "desks", 5, 2));
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
 		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
 		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
@@ -4234,7 +4234,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
 		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("parkingStall", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.REQUIRED, "parkingstall", 5, 2));
+		fields.add(new FormField("parkingStall", FieldDisplayType.LOOKUP_SIMPLE, "Parking", Required.REQUIRED, "parkingstall", 5, 2));
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
 		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
 		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
@@ -4255,7 +4255,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
 		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("parkingStall", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.REQUIRED, "parkingstall", 5, 2));
+		fields.add(new FormField("parkingStall", FieldDisplayType.LOOKUP_SIMPLE, "Parking", Required.REQUIRED, "parkingstall", 5, 2));
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
 		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
 		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));

@@ -117,7 +117,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleDeskBookingFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         spaceBookingModuleDeskBookingFormFields.add(new FormField("host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Host", FormField.Required.REQUIRED,"people",3, 1));
         spaceBookingModuleDeskBookingFormFields.add(new FormField("reservedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", FormField.Required.REQUIRED,"people",4, 1));
-        spaceBookingModuleDeskBookingFormFields.add(new FormField("desk", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.REQUIRED, "desks", 5, 2));
+        spaceBookingModuleDeskBookingFormFields.add(new FormField("desk", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Desk", FormField.Required.REQUIRED, "desks", 5, 2));
         spaceBookingModuleDeskBookingFormFields.add(new FormField("noOfAttendees", FacilioField.FieldDisplayType.NUMBER, "Number Of Attendees", FormField.Required.REQUIRED,6, 1));
         spaceBookingModuleDeskBookingFormFields.add(new FormField("bookingStartTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED,7, 2));
         spaceBookingModuleDeskBookingFormFields.add(new FormField("bookingEndTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED,7, 3));
@@ -149,7 +149,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleParkingBookingFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         spaceBookingModuleParkingBookingFormFields.add(new FormField("host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Host", FormField.Required.REQUIRED,"people",3, 1));
         spaceBookingModuleParkingBookingFormFields.add(new FormField("reservedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", FormField.Required.REQUIRED,"people",4, 1));
-        spaceBookingModuleParkingBookingFormFields.add(new FormField("parkingStall", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.REQUIRED, "parkingstall", 5, 2));
+        spaceBookingModuleParkingBookingFormFields.add(new FormField("parkingStall", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parking", FormField.Required.REQUIRED, "parkingstall", 5, 2));
         spaceBookingModuleParkingBookingFormFields.add(new FormField("noOfAttendees", FacilioField.FieldDisplayType.NUMBER, "Number Of Attendees", FormField.Required.REQUIRED,6, 1));
         spaceBookingModuleParkingBookingFormFields.add(new FormField("bookingStartTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED,7, 2));
         spaceBookingModuleParkingBookingFormFields.add(new FormField("bookingEndTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED,7, 3));
