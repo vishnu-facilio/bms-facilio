@@ -6582,6 +6582,11 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	public static FacilioChain getTestEmailChain(){
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new sendTestMailCommand());
+		return chain;
+	}
 }
 
 

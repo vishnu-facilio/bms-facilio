@@ -532,6 +532,8 @@
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="deleteEmailStructure" />
 		<action name="publish"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="publishEmailStructure" />
+		<action name="testMail"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="testMailTemplate" />
 	</package>
 
 	<package name="relation" namespace="/api/v2/relation" extends="v2Api">
