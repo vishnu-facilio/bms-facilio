@@ -425,7 +425,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("spaceCategory", "Space Category"));
 		columns.add(new ViewField("assetCategory", "Asset Category"));
-		columns.add(new ViewField("createdTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 	

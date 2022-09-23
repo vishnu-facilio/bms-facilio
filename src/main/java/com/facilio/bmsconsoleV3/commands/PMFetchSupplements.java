@@ -35,6 +35,9 @@ public class PMFetchSupplements extends FacilioCommand {
         supplementRecords.add((LookupField) fieldsAsMap.get("assetCategory"));
         supplementRecords.add((LookupField) fieldsAsMap.get("priority"));
         supplementRecords.add((LookupField) fieldsAsMap.get("type"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("createdBy"));
+
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementRecords);
         return false;
