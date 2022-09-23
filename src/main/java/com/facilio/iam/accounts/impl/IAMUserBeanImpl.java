@@ -1162,7 +1162,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
-			if (s == sessionId && "web".equalsIgnoreCase((String) session.get("userType"))) {
+			if (s == sessionId && ("web".equalsIgnoreCase((String) session.get("userType"))|| "mobile".equalsIgnoreCase((String) session.get("userType")))) {
 				prop = session;
 				break;
 			}
@@ -1192,7 +1192,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
-			if (s == sessionId && "web".equalsIgnoreCase((String) session.get("userType"))) {
+			if (s == sessionId && ("web".equalsIgnoreCase((String) session.get("userType")) || "mobile".equalsIgnoreCase((String) session.get("userType")))) {
 				prop = session;
 				break;
 			}
