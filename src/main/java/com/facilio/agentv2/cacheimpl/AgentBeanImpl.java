@@ -8,6 +8,7 @@ import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -145,6 +146,9 @@ public class AgentBeanImpl implements AgentBean {
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
                 agent.setLastModifiedTime(currTime);
+                if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
+                    AgentMessenger.setProperty(agent.getId(), AgentConstants.DATA_INTERVAL, currDataInterval);
+                }
                 if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
                     FacilioTimer.deleteJob(agent.getId(), FacilioConstants.Job.CLOUD_AGENT_JOB_NAME);
                     scheduleRestJob(agent);

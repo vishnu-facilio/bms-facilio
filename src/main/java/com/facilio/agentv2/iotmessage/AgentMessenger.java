@@ -13,7 +13,6 @@ import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
-import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
@@ -22,10 +21,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AgentMessenger {
 
@@ -61,6 +57,9 @@ public class AgentMessenger {
             switch (command) {
                 case PING:
                     messageBody.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
+                    break;
+                case PROPERTY:
+                    messageBody.put(AgentConstants.PROPERTY, extraMsgContent.get(AgentConstants.PROPERTY));
                     break;
                 case DISCOVER_CONTROLLERS:
                     if(agent.getDiscoverControllersTimeOut()>0) {
@@ -103,7 +102,7 @@ public class AgentMessenger {
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
-        iotData.setAgent(agent);
+            iotData.setAgent(agent);
             return iotData;
     }
 
@@ -130,20 +129,20 @@ public class AgentMessenger {
     }
 
 
-    public static boolean shutDown(long agentId) { //TODO not yet tested
+    public static boolean restart(long agentId) { //TODO not yet tested
         if (agentId > 0) {
             try {
-                IotData shutDown = constructAgentShutDown(agentId);
-                MessengerUtil.addAndPublishNewAgentData(shutDown);
+                IotData restart = constructAgentRestart(agentId);
+                MessengerUtil.addAndPublishNewAgentData(restart);
                 return true;
             } catch (Exception e) {
-                LOGGER.info("Exception occurred while shutting agent down ->" + agentId + "-> ", e);
+                LOGGER.info("Exception occurred while restarting the agent ->" + agentId + "-> ", e);
             }
         }
         return false;
     }
 
-    private static IotData constructAgentShutDown(long agentId) throws Exception {
+    private static IotData constructAgentRestart(long agentId) throws Exception {
         return constructNewIotAgentMessage(agentId, FacilioCommand.SHUTDOWN, (FacilioContext) null, (FacilioControllerType) null);
     }
 
@@ -276,7 +275,6 @@ public class AgentMessenger {
         context.put(AgentConstants.DATA, controllerArray);
         return constructNewIotAgentMessage(FacilioCommand.ADD_CONTROLLER, agent, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
     }
-
     public static boolean sendAddModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {
         return sendControllerConfig(controllerContext);
     }
@@ -299,5 +297,13 @@ public class AgentMessenger {
 
     public static boolean sendRdmAddControllerCommand(RdmControllerContext rdmControllerContext) throws Exception {
         return sendControllerConfig(rdmControllerContext);
+    }
+
+    public static void setProperty(long agentId, String property, long value) throws Exception {
+        FacilioContext context = new FacilioContext();
+        Map<String, Long> props = Collections.singletonMap(property, value);
+        context.put(AgentConstants.PROPERTY, props);
+        IotData iotData = constructNewIotAgentMessage(agentId, FacilioCommand.PROPERTY, context, null);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 }

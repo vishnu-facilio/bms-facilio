@@ -595,7 +595,7 @@ public class APIv3Config {
 
     @Module("failurecodeproblems")
     public static Supplier<V3Config> getFailureCodeProblems() {
-        return () -> new V3Config(V3FailureCodeProblemsContext.class, null)
+        return () -> new V3Config(V3FailureCodeProblemsContext.class, new ModuleCustomFieldCount15())
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
                 .delete()
@@ -605,7 +605,7 @@ public class APIv3Config {
 
     @Module("failurecodecauses")
     public static Supplier<V3Config> getFailureCodeCauses() {
-        return () -> new V3Config(V3FailureCodeCausesContext.class, null)
+        return () -> new V3Config(V3FailureCodeCausesContext.class, new ModuleCustomFieldCount15())
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
                 .delete()
@@ -615,7 +615,7 @@ public class APIv3Config {
 
     @Module("failurecoderemedies")
     public static Supplier<V3Config> getFailureCodeRemedies() {
-        return () -> new V3Config(V3FailureCodeRemediesContext.class, null)
+        return () -> new V3Config(V3FailureCodeRemediesContext.class, new ModuleCustomFieldCount15())
                 .list()
                 .beforeFetch(new FetchFailureCodeSupplements())
                 .delete()

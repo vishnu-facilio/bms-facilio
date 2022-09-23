@@ -107,13 +107,13 @@ public class IdsAction extends AgentActionV2
         return SUCCESS;
     }
 
-    public String shutDownAgent() {
+    public String restartAgent() {
         try {
             List<Long> ids = getRecordIds();
-            LOGGER.info(" shutting down agent" + ids);
+            LOGGER.info(" Restarting agent" + ids);
             if ((ids != null) && (!ids.isEmpty())) {
                 for (Long id : ids) {
-                    AgentMessenger.shutDown(id);
+                    AgentMessenger.restart(id);
                 }
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -48,17 +49,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.MultiEnumField;
@@ -256,7 +247,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					FacilioContext context = addModuleDataChain.getContext();
 					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 
-					
+					context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+					if(moduleData != null && moduleData.getData() != null && moduleData.getData().containsKey("activityModuleName")){
+						context.put(FacilioConstants.ContextNames.ACTIVITY_MODULE_NAME_FROM_SCRIPT, moduleData.getData().get("activityModuleName"));
+					}
+
 					context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 					context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 					moduleData.parseFormData();
@@ -352,8 +347,32 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				if(!supplements.isEmpty()) {
 					updateRecordBuilder.updateSupplements(supplements);
 				}
+				updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 				updateRecordBuilder.updateViaMap(updateMap);
 
+				try {
+					Map<Long, List<UpdateChangeSet>> recordChanges = updateRecordBuilder.getChangeSet();
+					updateActivity(recordChanges, module.getName(), updateMap);
+				} catch(Exception e){
+					LOGGER.info("Exception in update record activity - Facilio script");
+				}
+			}
+		}
+	}
+
+	private void updateActivity(Map<Long, List<UpdateChangeSet>> recordChanges,String moduleName,Map<String, Object> updateMap) throws Exception {
+		if(recordChanges != null && !recordChanges.isEmpty()) {
+			for(Map.Entry<Long,List<UpdateChangeSet>> item : recordChanges.entrySet()) {
+				FacilioChain chain = TransactionChainFactory.getConstructUpdateActivitiesChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, recordChanges);
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(item.getKey()));
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+				if (updateMap != null && updateMap.containsKey("activityModuleName")) {
+					context.put(FacilioConstants.ContextNames.ACTIVITY_MODULE_NAME_FROM_SCRIPT, updateMap.get("activityModuleName"));
+				}
+				chain.execute();
 			}
 		}
 	}

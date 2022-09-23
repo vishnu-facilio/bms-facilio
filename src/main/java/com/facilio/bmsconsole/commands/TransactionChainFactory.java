@@ -2121,6 +2121,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getConstructUpdateActivitiesChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ConstructUpdateCustomActivityCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
+			return c;
+		}
+
 		public static FacilioChain getUpdateVendorChain(){
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());

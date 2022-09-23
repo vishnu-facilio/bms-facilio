@@ -4,6 +4,7 @@ import com.facilio.attribute.context.ClassificationAttributeContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -25,8 +26,12 @@ public class ClassificationContext extends V3Context {
     private List<ClassificationAttributeContext> attributes;
     private Boolean hasChild;
     public void setClassificationPath(String classificationPath) {
-        if (StringUtils.isNotEmpty(classificationPath)) {
-            this.classificationPath = "All / " + classificationPath;
+        if (classificationPath != null) {
+            if(classificationPath.isEmpty()){
+                this.classificationPath = "All ";
+            }else{
+                this.classificationPath = "All / " + classificationPath;
+            }
         } else {
             this.classificationPath = classificationPath;
         }
