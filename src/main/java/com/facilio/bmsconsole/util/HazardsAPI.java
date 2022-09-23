@@ -35,6 +35,22 @@ public class HazardsAPI {
 			                 
 	}
 
+	public static List<SafetyPlanHazardContext> fetchAssociatedHazardsV2(Long safetyPlanId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<SafetyPlanHazardContext> builder = new SelectRecordsBuilder<SafetyPlanHazardContext>()
+				.module(module)
+				.beanClass(SafetyPlanHazardContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("SAFETY_PLAN_ID", "safetyPlan", String.valueOf(safetyPlanId),NumberOperators.EQUALS));
+		;
+
+		List<SafetyPlanHazardContext> list = builder.get();
+		return list;
+
+	}
+
 	public static List<V3HazardPrecautionContext> fetchAssociatedPrecautions(Long hazardId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.HAZARD_PRECAUTION);
