@@ -1332,6 +1332,7 @@ public class FacilioConstants {
 		public static final String RELATION_MODULE_NAME = "relationModuleName";
 
 		public static final String CLASSIFICATION = "classification";
+		public static final String CLASSIFICATION_DATA = "classificationData";
 		public static final String CLASSIFICATION_ID = "classificationId";
 		public static final String CLASSIFICATION_ATTRIBUTE = "classificationAttribute";
 		public static final String CLASSIFICATION_RESOLVE_PATH = "classificationResolvePath";

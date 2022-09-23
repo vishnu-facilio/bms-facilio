@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -36,6 +37,12 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
         customAttachmentModule.setType(FacilioModule.ModuleType.ATTACHMENTS);
 
         modules.add(customAttachmentModule);
+
+        FacilioModule classificationDataModule = ClassificationUtil.getNewClassificationDataModule(module,"Custom_Module_Classification_Data");
+        classificationDataModule.setCustom(true);
+
+        modules.add(classificationDataModule);
+
 
         if (modules != null && modules.size() > 0) {
             for (FacilioModule subModule: modules) {

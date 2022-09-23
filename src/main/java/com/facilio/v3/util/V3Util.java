@@ -370,7 +370,11 @@ public class V3Util {
     }
 
     public static Object getRecord(String moduleName, long id, Map<String, List<Object>> queryParams) throws Exception {
-        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), queryParams);
+        return getRecord(moduleName, id, queryParams, false);
+    }
+
+    public static Object getRecord(String moduleName, long id, Map<String, List<Object>> queryParams, boolean fetchClassificationData) throws Exception {
+        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), queryParams, fetchClassificationData);
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List list = recordMap.get(moduleName);
@@ -394,10 +398,10 @@ public class V3Util {
     }
 
     public static FacilioContext getSummary(String moduleName, List<Long> ids) throws Exception {
-        return getSummary(moduleName, ids, null);
+        return getSummary(moduleName, ids, null, false);
     }
 
-    public static FacilioContext getSummary(String moduleName, List<Long> ids, Map<String, List<Object>> queryParams) throws Exception {
+    public static FacilioContext getSummary(String moduleName, List<Long> ids, Map<String, List<Object>> queryParams, boolean fetchClassificationData) throws Exception {
         FacilioChain fetchRecordChain = ChainUtil.getFetchRecordChain(moduleName);
         FacilioContext context = fetchRecordChain.getContext();
 
@@ -411,6 +415,7 @@ public class V3Util {
         context.put(Constants.BEAN_CLASS, beanClass);
         Constants.setModuleName(context, moduleName);
         Constants.setV3config(context, config);
+        context.put(Constants.FETCH_CLASSIFICATION, fetchClassificationData);
 
         fetchRecordChain.execute();
 

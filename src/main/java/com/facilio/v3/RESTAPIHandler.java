@@ -46,7 +46,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         api currentApi = currentApi();
         Object record;
         if (currentApi == api.v3) {
-            record = V3Util.getRecord(moduleName, id, getQueryParameters());
+            record = V3Util.getRecord(moduleName, id, getQueryParameters(), true);
         } else {
             record = getV4TransformedRecord(moduleName, id);
         }
@@ -320,7 +320,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         String moduleName = getModuleName();
         JSONObject data = getData();
         List<Long> ids = (List<Long>) data.get(moduleName);
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids, null, true);
 
         List<ModuleBaseWithCustomFields> records = Constants.getRecordListFromContext(summaryContext, moduleName);
         JSONObject result = new JSONObject();
