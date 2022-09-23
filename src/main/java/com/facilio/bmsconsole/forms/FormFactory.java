@@ -4155,30 +4155,6 @@ public class FormFactory {
 		return form;
 	}
 
-	private static FacilioForm getSpaceBookingPortalForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Space Booking Form");
-		form.setName("default_"+ ContextNames.SpaceBooking.SPACE_BOOKING);
-		form.setModule(ModuleFactory.getModule(ContextNames.SpaceBooking.SPACE_BOOKING));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setAppLinkName(ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
-
-
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
-		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("space", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.REQUIRED, "space", 5, 2));
-		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
-		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
-		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
-		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,8, 1));
-		fields.add(new FormField("externalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "External Attendees", Required.OPTIONAL,9, 1));
-
-		form.setFields(fields);
-		return form;
-	}
 	private static FacilioForm getDeskBookingForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Desk Booking Form");
@@ -4186,27 +4162,6 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(ContextNames.SpaceBooking.SPACE_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
-		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("desk", FieldDisplayType.LOOKUP_SIMPLE, "Desk", Required.REQUIRED, "desks", 5, 2));
-		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
-		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
-		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
-		form.setFields(fields);
-		return form;
-	}
-
-	private static FacilioForm getDeskBookingPortalForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Desk Booking Form");
-		form.setName("default_"+ ContextNames.SpaceBooking.DESK_BOOKING);
-		form.setModule(ModuleFactory.getModule(ContextNames.SpaceBooking.SPACE_BOOKING));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setAppLinkName(ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
@@ -4241,28 +4196,7 @@ public class FormFactory {
 		form.setFields(fields);
 		return form;
 	}
-
-	private static FacilioForm getNewParkingBookingPortalForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Parking Booking Form");
-		form.setName("default_"+ ContextNames.SpaceBooking.PARKING_BOOKING);
-		form.setModule(ModuleFactory.getModule(ContextNames.SpaceBooking.SPACE_BOOKING));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setAppLinkName(ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
-
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("host", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.REQUIRED,"people",3, 1));
-		fields.add(new FormField("reservedBy", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"people",4, 1));
-		fields.add(new FormField("parkingStall", FieldDisplayType.LOOKUP_SIMPLE, "Parking", Required.REQUIRED, "parkingstall", 5, 2));
-		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,6, 1));
-		fields.add(new FormField("bookingStartTime", FieldDisplayType.DATETIME, "Start Time", Required.REQUIRED,7, 2));
-		fields.add(new FormField("bookingEndTime", FieldDisplayType.DATETIME, "End Time", Required.REQUIRED,7, 3));
-		form.setFields(fields);
-		return form;
-	}
-
+	
 	private static FacilioForm getSpaceBookingExternalAttendeeForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("External Attendee");
