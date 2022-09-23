@@ -615,7 +615,7 @@ public class FormFactory {
 		List<FacilioForm> workOrderToolForm = Arrays.asList(getWorkOrderToolForm());
 		List<FacilioForm> workOrderServiceForm = Arrays.asList(getWorkOrderServiceForm());
 
-		List<FacilioForm> spaceBookingFormsList = Arrays.asList(getSpaceBookingForm(),getSpaceBookingPortalForm(),getDeskBookingForm(),getDeskBookingPortalForm(),getNewParkingBookingForm(),getNewParkingBookingPortalForm());
+		List<FacilioForm> spaceBookingFormsList = Arrays.asList(getSpaceBookingForm(),getDeskBookingForm(),getNewParkingBookingForm());
 		List<FacilioForm> spaceBookingExternalAttendeeFormList = Arrays.asList(getSpaceBookingExternalAttendeeForm());
 
 
