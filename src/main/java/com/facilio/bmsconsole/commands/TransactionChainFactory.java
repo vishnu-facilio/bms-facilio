@@ -5048,9 +5048,10 @@ public class TransactionChainFactory {
 	public static FacilioChain subscribeUnsbscribechain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new SubscribeUnsbscribeCommand());
+		chain.addCommand(new MLTagPointListCommand());
 		return chain;
 	}
-
+	
 	/**
 	 * makes point's config status to in-progress and makes controllerId entry for point and childPoint.
 	 * @return

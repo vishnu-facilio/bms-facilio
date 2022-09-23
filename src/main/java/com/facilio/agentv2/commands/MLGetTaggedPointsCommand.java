@@ -49,11 +49,21 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
                 });
                 Map<Long, String> newResources = CommissioningApi.getResources(new HashSet<>(newResourceids));
                 if(newResources!=null && !newResources.isEmpty()){
-                    resources.putAll(newResources);
+                    if(resources!=null && !resources.isEmpty()){
+                        resources.putAll(newResources);
+                    }
+                    else{
+                        context.put(FacilioConstants.ContextNames.RESOURCE_LIST,newResources);
+                    }
                 }
                 Map<Long, Map<String, Object>> newFields = CommissioningApi.getFields(new HashSet<>(newFieldIds));
                 if(newFields!=null && !newFields.isEmpty()){
-                    fieldMap.putAll(newFields);
+                    if(fieldMap!=null && !fieldMap.isEmpty()){
+                        fieldMap.putAll(newFields);
+                    }
+                    else{
+                        context.put(FacilioConstants.ContextNames.FIELDS,newFields);
+                    }
                 }
                 return false;
             }
