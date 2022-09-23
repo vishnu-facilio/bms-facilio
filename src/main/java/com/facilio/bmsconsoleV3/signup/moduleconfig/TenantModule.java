@@ -57,6 +57,11 @@ public class TenantModule extends BaseModuleConfig{
         allView.setDisplayName("All Tenants");
         allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -77,6 +82,11 @@ public class TenantModule extends BaseModuleConfig{
         activeTenantsView.setDisplayName("Residing Tenants");
         activeTenantsView.setSortFields(Arrays.asList(new SortField(localId, false)));
         activeTenantsView.setCriteria(criteria);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        activeTenantsView.setAppLinkNames(appLinkNames);
 
         return activeTenantsView;
     }

@@ -47,6 +47,11 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         allView.setModuleName(tenantUnitSpaceModule.getName());
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -62,6 +67,11 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         allView.setModuleName(tenantUnitSpaceModule.getName());
         allView.setSortFields(sortFields);
         allView.setHidden(true);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

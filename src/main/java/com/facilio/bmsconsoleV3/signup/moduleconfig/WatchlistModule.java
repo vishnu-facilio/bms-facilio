@@ -63,6 +63,11 @@ public class WatchlistModule extends BaseModuleConfig{
         criteria.addAndCondition(blockedCondition);
         view.setCriteria(criteria);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -76,6 +81,11 @@ public class WatchlistModule extends BaseModuleConfig{
         criteria.addAndCondition(vipCondition);
         view.setCriteria(criteria);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -84,6 +94,11 @@ public class WatchlistModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Watchlist");
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

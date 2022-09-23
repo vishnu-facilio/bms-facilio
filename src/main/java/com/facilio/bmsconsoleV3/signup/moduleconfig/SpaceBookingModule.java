@@ -4,15 +4,16 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class SpaceBookingModule extends BaseModuleConfig{
 
@@ -171,7 +172,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
 
         FacilioForm spaceBookingModuleParkingBookingPortalForm = new FacilioForm();
         spaceBookingModuleParkingBookingPortalForm.setDisplayName("Parking Booking Form");
-        spaceBookingModuleParkingBookingPortalForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.PARKING_BOOKING);
+        spaceBookingModuleParkingBookingPortalForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.PARKING_BOOKING +"_portal");
         spaceBookingModuleParkingBookingPortalForm.setModule(spaceBookingModule);
         spaceBookingModuleParkingBookingPortalForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         spaceBookingModuleParkingBookingPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
@@ -199,5 +200,42 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleForms.add(spaceBookingModuleParkingBookingPortalForm);
 
         return spaceBookingModuleForms;
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> clientContact = new ArrayList<FacilioView>();
+        clientContact.add(getAllSpaceBookingViews().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", getModuleName());
+        groupDetails.put("views", clientContact);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private static FacilioView getAllSpaceBookingViews() {
+
+        List<SortField> sortFields = Collections.singletonList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Space Booking");
+        allView.setModuleName(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING);
+        allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
     }
 }

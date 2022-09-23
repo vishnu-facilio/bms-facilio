@@ -133,6 +133,11 @@ public class FloorModule extends BaseModuleConfig {
         allView.setDisplayName("All Floors");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 

@@ -233,6 +233,7 @@ public class AddModuleViewsAndGroups {
                 } else {
                     FacilioField sortField = fieldMap.get(field.getSortField().getName());
                     field.setFieldId(sortField.getId());
+                    field.setFieldName(fieldName);
                 }
                 ViewAPI.customizeViewSortColumns(view.getId(), sortFields);
                 LOGGER.info(String.format("Completed adding SortColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));

@@ -50,8 +50,11 @@ public class FacilityBookingModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

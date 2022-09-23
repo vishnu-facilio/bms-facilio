@@ -89,6 +89,11 @@ public class WarrantyContractsModule extends BaseModuleConfig{
         //allView.setCriteria(getContractListCriteria());
         allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -104,6 +109,11 @@ public class WarrantyContractsModule extends BaseModuleConfig{
         allView.setDisplayName("Expiring This Month");
         allView.setCriteria(getExpiringContractListCriteria(module, type));
         allView.setSortFields(Arrays.asList(new SortField(endDateField, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

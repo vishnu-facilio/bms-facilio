@@ -52,6 +52,11 @@ public class ServiceModule extends BaseModuleConfig{
         allView.setDisplayName("All Service");
         allView.setSortFields(Arrays.asList(new SortField(name, true)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 

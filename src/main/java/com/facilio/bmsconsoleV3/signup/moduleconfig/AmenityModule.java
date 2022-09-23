@@ -50,8 +50,10 @@ public class AmenityModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

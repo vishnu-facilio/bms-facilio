@@ -61,6 +61,11 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
         view.setDefault(true);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -84,6 +89,11 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         view.setModuleName("bmsalarm");
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -102,6 +112,11 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         typeAlarms.setCriteria(criteria);
         typeAlarms.setModuleName("bmsalarm");
         typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        typeAlarms.setAppLinkNames(appLinkNames);
 
         return typeAlarms;
     }

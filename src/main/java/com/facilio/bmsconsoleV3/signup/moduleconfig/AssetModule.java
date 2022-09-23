@@ -55,6 +55,11 @@ public class AssetModule extends BaseModuleConfig{
         allView.setDisplayName("All Assets");
         allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -85,6 +90,11 @@ public class AssetModule extends BaseModuleConfig{
 
         assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        assetView.setAppLinkNames(appLinkNames);
+
         return assetView;
     }
 
@@ -109,6 +119,11 @@ public class AssetModule extends BaseModuleConfig{
         localId.setModule(ModuleFactory.getAssetsModule());
 
         assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        assetView.setAppLinkNames(appLinkNames);
 
         return assetView;
     }

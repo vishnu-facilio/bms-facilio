@@ -65,6 +65,11 @@ public class ItemModule extends BaseModuleConfig{
         allView.setDisplayName("All Items");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -83,6 +88,11 @@ public class ItemModule extends BaseModuleConfig{
         staleParts.setDisplayName("Stale");
         staleParts.setCriteria(criteria);
         staleParts.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        staleParts.setAppLinkNames(appLinkNames);
 
         return staleParts;
     }
@@ -107,6 +117,11 @@ public class ItemModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         allView.setCriteria(criteria);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

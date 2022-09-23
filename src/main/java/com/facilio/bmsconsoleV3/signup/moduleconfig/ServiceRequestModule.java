@@ -60,6 +60,12 @@ public class ServiceRequestModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
         allView.setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -84,6 +90,12 @@ public class ServiceRequestModule extends BaseModuleConfig{
         openTicketsView.setCriteria(criteria);
         openTicketsView.setSortFields(sortFields);
         openTicketsView.setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
 
         return openTicketsView;
     }

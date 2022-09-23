@@ -55,13 +55,11 @@ public class VendorContactModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         allView.setHidden(true);
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
-        appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -78,6 +76,11 @@ public class VendorContactModule extends BaseModuleConfig{
         allView.setDisplayName("All Vendor Contacts");
         allView.setModuleName(vendorContactModule.getName());
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

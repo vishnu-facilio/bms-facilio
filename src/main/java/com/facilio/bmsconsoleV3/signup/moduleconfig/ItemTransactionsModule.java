@@ -56,6 +56,11 @@ public class ItemTransactionsModule extends BaseModuleConfig{
         requestedItemApproval.setCriteria(criteria);
 //		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        requestedItemApproval.setAppLinkNames(appLinkNames);
+
         return requestedItemApproval;
     }
 
@@ -74,6 +79,11 @@ public class ItemTransactionsModule extends BaseModuleConfig{
         rejectedApproval.setDisplayName("All Item Approvals");
         rejectedApproval.setCriteria(criteria);
         rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        rejectedApproval.setAppLinkNames(appLinkNames);
 
         return rejectedApproval;
     }

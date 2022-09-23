@@ -52,6 +52,11 @@ public class ReceivableModule extends BaseModuleConfig{
         allView.setDisplayName("All");
         allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -73,6 +78,11 @@ public class ReceivableModule extends BaseModuleConfig{
         statusView.setDisplayName(viewDisplayName);
         statusView.setSortFields(sortFields);
         statusView.setCriteria(criteria);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        statusView.setAppLinkNames(appLinkNames);
 
         return statusView;
     }

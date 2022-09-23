@@ -151,6 +151,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         createdTime.setModule(ModuleFactory.getWorkOrdersModule());
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getAllOverdueWorkOrders() {
@@ -167,6 +173,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         createdTime.setModule(ModuleFactory.getWorkOrdersModule());
         SortField sortField = new SortField(createdTime, false);
         overdueView.setSortFields(Arrays.asList(sortField));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getAllDueTodayWorkOrders() {
@@ -184,6 +196,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Due Today");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getOpenPlannedWorkOrders() {
@@ -212,6 +230,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Planned");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getOpenUnPlannedWorkOrders() {
@@ -241,6 +265,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Un Planned");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getUnassignedWorkorders() {
@@ -258,6 +288,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         unassignedWOView.setDisplayName("Unassigned");
         unassignedWOView.setCriteria(unassignedWOCriteria);
         unassignedWOView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        unassignedWOView.setAppLinkNames(appLinkNames);
+
         return unassignedWOView;
     }
     private static FacilioView getMyOpenWorkOrders() {
@@ -276,6 +312,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("My Work Orders");
         openTicketsView.setCriteria(criteria);
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getMyTeamOpenWorkOrders() {
@@ -294,6 +336,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("My Team Work Orders");
         openTicketsView.setCriteria(criteria);
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getMyOverdueWorkOrders() {
@@ -312,6 +360,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         view.setDisplayName("My Overdue");
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
     private static FacilioView getMyDueTodayWorkOrders() {
@@ -339,6 +393,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         view.setDisplayName("My Due Today");
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
     private static FacilioView getFireSafetyWOs() {
@@ -393,6 +453,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         allView.setName("all");
         allView.setDisplayName("All Workorders");
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
     private static FacilioView getAllResolvedWorkOrders() {
@@ -408,6 +474,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         resolvedTicketsView.setDisplayName("Resolved");
         resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved"));
         resolvedTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        resolvedTicketsView.setAppLinkNames(appLinkNames);
+
         return resolvedTicketsView;
     }
     private static FacilioView getAllClosedWorkOrders() {
@@ -423,8 +495,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("Closed Workorders");
         openTicketsView.setCriteria(getClosedTicketsCriteria());
         openTicketsView.setSortFields(sortFields);
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getReportView() {
@@ -472,6 +548,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         preOpenTicketsView.setCriteria(criteria);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         preOpenTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        preOpenTicketsView.setAppLinkNames(appLinkNames);
+
         return preOpenTicketsView;
     }
     private static FacilioView getUpcomingWorkOrdersNextWeek() {
@@ -495,6 +577,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         preOpenTicketsView.setCriteria(criteria);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         preOpenTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        preOpenTicketsView.setAppLinkNames(appLinkNames);
+
         return preOpenTicketsView;
     }
     private static FacilioView getVendorWorkOrders() {

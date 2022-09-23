@@ -132,6 +132,11 @@ public class SpaceModule extends BaseModuleConfig {
         allView.setDisplayName("All Spaces");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
