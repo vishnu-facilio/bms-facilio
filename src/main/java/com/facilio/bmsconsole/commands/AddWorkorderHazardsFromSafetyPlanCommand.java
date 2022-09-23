@@ -3,9 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
+import com.facilio.bmsconsole.context.SafetyPlanHazardContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkorderHazardContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,13 +25,17 @@ public class AddWorkorderHazardsFromSafetyPlanCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		V3WorkOrderContext workOrder = (V3WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		if(workOrder != null && workOrder.getSafetyPlan() != null && workOrder.getSafetyPlan().getId() > 0 && AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
-			List<V3SafetyPlanHazardContext> hazards = HazardsAPI.fetchAssociatedHazards(workOrder.getSafetyPlan().getId());
+		if(!AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)){
+			return false;
+		}
+
+		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		if(workOrder != null && workOrder.getSafetyPlan() != null && workOrder.getSafetyPlan().getId() > 0) {
+			List<SafetyPlanHazardContext> hazards = HazardsAPI.fetchAssociatedHazardsV2(workOrder.getSafetyPlan().getId());
 			if(CollectionUtils.isNotEmpty(hazards)) {
-				List<V3WorkorderHazardContext> woHazards = new ArrayList<V3WorkorderHazardContext>();
-				for(V3SafetyPlanHazardContext sfHazard : hazards) {
-					V3WorkorderHazardContext temp = new V3WorkorderHazardContext();
+				List<WorkorderHazardContext> woHazards = new ArrayList<>();
+				for(SafetyPlanHazardContext sfHazard : hazards) {
+					WorkorderHazardContext temp = new WorkorderHazardContext();
 					temp.setWorkorder(workOrder);
 					temp.setHazard(sfHazard.getHazard());
 					woHazards.add(temp);
