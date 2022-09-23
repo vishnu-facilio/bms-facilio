@@ -116,8 +116,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddMultiResourceModule
-  - com.facilio.bmsconsoleV3.signup.routes.AddRouteModules
-
 
   # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams
@@ -155,6 +153,9 @@ classes:
   #Adding Send Mail modules
   - com.facilio.mailtracking.signup.AddOutgoingMailLoggerModules
   - com.facilio.bmsconsoleV3.signup.serviceRequestModules.AddServiceRequestModules
+
+  # Route Modules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.RouteModule
 
   # WorkOrder Modules
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderModules
