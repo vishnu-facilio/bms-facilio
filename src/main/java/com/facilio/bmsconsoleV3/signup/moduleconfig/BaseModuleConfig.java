@@ -40,7 +40,7 @@ public abstract class BaseModuleConfig extends SignUpData {
         return moduleName;
     }
 
-    public FacilioModule getModule() throws Exception {
+    protected FacilioModule getModule() throws Exception {
         if (module == null) {
             if (StringUtils.isEmpty(moduleName)) {
                 throw new IllegalArgumentException("Module not found");
@@ -70,7 +70,7 @@ public abstract class BaseModuleConfig extends SignUpData {
     public void addViews(List<ApplicationContext> allApplications) throws Exception {
         List<Map<String, Object>> viewsAndGroups = getViewsAndGroups();
         if (CollectionUtils.isNotEmpty(viewsAndGroups)) {
-            AddModuleViewsAndGroups.addViews(getModuleName(), getModule(), viewsAndGroups, allApplications);
+            AddModuleViewsAndGroups.addViews(getModuleName(), viewsAndGroups, allApplications);
         }
     };
     protected void addMisc() throws Exception {};

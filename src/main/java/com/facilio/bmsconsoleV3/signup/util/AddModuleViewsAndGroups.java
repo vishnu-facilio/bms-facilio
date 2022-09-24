@@ -40,11 +40,12 @@ public class AddModuleViewsAndGroups {
         return groupId;
     }
 
-    public static void addViews(String moduleName, FacilioModule module, List<Map<String, Object>> groupVsViews, List<ApplicationContext> allApplications) throws Exception {
+    public static void addViews(String moduleName, List<Map<String, Object>> groupVsViews, List<ApplicationContext> allApplications) throws Exception {
         LOGGER.info("Started adding Views and Groups for module - " + moduleName);
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        long orgUserId = AccountUtil.getCurrentUser().getId();
+        long orgUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
 
         Map<String, ApplicationContext> allApplicationMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(allApplications)) {
