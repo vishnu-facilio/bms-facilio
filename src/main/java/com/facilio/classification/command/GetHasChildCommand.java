@@ -4,16 +4,14 @@ package com.facilio.classification.command;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.classification.context.ClassificationContext;
+import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -57,11 +55,10 @@ public class GetHasChildCommand  extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = FacilioConstants.ContextNames.CLASSIFICATION;
         FacilioModule module = modBean.getModule(moduleName);
-        List<FacilioField> field = new ArrayList<>();
-        field.add(FieldFactory.getField("parentClassification", "DISTINCT PARENT_CLASSIFICATION_ID", FieldType.NUMBER));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .select(field)
                 .table(module.getTableName())
+                .select(new ArrayList<>())
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.DISTINCT,modBean.getField("parentClassification",moduleName))
                 .andCondition(CriteriaAPI.getCondition(modBean.getField("parentClassification", moduleName), StringUtils.join(classificationIds, ","), NumberOperators.EQUALS));
         List<Map<String, Object>> maps = builder.get();
         return  maps;
