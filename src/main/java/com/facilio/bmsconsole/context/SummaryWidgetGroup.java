@@ -14,7 +14,7 @@ public class SummaryWidgetGroup {
     private String displayName;
     private long widgetId;
     private int sequenceNumber;
-    private long span;
+    private long columns;
     private String colorCode;
     private List<SummaryWidgetGroupFields> fields = new ArrayList<>();
 }

@@ -199,7 +199,7 @@ public class SummaryWidgetUtil {
     }
 
     public static void widgetGroupRowSpanValidator(SummaryWidgetGroup widgetGroup) throws Exception {
-        long widgetGroupSpan = widgetGroup.getSpan();
+        long widgetGroupSpan = widgetGroup.getColumns();
         Map<Long, List<SummaryWidgetGroupFields>> rowWiseFieldsMap = new HashMap<>();
         for (SummaryWidgetGroupFields widgetGroupField : widgetGroup.getFields()) {
             long rowIndex = widgetGroupField.getRowIndex();

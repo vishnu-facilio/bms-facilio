@@ -10998,7 +10998,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDisplayNameField(module));
         fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField("span", "SPAN", module, FieldType.NUMBER));
+        fields.add(getField("columns", "COLUMNS", module, FieldType.NUMBER));
         fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
         return fields;
     }
