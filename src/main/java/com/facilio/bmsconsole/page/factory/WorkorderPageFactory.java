@@ -319,7 +319,7 @@ public class WorkorderPageFactory extends PageFactory {
     }
 
     private static void addFailureReportTab(Page page){
-        Page.Tab failureReportTab = page.new Tab("Failure Reporting");
+        Page.Tab failureReportTab = page.new Tab("Failure Report");
         page.addTab(failureReportTab);
 
         Page.Section failureReportSection = page.new Section();
