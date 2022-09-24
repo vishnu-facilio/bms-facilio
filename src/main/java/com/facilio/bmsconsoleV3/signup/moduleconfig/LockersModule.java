@@ -79,6 +79,8 @@ public class LockersModule extends BaseModuleConfig{
         FormSection lockersFormSection = new FormSection("Default", 1, lockersFormFields, false);
         lockersFormSection.setSectionType(FormSection.SectionType.FIELDS);
         lockersForm.setSections(Collections.singletonList(lockersFormSection));
+        lockersForm.setIsSystemForm(true);
+        lockersForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm lockersPortalForm = new FacilioForm();
         lockersPortalForm.setDisplayName("NEW LOCKER");
@@ -97,6 +99,8 @@ public class LockersModule extends BaseModuleConfig{
         FormSection lockersPortalFormSection = new FormSection("Default", 1, lockersPortalFormFields, false);
         lockersPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         lockersPortalForm.setSections(Collections.singletonList(lockersPortalFormSection));
+        lockersPortalForm.setIsSystemForm(true);
+        lockersPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> lockersModuleForms = new ArrayList<>();
         lockersModuleForms.add(lockersForm);

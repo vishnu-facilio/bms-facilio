@@ -83,6 +83,8 @@ public class AudienceModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, audienceFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         audienceForm.setSections(Collections.singletonList(section));
+        audienceForm.setIsSystemForm(true);
+        audienceForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(audienceForm);
 

@@ -40,7 +40,7 @@ public abstract class BaseModuleConfig extends SignUpData {
         return moduleName;
     }
 
-    protected FacilioModule getModule() throws Exception {
+    public FacilioModule getModule() throws Exception {
         if (module == null) {
             if (StringUtils.isEmpty(moduleName)) {
                 throw new IllegalArgumentException("Module not found");

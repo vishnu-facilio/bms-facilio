@@ -45,6 +45,8 @@ public class LocationModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, locationFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         locationForm.setSections(Collections.singletonList(section));
+        locationForm.setIsSystemForm(true);
+        locationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(locationForm);
     }

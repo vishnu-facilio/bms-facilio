@@ -115,6 +115,8 @@ public class TenantContactModule extends BaseModuleConfig{
         FormSection tenantContactFormSection = new FormSection("Default", 1, tenantContactFormfields, false);
         tenantContactFormSection.setSectionType(FormSection.SectionType.FIELDS);
         tenantContactForm.setSections(Collections.singletonList(tenantContactFormSection));
+        tenantContactForm.setIsSystemForm(true);
+        tenantContactForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm tenantContactPortalForm = new FacilioForm();
         tenantContactPortalForm.setDisplayName("NEW TENANT CONTACT");
@@ -133,6 +135,8 @@ public class TenantContactModule extends BaseModuleConfig{
         FormSection tenantContactPortalFormSection = new FormSection("Default", 1, tenantContactPortalFormFields, false);
         tenantContactPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         tenantContactPortalForm.setSections(Collections.singletonList(tenantContactPortalFormSection));
+        tenantContactPortalForm.setIsSystemForm(true);
+        tenantContactPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> tenantContactModuleForms = new ArrayList<>();
         tenantContactModuleForms.add(tenantContactForm);

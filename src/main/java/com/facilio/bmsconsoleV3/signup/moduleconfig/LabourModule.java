@@ -47,6 +47,8 @@ public class LabourModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, labourFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         labourForm.setSections(Collections.singletonList(section));
+        labourForm.setIsSystemForm(true);
+        labourForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(labourForm);
     }

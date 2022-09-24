@@ -91,6 +91,8 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, newsAndInformationFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         newsAndInformationForm.setSections(Collections.singletonList(section));
+        newsAndInformationForm.setIsSystemForm(true);
+        newsAndInformationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(newsAndInformationForm);
     }

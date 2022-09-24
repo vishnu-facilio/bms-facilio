@@ -42,6 +42,8 @@ public class OccupantModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, occupantFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         occupantForm.setSections(Collections.singletonList(section));
+        occupantForm.setIsSystemForm(true);
+        occupantForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(occupantForm);
     }

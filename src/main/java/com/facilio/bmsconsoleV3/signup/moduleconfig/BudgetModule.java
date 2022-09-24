@@ -100,6 +100,8 @@ public class BudgetModule extends BaseModuleConfig{
         budgetFormSections.add(budgetAmountSection);
 
         budgetForm.setSections(budgetFormSections);
+        budgetForm.setIsSystemForm(true);
+        budgetForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(budgetForm);
 

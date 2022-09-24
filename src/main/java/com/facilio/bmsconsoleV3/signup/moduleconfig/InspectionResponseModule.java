@@ -94,6 +94,8 @@ public class InspectionResponseModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, inspectionFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         inspectionForm.setSections(Collections.singletonList(section));
+        inspectionForm.setIsSystemForm(true);
+        inspectionForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(inspectionForm);
     }

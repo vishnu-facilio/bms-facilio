@@ -120,6 +120,8 @@ public class QuoteModule extends BaseModuleConfig{
         sections.add(notesSection);
 
         quotationForm.setSections(sections);
+        quotationForm.setIsSystemForm(true);
+        quotationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(quotationForm);
     }

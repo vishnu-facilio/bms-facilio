@@ -94,6 +94,8 @@ public class StoreRoomModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, storeRoomFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         storeRoomForm.setSections(Collections.singletonList(section));
+        storeRoomForm.setIsSystemForm(true);
+        storeRoomForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(storeRoomForm);
     }

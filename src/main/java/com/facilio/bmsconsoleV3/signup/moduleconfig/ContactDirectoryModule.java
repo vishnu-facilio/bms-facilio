@@ -89,6 +89,8 @@ public class ContactDirectoryModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, contactDirectoryFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         contactDirectoryForm.setSections(Collections.singletonList(Section));
+        contactDirectoryForm.setIsSystemForm(true);
+        contactDirectoryForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(contactDirectoryForm);
     }

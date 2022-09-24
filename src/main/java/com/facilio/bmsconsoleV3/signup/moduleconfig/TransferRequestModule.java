@@ -90,7 +90,6 @@ public class TransferRequestModule extends BaseModuleConfig{
         transferRequestFormFields.addAll(transferRequestFormDefaultFields);
         transferRequestFormFields.addAll(lineItemFields);
 
-//        transferRequestForm.setFields(transferRequestFormFields);
 
         FormSection defaultSection = new FormSection("Inventory Request", 1, transferRequestFormDefaultFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -103,6 +102,8 @@ public class TransferRequestModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         transferRequestForm.setSections(sections);
+        transferRequestForm.setIsSystemForm(true);
+        transferRequestForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(transferRequestForm);
     }

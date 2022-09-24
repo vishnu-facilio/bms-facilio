@@ -82,6 +82,8 @@ public class MovesModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, movesFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         movesForm.setSections(Collections.singletonList(section));
+        movesForm.setIsSystemForm(true);
+        movesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(movesForm);
     }

@@ -72,6 +72,8 @@ public class ClientModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, clientFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         clientForm.setSections(Collections.singletonList(Section));
+        clientForm.setIsSystemForm(true);
+        clientForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(clientForm);
     }

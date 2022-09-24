@@ -88,6 +88,8 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, adminDocumentsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         adminDocumentsForm.setSections(Collections.singletonList(section));
+        adminDocumentsForm.setIsSystemForm(true);
+        adminDocumentsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(adminDocumentsForm);
     }

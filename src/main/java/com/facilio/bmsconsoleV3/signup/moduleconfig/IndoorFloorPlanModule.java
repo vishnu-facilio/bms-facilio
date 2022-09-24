@@ -45,6 +45,8 @@ public class IndoorFloorPlanModule extends BaseModuleConfig{
         FormSection floorPlanAddFormSection = new FormSection("Default", 1, floorPlanAddFormFields, false);
         floorPlanAddFormSection.setSectionType(FormSection.SectionType.FIELDS);
         floorPlanAddForm.setSections(Collections.singletonList(floorPlanAddFormSection));
+        floorPlanAddForm.setIsSystemForm(true);
+        floorPlanAddForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm workPlaceFloorPlanAddForm = new FacilioForm();
         workPlaceFloorPlanAddForm.setDisplayName("CREATE FLOORPLAN");
@@ -65,6 +67,8 @@ public class IndoorFloorPlanModule extends BaseModuleConfig{
         FormSection workPlaceFloorPlanAddFormSection = new FormSection("Default", 1, workPlaceFloorPlanAddFormFields, false);
         workPlaceFloorPlanAddFormSection.setSectionType(FormSection.SectionType.FIELDS);
         workPlaceFloorPlanAddForm.setSections(Collections.singletonList(workPlaceFloorPlanAddFormSection));
+        workPlaceFloorPlanAddForm.setIsSystemForm(true);
+        workPlaceFloorPlanAddForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> indoorFloorPlanModuleForms = new ArrayList<>();
         indoorFloorPlanModuleForms.add(floorPlanAddForm);

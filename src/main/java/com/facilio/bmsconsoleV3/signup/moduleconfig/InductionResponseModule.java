@@ -92,6 +92,8 @@ public class InductionResponseModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, inductionFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         inductionForm.setSections(Collections.singletonList(section));
+        inductionForm.setIsSystemForm(true);
+        inductionForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(inductionForm);
     }

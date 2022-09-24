@@ -99,6 +99,8 @@ public class ItemTypesModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, itemTypesFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         itemTypesForm.setSections(Collections.singletonList(section));
+        itemTypesForm.setIsSystemForm(true);
+        itemTypesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(itemTypesForm);
     }

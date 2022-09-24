@@ -43,6 +43,8 @@ public class DevicesModule extends BaseModuleConfig{
         FormSection devicesModuleFormSection = new FormSection("Default", 1, devicesModuleFormFields, false);
         devicesModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
         devicesModuleForm.setSections(Collections.singletonList(devicesModuleFormSection));
+        devicesModuleForm.setIsSystemForm(true);
+        devicesModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(devicesModuleForm);
     }

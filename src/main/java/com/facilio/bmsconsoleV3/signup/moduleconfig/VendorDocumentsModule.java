@@ -83,6 +83,8 @@ public class VendorDocumentsModule extends BaseModuleConfig{
         FormSection vendorDocumentFormSection = new FormSection("Default", 1, vendorDocumentFormFields, false);
         vendorDocumentFormSection.setSectionType(FormSection.SectionType.FIELDS);
         vendorDocumentForm.setSections(Collections.singletonList(vendorDocumentFormSection));
+        vendorDocumentForm.setIsSystemForm(true);
+        vendorDocumentForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm portalVendorDocumentForm = new FacilioForm();
         portalVendorDocumentForm.setDisplayName("Vendor Document");
@@ -101,6 +103,8 @@ public class VendorDocumentsModule extends BaseModuleConfig{
         FormSection portalVendorDocumentFormSection = new FormSection("Default", 1, portalVendorDocumentFormFields, false);
         portalVendorDocumentFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVendorDocumentForm.setSections(Collections.singletonList(portalVendorDocumentFormSection));
+        portalVendorDocumentForm.setIsSystemForm(true);
+        portalVendorDocumentForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> vendorDocumentForms = new ArrayList<>();
         vendorDocumentForms.add(vendorDocumentForm);

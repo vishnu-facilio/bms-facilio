@@ -125,11 +125,12 @@ public class WatchlistModule extends BaseModuleConfig{
         watchListFormFields.add(new FormField("isBlocked", FacilioField.FieldDisplayType.DECISION_BOX, "Blocked Entry", FormField.Required.OPTIONAL, 7, 2));
         watchListFormFields.add(new FormField("isVip", FacilioField.FieldDisplayType.DECISION_BOX, "VIP", FormField.Required.OPTIONAL, 8, 3));
         watchListFormFields.add(new FormField("remarks", FacilioField.FieldDisplayType.LONG_DESC, "Remarks", FormField.Required.OPTIONAL, 9, 2));
-//        watchListForm.setFields(watchListFormFields);
 
         FormSection section = new FormSection("Default", 1, watchListFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         watchListForm.setSections(Collections.singletonList(section));
+        watchListForm.setIsSystemForm(true);
+        watchListForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(watchListForm);
     }

@@ -85,11 +85,12 @@ public class VendorsModule extends BaseModuleConfig{
         vendorsFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact E-mail", FormField.Required.OPTIONAL, 5, 1));
         vendorsFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Phone", FormField.Required.REQUIRED, 6, 1));
         vendorsFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 7, 1));
-//        vendorsForm.setFields(vendorsFormFields);
 
         FormSection vendorsFormSection = new FormSection("Default", 1, vendorsFormFields, false);
         vendorsFormSection.setSectionType(FormSection.SectionType.FIELDS);
         vendorsForm.setSections(Collections.singletonList(vendorsFormSection));
+        vendorsForm.setIsSystemForm(true);
+        vendorsForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm vendorContactForm = new FacilioForm();
         vendorContactForm.setDisplayName("NEW VENDOR");
@@ -108,11 +109,12 @@ public class VendorsModule extends BaseModuleConfig{
         vendorContactFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 7, 1));
         vendorContactFormFields.add(new FormField("registeredBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Registered By", FormField.Required.OPTIONAL, "requester",8, 1));
         vendorContactFormFields.add(new FormField("vendorContacts", FacilioField.FieldDisplayType.VENDOR_CONTACTS, "Contacts", FormField.Required.OPTIONAL, 9, 1));
-//        vendorContactForm.setFields(vendorContactFormFields);
 
         FormSection vendorContactFormSection = new FormSection("Default", 1, vendorContactFormFields, false);
         vendorContactFormSection.setSectionType(FormSection.SectionType.FIELDS);
         vendorContactForm.setSections(Collections.singletonList(vendorContactFormSection));
+        vendorContactForm.setIsSystemForm(true);
+        vendorContactForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm portalVendorForm = new FacilioForm();
         portalVendorForm.setDisplayName("NEW VENDOR");
@@ -129,11 +131,13 @@ public class VendorsModule extends BaseModuleConfig{
         portalVendorFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Contact E-mail", FormField.Required.REQUIRED, 5, 1));
         portalVendorFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Contact Phone", FormField.Required.REQUIRED, 6, 1));
         portalVendorFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 7, 1));
-//        portalVendorForm.setFields(portalVendorFormFields);
+
 
         FormSection portalVendorFormSection = new FormSection("Default", 1, portalVendorFormFields, false);
         portalVendorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVendorForm.setSections(Collections.singletonList(portalVendorFormSection));
+        portalVendorForm.setIsSystemForm(true);
+        portalVendorForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> vendorsModuleForms = new ArrayList<>();
         vendorsModuleForms.add(vendorsForm);

@@ -161,6 +161,8 @@ public class RentalLeaseContractsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, rentalLeaseContractsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         rentalLeaseContractsForm.setSections(Collections.singletonList(section));
+        rentalLeaseContractsForm.setIsSystemForm(true);
+        rentalLeaseContractsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(rentalLeaseContractsForm);
     }

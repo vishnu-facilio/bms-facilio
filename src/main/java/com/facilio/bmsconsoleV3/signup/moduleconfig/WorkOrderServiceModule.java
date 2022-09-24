@@ -85,6 +85,8 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         FormSection workOrderServiceModuleFormSection = new FormSection("Default", 1, workOrderServiceModuleFormFields, false);
         workOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
         workOrderServiceModuleForm.setSections(Collections.singletonList(workOrderServiceModuleFormSection));
+        workOrderServiceModuleForm.setIsSystemForm(true);
+        workOrderServiceModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workOrderServiceModuleForm);
 

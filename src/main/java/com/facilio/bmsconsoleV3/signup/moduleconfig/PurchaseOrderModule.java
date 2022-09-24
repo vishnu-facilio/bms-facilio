@@ -118,6 +118,8 @@ public class PurchaseOrderModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         purchaseOrderForm.setSections(sections);
+        purchaseOrderForm.setIsSystemForm(true);
+        purchaseOrderForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(purchaseOrderForm);
     }

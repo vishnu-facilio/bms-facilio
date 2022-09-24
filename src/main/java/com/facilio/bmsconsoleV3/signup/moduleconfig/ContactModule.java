@@ -121,14 +121,16 @@ public class ContactModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, contactFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         contactForm.setSections(Collections.singletonList(Section));
+        contactForm.setIsSystemForm(true);
+        contactForm.setType(FacilioForm.Type.FORM);
 
 
-        FacilioForm portalContactFormForm = new FacilioForm();
-        portalContactFormForm.setDisplayName("CONTACT");
-        portalContactFormForm.setName("default_contact_portal");
-        portalContactFormForm.setModule(contactModule);
-        portalContactFormForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        portalContactFormForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+        FacilioForm portalContactForm = new FacilioForm();
+        portalContactForm.setDisplayName("CONTACT");
+        portalContactForm.setName("default_contact_portal");
+        portalContactForm.setModule(contactModule);
+        portalContactForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        portalContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
         List<FormField> portalContactFormFields = new ArrayList<>();
         portalContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
@@ -142,11 +144,13 @@ public class ContactModule extends BaseModuleConfig{
 
         FormSection portalFormSection = new FormSection("Default", 1, portalContactFormFields, false);
         portalFormSection.setSectionType(FormSection.SectionType.FIELDS);
-        portalContactFormForm.setSections(Collections.singletonList(portalFormSection));
+        portalContactForm.setSections(Collections.singletonList(portalFormSection));
+        portalContactForm.setIsSystemForm(true);
+        portalContactForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> contactModuleForms = new ArrayList<>();
         contactModuleForms.add(contactForm);
-        contactModuleForms.add(portalContactFormForm);
+        contactModuleForms.add(portalContactForm);
 
         return contactModuleForms;
     }

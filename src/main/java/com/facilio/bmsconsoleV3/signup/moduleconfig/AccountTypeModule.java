@@ -78,6 +78,8 @@ public class AccountTypeModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, accountTypeFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         accountTypeForm.setSections(Collections.singletonList(section));
+        accountTypeForm.setIsSystemForm(true);
+        accountTypeForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(accountTypeForm);
     }

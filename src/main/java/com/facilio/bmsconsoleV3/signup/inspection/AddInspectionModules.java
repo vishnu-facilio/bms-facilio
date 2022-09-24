@@ -354,6 +354,8 @@ public class AddInspectionModules extends BaseModuleConfig {
       sections.add(configSection);
       
       defaultForm.setSections(sections);
+	  defaultForm.setType(FacilioForm.Type.FORM);
+	  defaultForm.setIsSystemForm(true);
       FormsAPI.createForm(defaultForm, inspection);
       
       Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
@@ -550,6 +552,8 @@ public class AddInspectionModules extends BaseModuleConfig {
 		configSection.setSequenceNumber(2);
 		sections.add(configSection);
 		defaultForm.setSections(sections);
+		defaultForm.setType(FacilioForm.Type.FORM);
+		defaultForm.setIsSystemForm(true);
 		FormsAPI.createForm(defaultForm, inspection);
 		Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
 		addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);

@@ -81,6 +81,8 @@ public class InventoryCategoryModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, inventoryCategoryFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         inventoryCategoryForm.setSections(Collections.singletonList(section));
+        inventoryCategoryForm.setIsSystemForm(true);
+        inventoryCategoryForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(inventoryCategoryForm);
     }

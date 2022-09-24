@@ -65,6 +65,8 @@ public class PrecautionModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, precautionFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         precautionForm.setSections(Collections.singletonList(section));
+        precautionForm.setIsSystemForm(true);
+        precautionForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(precautionForm);
     }

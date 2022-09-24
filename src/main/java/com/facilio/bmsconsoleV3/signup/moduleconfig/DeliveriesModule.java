@@ -89,6 +89,8 @@ public class DeliveriesModule extends BaseModuleConfig{
         FormSection deliveriesFormSection = new FormSection("Default", 1, deliveriesFormFields, false);
         deliveriesFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveriesForm.setSections(Collections.singletonList(deliveriesFormSection));
+        deliveriesForm.setIsSystemForm(true);
+        deliveriesForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm deliveriesPortalForm = new FacilioForm();
@@ -114,6 +116,8 @@ public class DeliveriesModule extends BaseModuleConfig{
         FormSection deliveriesPortalFormSection = new FormSection("Default", 1, deliveriesPortalFormFields, false);
         deliveriesPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveriesPortalForm.setSections(Collections.singletonList(deliveriesPortalFormSection));
+        deliveriesPortalForm.setIsSystemForm(true);
+        deliveriesPortalForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm scanForDeliveriesForm = new FacilioForm();
@@ -142,6 +146,8 @@ public class DeliveriesModule extends BaseModuleConfig{
         FormSection scanForDeliveriesFormSection = new FormSection("Default", 1, scanForDeliveriesFormFields, false);
         scanForDeliveriesFormSection.setSectionType(FormSection.SectionType.FIELDS);
         scanForDeliveriesForm.setSections(Collections.singletonList(scanForDeliveriesFormSection));
+        scanForDeliveriesForm.setIsSystemForm(true);
+        scanForDeliveriesForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> deliveriesModuleForms = new ArrayList<>();
         deliveriesModuleForms.add(deliveriesForm);

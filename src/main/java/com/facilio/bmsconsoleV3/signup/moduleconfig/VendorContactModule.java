@@ -108,6 +108,8 @@ public class VendorContactModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, newVendorContactFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         newVendorContactForm.setSections(Collections.singletonList(section));
+        newVendorContactForm.setIsSystemForm(true);
+        newVendorContactForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(newVendorContactForm);
     }

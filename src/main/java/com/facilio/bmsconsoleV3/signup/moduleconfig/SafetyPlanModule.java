@@ -67,6 +67,8 @@ public class SafetyPlanModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, safetyPlanFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         safetyPlanForm.setSections(Collections.singletonList(section));
+        safetyPlanForm.setIsSystemForm(true);
+        safetyPlanForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(safetyPlanForm);
     }

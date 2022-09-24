@@ -176,6 +176,8 @@ public class SpaceModule extends BaseModuleConfig {
         FormSection defaultSpaceWebSiteFormSection = new FormSection("Default", 1, defaultSpaceWebSiteFormFields, false);
         defaultSpaceWebSiteFormSection.setSectionType(FormSection.SectionType.FIELDS);
         defaultSpaceWebSiteForm.setSections(Collections.singletonList(defaultSpaceWebSiteFormSection));
+        defaultSpaceWebSiteForm.setIsSystemForm(true);
+        defaultSpaceWebSiteForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm defaultSpaceWebBuildingForm = new FacilioForm();
@@ -209,6 +211,9 @@ public class SpaceModule extends BaseModuleConfig {
         FormSection defaultSpaceWebBuildingFormSection = new FormSection("Default", 1, defaultSpaceWebBuildingFormFields, false);
         defaultSpaceWebBuildingFormSection.setSectionType(FormSection.SectionType.FIELDS);
         defaultSpaceWebBuildingForm.setSections(Collections.singletonList(defaultSpaceWebBuildingFormSection));
+        defaultSpaceWebBuildingForm.setIsSystemForm(true);
+        defaultSpaceWebBuildingForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm defaultSpaceWebFloorForm = new FacilioForm();
         defaultSpaceWebFloorForm.setName("default_space_web_floor");
@@ -240,6 +245,8 @@ public class SpaceModule extends BaseModuleConfig {
         FormSection defaultSpaceWebFloorFormSection = new FormSection("Default", 1, defaultSpaceWebFloorFormFields, false);
         defaultSpaceWebFloorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         defaultSpaceWebFloorForm.setSections(Collections.singletonList(defaultSpaceWebFloorFormSection));
+        defaultSpaceWebFloorForm.setIsSystemForm(true);
+        defaultSpaceWebFloorForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm defaultSpaceWebSpaceForm = new FacilioForm();
         defaultSpaceWebSpaceForm.setName("default_space_web_space");
@@ -272,6 +279,8 @@ public class SpaceModule extends BaseModuleConfig {
         FormSection defaultSpaceWebSpaceFormSection = new FormSection("Default", 1, defaultSpaceWebSpaceFormFields, false);
         defaultSpaceWebSpaceFormSection.setSectionType(FormSection.SectionType.FIELDS);
         defaultSpaceWebSpaceForm.setSections(Collections.singletonList(defaultSpaceWebSpaceFormSection));
+        defaultSpaceWebSpaceForm.setIsSystemForm(true);
+        defaultSpaceWebSpaceForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> spaceModuleForms = new ArrayList<>();
         spaceModuleForms.add(defaultSpaceWebSiteForm);

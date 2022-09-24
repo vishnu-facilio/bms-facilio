@@ -131,6 +131,8 @@ public class BuildingModule extends BaseModuleConfig {
         FormSection Section = new FormSection("Default", 1, defaultBuildingFormfields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         defaultBuildingForm.setSections(Collections.singletonList(Section));
+        defaultBuildingForm.setIsSystemForm(true);
+        defaultBuildingForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultBuildingForm);
     }

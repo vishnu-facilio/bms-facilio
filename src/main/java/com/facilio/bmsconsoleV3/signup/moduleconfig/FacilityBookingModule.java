@@ -69,7 +69,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilityBookingForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
         facilityBookingForm.setModule(facilityBookingModule);
         facilityBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        facilityBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        facilityBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         List<FormField> facilityBookingFormDefaultFields = new ArrayList<>();
         facilityBookingFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));
@@ -103,6 +103,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections.add(attendeeSection);
 
         facilityBookingForm.setSections(sections);
+        facilityBookingForm.setIsSystemForm(true);
+        facilityBookingForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm facilityBookingPortalForm = new FacilioForm();
         facilityBookingPortalForm.setDisplayName("Booking");
@@ -144,6 +146,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections1.add(attendeeSection1);
 
         facilityBookingPortalForm.setSections(sections1);
+        facilityBookingPortalForm.setIsSystemForm(true);
+        facilityBookingPortalForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm facilityHotDeskBookingForm = new FacilioForm();
@@ -151,7 +155,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilityHotDeskBookingForm.setName("hot_desk_"+ FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
         facilityHotDeskBookingForm.setModule(facilityBookingModule);
         facilityHotDeskBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        facilityHotDeskBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        facilityHotDeskBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         List<FormField> facilityHotDeskBookingFormDefaultFields = new ArrayList<>();
         facilityHotDeskBookingFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));
@@ -177,6 +181,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections2.add(timeSlotSection2);
 
         facilityHotDeskBookingForm.setSections(sections2);
+        facilityHotDeskBookingForm.setIsSystemForm(true);
+        facilityHotDeskBookingForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm facilitySpaceBookingForm = new FacilioForm();
@@ -184,7 +190,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilitySpaceBookingForm.setName("Space_"+ FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
         facilitySpaceBookingForm.setModule(facilityBookingModule);
         facilitySpaceBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        facilitySpaceBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        facilitySpaceBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         List<FormField> facilitySpaceBookingFormDefaultFields = new ArrayList<>();
         facilitySpaceBookingFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));
@@ -218,6 +224,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections3.add(attendeeSection3);
 
         facilitySpaceBookingForm.setSections(sections3);
+        facilitySpaceBookingForm.setIsSystemForm(true);
+        facilitySpaceBookingForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm facilityHotDeskBookingPortalForm = new FacilioForm();
         facilityHotDeskBookingPortalForm.setDisplayName("Hot Desk Booking");
@@ -249,6 +257,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections4.add(timeSlotSection4);
 
         facilityHotDeskBookingPortalForm.setSections(sections4);
+        facilityHotDeskBookingPortalForm.setIsSystemForm(true);
+        facilityHotDeskBookingPortalForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm facilitySpaceBookingPortalForm = new FacilioForm();
@@ -290,6 +300,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections5.add(attendeeSection5);
 
         facilitySpaceBookingPortalForm.setSections(sections5);
+        facilitySpaceBookingPortalForm.setIsSystemForm(true);
+        facilitySpaceBookingPortalForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm parkingBookingForm = new FacilioForm();
@@ -297,7 +309,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         parkingBookingForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.PARKING_BOOKING +"_web");
         parkingBookingForm.setModule(facilityBookingModule);
         parkingBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        parkingBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        parkingBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         List<FormField> parkingBookingFormDefaultFields = new ArrayList<>();
         parkingBookingFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));
@@ -322,6 +334,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections6.add(timeSlotSection6);
 
         parkingBookingForm.setSections(sections6);
+        parkingBookingForm.setIsSystemForm(true);
+        parkingBookingForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm parkingBookingPortalForm = new FacilioForm();
         parkingBookingPortalForm.setDisplayName("Parking Booking");
@@ -354,6 +368,8 @@ public class FacilityBookingModule extends BaseModuleConfig{
         sections7.add(timeSlotSection7);
 
         parkingBookingPortalForm.setSections(sections7);
+        parkingBookingPortalForm.setIsSystemForm(true);
+        parkingBookingPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> facilityBookingModuleForms = new ArrayList<>();
         facilityBookingModuleForms.add(facilityBookingForm);

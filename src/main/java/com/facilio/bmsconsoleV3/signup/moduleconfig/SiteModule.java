@@ -186,6 +186,8 @@ public class SiteModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, defaultSiteFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         defaultSiteForm.setSections(Collections.singletonList(section));
+        defaultSiteForm.setIsSystemForm(true);
+        defaultSiteForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultSiteForm);
     }

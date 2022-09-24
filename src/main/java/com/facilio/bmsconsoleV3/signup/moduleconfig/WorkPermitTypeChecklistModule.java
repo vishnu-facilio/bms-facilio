@@ -40,6 +40,8 @@ public class WorkPermitTypeChecklistModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, workPermitTypeChecklistFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         workPermitTypeChecklistForm.setSections(Collections.singletonList(section));
+        workPermitTypeChecklistForm.setIsSystemForm(true);
+        workPermitTypeChecklistForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workPermitTypeChecklistForm);
     }

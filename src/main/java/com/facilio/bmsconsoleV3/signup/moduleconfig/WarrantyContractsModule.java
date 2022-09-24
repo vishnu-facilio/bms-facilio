@@ -52,6 +52,8 @@ public class WarrantyContractsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, warrantyContractFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         warrantyContractForm.setSections(Collections.singletonList(section));
+        warrantyContractForm.setIsSystemForm(true);
+        warrantyContractForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(warrantyContractForm);
     }

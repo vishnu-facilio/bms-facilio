@@ -279,6 +279,8 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         requestForQuotationModuleForm.setSections(sections);
+        requestForQuotationModuleForm.setIsSystemForm(true);
+        requestForQuotationModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(requestForQuotationModuleForm);
     }

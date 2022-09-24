@@ -117,6 +117,8 @@ public class FacilityModule extends BaseModuleConfig{
         sections.add(checklistSection);
 
         facilityCreationForm.setSections(sections);
+        facilityCreationForm.setIsSystemForm(true);
+        facilityCreationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(facilityCreationForm);
     }

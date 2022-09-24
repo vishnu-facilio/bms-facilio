@@ -80,6 +80,8 @@ public class AmenityModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1,amenityFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         amenityForm.setSections(Collections.singletonList(section));
+        amenityForm.setIsSystemForm(true);
+        amenityForm.setType(FacilioForm.Type.FORM);
 
         return  Collections.singletonList(amenityForm);
     }

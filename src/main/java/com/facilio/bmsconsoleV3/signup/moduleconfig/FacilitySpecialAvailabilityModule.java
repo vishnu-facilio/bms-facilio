@@ -46,6 +46,8 @@ public class FacilitySpecialAvailabilityModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, facilitySpecialAvailabilityFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         facilitySpecialAvailabilityForm.setSections(Collections.singletonList(section));
+        facilitySpecialAvailabilityForm.setIsSystemForm(true);
+        facilitySpecialAvailabilityForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(facilitySpecialAvailabilityForm);
     }

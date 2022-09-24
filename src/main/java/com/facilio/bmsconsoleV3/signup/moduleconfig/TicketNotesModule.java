@@ -57,6 +57,8 @@ public class TicketNotesModule extends BaseModuleConfig {
         sections.add(configSection);
 
         ticketNotesForm.setSections(sections);
+        ticketNotesForm.setIsSystemForm(true);
+        ticketNotesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(ticketNotesForm);
     }

@@ -83,6 +83,8 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, chartOfAccountFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         chartOfAccountForm.setSections(Collections.singletonList(Section));
+        chartOfAccountForm.setIsSystemForm(true);
+        chartOfAccountForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(chartOfAccountForm);
     }

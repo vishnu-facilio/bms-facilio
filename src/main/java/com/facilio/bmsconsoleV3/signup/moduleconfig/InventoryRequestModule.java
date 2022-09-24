@@ -150,6 +150,8 @@ public class InventoryRequestModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         inventoryRequestModuleForm.setSections(sections);
+        inventoryRequestModuleForm.setIsSystemForm(true);
+        inventoryRequestModuleForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm inventoryRequestWorkOrderForm = new FacilioForm();
         inventoryRequestWorkOrderForm.setDisplayName("INVENTORY REQUEST");
@@ -188,6 +190,8 @@ public class InventoryRequestModule extends BaseModuleConfig{
         sections1.add(lineItemSection1);
 
         inventoryRequestWorkOrderForm.setSections(sections1);
+        inventoryRequestWorkOrderForm.setIsSystemForm(true);
+        inventoryRequestWorkOrderForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> inventoryRequestModuleForms = new ArrayList<>();
         inventoryRequestModuleForms.add(inventoryRequestModuleForm);

@@ -72,6 +72,8 @@ public class VisitorModule extends BaseModuleConfig{
         FormSection visitorKioskFormSection = new FormSection("Default", 1, visitorKioskFormFields, false);
         visitorKioskFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorKioskForm.setSections(Collections.singletonList(visitorKioskFormSection));
+        visitorKioskForm.setIsSystemForm(true);
+        visitorKioskForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm visitorForm = new FacilioForm();
         visitorForm.setDisplayName("VISITOR");
@@ -90,6 +92,9 @@ public class VisitorModule extends BaseModuleConfig{
         FormSection visitorFormSection = new FormSection("Default", 1, visitorFormFields, false);
         visitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorForm.setSections(Collections.singletonList(visitorFormSection));
+        visitorForm.setIsSystemForm(true);
+        visitorForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm portalVisitorForm = new FacilioForm();
         portalVisitorForm.setDisplayName("VISITOR");
@@ -108,6 +113,9 @@ public class VisitorModule extends BaseModuleConfig{
         FormSection portalVisitorFormSection = new FormSection("Default", 1, portalVisitorFormFields, false);
         portalVisitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVisitorForm.setSections(Collections.singletonList(portalVisitorFormSection));
+        portalVisitorForm.setIsSystemForm(true);
+        portalVisitorForm.setType(FacilioForm.Type.FORM);
+
 
         List<FacilioForm> visitorModuleForms = new ArrayList<>();
         visitorModuleForms.add(visitorKioskForm);

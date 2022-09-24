@@ -162,6 +162,8 @@ public class LabourContractsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, labourContractsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         labourContractsForm.setSections(Collections.singletonList(section));
+        labourContractsForm.setIsSystemForm(true);
+        labourContractsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(labourContractsForm);
     }

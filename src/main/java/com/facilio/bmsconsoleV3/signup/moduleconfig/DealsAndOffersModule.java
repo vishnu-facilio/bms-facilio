@@ -93,6 +93,8 @@ public class DealsAndOffersModule extends BaseModuleConfig{
         FormSection dealsAndOffersFormSection = new FormSection("Default", 1, dealsAndOffersFormFields, false);
         dealsAndOffersFormSection.setSectionType(FormSection.SectionType.FIELDS);
         dealsAndOffersForm.setSections(Collections.singletonList(dealsAndOffersFormSection));
+        dealsAndOffersForm.setIsSystemForm(true);
+        dealsAndOffersForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm dealsAndOffersPortalForm = new FacilioForm();
         dealsAndOffersPortalForm.setDisplayName("Deals and Offers");
@@ -117,6 +119,8 @@ public class DealsAndOffersModule extends BaseModuleConfig{
         FormSection dealsAndOffersPortalFormSection = new FormSection("Default", 1, dealsAndOffersPortalFormFields, false);
         dealsAndOffersPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         dealsAndOffersPortalForm.setSections(Collections.singletonList(dealsAndOffersPortalFormSection));
+        dealsAndOffersPortalForm.setIsSystemForm(true);
+        dealsAndOffersPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> dealsAndOffersModuleForms = new ArrayList<>();
         dealsAndOffersModuleForms.add(dealsAndOffersForm);

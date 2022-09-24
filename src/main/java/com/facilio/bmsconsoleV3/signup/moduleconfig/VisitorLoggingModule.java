@@ -445,11 +445,12 @@ public class VisitorLoggingModule extends BaseModuleConfig{
         portalVisitorPreRegisterFormFields.add(new FormField("expectedCheckInTime", FacilioField.FieldDisplayType.DATETIME, "Expected Check-in Time", FormField.Required.OPTIONAL, 6, 1));
         portalVisitorPreRegisterFormFields.add(new FormField("expectedCheckOutTime", FacilioField.FieldDisplayType.DATETIME, "Expected Check-out Time", FormField.Required.OPTIONAL, 7, 1));
         portalVisitorPreRegisterFormFields.add(new FormField("purposeOfVisit", FacilioField.FieldDisplayType.SELECTBOX, "Purpose of Visit", FormField.Required.OPTIONAL, 8, 1));
-//        portalVisitorPreRegisterForm.setFields(portalVisitorPreRegisterFormFields);
 
         FormSection portalVisitorPreRegisterFormSection = new FormSection("Default", 1, portalVisitorPreRegisterFormFields, false);
         portalVisitorPreRegisterFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVisitorPreRegisterForm.setSections(Collections.singletonList(portalVisitorPreRegisterFormSection));
+        portalVisitorPreRegisterForm.setIsSystemForm(true);
+        portalVisitorPreRegisterForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm visitorLogForm = new FacilioForm();
         visitorLogForm.setDisplayName("VISITS");
@@ -462,11 +463,13 @@ public class VisitorLoggingModule extends BaseModuleConfig{
         visitorLogFormFields.add(new FormField("visitor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Visitor", FormField.Required.REQUIRED, "visitor", 1, 1).setAllowCreateOptions(true).setCreateFormName("visitorForm"));
         visitorLogFormFields.add(new FormField("host", FacilioField.FieldDisplayType.USER, "Host", FormField.Required.OPTIONAL, "host", 2, 2));
         visitorLogFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", FormField.Required.OPTIONAL, 5, 3));
-//        visitorLogForm.setFields(visitorLogFormFields);
 
         FormSection visitorLogFormSection = new FormSection("Default", 1, visitorLogFormFields, false);
         visitorLogFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorLogForm.setSections(Collections.singletonList(visitorLogFormSection));
+        visitorLogForm.setIsSystemForm(true);
+        visitorLogForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm guestForm = new FacilioForm();
         guestForm.setDisplayName("Guest form for Vistor module");
@@ -480,11 +483,12 @@ public class VisitorLoggingModule extends BaseModuleConfig{
         guestFormFields.add(new FormField("purposeOfVisit", FacilioField.FieldDisplayType.SELECTBOX,"What is the purpose of visit", FormField.Required.OPTIONAL,1,1).setAllowCreateOptions(true));
         guestFormFields.add(new FormField("visitor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Visitor", FormField.Required.OPTIONAL, "visitor", 1, 1));
         guestFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
-//        guestForm.setFields(guestFormFields);
 
         FormSection guestFormSection = new FormSection("Default", 1, guestFormFields, false);
         guestFormSection.setSectionType(FormSection.SectionType.FIELDS);
         guestForm.setSections(Collections.singletonList(guestFormSection));
+        guestForm.setIsSystemForm(true);
+        guestForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm vendorForm = new FacilioForm();
         vendorForm.setDisplayName("Vendor form for Vistor module");
@@ -498,11 +502,13 @@ public class VisitorLoggingModule extends BaseModuleConfig{
         vendorFormFields.add(new FormField("host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet", FormField.Required.OPTIONAL, "user",1,1));
         vendorFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
         vendorFormFields.add(new FormField("visitor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Visitor", FormField.Required.OPTIONAL, "visitor", 1, 1));
-//        vendorForm.setFields(vendorFormFields);
 
         FormSection vendorFormSection = new FormSection("Default", 1, vendorFormFields, false);
         vendorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         vendorForm.setSections(Collections.singletonList(vendorFormSection));
+        vendorForm.setIsSystemForm(true);
+        vendorForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm employeeForm = new FacilioForm();
         employeeForm.setDisplayName("Employee form for Vistor module");
@@ -514,11 +520,12 @@ public class VisitorLoggingModule extends BaseModuleConfig{
         List<FormField> employeeFormFields =new ArrayList<>();
         employeeFormFields.add(new FormField("visitor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Visitor", FormField.Required.OPTIONAL, "visitor", 1, 1));
         employeeFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
-//        employeeForm.setFields(employeeFormFields);
 
         FormSection employeeFormSection = new FormSection("Default", 1, employeeFormFields, false);
         employeeFormSection.setSectionType(FormSection.SectionType.FIELDS);
         employeeForm.setSections(Collections.singletonList(employeeFormSection));
+        employeeForm.setIsSystemForm(true);
+        employeeForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> visitorLoggingModuleForms = new ArrayList<>();
         visitorLoggingModuleForms.add(portalVisitorPreRegisterForm);

@@ -61,12 +61,12 @@ public class ShiftModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule shiftModule = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
 
-        FacilioForm ShiftModuleForm = new FacilioForm();
-        ShiftModuleForm.setDisplayName("NEW SHIFT");
-        ShiftModuleForm.setName("default_shift_web");
-        ShiftModuleForm.setModule(shiftModule);
-        ShiftModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        ShiftModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        FacilioForm shiftModuleForm = new FacilioForm();
+        shiftModuleForm.setDisplayName("NEW SHIFT");
+        shiftModuleForm.setName("default_shift_web");
+        shiftModuleForm.setModule(shiftModule);
+        shiftModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        shiftModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
         List<FormField> ShiftModuleFormFields = new ArrayList<>();
 
@@ -92,13 +92,15 @@ public class ShiftModule extends BaseModuleConfig{
         ShiftModuleFormFields.add(endTime);
         ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 3, 1 ));
 
-        ShiftModuleForm.setFields(ShiftModuleFormFields);
+        shiftModuleForm.setFields(ShiftModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, ShiftModuleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
-        ShiftModuleForm.setSections(Collections.singletonList(section));
+        shiftModuleForm.setSections(Collections.singletonList(section));
+        shiftModuleForm.setIsSystemForm(true);
+        shiftModuleForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(ShiftModuleForm);
+        return Collections.singletonList(shiftModuleForm);
     }
 
 }

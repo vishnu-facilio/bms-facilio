@@ -117,6 +117,8 @@ public class PurchaseRequestModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         purchaseRequestForm.setSections(sections);
+        purchaseRequestForm.setIsSystemForm(true);
+        purchaseRequestForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(purchaseRequestForm);
     }

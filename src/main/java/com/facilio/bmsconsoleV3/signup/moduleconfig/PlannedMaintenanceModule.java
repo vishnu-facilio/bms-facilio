@@ -160,6 +160,8 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, defaultPlannedMaintenanceFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         defaultPlannedMaintenanceForm.setSections(Collections.singletonList(section));
+        defaultPlannedMaintenanceForm.setIsSystemForm(true);
+        defaultPlannedMaintenanceForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultPlannedMaintenanceForm);
     }

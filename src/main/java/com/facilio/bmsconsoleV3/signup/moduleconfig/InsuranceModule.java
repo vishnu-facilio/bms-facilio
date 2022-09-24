@@ -193,11 +193,12 @@ public class InsuranceModule extends BaseModuleConfig{
         FormField vendorField = new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED,"vendors", 3, 2);
         insuranceFormFields.add(vendorField);
         insuranceFormFields.add(new FormField("insurance", FacilioField.FieldDisplayType.FILE, "Insurance", FormField.Required.OPTIONAL, 1, 1));
-//        insuranceForm.setFields(insuranceFormFields);
 
         FormSection insuranceFormSection = new FormSection("Default", 1, insuranceFormFields, false);
         insuranceFormSection.setSectionType(FormSection.SectionType.FIELDS);
         insuranceForm.setSections(Collections.singletonList(insuranceFormSection));
+        insuranceForm.setIsSystemForm(true);
+        insuranceForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm portalInsuranceForm = new FacilioForm();
         portalInsuranceForm.setDisplayName("INSURANCE");
@@ -216,6 +217,8 @@ public class InsuranceModule extends BaseModuleConfig{
         FormSection portalInsuranceFormSection = new FormSection("Default", 1, portalInsuranceFormFields, false);
         portalInsuranceFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalInsuranceForm.setSections(Collections.singletonList(portalInsuranceFormSection));
+        portalInsuranceForm.setIsSystemForm(true);
+        portalInsuranceForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> insuranceModuleForms = new ArrayList<>();
         insuranceModuleForms.add(insuranceForm);

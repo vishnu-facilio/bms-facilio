@@ -165,6 +165,8 @@ public class ReservationModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, reservationFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         reservationForm.setSections(Collections.singletonList(section));
+        reservationForm.setIsSystemForm(true);
+        reservationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(reservationForm);
     }

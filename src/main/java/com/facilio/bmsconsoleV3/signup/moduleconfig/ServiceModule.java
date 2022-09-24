@@ -79,11 +79,12 @@ public class ServiceModule extends BaseModuleConfig{
         serviceModuleFormFields.add(new FormField("paymentType", FacilioField.FieldDisplayType.SELECTBOX, "Payment Type", FormField.Required.REQUIRED, 4, 1));
         serviceModuleFormFields.add(new FormField("buyingPrice", FacilioField.FieldDisplayType.DECIMAL, "Buying Price", FormField.Required.OPTIONAL, 5, 1));
         serviceModuleFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.DECIMAL, "Selling Price", FormField.Required.OPTIONAL, 6, 1));
-//        serviceModuleForm.setFields(serviceModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, serviceModuleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         serviceModuleForm.setSections(Collections.singletonList(section));
+        serviceModuleForm.setIsSystemForm(true);
+        serviceModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(serviceModuleForm);
     }

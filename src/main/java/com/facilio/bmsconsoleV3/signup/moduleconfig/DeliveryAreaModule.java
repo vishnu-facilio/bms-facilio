@@ -77,6 +77,8 @@ public class DeliveryAreaModule extends BaseModuleConfig{
         FormSection deliveryAreaFormSection = new FormSection("Default", 1, deliveryAreaFormFields, false);
         deliveryAreaFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveryAreaForm.setSections(Collections.singletonList(deliveryAreaFormSection));
+        deliveryAreaForm.setIsSystemForm(true);
+        deliveryAreaForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm deliveryAreaPortalForm = new FacilioForm();
@@ -97,6 +99,8 @@ public class DeliveryAreaModule extends BaseModuleConfig{
         FormSection deliveryAreaPortalFormSection = new FormSection("Default", 1, deliveryAreaPortalFormFields, false);
         deliveryAreaPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveryAreaPortalForm.setSections(Collections.singletonList(deliveryAreaPortalFormSection));
+        deliveryAreaPortalForm.setIsSystemForm(true);
+        deliveryAreaPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> deliveryAreaModuleForms = new ArrayList<>();
         deliveryAreaModuleForms.add(deliveryAreaForm);

@@ -160,6 +160,8 @@ public class PurchaseContractsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, purchaseContractsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         purchaseContractsForm.setSections(Collections.singletonList(section));
+        purchaseContractsForm.setIsSystemForm(true);
+        purchaseContractsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(purchaseContractsForm);
     }

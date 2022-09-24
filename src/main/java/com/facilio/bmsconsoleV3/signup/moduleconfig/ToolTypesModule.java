@@ -89,11 +89,13 @@ public class ToolTypesModule extends BaseModuleConfig{
         toolTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
         toolTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
         toolTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 6, 3));
-//        toolTypesForm.setFields(toolTypesFormFields);
+
 
         FormSection section = new FormSection("Default", 1, toolTypesFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         toolTypesForm.setSections(Collections.singletonList(section));
+        toolTypesForm.setIsSystemForm(true);
+        toolTypesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(toolTypesForm);
     }
