@@ -46,6 +46,7 @@ import sh.ory.hydra.JSON;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
@@ -63,10 +64,17 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
         Map<String, BaseAlarmContext> alarmMap = (Map<String, BaseAlarmContext>) context.get("alarmMap");
         alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>) context.get("alarmOccurrenceMap");
 
+        Map<String, BaseEventContext> keyVsEvents = eventList.stream()
+                .filter(e -> e.getBaseAlarm() != null)
+                .collect(Collectors.toMap(e -> e.getBaseAlarm().getKey(), Function.identity()));
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (MapUtils.isNotEmpty(alarmMap)) {
             for (BaseAlarmContext baseAlarm : alarmMap.values()) {
-                baseAlarm.setData(eventList.get(0).getCustomFields());
+                BaseEventContext alarmEvent = keyVsEvents.get(baseAlarm.getKey());
+                if (alarmEvent != null) {
+                    baseAlarm.setData(alarmEvent.getCustomFields());
+                }
                 if (baseAlarm.getId() > 0) {
                     UpdateRecordBuilder<BaseAlarmContext> builder = new UpdateRecordBuilder<BaseAlarmContext>()
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))

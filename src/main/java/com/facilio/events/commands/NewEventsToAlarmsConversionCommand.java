@@ -164,6 +164,12 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 						LOGGER.debug(alarmOccurrence.getId() + " : " + pointedList.getLastRecord().getId());
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
 						alarm = NewAlarmAPI.getAlarm(alarm.getId());
+
+						if (alarm.getTypeEnum() == BaseAlarmContext.Type.BMS_ALARM) {
+							LOGGER.error("Event trying to auto clear for bms alarm " + alarm.getId() + ", occurrence - " + alarmOccurrence.getId() + ". last record - " + pointedList.getLastRecord().getId());
+							continue;
+						}
+
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
 								clearSeverity, "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
 						JSONObject info = new JSONObject();
