@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.homepage.homepagewidgetdata;
 
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import lombok.Getter;
 import lombok.Setter;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
@@ -24,6 +25,8 @@ public class HomepageWidgetData {
     Long RecordId;
     String secondaryText2;
     String date;
+    String time;
+    V3SpaceContext Space;
     //List<JSONObject> params;
     JSONObject params;
 
