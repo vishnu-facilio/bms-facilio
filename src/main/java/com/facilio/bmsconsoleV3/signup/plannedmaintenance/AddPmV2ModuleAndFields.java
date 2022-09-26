@@ -132,10 +132,6 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.DECISION_BOX, 63L, false, false, true, orgId);
         fields.add(isActiveField);
 
-        /* SystemModifiedByField */
-        LookupField modifiedByField = (LookupField) FieldFactory.getSystemField("sysModifiedBy", module);
-        fields.add(modifiedByField);
-
         module.setFields(fields);
         return module;
     }
