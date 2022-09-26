@@ -1908,7 +1908,7 @@ public class ApplicationApi {
                 .select(FieldFactory.getApplicationFields());
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
-        return getFilteredApplications(applications);
+        return applications;
     }
 
     public static List<ApplicationContext> getFilteredApplications(List<ApplicationContext> applications) throws Exception {
