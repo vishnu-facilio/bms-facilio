@@ -40,11 +40,13 @@ public class VisitorInviteModule extends BaseModuleConfig{
         visitorPreRegisterFormFields.add(new FormField("recurringVisitor", FacilioField.FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", FormField.Required.OPTIONAL, 4, 1));
         visitorPreRegisterFormFields.add(new FormField("invitees", FacilioField.FieldDisplayType.VISITOR_INVITEES , "VISITORS", FormField.Required.OPTIONAL, 5, 1));
         visitorPreRegisterFormFields.add(new FormField("requestedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested By", FormField.Required.OPTIONAL, "requester",6, 1));
-//        visitorPreRegisterForm.setFields(visitorPreRegisterFormFields);
+
 
         FormSection visitorPreRegisterFormSection = new FormSection("Default", 1, visitorPreRegisterFormFields, false);
         visitorPreRegisterFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorPreRegisterForm.setSections(Collections.singletonList(visitorPreRegisterFormSection));
+        visitorPreRegisterForm.setIsSystemForm(true);
+        visitorPreRegisterForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(visitorPreRegisterForm);
     }

@@ -81,6 +81,8 @@ public class ParkingStallModule extends BaseModuleConfig{
         FormSection parkingStallFormSection = new FormSection("Default", 1, parkingStallFormFields, false);
         parkingStallFormSection.setSectionType(FormSection.SectionType.FIELDS);
         parkingStallForm.setSections(Collections.singletonList(parkingStallFormSection));
+        parkingStallForm.setIsSystemForm(true);
+        parkingStallForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm parkingStallPortalForm = new FacilioForm();
         parkingStallPortalForm.setDisplayName("NEW PARKING STALL");
@@ -93,6 +95,8 @@ public class ParkingStallModule extends BaseModuleConfig{
         FormSection parkingStallPortalFormSection = new FormSection("Default", 1, parkingStallFormFields, false);
         parkingStallPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         parkingStallPortalForm.setSections(Collections.singletonList(parkingStallPortalFormSection));
+        parkingStallPortalForm.setIsSystemForm(true);
+        parkingStallPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> parkingStallModuleForms = new ArrayList<>();
         parkingStallModuleForms.add(parkingStallForm);

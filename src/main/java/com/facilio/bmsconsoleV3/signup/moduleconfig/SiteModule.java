@@ -146,6 +146,11 @@ public class SiteModule extends BaseModuleConfig {
         allView.setDisplayName("All Sites");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -181,6 +186,8 @@ public class SiteModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, defaultSiteFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         defaultSiteForm.setSections(Collections.singletonList(section));
+        defaultSiteForm.setIsSystemForm(true);
+        defaultSiteForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultSiteForm);
     }

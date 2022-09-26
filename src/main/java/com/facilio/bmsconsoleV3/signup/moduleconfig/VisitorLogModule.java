@@ -71,6 +71,12 @@ public class VisitorLogModule extends BaseModuleConfig{
         criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, DateOperators.TODAY));
         view.setCriteria(criteria);
         view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
         return view;
     }
 
@@ -88,6 +94,12 @@ public class VisitorLogModule extends BaseModuleConfig{
 
         view.setCriteria(criteria);
         view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
 
         return view;
     }
@@ -108,6 +120,12 @@ public class VisitorLogModule extends BaseModuleConfig{
         List<SortField> sortFields = Arrays.asList(new SortField(checkInTime, false));
         view.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -122,6 +140,12 @@ public class VisitorLogModule extends BaseModuleConfig{
         FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLogging,FieldType.DATE_TIME);
         List<SortField> sortFields = Arrays.asList(new SortField(checkInTime, false));
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

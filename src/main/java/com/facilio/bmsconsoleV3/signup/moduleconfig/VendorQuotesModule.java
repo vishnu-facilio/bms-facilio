@@ -87,6 +87,8 @@ public class VendorQuotesModule extends BaseModuleConfig{
         FormSection vendorQuotesFormSection = new FormSection("Default", 1, vendorQuotesFormFields, false);
         vendorQuotesFormSection.setSectionType(FormSection.SectionType.FIELDS);
         vendorQuotesForm.setSections(Collections.singletonList(vendorQuotesFormSection));
+        vendorQuotesForm.setIsSystemForm(true);
+        vendorQuotesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(vendorQuotesForm);
     }

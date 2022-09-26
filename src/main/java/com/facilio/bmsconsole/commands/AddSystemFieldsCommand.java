@@ -105,6 +105,16 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			slaPolicyIdField.setDisplayType(FieldDisplayType.NUMBER);
 			fields.add(slaPolicyIdField);
 
+			LookupField classificationField = (LookupField) FieldFactory.getField("classification", "Classification", "CLASSIFICATION", module, FieldType.LOOKUP);
+			classificationField.setDefault(true);
+			classificationField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+			classificationField.setLookupModule(modBean.getModule("classification"));
+			fields.add(classificationField);
+
+
+
+
+
 		}
 		return false;
 	}

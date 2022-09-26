@@ -37,12 +37,12 @@ public class FetchInviteAcceptedUsersCommand extends FacilioCommand {
         List<User> users = V3PeopleAPI.fetchUserContext(peopleIds,true);
 
         if (CollectionUtils.isNotEmpty(users)) {
-            JSONObject jsonObject = new JSONObject();
             for (User user : users) {
+                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("label",user.getName());
                 jsonObject.put("value",user.getPeopleId());
+                jsonArray.add(jsonObject);
             }
-            jsonArray.add(jsonObject);
         }
     }
 }

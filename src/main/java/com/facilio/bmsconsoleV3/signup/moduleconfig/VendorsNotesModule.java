@@ -59,6 +59,8 @@ public class VendorsNotesModule extends BaseModuleConfig{
         sections.add(configSection);
 
         vendorNotesForm.setSections(sections);
+        vendorNotesForm.setIsSystemForm(true);
+        vendorNotesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(vendorNotesForm);
     }

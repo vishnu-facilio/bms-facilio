@@ -54,7 +54,7 @@ public class AddMultiResourceModule extends SignUpData {
 		fields.add(asset);
 		
 		LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);
-		space.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SPACE));
+		space.setLookupModule(bean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
 		
 		fields.add(space);	
 		
@@ -64,7 +64,7 @@ public class AddMultiResourceModule extends SignUpData {
         NumberField parentRecordIdField = (NumberField) FieldFactory.getDefaultField("parentRecordId", "Parent_Record_Id", "PARENT_RECORD_ID", FieldType.NUMBER);
         fields.add(parentRecordIdField);
 		
-		fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
+		fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.BIG_STRING, FacilioField.FieldDisplayType.TEXTAREA));
 		
 		fields.add(FieldFactory.getDefaultField("sequence", "Sequence", "SEQUENCE", FieldType.NUMBER));
 		

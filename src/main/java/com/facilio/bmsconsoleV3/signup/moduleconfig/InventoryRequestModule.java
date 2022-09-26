@@ -56,6 +56,11 @@ public class InventoryRequestModule extends BaseModuleConfig{
         allView.setDisplayName("All");
         allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -77,13 +82,11 @@ public class InventoryRequestModule extends BaseModuleConfig{
         statusView.setDisplayName(viewDisplayName);
         statusView.setSortFields(sortFields);
         statusView.setCriteria(criteria);
-        List<ViewField> fields = new ArrayList<ViewField>();
-        fields.add(new ViewField("id", "ID"));
-        fields.add(new ViewField("name", "Name"));
-        fields.add(new ViewField("requestedBy", "Requested By"));
-        fields.add(new ViewField("requestedTime", "Requested Time"));
-        fields.add(new ViewField("status", "Valid Till"));
-        fields.add(new ViewField("totalCost", "Total Cost"));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        statusView.setAppLinkNames(appLinkNames);
         return statusView;
     }
 
@@ -147,6 +150,8 @@ public class InventoryRequestModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         inventoryRequestModuleForm.setSections(sections);
+        inventoryRequestModuleForm.setIsSystemForm(true);
+        inventoryRequestModuleForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm inventoryRequestWorkOrderForm = new FacilioForm();
         inventoryRequestWorkOrderForm.setDisplayName("INVENTORY REQUEST");
@@ -185,6 +190,8 @@ public class InventoryRequestModule extends BaseModuleConfig{
         sections1.add(lineItemSection1);
 
         inventoryRequestWorkOrderForm.setSections(sections1);
+        inventoryRequestWorkOrderForm.setIsSystemForm(true);
+        inventoryRequestWorkOrderForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> inventoryRequestModuleForms = new ArrayList<>();
         inventoryRequestModuleForms.add(inventoryRequestModuleForm);

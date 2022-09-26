@@ -48,6 +48,7 @@ public class Constants {
     public static final String STATE_FLOWS = "stateFlows";
     public static final String CUSTOM_BUTTONS = "customButtons";
     public static final String SYSTEM_BUTTONS = "systemButtons";
+    public static final String FETCH_CLASSIFICATION="fetchClassification";
 
     public static final String MODULE_VS_DELETEDIDS = "moduleVsDeletedIds";
 

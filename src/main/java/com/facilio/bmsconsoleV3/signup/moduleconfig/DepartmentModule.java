@@ -84,6 +84,8 @@ public class DepartmentModule extends BaseModuleConfig{
         FormSection departmentFormSection = new FormSection("Default", 1, departmentFormFields, false);
         departmentFormSection.setSectionType(FormSection.SectionType.FIELDS);
         departmentForm.setSections(Collections.singletonList(departmentFormSection));
+        departmentForm.setIsSystemForm(true);
+        departmentForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(departmentForm);
     }

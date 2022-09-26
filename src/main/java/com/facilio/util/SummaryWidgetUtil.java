@@ -9,19 +9,25 @@ import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class SummaryWidgetUtil {
+    public static Logger LOGGER = LogManager.getLogger(SummaryWidgetUtil.class.getName());
     public static CustomPageWidget getWidgetById(long appId, long widgetId) throws Exception {
         return getAllPageWidgets(appId, widgetId, null, -1);
     }
@@ -108,5 +114,125 @@ public class SummaryWidgetUtil {
 
     public static boolean isLookupField(FacilioField field){
         return field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP;
+    }
+
+    public static void addPageWidget(CustomPageWidget customPageWidget) throws Exception {
+        customPageWidget.setId(-1);
+        customPageWidget.setOrgId(AccountUtil.getCurrentOrg().getId());
+        if (customPageWidget.getAppId() < 0){
+            ApplicationContext application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            customPageWidget.setAppId(application.getId());
+        }
+
+        try {
+            Map<String, Object> widgetProps = FieldUtil.getAsProperties(customPageWidget);
+            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
+                    .fields(FieldFactory.getCustomPageWidgetFields())
+                    .addRecord(widgetProps);
+
+            insertBuilder.save();
+            long widgetId = (long) widgetProps.get("id");
+            customPageWidget.setId(widgetId);
+
+            addWidgetGroup(customPageWidget);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
+            throw e;
+        }
+    }
+
+    public static void addWidgetGroup(CustomPageWidget customPageWidget) throws Exception {
+        for (SummaryWidgetGroup widgetGroup : customPageWidget.getGroups()){
+            widgetGroup.setId(-1);
+            widgetGroup.setOrgId(customPageWidget.getOrgId());
+            widgetGroup.setWidgetId(customPageWidget.getId());
+
+            try {
+                Map<String, Object> widgetGroupProps = FieldUtil.getAsProperties(widgetGroup);
+                GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                        .table(ModuleFactory.getSummaryWidgetGroupModule().getTableName())
+                        .fields(FieldFactory.getSummaryWidgetGroupFields())
+                        .addRecord(widgetGroupProps);
+
+                insertBuilder.save();
+                long widgetGroupId = (long) widgetGroupProps.get("id");
+                widgetGroup.setId(widgetGroupId);
+
+                addWidgetGroupFields(widgetGroup);
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred ", e);
+                throw e;
+            }
+        }
+    }
+
+    public static void addWidgetGroupFields(SummaryWidgetGroup widgetGroup) throws Exception {
+        widgetGroupRowSpanValidator(widgetGroup);
+        List<Map<String, Object>> groupFieldsProps = new ArrayList<>();
+        for (SummaryWidgetGroupFields widgetGroupField : widgetGroup.getFields()) {
+            FacilioField fieldDetails = widgetGroupField.getField();
+            if (widgetGroupField.getFieldId() == -1 && StringUtils.isEmpty(widgetGroupField.getName()) && (fieldDetails.getFieldId() == -1 && StringUtils.isEmpty(fieldDetails.getName()))) {
+                throw new IllegalArgumentException("WidgetGroupField is required");
+            }
+            widgetGroupField.setId(-1);
+            widgetGroupField.setOrgId(widgetGroup.getOrgId());
+            widgetGroupField.setWidgetGroupId(widgetGroup.getId());
+            widgetGroupField.setWidgetId(widgetGroup.getWidgetId());
+
+            Map<String, Object> props = FieldUtil.getAsProperties(widgetGroupField);
+            groupFieldsProps.add(props);
+        }
+
+        try {
+            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getSummaryWidgetGroupFieldsModule().getTableName())
+                    .fields(FieldFactory.getSummaryWidgetGroupFieldsFields())
+                    .addRecords(groupFieldsProps);
+
+            insertBuilder.save();
+
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
+            throw e;
+        }
+    }
+
+    public static void widgetGroupRowSpanValidator(SummaryWidgetGroup widgetGroup) throws Exception {
+        long widgetGroupSpan = widgetGroup.getColumns();
+        Map<Long, List<SummaryWidgetGroupFields>> rowWiseFieldsMap = new HashMap<>();
+        for (SummaryWidgetGroupFields widgetGroupField : widgetGroup.getFields()) {
+            long rowIndex = widgetGroupField.getRowIndex();
+            if (rowWiseFieldsMap.containsKey(rowIndex)) {
+                rowWiseFieldsMap.get(rowIndex).add(widgetGroupField);
+            } else {
+                List<SummaryWidgetGroupFields> currRowFields = new ArrayList<>();
+                currRowFields.add(widgetGroupField);
+                rowWiseFieldsMap.put(rowIndex, currRowFields);
+            }
+        }
+
+        for (Map.Entry<Long, List<SummaryWidgetGroupFields>> entry : rowWiseFieldsMap.entrySet()) {
+            long nextColIndex = 0;
+            List<SummaryWidgetGroupFields> currRowFields = entry.getValue();
+            currRowFields = currRowFields.stream().sorted(Comparator.comparingLong(SummaryWidgetGroupFields::getColIndex)).collect(Collectors.toList());
+            int currRowColumnSpan = currRowFields.stream().mapToInt(SummaryWidgetGroupFields::getColSpan).sum();
+
+            if (currRowColumnSpan <= widgetGroupSpan){
+                for (SummaryWidgetGroupFields field : currRowFields) {
+                    long colSpan = field.getColSpan();
+                    long colIndex = field.getColIndex();
+                    if (colIndex <= nextColIndex) {
+                        throw new IllegalArgumentException("Found field overlap");
+                    }
+                    if (!(colSpan <= (widgetGroupSpan - colIndex + 1))){
+                        throw new IllegalArgumentException("Field Span exceeds Group span");
+                    }
+                    nextColIndex += colSpan;
+                }
+            } else {
+                throw new IllegalArgumentException("Span of fields should be less than Group span");
+            }
+        }
     }
 }

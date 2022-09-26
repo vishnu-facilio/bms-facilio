@@ -78,6 +78,8 @@ public class PeopleModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, peopleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         peopleForm.setSections(Collections.singletonList(section));
+        peopleForm.setIsSystemForm(true);
+        peopleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(peopleForm);
     }

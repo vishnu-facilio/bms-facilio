@@ -79,6 +79,8 @@ public class FailureClassModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, failureClassModuleFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         failureClassModuleForm.setSections(Collections.singletonList(section));
+        failureClassModuleForm.setIsSystemForm(true);
+        failureClassModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(failureClassModuleForm);
     }

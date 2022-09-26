@@ -1,6 +1,7 @@
 package com.facilio.v3.context;
 
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -235,4 +236,9 @@ public class V3Context extends ModuleBaseWithCustomFields {
     @Setter
     @JsonProperty("failureClass")
     private V3FailureClassContext failureClass;
+
+    @Getter
+    @Setter
+    @JsonProperty("classification")
+    private ClassificationContext classification;
 }

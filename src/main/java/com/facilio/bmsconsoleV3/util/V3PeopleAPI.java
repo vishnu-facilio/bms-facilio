@@ -915,9 +915,8 @@ public class V3PeopleAPI {
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)){
 
             List<User> users = new ArrayList<>();
-
+            IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
             for (Map<String,Object> prop : props){
-                IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
                 User user = UserBeanImpl.createUserFromProps(prop, true, true, null);
                 users.add(user);
             }

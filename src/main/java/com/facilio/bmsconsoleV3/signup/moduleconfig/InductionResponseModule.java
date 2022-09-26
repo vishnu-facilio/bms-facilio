@@ -50,8 +50,10 @@ public class InductionResponseModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.Induction.INDUCTION_RESPONSE);
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -90,6 +92,8 @@ public class InductionResponseModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, inductionFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         inductionForm.setSections(Collections.singletonList(section));
+        inductionForm.setIsSystemForm(true);
+        inductionForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(inductionForm);
     }

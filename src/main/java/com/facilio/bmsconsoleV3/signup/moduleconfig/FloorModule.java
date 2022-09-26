@@ -133,6 +133,11 @@ public class FloorModule extends BaseModuleConfig {
         allView.setDisplayName("All Floors");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -163,6 +168,8 @@ public class FloorModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, defaultFloorFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         defaultFloorForm.setSections(Collections.singletonList(section));
+        defaultFloorForm.setIsSystemForm(true);
+        defaultFloorForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultFloorForm);
     }

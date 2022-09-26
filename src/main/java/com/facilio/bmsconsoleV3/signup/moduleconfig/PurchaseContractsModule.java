@@ -59,6 +59,11 @@ public class PurchaseContractsModule extends BaseModuleConfig{
         //allView.setCriteria(getContractListCriteria());
         allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -74,6 +79,11 @@ public class PurchaseContractsModule extends BaseModuleConfig{
         allView.setDisplayName("Expiring This Month");
         allView.setCriteria(getExpiringContractListCriteria(module, type));
         allView.setSortFields(Arrays.asList(new SortField(endDateField, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -150,6 +160,8 @@ public class PurchaseContractsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, purchaseContractsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         purchaseContractsForm.setSections(Collections.singletonList(section));
+        purchaseContractsForm.setIsSystemForm(true);
+        purchaseContractsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(purchaseContractsForm);
     }

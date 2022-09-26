@@ -172,6 +172,8 @@ public class AddInductionModules extends BaseModuleConfig {
         configSection.setSequenceNumber(1);
         sections.add(configSection);
         defaultForm.setSections(sections);
+        defaultForm.setType(FacilioForm.Type.FORM);
+        defaultForm.setIsSystemForm(true);
         FormsAPI.createForm(defaultForm, Induction);
         Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
         addApplyToSiteRule(defaultForm, fieldMap, formFieldMap);
@@ -321,7 +323,8 @@ public class AddInductionModules extends BaseModuleConfig {
       sections.add(configSection);
       
       defaultForm.setSections(sections);
-      
+      defaultForm.setType(FacilioForm.Type.FORM);
+      defaultForm.setIsSystemForm(true);
       FormsAPI.createForm(defaultForm, Induction);
       
       Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));

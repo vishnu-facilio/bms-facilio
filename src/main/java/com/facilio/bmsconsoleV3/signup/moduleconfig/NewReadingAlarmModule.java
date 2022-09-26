@@ -61,6 +61,11 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
         allView.setCriteria(criteria);
         allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -86,6 +91,11 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
         view.setModuleName("newreadingalarm");
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -106,6 +116,11 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
         typeAlarms.setCriteria(criteria);
         typeAlarms.setModuleName("newreadingalarm");
         typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        typeAlarms.setAppLinkNames(appLinkNames);
 
         return typeAlarms;
     }

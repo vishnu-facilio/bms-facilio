@@ -43,6 +43,8 @@ public class PrintersModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, printerFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         printerForm.setSections(Collections.singletonList(section));
+        printerForm.setIsSystemForm(true);
+        printerForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(printerForm);
     }

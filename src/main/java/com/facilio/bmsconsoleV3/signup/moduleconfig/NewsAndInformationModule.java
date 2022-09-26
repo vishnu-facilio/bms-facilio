@@ -55,6 +55,7 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -90,6 +91,8 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, newsAndInformationFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         newsAndInformationForm.setSections(Collections.singletonList(section));
+        newsAndInformationForm.setIsSystemForm(true);
+        newsAndInformationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(newsAndInformationForm);
     }

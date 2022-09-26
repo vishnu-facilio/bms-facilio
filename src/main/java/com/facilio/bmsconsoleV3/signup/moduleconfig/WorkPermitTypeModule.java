@@ -40,6 +40,8 @@ public class WorkPermitTypeModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, workPermitTypeFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         workPermitTypeForm.setSections(Collections.singletonList(section));
+        workPermitTypeForm.setIsSystemForm(true);
+        workPermitTypeForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workPermitTypeForm);
     }

@@ -96,6 +96,8 @@ public class EmployeeModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, employeeContactFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         employeeContactForm.setSections(Collections.singletonList(section));
+        employeeContactForm.setIsSystemForm(true);
+        employeeContactForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(employeeContactForm);
     }

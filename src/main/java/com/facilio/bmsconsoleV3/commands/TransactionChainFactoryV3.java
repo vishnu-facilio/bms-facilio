@@ -49,6 +49,9 @@ import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingAvailability;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingCommand;
+import com.facilio.bmsconsoleV3.context.spacebooking.setSpaceBookingVariableCommand;
 import com.facilio.modules.FacilioModule;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import org.apache.commons.chain.Command;
@@ -2204,6 +2207,14 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain fetchActivePeopleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchInviteAcceptedUsersCommand());
+        return c;
+    }
+
+    public static FacilioChain createSpaceBookingChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new setSpaceBookingVariableCommand());
+        c.addCommand(new V3ValidateSpaceBookingAvailability());
+        c.addCommand(new V3ValidateSpaceBookingCommand());
         return c;
     }
 

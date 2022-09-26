@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -37,43 +38,45 @@ public class AddEmployeePortalDefaultViews extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<String> sysModuleNames = V3ModuleAPI.getSystemModuleNamesForApp(employee_portal.getLinkName());
         Role portalAdminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.EMPLOYEE_ADMIN);
-        for(String moduleName : sysModuleNames) {
-            boolean isEmployeePortal = false;
-            List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
-            for (ApplicationContext applicationContext : applicationContexts) {
-                if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-                    for (Map<String, Object> groupView : groupViews) {
+        if(!AddSignupDataCommandV3.createViews) {
+            for (String moduleName : sysModuleNames) {
+                boolean isEmployeePortal = false;
+                List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
+                for (ApplicationContext applicationContext : applicationContexts) {
+                    if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+                        for (Map<String, Object> groupView : groupViews) {
+                            ViewGroups viewGroup = new ViewGroups();
+                            if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
+                                viewGroup.setName((String) groupView.get("name") + "_employee_portal");
+                                viewGroup.setAppId(applicationContext.getId());
+                                isEmployeePortal = true;
+                            } else {
+                                viewGroup.setName((String) groupView.get("name"));
+                                viewGroup.setAppId(applicationContext.getId());
+                            }
+                            viewGroup.setDisplayName((String) groupView.get("displayName"));
+                            long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
+                            if (groupView.get("views") != null) {
+                                for (String view : (List<String>) groupView.get("views")) {
+                                    addViewsAndColumns(moduleName, groupId, view, modBean, applicationContext, isEmployeePortal, portalAdminRole.getId());
+                                }
+                            }
+                        }
+                    } else {
+                        Map<String, FacilioView> moduleViews = ViewFactory.getModuleViews(moduleName, modBean.getModule(moduleName));
                         ViewGroups viewGroup = new ViewGroups();
+                        viewGroup.setName("systemviews");
+                        viewGroup.setDisplayName("System Views");
                         if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
-                            viewGroup.setName((String) groupView.get("name") + "_employee_portal");
                             viewGroup.setAppId(applicationContext.getId());
                             isEmployeePortal = true;
                         } else {
-                            viewGroup.setName((String) groupView.get("name"));
                             viewGroup.setAppId(applicationContext.getId());
                         }
-                        viewGroup.setDisplayName((String) groupView.get("displayName"));
                         long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
-                        if (groupView.get("views") != null) {
-                            for (String view : (List<String>) groupView.get("views")) {
-                                addViewsAndColumns(moduleName, groupId, view, modBean, applicationContext, isEmployeePortal, portalAdminRole.getId());
-                            }
+                        for (String viewName : moduleViews.keySet()) {
+                            addViewsAndColumns(moduleName, groupId, viewName, modBean, applicationContext, isEmployeePortal, portalAdminRole.getId());
                         }
-                    }
-                } else {
-                    Map<String, FacilioView> moduleViews = ViewFactory.getModuleViews(moduleName, modBean.getModule(moduleName));
-                    ViewGroups viewGroup = new ViewGroups();
-                    viewGroup.setName("systemviews");
-                    viewGroup.setDisplayName("System Views");
-                    if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
-                        viewGroup.setAppId(applicationContext.getId());
-                        isEmployeePortal = true;
-                    } else {
-                        viewGroup.setAppId(applicationContext.getId());
-                    }
-                    long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
-                    for (String viewName : moduleViews.keySet()) {
-                        addViewsAndColumns(moduleName, groupId, viewName, modBean, applicationContext, isEmployeePortal, portalAdminRole.getId());
                     }
                 }
             }

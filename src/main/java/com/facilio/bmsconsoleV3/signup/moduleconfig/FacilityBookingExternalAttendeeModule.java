@@ -44,6 +44,8 @@ public class FacilityBookingExternalAttendeeModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, externalAttendeeFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         externalAttendeeForm.setSections(Collections.singletonList(section));
+        externalAttendeeForm.setIsSystemForm(true);
+        externalAttendeeForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(externalAttendeeForm);
     }

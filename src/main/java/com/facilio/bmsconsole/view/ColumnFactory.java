@@ -3,9 +3,6 @@ package com.facilio.bmsconsole.view;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3SpaceContext;
-import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingInternalAttendeeContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.modules.FieldType;
@@ -428,7 +425,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("spaceCategory", "Space Category"));
 		columns.add(new ViewField("assetCategory", "Asset Category"));
-		columns.add(new ViewField("createdTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 	

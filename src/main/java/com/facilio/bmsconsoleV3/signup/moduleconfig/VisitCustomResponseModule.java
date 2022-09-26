@@ -42,6 +42,8 @@ public class VisitCustomResponseModule extends BaseModuleConfig{
         FormSection visitResponseFormSection = new FormSection("Default", 1, visitResponseFormFields, false);
         visitResponseFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitResponseForm.setSections(Collections.singletonList(visitResponseFormSection));
+        visitResponseForm.setIsSystemForm(true);
+        visitResponseForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(visitResponseForm);
     }

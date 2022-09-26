@@ -325,7 +325,8 @@ public class FieldFactory extends BaseFieldFactory {
             "pmPlanner",
             "pmResourcePlanner",
             "pmTriggerV2",
-            "pmV2"
+            "pmV2",
+            "createdTime",
         }));
 
         public static final List<String> PM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -341,7 +342,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "tenant",
                 "vendor",
                 "subject",
-                "description"
+                "description",
+                "sysCreatedTime"
         }));
 
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -10996,7 +10998,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDisplayNameField(module));
         fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField("span", "SPAN", module, FieldType.NUMBER));
+        fields.add(getField("columns", "COLUMNS", module, FieldType.NUMBER));
         fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
         return fields;
     }

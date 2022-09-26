@@ -159,6 +159,8 @@ public class JobPlanModule extends BaseModuleConfig{
         sections.add(taskSection);
 
         jobPlanModuleForm.setSections(sections);
+        jobPlanModuleForm.setIsSystemForm(true);
+        jobPlanModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(jobPlanModuleForm);
     }

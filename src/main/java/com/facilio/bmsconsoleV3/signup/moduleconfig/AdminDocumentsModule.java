@@ -55,6 +55,7 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -87,6 +88,8 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, adminDocumentsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         adminDocumentsForm.setSections(Collections.singletonList(section));
+        adminDocumentsForm.setIsSystemForm(true);
+        adminDocumentsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(adminDocumentsForm);
     }

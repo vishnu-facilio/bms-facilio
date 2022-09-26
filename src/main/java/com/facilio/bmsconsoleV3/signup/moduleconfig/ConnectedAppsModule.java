@@ -46,6 +46,8 @@ public class ConnectedAppsModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, connectedAppsModuleFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         connectedAppsModuleForm.setSections(Collections.singletonList(Section));
+        connectedAppsModuleForm.setIsSystemForm(true);
+        connectedAppsModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(connectedAppsModuleForm);
     }

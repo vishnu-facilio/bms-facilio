@@ -41,6 +41,8 @@ public class RequesterModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, requesterModuleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         requesterModuleForm.setSections(Collections.singletonList(section));
+        requesterModuleForm.setIsSystemForm(true);
+        requesterModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(requesterModuleForm);
     }

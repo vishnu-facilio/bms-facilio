@@ -75,7 +75,7 @@ public class BuildingModule extends BaseModuleConfig {
 
         int order = 1;
         ArrayList<FacilioView> building = new ArrayList<FacilioView>();
-        building.add(getAllSpaces().setOrder(order++));
+        building.add(getAllBuildings().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -87,13 +87,18 @@ public class BuildingModule extends BaseModuleConfig {
         return groupVsViews;
     }
 
-    private static FacilioView getAllSpaces() {
+    private static FacilioView getAllBuildings() {
 
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Spaces");
+        allView.setDisplayName("All Buildings");
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -126,6 +131,8 @@ public class BuildingModule extends BaseModuleConfig {
         FormSection Section = new FormSection("Default", 1, defaultBuildingFormfields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         defaultBuildingForm.setSections(Collections.singletonList(Section));
+        defaultBuildingForm.setIsSystemForm(true);
+        defaultBuildingForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultBuildingForm);
     }

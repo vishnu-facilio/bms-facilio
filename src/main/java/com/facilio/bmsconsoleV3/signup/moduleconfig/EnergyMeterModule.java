@@ -126,6 +126,8 @@ public class EnergyMeterModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, energyMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         energyMeterForm.setSections(Collections.singletonList(section));
+        energyMeterForm.setIsSystemForm(true);
+        energyMeterForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(energyMeterForm);
     }

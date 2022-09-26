@@ -35,11 +35,12 @@ public class WorkPermitTypeChecklistCategoryModule extends BaseModuleConfig{
 
         List<FormField> workPermitTypeChecklistCategoryFormFields = new ArrayList<>();
         workPermitTypeChecklistCategoryFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-//        workPermitTypeChecklistCategoryForm.setFields(workPermitTypeChecklistCategoryFormFields);
 
         FormSection section = new FormSection("Default", 1, workPermitTypeChecklistCategoryFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         workPermitTypeChecklistCategoryForm.setSections(Collections.singletonList(section));
+        workPermitTypeChecklistCategoryForm.setIsSystemForm(true);
+        workPermitTypeChecklistCategoryForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workPermitTypeChecklistCategoryForm);
     }

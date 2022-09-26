@@ -18,6 +18,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class SignupUtil {
 
-
+        private static Logger LOGGER = LogManager.getLogger(SignupUtil.class.getName());
 	public static void addNotesAndAttachmentModule(FacilioModule module) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -171,6 +172,8 @@ public class SignupUtil {
                 addModulesChain.execute();
         }
         public static void addFormForModules(List<FacilioForm> forms,List<ApplicationContext> allApplications, String moduleName) throws Exception {
+
+                LOGGER.info("Started adding Forms for module   : " +moduleName);
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> allFields = modBean.getAllFields(moduleName).stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),(name1, name2) -> { return name1; }));
 
@@ -198,7 +201,6 @@ public class SignupUtil {
                                 newSections.add(section);
                         }
                         form.setSections(newSections);
-                        form.setIsSystemForm(true);
                         if (form.getAppLinkNamesForForm() == null || form.getAppLinkNamesForForm().isEmpty()) {
                                 form.setAppId(allApplicationMap.get(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
                                 form.setAppLinkNamesForForm(Arrays.asList(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
@@ -228,8 +230,10 @@ public class SignupUtil {
                                 }
                         }
                 }
+                LOGGER.info("Completed adding Forms for module : " +moduleName);
         }
-        public static void addForm(FacilioForm form) throws  Exception{
+        private static void addForm(FacilioForm form) throws  Exception{
+                form.setIsSystemForm(true);
                 FacilioChain newForm = TransactionChainFactory.getAddFormCommand();
                 FacilioContext context=newForm.getContext();
                 FacilioModule module = form.getModule();

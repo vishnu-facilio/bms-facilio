@@ -77,11 +77,12 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         workOrderItemFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item Type", FormField.Required.REQUIRED, "itemTypes", 1, 2,true));
         workOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 1, 3,true));
         workOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, 2, 2));
-//        workOrderItemForm.setFields(workOrderItemFormFields);
 
         FormSection section = new FormSection("Default", 1, workOrderItemFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         workOrderItemForm.setSections(Collections.singletonList(section));
+        workOrderItemForm.setIsSystemForm(true);
+        workOrderItemForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workOrderItemForm);
     }

@@ -52,6 +52,11 @@ public class QuoteModule extends BaseModuleConfig{
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -115,6 +120,8 @@ public class QuoteModule extends BaseModuleConfig{
         sections.add(notesSection);
 
         quotationForm.setSections(sections);
+        quotationForm.setIsSystemForm(true);
+        quotationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(quotationForm);
     }

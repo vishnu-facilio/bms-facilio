@@ -17,12 +17,10 @@ public class AddPointsCommand extends FacilioCommand {
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
         List<Map<String,Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
         PointsUtil.addPoints(controller,points);
-
-        FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-        context.put(AgentConstants.POINT_NAMES,mlPointsToTag(points,agent));
+        context.put(AgentConstants.POINT_NAMES,mlPointsToTag(points));
         return false;
     }
-    public List<String> mlPointsToTag(List<Map<String,Object>>points, FacilioAgent agent){
+    public List<String> mlPointsToTag(List<Map<String,Object>>points){
         List<String>pointNames = new ArrayList<>();
         for (Map<String,Object>point: points){
             if((int) point.get(AgentConstants.CONFIGURE_STATUS)==3){

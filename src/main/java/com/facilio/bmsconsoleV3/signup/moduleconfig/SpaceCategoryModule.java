@@ -42,6 +42,8 @@ public class SpaceCategoryModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, spaceCategoryFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         spaceCategoryForm.setSections(Collections.singletonList(section));
+        spaceCategoryForm.setIsSystemForm(true);
+        spaceCategoryForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(spaceCategoryForm);
     }

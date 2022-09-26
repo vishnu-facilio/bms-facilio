@@ -54,8 +54,10 @@ public class DeliveriesModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.ContextNames.DELIVERIES);
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -72,7 +74,6 @@ public class DeliveriesModule extends BaseModuleConfig{
         deliveriesForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         deliveriesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
-//      --> THESE FormField IS COMMON FOR deliveriesForm AND deliveriesPortalForm
         List<FormField> deliveriesFormFields = new ArrayList<>();
         FormField nameField = new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.OPTIONAL, 1, 1);
         nameField.setHideField(true);
@@ -84,13 +85,12 @@ public class DeliveriesModule extends BaseModuleConfig{
         deliveriesFormFields.add(new FormField("deliveryArea", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", FormField.Required.OPTIONAL, "deliveryArea", 6, 2));
         deliveriesFormFields.add(new FormField("carrier", FacilioField.FieldDisplayType.SELECTBOX, "Carrier", FormField.Required.REQUIRED, 7, 2));
         deliveriesFormFields.add(new FormField("signature", FacilioField.FieldDisplayType.SIGNATURE, "Signature", FormField.Required.OPTIONAL, 8, 1));
-//      --> THESE FormField IS COMMON FOR deliveriesForm AND deliveriesPortalForm
-
-//        deliveriesForm.setFields(deliveriesFormFields);
 
         FormSection deliveriesFormSection = new FormSection("Default", 1, deliveriesFormFields, false);
         deliveriesFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveriesForm.setSections(Collections.singletonList(deliveriesFormSection));
+        deliveriesForm.setIsSystemForm(true);
+        deliveriesForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm deliveriesPortalForm = new FacilioForm();
@@ -101,9 +101,23 @@ public class DeliveriesModule extends BaseModuleConfig{
 //        deliveriesPortalForm.setFields(deliveriesFormFields);
         deliveriesPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection deliveriesPortalFormSection = new FormSection("Default", 1, deliveriesFormFields, false);
+        List<FormField> deliveriesPortalFormFields = new ArrayList<>();
+        FormField portalNameField = new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.OPTIONAL, 1, 1);
+        portalNameField.setHideField(true);
+        deliveriesPortalFormFields.add(portalNameField);
+        deliveriesPortalFormFields.add(new FormField("trackingNumber", FacilioField.FieldDisplayType.TEXTBOX, "Tracking Number", FormField.Required.OPTIONAL, 2, 2));
+        deliveriesPortalFormFields.add(new FormField("employee", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Recipient", FormField.Required.OPTIONAL, "employee", 3, 2));
+        deliveriesPortalFormFields.add(new FormField("receivedTime", FacilioField.FieldDisplayType.DATETIME, "Received Time", FormField.Required.REQUIRED, 4, 2));
+        deliveriesPortalFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Photo", FormField.Required.OPTIONAL,5,2));
+        deliveriesPortalFormFields.add(new FormField("deliveryArea", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", FormField.Required.OPTIONAL, "deliveryArea", 6, 2));
+        deliveriesPortalFormFields.add(new FormField("carrier", FacilioField.FieldDisplayType.SELECTBOX, "Carrier", FormField.Required.REQUIRED, 7, 2));
+        deliveriesPortalFormFields.add(new FormField("signature", FacilioField.FieldDisplayType.SIGNATURE, "Signature", FormField.Required.OPTIONAL, 8, 1));
+
+        FormSection deliveriesPortalFormSection = new FormSection("Default", 1, deliveriesPortalFormFields, false);
         deliveriesPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         deliveriesPortalForm.setSections(Collections.singletonList(deliveriesPortalFormSection));
+        deliveriesPortalForm.setIsSystemForm(true);
+        deliveriesPortalForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm scanForDeliveriesForm = new FacilioForm();
@@ -132,6 +146,8 @@ public class DeliveriesModule extends BaseModuleConfig{
         FormSection scanForDeliveriesFormSection = new FormSection("Default", 1, scanForDeliveriesFormFields, false);
         scanForDeliveriesFormSection.setSectionType(FormSection.SectionType.FIELDS);
         scanForDeliveriesForm.setSections(Collections.singletonList(scanForDeliveriesFormSection));
+        scanForDeliveriesForm.setIsSystemForm(true);
+        scanForDeliveriesForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> deliveriesModuleForms = new ArrayList<>();
         deliveriesModuleForms.add(deliveriesForm);

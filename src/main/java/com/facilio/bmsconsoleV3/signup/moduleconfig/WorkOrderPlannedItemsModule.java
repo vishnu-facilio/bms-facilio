@@ -100,11 +100,12 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         totalCost.setIsDisabled(true);
         plannedItemsFormFields.add(totalCost);
 
-//        plannedItemsForm.setFields(plannedItemsFormFields);
 
         FormSection section = new FormSection("Default", 1, plannedItemsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         plannedItemsForm.setSections(Collections.singletonList(section));
+        plannedItemsForm.setIsSystemForm(true);
+        plannedItemsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(plannedItemsForm);
     }

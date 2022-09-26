@@ -54,6 +54,7 @@ public class NeighbourhoodModule extends BaseModuleConfig{
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         allView.setAppLinkNames(appLinkNames);
 
@@ -93,6 +94,8 @@ public class NeighbourhoodModule extends BaseModuleConfig{
         FormSection neighbourhoodFormSection = new FormSection("Default", 1, neighbourhoodFormFields, false);
         neighbourhoodFormSection.setSectionType(FormSection.SectionType.FIELDS);
         neighbourhoodForm.setSections(Collections.singletonList(neighbourhoodFormSection));
+        neighbourhoodForm.setIsSystemForm(true);
+        neighbourhoodForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm neighbourhoodPortalForm = new FacilioForm();
         neighbourhoodPortalForm.setDisplayName("Neighbourhood");
@@ -118,6 +121,8 @@ public class NeighbourhoodModule extends BaseModuleConfig{
         FormSection neighbourhoodPortalFormSection = new FormSection("Default", 1, fields, false);
         neighbourhoodPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         neighbourhoodPortalForm.setSections(Collections.singletonList(neighbourhoodPortalFormSection));
+        neighbourhoodPortalForm.setIsSystemForm(true);
+        neighbourhoodPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> neighbourhoodModuleForms = new ArrayList<>();
         neighbourhoodModuleForms.add(neighbourhoodForm);

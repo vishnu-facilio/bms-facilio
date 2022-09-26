@@ -52,6 +52,11 @@ public class ServiceModule extends BaseModuleConfig{
         allView.setDisplayName("All Service");
         allView.setSortFields(Arrays.asList(new SortField(name, true)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -74,11 +79,12 @@ public class ServiceModule extends BaseModuleConfig{
         serviceModuleFormFields.add(new FormField("paymentType", FacilioField.FieldDisplayType.SELECTBOX, "Payment Type", FormField.Required.REQUIRED, 4, 1));
         serviceModuleFormFields.add(new FormField("buyingPrice", FacilioField.FieldDisplayType.DECIMAL, "Buying Price", FormField.Required.OPTIONAL, 5, 1));
         serviceModuleFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.DECIMAL, "Selling Price", FormField.Required.OPTIONAL, 6, 1));
-//        serviceModuleForm.setFields(serviceModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, serviceModuleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         serviceModuleForm.setSections(Collections.singletonList(section));
+        serviceModuleForm.setIsSystemForm(true);
+        serviceModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(serviceModuleForm);
     }

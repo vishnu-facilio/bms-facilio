@@ -66,6 +66,8 @@ public class HazardModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, hazardFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         hazardForm.setSections(Collections.singletonList(section));
+        hazardForm.setIsSystemForm(true);
+        hazardForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(hazardForm);
     }

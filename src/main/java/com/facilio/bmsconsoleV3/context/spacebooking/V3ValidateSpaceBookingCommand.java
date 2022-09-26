@@ -31,56 +31,39 @@ public class V3ValidateSpaceBookingCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        String moduleName = Constants.getModuleName(context);
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule spaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
         List<FacilioField> fields = modBean.getAllFields(spaceBookingModule.getName());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        List<FacilioField> selectFields = Arrays.asList(fieldMap.get("bookingStartTime"), fieldMap.get("bookingEndTime"),fieldMap.get("space"));
+        List<FacilioField> selectFields = Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME), fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME),fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID));
 
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3SpaceBookingContext> spaceBooking = recordMap.get(moduleName);
+        Long startTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
+        Long endTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
+        Long currentTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.CURRENT_TIME);
+        long spaceId = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID);
 
-        if (CollectionUtils.isNotEmpty(spaceBooking)) {
-
-            Map<String, Object> bodyParams = Constants.getBodyParams(context);
-
-            Long startTime = null;
-            Long endTime = null;
-            long spaceId = -1;
-            for (V3SpaceBookingContext booking : spaceBooking) {
-
-                 startTime = booking.getBookingStartTime();
-                 endTime = booking.getBookingEndTime();
-                spaceId = booking.getSpace().getId();
-            }
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(spaceBookingModule.getTableName())
+                .select(selectFields)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID), String.valueOf(spaceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS));
 
 
-
-            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .table(modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING).getTableName())
-                    .select(selectFields)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), String.valueOf(spaceId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS));
-
-
-            List<Map<String, Object>> props = selectBuilder.get();
-
-            for(Map<String, Object> prop : props) { 
-                Long bookingEndTime = (Long)prop.get("bookingEndTime");
-                Long bookingStartTime = (Long)prop.get("bookingStartTime");
-                // Check selected slot not overlaps the existing booked slots
-                if(((startTime <bookingStartTime && endTime <= bookingStartTime) ||(startTime>=bookingEndTime && endTime> bookingEndTime) || ( (startTime > bookingStartTime && startTime >bookingEndTime ) && (endTime > bookingStartTime && endTime >bookingEndTime ))|| ((startTime <bookingStartTime && startTime <bookingEndTime) &&(endTime <bookingStartTime && endTime <bookingEndTime))) && (endTime >startTime)) {
-                // Selected Booking Range
-                 }
-
-
-            else{
-                   throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this space  ");
+                List<Map<String, Object>> props = selectBuilder.get();
+                if (props != null) {
+                    for (Map<String, Object> prop : props) {
+                        Long bookingEndTime = (Long) prop.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
+                        Long bookingStartTime = (Long) prop.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
+                        // Check selected slot not overlaps the existing booked slots
+                        if (((startTime < bookingStartTime && endTime <= bookingStartTime) || (startTime >= bookingEndTime && endTime > bookingEndTime) || ((startTime > bookingStartTime && startTime > bookingEndTime) && (endTime > bookingStartTime && endTime > bookingEndTime)) || ((startTime < bookingStartTime && startTime < bookingEndTime) && (endTime < bookingStartTime && endTime < bookingEndTime))) && (endTime > startTime) && (startTime>=currentTime)) {
+                            // Selected Booking Range
+                        } else {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this space  ");
+                        }
+                    }
                 }
-            }
 
-        }
 
         return false;
     } }

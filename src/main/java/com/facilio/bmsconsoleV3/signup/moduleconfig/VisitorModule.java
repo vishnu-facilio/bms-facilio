@@ -43,6 +43,12 @@ public class VisitorModule extends BaseModuleConfig{
         allView.setName("all");
         allView.setDisplayName("All Visitors");
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -62,11 +68,12 @@ public class VisitorModule extends BaseModuleConfig{
         visitorKioskFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.NUMBER, "Enter your mobile number", FormField.Required.REQUIRED, 1, 1));
         visitorKioskFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Hi,What is your full name?", FormField.Required.REQUIRED, 1, 1));
         visitorKioskFormFields.add(new FormField("email", FacilioField.FieldDisplayType.EMAIL, "What is your email id?", FormField.Required.OPTIONAL, 2, 1));
-//        visitorKioskForm.setFields(visitorKioskFormFields);
 
         FormSection visitorKioskFormSection = new FormSection("Default", 1, visitorKioskFormFields, false);
         visitorKioskFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorKioskForm.setSections(Collections.singletonList(visitorKioskFormSection));
+        visitorKioskForm.setIsSystemForm(true);
+        visitorKioskForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm visitorForm = new FacilioForm();
         visitorForm.setDisplayName("VISITOR");
@@ -75,30 +82,40 @@ public class VisitorModule extends BaseModuleConfig{
         visitorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         visitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
-//        --> THESE FORM FIELD LIST IS COMMON FOR visitorForm AND portalVisitorForm
         List<FormField> visitorFormFields = new ArrayList<>();
         visitorFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
         visitorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
         visitorFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 3, 1));
         visitorFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 1));
         visitorFormFields.add(new FormField("location", FacilioField.FieldDisplayType.ADDRESS, "Location", FormField.Required.OPTIONAL, 5, 1));
-//        visitorForm.setFields(visitorFormFields);
 
         FormSection visitorFormSection = new FormSection("Default", 1, visitorFormFields, false);
         visitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         visitorForm.setSections(Collections.singletonList(visitorFormSection));
+        visitorForm.setIsSystemForm(true);
+        visitorForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm portalVisitorForm = new FacilioForm();
         portalVisitorForm.setDisplayName("VISITOR");
         portalVisitorForm.setName("default_portal_visitor_web");
         portalVisitorForm.setModule(visitorModule);
         portalVisitorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-//        portalVisitorForm.setFields(visitorFormFields);
         portalVisitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection portalVisitorFormSection = new FormSection("Default", 1, visitorFormFields, false);
+        List<FormField> portalVisitorFormFields = new ArrayList<>();
+        portalVisitorFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
+        portalVisitorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        portalVisitorFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 3, 1));
+        portalVisitorFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 1));
+        portalVisitorFormFields.add(new FormField("location", FacilioField.FieldDisplayType.ADDRESS, "Location", FormField.Required.OPTIONAL, 5, 1));
+
+        FormSection portalVisitorFormSection = new FormSection("Default", 1, portalVisitorFormFields, false);
         portalVisitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
         portalVisitorForm.setSections(Collections.singletonList(portalVisitorFormSection));
+        portalVisitorForm.setIsSystemForm(true);
+        portalVisitorForm.setType(FacilioForm.Type.FORM);
+
 
         List<FacilioForm> visitorModuleForms = new ArrayList<>();
         visitorModuleForms.add(visitorKioskForm);

@@ -1098,5 +1098,14 @@
             <property name="isDownload" type="boolean"/>
         </urlparams>
     </request>-->
+<!--    <request path="/api/v2/template/email/testMail">
+        <requestbody type="object">
+                <property name="templateId" type="number" mandatory="true"/>
+                <property name="recordId" type="number" mandatory="true"/>
+        </requestbody>
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>-->
 
 </config>

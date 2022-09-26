@@ -151,6 +151,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         createdTime.setModule(ModuleFactory.getWorkOrdersModule());
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getAllOverdueWorkOrders() {
@@ -167,6 +173,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         createdTime.setModule(ModuleFactory.getWorkOrdersModule());
         SortField sortField = new SortField(createdTime, false);
         overdueView.setSortFields(Arrays.asList(sortField));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getAllDueTodayWorkOrders() {
@@ -184,6 +196,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Due Today");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getOpenPlannedWorkOrders() {
@@ -212,6 +230,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Planned");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getOpenUnPlannedWorkOrders() {
@@ -241,6 +265,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         overdueView.setDisplayName("Un Planned");
         overdueView.setCriteria(criteria);
         overdueView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        overdueView.setAppLinkNames(appLinkNames);
+
         return overdueView;
     }
     private static FacilioView getUnassignedWorkorders() {
@@ -258,6 +288,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         unassignedWOView.setDisplayName("Unassigned");
         unassignedWOView.setCriteria(unassignedWOCriteria);
         unassignedWOView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        unassignedWOView.setAppLinkNames(appLinkNames);
+
         return unassignedWOView;
     }
     private static FacilioView getMyOpenWorkOrders() {
@@ -276,6 +312,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("My Work Orders");
         openTicketsView.setCriteria(criteria);
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getMyTeamOpenWorkOrders() {
@@ -294,6 +336,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("My Team Work Orders");
         openTicketsView.setCriteria(criteria);
         openTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getMyOverdueWorkOrders() {
@@ -312,6 +360,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         view.setDisplayName("My Overdue");
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
     private static FacilioView getMyDueTodayWorkOrders() {
@@ -339,6 +393,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         view.setDisplayName("My Due Today");
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
     private static FacilioView getFireSafetyWOs() {
@@ -393,6 +453,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         allView.setName("all");
         allView.setDisplayName("All Workorders");
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
     private static FacilioView getAllResolvedWorkOrders() {
@@ -408,6 +474,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         resolvedTicketsView.setDisplayName("Resolved");
         resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved"));
         resolvedTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        resolvedTicketsView.setAppLinkNames(appLinkNames);
+
         return resolvedTicketsView;
     }
     private static FacilioView getAllClosedWorkOrders() {
@@ -423,8 +495,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         openTicketsView.setDisplayName("Closed Workorders");
         openTicketsView.setCriteria(getClosedTicketsCriteria());
         openTicketsView.setSortFields(sortFields);
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        openTicketsView.setAppLinkNames(appLinkNames);
+
         return openTicketsView;
     }
     private static FacilioView getReportView() {
@@ -472,6 +548,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         preOpenTicketsView.setCriteria(criteria);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         preOpenTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        preOpenTicketsView.setAppLinkNames(appLinkNames);
+
         return preOpenTicketsView;
     }
     private static FacilioView getUpcomingWorkOrdersNextWeek() {
@@ -495,6 +577,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         preOpenTicketsView.setCriteria(criteria);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         preOpenTicketsView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        preOpenTicketsView.setAppLinkNames(appLinkNames);
+
         return preOpenTicketsView;
     }
     private static FacilioView getVendorWorkOrders() {
@@ -951,11 +1039,13 @@ public class WorkOrderModule extends BaseModuleConfig {
         urgency.setValueObject(WorkOrderContext.WOUrgency.NOTURGENT.getValue());
         serviceWorkOrderFormFields.add(urgency);
         serviceWorkOrderFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 6, 1));
-//        serviceWorkOrderForm.setFields(serviceWorkOrderFormFields);
+
 
         FormSection serviceWorkOrderFormSection = new FormSection("WORKORDER", 1, serviceWorkOrderFormFields, true);
         serviceWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
         serviceWorkOrderForm.setSections(Collections.singletonList(serviceWorkOrderFormSection));
+        serviceWorkOrderForm.setIsSystemForm(true);
+        serviceWorkOrderForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm approvalForm = new FacilioForm();
         approvalForm.setDisplayName("Approval");
@@ -975,11 +1065,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         approvalFormfields.add(new FormField("urgency", FacilioField.FieldDisplayType.URGENCY, "Urgency", FormField.Required.OPTIONAL, 7, 1));
         approvalFormfields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 8, 1));
         approvalFormfields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
-//        approvalForm.setFields(approvalFormfields);
 
         FormSection approvalFormFormSection = new FormSection("WORKORDER", 1, approvalFormfields, true);
         approvalFormFormSection.setSectionType(FormSection.SectionType.FIELDS);
         approvalForm.setSections(Collections.singletonList(approvalFormFormSection));
+        approvalForm.setIsSystemForm(true);
+        approvalForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm mobileApprovalForm = new FacilioForm();
         mobileApprovalForm.setDisplayName("Approval");
@@ -997,18 +1088,19 @@ public class WorkOrderModule extends BaseModuleConfig {
         mobileApprovalFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 6, 1));
         mobileApprovalFormFields.add(new FormField("urgency", FacilioField.FieldDisplayType.URGENCY, "Urgency", FormField.Required.OPTIONAL, "urgency" , 7, 1));
         mobileApprovalFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 8, 1));
-//        mobileApprovalForm.setFields(mobileApprovalFormFields);
 
         FormSection mobileApprovalFormSection = new FormSection("WORKORDER", 1, mobileApprovalFormFields, true);
         mobileApprovalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         mobileApprovalForm.setSections(Collections.singletonList(mobileApprovalFormSection));
+        mobileApprovalForm.setIsSystemForm(true);
+        mobileApprovalForm.setType(FacilioForm.Type.FORM);
 
-        FacilioForm mobileMobileWorkOrderForm = new FacilioForm();
-        mobileMobileWorkOrderForm.setDisplayName("SUBMIT WORKORDER");
-        mobileMobileWorkOrderForm.setName("mobile_default");
-        mobileMobileWorkOrderForm.setModule(workOrderModule);
-        mobileMobileWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        mobileMobileWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        FacilioForm mobileWorkOrderForm = new FacilioForm();
+        mobileWorkOrderForm.setDisplayName("SUBMIT WORKORDER");
+        mobileWorkOrderForm.setName("mobile_default");
+        mobileWorkOrderForm.setModule(workOrderModule);
+        mobileWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        mobileWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
         List<FormField> mobileMobileWorkOrderFormFields = new ArrayList<>();
         mobileMobileWorkOrderFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
@@ -1021,11 +1113,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         mobileMobileWorkOrderFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 8, 1));
         mobileMobileWorkOrderFormFields.add(new FormField("sendForApproval", FacilioField.FieldDisplayType.DECISION_BOX, "Send For Approval", FormField.Required.OPTIONAL, 9, 1));
         mobileMobileWorkOrderFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, 10, 1));
-//        mobileMobileWorkOrderForm.setFields(mobileMobileWorkOrderFormFields);
 
         FormSection mobileMobileWorkOrderFormSection = new FormSection("WORKORDER", 1, mobileMobileWorkOrderFormFields, true);
         mobileMobileWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
-        mobileMobileWorkOrderForm.setSections(Collections.singletonList(mobileMobileWorkOrderFormSection));
+        mobileWorkOrderForm.setSections(Collections.singletonList(mobileMobileWorkOrderFormSection));
+        mobileWorkOrderForm.setIsSystemForm(true);
+        mobileWorkOrderForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm webWorkOrderForm = new FacilioForm();
         webWorkOrderForm.setDisplayName("Standard");
@@ -1072,8 +1165,10 @@ public class WorkOrderModule extends BaseModuleConfig {
         webWorkOrderFormSections.add(defaultSection);
         webWorkOrderFormSections.add(tasksSection);
 
-//        webWorkOrderForm.setFields(webWorkOrderFormFields);
         webWorkOrderForm.setSections(webWorkOrderFormSections);
+        webWorkOrderForm.setIsSystemForm(true);
+        webWorkOrderForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm alarmWorkOrderForm = new FacilioForm();
         alarmWorkOrderForm.setDisplayName("Alarm Workorder");
@@ -1088,11 +1183,12 @@ public class WorkOrderModule extends BaseModuleConfig {
         alarmWorkOrderFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 2, 1));
         alarmWorkOrderFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 3, 1));
         alarmWorkOrderFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 4, 1));
-//        alarmWorkOrderForm.setFields(alarmWorkOrderFormFields);
 
         FormSection alarmWorkOrderFormSection = new FormSection("WORKORDER", 1, alarmWorkOrderFormFields, true);
         alarmWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
         alarmWorkOrderForm.setSections(Collections.singletonList(alarmWorkOrderFormSection));
+        alarmWorkOrderForm.setIsSystemForm(true);
+        alarmWorkOrderForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm preventiveMaintenanceForm =new FacilioForm();
         preventiveMaintenanceForm.setDisplayName("PREVENTIVE MAINTENANCE");
@@ -1117,11 +1213,13 @@ public class WorkOrderModule extends BaseModuleConfig {
         groups.addToConfig("lookupModuleName", "groups");
         preventiveMaintenanceFormFields.add(groups);
         preventiveMaintenanceFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
-//        preventiveMaintenanceForm.setFields(preventiveMaintenanceFormFields);
 
         FormSection preventiveMaintenanceFormSection = new FormSection("WORKORDER", 1, preventiveMaintenanceFormFields, true);
         preventiveMaintenanceFormSection.setSectionType(FormSection.SectionType.FIELDS);
         preventiveMaintenanceForm.setSections(Collections.singletonList(preventiveMaintenanceFormSection));
+        preventiveMaintenanceForm.setIsSystemForm(true);
+        preventiveMaintenanceForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm multiPreventiveMaintenanceForm =new FacilioForm();
         multiPreventiveMaintenanceForm.setDisplayName("PREVENTIVE MAINTENANCE");
@@ -1145,17 +1243,18 @@ public class WorkOrderModule extends BaseModuleConfig {
 //        group.addToConfig("lookupModuleName", "groups");
         multiPreventiveMaintenanceFormFields.add(groups);
         multiPreventiveMaintenanceFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
-//        multiPreventiveMaintenanceForm.setFields(multiPreventiveMaintenanceFormFields);
 
         FormSection multiPreventiveMaintenanceFormSection = new FormSection("WORKORDER", 1, multiPreventiveMaintenanceFormFields, true);
         multiPreventiveMaintenanceFormSection.setSectionType(FormSection.SectionType.FIELDS);
         multiPreventiveMaintenanceForm.setSections(Collections.singletonList(multiPreventiveMaintenanceFormSection));
+        multiPreventiveMaintenanceForm.setIsSystemForm(true);
+        multiPreventiveMaintenanceForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> workOrderModuleForms = new ArrayList<>();
         workOrderModuleForms.add(serviceWorkOrderForm);
         workOrderModuleForms.add(approvalForm);
         workOrderModuleForms.add(mobileApprovalForm);
-        workOrderModuleForms.add(mobileMobileWorkOrderForm);
+        workOrderModuleForms.add(mobileWorkOrderForm);
         workOrderModuleForms.add(webWorkOrderForm);
         workOrderModuleForms.add(alarmWorkOrderForm);
         workOrderModuleForms.add(preventiveMaintenanceForm);

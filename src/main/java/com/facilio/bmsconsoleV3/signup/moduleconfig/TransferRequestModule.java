@@ -53,8 +53,10 @@ public class TransferRequestModule extends BaseModuleConfig{
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -88,7 +90,6 @@ public class TransferRequestModule extends BaseModuleConfig{
         transferRequestFormFields.addAll(transferRequestFormDefaultFields);
         transferRequestFormFields.addAll(lineItemFields);
 
-//        transferRequestForm.setFields(transferRequestFormFields);
 
         FormSection defaultSection = new FormSection("Inventory Request", 1, transferRequestFormDefaultFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -101,6 +102,8 @@ public class TransferRequestModule extends BaseModuleConfig{
         sections.add(lineItemSection);
 
         transferRequestForm.setSections(sections);
+        transferRequestForm.setIsSystemForm(true);
+        transferRequestForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(transferRequestForm);
     }

@@ -52,6 +52,11 @@ public class AnnouncementModule extends BaseModuleConfig{
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -92,6 +97,8 @@ public class AnnouncementModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, announcementFormfields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         announcementForm.setSections(Collections.singletonList(section));
+        announcementForm.setIsSystemForm(true);
+        announcementForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(announcementForm);
     }

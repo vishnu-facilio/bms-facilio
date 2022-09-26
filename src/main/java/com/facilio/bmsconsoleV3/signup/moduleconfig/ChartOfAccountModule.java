@@ -51,8 +51,10 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         allView.setModuleName("chartofaccount");
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -81,6 +83,8 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, chartOfAccountFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         chartOfAccountForm.setSections(Collections.singletonList(Section));
+        chartOfAccountForm.setIsSystemForm(true);
+        chartOfAccountForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(chartOfAccountForm);
     }

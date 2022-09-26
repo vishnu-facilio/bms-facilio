@@ -55,6 +55,11 @@ public class AssetModule extends BaseModuleConfig{
         allView.setDisplayName("All Assets");
         allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -85,6 +90,11 @@ public class AssetModule extends BaseModuleConfig{
 
         assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        assetView.setAppLinkNames(appLinkNames);
+
         return assetView;
     }
 
@@ -109,6 +119,11 @@ public class AssetModule extends BaseModuleConfig{
         localId.setModule(ModuleFactory.getAssetsModule());
 
         assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        assetView.setAppLinkNames(appLinkNames);
 
         return assetView;
     }
@@ -250,11 +265,13 @@ public class AssetModule extends BaseModuleConfig{
         assetFormFields.add(new FormField("moveApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Is Move Approval Needed", FormField.Required.OPTIONAL, 13,2));
         assetFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 2));
         assetFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
-//        assetForm.setFields(assetFormFields);
 
         FormSection section = new FormSection("Default", 1, assetFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         assetForm.setSections(Collections.singletonList(section));
+        assetForm.setIsSystemForm(true);
+        assetForm.setType(FacilioForm.Type.FORM);
+
 
         FacilioForm mobileAssetForm = new FacilioForm();
         mobileAssetForm.setDisplayName("Asset");
@@ -280,11 +297,12 @@ public class AssetModule extends BaseModuleConfig{
         mobileAssetFormFields.add(new FormField("retireDate", FacilioField.FieldDisplayType.DATE, "Retire Date", FormField.Required.OPTIONAL, 13, 1));
         mobileAssetFormFields.add(new FormField("warrantyExpiryDate", FacilioField.FieldDisplayType.DATE, "Warranty Expiry Date", FormField.Required.OPTIONAL, 14, 1));
         mobileAssetFormFields.add(new FormField("qrVal", FacilioField.FieldDisplayType.TEXTBOX, "QR Value", FormField.Required.OPTIONAL, 15, 1));
-//        mobileAssetForm.setFields(mobileAssetFormFields);
 
         FormSection mobileAssetFormSection = new FormSection("Default", 1, mobileAssetFormFields, false);
         mobileAssetFormSection.setSectionType(FormSection.SectionType.FIELDS);
         mobileAssetForm.setSections(Collections.singletonList(mobileAssetFormSection));
+        mobileAssetForm.setIsSystemForm(true);
+        mobileAssetForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> assetModuleForms = new ArrayList<>();
         assetModuleForms.add(assetForm);

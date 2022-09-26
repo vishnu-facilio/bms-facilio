@@ -108,7 +108,6 @@ public class ContactModule extends BaseModuleConfig{
         contactForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         contactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
-//        --> THESE FormField IS COMMON FOR contactForm AND portalContactFormForm
         List<FormField> contactFormFields = new ArrayList<>();
         contactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         contactFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 2, 2));
@@ -118,28 +117,40 @@ public class ContactModule extends BaseModuleConfig{
         contactFormFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, "tenant",4, 3));
         contactFormFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, "client",5, 2));
         contactFormFields.add(new FormField("isPrimaryContact", FacilioField.FieldDisplayType.DECISION_BOX, "Is Primary Contact", FormField.Required.OPTIONAL, 6, 3));
-//        --> THESE FormField IS COMMON FOR contactForm AND portalContactFormForm
-//        contactForm.setFields(contactFormFields);
 
         FormSection Section = new FormSection("Default", 1, contactFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         contactForm.setSections(Collections.singletonList(Section));
+        contactForm.setIsSystemForm(true);
+        contactForm.setType(FacilioForm.Type.FORM);
 
-        FacilioForm portalContactFormForm = new FacilioForm();
-        portalContactFormForm.setDisplayName("CONTACT");
-        portalContactFormForm.setName("default_contact_portal");
-        portalContactFormForm.setModule(contactModule);
-        portalContactFormForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-//        portalContactFormForm.setFields(contactFormFields);
-        portalContactFormForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection portalFormSection = new FormSection("Default", 1, contactFormFields, false);
+        FacilioForm portalContactForm = new FacilioForm();
+        portalContactForm.setDisplayName("CONTACT");
+        portalContactForm.setName("default_contact_portal");
+        portalContactForm.setModule(contactModule);
+        portalContactForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        portalContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+
+        List<FormField> portalContactFormFields = new ArrayList<>();
+        portalContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        portalContactFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 2, 2));
+        portalContactFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 3));
+        portalContactFormFields.add(new FormField("contactType", FacilioField.FieldDisplayType.SELECTBOX, "Contact Type", FormField.Required.REQUIRED, 3, 1));
+        portalContactFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, "vendors",4, 2));
+        portalContactFormFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, "tenant",4, 3));
+        portalContactFormFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, "client",5, 2));
+        portalContactFormFields.add(new FormField("isPrimaryContact", FacilioField.FieldDisplayType.DECISION_BOX, "Is Primary Contact", FormField.Required.OPTIONAL, 6, 3));
+
+        FormSection portalFormSection = new FormSection("Default", 1, portalContactFormFields, false);
         portalFormSection.setSectionType(FormSection.SectionType.FIELDS);
-        portalContactFormForm.setSections(Collections.singletonList(portalFormSection));
+        portalContactForm.setSections(Collections.singletonList(portalFormSection));
+        portalContactForm.setIsSystemForm(true);
+        portalContactForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> contactModuleForms = new ArrayList<>();
         contactModuleForms.add(contactForm);
-        contactModuleForms.add(portalContactFormForm);
+        contactModuleForms.add(portalContactForm);
 
         return contactModuleForms;
     }

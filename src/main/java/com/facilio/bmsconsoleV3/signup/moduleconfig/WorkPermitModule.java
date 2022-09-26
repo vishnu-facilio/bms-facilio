@@ -48,7 +48,6 @@ public class WorkPermitModule extends BaseModuleConfig{
         workPermitFormFields.addAll(workPermitFormDefaultFields);
         workPermitFormFields.addAll(checklistFields);
 
-//        workPermitForm.setFields(workPermitFormFields);
 
         FormSection defaultSection = new FormSection("PERMIT INFORMATION", 1, workPermitFormFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -61,6 +60,8 @@ public class WorkPermitModule extends BaseModuleConfig{
         sections.add(checklistSection);
 
         workPermitForm.setSections(sections);
+        workPermitForm.setIsSystemForm(true);
+        workPermitForm.setType(FacilioForm.Type.FORM);
 
 
         FacilioForm portalWorkPermitForm = new FacilioForm();
@@ -77,7 +78,7 @@ public class WorkPermitModule extends BaseModuleConfig{
         portalWorkPermitFormFields.add(new FormField("expectedEndTime", FacilioField.FieldDisplayType.DATETIME, "Valid To", FormField.Required.OPTIONAL, 4, 1));
         portalWorkPermitFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED,"vendors", 6, 1));
         portalWorkPermitFormFields.add(new FormField("people", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Contact", FormField.Required.OPTIONAL, "people",7, 1));
-//        portalWorkPermitForm.setFields(portalWorkPermitFormFields);
+
 
         FormSection portalDefaultSection = new FormSection("PERMIT INFORMATION", 1, portalWorkPermitFormFields, true);
         portalDefaultSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -86,6 +87,8 @@ public class WorkPermitModule extends BaseModuleConfig{
         section.add(portalDefaultSection);
 
         portalWorkPermitForm.setSections(section);
+        portalWorkPermitForm.setIsSystemForm(true);
+        portalWorkPermitForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> workPermitModuleForms = new ArrayList<>();
         workPermitModuleForms.add(workPermitForm);

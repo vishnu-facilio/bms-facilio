@@ -27,7 +27,7 @@ public class InviteVisitorModule extends BaseModuleConfig{
         ArrayList<FacilioView> inviteVisitor = new ArrayList<FacilioView>();
         inviteVisitor.add(getUpcomingInviteVisitsView().setOrder(order++));
         inviteVisitor.add(getTodayInviteVisitorInvitesView().setOrder(order++));
-//        inviteVisitor.add(getPendingInviteVisitorInvitesView().setOrder(order++));
+        inviteVisitor.add(getPendingInviteVisitorInvitesView().setOrder(order++));
         inviteVisitor.add(getAllInviteVisitorInvitesView().setOrder(order++));
 
         groupDetails = new HashMap<>();
@@ -86,6 +86,12 @@ public class InviteVisitorModule extends BaseModuleConfig{
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
         view.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -106,8 +112,13 @@ public class InviteVisitorModule extends BaseModuleConfig{
 
         FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", inviteVisitorModule,FieldType.DATE_TIME);
         view.setSortFields(Arrays.asList(new SortField(expCheckInTime, false)));
-
         view.setCriteria(criteria);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
 
         return view;
     }
@@ -155,8 +166,13 @@ public class InviteVisitorModule extends BaseModuleConfig{
         view.setCriteria(criteria);
 
         List<SortField> sortFields = Arrays.asList(new SortField(expCheckInTime, false));
-
         view.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        view.setAppLinkNames(appLinkNames);
 
         return view;
     }
@@ -171,6 +187,12 @@ public class InviteVisitorModule extends BaseModuleConfig{
         FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", inviteVisitorModule,FieldType.DATE_TIME);
 
         allView.setSortFields(Arrays.asList(new SortField(expCheckInTime, true)));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

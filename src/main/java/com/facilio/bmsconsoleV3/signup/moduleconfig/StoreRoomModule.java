@@ -57,6 +57,11 @@ public class StoreRoomModule extends BaseModuleConfig{
         allView.setDisplayName("All Stores");
         allView.setSortFields(sortFields);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -89,6 +94,8 @@ public class StoreRoomModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, storeRoomFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         storeRoomForm.setSections(Collections.singletonList(section));
+        storeRoomForm.setIsSystemForm(true);
+        storeRoomForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(storeRoomForm);
     }

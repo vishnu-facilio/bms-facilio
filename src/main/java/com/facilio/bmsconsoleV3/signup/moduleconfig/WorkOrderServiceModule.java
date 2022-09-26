@@ -71,9 +71,8 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         FacilioForm workOrderServiceModuleForm = new FacilioForm();
         workOrderServiceModuleForm.setDisplayName("New Work Order Service");
         workOrderServiceModuleForm.setName("default_workorderService_web");
-        workOrderServiceModuleForm.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WO_SERVICE));
+        workOrderServiceModuleForm.setModule(workOrderServiceModule);
         workOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        workOrderServiceModuleForm.setAppLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         workOrderServiceModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 
         List<FormField> workOrderServiceModuleFormFields = new ArrayList<>();
@@ -86,6 +85,8 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         FormSection workOrderServiceModuleFormSection = new FormSection("Default", 1, workOrderServiceModuleFormFields, false);
         workOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
         workOrderServiceModuleForm.setSections(Collections.singletonList(workOrderServiceModuleFormSection));
+        workOrderServiceModuleForm.setIsSystemForm(true);
+        workOrderServiceModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(workOrderServiceModuleForm);
 

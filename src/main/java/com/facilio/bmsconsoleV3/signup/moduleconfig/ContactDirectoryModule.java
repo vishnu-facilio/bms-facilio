@@ -56,6 +56,7 @@ public class ContactDirectoryModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -88,6 +89,8 @@ public class ContactDirectoryModule extends BaseModuleConfig{
         FormSection Section = new FormSection("Default", 1, contactDirectoryFormFields, false);
         Section.setSectionType(FormSection.SectionType.FIELDS);
         contactDirectoryForm.setSections(Collections.singletonList(Section));
+        contactDirectoryForm.setIsSystemForm(true);
+        contactDirectoryForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(contactDirectoryForm);
     }

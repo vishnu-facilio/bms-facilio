@@ -25,8 +25,8 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
     private static final Logger LOGGER = LogManager.getLogger(AddSignupDataCommandV3.class.getName());
     private static final String DEFAULT_SIGNUP_CONF_PATH = FacilioUtil.normalizePath("conf/signup.yml");
     public static final List<SignUpData> SIGN_UP_CHAIN = initSignUpChain();
-    public static final boolean createForms = false;
-    public static final boolean createViews = false;
+    public static final boolean createForms = true;
+    public static final boolean createViews = true;
     private static List<SignUpData> initSignUpChain() {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;

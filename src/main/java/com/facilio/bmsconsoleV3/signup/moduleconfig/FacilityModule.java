@@ -50,8 +50,10 @@ public class FacilityModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -115,6 +117,8 @@ public class FacilityModule extends BaseModuleConfig{
         sections.add(checklistSection);
 
         facilityCreationForm.setSections(sections);
+        facilityCreationForm.setIsSystemForm(true);
+        facilityCreationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(facilityCreationForm);
     }

@@ -103,6 +103,8 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
         FormSection section = new FormSection("Default", 1, plannedToolsFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         plannedToolsForm.setSections(Collections.singletonList(section));
+        plannedToolsForm.setIsSystemForm(true);
+        plannedToolsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(plannedToolsForm);
     }

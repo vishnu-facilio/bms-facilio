@@ -74,23 +74,33 @@ public class LockersModule extends BaseModuleConfig{
         lockersFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 5, 2));
         lockersFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 6, 3));
         lockersFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 7, 1));
-        lockersForm.setFields(lockersFormFields);
+
 
         FormSection lockersFormSection = new FormSection("Default", 1, lockersFormFields, false);
         lockersFormSection.setSectionType(FormSection.SectionType.FIELDS);
         lockersForm.setSections(Collections.singletonList(lockersFormSection));
+        lockersForm.setIsSystemForm(true);
+        lockersForm.setType(FacilioForm.Type.FORM);
 
         FacilioForm lockersPortalForm = new FacilioForm();
         lockersPortalForm.setDisplayName("NEW LOCKER");
         lockersPortalForm.setName("default_lockers_portal");
         lockersPortalForm.setModule(lockersModule);
         lockersPortalForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        lockersPortalForm.setFields(lockersFormFields);
         lockersPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection lockersPortalFormSection = new FormSection("Default", 1, lockersFormFields, false);
+        List<FormField> lockersPortalFormFields = new ArrayList<>();
+        lockersPortalFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        lockersPortalFormFields.add(new FormField("employee", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Employee", FormField.Required.REQUIRED, "employee", 2, 2));
+        lockersPortalFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 5, 2));
+        lockersPortalFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 6, 3));
+        lockersPortalFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 7, 1));
+
+        FormSection lockersPortalFormSection = new FormSection("Default", 1, lockersPortalFormFields, false);
         lockersPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         lockersPortalForm.setSections(Collections.singletonList(lockersPortalFormSection));
+        lockersPortalForm.setIsSystemForm(true);
+        lockersPortalForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> lockersModuleForms = new ArrayList<>();
         lockersModuleForms.add(lockersForm);

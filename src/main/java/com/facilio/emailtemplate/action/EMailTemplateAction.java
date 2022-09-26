@@ -7,6 +7,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.emailtemplate.context.EMailStructure;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,10 @@ public class EMailTemplateAction extends FacilioAction {
     public void setFetchAll(Boolean fetchAll) {
         this.fetchAll = fetchAll;
     }
-
+    @Getter @Setter
+    private long templateId = -1;
+    @Getter @Setter
+    private long recordId = -1;
     public String list() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAllEmailStructureChain();
         FacilioContext context = chain.getContext();
@@ -78,7 +83,6 @@ public class EMailTemplateAction extends FacilioAction {
     public void setId(long id) {
         this.id = id;
     }
-
     public String viewEmailStructure() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getEmailStructureChain();
         FacilioContext context = chain.getContext();
@@ -109,5 +113,16 @@ public class EMailTemplateAction extends FacilioAction {
         chain.execute();
         setResult(FacilioConstants.ContextNames.PUBLISH_SUCCESS,"Email Template published successfully");
         return SUCCESS;
+    }
+
+    public String testMailTemplate() throws Exception{
+        FacilioChain chain= TransactionChainFactory.getTestEmailChain();
+        FacilioContext context=chain.getContext();
+        context.put(FacilioConstants.ContextNames.TEMPLATE_ID,templateId);
+        context.put(FacilioConstants.ContextNames.RECORD_ID,recordId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        chain.execute();
+        return SUCCESS;
+
     }
 }

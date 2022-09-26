@@ -51,8 +51,10 @@ public class TransferRequestShipmentModule extends BaseModuleConfig{
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
 
-        List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
-        appDomains.add(AppDomain.AppDomainType.FACILIO);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -76,6 +78,8 @@ public class TransferRequestShipmentModule extends BaseModuleConfig{
         FormSection section = new FormSection("Default", 1, transferRequestShipmentFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         transferRequestShipmentForm.setSections(Collections.singletonList(section));
+        transferRequestShipmentForm.setIsSystemForm(true);
+        transferRequestShipmentForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(transferRequestShipmentForm);
     }

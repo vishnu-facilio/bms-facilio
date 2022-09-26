@@ -2729,3 +2729,4 @@
 /api/v2/publicFile/addPublicFile
 /api/v2/publicFile/addPublicUrlForFile
 /api/v2/publicFile/deletePublicFile
+/api/v2/template/email/testMail
