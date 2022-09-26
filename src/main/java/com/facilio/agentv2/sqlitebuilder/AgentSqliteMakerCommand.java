@@ -1,19 +1,9 @@
 package com.facilio.agentv2.sqlitebuilder;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.commands.AgentV2Command;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
-//import com.facilio.sqlUtils.sqllite.SQLiteUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.util.Map;
 
 public class AgentSqliteMakerCommand extends AgentV2Command {
     private static final Logger LOGGER = LogManager.getLogger(AgentSqliteMakerCommand.class.getName());

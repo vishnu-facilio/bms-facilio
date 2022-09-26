@@ -103,7 +103,9 @@ function init() {
     <br>Agent Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
     out.println(LRUCache.getAgentCache());
 %></textarea>
-
+    <br>Controller Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(LRUCache.getControllerCache());
+%></textarea>
 
 </div>
 

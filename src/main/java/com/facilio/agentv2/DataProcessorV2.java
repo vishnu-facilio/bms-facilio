@@ -7,8 +7,8 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.cacheimpl.ControllerBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
@@ -58,9 +58,9 @@ public class DataProcessorV2 {
     private long orgId;
     private String orgDomainName;
     private AgentUtilV2 agentUtil;
-    private ControllerUtilV2 controllerUtil;
-    private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
     private final Map<Long, String> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
+    private final ControllerBean controllerBean = AgentConstants.getControllerBean();
+    private final AgentBean agentBean = AgentConstants.getAgentBean();
 
     private static final Meter OTEL_METER = GlobalOpenTelemetry.getMeter(DataProcessorV2.class.getSimpleName());
 
@@ -72,7 +72,7 @@ public class DataProcessorV2 {
 
     private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
 
-    public DataProcessorV2(long orgId, String orgDomainName, AgentUtilV2 agentUtil) {
+    public DataProcessorV2(long orgId, String orgDomainName, AgentUtilV2 agentUtil) throws Exception {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.agentUtil = agentUtil;
@@ -95,11 +95,9 @@ public class DataProcessorV2 {
             }
             if (agent.getAgentType() != AgentType.CLOUD.getKey()) {
                 agent.setLastDataReceivedTime(timeStamp);
-                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
                 agentBean.updateAgentLastDataReceivedTime(agent);
             }
 
-            controllerUtil = getControllerUtil(agent.getId());
             if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
                 LOGGER.info("Exception Occurred, " + AgentConstants.PUBLISH_TYPE + " is mandatory in payload " + payload);
                 return false;
@@ -132,7 +130,7 @@ public class DataProcessorV2 {
                     break;
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    Controller timeseriesController = getCachedControllerUsingPayload(payload, agent.getId());
+                    Controller timeseriesController = controllerBean.getController(payload, agent.getId());
                     int messagePartition = 0;
                     if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
                         messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
@@ -153,7 +151,7 @@ public class DataProcessorV2 {
                     }
                     break;
                 case COV:
-                    Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
+                    Controller controller = controllerBean.getController(payload,agent.getId());
                     timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
@@ -214,7 +212,7 @@ public class DataProcessorV2 {
         try {
             payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
             if (containsCheck(AgentConstants.CONTROLLER, payload)) {
-                Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
+                Controller controller = controllerBean.getController(payload, agent.getId());
                 IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
                 //for modbus device points are sent as ACK's,
                 //so redirecting to devicePoints from ack
@@ -283,13 +281,14 @@ public class DataProcessorV2 {
                     List<Controller> listOfControllers = new ArrayList<>();
                     for (Object controllerObj: controllerArray){
                         JSONObject controllerObject = (JSONObject) controllerObj;
+                        JSONObject controllerPayload = new JSONObject();
                         if (controllerObject.containsKey(AgentConstants.CONTROLLER_TYPE)) {
-                            int type = Integer.parseInt(controllerObject.get(AgentConstants.CONTROLLER_TYPE).toString());
-                            FacilioControllerType controllerType = FacilioControllerType.valueOf(type);
-                            Controller controllr = controllerUtil.getCachedController(controllerObject, controllerType);
+                            controllerPayload.put(AgentConstants.CONTROLLER_TYPE, controllerObject.remove(AgentConstants.CONTROLLER_TYPE));
+                            controllerPayload.put(AgentConstants.CONTROLLER, controllerObject);
+                            Controller controllr = controllerBean.getController(controllerPayload, agent.getId());
                             if (controllr!=null) {
                                 listOfControllers.add(controllr);
-                            }else {
+                            } else {
                                 LOGGER.info("Controller is null while processing event");
                             }
                         }
@@ -326,7 +325,7 @@ public class DataProcessorV2 {
         }
     }
 
-    private Controller getCachedControllerUsingPayload(JSONObject payload, long agentId) throws Exception {
+/*    private Controller getCachedControllerUsingPayload(JSONObject payload, long agentId) throws Exception {
             if(containsCheck(AgentConstants.CONTROLLER,payload)) {
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
                 if (containsCheck(AgentConstants.CONTROLLER_TYPE, payload)) {
@@ -340,7 +339,6 @@ public class DataProcessorV2 {
                         if (controller != null) {
                             return controller;
                         } else {
-                            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
                             FacilioAgent agent = agentBean.getAgent(agentId);
                             if (agent.getAgentTypeEnum().allowAutoAddition()) {
                                 MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
@@ -364,7 +362,7 @@ public class DataProcessorV2 {
                 throw new Exception("payload is missing" + AgentConstants.CONTROLLER);
             }
 
-    }
+    } */
 
     public static boolean containsCheck(String key, Map map){
         if( (key != null) && ( ! key.isEmpty()) && ( map != null ) && ( ! map.isEmpty() ) && (map.containsKey(key)) && (map.get(key) != null) ){
@@ -402,8 +400,8 @@ public class DataProcessorV2 {
                 throw new Exception("payload missing controllerType ");
             }
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
-            Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
-            //Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
+            Controller controller = controllerBean.getController(payload, agent.getId());
+
             if (controller != null) {
                 return PointsUtil.processPoints(payload, controller, agent);
             } else {
@@ -440,8 +438,8 @@ public class DataProcessorV2 {
                 context.put(AgentConstants.AGENT_ID, controller.getAgentId());
             } else {
                 context.put(AgentConstants.CONTROLLER_ID, -1L);
-                if (payload.containsKey("agent")) {
-                    long agentId = getAgentId(payload.get("agent").toString());
+                if (payload.containsKey(AgentConstants.AGENT)) {
+                    long agentId = agentBean.getAgent((Long) payload.get(AgentConstants.AGENT)).getId();
                     if (agentId > 0) {
                         context.put(AgentConstants.AGENT_ID, agentId);
                     }
@@ -480,7 +478,7 @@ public class DataProcessorV2 {
     private boolean processCustom(FacilioAgent agent,JSONObject payload) {
 
     	try {
-            Controller customController = getCachedControllerUsingPayload(payload,agent.getId());
+            Controller customController = controllerBean.getController(payload, agent.getId());
             JSONObject customPayload = (JSONObject) payload.clone();
             if (customController != null) {
                 customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
@@ -511,29 +509,5 @@ public class DataProcessorV2 {
         }
         return false;
     }
-
-    private long getAgentId(String agent) throws Exception {
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getNewAgentModule().getTableName())
-                .select(FieldFactory.getNewAgentFields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agent, StringOperators.IS));
-        List<Map<String, Object>> rows =selectRecordBuilder.get();
-        if (rows.size()>0){
-            return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
-        }
-        return -1;
-    }
-
-    public ControllerUtilV2 getControllerUtil(long agentId){
-        ControllerUtilV2 cU;
-        if(agentIdControllerUtilMap.containsKey(agentId)){
-            cU = agentIdControllerUtilMap.get(agentId);
-        }else {
-            cU = new ControllerUtilV2(agentId,orgId);
-            agentIdControllerUtilMap.put(agentId,cU);
-        }
-        return cU;
-    }
-
 
 }

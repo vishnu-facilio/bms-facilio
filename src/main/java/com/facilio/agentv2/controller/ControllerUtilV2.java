@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.ControllerBean;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
@@ -53,7 +54,7 @@ public class ControllerUtilV2 {
     }
 
 
-    public static Controller makeCustomController(long orgId, long agentId, JSONObject controllerJson) {
+    public static Controller makeCustomController(long orgId, long agentId, JSONObject controllerJson) throws Exception {
         CustomController controller = null;
         try {
 
@@ -74,7 +75,7 @@ public class ControllerUtilV2 {
             controller.setAgentId(agentId);
             controller.setActive(true);
             controller.setName((String)controllerJson.get(AgentConstants.NAME));
-            if (ControllerApiV2.addController(controller) < 1) {
+            if (AgentConstants.getControllerBean().addController(controller) < 1) {
                 controller = null;
             }
         }
@@ -98,7 +99,7 @@ public class ControllerUtilV2 {
     public Controller getCachedController(JSONObject controllerJson, FacilioControllerType controllerType) throws Exception {
 
         if((controllerJson != null)&&(controllerType != null)){
-            Controller mockController = ControllerApiV2.makeControllerFromMap(controllerJson,controllerType);
+            Controller mockController = AgentConstants.getControllerBean().makeControllerFromMap(controllerJson,controllerType);
             if ((controllerMapList.get(controllerType.asInt()) == null)) {// avoids null pointer --  loads the controller map
                 controllerMapList.get(controllerType.asInt()).putAll(new HashMap<>());
             }
@@ -139,7 +140,6 @@ public class ControllerUtilV2 {
                         if (AccountUtil.getCurrentOrg().getOrgId() == 152 && controller != null) {
                             LOGGER.info("Controller from DB for :" + controllerType.asInt() + " : " + controller.toJSON());
                         }
-                        //controller = ControllerApiV2.getControllerFromDb(controllerJson, agentId, controllerType);
                     } catch (Exception e) {
                         LOGGER.info(" Exception while fetching controller ",e);
                     }
@@ -178,7 +178,7 @@ public class ControllerUtilV2 {
                 deviceJSON.putAll((JSONObject)object);
             }
         }
-        controller = ControllerApiV2.makeControllerFromMap(deviceJSON,controllerType);
+        controller = AgentConstants.getControllerBean().makeControllerFromMap(deviceJSON,controllerType);
         return (T) controller;
     }
 
@@ -224,7 +224,7 @@ public class ControllerUtilV2 {
                 controllerList.add(getControllerFromJSON(deviceJSON, controllerType));
             }
 
-            List<? extends Controller> controllersToAdd = ControllerApiV2.getControllersToAdd(agent.getId(), controllerType, controllerList);
+            List<? extends Controller> controllersToAdd = AgentConstants.getControllerBean().getControllersToAdd(agent.getId(), controllerType, controllerList);
             if(controllersToAdd !=null && !controllersToAdd.isEmpty()){
                 for (Object controllerObject : controllersToAdd) {
                     Controller controller = (Controller) controllerObject;
@@ -250,9 +250,9 @@ public class ControllerUtilV2 {
                             } else {
                                 rtuControllerContext.setNetwork(rtuNetworkContext);
                             }
-                            controllerId = ControllerApiV2.addController(rtuControllerContext);
+                            controllerId = AgentConstants.getControllerBean().addController(rtuControllerContext);
                         } else {
-                            controllerId = ControllerApiV2.addController(controller);
+                            controllerId = AgentConstants.getControllerBean().addController(controller);
                         }
                         if (controllerId > 0) {
                             controller.setId(controllerId);

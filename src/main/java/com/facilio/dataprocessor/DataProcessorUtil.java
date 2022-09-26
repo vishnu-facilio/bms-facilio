@@ -474,7 +474,8 @@ public class DataProcessorUtil {
         String agentName = null;
         if (payload.containsKey(AgentConstants.AGENT)) {
             agentName = payload.get(AgentConstants.AGENT).toString().trim();
-            com.facilio.agentv2.FacilioAgent agent = agentUtilV2.getFacilioAgent(agentName);
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            com.facilio.agentv2.FacilioAgent agent = agentBean.getAgent(agentName);
             if (agent != null) {
                 return agent;
             } else {

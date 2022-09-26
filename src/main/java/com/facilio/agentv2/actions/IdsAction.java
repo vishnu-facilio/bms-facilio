@@ -2,7 +2,6 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
@@ -31,7 +30,7 @@ public class IdsAction extends AgentActionV2
     public String deleteControllers(){
         try {
             List<Long> controllerIds = getRecordIds();
-            if (ControllerApiV2.deleteControllerApi(controllerIds)) {
+            if (AgentConstants.getControllerBean().deleteControllerApi(controllerIds)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             } else {

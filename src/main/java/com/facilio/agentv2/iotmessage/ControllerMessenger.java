@@ -20,7 +20,6 @@ import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.point.Point;
@@ -50,7 +49,7 @@ public class ControllerMessenger {
         }
         long controllerId = (long) points.get(0).getControllerId();
         LOGGER.info("Point Context value :"+points);
-        return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
+        return constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), command, points, null);
     }
 
     private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command, Controller controller, int interval) throws Exception {
@@ -121,7 +120,10 @@ public class ControllerMessenger {
 	            		break;
 	            		//
 	            	case SET:
-	            		JSONArray pointsData = MessengerUtil.getPointsData(points);
+                        if(!agent.getWritable()) {
+                            throw new Exception("Agent is not writable");
+                        }
+                        JSONArray pointsData = MessengerUtil.getPointsData(points);
 	            		for (Object pointsDatumObject : pointsData) {
 	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;
 	            			Point point = points.get(pointsData.indexOf(pointdatum));
@@ -248,7 +250,7 @@ public class ControllerMessenger {
     }
 
 public static boolean discoverPoints(long controllerId) throws Exception {
-            IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
+            IotData iotData = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
 }
@@ -276,7 +278,7 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void resetController(long controllerId) throws Exception {
-        IotData iotDat = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.RESET);
+        IotData iotDat = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.RESET);
         MessengerUtil.addAndPublishNewAgentData(iotDat);
     }
 

@@ -12,14 +12,13 @@ import org.apache.log4j.Logger;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 
 public class ModbusControllerAction extends AgentIdAction {
 
-    private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ModbusControllerAction.class.getName());
 
 
     @NotNull

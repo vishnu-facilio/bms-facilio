@@ -7,7 +7,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
@@ -59,7 +58,7 @@ public class SubscribeUnsbscribeCommand extends AgentV2Command {
                     if(points!=null && !points.isEmpty()){
                         long agentId = points.get(0).getAgentId();
                         long controllerId = points.get(0).getControllerId();
-                        Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
+                        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
                         context.put(AgentConstants.POINT_NAMES,mlPointsToTag(points,agentId));
                         context.put(AgentConstants.CONTROLLER,controller);
 
