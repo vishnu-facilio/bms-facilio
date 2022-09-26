@@ -76,7 +76,6 @@ public class ParkingStallModule extends BaseModuleConfig{
         parkingStallFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 5, 2));
         parkingStallFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 6, 2));
         parkingStallFormFields.add(new FormField("employee", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Employee", FormField.Required.OPTIONAL,"employee", 7, 2));
-        parkingStallForm.setFields(parkingStallFormFields);
 
         FormSection parkingStallFormSection = new FormSection("Default", 1, parkingStallFormFields, false);
         parkingStallFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -92,7 +91,16 @@ public class ParkingStallModule extends BaseModuleConfig{
         parkingStallPortalForm.setFields(parkingStallFormFields);
         parkingStallPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
-        FormSection parkingStallPortalFormSection = new FormSection("Default", 1, parkingStallFormFields, false);
+        List<FormField> parkingStallPortalFormFields = new ArrayList<>();
+        parkingStallPortalFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        parkingStallPortalFormFields.add(new FormField("parkingType", FacilioField.FieldDisplayType.SELECTBOX, "Parking Type", FormField.Required.REQUIRED, 2, 2));
+        parkingStallPortalFormFields.add(new FormField("parkingMode", FacilioField.FieldDisplayType.SELECTBOX, "Parking Mode", FormField.Required.REQUIRED, 3, 2));
+        parkingStallPortalFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 4, 2));
+        parkingStallPortalFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 5, 2));
+        parkingStallPortalFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 6, 2));
+        parkingStallPortalFormFields.add(new FormField("employee", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Employee", FormField.Required.OPTIONAL,"employee", 7, 2));
+
+        FormSection parkingStallPortalFormSection = new FormSection("Default", 1, parkingStallPortalFormFields, false);
         parkingStallPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
         parkingStallPortalForm.setSections(Collections.singletonList(parkingStallPortalFormSection));
         parkingStallPortalForm.setIsSystemForm(true);
