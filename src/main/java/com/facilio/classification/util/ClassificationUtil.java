@@ -246,7 +246,7 @@ public class ClassificationUtil {
     public static FacilioModule getNewClassificationDataModule(FacilioModule parentModule, String tableName) throws Exception {
         FacilioModule newClassificationDataModule = new FacilioModule();
         newClassificationDataModule.setName(parentModule.getName() + "_" + "classification_data");
-        newClassificationDataModule.setDisplayName("Classification Data Module for " + parentModule.getName());
+        newClassificationDataModule.setDisplayName(parentModule.getDisplayName() +"CMD Classifications");
         newClassificationDataModule.setType(FacilioModule.ModuleType.CLASSIFICATION_DATA);
         newClassificationDataModule.setTableName(tableName);
 
