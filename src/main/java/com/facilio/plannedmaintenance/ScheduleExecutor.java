@@ -1,5 +1,6 @@
 package com.facilio.plannedmaintenance;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
@@ -32,7 +33,7 @@ public class ScheduleExecutor extends ExecutorBase {
         List<Long> nextExecutionTimes = new ArrayList<>();
         calculateEndTime(trigger, cutOffTime);
 
-        long maxNextExecutionCount = 100;
+        long maxNextExecutionCount = 750;
         while (nextExecutionTime.getLeft() <= (trigger.getEndTime())) { // inconsistency, endpoint set via computeEndtimeUsingTriggerType() is in seconds so /1000 isn't required. -Now Fixed
             if (nextExecutionTime.getLeft() < cutOffTime / 1000) {
                 nextExecutionTime = schedule.nextExecutionTime(nextExecutionTime);
@@ -40,7 +41,8 @@ public class ScheduleExecutor extends ExecutorBase {
             }
             nextExecutionTimes.add(nextExecutionTime.getLeft());
             if (nextExecutionTimes.size() > maxNextExecutionCount) {
-                throw new IllegalArgumentException("Only 100 executions are allowed, this is to avoid OOMs and infinite looping.");
+                CommonCommandUtil.emailException("ScheduleExecutor", "Only 750 executions are allowed, this is to avoid OOMs and infinite looping.", schedule.toString());
+                throw new IllegalArgumentException("Only 750 executions are allowed, this is to avoid OOMs and infinite looping.");
             }
             nextExecutionTime = schedule.nextExecutionTime(nextExecutionTime);
         }
