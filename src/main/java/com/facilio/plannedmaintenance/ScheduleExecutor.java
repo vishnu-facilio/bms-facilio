@@ -90,20 +90,20 @@ public class ScheduleExecutor extends ExecutorBase {
         if (triggerV2.getEndTime() <= 0 && triggerV2.getPlanEndTime() <= 0) {
             endTime = computeEndtimeUsingTriggerType(scheduleInfo, cutOffTime); // endtime isn't assigned here, and again set at line:68, where endpoint is 0. -Now Fixed
         } else if (triggerV2.getPlanEndTime() > 0 && triggerV2.getEndTime() <= 0) {
-            endTime = triggerV2.getPlanEndTime();
+            endTime = triggerV2.getPlanEndTime() / 1000; // TODO: need to check planned endtime
         } else if (triggerV2.getEndTime() > 0 && triggerV2.getPlanEndTime() <= 0) {
-            endTime = triggerV2.getEndTime();
+            endTime = triggerV2.getEndTime() / 1000;
         } else {
             endTime = Math.min(triggerV2.getPlanEndTime(), triggerV2.getEndTime());
         }
-        triggerV2.setEndTime(endTime);
+        triggerV2.setEndTime(endTime); // endTime in seconds
     }
 
     /**
      * Helper method to set endTime based on @param scheduleInfo's FrequencyType.
      * @param scheduleInfo
      * @param cutOffTime - Time from which schedule generation should be calculated.
-     * @return trigger's endtime
+     * @return trigger's endtime in seconds
      */
     private long computeEndtimeUsingTriggerType(ScheduleInfo scheduleInfo, long cutOffTime) {
         ZonedDateTime dateTime = DateTimeUtil.getDateTime(cutOffTime, false);
