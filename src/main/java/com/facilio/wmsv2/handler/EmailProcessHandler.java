@@ -42,7 +42,7 @@ import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 
 @TopicHandler(
-        topic = EmailProcessHandler.TOPIC,
+        topic = EmailProcessHandler.TOPIC+"/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
         sendToAllWorkers = false

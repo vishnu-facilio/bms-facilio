@@ -40,7 +40,7 @@ public class WorkOrderRequestAPI {
             insertBuilder.save();
             
 			SessionManager.getInstance().sendMessage(new Message()
-			        .setTopic(EmailProcessHandler.TOPIC)
+			        .setTopic(EmailProcessHandler.TOPIC+"/"+recipient)
 			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
 
             LOGGER.info("ID of the workOrder : "+workOrderEmailProps.get("id"));
