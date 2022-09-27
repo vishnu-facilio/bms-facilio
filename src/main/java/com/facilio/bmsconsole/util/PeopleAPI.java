@@ -104,7 +104,7 @@ public class PeopleAPI {
 			people.setPhone(user.getMobile());
 			people.setPeopleType(PeopleType.EMPLOYEE);
 			people.setIsAppAccess(true);
-			people.setUser(true);
+//			people.setUser(true);
 			people.setRoleId(user.getRoleId());
 
 			people.setLanguage(user.getLanguage());
