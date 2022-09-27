@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 @Getter
 @Setter
-public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
+public class AlarmOccurrenceContext extends V3Context {
 	private static final long serialVersionUID = 1L;
 
 	public AlarmOccurrenceContext() {
