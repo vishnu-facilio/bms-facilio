@@ -80,7 +80,7 @@ public class ContactDirectoryModule extends BaseModuleConfig{
         contactDirectoryFormFields.add(new FormField("contactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Contact Phone", FormField.Required.REQUIRED,4, 1));
         contactDirectoryFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 5, 1));
         contactDirectoryFormFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 6, 1));
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",7, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",7, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         contactDirectoryFormFields.add(field);

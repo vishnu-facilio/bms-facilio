@@ -84,7 +84,7 @@ public class DealsAndOffersModule extends BaseModuleConfig{
         FormField attachment = new FormField("dealsandoffersattachments", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, 6, 1);
         attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
         dealsAndOffersFormFields.add(attachment);
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",7, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",7, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         dealsAndOffersFormFields.add(field);
