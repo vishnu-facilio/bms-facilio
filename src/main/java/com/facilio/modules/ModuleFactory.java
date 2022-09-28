@@ -5282,7 +5282,7 @@ public class ModuleFactory {
 		return RDM_Controller;
 	}
 
-	public static FacilioModule getSpaceBookingFormRelationModule(){
+public static FacilioModule getSpaceBookingFormRelationModule(){
 		FacilioModule spaceBookingFormRelationModule = new FacilioModule();
 		spaceBookingFormRelationModule.setName(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION);
 		spaceBookingFormRelationModule.setDisplayName("Space Category Form Relation");

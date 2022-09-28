@@ -1113,4 +1113,29 @@
             <property name="formFieldId" type="number"/>
         </requestbody>
     </request>
+
+
+    <request path="/api/v3/formrelation/create">
+        <requestbody type="object">
+            <property name="formRelationData" type="object">
+                <property name="id" type="number"/>
+                <property name="appId" type="number"/>
+                <property name="parentModuleId" type="number"/>
+                <property name="categoryId" type="number"/>
+                <property name="moduleFormId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/formrelation/list">
+        <requestbody type="object">
+            <property name="formRelationData" type="object">
+                <property name="id" type="number"/>
+                <property name="appId" type="number"/>
+                <property name="parentModuleId" type="number"/>
+                <property name="categoryId" type="number"/>
+                <property name="moduleFormId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
 </config>

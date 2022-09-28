@@ -1150,4 +1150,17 @@
             <param name="workflowId">{1}</param>
         </action>
     </package>
+
+<!--    this is temp we will remove it soon -->
+    <package name="spaceCategoryformRelation" namespace="/api/v3/formrelation" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
+                method="addformRelation"/>
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
+                method="getList"/>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
+                method="updateFormRelation"/>
+    </package>
 </struts>

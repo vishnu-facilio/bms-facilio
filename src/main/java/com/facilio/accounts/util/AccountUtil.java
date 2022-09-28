@@ -514,7 +514,8 @@ public class AccountUtil {
 
 		WORKPLACE_APPS(87, 8388608, LicenseMapping.GROUP2LICENSE), // 2^23
 		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) , // 2^24
-		ASSET_SPARE_PARTS(89,33554432,LicenseMapping.GROUP2LICENSE); // 2^25
+		ASSET_SPARE_PARTS(89,33554432,LicenseMapping.GROUP2LICENSE), // 2^25
+		NEW_BOOKING(90,67108864,LicenseMapping.GROUP2LICENSE); // 2^26
 
 		public int featureId;
 		private long license;
