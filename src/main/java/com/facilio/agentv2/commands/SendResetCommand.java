@@ -1,7 +1,6 @@
 package com.facilio.agentv2.commands;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -15,7 +14,7 @@ public class SendResetCommand extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
             if(checkNumber((Number) context.get(AgentConstants.CONTROLLER_ID))){
-                ControllerApiV2.resetConfiguredPoints((Long) context.get(AgentConstants.CONTROLLER_ID));
+                AgentConstants.getControllerBean().resetConfiguredPoints((Long) context.get(AgentConstants.CONTROLLER_ID));
                 ControllerMessenger.resetController((Long) context.get(AgentConstants.CONTROLLER_ID));
             }else {
                 throw new Exception(" controller id can't be less than 1");

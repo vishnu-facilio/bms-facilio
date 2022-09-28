@@ -1670,6 +1670,18 @@ public class TransactionChainFactory {
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
+		public static FacilioChain getExportpivotReportFileChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(ReadOnlyChainFactory.fetchPivotReportChain());
+		c.addCommand(new ExportPivotReport());
+		return c;
+		}
+		public static FacilioChain sendPivotReportMailChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(getExportpivotReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+		}
 
 		public static FacilioChain getExportModuleAnalyticsFileChain() {
 			FacilioChain c = getDefaultChain();

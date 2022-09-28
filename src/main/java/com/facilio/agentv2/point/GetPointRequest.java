@@ -1,30 +1,7 @@
 package com.facilio.agentv2.point;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.util.CommissioningApi;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import com.facilio.agent.AgentType;
-import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agent.module.AgentFieldFactory;
-import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -39,6 +16,14 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class GetPointRequest {
     private static final Logger LOGGER = LogManager.getLogger(GetPointRequest.class.getName());
@@ -88,7 +73,7 @@ public class GetPointRequest {
     }
     
     public GetPointRequest withLogicalControllers(long agentId) throws Exception {
-    		Set<Long> controllersIds = ControllerApiV2.getControllerIds(Collections.singletonList(agentId));
+    		Set<Long> controllersIds = AgentConstants.getControllerBean().getControllerIds(Collections.singletonList(agentId));
 		if (CollectionUtils.isNotEmpty(controllersIds)) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
 					String.valueOf(true), BooleanOperators.IS));

@@ -11,7 +11,6 @@ import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
@@ -130,32 +129,16 @@ public class SqliteBridge{
                         newController.setControllerType(controllerType.getKey());
                         newController.setAgentId(newAgent.getId());
                         newController.setSiteId(newAgent.getSiteId());
-                        try {
-                            //addFieldDevice(newController);
-                            long newControllerId = ControllerApiV2.addController(newController, newAgent);
+                        //addFieldDevice(newController);
+ /*                         long newControllerId = AgentConstants.getControllerBean().addController(newController, newAgent);
 
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId);
                             if (newControllerId > 0) {
                                 pair.setLeft(newControllerId);
                                 controller.setAgentId(newAgent.getId());
                             }
-                        } catch (MySQLIntegrityConstraintViolationException | BatchUpdateException e) {
-                            LOGGER.info(" duplicate controller present");
-                            try {
-                                GetControllerRequest getControllerRequest = new GetControllerRequest()
-                                        .withAgentId(newAgent.getId())
-                                        .withControllerProperties(newController.getChildJSON(), FacilioControllerType.valueOf(controllerType.getKey()));
-                                Controller existingController = getControllerRequest.getController();
-                                if(existingController == null){
-                                    throw new Exception(" controller not present and cant be added ");
-                                }
-                                controller.setAgentId(existingController.getId());
-                            }catch (Exception e1){
-                                LOGGER.info(" exception while fetching existing controller ",e1);
-                                continue;
-                            }
-                            LOGGER.info("Controller already migrated "+controller.getId());
-                    }
+
+  */
                         controllersToMigrate.add(pair);
                     }
                 } catch (Exception e) {
@@ -232,7 +215,7 @@ public class SqliteBridge{
                         }
                         FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
                         FacilioContext context = new FacilioContext();
-                        Controller cont = ControllerApiV2.getControllerFromDb(newControllerId);
+                        Controller cont = AgentConstants.getControllerBean().getControllerFromDb(newControllerId);
                         context.put(AgentConstants.CONTROLLER,cont);
                         context.put(AgentConstants.POINTS,newPoints);
                         addPointsChain.setContext(context);

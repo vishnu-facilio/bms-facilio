@@ -65,7 +65,7 @@ public class AgentBeanCacheImpl extends AgentBeanImpl implements AgentBean{
         return isEdited;
     }
 
-    public void dropAgentFromCache(String agentName) {
+    private void dropAgentFromCache(String agentName) {
         FacilioCache<String, Object> cache = LRUCache.getAgentCache();
         if (cache.get(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName)) != null) {
             cache.remove(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName));

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.criteria.operators.*;
@@ -175,24 +176,61 @@ public class ReportUtil {
 		
 		return report;
 	}
-	
-	
+
+public static FacilioContext Constructpivot(FacilioContext context,long jobId) throws Exception {
+	FacilioModule module = ModuleFactory.getReportScheduleInfo();
+	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+			.table(module.getTableName())
+			.select(FieldFactory.getReportScheduleInfo1Fields())
+			.andCondition(CriteriaAPI.getIdCondition(jobId, module));
+	List<Map<String, Object>> props = builder.get();
+	Map<String, Object> prop = null;
+	if (props != null && !props.isEmpty() && props.get(0) != null) {
+		prop = props.get(0);
+	}
+	Long reportId = (long) prop.get("reportId");
+	ReportContext reportContext = ReportUtil.getReport(reportId);
+
+	JSONParser parser = new JSONParser();
+	ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+			(JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+	context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+	context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+	context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
+	context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
+	context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+	context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+	context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+	context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+	context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+	context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+	context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
+	context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+	context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
+	context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
+	context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
+	context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+	context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+	return null;
+}
+
+
 	public static FacilioContext getReportData(Map<String,Object> params) throws Exception {
 		
 		FacilioChain fetchReadingDataChain = ReadOnlyChainFactory.newFetchReadingReportChain();
-		
+
 		FacilioContext context = fetchReadingDataChain.getContext();
-		
+
 		List<ReadingAnalysisContext> metrics = new ArrayList<>();
 		if(params != null) {
-			
-			
+
+
 			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
-			
+
 			AggregateOperator xAggr = AggregateOperator.getAggregateOperator(xAggrInt);
-			
+
 			DateOperators dateOperator = params.get("dateOperator") != null?(DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString())):null;
-			
+
 			if(params.get("fields") != null) {
 				JSONParser parser = new JSONParser();
 				JSONArray fieldArray = (JSONArray) parser.parse(params.get("fields").toString());
@@ -201,30 +239,30 @@ public class ReportUtil {
 			ReportYAxisContext reportaxisContext = new ReportYAxisContext();
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
 			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
-			
+
 			Map<String, String> aliases = new HashMap<>();
 			aliases.put("actual", "A");
-			
+
 			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
 			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
 			readingAnalysisContext.setType(1);
 			readingAnalysisContext.setAliases(aliases);
 			readingAnalysisContext.setyAxis(reportaxisContext);
-			
+
 			metrics.add(readingAnalysisContext);
 			}
-			
+
 			if(params.get("startTime") != null && params.get("endTime") != null) {
-				
+
 				context.put(FacilioConstants.ContextNames.START_TIME, params.get("startTime"));
 				context.put(FacilioConstants.ContextNames.END_TIME, params.get("endTime"));
 			}
 			else if(dateOperator != null){
-				
+
 				context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
 				context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
 			}
-			
+
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
 			if(params.get("mode") != null) {
@@ -240,7 +278,7 @@ public class ReportUtil {
 				context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
 			}
 			fetchReadingDataChain.execute();
-			
+
 			return context;
 		}
 		return null;

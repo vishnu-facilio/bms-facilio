@@ -1,6 +1,5 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.module.AgentFieldFactory;
@@ -10,7 +9,6 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.misc.MiscPoint;
@@ -22,7 +20,6 @@ import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.agentv2.rdm.RdmPointContext;
 import com.facilio.agentv2.system.SystemPointContext;
 import com.facilio.bacnet.BACNetUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -46,7 +43,6 @@ import org.json.simple.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
@@ -293,7 +289,7 @@ public class PointsAPI {
     private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
         FacilioChain chain = TransactionChainFactory.pointsConfigurationComplete();
         FacilioContext context = chain.getContext();
-        Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
+        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
         context.put(AgentConstants.POINT_NAMES,pointNames);
         context.put(AgentConstants.CONTROLLER,controller);
         chain.execute();
@@ -569,7 +565,7 @@ public class PointsAPI {
     public static List<MiscPoint> getAgentPointsSuperficial(List<Long> agentIds) throws Exception {
         Set<Long> controllerIds;
         if ((agentIds != null) && ( ! agentIds.isEmpty())) {
-            controllerIds = ControllerApiV2.getControllerIds(agentIds);
+            controllerIds = AgentConstants.getControllerBean().getControllerIds(agentIds);
             LOGGER.info(" controller ids "+controllerIds);
             if ( ! controllerIds.isEmpty()) {
                 return getControllerPointsSuperficial(new ArrayList<>(controllerIds));

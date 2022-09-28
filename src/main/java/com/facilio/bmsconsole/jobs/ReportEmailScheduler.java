@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.jobs;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FieldUtil;
+import com.facilio.report.context.ReportPivotParamsContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -24,6 +26,8 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class ReportEmailScheduler extends FacilioJob {
 	
@@ -58,14 +62,13 @@ public class ReportEmailScheduler extends FacilioJob {
 				FacilioChain mailReportChain;
 				if (reportContext.getTypeEnum() == ReportType.WORKORDER_REPORT) {
 					mailReportChain = TransactionChainFactory.sendModuleReportMailChain(fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF);
-				}
-				else {
+				} else if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
+					ReportUtil.Constructpivot(context,jobId);
+					mailReportChain = TransactionChainFactory.sendPivotReportMailChain();
+				} else {
 					mailReportChain = TransactionChainFactory.sendReportMailChain();
 				}
-				mailReportChain.execute(context);				
-				
-			}
-			
+				mailReportChain.execute(context);}
 		} catch (Exception e) {
 			LOGGER.error("Error occurred during execution of ReportEmailScheduler", e);
 			CommonCommandUtil.emailException(ReportEmailScheduler.class.getName(), "Report Email Scheduler Job failed", e);

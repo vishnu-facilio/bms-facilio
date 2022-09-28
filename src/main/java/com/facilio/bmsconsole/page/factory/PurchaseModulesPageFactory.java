@@ -38,9 +38,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
 
-        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
-        detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
-        tab2Sec1.addWidget(detailsWidget);
+        addSecondaryDetailsWidget(tab2Sec1);
 
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
@@ -96,9 +94,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
 
-        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
-        detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
-        tab2Sec1.addWidget(detailsWidget);
+        addSecondaryDetailsWidget(tab2Sec1);
 
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
@@ -174,6 +170,12 @@ public class PurchaseModulesPageFactory extends PageFactory {
                 }
             }
         }
+    }
+
+    private static void addSecondaryDetailsWidget(Page.Section section) {
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(section, 24, 7);
+        section.addWidget(detailsWidget);
     }
 
 }

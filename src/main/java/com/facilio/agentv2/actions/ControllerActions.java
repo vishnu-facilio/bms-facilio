@@ -2,7 +2,6 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.chain.FacilioContext;
@@ -46,7 +45,7 @@ public class ControllerActions extends AgentActionV2 {
 
 	public String getControllerUsingId() {
         try {
-            List<Map<String, Object>> controller = ControllerApiV2.getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
+            List<Map<String, Object>> controller = AgentConstants.getControllerBean().getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
             if (controller != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();
@@ -83,7 +82,7 @@ public class ControllerActions extends AgentActionV2 {
 
     public String resetController() {
         try {
-            ControllerApiV2.resetController(getControllerId());
+            AgentConstants.getControllerBean().resetController(getControllerId());
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
             return SUCCESS;

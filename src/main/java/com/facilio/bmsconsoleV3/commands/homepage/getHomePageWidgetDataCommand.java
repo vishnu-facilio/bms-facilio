@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -48,16 +49,7 @@ public class getHomePageWidgetDataCommand extends FacilioCommand {
 
         return widgetDataList;
     }
-    private static List<HomepageWidgetData> getNutshellWidget() throws Exception {
-        HomepageWidgetData homepageWidget = new HomepageWidgetData();
-
-        List<HomepageWidgetData> widgetDataList = new ArrayList<HomepageWidgetData>();
-        widgetDataList.add(HomepageWidgteApi.getLatestMyDeskBooking());
-        widgetDataList.add(HomepageWidgteApi.getLatestMyParkingBooking());
-        widgetDataList.add(HomepageWidgteApi.getLatestMySpaceBooking());
-        widgetDataList.addAll(HomepageWidgteApi.getMyVisitorActionCards());
-
-
-        return widgetDataList.stream().filter(widget -> (widget != null )).collect(Collectors.toList());
+    private static Map<String, List<HomepageWidgetData>> getNutshellWidget() throws Exception {
+        return HomepageWidgteApi.getMySpaceBookingNutshellData();
     }
     }

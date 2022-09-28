@@ -15,6 +15,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -47,7 +48,133 @@ import java.util.stream.Collectors;
 public class HomepageWidgteApi {
     private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
 
-    public static List<HomepageWidgetData> getMyVisitorActionCards()throws Exception {
+    public static  Map<String, List<HomepageWidgetData>> getMySpaceBookingNutshellData()throws Exception {
+
+        Map<String, List<HomepageWidgetData>> widgetMapData = new HashMap<>();
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
+        FacilioModule parkingModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.PARKING);
+        FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        FacilioModule visitorModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+
+
+
+        List<V3SpaceBookingContext> bookingsList = getMySpaceBookings();
+
+       if(bookingsList != null) {
+           List<HomepageWidgetData> deskWidgetList = new ArrayList<>();
+           List<HomepageWidgetData> parkingWidgteList = new ArrayList<>();
+           List<HomepageWidgetData> spaceWidgetList = new ArrayList<>();
+
+           bookingsList.forEach(booking -> {
+               try {
+                   if(deskModule.getModuleId() == booking.getParentModuleId()) {
+                       deskWidgetList.add(getWidgetDataFromSPaceBookingContext(booking, deskModule));
+                   }
+                   else if(parkingModule.getModuleId() == booking.getParentModuleId()) {
+                       parkingWidgteList.add(getWidgetDataFromSPaceBookingContext(booking, parkingModule));
+                   }
+                   else {
+                       spaceWidgetList.add(getWidgetDataFromSPaceBookingContext(booking, spaceModule));
+                   }
+
+
+               } catch (Exception e) {
+                   throw new RuntimeException(e);
+               }
+
+           });
+
+           widgetMapData.put(deskModule.getName(),deskWidgetList);
+           widgetMapData.put(parkingModule.getName(), parkingWidgteList);
+           widgetMapData.put(spaceModule.getName(), spaceWidgetList);
+           widgetMapData.put(visitorModule.getName(), getMyVisitorActionCards());
+
+
+       }
+
+
+        return widgetMapData;
+    }
+
+    public static HomepageWidgetData getWidgetDataFromSPaceBookingContext (V3SpaceBookingContext spaceBooking, FacilioModule module) throws  Exception {
+        HomepageWidgetData widget = new HomepageWidgetData();
+
+        widget.setTitle(module.getDisplayName());
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
+        FacilioModule parkingModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.PARKING);
+        FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+
+        V3SpaceContext space = spaceBooking.getSpace();
+
+
+        if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
+            widget.setPrimaryText("You desk is " + space.getName());
+            widget.setSpace(space);
+            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            String time = "";
+            time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time = time.replace("am", "AM").replace("pm","PM");
+            widget.setTime(time);
+        }
+        else if(parkingModule.getModuleId() == spaceBooking.getParentModuleId()) {
+            widget.setPrimaryText("Slot No " + space.getName());
+            widget.setSpace(space);
+            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            String time = "";
+            time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time = time.replace("am", "AM").replace("pm","PM");
+            widget.setTime(time);
+        }
+        else {
+            widget.setPrimaryText("You space is " + space.getName());
+            widget.setSpace(space);
+            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            String time = "";
+            time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time = time.replace("am", "AM").replace("pm","PM");
+            widget.setTime(time);
+        }
+
+        return widget;
+    }
+    public static List<V3SpaceBookingContext> getMySpaceBookings()throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> map = FieldFactory.getAsMap(fields);
+
+        Long daystartTime = DateTimeUtil.getDayStartTime();
+        Long dayEndTime = DateTimeUtil.getDayEndTimeOf(daystartTime);
+
+
+        Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("host"), String.valueOf(peopleId), NumberOperators.EQUALS));
+//        criteria.addOrCondition(CriteriaAPI.getCondition(map.get("internalAttendees"), String.valueOf(peopleId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingStartTime"), String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
+
+        List<SupplementRecord> supplementRecords = new ArrayList<>();
+        supplementRecords.add((SupplementRecord)map.get("host"));
+//        supplementRecords.add((SupplementRecord)map.get("internalAttendees"));
+        supplementRecords.add((SupplementRecord)map.get("space"));
+
+        List<V3SpaceBookingContext> spaceBookingList = new ArrayList<>();
+
+        spaceBookingList= V3RecordAPI.getRecordsListWithSupplements(module.getName(), null, V3SpaceBookingContext.class, criteria, supplementRecords);
+
+
+        return spaceBookingList;
+    }
+
+        public static List<HomepageWidgetData> getMyVisitorActionCards()throws Exception {
         List<HomepageWidgetData> widgets = new ArrayList<>();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -85,25 +212,41 @@ public class HomepageWidgteApi {
                     if(visitor.getVisitedSpace() != null && visitor.getVisitedSpace().getName() != null) {
                         visitedSpace = visitor.getVisitedSpace().getName();
                     }
-                    String primaryText = visitor.getVisitorName()+ " is waiting to meet you";
+
+                               try {
+                                   FacilioStatus moduleState = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TICKET_STATUS, visitor.getModuleState().getId());
+                                   visitor.setModuleState(moduleState);
+                               }
+                               catch (Exception e) {
+                                   throw new RuntimeException(e);
+                               }
+
+                    String primaryText = visitor.getVisitorName()+ " will arrive soon";
                     widget.setIcon(4);
                     widget.setTitle(visitor.getModuleState().getDisplayName());
+                    widget.setTitle(module.getDisplayName());
                     widget.setPrimaryText(primaryText);
-//                    widget.setPrimaryText(visitor.getHost().getName());
                     widget.setSecondaryText(visitedSpace);
                     widget.setModuleName(module.getName());
                     widget.setSecondaryText2("Today");
                     params.put("record", visitor);
                     widget.setParams(params);
                     widget.setRecordId(visitor.getId());
-                    widgets.add(widget);
-
-                });
-            }
 
 
-        }
+                    widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(visitor.getExpectedCheckInTime() ));
 
+                  String time = "";
+                  time += new SimpleDateFormat("hh:mm a").format(visitor.getExpectedCheckInTime());
+                  time += " to " + new SimpleDateFormat("hh:mm a").format(visitor.getExpectedCheckOutTime());
+                  time = time.replace("am", "AM").replace("pm","PM");
+                  widget.setTime(time);
+                   widgets.add(widget);
+
+
+                          });
+                      }
+             }
 
         return widgets;
     }
@@ -166,6 +309,9 @@ public class HomepageWidgteApi {
 
                     widget.setSecondaryText("");
                     widget.setSecondaryText2("");
+
+
+
                     FacilioField carrierField;
                     try {
                         carrierField = modBean.getField("carrier", module.getName());
@@ -180,9 +326,7 @@ public class HomepageWidgteApi {
                         widget.setSecondaryText2(secondaryText);
                     }
 
-//                    String primaryText = "Package " + deliveries.getTrackingNumber() + " arrived";
-
-                    String primaryText = "Your Package is arrived";
+                    String primaryText = "Your can now pick up your package";
 
                     if (deliveries.getModuleState() != null && deliveries.getModuleState().getDisplayName() != null) {
                         widget.setTitle(deliveries.getModuleState().getDisplayName());
@@ -193,6 +337,10 @@ public class HomepageWidgteApi {
                     params.put("record", deliveries);
                     widget.setParams(params);
                     widget.setRecordId(deliveries.getId());
+    
+
+                    widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(deliveries.getReceivedTime() ));
+
                     widgets.add(widget);
                 });
 
@@ -206,7 +354,7 @@ public class HomepageWidgteApi {
             List <HomepageWidgetData> widgets = new ArrayList<>();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
-            List<V3FacilityBookingContext> bookingList = getMyActionBookingList(module);
+            List<V3SpaceBookingContext> bookingList = getMyActionBookingList(module);
             if(CollectionUtils.isNotEmpty(bookingList)) {
                 bookingList.forEach(booking -> {
                     try {
@@ -227,7 +375,7 @@ public class HomepageWidgteApi {
         List <HomepageWidgetData> widgets = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Floorplan.PARKING);
-        List<V3FacilityBookingContext> bookingList = getMyActionBookingList(module);
+        List<V3SpaceBookingContext> bookingList = getMyActionBookingList(module);
         if(CollectionUtils.isNotEmpty(bookingList)) {
             bookingList.forEach(booking -> {
                 try {
@@ -247,7 +395,7 @@ public class HomepageWidgteApi {
         List <HomepageWidgetData> widgets = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
-        List<V3FacilityBookingContext> bookingList = getMyActionBookingList(module);
+        List<V3SpaceBookingContext> bookingList = getMyActionBookingList(module);
         if(CollectionUtils.isNotEmpty(bookingList)) {
             bookingList.forEach(booking -> {
                 try {
@@ -264,93 +412,79 @@ public class HomepageWidgteApi {
         return widgets;
     }
 
-        public static HomepageWidgetData getWidgetFromBookingData(V3FacilityBookingContext booking, FacilioModule module) throws Exception {
+        public static HomepageWidgetData getWidgetFromBookingData(V3SpaceBookingContext booking, FacilioModule module) throws Exception {
             HomepageWidgetData widget = new HomepageWidgetData();
             JSONObject params = new JSONObject();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule FacilityBookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+            FacilioModule SpaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+            FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
+            FacilioModule parkingModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.PARKING);
+            FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
 
+            V3SpaceContext space = booking.getSpace();
 
             try {
                 FacilioStatus moduleState = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TICKET_STATUS, booking.getModuleState().getId());
                 booking.setModuleState(moduleState);
-                widget.setPrimaryText(" Your upcoming " + module.getDisplayName() + " booking");
             }
             catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
+            HashMap<String, Object> startTimeData = DateTimeUtil.getTimeData(booking.getBookingStartTime());
+            int startDay = (int) startTimeData.get("day");
             widget.setTitle(booking.getModuleState().getDisplayName());
             widget.setRecordId(booking.getId());
-            widget.setModuleName(FacilityBookingModule.getName());
-            params.put("record", booking);
-            widget.setParams(params);
-            widget.setSecondaryText(booking.getFacility().getName());
-            widget.setModuleName(FacilityBookingModule.getName());
-
-
-            List<BookingSlotsContext> bookingSlostList = null;
-            List<SlotContext> slotList = null;
-            try {
-                bookingSlostList = FacilityAPI.getBookingSlots(booking.getId());
-                slotList = bookingSlostList.stream().map(bookingslot -> bookingslot.getSlot()).collect(Collectors.toList());;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            Long durationstartTime = null;
-            Long durationEndTime = null;
-
-            String secondaryText2 = "";
+            widget.setModuleName(SpaceBookingModule.getName());
+            widget.setSpace(space);
             String date = "";
+            date+= new SimpleDateFormat("dd/MMM/yyyy").format(booking.getBookingStartTime());
+            date+= "-" + startDay;
+            widget.setDate(date);
+            
+            String time = "";
+            time += new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
+            time = time.replace("am", "AM").replace("pm", "PM");
+            widget.setTime(time);
 
-            if (CollectionUtils.isNotEmpty(slotList)) {
+             params.put("record", booking);
+             widget.setParams(params);
+             widget.setSecondaryText(booking.getSpace().getName());
 
-                if (slotList.size() == 1) {
-                    SlotContext slot = slotList.get(0);
-                    durationstartTime = slot.getSlotStartTime();
-                    durationEndTime = slot.getSlotEndTime();
-                }
-                else {
-                    SlotContext firstSlot = slotList.get(0);
-                    SlotContext lastSlot = slotList.get(slotList.size() - 1);
-                    durationstartTime = firstSlot.getSlotStartTime();
-                    durationEndTime = lastSlot.getSlotEndTime();
-                }
+             if(deskModule.getModuleId() == booking.getParentModuleId()) {
 
-                if(durationstartTime != null && durationEndTime != null) {
-                    date = new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
-                    secondaryText2 += new SimpleDateFormat("hh:mm a").format(durationstartTime);
-                    secondaryText2 += " to " + new SimpleDateFormat("hh:mm a").format(durationEndTime);
-                    secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
-                }
-                widget.setDate(date);
-                widget.setSecondaryText2(secondaryText2);
-                return widget;
+                widget.setPrimaryText("You desk is " + space.getName());
+            }
+            else if(parkingModule.getModuleId() == booking.getParentModuleId()) {
+                widget.setPrimaryText("Slot No " + space.getName());
             }
             else {
-                return null;
+                widget.setPrimaryText("You space is " + space.getName());
             }
 
-        }
+                return widget;
+            }
 
-        public static  List<V3FacilityBookingContext> getMyActionBookingList(FacilioModule parentModule) throws Exception {
+
+
+    public static  List<V3SpaceBookingContext> getMyActionBookingList(FacilioModule parentModule) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        List<V3FacilityBookingContext> bookingList = new ArrayList<>();
-        FacilioModule FacilityBookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        List<V3SpaceBookingContext>bookingList = new ArrayList<>();
+        FacilioModule SpaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
         FacilioModule StateFlowModule = ModuleFactory.getStateRuleTransitionModule();
 
         Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
         Long daystartTime = DateTimeUtil.getDayStartTime();
         Long dayEndTime = DateTimeUtil.getDayEndTimeOf(daystartTime);
 
-        Map<String, FacilioField> facilityBookingFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilityBookingModule.getName()));
+        Map<String, FacilioField> spaceBookingFieldMap = FieldFactory.getAsMap(modBean.getAllFields(SpaceBookingModule.getName()));
 
         if(peopleId != null ) {
 
-            FacilioStatus activeStatus = TicketAPI.getStatus(FacilityBookingModule, "Active");
+            FacilioStatus activeStatus = TicketAPI.getStatus(SpaceBookingModule, "Pending");
 
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getStateRuleTransitionFields());
 
@@ -370,19 +504,19 @@ public class HomepageWidgteApi {
                     Long id = ids.get(0);
                     if (id != null) {
 
-                        SelectRecordsBuilder<V3FacilityBookingContext> selectBuilder = new SelectRecordsBuilder<V3FacilityBookingContext>()
-                                .moduleName(FacilityBookingModule.getName())
-                                .select(modBean.getAllFields(FacilityBookingModule.getName()))
-                                .beanClass(V3FacilityBookingContext.class);
-
+                        SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
+                                .moduleName(SpaceBookingModule.getName())
+                                .select(modBean.getAllFields(SpaceBookingModule.getName()))
+                                .beanClass(V3SpaceBookingContext.class);
+//
                         selectBuilder
-                                .innerJoin("Facility")
-                                .on("FacilityBooking.FACILITY_ID = Facility.ID")
-                                .andCondition(CriteriaAPI.getCondition("FacilityBooking.RESERVED_FOR", "reservedFor", String.valueOf(peopleId), NumberOperators.EQUALS))
-                                .andCondition(CriteriaAPI.getCondition("FacilityBooking.BOOKING_DATE", "bookingDate", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL))
-                                .andCondition(CriteriaAPI.getCondition("Facility.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS))
-                                .andCondition(CriteriaAPI.getCondition("FacilityBooking.MODULE_STATE", "moduleState", String.valueOf(activeStatus.getId()), NumberOperators.EQUALS))
-                                .fetchSupplement((LookupField) facilityBookingFieldMap.get("facility"));
+//                                .innerJoin("Facility")
+//                                .on("FacilityBooking.FACILITY_ID = Facility.ID")
+                                .andCondition(CriteriaAPI.getCondition("SpaceBooking.HOST", "host", String.valueOf(peopleId), NumberOperators.EQUALS))
+                                .andCondition(CriteriaAPI.getCondition("SpaceBooking.BOOKING_STARTTIME", "bookingStartTime", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL))
+                                .andCondition(CriteriaAPI.getCondition("SpaceBooking.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS))
+                                .andCondition(CriteriaAPI.getCondition("SpaceBooking.MODULE_STATE", "moduleState", String.valueOf(activeStatus.getId()), NumberOperators.EQUALS))
+                                .fetchSupplement((LookupField) spaceBookingFieldMap.get("space"));
 
                         bookingList = selectBuilder.get();
                     }
@@ -401,15 +535,15 @@ public class HomepageWidgteApi {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
-        List<FacilityContext> facilityList = getMyPreviousBookedFacilityList(module);
+        List<V3SpaceBookingContext> spaceBookingList = getMyPreviousBookedSpaceList(module);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         List<SupplementRecord> supplementRecords = new ArrayList<SupplementRecord>();
         supplementRecords.add((SupplementRecord) fieldMap.get("spaceCategory"));
 
         List<Long> spaceIds = new ArrayList<Long>();
-        facilityList.forEach(facility -> {
-            spaceIds.add(facility.getLocation().getId());
+        spaceBookingList.forEach(spaceBooking -> {
+            spaceIds.add(spaceBooking.getSpace().getId());
         });
 
 
@@ -428,8 +562,8 @@ public class HomepageWidgteApi {
 
     public static List<HomepageWidgetData> getLatestMyBookingActionCards()throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FACILITY_BOOKING);
-        List<V3FacilityBookingContext> bookingList = getMyBookingList(module);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        List<V3SpaceBookingContext> bookingList = getMyBookingList(module);
 
 
         List<HomepageWidgetData> widgetDataList = new ArrayList<>();
@@ -443,7 +577,7 @@ public class HomepageWidgteApi {
             HomepageWidgetData widgetData = new HomepageWidgetData();
             JSONObject params = new JSONObject();
             try {
-                FacilioModule parentModule = modBean.getModule(booking.getFacility().getParentModuleId());
+                FacilioModule parentModule = modBean.getModule(booking.getParentModuleId());
 
                 FacilioStatus moduleState = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TICKET_STATUS, booking.getModuleState().getId());
                 booking.setModuleState(moduleState);
@@ -457,12 +591,11 @@ public class HomepageWidgteApi {
             widgetData.setModuleName(module.getName());
             params.put("record", booking);
             widgetData.setParams(params);
-            widgetData.setSecondaryText(booking.getFacility().getName());
+            widgetData.setSecondaryText(booking.getSpace().getName());
             widgetData.setModuleName(module.getName());
 
-            List<Long> facilityIds = new ArrayList<Long>();
-            facilityIds.add(booking.getFacility().getId());
-
+            List<Long> spaceIds = new ArrayList<Long>();
+            spaceIds.add(booking.getSpace().getId());
 
 
             String secondaryText2 = "";
@@ -471,31 +604,9 @@ public class HomepageWidgteApi {
 
             Long endTime = DateTimeUtil.addDays(startTime, 7);
 
-            List<BookingSlotsContext> bookingSlostList = null;
-            List<SlotContext> slotList = null;
-            try {
-                bookingSlostList = FacilityAPI.getBookingSlots(booking.getId());
-                slotList = bookingSlostList.stream().map(bookingslot -> bookingslot.getSlot()).collect(Collectors.toList());;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            Long durationstartTime = booking.getBookingStartTime();
+            Long durationEndTime = booking.getBookingEndTime();
 
-            Long durationstartTime = null;
-            Long durationEndTime = null;
-
-
-            if (CollectionUtils.isNotEmpty(slotList)) {
-                if (slotList.size() == 1) {
-                    SlotContext slot = slotList.get(0);
-                    durationstartTime = slot.getSlotStartTime();
-                    durationEndTime = slot.getSlotEndTime();
-                }
-                else {
-                    SlotContext firstSlot = slotList.get(0);
-                    SlotContext lastSlot = slotList.get(slotList.size() - 1);
-                    durationstartTime = firstSlot.getSlotStartTime();
-                    durationEndTime = lastSlot.getSlotEndTime();
-                }
 
                 if(durationstartTime != null && durationEndTime != null) {
                     date= new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
@@ -506,7 +617,7 @@ public class HomepageWidgteApi {
                 }
                 widgetData.setDate(date);
                 widgetData.setSecondaryText2(secondaryText2);
-            }
+
             widgetDataList.add(widgetData);
 
         });
@@ -514,8 +625,8 @@ public class HomepageWidgteApi {
         return widgetDataList;
     }
 
-    public static  List<V3FacilityBookingContext>  getMyBookingList(FacilioModule module)throws Exception {
-        List<V3FacilityBookingContext> bookinglist = new ArrayList<V3FacilityBookingContext>();
+    public static  List<V3SpaceBookingContext>  getMyBookingList(FacilioModule module)throws Exception {
+        List<V3SpaceBookingContext> bookinglist = new ArrayList<V3SpaceBookingContext>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 
@@ -524,14 +635,14 @@ public class HomepageWidgteApi {
         Long daystartTime = DateTimeUtil.getDayStartTime();
 
         if(peopleId != null ) {
-            SelectRecordsBuilder<V3FacilityBookingContext> selectBuilder = new SelectRecordsBuilder<V3FacilityBookingContext>()
+            SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
                     .module(module)
-                    .beanClass(V3FacilityBookingContext.class)
+                    .beanClass(V3SpaceBookingContext.class)
                     .select(modBean.getAllFields(module.getName()))
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.RESERVED_FOR", "reservedFor", String.valueOf(peopleId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.BOOKING_DATE", "bookingDate", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.HOST", "host", String.valueOf(peopleId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.BOOKING_STARTTIME", "bookingStartTime", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
 
-            selectBuilder.fetchSupplement((LookupField) fieldMap.get("facility"));
+            selectBuilder.fetchSupplement((LookupField) fieldMap.get("space"));
 
 
             bookinglist = selectBuilder.get();
@@ -540,34 +651,34 @@ public class HomepageWidgteApi {
 
     return bookinglist;
     }
-    public static  List<FacilityContext>  getMyPreviousBookedFacilityList(FacilioModule module)throws Exception {
-        List<FacilityContext> facilityList = new ArrayList<FacilityContext>();
+    public static  List<V3SpaceBookingContext>  getMyPreviousBookedSpaceList(FacilioModule module)throws Exception {
+        List<V3SpaceBookingContext> spaceBookingList = new ArrayList<V3SpaceBookingContext>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule FacilityModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+        FacilioModule spaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
 
         Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
         Long daystartTime = DateTimeUtil.getDayStartTime();
         if(peopleId != null ) {
 
 
-            SelectRecordsBuilder<FacilityContext> selectBuilder = new SelectRecordsBuilder<FacilityContext>()
-                    .moduleName(FacilityModule.getName())
-                    .select(modBean.getAllFields(FacilityModule.getName()))
-                    .beanClass(FacilityContext.class)
+            SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
+                    .moduleName(spaceBookingModule.getName())
+                    .select(modBean.getAllFields(spaceBookingModule.getName()))
+                    .beanClass(V3SpaceBookingContext.class)
                     .limit(4);
 
             selectBuilder
-                    .innerJoin("FacilityBooking")
-                    .on("FacilityBooking.FACILITY_ID = Facility.ID")
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.RESERVED_FOR", "reservedFor", String.valueOf(peopleId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.BOOKING_DATE", "bookingDate", String.valueOf(daystartTime), NumberOperators.LESS_THAN))
-                    .orderBy("BOOKING_DATE DESC");
+//                    .innerJoin("FacilityBooking")
+//                    .on("FacilityBooking.FACILITY_ID = Facility.ID")
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.HOST", "host", String.valueOf(peopleId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.BOOKING_STARTTIME", "bookingStartTime", String.valueOf(daystartTime), NumberOperators.LESS_THAN))
+                    .orderBy("BOOKING_STARTTIME DESC");
 
-            facilityList = selectBuilder.get();
+            spaceBookingList = selectBuilder.get();
 
         }
 
-        return facilityList;
+        return spaceBookingList;
     }
 
 
@@ -609,7 +720,7 @@ public class HomepageWidgteApi {
                 widget.setSecondaryText2("");
                if (deliveriesContext.getDeliveryArea() !=null && deliveriesContext.getDeliveryArea().getName() != null) {
                    widget.setSecondaryText(deliveriesContext.getDeliveryArea().getName());
-                   widget.setSecondaryText2("package is waiting for pickup");
+                   widget.setSecondaryText2("You can now pickup your package");
                }
 
                String primaryText = "Package " + deliveriesContext.getTrackingNumber() + " arrived";
@@ -745,53 +856,53 @@ public class HomepageWidgteApi {
         return widget;
     }
 
-    public static List<Long> getFacilityIdsByParentModuleId(Long parentId)throws Exception{
-        List<Long> facilityIds = new ArrayList<>();
+    public static List<Long> getSpaceIdsByParentModuleId(Long parentId)throws Exception{
+        List<Long> spaceIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
-        SelectRecordsBuilder<FacilityContext> selectBuilder = new SelectRecordsBuilder<FacilityContext>()
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
                 .module(module)
-                .beanClass(FacilityContext.class)
+                .beanClass(V3SpaceBookingContext.class)
                 .select(modBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getCondition("Facility.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("SpaceBooking.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentId), NumberOperators.EQUALS));
 
-        List<FacilityContext> facilityList = selectBuilder.get();
-        if(CollectionUtils.isNotEmpty(facilityList)) {
+        List<V3SpaceBookingContext> spaceList = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(spaceList)) {
 
-            facilityList.forEach(facility -> {
-                facilityIds.add(facility.getId());
+            spaceList.forEach(space -> {
+                spaceIds.add(space.getId());
             });
         }
 
-        return facilityIds;
+        return spaceIds;
     }
     public static HomepageWidgetData getLatestMyBooking(Long parentId)throws Exception{
         HomepageWidgetData widget = new HomepageWidgetData();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FACILITY_BOOKING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
         Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
         Long startTime = System.currentTimeMillis();
         Long daystartTime = DateTimeUtil.getDayStartTime();
 
         if(peopleId != null ) {
-            SelectRecordsBuilder<V3FacilityBookingContext> selectBuilder = new SelectRecordsBuilder<V3FacilityBookingContext>()
+            SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
                     .module(module)
-                    .beanClass(V3FacilityBookingContext.class)
+                    .beanClass(V3SpaceBookingContext.class)
                     .select(modBean.getAllFields(module.getName()))
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.RESERVED_FOR", "reservedFor", String.valueOf(peopleId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("FacilityBooking.BOOKING_DATE", "bookingDate", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.HOST", "host", String.valueOf(peopleId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("SpaceBooking.BOOKING_STARTTIME", "bookingStartTime", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
 
 
             if(parentId != null) {
-                List <Long> facilityIds = getFacilityIdsByParentModuleId(parentId);
-                if(CollectionUtils.isNotEmpty(facilityIds)) {
+                List <Long> spaceIds = getSpaceIdsByParentModuleId(parentId);
+                if(CollectionUtils.isNotEmpty(spaceIds)) {
                     StringJoiner idString = new StringJoiner(",");
-                    for(Long facilityId : facilityIds) {
-                        idString.add(String.valueOf(facilityId));
+                    for(Long spaceId : spaceIds) {
+                        idString.add(String.valueOf(spaceId));
                     }
-                    selectBuilder.andCondition(CriteriaAPI.getCondition("FacilityBooking.FACILITY_ID", "facility", idString.toString(), NumberOperators.EQUALS));
+                    selectBuilder.andCondition(CriteriaAPI.getCondition("SpaceBooking.SPACE_ID", "space", idString.toString(), NumberOperators.EQUALS));
                 }
                 else {
                     return null;
@@ -799,17 +910,15 @@ public class HomepageWidgteApi {
             }
             selectBuilder.limit(1);
 
-            selectBuilder.fetchSupplement((LookupField) fieldMap.get("facility"));
-        //    selectBuilder.fetchSupplement((LookupField) fieldMap.get("slotList"));
+            selectBuilder.fetchSupplement((LookupField) fieldMap.get("space"));
 
 
-
-            List<V3FacilityBookingContext> facilityList = selectBuilder.get();
-            if(CollectionUtils.isNotEmpty(facilityList))
+            List<V3SpaceBookingContext> spaceList = selectBuilder.get();
+            if(CollectionUtils.isNotEmpty(spaceList))
             {
-                V3FacilityBookingContext latestBooking = facilityList.get(0);
-                List<Long> facilityIds = new ArrayList<Long>();
-                facilityIds.add(latestBooking.getFacility().getId());
+                V3SpaceBookingContext latestBooking = spaceList.get(0);
+                List<Long> spaceIds = new ArrayList<Long>();
+                spaceIds.add(latestBooking.getSpace().getId());
 
 
 
@@ -819,23 +928,9 @@ public class HomepageWidgteApi {
 
                 Long endTime = DateTimeUtil.addDays(startTime, 7);
 
-                List<SlotContext> slotList = FacilityAPI.getFacilityBookedSlotsForTimeRange(facilityIds, daystartTime, endTime);
 
-                Long durationstartTime = null;
-                Long durationEndTime = null;
-
-                if (CollectionUtils.isNotEmpty(slotList)) {
-                    if (slotList.size() == 1) {
-                        SlotContext slot = slotList.get(0);
-                        durationstartTime = slot.getSlotStartTime();
-                        durationEndTime = slot.getSlotEndTime();
-                    }
-                    else {
-                        SlotContext firstSlot = slotList.get(0);
-                        SlotContext lastSlot = slotList.get(slotList.size() - 1);
-                        durationstartTime = firstSlot.getSlotStartTime();
-                        durationEndTime = lastSlot.getSlotEndTime();
-                    }
+                Long durationstartTime = latestBooking.getBookingStartTime();
+                Long durationEndTime = latestBooking.getBookingEndTime();
 
                     if(durationstartTime != null && durationEndTime != null) {
                         date = new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
@@ -844,15 +939,11 @@ public class HomepageWidgteApi {
                         secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
 
                     }
-                    widget.setSecondaryText(latestBooking.getFacility().getName());
+                    widget.setSecondaryText(latestBooking.getSpace().getName());
                     widget.setDate(date);
                     widget.setSecondaryText2(secondaryText2);
                     widget.setModuleName(module.getName());
                     return widget;
-                }
-                else {
-                    return null;
-                }
             }
 
         }
