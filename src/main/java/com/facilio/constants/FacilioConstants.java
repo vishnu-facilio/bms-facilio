@@ -33,8 +33,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
-import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
@@ -45,8 +45,8 @@ import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
-import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
@@ -3201,6 +3201,12 @@ public class FacilioConstants {
 
 	public static class Shift {
 		public static final String SHIFT = "shift";
+		public static final String TIMELINE_METRIC = "timelineMetric";
+		public static final String TIMELINE_VALUE = "timelineValue";
+		public static final String PEOPLE_ID = "peopleID";
+		public static final String SHIFT_ID = "shiftID";
+		public static final String SHIFT_START = "shiftStart";
+		public static final String SHIFT_END = "shiftEnd";
 	}
 
 
