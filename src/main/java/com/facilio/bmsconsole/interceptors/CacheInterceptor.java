@@ -24,7 +24,15 @@ public class CacheInterceptor extends AbstractInterceptor {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
-		MultiReadServletRequest multiReadServletRequest = new MultiReadServletRequest(request);
+		MultiReadServletRequest multiReadServletRequest;
+		if(AccountUtil.getCurrentOrg() != null
+				&& AccountUtil.getCurrentOrg().getOrgId() == 10
+				&& request.getRequestURI().endsWith("/api/v2/workorders/add")) {
+			// Temp: Added this for Mercatus account - will be removed later.
+			multiReadServletRequest = new MultiReadServletRequest(request, true);
+		} else {
+			multiReadServletRequest = new MultiReadServletRequest(request);
+		}
 		ServletActionContext.setRequest(multiReadServletRequest);
 		
 		if (multiReadServletRequest.isCachedRequest()) {

@@ -25,10 +25,12 @@ import lombok.Setter;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,6 +85,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -2772,6 +2777,23 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String v2addWorkOrder() throws Exception {
+
+		// Temp: Added this for Mercatus account
+		try {
+			if(AccountUtil.getCurrentOrg().getOrgId() == 10) {
+				HttpServletRequest request = ServletActionContext.getRequest();
+				if (request != null) {
+					if (request.getReader() != null) {
+						String requestBody = IOUtils.toString(request.getReader());
+						LOGGER.info("v2 WO create requestBody: " + requestBody);
+					}
+				}
+			}
+		}catch (Exception e){
+			LOGGER.error("Error occurred while trying to get v2 WO create requestBody.", e);
+		}
+
+
 		addWorkOrder();
 		v2viewWorkOrder();
 		if (workorder != null) {
