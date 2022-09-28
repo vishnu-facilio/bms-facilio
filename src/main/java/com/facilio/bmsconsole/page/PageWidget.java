@@ -476,7 +476,7 @@ public class PageWidget {
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
 		CLASSIFICATION("classification"),
 		NEW_RELATED_LIST("newRelatedList"),
-		ROUTE_MULTIRESOURCE("routeMultiResource");
+		MULTIRESOURCE("multiResource");
 
 		private String name;
 

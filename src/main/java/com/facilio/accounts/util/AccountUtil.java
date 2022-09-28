@@ -512,8 +512,8 @@ public class AccountUtil {
 		NEW_KPI(85,2097152,LicenseMapping.GROUP2LICENSE), //2^21
 		EMAIL_TRACKING(86,4194304,LicenseMapping.GROUP2LICENSE), // 2^22
 
-		WORKPLACE_APPS(87, 8388608, LicenseMapping.GROUP2LICENSE) // 2^23
-		;
+		WORKPLACE_APPS(87, 8388608, LicenseMapping.GROUP2LICENSE), // 2^23
+		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) ;
 
 		public int featureId;
 		private long license;
