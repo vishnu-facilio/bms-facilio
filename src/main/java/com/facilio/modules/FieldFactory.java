@@ -6763,6 +6763,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
         fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
         fields.add(getField("printParams", "PRINT_PARAMS", module, FieldType.STRING));
+        fields.add(getField("reportType","REPORT_TYPE", module, FieldType.NUMBER));
 
         return fields;
     }
