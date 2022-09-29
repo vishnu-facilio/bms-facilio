@@ -89,8 +89,8 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			module.setModuleId(oldFormula.getReadingField().getModuleId());
 			modBean.updateModule(module);
 		}
-		
-		if (newFormula.getWorkflow() != null && BooleanUtils.isFalse(newFormula.getWorkflow().getIsV2Script())) {
+
+		if (newFormula.getWorkflow() != null && BooleanUtils.isNotTrue(newFormula.getWorkflow().getIsV2Script())) {
 			long workflowId = WorkflowUtil.addWorkflow(newFormula.getWorkflow());
 			newFormula.setWorkflowId(workflowId);
 		}
