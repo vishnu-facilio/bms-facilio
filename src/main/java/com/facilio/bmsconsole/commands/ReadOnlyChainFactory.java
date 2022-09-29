@@ -2158,6 +2158,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAutomationModulesCommand());
 		return chain;
 	}
+	public static FacilioChain getClassificationSupportedModules() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetClassificationModulesCommand());
+		return chain;
+	}
 	public static FacilioChain fetchVisitorTypePicklistData() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorType());

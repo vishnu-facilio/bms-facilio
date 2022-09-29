@@ -1,5 +1,6 @@
 package com.facilio.classification.action;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -22,6 +23,14 @@ public class ClassificationAction extends V3Action {
 
         chain.execute();
         setData("result","success");
+        return SUCCESS;
+    }
+    public String getClassificationSupportedModules() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getClassificationSupportedModules();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+
+        setData(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return SUCCESS;
     }
 

@@ -1057,6 +1057,8 @@
     <package name="classifications" namespace="/api/v3/classifications" extends="v3Api">
         <action name="changeStatus" class="com.facilio.classification.action.ClassificationAction" method="changeStatus">
         </action>
+        <action name="modules" class="com.facilio.classification.action.ClassificationAction" method="getClassificationSupportedModules">
+        </action>
     </package>
     <package name="applicationPermissions" namespace="/api/v3/applicationPermissions"
              extends="v3Api">

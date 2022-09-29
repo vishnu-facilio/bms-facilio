@@ -1,11 +1,14 @@
 package com.facilio.classification.command;
 
 import com.facilio.attribute.context.ClassificationAttributeContext;
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.classification.context.ClassificationContext;
 import com.facilio.classification.context.ClassificationDataContext;
 import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
@@ -51,7 +54,7 @@ public class SummaryClassificationDataCommand extends FacilioCommand {
             long recordId = record.getId();
             long classificationId = classificationContext.getId();
             List<ClassificationDataContext> classificationData = classificationDataMap.getOrDefault(recordId, new ArrayList<>());
-            List<ClassificationAttributeContext> attributeList = getNewAttributeObject(attributeMap.get(classificationId));
+            List<ClassificationAttributeContext> attributeList = cloneAttributeObject(attributeMap.get(classificationId));
             //when many records have same classificationId means we shoud fill data to new attributeList objects otherwise same refernce objects used to other records --Data inconsistency problem
             if (CollectionUtils.isNotEmpty(attributeList) && CollectionUtils.isNotEmpty(classificationData)) {
                 Map<Long, ClassificationAttributeContext> attributeMapByAttributeId = attributeList.stream().collect(Collectors.toMap(ClassificationAttributeContext::getId, Function.identity()));
@@ -69,7 +72,7 @@ public class SummaryClassificationDataCommand extends FacilioCommand {
         return false;
     }
 
-    private List<ClassificationAttributeContext> getNewAttributeObject(List<ClassificationAttributeContext> dbAttributeList) {
+    private List<ClassificationAttributeContext> cloneAttributeObject(List<ClassificationAttributeContext> dbAttributeList) {
         List<ClassificationAttributeContext> attributeList = new ArrayList<>();
         for(ClassificationAttributeContext dbAttribute:dbAttributeList){
             ClassificationAttributeContext attribute=FieldUtil.cloneBean(dbAttribute,ClassificationAttributeContext.class);
