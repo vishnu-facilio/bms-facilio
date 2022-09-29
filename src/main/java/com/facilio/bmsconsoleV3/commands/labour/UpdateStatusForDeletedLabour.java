@@ -10,6 +10,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
@@ -18,7 +19,9 @@ public class UpdateStatusForDeletedLabour extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         List<Long> peopleIds = (List<Long>) context.get("peopleIds");
-
+        if (CollectionUtils.isEmpty(peopleIds)){
+            return false;
+        }
         FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
 

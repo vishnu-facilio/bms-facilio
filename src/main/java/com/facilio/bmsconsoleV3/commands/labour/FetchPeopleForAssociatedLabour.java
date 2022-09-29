@@ -30,7 +30,7 @@ public class FetchPeopleForAssociatedLabour extends FacilioCommand {
 
        List<LabourContextV3> labours = builder.get();
 
-       List<Long> peopleIds = CollectionUtils.isNotEmpty(labours) ? labours.stream().map(p -> p.getPeople().getId()).collect(Collectors.toList()) : Collections.emptyList();
+       List<Long> peopleIds = CollectionUtils.isNotEmpty(labours) ? labours.stream().filter(p -> p.getPeople() != null).map(p -> p.getPeople().getId()).collect(Collectors.toList()) : Collections.emptyList();
 
        context.put("peopleIds",peopleIds);
 

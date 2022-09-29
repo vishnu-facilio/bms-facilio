@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartment
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidationForScopeCommandV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
+import com.facilio.bmsconsoleV3.commands.employee.AssignDefaultShift;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
@@ -535,6 +536,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AssignDefaultShift());
         return c;
     }
 
@@ -550,6 +552,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AssignDefaultShift());
         return c;
     }
 
@@ -560,6 +563,13 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getEmployeeAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
+        c.addCommand(new AssignDefaultShift());
+        return c;
+    }
+
     public static FacilioChain getClientContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -567,11 +577,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CheckForMandatoryClientIdCommandV3());
         return c;
     }
+
     public static FacilioChain getClientContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AssignDefaultShift());
         return c;
     }
 

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -75,16 +76,6 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
-import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
-import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
-import com.facilio.bmsconsoleV3.context.V3LockersContext;
-import com.facilio.bmsconsoleV3.context.V3MovesContext;
-import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
-import com.facilio.bmsconsoleV3.context.V3ServiceContext;
-import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
-import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -297,8 +288,8 @@ public class PageFactory {
 				return PlannedMaintenancePageFactory.getPlannedMaintenancePage((PlannedMaintenance) record);
 			case ContextNames.SPACE_BOOKING:
 				return  SpaceBookingPageFactory.getSpaceBookingPage((V3SpaceBookingContext) record, module);
-
-
+			case ContextNames.ROUTES:
+				return  RoutePageFactory.getRoutePage((RoutesContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

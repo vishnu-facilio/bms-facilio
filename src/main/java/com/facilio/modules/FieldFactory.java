@@ -201,6 +201,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getShiftPeopleRelModuleFields() {
+        FacilioModule module = ModuleFactory.getShiftPeopleRelModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getField("id", "ID", module, FieldType.ID));
+        fields.add(getField("peopleId", "PEOPLE_ID", module, FieldType.NUMBER));
+        fields.add(getField("shiftId", "SHIFT_ID", module, FieldType.NUMBER));
+        fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+        fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
 
     public static class Fields {
         public static enum FilterType {

@@ -66,7 +66,12 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 
         Map<String, BaseEventContext> keyVsEvents = eventList.stream()
                 .filter(e -> e.getBaseAlarm() != null)
-                .collect(Collectors.toMap(e -> e.getBaseAlarm().getKey(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getBaseAlarm().getKey(), Function.identity(), (prevEvent, event) -> {
+                    if (prevEvent.getCreatedTime() > event.getCreatedTime()) {
+                        return prevEvent;
+                    }
+                    return event;
+                }));
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (MapUtils.isNotEmpty(alarmMap)) {

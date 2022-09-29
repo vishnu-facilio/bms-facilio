@@ -68,7 +68,12 @@ public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 					}
 				}
 				else {
-					requester = PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId());
+					if(requester != null && requester.getId()>0) {
+						requester=PeopleAPI.getPeopleForId(requester.getId());
+					}
+					else {
+						requester = PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId());
+					}
 					serviceRequestContext.setRequester(requester);
 				}
 				

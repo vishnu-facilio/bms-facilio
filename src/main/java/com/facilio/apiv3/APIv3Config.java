@@ -1204,7 +1204,7 @@ public class APIv3Config {
         return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
-                .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
+                .afterSave(TransactionChainFactoryV3.getEmployeeAfterSaveChain())
                 .update()
                 .beforeSave(new PeopleValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())

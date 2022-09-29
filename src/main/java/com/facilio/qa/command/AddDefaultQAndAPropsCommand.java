@@ -39,8 +39,12 @@ public class AddDefaultQAndAPropsCommand extends FacilioCommand {
 
         for (QAndATemplateContext template : list) {
             template.setQAndAType(type);
-            template.setTotalPages(0);
-            template.setTotalQuestions(0);
+            if (template.getTotalPages() == null){
+                template.setTotalPages(0);
+            }
+            if (template.getTotalQuestions() == null){
+                template.setTotalQuestions(0);
+            }
         }
 
         return false;

@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.dto.*;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -64,12 +66,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
@@ -1210,12 +1206,30 @@ public class UserBeanImpl implements UserBean {
 					appUser = getInvitedUser(appUser.getOuid());
 					if (appUser != null) {
 						updateUserEntry(appUser);
+						updateUserStatusInPeople(user.getPeopleId());
 						// LicenseApi.updateUsedLicense(user.getLicenseEnum());
 						return true;
 					}
 				}
 		    }
 		return false;
+	}
+
+	private void updateUserStatusInPeople(long peopleId) throws Exception {
+
+		ModuleBean bean = Constants.getModBean();
+		FacilioModule module = bean.getModule(FacilioConstants.ContextNames.PEOPLE);
+		FacilioField userStatusField = bean.getField("user", module.getName());
+
+		Map<String,Object> prop = new HashMap<>();
+		prop.put("user",true);
+
+		UpdateRecordBuilder<V3PeopleContext> updateRecordBuilder = new UpdateRecordBuilder<V3PeopleContext>()
+				.fields(Collections.singletonList(userStatusField))
+				.andCondition(CriteriaAPI.getIdCondition(peopleId,module))
+				.module(module);
+		updateRecordBuilder.updateViaMap(prop);
+
 	}
 
 	@Override
