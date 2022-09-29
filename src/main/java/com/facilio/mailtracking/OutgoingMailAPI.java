@@ -163,6 +163,9 @@ public class OutgoingMailAPI {
     }
 
     public static void restoreMailMessage(JSONObject mailJson) {
+        if(mailJson.get(MailConstants.Email.MESSAGE) != null){
+            return;
+        }
         if(mailJson.get(MailConstants.Email.HTML_CONTENT) != null) {
             mailJson.put(MailConstants.Email.MESSAGE, mailJson.remove(MailConstants.Email.HTML_CONTENT));
         } else if(mailJson.get(MailConstants.Email.TEXT_CONTENT) != null) {
@@ -209,5 +212,12 @@ public class OutgoingMailAPI {
         mailJson.remove(MailConstants.Email.CONTENT_TYPE);
         mailJson.remove(MailConstants.Email.TEXT_CONTENT);
         mailJson.remove(MailConstants.Email.HTML_CONTENT);
+    }
+
+    public static String getLogMeta(JSONObject mailJson) {
+        Long mapperId = (Long) mailJson.get(MailConstants.Params.MAPPER_ID);
+        Long loggerId = (Long) mailJson.get(MailConstants.Params.LOGGER_ID);
+        String logMeta = " for [ MAPPER_ID="+mapperId+", LOGGER_ID="+loggerId+" ]";
+        return logMeta;
     }
 }

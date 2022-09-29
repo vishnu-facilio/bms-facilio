@@ -53,4 +53,11 @@ public class MailTransactionChainFactory {
         return c;
     }
 
+    public static FacilioChain sendNormalMailChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SendMailWithoutTrackingCommand());
+        c.addCommand(new ConvertToMailLoggerRecord());
+        c.addCommand(triggerMailHandlerChain());
+        return c;
+    }
 }

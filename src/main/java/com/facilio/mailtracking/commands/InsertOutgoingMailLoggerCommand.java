@@ -26,8 +26,10 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
         context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
         LOGGER.info("OG_MAIL_LOG :: LOGGER_ID inserted :: "+loggerId);
-        V3Util.throwRestException(mailLogContext.getMailStatus() == MailStatus.INVALID,
-                ErrorCode.VALIDATION_ERROR, "OG_MAIL_ERROR :: MailStatus is flagged as INVALID"); // its invalid, so throwing e
+        V3Util.throwRestException(
+                mailLogContext.getMailStatus() == MailStatus.INVALID,
+                ErrorCode.VALIDATION_ERROR,
+                "OG_MAIL_ERROR :: MailStatus is flagged as INVALID for LOGGER_ID :: "+loggerId); // its invalid, so throwing e
         return false;
     }
 

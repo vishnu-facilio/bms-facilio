@@ -30,8 +30,9 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalCc()));
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalBcc()));
 
+        String logMeta = " for [ MAPPER_ID="+mailLogContext.getMapperId()+", LOGGER_ID="+mailLogContext.getId()+" ]";
         V3Util.throwRestException(records.isEmpty(), ErrorCode.RESOURCE_NOT_FOUND,
-                "OG_MAIL_ERROR :: No recipients found in the given outgoing mail record. So stopping here.. " +
+                "OG_MAIL_ERROR :: No recipients found"+logMeta+". So stopping here.. " +
                         "\nwith mailJson : "+context.get(MailConstants.Params.MAIL_JSON)
         );
 
