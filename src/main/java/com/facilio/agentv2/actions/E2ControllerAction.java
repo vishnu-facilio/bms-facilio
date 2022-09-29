@@ -2,6 +2,7 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.E2.E2ControllerContext;
+import com.facilio.agentv2.controller.ControllerApiV2;
 
 
 public class E2ControllerAction extends AgentIdAction {
@@ -44,7 +45,7 @@ public class E2ControllerAction extends AgentIdAction {
             e2Controller.setName(name);
             e2Controller.setAgentId(getAgentId());
             e2Controller.setControllerType(getControllerType());
-            AgentConstants.getControllerBean().addController(e2Controller);
+            ControllerApiV2.addController(e2Controller);
             setResult(AgentConstants.RESULT,SUCCESS);
         }
         catch (Exception e){

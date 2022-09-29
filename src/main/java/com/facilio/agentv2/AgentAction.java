@@ -47,6 +47,7 @@ import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
@@ -324,7 +325,7 @@ public class AgentAction extends AgentActionV2 {
 
     public String getControllerUsingId() {
         try {
-            Controller controllers = AgentConstants.getControllerBean().getControllerFromDb(getControllerId());
+            Controller controllers = ControllerApiV2.getControllerFromDb(getControllerId());
             setResult(AgentConstants.DATA, controllers.toJSON());
             ok();
         } catch (Exception e) {

@@ -4,8 +4,6 @@
 	<bean name="ModuleBean" class="com.facilio.beans.ModuleBeanCacheImpl"></bean>
 	<bean name="ModuleCRUD" class="com.facilio.beans.ModuleCRUDBeanImpl"></bean>
 	<bean name="AgentBean" class="com.facilio.agentv2.cacheimpl.AgentBeanCacheImpl"></bean>
-	<bean name="ControllerBean" class="com.facilio.agentv2.cacheimpl.ControllerBeanCacheImpl"></bean>
-
 
 	<bean name="UserBean" class="com.facilio.accounts.impl.UserBeanImpl"></bean>
 	<bean name="OrgBean" class="com.facilio.accounts.impl.OrgBeanCacheImpl"></bean>

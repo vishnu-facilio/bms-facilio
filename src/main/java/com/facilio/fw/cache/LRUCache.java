@@ -35,7 +35,6 @@ public class LRUCache {
 	private static FacilioCache<String, Map<String, Map<String, Object>>> globalVariable = new PubSubLRUCache<>("globalVariable", 2000);
 	private static FacilioCache<String, Boolean> proxyUsersPS = new PubSubLRUCache<>("proxyUsers", 1000);
 	private static FacilioCache<String, Object> agentCache = new PubSubLRUCache<>("agentCache", 1000);
-	private static FacilioCache<String, Object> controllerCache = new PubSubLRUCache<>("controllerCache", 1000);
 	private static FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = new PubSubLRUCache<>("globalScopeVariableCache", 2000);
 
 	public static void purgeAllCache() {
@@ -91,8 +90,6 @@ public class LRUCache {
 	}
 
 	public static FacilioCache<String, Object> getAgentCache() {return agentCache;}
-
-	public static FacilioCache<String, Object> getControllerCache() {return controllerCache;}
 
 	public static FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> getGlobalScopeVariableCache() {
 		return globalScopeVariableCache;

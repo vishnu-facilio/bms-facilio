@@ -11,6 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.ControllerApiV2;
 
 public class AddMiscControllerAction extends AgentIdAction{
 
@@ -32,7 +33,7 @@ public class AddMiscControllerAction extends AgentIdAction{
                     context.setName(getName());
                     context.setControllerType(getControllerType());
                 //    context.setDeviceId(deviceId);
-                    controllerId = AgentConstants.getControllerBean().addController(context);
+                    controllerId = ControllerApiV2.addController(context);
                 // }
                 if (controllerId != null && controllerId > 0) {
                     //     FieldDeviceApi.updateDeviceConfigured(deviceId);

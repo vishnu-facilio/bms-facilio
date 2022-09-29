@@ -2,6 +2,7 @@ package com.facilio.agentv2.point;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -19,7 +20,7 @@ public class ConfigurePointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         if(context.containsKey(AgentConstants.CONTROLLER_ID)){
             Long controllerId = (Long) context.get(AgentConstants.CONTROLLER_ID);
-            Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
+            Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
 //            List<Controller> controllers = FieldUtil.getAsBeanListFromMapList(ControllerApiV2.getControllers(Collections.singletonList(controllerId)), Controller.class);
 
             if(controller== null){
