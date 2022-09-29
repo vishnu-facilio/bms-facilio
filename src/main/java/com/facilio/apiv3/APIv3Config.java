@@ -2590,7 +2590,11 @@ public class APIv3Config {
         return () -> new V3Config(V3SpaceBookingContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.createSpaceBookingChain())
-                .update()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .delete()
                 .list()
                 .beforeFetch(new SpaceBookingSupplementsCommand())
