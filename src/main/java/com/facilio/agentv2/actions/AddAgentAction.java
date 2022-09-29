@@ -63,9 +63,8 @@ public class AddAgentAction extends AgentActionV2
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = new FacilioAgent();
-            AgentType agentType = AgentType.valueOf(getAgentType());
 
-            if(agentType == AgentType.NIAGARA || StringUtils.isNotEmpty(getAgentName())){
+            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || StringUtils.isNotEmpty(getAgentName())){
                 agent.setName(getAgentName());
             }
             else {
@@ -79,10 +78,10 @@ public class AddAgentAction extends AgentActionV2
 //            agent.setPartitionId(partitionId);
             agent.setMessageSourceId(getMessageSourceId());
             agent.setSubscribeTopics(getSubscribeTopics());
-            if (agentType != AgentType.CUSTOM) {
+            if (agentType != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
-            switch (agentType){
+            switch (AgentType.valueOf(agentType)){
                 case REST:
                     long orgId = AccountUtil.getCurrentOrg().getOrgId();
                     long inboundId = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE, () -> insertApiKey(agent.getName(), orgId));
@@ -91,9 +90,6 @@ public class AddAgentAction extends AgentActionV2
                 case CUSTOM:
                     agent.setConnected(true);
                     break;
-            }
-            if(agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO){
-                agent.setWritable(true);
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();

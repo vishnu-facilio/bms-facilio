@@ -1,6 +1,7 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,7 +37,7 @@ public class UpdateControllerAction extends AgentActionV2 {
 
     public String updateController() {
         try {
-                if (AgentConstants.getControllerBean().editController(getControllerId(),getToUpdate())) {
+                if (ControllerApiV2.editController(getControllerId(),getToUpdate())) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                 } else {
