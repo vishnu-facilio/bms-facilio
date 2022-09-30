@@ -215,8 +215,8 @@ public class OutgoingMailAPI {
     }
 
     public static String getLogMeta(JSONObject mailJson) {
-        Long mapperId = (Long) mailJson.get(MailConstants.Params.MAPPER_ID);
-        Long loggerId = (Long) mailJson.get(MailConstants.Params.LOGGER_ID);
+        Object mapperId = mailJson.get(MailConstants.Params.MAPPER_ID);
+        Object loggerId = mailJson.get(MailConstants.Params.LOGGER_ID);
         String logMeta = " for [ MAPPER_ID="+mapperId+", LOGGER_ID="+loggerId+" ]";
         return logMeta;
     }
