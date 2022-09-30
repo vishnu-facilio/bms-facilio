@@ -82,7 +82,7 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
         newsAndInformationFormFields.add(attachment);
         newsAndInformationFormFields.add(new FormField("commentsAllowed", FacilioField.FieldDisplayType.DECISION_BOX, "Comments Allowed", FormField.Required.OPTIONAL, 5, 1));
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",6, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",6, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         newsAndInformationFormFields.add(field);

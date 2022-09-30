@@ -2705,6 +2705,7 @@ public class ModuleFactory {
 		return rateCardService;
 	}
 
+	@Deprecated
 	public static FacilioModule getShiftUserRelModule() {
 		FacilioModule shiftUserRel = new FacilioModule();
 		shiftUserRel.setName("shiftUserRel");

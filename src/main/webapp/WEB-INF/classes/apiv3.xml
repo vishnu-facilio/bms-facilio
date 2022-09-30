@@ -226,6 +226,18 @@
                 method="assign"/>
     </package>
 
+    <package name="shiftPlannerList" namespace="/api/v3/shiftplanner" extends="v3Api">
+        <action name="view"
+                class="com.facilio.bmsconsoleV3.actions.ShiftAction"
+                method="list">
+        </action>
+
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.ShiftAction"
+                method="update">
+        </action>
+    </package>
+
 
     <package name="usernotification" namespace="/api/v3/usernotification/update" extends="v3Api">
         <action name="seen"

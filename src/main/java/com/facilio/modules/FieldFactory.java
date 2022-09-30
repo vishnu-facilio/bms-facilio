@@ -7997,7 +7997,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("benchmarkId", "BENCHMARK_ID", module, FieldType.NUMBER));
         return fields;
     }
-
+    @Deprecated
     public static List<FacilioField> getShiftUserRelModuleFields() {
         FacilioModule module = ModuleFactory.getShiftUserRelModule();
         List<FacilioField> fields = new ArrayList<>();

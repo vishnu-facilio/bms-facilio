@@ -365,7 +365,11 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 //    		if(e.getCause() != null) {
 //    			workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getCause()+"\n");
 //    		}
-    		throw new RuntimeException(e);
+			if (e.getCause()!= null){
+				throw new RuntimeException(e.getCause());
+			}else {
+				throw new RuntimeException(e);
+			}
     	}
     }
     

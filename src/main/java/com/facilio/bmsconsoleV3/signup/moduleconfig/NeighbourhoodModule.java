@@ -85,7 +85,7 @@ public class NeighbourhoodModule extends BaseModuleConfig{
         FormField attachment = new FormField("neighbourhoodattachments", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, 5, 1);
         attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
         neighbourhoodFormFields.add(attachment);
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",6, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",6, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         neighbourhoodFormFields.add(field);

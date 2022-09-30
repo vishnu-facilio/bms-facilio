@@ -79,7 +79,7 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         adminDocumentsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         adminDocumentsFormFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 3, 1));
         adminDocumentsFormFields.add(new FormField("file", FacilioField.FieldDisplayType.FILE, "File", FormField.Required.REQUIRED, 4, 1));
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",5, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",5, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         adminDocumentsFormFields.add(field);

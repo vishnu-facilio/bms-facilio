@@ -87,7 +87,7 @@ public class AnnouncementModule extends BaseModuleConfig{
         announcementFormfields.add(attachment);
         FormField sendMail = new FormField("sendMail", FacilioField.FieldDisplayType.DECISION_BOX, "Send Mail", FormField.Required.OPTIONAL, 7, 1);
         announcementFormfields.add(sendMail);
-        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",5, 1);
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",8, 1);
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         announcementFormfields.add(field);
