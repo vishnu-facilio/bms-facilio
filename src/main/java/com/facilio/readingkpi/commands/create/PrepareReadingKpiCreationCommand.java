@@ -32,7 +32,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 setContextForNsAndWorkflow(context, kpi);
                 String kpiName = kpi.getName();
                 context.put(FacilioConstants.ContextNames.READING_NAME, kpiName);
-                NumberField field = FieldFactory.getField(FacilioConstants.ReadingKpi.READING_KPI_RESULT, kpiName, "RESULT", null, FieldType.DECIMAL);
+                NumberField field = FieldFactory.getField(null, kpiName, "RESULT", null, FieldType.DECIMAL);
 
                 String customUnit = kpi.getCustomUnit();
                 if (customUnit != null) {
