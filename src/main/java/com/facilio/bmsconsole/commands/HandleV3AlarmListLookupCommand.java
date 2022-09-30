@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class HandleV3AlarmListLookupCommand extends FacilioCommand {
@@ -63,8 +64,8 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 alarm.setLastOccurrenceId(alarmOccurrenceId);
             }
 
-//            List<Long> newRuleIds = newReadingAlarms.stream().map(el -> el.getRule().getId()).collect(Collectors.toList());
             List<Long> newRuleIds = new ArrayList<>();
+
             for(ReadingAlarm newReadingAlarm:newReadingAlarms){
                 if(newReadingAlarm.getRule()!=null) {
                     if(newReadingAlarm.getRule() instanceof NewReadingRuleContext) {
@@ -76,13 +77,9 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                     LOGGER.info("Id of New Alarm that doesn't have a Rule " + newReadingAlarm.getId());
                 }
             }
-            if (!newRuleIds.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(newRuleIds)) {
                 Map<Long, String> ruleNameMap = NewReadingRuleAPI.getReadingRuleNamesByIds(newRuleIds);
-                for (ReadingAlarm alarm : newReadingAlarms) {
-                    if (alarm.getIsNewReadingRule()) {
-                        alarm.getRule().setName(ruleNameMap.get(alarm.getRule().getId()));
-                    }
-                }
+                newReadingAlarms.stream().filter(readingAlarm -> readingAlarm.getIsNewReadingRule() && readingAlarm.getRule()!=null).forEach(alarm -> alarm.getRule().setName(ruleNameMap.get(alarm.getRule().getId())));
             }
 
             if (!oldRuleIds.isEmpty()) {
