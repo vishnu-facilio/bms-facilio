@@ -170,7 +170,7 @@ public class ListCommand extends FacilioCommand {
         }
 
         boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
-        if (skipModuleCriteria) {
+        if (skipModuleCriteria || (view != null && view.isExcludeModuleCriteria())) {
             selectRecordsBuilder.skipModuleCriteria();
         }
 
