@@ -273,6 +273,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.HazardPrecautionModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderHazardModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AssetHazardModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BaseSpaceHazardsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VendorContactModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TenantContactModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DepartmentModule
@@ -331,6 +332,10 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SurveyTemplateModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SurveyResponseModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkflowLogModule
-
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.PreventiveMaintenanceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingRuleModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.ReadingRuleModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FormulaFieldModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.EventModule
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule

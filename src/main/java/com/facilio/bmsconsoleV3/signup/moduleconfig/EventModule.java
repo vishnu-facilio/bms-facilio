@@ -16,6 +16,10 @@ public class EventModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.EVENT);
     }
 
+    @Override
+    protected void addTriggers() throws Exception {
+        return;
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -20,6 +20,11 @@ public class ReadingRuleModule extends BaseModuleConfig{
     }
 
     @Override
+    protected void addTriggers() throws Exception {
+        return;
+    }
+
+    @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
