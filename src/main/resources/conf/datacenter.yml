@@ -26,3 +26,6 @@ datacenters:
  
   6:
     mainapp: app.facilio.co.uk
+
+  7:
+    mainapp: app.facilio.ae
