@@ -1152,7 +1152,6 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getWorkorderAfterUpdateChain(true))
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchChain())
-                .afterFetch(new LoadWorkorderLookupsAfterFetchcommandV3())
                 .summary()
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
