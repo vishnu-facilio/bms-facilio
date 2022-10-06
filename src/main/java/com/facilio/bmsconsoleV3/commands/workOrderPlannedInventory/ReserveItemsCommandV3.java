@@ -108,24 +108,22 @@ public class ReserveItemsCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(itemModuleName);
 
         V3ItemTransactionsContext itemTransaction = new V3ItemTransactionsContext();
-        if(reservationType.equals(ReservationType.HARD)){
-            itemTransaction.setItem(item);
-            itemTransaction.setItemType(item.getItemType());
-            itemTransaction.setStoreRoom(item.getStoreRoom());
-            itemTransaction.setQuantity(plannedItemQuantity);
-            itemTransaction.setIsReturnable(false);
-            itemTransaction.setParentId(workOrderPlannedItemId);
-            itemTransaction.setTransactionType(TransactionType.RESERVATION);
-            if(reservationType.equals(ReservationType.HARD)) {
-                itemTransaction.setTransactionState(TransactionState.HARD_RESERVE);
-            }
-            else if(reservationType.equals(ReservationType.SOFT)){
-                itemTransaction.setTransactionState(TransactionState.SOFT_RESERVE);
-            }
-            InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                    .module(module).fields(fields).addRecord(itemTransaction);
-            readingBuilder.save();
-        }
+        itemTransaction.setItem(item);
+        itemTransaction.setItemType(item.getItemType());
+        itemTransaction.setStoreRoom(item.getStoreRoom());
+        itemTransaction.setQuantity(plannedItemQuantity);
+        itemTransaction.setIsReturnable(false);
+        itemTransaction.setParentId(workOrderPlannedItemId);
+        itemTransaction.setTransactionType(TransactionType.RESERVATION);
 
+        if(reservationType.equals(ReservationType.HARD)) {
+            itemTransaction.setTransactionState(TransactionState.HARD_RESERVE);
+        }
+        else if(reservationType.equals(ReservationType.SOFT)){
+            itemTransaction.setTransactionState(TransactionState.SOFT_RESERVE);
+        }
+        InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
+                .module(module).fields(fields).addRecord(itemTransaction);
+        readingBuilder.save();
     }
 }
