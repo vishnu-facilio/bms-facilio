@@ -856,6 +856,9 @@ public class FacilioProperties {
            case "ap-southeast-1":
            	regionCountryCode = "SG";
                break;
+           case "me-central-1":
+               regionCountryCode = "AE";
+               break;
            default:
            	regionCountryCode = "ND"; //No Data
        }
