@@ -63,7 +63,7 @@ public class FetchReportDataCommand extends FacilioCommand {
     private Boolean isBaseModuleJoined = false;
     private List<Map<String, Object>> pivotFieldsList = new ArrayList<>();
     private Boolean isReportExport=false;
-
+    private List<String> cm_pivot_joins= new ArrayList<>();
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1467,6 +1467,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
         while (module != null) {
             String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
+            cm_pivot_joins.add(tableName);
             String joinOn = getAndSetModuleAlias(module.getName()) + ".ID = " + module.getTableName() + ".ID";
             selectBuilder.innerJoin(tableName)
                     .on(joinOn);
@@ -1550,7 +1551,10 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (subModule.equals(lookupFieldModule)) {
                     prevModule = subModule;
                     String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
-                    selectBuilder.innerJoin(tableName).on(submoduleJoinOn);
+                    if(!cm_pivot_joins.contains(tableName)) {
+                        cm_pivot_joins.add(tableName);
+                        selectBuilder.innerJoin(tableName).on(submoduleJoinOn);
+                    }
                     break;
                 }
                 stack.push(subModule);

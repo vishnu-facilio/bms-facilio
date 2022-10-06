@@ -134,7 +134,13 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     public long sendMailWithoutTracking(JSONObject mailJson, Map<String, String> files) throws Exception {
-        sendEmailFromWMS(mailJson, files);
+        FacilioChain chain = MailTransactionChainFactory.sendNormalMailChain();
+        FacilioContext context = chain.getContext();
+        context.put(MailConstants.Params.MAIL_JSON, mailJson);
+        context.put(MailConstants.Params.FILES, files);
+        chain.execute();
+
+        OutgoingMailAPI.resetMailJson(mailJson);
         return -1;
     }
 

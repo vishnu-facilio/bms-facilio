@@ -39,7 +39,7 @@ public class RoutePageFactory extends PageFactory{
 
         Page.Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        PageWidget previewWidget2 = new PageWidget(PageWidget.WidgetType.ROUTE_MULTIRESOURCE);
+        PageWidget previewWidget2 = new PageWidget(PageWidget.WidgetType.MULTIRESOURCE);
         previewWidget2.addToLayoutParams(tab1Sec1, 24, 9);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

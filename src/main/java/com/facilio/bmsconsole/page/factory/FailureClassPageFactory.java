@@ -25,7 +25,7 @@ public class FailureClassPageFactory extends PageFactory{
         tab1Sec1.addWidget(detailsWidgetFailureClass);
 
         PageWidget detailsWidgetAssociatedProblems = new PageWidget(PageWidget.WidgetType.FAILURE_CLASS_ASSOCIATED_PROBELMS);
-        detailsWidgetAssociatedProblems.addToLayoutParams(tab1Sec1, 24, 11);
+        detailsWidgetAssociatedProblems.addToLayoutParams(tab1Sec1, 24, 10);
         detailsWidgetAssociatedProblems.addToWidgetParams("card", "failureclassassociatedproblems");
         tab1Sec1.addWidget(detailsWidgetAssociatedProblems);
 

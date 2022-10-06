@@ -69,16 +69,18 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Object val = context.get(MailConstants.Params.RECORDS_MODULE_ID);
-        if(val == null) {
+        V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
+        if(mailLogContext == null) {
             return false;
         }
-        long recordModuleId = FacilioUtil.parseLong(val);
+        Long recordModuleId = mailLogContext.getRecordsModuleId();
+        if(recordModuleId == null || recordModuleId.equals(0)) {
+            return false;
+        }
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(recordModuleId);
         OutgoingMailData mailData = MAIL_DATA_MAP.get(module.getName());
         if(mailData != null) {
-            V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
             mailData.loadMailData(mailLogContext);
         }
         return false;

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -45,7 +47,11 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 		props.put("moduleId", reportModule.getModuleId());
 		props.put("fileFormat", fileFormat.getIntVal());
 		props.put("templateId", emailTemplate.getId());
-		
+		ReportContext reportContext = ReportUtil.getReport(reportInfo.getReportId());
+		if(reportContext != null)
+		{
+			props.put("reportType" , reportContext.getTypeEnum().getValue());
+		}
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfo1Fields();
 		

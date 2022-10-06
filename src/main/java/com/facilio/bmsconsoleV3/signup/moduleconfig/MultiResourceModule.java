@@ -48,7 +48,8 @@ public class MultiResourceModule extends BaseModuleConfig{
         FacilioModule module = new FacilioModule(FacilioConstants.MultiResource.NAME,
                 FacilioConstants.MultiResource.DISPLAY_NAME,
                 FacilioConstants.MultiResource.TABLE_NAME,
-                FacilioModule.ModuleType.BASE_ENTITY
+                FacilioModule.ModuleType.BASE_ENTITY,
+                true
         );
 
         List<FacilioField> fields = new ArrayList<>();

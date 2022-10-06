@@ -128,6 +128,7 @@ import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.CountCommand;
+import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -2215,6 +2216,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain createSpaceBookingChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchChangeSetForCustomActivityCommand());
         c.addCommand(new setSpaceBookingVariableCommand());
         c.addCommand(new V3ValidateSpaceBookingAvailability());
         c.addCommand(new V3ValidateSpaceBookingCommand());

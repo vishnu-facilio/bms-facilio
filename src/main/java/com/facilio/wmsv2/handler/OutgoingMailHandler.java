@@ -36,7 +36,7 @@ public class OutgoingMailHandler extends BaseHandler {
                 JSONObject mailJson = message.getContent();
 
                 mapperId = NewTransactionService.newTransactionWithReturn(() -> registerOutgoingMailMapper(orgId));
-                LOGGER.info("OG_MAIL_LOG :: MAPPER_ID inserted :: "+mapperId);
+                LOGGER.info("OG_MAIL_LOG :: MAPPER_ID inserted :: "+mapperId +" for LOGGER_ID :: "+mailJson.get(MailConstants.Params.ID));
                 mailJson.put(MailConstants.Params.MAPPER_ID, mapperId);
                 mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.IN_PROCESS.name());
 

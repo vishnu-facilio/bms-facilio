@@ -21,6 +21,7 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
         JSONObject mailJson = this.constructMailJson(context);
         Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
         EmailClient emailClient = EmailFactory.getEmailClient();
+        String logMeta = OutgoingMailAPI.getLogMeta(mailJson);
         try {
             String messageId = emailClient.sendEmailFromWMS(mailJson, files);
             context.put(MailConstants.Params.MESSAGE_ID, messageId);
@@ -28,9 +29,9 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
             context.put(MailConstants.Params.RECIPIENT_STATUS, RecipientStatus.SENT);
         } catch (Exception e) {
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.FAILED);
-            LOGGER.error("OG_MAIL_ERROR :: SendMailFailed with exception :: ", e);
+            LOGGER.error("OG_MAIL_ERROR :: SendMailFailed "+logMeta+" with exception :: ", e);
         }
-        LOGGER.info("OG_MAIL_LOG :: email sent successfully for MAPPER_ID "+ context.get(MailConstants.Params.MAPPER_ID));
+        LOGGER.info("OG_MAIL_LOG :: email sent successfully"+logMeta);
         return false;
     }
 

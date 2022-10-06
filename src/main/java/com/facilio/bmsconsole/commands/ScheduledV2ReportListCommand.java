@@ -51,9 +51,15 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 				.select(fields)
 				.table(module.getTableName())
 				.innerJoin(reportModule.getTableName())
-				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
+				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID");
 				//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
+				if(moduleName != null && moduleName.equals("pivot") )
+				{
+					selectBuilder.andCondition(CriteriaAPI.getCondition(module.getTableName()+".REPORT_TYPE","reportType", ReportContext.ReportType.PIVOT_REPORT.getValue()+"", NumberOperators.EQUALS));
+				}else {
+					selectBuilder.andCondition(CriteriaAPI.getCondition(module.getTableName()+".REPORT_TYPE","reportType", ReportContext.ReportType.PIVOT_REPORT.getValue()+"", NumberOperators.NOT_EQUALS));
+					selectBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
+				}
 
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if (ids != null && !ids.isEmpty()) {
@@ -65,7 +71,7 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 
 		List<Long> reportInfoIds = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop : props) {
+			for(Map<String, Object> prop : props){
 				ReportInfo reportInfo = FieldUtil.getAsBeanFromMap(prop, ReportInfo.class);
 				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
 				reportInfo.setName(report.getName());

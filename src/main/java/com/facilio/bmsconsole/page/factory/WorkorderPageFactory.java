@@ -20,6 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -203,6 +204,17 @@ public class WorkorderPageFactory extends PageFactory {
             actualDuration.addToLayoutParams(11, yOffset, 6, 6);
             summarySection.addWidget(actualDuration);
 
+            // multiresource widget
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ROUTES_AND_MULTI_RESOURCE)) {
+                PageWidget multiResourceWidget = new PageWidget(PageWidget.WidgetType.MULTIRESOURCE);
+                multiResourceWidget.addToLayoutParams(0, 6 + yOffset, 17, 9);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule workOrderModule = modBean.getModule("workorder");
+                JSONObject moduleData = new JSONObject();
+                moduleData.put("module", workOrderModule);
+                multiResourceWidget.setWidgetParams(moduleData);
+                summarySection.addWidget(multiResourceWidget);
+            }
             // comments widget
             PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
             commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 9);
@@ -307,7 +319,7 @@ public class WorkorderPageFactory extends PageFactory {
     }
 
     private static void addFailureReportTab(Page page){
-        Page.Tab failureReportTab = page.new Tab("Failure Reporting");
+        Page.Tab failureReportTab = page.new Tab("Failure Report");
         page.addTab(failureReportTab);
 
         Page.Section failureReportSection = page.new Section();

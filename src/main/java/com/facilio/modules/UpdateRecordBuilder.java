@@ -24,6 +24,7 @@ import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
 
@@ -360,17 +361,52 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return recordIds;
 	}
 
+	private Map<String, Object> sanitizeFields(List<FacilioField> fields,Map<String, Object> moduleProps){
+		Map<String, Object> props = new HashMap<>(moduleProps);
+		if(ignoreSplNullHandling){
+			return props;
+		}
+		if(CollectionUtils.isNotEmpty(fields)){
+			Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			if(props != null && !props.isEmpty()) {
+				for (Map.Entry<String,Object> propSet : props.entrySet()) {
+					if (fieldMap.containsKey(propSet.getKey())) {
+						FacilioField field = fieldMap.get(propSet.getKey());
+						Object value = propSet.getValue();
+						if(field != null) {
+							switch (field.getDataTypeEnum()) {
+								case STRING:
+									if (String.valueOf(value).equals(StringUtils.EMPTY)) {
+										props.put(propSet.getKey(), null);
+									}
+									break;
+								case NUMBER:
+								case DECIMAL:
+									Number num = (Number) FacilioUtil.castOrParseValueAsPerType(field,value);
+									if (num != null && num.longValue() == -99l) {
+										props.put(propSet.getKey(), null);
+									}
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+		return props;
+	}
+
 	private List<Long> constructChangeSet(Map<String, Object> moduleProps) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
-
+		Map<String, Object> modProps = sanitizeFields(allFields,moduleProps);
 		if (oldValues == null) {
 			this.selectBuilder.select(allFields);
 			selectBuilder.skipPermission().skipModuleCriteria();
 			oldValues = selectBuilder.get();
 			if (AccountUtil.getCurrentOrg().getOrgId() == 1l) {
 				LOGGER.info("Adding Log for Select Query "+selectBuilder);
-			} 
+			}
 		}
 
 		isIdsFetched = true;
@@ -386,7 +422,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				Map<String, Object> oldProp = FieldUtil.getAsProperties(bean);
 				updateLookupFields(oldProp, allFields);
 
-				MapDifference<String, Object> difference = Maps.difference(oldProp, moduleProps);
+				MapDifference<String, Object> difference = Maps.difference(oldProp, modProps);
 				List<UpdateChangeSet> currentChangeList = new ArrayList<>();
 				getNewValues(id, fieldNames, fieldMap, difference.entriesOnlyOnRight(), currentChangeList);
 				getDifference(id, fieldNames, fieldMap, difference.entriesDiffering(), currentChangeList);
@@ -433,7 +469,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 
 		updateFields.addAll(FieldUtil.removeMultiRecordFields(fields));
-		
+
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
 		builder.setBaseTableName(prevModule.getTableName());
@@ -600,11 +636,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	//will be an interface method once i check in in framework
-		public void addJoinModules(Collection<FacilioModule> joinModules) {
-			if(this.joinModules == null) {
-				this.joinModules = new ArrayList<FacilioModule>();  
-			}
-			this.joinModules.addAll(joinModules);
+	public void addJoinModules(Collection<FacilioModule> joinModules) {
+		if(this.joinModules == null) {
+			this.joinModules = new ArrayList<FacilioModule>();
 		}
+		this.joinModules.addAll(joinModules);
+	}
 
 }
+
