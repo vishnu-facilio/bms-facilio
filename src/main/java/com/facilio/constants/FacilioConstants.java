@@ -460,6 +460,7 @@ public class FacilioConstants {
 
 		public static final String ACCOUNT_TYPE = "accounttype";
 		public static final String POINTS = "points";
+		public static final String COMMISSIONING_LOG = "commissioninglog";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";

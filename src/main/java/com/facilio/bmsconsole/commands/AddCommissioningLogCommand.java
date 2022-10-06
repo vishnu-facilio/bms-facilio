@@ -1,11 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -13,10 +18,6 @@ import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 public class AddCommissioningLogCommand extends FacilioCommand {
 
@@ -24,25 +25,46 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		CommissioningLogContext log = (CommissioningLogContext) context.get(ContextNames.LOG);
 		validateLog(log);
-		
-		log.setSysCreatedTime(System.currentTimeMillis());
-		log.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
-		Map<String, Object> prop = FieldUtil.getAsProperties(log);
-		
-		FacilioModule module = ModuleFactory.getCommissioningLogModule();
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(module.getTableName())
-				.fields(FieldFactory.getCommissioningLogFields())
-				.addRecord(prop);
-		
-		builder.save();
-		long logId = (long) prop.get("id");
-		log.setId(logId);
-		
-		if (!log.isLogical()) {
-			addControllers(log);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
+		Map<String,Object> prop;
+		if(module != null){
+			List<FacilioField>fields = modBean.getAllFields(module.getName());
+			prop = FieldUtil.getAsProperties(log);
+			InsertRecordBuilder builder = new InsertRecordBuilder()
+					.module(module)
+					.fields(fields)
+					.addRecordProps(Collections.singletonList(prop));
+
+			builder.save();
+			long logId = (long) prop.get("id");
+			log.setId(logId);
+
+			if (!log.isLogical()) {
+				addControllers(log);
+			}
 		}
-		
+		else{
+			module = ModuleFactory.getCommissioningLogModule();
+			List<FacilioField>fields = FieldFactory.getCommissioningLogFields();
+			log.setSysCreatedTime(System.currentTimeMillis());
+			log.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
+			prop = FieldUtil.getAsProperties(log);
+			prop.put("sysCreatedBy",log.getSysCreatedBy());
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(module.getTableName())
+					.fields(fields)
+					.addRecord(prop);
+
+			builder.save();
+			long logId = (long) prop.get("id");
+			log.setId(logId);
+
+			if (!log.isLogical()) {
+				addControllers(log);
+			}
+		}
+
 		return false;
 	}
 	
