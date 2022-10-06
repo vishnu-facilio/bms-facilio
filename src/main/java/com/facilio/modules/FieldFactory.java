@@ -8227,7 +8227,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
-
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         return fields;
     }
 
