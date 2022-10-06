@@ -2369,6 +2369,8 @@ public class FacilioConstants {
 
 		public static final String SCOPE_VARIABLE = "scopeVariable";
 
+		public static final String SWITCH_VARIABLE = "switchVariable";
+
 		public static final String ACTIVITY_MODULE_NAME_FROM_SCRIPT = "activityModuleNameFromScript";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

@@ -1087,7 +1087,14 @@
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
         </action>
+
     </package>
+
+    <package name="switchVariable" namespace="/api/v3/switchVariable" extends="v3Api">
+        <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getSwitchVariable">
+        </action>
+    </package>
+
     <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
              extends="v3Api">
         <action name="reserve"
