@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -75,6 +76,19 @@ public class BMSEventContext extends BaseEventContext {
         alarm.setController(getController());
 
         return baseAlarm;
+    }
+
+    @Override
+    public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+        if (add && alarmOccurrence == null) {
+            alarmOccurrence = new BMSAlarmOccurrenceContext();
+        }
+
+        BMSAlarmOccurrenceContext bmsOccurrence = (BMSAlarmOccurrenceContext) alarmOccurrence;
+        bmsOccurrence.setCondition(getCondition());
+        bmsOccurrence.setSource(getSource());
+        bmsOccurrence.setController(getController());
+        return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 
     @Override

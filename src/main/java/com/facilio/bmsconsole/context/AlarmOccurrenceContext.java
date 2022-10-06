@@ -23,10 +23,6 @@ public class AlarmOccurrenceContext extends V3Context {
 
 	private AlarmSeverityContext severity;
 
-	private String condition;
-
-	private String source;
-
 	private BaseAlarmContext alarm;
 
 	private AlarmSeverityContext previousSeverity;
@@ -201,6 +197,7 @@ public class AlarmOccurrenceContext extends V3Context {
 
 	public enum Type implements FacilioIntEnum {
 		NORMAL,
+		BMS,
 		ANOMALY,
 		READING,
 		VIOLATION,

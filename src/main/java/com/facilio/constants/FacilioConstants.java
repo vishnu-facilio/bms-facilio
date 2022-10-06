@@ -525,6 +525,7 @@ public class FacilioConstants {
 		public static final String ALARM_OCCURRENCE_ID = "alarmoccurrenceId";
 		public static final String RCA_ALARMS = "rcaAlarm";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
+		public static final String BMS_ALARM_OCCURRENCE = "bmsalarmoccurrence";
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
 		public static final String VIOLATION_ALARM_OCCURRENCE = "violationalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";

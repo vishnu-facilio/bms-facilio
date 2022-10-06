@@ -109,6 +109,8 @@ public class NewAlarmAPI {
 				return AlarmOccurrenceContext.class;
 			case ANOMALY:
 				return MLAlarmOccurenceContext.class;
+			case BMS:
+				return BMSAlarmOccurrenceContext.class;
 			case READING:
 				return ReadingAlarmOccurrenceContext.class;
 			case VIOLATION:
@@ -139,6 +141,8 @@ public class NewAlarmAPI {
 		switch (type) {
 			case NORMAL:
 				return FacilioConstants.ContextNames.ALARM_OCCURRENCE;
+			case BMS:
+				return FacilioConstants.ContextNames.BMS_ALARM_OCCURRENCE;
 			case ANOMALY:
 				return FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE;
 			case READING:
@@ -290,6 +294,8 @@ public class NewAlarmAPI {
 		switch (type) {
 			case READING_ALARM:
 				return AlarmOccurrenceContext.Type.READING;
+			case BMS_ALARM:
+				return AlarmOccurrenceContext.Type.BMS;
 			case ML_ANOMALY_ALARM:
 				return AlarmOccurrenceContext.Type.ANOMALY;
 			case VIOLATION_ALARM:
