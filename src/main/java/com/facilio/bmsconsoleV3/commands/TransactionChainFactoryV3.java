@@ -2283,4 +2283,10 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateShiftPlannerCommand());
         return c;
     }
+
+    public static Command getTicketAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddTicketLookups());
+        return c;
+    }
 }
