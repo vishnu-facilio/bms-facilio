@@ -774,6 +774,10 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
                 method="exportReport">
         </action>
+        <action name="sendMail"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="sendPivotMail">
+        </action>
     </package>
     <package name="analyticsReportApi" namespace="/api/v3/report/analytics" extends="v3Api">
         <action name="create"
