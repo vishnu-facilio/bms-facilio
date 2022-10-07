@@ -800,8 +800,8 @@ public class WorkOrderModule extends BaseModuleConfig {
     public static Condition getOpenStatusCondition() {
         FacilioModule module = ModuleFactory.getTicketsModule();
         LookupField statusField = new LookupField();
-        statusField.setName("status");
-        statusField.setColumnName("STATUS_ID");
+        statusField.setName("moduleState");
+        statusField.setColumnName("MODULE_STATE");
         statusField.setDataType(FieldType.LOOKUP);
         statusField.setModule(module);
         statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
@@ -842,8 +842,8 @@ public class WorkOrderModule extends BaseModuleConfig {
     public static Criteria getClosedTicketsCriteria () {
         FacilioModule module = ModuleFactory.getTicketsModule();
         LookupField statusField = new LookupField();
-        statusField.setName("status");
-        statusField.setColumnName("STATUS_ID");
+        statusField.setName("moduleState");
+        statusField.setColumnName("MODULE_STATE");
         statusField.setDataType(FieldType.LOOKUP);
         statusField.setModule(module);
 //		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
@@ -956,8 +956,8 @@ public class WorkOrderModule extends BaseModuleConfig {
         Criteria statusCriteria = new Criteria();
         statusCriteria.addAndCondition(statusClose);
         LookupField statusField = new LookupField();
-        statusField.setName("status");
-        statusField.setColumnName("STATUS_ID");
+        statusField.setName("moduleState");
+        statusField.setColumnName("MODULE_STATE");
         statusField.setDataType(FieldType.LOOKUP);
         statusField.setModule(ModuleFactory.getTicketsModule());
 //		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
