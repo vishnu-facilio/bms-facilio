@@ -251,7 +251,7 @@
         </action>
 
     </package>
-    
+
     <package name="v3triggers" namespace="/api/v3/trigger" extends="v3Api">
         <action name="list"
                 class="com.facilio.trigger.action.TriggerAction"
@@ -261,7 +261,7 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="addOrUpdateTrigger">
         </action>
-        
+
         <action name="delete"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="deleteTrigger">
@@ -273,12 +273,12 @@
         <action name="changeStatus"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="changeStatus" />
-        
+
         <action name="execute"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="executeTrigger">
         </action>
-        
+
         <action name="agent"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listAgentTriggers">
@@ -288,10 +288,10 @@
 	                <param name="ignoreHierarchy">false</param>
 	                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
 	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name|displayName)).)*</param>
-	                
+
            	 	</result>
         </action>
-        
+
         <action name="*"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="triggerDetails">
@@ -299,8 +299,8 @@
         </action>
 
     </package>
-    
-    
+
+
     <package name="v3MailMessageAction" namespace="/api/v3/mailmessage" extends="v3Api">
         <action name="reSendVerificationEmail"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
@@ -310,10 +310,10 @@
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
                 method="getfromEmailForEmailThreadingReply">
         </action>
-        
+
     </package>
-    
-    
+
+
     <package name="control" namespace="/api/v3/control" extends="v3Api">
         <action name="getCategoryForType"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
@@ -379,13 +379,13 @@
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList"></action>
     </package>
-    
+
     <package name="placeholderApiv3" namespace="/api/v3/placeholders" extends="v3Api">
         <action name="*" class="com.facilio.bmsconsoleV3.actions.V3CommonAction" method="fetchPlaceholderFields">
             <param name="moduleName">{1}</param>
         </action>
     </package>
-    
+
     <package name="summaryApiv3" namespace="/api/v3/summary/fields" extends="v3Api">
         <action name="*" class="com.facilio.bmsconsoleV3.actions.V3PageAction" method="fetchSummaryFields">
             <param name="moduleName">{1}</param>
@@ -395,7 +395,7 @@
                 <param name="ignoreHierarchy">false</param>
                 <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
                 <param name="excludeProperties">data.fields.*\.field.(columnName|completeColumnName|tableName|inputName|module|accessType)</param>
-                
+
             </result>
         </action>
     </package>
@@ -447,7 +447,7 @@
                 method="validateAnswers">
         </action>
     </package>
-    
+
     <package name="qandaDisplayLogic" namespace="/api/v3/qandaDisplayLogic" extends="v3Api">
         <action name="add"
                 class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
@@ -477,7 +477,7 @@
                 method="fetchOperators">
         </action>
     </package>
-    
+
     <package name="scoringRulesAdd" namespace="/api/v3/scoringrules/add" extends="v3Api">
         <action name="*"
                 class="com.facilio.qa.rules.actions.QAndARuleAction"
@@ -522,7 +522,7 @@
             <param name="pageId">{1}</param>
         </action>
     </package>
-    
+
     <package name="floorplan" namespace="/api/v3/floorplan" extends="v3Api">
         <action name="getFacilityDetails"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
@@ -540,7 +540,7 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getPropertiesData">
         </action>
-        
+
     </package>
     <package name="floorplansearch" namespace="/api/v3/floorplan/search" extends="v3Api">
         <action name="*"
@@ -572,7 +572,7 @@
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="delete"></action>
     </package>
-    
+
     <package name="setup" namespace="/api/v3/setup" extends="v3Api">
         <action name="*/*/*"
                 class="com.facilio.bmsconsoleV3.actions.SetupAction">
@@ -590,15 +590,15 @@
             <param name="first">{1}</param>
         </action>
     </package>
-    
+
     <package name="bulkResourceAllocation" namespace="/api/v3/resourceAllocation" extends="v3Api">
         <action name="getModuleAndCrtieriaFromConfig"
                 class="com.facilio.bmsconsoleV3.actions.BulkResourceAllocationAction"
                 method="getModuleAndCrtieriaFromConfig">
         </action>
     </package>
-    
-    
+
+
     <package name="bundle" namespace="/api/v3/bundle" extends="v3Api">
         <action name="copyCustomization"
                 class="com.facilio.bundle.action.BundleAction"
@@ -633,7 +633,7 @@
                 method="getAllInstalledBundles">
         </action>
     </package>
-    
+
     <package name="sandbox" namespace="/api/v3/sandbox" extends="v3Api">
         <action name="add"
                 class="com.facilio.sandbox.action.SandboxAction"
@@ -889,6 +889,12 @@
         <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchReadings"/>
         <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames"/>
         <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames"/>
+    </package>
+
+    <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/runHistorical" extends="v3Api">
+        <action name="*" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical">
+            <param name="id">{1}</param>
+        </action>
     </package>
 
     <package name="licensinginfo" namespace="/api/v3/licensinginfo" extends="v3Api">

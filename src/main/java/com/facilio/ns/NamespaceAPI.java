@@ -3,7 +3,10 @@ package com.facilio.ns;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -12,29 +15,33 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
+import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.facilio.ns.factory.NamespaceModuleAndFieldFactory.getNamespaceInclusionModule;
 
 @Log4j
 public class NamespaceAPI {
@@ -79,7 +86,7 @@ public class NamespaceAPI {
                     continue;
                 }
             }
-            if(field.getRelMapId()!=null){
+            if (field.getRelMapId() != null) {
                 RelationMappingContext mapping = RelationUtil.getRelationMapping(field.getRelMapId());
                 field.setRelMapContext(mapping);
             }
@@ -109,20 +116,20 @@ public class NamespaceAPI {
     }
 
     private static void updateWorkflow(NameSpaceContext namespaceContext) throws Exception {
-        if(namespaceContext.getWorkflowId() != null) { //TODO: should be remove this check
+        if (namespaceContext.getWorkflowId() != null) { //TODO: should be remove this check
             WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(namespaceContext.getWorkflowId());
             namespaceContext.setWorkflowContext(workflowContext);
         }
     }
 
-    public static int updateNsStatus(Long ruleId,boolean status, NSType type) throws Exception{
-        NameSpaceContext namespaceContext=getNameSpaceByRuleId(ruleId, type);
+    public static int updateNsStatus(Long ruleId, boolean status, NSType type) throws Exception {
+        NameSpaceContext namespaceContext = getNameSpaceByRuleId(ruleId, type);
         namespaceContext.setStatus(status);
-        Map<String,Object> namespaceMap =FieldUtil.getAsProperties(namespaceContext);
+        Map<String, Object> namespaceMap = FieldUtil.getAsProperties(namespaceContext);
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
-                .andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(),NamespaceModuleAndFieldFactory.getNamespaceModule()))
+                .andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(), NamespaceModuleAndFieldFactory.getNamespaceModule()))
                 .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(type.getIndex()), NumberOperators.EQUALS));
         int cnt = updateBuilder.update(namespaceMap);
         return cnt;
@@ -138,18 +145,29 @@ public class NamespaceAPI {
         return false;
     }
 
-    public static List<Long> getMatchedResources(NameSpaceContext ns) {
-        List<NameSpaceField> fields = ns.getFields();
-        List<Long> resources = new ArrayList<>();
-        if (CollectionUtils.isEmpty(fields)) {
-            return new ArrayList<>();
+    public static List<Long> getMatchedResources(NameSpaceContext ns) throws Exception {
+        return getMatchedResources(ns, null);
+    }
+
+    public static List<Long> getMatchedResources(NameSpaceContext ns, V3Context fddContext) throws Exception {
+        Set<Long> resourceIds = new HashSet<>();
+
+        List<Long> inclusions = fetchResourceIdsFromNamespaceInclusions(ns.getId());
+        if (CollectionUtils.isNotEmpty(inclusions)) {
+            return inclusions;
         }
-        for (NameSpaceField fld : fields) {
-            if (fld.getResourceId() != null && fld.getResourceId() > 0 && (fld.getPrimary() != null && fld.getPrimary())) {
-                resources.add(fld.getResourceId());
+        if (fddContext != null) {
+            List<AssetContext> assets = new ArrayList<>();
+            if (fddContext instanceof ReadingKPIContext) {
+                Long assetCategoryId = ((ReadingKPIContext) fddContext).getAssetCategory().getId();
+                assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, fddContext.getSiteId());
+            } else {
+                // TODO: add functionality to support rule
             }
+            resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
+
         }
-        return resources;
+        return new ArrayList<>(resourceIds);
     }
 
     public static List<Long> fetchMatchedResourceIds(Long nsId) throws Exception {
@@ -167,10 +185,11 @@ public class NamespaceAPI {
         List<Long> resourceIds = new ArrayList<>();
         for (Map<String, Object> m : maps) {
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
-            if (field.getPrimary() != null && field.getPrimary() && field.getResourceId() != null) {
+            if (field.getResourceId() != null) {
                 resourceIds.add(field.getResourceId());
             }
         }
+
         return resourceIds;
     }
 
@@ -238,6 +257,26 @@ public class NamespaceAPI {
                     .save();
         }
     }
+
+
+    public static List<Long> fetchResourceIdsFromNamespaceInclusions(Long nameSpaceId) throws Exception {
+        List<FacilioField> fields = NamespaceModuleAndFieldFactory.getNamespaceInclusionFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(getNamespaceInclusionModule().getTableName())
+                .select(Arrays.asList(fieldMap.get("resourceId")))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("namespaceId"), nameSpaceId.toString(), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> maps = selectBuilder.get();
+        List<Long> resourceIds = new ArrayList<>();
+        for (Map<String, Object> m : maps) {
+            resourceIds.add((Long) m.get("resourceId"));
+        }
+
+        return resourceIds;
+    }
+
 
     private static void throwIfAssetNotFound(List<Long> assetIds, List<AssetContext> assetInfo) {
         if (assetIds.size() != assetInfo.size()) {

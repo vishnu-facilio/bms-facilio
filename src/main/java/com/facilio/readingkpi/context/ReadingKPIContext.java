@@ -5,10 +5,13 @@ import java.util.List;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
 
@@ -39,6 +42,8 @@ public class ReadingKPIContext extends V3Context {
     private NameSpaceContext ns;
     private String firstAssetName;
     private List<Long> assets;
+
+    private List<Long> matchedResourcesIds;
 
     public PreventiveMaintenance.PMAssignmentType getResourceTypeEnum() {
         return resourceType;
@@ -79,6 +84,15 @@ public class ReadingKPIContext extends V3Context {
     }
 
     public int getFrequency() {
-        return frequency != null? frequency.getIndex() : -1;
+        return frequency != null ? frequency.getIndex() : -1;
+    }
+
+    public Unit getUnit() {
+        Unit inputUnit = null;
+        if (this.getReadingField() instanceof NumberField) {
+            NumberField numberfield = (NumberField) this.getReadingField();
+            inputUnit = FormulaFieldAPI.getOrgDisplayUnit(numberfield);
+        }
+        return inputUnit;
     }
 }

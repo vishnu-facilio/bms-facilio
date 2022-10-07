@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.faults.newreadingalarm;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext;

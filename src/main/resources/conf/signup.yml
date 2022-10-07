@@ -147,7 +147,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.people.AddPeopleModuleFields
 
   # ReadingKpi Modules
-  - com.facilio.bmsconsoleV3.signup.AddKPIModules
+  - com.facilio.bmsconsoleV3.signup.readingkpi.AddKPIModules
+  - com.facilio.bmsconsoleV3.signup.readingkpi.AddScheduledKpiLoggerModule
 
   #Adding Send Mail modules
   - com.facilio.mailtracking.signup.AddOutgoingMailLoggerModules

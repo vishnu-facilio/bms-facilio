@@ -3,8 +3,9 @@ package com.facilio.readingkpi.context;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum KPIType implements FacilioIntEnum {
-    LIVE_FORMULA,
-    SCHEDULED_FORMULA;
+
+    LIVE,
+    SCHEDULED;
 
     public static KPIType valueOf(int idx) {
         if (idx > 0 && idx <= values().length) {

@@ -62,6 +62,9 @@ import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
 import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
+import com.facilio.ns.context.NamespaceFrequency;
+import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
+import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
@@ -72,6 +75,7 @@ import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 
+import javax.xml.stream.events.Namespace;
 import java.util.Collections;
 
 public class TransactionChainFactory {
@@ -6599,6 +6603,19 @@ public class TransactionChainFactory {
 		chain.addCommand(new sendTestMailCommand());
 		return chain;
 	}
+
+	public static FacilioChain executeScheduleKpi(Integer scheduleType){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteSchKpiOfACategoryCommand(scheduleType));
+		return c;
+	}
+	public static FacilioChain fetchIntervalsAndCalculateKpiChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchIntervalsAndCalculateKpiCommand());
+		return c;
+	}
+
+
 }
 
 

@@ -3624,5 +3624,14 @@ public class FacilioConstants {
         public static final String READING_KPI = "readingkpi";
         public static final String READING_KPI_READINGS_TABLE = "KPIReadings";
         public static final String READING_KPI_RESULT = "kpiResult";
-    }
+		public static final String IS_HISTORICAL = "isHistorical";
+		public static final String INDEPENDENT_KPIS = "independentKpis";
+		public static final String DEPENDENT_KPIS = "dependentKpis";
+		public static final String DEPENDENCY_GRAPH_LIST="dependencyGraphList";
+		public static final String SCHEDULE_TYPE = "scheduleType";
+		public static final String NEXT_SCHEDULE_TYPE = "nextScheduleType";
+		public static final String READING_KPI_JOB_NAME = "ExecuteScheduledReadingKpi";
+		public static final String SCHEDULED_KPI_LOGGER_MODULE = "scheduledKpiLogger";
+		public static final String KPI_TYPE = "kpiType";
+	}
 }
