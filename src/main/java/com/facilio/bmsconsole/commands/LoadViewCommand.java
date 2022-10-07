@@ -337,10 +337,11 @@ public class LoadViewCommand extends FacilioCommand {
 			}
 			else if (view.getFields().get(i).getFieldName() != null) {
 				System.out.println("view.getFields().get(i).getFieldName()" + view.getFields().get(i));
-				if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				FacilioField systemField = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(), module);
+				if (systemField != null) {
+					modulesName = systemField.getModule().getName();
+				} else if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 					modulesName = moduleName;
-				} else {
-					modulesName = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(), module).getModule().getName();
 				}
 				fieldsName = view.getFields().get(i).getFieldName();
 			}
