@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -419,5 +420,11 @@ public class ApplicationAction extends FacilioAction {
 
 		return SUCCESS;
 
+	}
+
+	public String getAllLicensedPortals() throws Exception{
+		List<ApplicationContext> portals = ApplicationApi.getLicensedPortalApps();
+		setResult(FacilioConstants.ContextNames.PORTALS,portals);
+		return SUCCESS;
 	}
 }

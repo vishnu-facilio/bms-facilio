@@ -261,6 +261,7 @@ public class FacilioConstants {
 
 		public static final String MY_APPS = "myApps";
 		public static final String APPLICATION = "application";
+		public static final String PORTALS = "portals";
 		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";
 		public static final String LAYOUT_APP_TYPE = "layoutAppType";

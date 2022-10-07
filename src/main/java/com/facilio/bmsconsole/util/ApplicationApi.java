@@ -2729,7 +2729,10 @@ public class ApplicationApi {
                     portalApplications.add(portal);
                 } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
                     portalApplications.add(portal);
-                } else if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)) {
+                } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
+                    portalApplications.add(portal);
+                }
+                else if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)) {
                     portalApplications.add(portal);
                 }
             }
