@@ -197,7 +197,6 @@ public class AlarmOccurrenceContext extends V3Context {
 
 	public enum Type implements FacilioIntEnum {
 		NORMAL,
-		BMS,
 		ANOMALY,
 		READING,
 		VIOLATION,
@@ -210,6 +209,7 @@ public class AlarmOccurrenceContext extends V3Context {
 		SENSOR,
 		SENSOR_ROLLUP,
 		MULTIVARIATE_ANOMALY,
+		BMS,
 		;
 
 		public Integer getIndex() {
