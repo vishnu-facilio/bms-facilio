@@ -1434,6 +1434,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("createdTime", "CREATED_TIME", module));
         fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
         fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
+        fields.add(getNumberField("accessType","ACCESS_TYPE",module));
 
 
         return fields;
@@ -1459,7 +1460,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("styleClass","STYLE_CLASS",module,FieldType.STRING));
         fields.add(getField("icon","ICON",module,FieldType.STRING));
         fields.add(getField("placeHolder","PLACE_HOLDER",module,FieldType.STRING));
-        fields.add(getField("accessType","ACCESS_TYPE",module,FieldType.NUMBER));
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
