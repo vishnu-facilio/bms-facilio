@@ -18,6 +18,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
@@ -56,17 +58,7 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.TicketActivity;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -1644,15 +1636,12 @@ public class WorkOrderAction extends FacilioAction {
 		if (workorder == null) {
 			if (stateTransitionId != null && stateTransitionId > 0) {
 				workorder = new WorkOrderContext();
-			}
-			else if (approvalTransitionId != null && approvalTransitionId > 0) {
+			} else if (approvalTransitionId != null && approvalTransitionId > 0) {
+				workorder = new WorkOrderContext();
+			} else if (customButtonId != null && customButtonId > 0) {
 				workorder = new WorkOrderContext();
 			}
-			else if (customButtonId != null && customButtonId > 0) {
-				workorder = new WorkOrderContext();
-			}
-		}
-		else if (workOrderString == null && workorder != null) {
+		} else if (workOrderString == null && workorder != null) {
 			workorder.parseFormData();
 		}
 		if (workorder.getStatus() != null) {
@@ -1660,29 +1649,28 @@ public class WorkOrderAction extends FacilioAction {
 			if (type != null) {
 				activityType = type;
 			}
-		}
-		else if(!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
+		} else if (!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0))) {
 			activityType = EventType.ASSIGN_TICKET;
 		}
-		
+
 		// cannot update module state directly
 		if (workorder.getModuleState() != null) {
 			workorder.setModuleState(null);
 		}
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, this.ticketattachments);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
- 		if (qrVal != null) {
- 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVal);
- 		}else {
- 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
- 		}
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, this.ticketattachments);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+		if (qrVal != null) {
+			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVal);
+		} else {
+			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
+		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
- 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
- 		if (customButtonId != null && customButtonId > 0) {
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+		if (customButtonId != null && customButtonId > 0) {
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(customButtonId));
 			CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
 		}
@@ -1691,12 +1679,26 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.NOTIFY_REQUESTER, getNotifyRequester());
 	}
 
+	private boolean closingWorkOrder(Long transitionID) throws Exception {
+		if (transitionID == null) {
+			return false;
+		}
+		StateflowTransitionContext transition = (StateflowTransitionContext)
+				StateFlowRulesAPI.getStateTransition(transitionID);
+		FacilioStatus toState = StateFlowRulesAPI.getStateContext(transition.getToStateId());
+		return toState != null &&
+				toState.getType().equals(FacilioStatus.StatusType.CLOSED);
+	}
+
 	private String updateWorkOrder(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+
+		if (closingWorkOrder(stateTransitionId)) {
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
+		}
 
 		FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
