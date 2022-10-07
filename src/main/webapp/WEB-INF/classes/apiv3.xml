@@ -350,6 +350,23 @@
             <param name="translationImpl">V3PickListTranslation</param>
         </action>
     </package>
+
+    <package name="bulkActionPatch" namespace="/api/v3/bulkActionPatch" extends="v3Api">
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionPatch">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
+
+    <package name="bulkActionDelete" namespace="/api/v3/bulkActionDelete" extends="v3Api">
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionDelete">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
+
     <package name="timelineGroupPicklist" namespace="/api/v3/timelineGroupData"
              extends="v3Api">
         <action name="fetch"

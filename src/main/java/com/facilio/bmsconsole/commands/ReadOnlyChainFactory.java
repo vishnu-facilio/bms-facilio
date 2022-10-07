@@ -23,6 +23,8 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
+import com.facilio.bmsconsoleV3.commands.bulkActions.DeleteModuleDataCommand;
+import com.facilio.bmsconsoleV3.commands.bulkActions.UpdateModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
@@ -192,6 +194,20 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new HandleDefaultIdAndOrderByForPicklist());
 		c.addCommand(commonFetchDataListChain(true));
 		c.addCommand(new ConstructFieldOptionForPicklist());
+		return c;
+	}
+
+	public static FacilioChain getBulkActionPatchChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new UpdateModuleDataCommand());
+		return c;
+	}
+
+	public static FacilioChain getBulkActionDeleteChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new DeleteModuleDataCommand());
 		return c;
 	}
 
