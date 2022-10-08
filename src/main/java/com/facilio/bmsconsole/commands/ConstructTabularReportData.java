@@ -13,6 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -39,6 +40,7 @@ import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.report.context.PivotDataColumnContext;
+import org.json.simple.parser.JSONParser;
 
 ;
 
@@ -304,8 +306,31 @@ public class ConstructTabularReportData extends FacilioCommand {
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(dateOperatorInt);
                     Criteria otherCrit = new Criteria();
-                    Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
-                    otherCrit.addAndCondition(newCond);
+                    if(dateOperatorInt == DateOperators.CURRENT_N_YEAR.getOperatorId() || dateOperatorInt == DateOperators.CURRENT_N_DAY.getOperatorId() ||
+                            dateOperatorInt == DateOperators.CURRENT_N_MONTH.getOperatorId() || dateOperatorInt == DateOperators.CURRENT_N_WEEK.getOperatorId())
+                    {
+                        String tabular_state = reportContext.getTabularState();
+                        if(tabular_state != null){
+                            JSONParser parser = new JSONParser();
+                            JSONObject tabular_state_json = (JSONObject) parser.parse(tabular_state);
+                            if(tabular_state_json != null && tabular_state_json.containsKey("dateValue"))
+                            {
+                                String dateValue = (String) tabular_state_json.get("dateValue");
+                                if (dateValue != null && !dateValue.equals("") && !dateValue.equals("-1")) {
+                                    String []date_value = dateValue.split(",");
+                                    if(date_value.length>0 && date_value[0] != null && !date_value[0].equals("")) {
+                                        Condition newCond = CriteriaAPI.getCondition(dateField, date_value[0], dateOperator);
+                                        otherCrit.addAndCondition(newCond);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
+                        otherCrit.addAndCondition(newCond);
+                    }
                     dataPointContext.setOtherCriteria(otherCrit);
                 } else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20){
                     FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
