@@ -137,7 +137,6 @@ public class FacilioChainFactory {
 		c.addCommand(new AddorUpdateUserScopingCommand());
 		return c;
 	}
-	
 	public static Command getChangeTeamStatusCommand(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ChangeTeamStatusCommand());
@@ -335,6 +334,13 @@ public class FacilioChainFactory {
 	public static FacilioChain getAddAlarmTemplateChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAlarmTemplateCommand());
+		return c;
+	}
+
+	public static FacilioChain getPortalUsersListChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetPortalUsersListCommand());
 		return c;
 	}
 	

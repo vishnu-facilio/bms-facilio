@@ -16,9 +16,13 @@ import java.util.*;
 
 public class NewReadingRuleModule extends BaseModuleConfig{
     public NewReadingRuleModule(){
-        setModuleName(FacilioConstants.ContextNames.NEW_READING_RULE);
+        setModuleName(FacilioConstants.ContextNames.NEW_READING_RULE_MODULE);
     }
 
+    @Override
+    protected void addTriggers() throws Exception {
+        return;
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

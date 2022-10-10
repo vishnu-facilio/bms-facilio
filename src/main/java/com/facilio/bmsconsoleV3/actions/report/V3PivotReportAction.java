@@ -1,15 +1,28 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportPivotParamsContext;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotRowColumnContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -21,8 +34,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -40,7 +55,14 @@ public class V3PivotReportAction extends V3Action {
     private long startTime = -1;
     private long endTime = -1;
     private Boolean showTimelineFilter;
-
+    private EMailTemplate emailTemplate;
+    private FileInfo.FileFormat fileFormat;
+    public int getFileFormat() {
+        return  fileFormat != null ? fileFormat.getIntVal() : -1;
+    }
+    public void setFileFormat(int fileFormat) {
+        this.fileFormat = FileInfo.FileFormat.getFileFormat(fileFormat);
+    }
     private List<PivotRowColumnContext> rows = new ArrayList<PivotRowColumnContext>();
     private List<PivotDataColumnContext> pivotData = new ArrayList<PivotDataColumnContext>();
 
@@ -108,6 +130,37 @@ public class V3PivotReportAction extends V3Action {
         V3ReportAction reportAction = new V3ReportAction();
         reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message,
                 AuditLogHandler.ActionType.ADD);
+        return SUCCESS;
+    }
+    public String sendPivotMail() throws Exception {
+        FacilioContext context = new FacilioContext();
+        FacilioChain mailReportChain;
+        ReportContext reportContext = ReportUtil.getReport(reportId);
+        context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+        context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+        JSONParser parser = new JSONParser();
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+                (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+        context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
+        context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+        context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+        context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+        context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
+        context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
+        context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+        context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+        mailReportChain = TransactionChainFactory.sendPivotReportMailChain();
+        context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+        context.put("isS3Url", true);
+        mailReportChain.execute(context);
         return SUCCESS;
     }
 

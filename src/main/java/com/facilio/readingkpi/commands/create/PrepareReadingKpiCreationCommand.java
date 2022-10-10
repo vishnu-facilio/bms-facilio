@@ -1,6 +1,5 @@
 package com.facilio.readingkpi.commands.create;
 
-import com.facilio.bmsconsoleV3.signup.AddKPIModules;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -13,11 +12,13 @@ import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 setContextForNsAndWorkflow(context, kpi);
                 String kpiName = kpi.getName();
                 context.put(FacilioConstants.ContextNames.READING_NAME, kpiName);
-                NumberField field = FieldFactory.getField(FacilioConstants.ReadingKpi.READING_KPI_RESULT, kpiName, "RESULT", null, FieldType.DECIMAL);
+                NumberField field = FieldFactory.getField(null, kpiName, "RESULT", null, FieldType.DECIMAL);
 
                 String customUnit = kpi.getCustomUnit();
                 if (customUnit != null) {
@@ -51,7 +52,14 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
 
                 field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
                 kpi.setReadingField(field);
-                context.put(FacilioConstants.ContextNames.MODULE_FIELD, kpi.getReadingField());
+                ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
+                    {
+                        add(kpi.getReadingField());
+                        add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, kpi.getName() + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
+                    }
+                };
+                context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
+
                 context.put(FacilioConstants.ContextNames.MODULE_TYPE, getModuleTypeFromKpiType(kpi.getKpiTypeEnum()));
 
                 setReadingParent(kpi, context);
@@ -78,9 +86,9 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
 
     public FacilioModule.ModuleType getModuleTypeFromKpiType(KPIType type) {
         switch (type) {
-            case SCHEDULED_FORMULA:
+            case SCHEDULED:
                 return FacilioModule.ModuleType.SCHEDULED_FORMULA;
-            case LIVE_FORMULA:
+            case LIVE:
                 return FacilioModule.ModuleType.LIVE_FORMULA;
         }
         return null;

@@ -23,10 +23,6 @@ public class AlarmOccurrenceContext extends V3Context {
 
 	private AlarmSeverityContext severity;
 
-	private String condition;
-
-	private String source;
-
 	private BaseAlarmContext alarm;
 
 	private AlarmSeverityContext previousSeverity;
@@ -213,6 +209,7 @@ public class AlarmOccurrenceContext extends V3Context {
 		SENSOR,
 		SENSOR_ROLLUP,
 		MULTIVARIATE_ANOMALY,
+		BMS,
 		;
 
 		public Integer getIndex() {

@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
@@ -17,7 +19,6 @@ import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CommissioningLogContext {
-	
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -32,20 +33,24 @@ public class CommissioningLogContext {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-	
+
 	private long agentId = -1;
-	public long getAgentId() {
+	public long getAgentId(){
 		return agentId;
 	}
+
 	public void setAgentId(long agentId) {
+		FacilioAgent agent = new FacilioAgent();
+		this.agent = agent;
+		agent.setId(agentId);
 		this.agentId = agentId;
 	}
-	
+
 	private String agentName;
 	public String getAgentName() {
 		return agentName;
 	}
-	
+
 	private FacilioAgent agent;
 	@JSON(serialize = false)
 	public FacilioAgent getAgent() {
@@ -55,9 +60,10 @@ public class CommissioningLogContext {
 		this.agent = agent;
 		if (agent != null) {
 			this.agentName = agent.getDisplayName();
+			this.agentId = agent.getId();
 		}
 	}
-	
+
 	private long publishedTime = -1;
 	public long getPublishedTime() {
 		return publishedTime;
@@ -75,7 +81,7 @@ public class CommissioningLogContext {
 	}
 
 	private boolean prefillMlData;
-	
+
 	@JsonIgnore
 	private List<Point> pointList;
 	@JSON(serialize = false)
@@ -86,7 +92,7 @@ public class CommissioningLogContext {
 	public void setPointList(List<Point> pointList) {
 		this.pointList = pointList;
 	}
-	
+
 	@JsonIgnore
 	private JSONArray points;
 	public JSONArray getPoints() {
@@ -95,7 +101,7 @@ public class CommissioningLogContext {
 	public void setPoints(JSONArray points) {
 		this.points = points;
 	}
-	
+
 	@JSON(serialize = false)
 	public String getPointJsonStr() {
 		if (points != null) {
@@ -109,7 +115,7 @@ public class CommissioningLogContext {
 			this.points = FacilioUtil.parseJsonArray(pointsStr);
 		}
 	}
-	
+
 	private JSONObject clientMeta;
 	@JsonIgnore
 	public JSONObject getClientMeta() {
@@ -119,7 +125,7 @@ public class CommissioningLogContext {
 	public void setClientMeta(JSONObject clientMeta) {
 		this.clientMeta = clientMeta;
 	}
-	
+
 	@JSON(serialize = false)
 	public String getClientMetaStr() {
 		if (clientMeta != null) {
@@ -141,7 +147,7 @@ public class CommissioningLogContext {
 	public void setSysCreatedTime(long sysCreatedTime) {
 		this.sysCreatedTime = sysCreatedTime;
 	}
-	
+
 	private long sysModifiedTime = -1;
 	public long getSysModifiedTime() {
 		return sysModifiedTime;
@@ -149,15 +155,18 @@ public class CommissioningLogContext {
 	public void setSysModifiedTime(long sysModifiedTime) {
 		this.sysModifiedTime = sysModifiedTime;
 	}
-	
+
+
 	private long sysCreatedBy = -1;
+	@JsonIgnore
 	public long getSysCreatedBy() {
 		return sysCreatedBy;
 	}
+	@JsonIgnore
 	public void setSysCreatedBy(long sysCreatedBy) {
 		this.sysCreatedBy = sysCreatedBy;
 	}
-	
+
 	/*private String createdByName;
 	public String getCreatedByName() {
 		return createdByName;
@@ -165,15 +174,16 @@ public class CommissioningLogContext {
 	public void setCreatedByName(String createdByName) {
 		this.createdByName = createdByName;
 	}*/
-	
 	private long sysModifiedBy = -1;
+	@JsonIgnore
 	public long getSysModifiedBy() {
 		return sysModifiedBy;
 	}
+	@JsonIgnore
 	public void setSysModifiedBy(long sysModifiedBy) {
 		this.sysModifiedBy = sysModifiedBy;
 	}
-	
+
 	/*private long modifiedByName = -1;
 	public long getModifiedByName() {
 		return modifiedByName;
@@ -181,7 +191,7 @@ public class CommissioningLogContext {
 	public void setModifiedByName(long modifiedByName) {
 		this.modifiedByName = modifiedByName;
 	}*/
-	
+
 	private List<Long> controllerIds;
 	@JsonIgnore
 	public List<Long> getControllerIds() {
@@ -191,7 +201,7 @@ public class CommissioningLogContext {
 	public void setControllerIds(List<Long> controllerIds) {
 		this.controllerIds = controllerIds;
 	}
-	
+
 	private List<Map<String, Object>> controllers;
 	@JsonIgnore
 	public List<Map<String, Object>> getControllers() {
@@ -204,7 +214,7 @@ public class CommissioningLogContext {
 			this.controllerIds = controllers.stream().map(controller -> (long)controller.get("id")).collect(Collectors.toList());
 		}
 	}
-	
+
 	private List<Map<String, Object>> headers;
 	public List<Map<String, Object>> getHeaders() {
 		return headers;
@@ -212,7 +222,7 @@ public class CommissioningLogContext {
 	public void setHeaders(List<Map<String, Object>> headers) {
 		this.headers = headers;
 	}
-	
+
 	private FacilioControllerType controllerType;
 	public int getControllerType() {
 		if(controllerType != null) {
@@ -228,15 +238,23 @@ public class CommissioningLogContext {
 	public void setControllerType(int type) {
 		this.controllerType = FacilioControllerType.valueOf(type);
 	}
-	
+
 	private Boolean logical;
 	public Boolean getLogical() {
 		return logical;
 	}
 	public void setLogical(Boolean logical) {
 		this.logical = logical;
-	} 
+	}
 	public boolean isLogical() {
 		return logical == null ? false : logical;
+	}
+	private long moduleId = -1L;
+	public long getModuleId() {
+		return this.moduleId;
+	}
+
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
 	}
 }

@@ -11,10 +11,12 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingkpi.context.KPIType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.mockito.internal.runners.StrictRunner;
 
 import java.util.*;
 
@@ -61,11 +63,15 @@ public class FetchKpiNamesCommand extends FacilioCommand {
         FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
         Map<String, FacilioField> rdmFieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
 
+        String kpiTypeString = (String) context.get(FacilioConstants.ReadingKpi.KPI_TYPE);
+        KPIType kpiType = KPIType.valueOf(kpiTypeString.toUpperCase());
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(rdmModule.getTableName())
                 .innerJoin(readingKpiModule.getTableName()).on(rdmFieldMap.get("fieldId").getCompleteColumnName() + "=" + readingKpiFieldMap.get("readingFieldId").getCompleteColumnName())
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), "true", BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS));
+                .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
+                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS));
+
 
         if (!fetchCount) {
             builder.select(selectFields);

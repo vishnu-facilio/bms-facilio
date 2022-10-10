@@ -164,13 +164,15 @@ public class ConstructReportDataCommand extends FacilioCommand {
                                 key.add(groupBy.getAlias() + "_" + groupByVal.toString());
                             }
                         }
-                        if (report.getgroupByTimeAggr() > 0) {
+                        if (report.getgroupByTimeAggr() > 0 && !formattedxVal.equals("deleted")) {
                             key.add(xVal.toString());
                             constructAndAddData(key.toString(), data, xVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
 
                         } else {
-                            key.add(formattedxVal.toString());
-                            constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+                            if(!formattedxVal.equals("deleted")) {
+                                key.add(formattedxVal.toString());
+                                constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+                            }
 
                         }
                     }
@@ -267,17 +269,22 @@ public class ConstructReportDataCommand extends FacilioCommand {
                 }
                 break;
             case LOOKUP:
-//				LookupField lookupField = (LookupField) field;
-//				FacilioModule lookupModule = lookupField.getLookupModule();
-//				if(aggr != null && aggr instanceof SpaceAggregateOperator && (reportFieldContext.getModuleName().equals(FacilioConstants.ModuleNames.ASSET_BREAKDOWN))) {
-//					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//					lookupModule = modBean.getModule(aggr.getStringValue());
-//				}
-//				updateLookupMap(reportFieldContext, lookupField.getFieldId(), lookupField.getSpecialType(), lookupModule);
                 if (val instanceof Map) {
                     val = ((Map) val).get("id");
                 }
                 List<Long> ids = dpLookUpMap.getOrDefault(reportFieldContext, new ArrayList<Long>());
+                LookupField lookupField = (LookupField) field;
+                FacilioModule lookupModule = lookupField.getLookupModule();
+                if(lookupModule != null && lookupModule.getName().equals("vendors")) {
+                    List<Long> vals = new ArrayList<>();
+                    if(val != null) {
+                        vals.add((Long) val);
+                    }
+                    Boolean isDeleted = isDeletedLookup(lookupField.getSpecialType(), lookupField.getLookupModule(), vals);
+                    if(isDeleted){
+                        return "deleted";
+                    }
+                }
                 ids.add((Long) val);
                 dpLookUpMap.put(reportFieldContext, ids);
                 break;
@@ -369,6 +376,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
                 .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
                 .select(selectFields)
+//                .fetchDeleted()
                 .module(lookupModule);
         if (CollectionUtils.isNotEmpty(ids)) {
             builder.andCondition(CriteriaAPI.getIdCondition(ids, lookupModule));
@@ -394,5 +402,40 @@ public class ConstructReportDataCommand extends FacilioCommand {
         }
         return lookupMap;
     }
+    private Boolean isDeletedLookup(String specialType, FacilioModule lookupModule, List<Long> ids)
+    {
+        try
+        {
+            String moduleName = null;
+            if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
+                moduleName = specialType;
+            } else {
+                moduleName = lookupModule.getName();
+            }
 
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioField mainField = modBean.getPrimaryField(moduleName);
+
+            List<FacilioField> selectFields = new ArrayList<>();
+            selectFields.add(mainField);
+            selectFields.add(FieldFactory.getIdField(lookupModule));
+            SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
+                    .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
+                    .select(selectFields)
+                    .module(lookupModule);
+            if (CollectionUtils.isNotEmpty(ids)) {
+                builder.andCondition(CriteriaAPI.getIdCondition(ids, lookupModule));
+            }
+
+            List<Map<String, Object>> asProps = builder.getAsProps();
+            if (asProps == null || (asProps != null && asProps.size() <= 0)) {
+               return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
 }

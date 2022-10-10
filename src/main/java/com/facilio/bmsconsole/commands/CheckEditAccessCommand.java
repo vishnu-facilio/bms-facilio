@@ -18,22 +18,25 @@ public class CheckEditAccessCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
 
-        Boolean isSuperAdmin = AccountUtil.getCurrentUser().isSuperAdmin();
+        User currentUser = AccountUtil.getCurrentUser();
+        Boolean isSuperAdmin = currentUser.isSuperAdmin();
         if (isSuperAdmin) {
             return false;
         }
 
-        Long currentUserRoleId = AccountUtil.getCurrentUser().getRoleId();
-        Role adminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        Long currentUserRoleId = currentUser.getRoleId();
+        Boolean isPrivileged = currentUser.getRole().isPrevileged();
+        Role adminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
         Long adminRoleId = adminRole.getId();
-        if (adminRoleId.equals(currentUserRoleId)){
+        if (isPrivileged || adminRoleId.equals(currentUserRoleId)){
             return false;
         }
 
-        Long currentUserId = AccountUtil.getCurrentUser().getId();
+        Long currentUserId = currentUser.getId();
         Long ownerId = view.getOwnerId();
         if (ownerId == -1){
-            User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+            User user = AccountUtil.getOrgBean().getSuperAdmin(orgId);
             ownerId = user.getOuid();
         }
         if (ownerId.equals(currentUserId)) {

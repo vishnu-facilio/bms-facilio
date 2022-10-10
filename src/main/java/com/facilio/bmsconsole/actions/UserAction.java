@@ -10,11 +10,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.iam.accounts.util.IAMUserException;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
@@ -149,6 +155,26 @@ public class UserAction extends FacilioAction {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	private String filters;
+
+	public String getFilters() {
+		return filters;
+	}
+
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+
 
 	public void setAppDomain(String appDomain) {
 		this.appDomain = appDomain;
@@ -198,8 +224,23 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String allPortalUserList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		if(getFilters() != null)
+		{
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+
+		}
+
+		FacilioChain chain = FacilioChainFactory.getPortalUsersListChain();
+        context.put(FacilioConstants.ContextNames.STATUS,false);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "users");
+		chain.execute(context);
+
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), false));
+		setUsers((List<User>) context.get(FacilioConstants.ContextNames.USERS));
 		return SUCCESS;
 	}
 	

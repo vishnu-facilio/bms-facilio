@@ -66,6 +66,8 @@ public class DefaultJobsOnSignUp extends SignUpData {
         // VALUES (${orgId}, ${orgId}, 'ScheduledFormulaCalculator', true, true, '{"times":["00:05","01:05","02:05","03:05","04:05","05:05","06:05","07:05","08:05","09:05","10:05","11:05","12:05","13:05","14:05","15:05","16:05","17:05","18:05","19:05","20:05","21:05","22:05","23:05"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 300000, UNIX_TIMESTAMP()*1000);
         FacilioTimer.scheduleCalendarJob(orgId, "ScheduledFormulaCalculator", System.currentTimeMillis(), constructDailyScheduleInfoWithHourlyTime(5), "facilio");
 
+        FacilioTimer.scheduleCalendarJob(orgId, "ScheduledKpiExecInitiator", System.currentTimeMillis(), constructDailyScheduleInfoWithOneTime("00:01"), "facilio");
+
         // INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, PERIOD, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME)
         // VALUES (${orgId}, ${orgId}, 'VirtualMeterCalculation', true, true, 900, UNIX_TIMESTAMP()+900,'facilio', 3, 0, 300000, UNIX_TIMESTAMP()*1000);
         FacilioTimer.schedulePeriodicJob(orgId, "VirtualMeterCalculation", 900, 900, "facilio");

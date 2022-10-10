@@ -50,4 +50,12 @@ public class ScopeVariableAction extends V3Action {
         scopeBean.getAllScopeVariable();
         return V3Action.SUCCESS;
     }
+
+    public String getSwitchVariable() throws Exception {
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        setData(FacilioConstants.ContextNames.SWITCH_VARIABLE,scopeBean.getSwitchVariable());
+        scopeBean.getSwitchVariable();
+        return V3Action.SUCCESS;
+
+    }
 }

@@ -1335,6 +1335,7 @@
 /api/v3/report/pivot/update
 /api/v3/report/pivot/execute
 /api/v3/report/pivot/export
+/api/v3/report/pivot/sendMail
 /api/v3/report/analytics/create
 /api/v3/report/analytics/update
 /api/v3/report/reading/create

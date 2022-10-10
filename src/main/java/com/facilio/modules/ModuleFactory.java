@@ -1798,7 +1798,7 @@ public class ModuleFactory {
 		formulaFieldHistoricalLoggerModule.setTableName("Formula_Field_Historical_Logger");
 		return formulaFieldHistoricalLoggerModule;
 	}
-	
+
 	public static FacilioModule getWorkflowRuleLoggerModule() {
 		FacilioModule workflowRuleLoggerModule = new FacilioModule();
 		workflowRuleLoggerModule.setName("workflowRuleLoggerModule");

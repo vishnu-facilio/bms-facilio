@@ -6920,4 +6920,11 @@
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="getCustomPageWidget">
 		</action>
 	</package>
+
+	<package name="portals" namespace="/api/v2/portals" extends="v2Api">
+		<action name="getLicensedPortals"
+				class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getAllLicensedPortals">
+		</action>
+	</package>
 </struts>

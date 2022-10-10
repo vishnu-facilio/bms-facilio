@@ -76,8 +76,12 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						List<V3PurchasedItemContext> pItems = selectBuilder.get();
 						if (pItems != null && !pItems.isEmpty()) {
 							V3PurchasedItemContext pitem = pItems.get(0);
-							lastPurchasedDate = pitem.getCostDate();
-							lastPurchasedPrice = pitem.getUnitcost();
+							if(pitem.getCostDate()!=null){
+								lastPurchasedDate = pitem.getCostDate();
+							}
+							if(pitem.getUnitcost()!=null){
+								lastPurchasedPrice = pitem.getUnitcost();
+							}
 						}
 
 

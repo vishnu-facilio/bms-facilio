@@ -151,13 +151,13 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* left Field */
-        LookupField leftField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "left", "Planned Maintenance", "PM_ID", null,
+        LookupField leftField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "left", "Planned Maintenance", "LEFT_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(leftField);
 
         /* right Field */
         LookupField rightField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SITE),
-                "right", "Site", "SITE_ID", null,
+                "right", "Site", "RIGHT_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(rightField);
         module.setFields(fields);

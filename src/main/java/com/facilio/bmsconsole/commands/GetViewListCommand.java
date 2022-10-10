@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -392,36 +393,39 @@ public class GetViewListCommand extends FacilioCommand {
 		
 	}
 
-	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Long currentUserId, Long ownerId, Long adminRoleId, Long currentUserRoleId) {
+	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Boolean isPrivileged, Long currentUserId, Long ownerId, Long adminRoleId, Long currentUserRoleId) {
 
 		Boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
 
-		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId.equals(currentUserId) || adminRoleId.equals(currentUserRoleId))));
+		view.setEditable(isSuperAdmin || isPrivileged || !isLocked || (isLocked && (ownerId.equals(currentUserId) || adminRoleId.equals(currentUserRoleId))));
 
 		return view;
 	}
 
 	public List<FacilioView> filterAccessibleViews(List<FacilioView> dbViews) throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		List<FacilioView> resultViews = new ArrayList<>();
 
-		Boolean isSuperAdmin = AccountUtil.getCurrentUser().isSuperAdmin();
-		Long currentUserId = AccountUtil.getCurrentUser().getId();
-		Long currentUserRoleId = AccountUtil.getCurrentUser().getRoleId();
-		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+		User currentUser = AccountUtil.getCurrentUser();
+		Long currentUserId = currentUser.getId();
+		Long currentUserRoleId = currentUser.getRoleId();
+		Boolean isSuperAdmin = currentUser.isSuperAdmin();
+		Boolean isPrivileged = currentUser.getRole().isPrevileged();
+		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
 
-		Role adminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
+		Role adminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
 		Long adminRoleId = adminRole.getId();
 
 		for (FacilioView view : dbViews){
 			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
 			if (view.isHidden()){
 				continue;
-			} else if (isSuperAdmin || (ownerId.equals(currentUserId)) || (adminRoleId.equals(currentUserRoleId))){
-				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId, adminRoleId, currentUserRoleId));
-			} else if (view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(), DelegationType.LIST_VIEWS)) {
+			} else if (isSuperAdmin || isPrivileged || (ownerId.equals(currentUserId)) || (adminRoleId.equals(currentUserRoleId))){
+				resultViews.add(addEditableAccess(view, isSuperAdmin, isPrivileged, currentUserId, ownerId, adminRoleId, currentUserRoleId));
+			} else if (view.getViewSharing() != null && !view.getViewSharing().isAllowed(currentUser, DelegationType.LIST_VIEWS)) {
 				continue;
 			} else {
-				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId, adminRoleId, currentUserRoleId));
+				resultViews.add(addEditableAccess(view, isSuperAdmin, isPrivileged, currentUserId, ownerId, adminRoleId, currentUserRoleId));
 			}
 		}
 		return resultViews;

@@ -14,6 +14,10 @@ public class MultivariateAnomalyAlarmModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
     }
 
+    @Override
+    protected void addTriggers() throws Exception {
+        return;
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

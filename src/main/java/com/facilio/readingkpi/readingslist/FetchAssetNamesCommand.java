@@ -14,10 +14,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingkpi.context.KPIType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.stream.events.Namespace;
 import java.util.*;
 
 public class FetchAssetNamesCommand extends FacilioCommand {
@@ -62,13 +64,15 @@ public class FetchAssetNamesCommand extends FacilioCommand {
         resourceIdField.setColumnName("DISTINCT(" + resourceIdField.getCompleteColumnName() + ")");
         resourceIdField.setModule(null);
 
+        KPIType kpiType = KPIType.valueOf((String) context.get(FacilioConstants.ReadingKpi.KPI_TYPE));
         List<FacilioField> rdmSelectFields = Arrays.asList(resourceIdField, resourceFieldMap.get("name"), rdmFieldMap.get("resourceId"));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(rdmModule.getTableName())
                 .innerJoin(readingKpiModule.getTableName()).on(rdmFieldMap.get("fieldId").getCompleteColumnName() + "=" + readingKpiFieldMap.get("readingFieldId").getCompleteColumnName())
                 .innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName() + "=" + resourceTable + ".ID")
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), "true", BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS));
+                .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
+                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS));
 
         if (!fetchCount) {
             int page = (int) context.get(FacilioConstants.ContextNames.PAGE);

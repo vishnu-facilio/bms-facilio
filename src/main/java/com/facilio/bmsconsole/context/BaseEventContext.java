@@ -266,16 +266,12 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
         }
 
         if (StringUtils.isNotEmpty(getPossibleCause())) {
-            if (StringUtils.isNotEmpty(getPossibleCause())) {
                 alarmOccurrence.setPossibleCauses(getPossibleCause());
-            }
         }
 
 
         if (StringUtils.isNotEmpty(getRecommendation())) {
-            if (StringUtils.isNotEmpty(getRecommendation())) {
                 alarmOccurrence.setRecommendation(getRecommendation());
-            }
         }
 
         return alarmOccurrence;

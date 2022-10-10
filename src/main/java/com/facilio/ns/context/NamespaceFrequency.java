@@ -28,7 +28,9 @@ public enum NamespaceFrequency implements FacilioIntEnum {
     ONE_DAY(86400000l),  //16
     WEEKLY(604800000l),  //17
     MONTHLY(2630000000l),  //18
-    ANNUALLY(31560000000l);  //19
+    QUARTERTLY(7889400000l), // 19
+    HALF_YEARLY(15778800000l), //20
+    ANNUALLY(31560000000l);  //21
 
     private long ms;
 

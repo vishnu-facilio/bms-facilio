@@ -17,11 +17,15 @@ import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 
-public class PreventiveMaintananceModule extends BaseModuleConfig{
-    public PreventiveMaintananceModule(){
+public class PreventiveMaintenanceModule extends BaseModuleConfig{
+    public PreventiveMaintenanceModule(){
         setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
     }
 
+    @Override
+    protected void addTriggers() throws Exception {
+        return;
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -62,6 +66,11 @@ public class PreventiveMaintananceModule extends BaseModuleConfig{
         view.setCriteria(criteria);
         view.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -90,6 +99,11 @@ public class PreventiveMaintananceModule extends BaseModuleConfig{
         view.setCriteria(criteria);
         view.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        view.setAppLinkNames(appLinkNames);
+
         return view;
     }
 
@@ -99,6 +113,11 @@ public class PreventiveMaintananceModule extends BaseModuleConfig{
         allView.setName("all");
         allView.setDisplayName("All");
         allView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }

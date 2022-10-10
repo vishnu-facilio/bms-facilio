@@ -1,7 +1,8 @@
-package com.facilio.bmsconsoleV3.signup;
+package com.facilio.bmsconsoleV3.signup.readingkpi;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

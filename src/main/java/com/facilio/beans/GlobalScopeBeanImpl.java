@@ -12,6 +12,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,6 +36,35 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
             return scopeVariableList;
         }
         return new ArrayList<>();
+    }
+
+    public List<GlobalScopeVariableContext> getSwitchVariable() throws Exception {
+        if(AccountUtil.getCurrentApp() != null) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getGlobalScopeVariableModule().getTableName())
+                    .select(FieldFactory.getGlobalScopeVariableFields())
+                    .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("SHOW_SWITCH", "showSwitch", String.valueOf(Boolean.TRUE), BooleanOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(Boolean.TRUE), BooleanOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS));
+            List<Map<String, Object>> props = selectRecordBuilder.get();
+            if (CollectionUtils.isNotEmpty(props)) {
+                List<GlobalScopeVariableContext> switchVariableList = FieldUtil.getAsBeanListFromMapList(props, GlobalScopeVariableContext.class);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                for (GlobalScopeVariableContext switchVariable : switchVariableList) {
+                    if (switchVariable.getApplicableModuleId() != null) {
+
+                        FacilioModule module = modBean.getModule(switchVariable.getApplicableModuleId());
+                        if(module != null ) {
+                            switchVariable.setApplicableModuleName(module.getName());
+                        }
+                    }
+                }
+                return switchVariableList;
+            }
+        }
+            return new ArrayList<>();
+
     }
 
     @Override

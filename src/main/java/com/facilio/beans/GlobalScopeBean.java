@@ -10,6 +10,7 @@ import java.util.Map;
 
 public interface GlobalScopeBean {
     public List<GlobalScopeVariableContext> getAllScopeVariable() throws Exception;
+    public List<GlobalScopeVariableContext> getSwitchVariable() throws Exception;
 
     public List<ScopeVariableModulesFields> getScopeVariableModulesFields(Long id) throws Exception;
 

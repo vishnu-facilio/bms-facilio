@@ -43,6 +43,7 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 					.andCondition(CriteriaAPI.getIdCondition(workflow.getId(), ModuleFactory.getWorkflowModule()));
 
 			Map<String, Object> prop = FieldUtil.getAsProperties(workflow);
+			prop.put("runAsAdmin",workflow.getRunAsAdmin());
 			update.update(prop);
 		}
 		

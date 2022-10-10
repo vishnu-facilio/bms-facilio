@@ -261,6 +261,7 @@ public class FacilioConstants {
 
 		public static final String MY_APPS = "myApps";
 		public static final String APPLICATION = "application";
+		public static final String PORTALS = "portals";
 		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";
 		public static final String LAYOUT_APP_TYPE = "layoutAppType";
@@ -460,6 +461,7 @@ public class FacilioConstants {
 
 		public static final String ACCOUNT_TYPE = "accounttype";
 		public static final String POINTS = "points";
+		public static final String COMMISSIONING_LOG = "commissioninglog";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";
@@ -525,6 +527,7 @@ public class FacilioConstants {
 		public static final String ALARM_OCCURRENCE_ID = "alarmoccurrenceId";
 		public static final String RCA_ALARMS = "rcaAlarm";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
+		public static final String BMS_ALARM_OCCURRENCE = "bmsalarmoccurrence";
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
 		public static final String VIOLATION_ALARM_OCCURRENCE = "violationalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
@@ -2369,6 +2372,8 @@ public class FacilioConstants {
 
 		public static final String SCOPE_VARIABLE = "scopeVariable";
 
+		public static final String SWITCH_VARIABLE = "switchVariable";
+
 		public static final String ACTIVITY_MODULE_NAME_FROM_SCRIPT = "activityModuleNameFromScript";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
@@ -3619,5 +3624,14 @@ public class FacilioConstants {
         public static final String READING_KPI = "readingkpi";
         public static final String READING_KPI_READINGS_TABLE = "KPIReadings";
         public static final String READING_KPI_RESULT = "kpiResult";
-    }
+		public static final String IS_HISTORICAL = "isHistorical";
+		public static final String INDEPENDENT_KPIS = "independentKpis";
+		public static final String DEPENDENT_KPIS = "dependentKpis";
+		public static final String DEPENDENCY_GRAPH_LIST="dependencyGraphList";
+		public static final String SCHEDULE_TYPE = "scheduleType";
+		public static final String NEXT_SCHEDULE_TYPE = "nextScheduleType";
+		public static final String READING_KPI_JOB_NAME = "ExecuteScheduledReadingKpi";
+		public static final String SCHEDULED_KPI_LOGGER_MODULE = "scheduledKpiLogger";
+		public static final String KPI_TYPE = "kpiType";
+	}
 }

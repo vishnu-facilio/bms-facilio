@@ -21,7 +21,7 @@ public class RdmControllerAction extends AgentIdAction {
     private String name;
     @URL
     private String url;
-    private String username;
+    private String userName;
     private String password;
     private String device;
 
@@ -31,7 +31,7 @@ public class RdmControllerAction extends AgentIdAction {
             RdmControllerContext controllerContext = new RdmControllerContext();
             controllerContext.setUrl(getUrl());
             controllerContext.setPassword(getPassword());
-            controllerContext.setUsername(getUsername());
+            controllerContext.setUsername(getUserName());
             controllerContext.setAgentId(getAgentId());
             controllerContext.setName(getName());
             AgentMessenger.sendRdmAddControllerCommand(controllerContext);

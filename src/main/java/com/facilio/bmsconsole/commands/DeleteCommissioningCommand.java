@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.CommissioningLogContext;
@@ -21,13 +24,22 @@ public class DeleteCommissioningCommand extends FacilioCommand {
 		if (log.getPublishedTime() != -1) {
 			throw new IllegalArgumentException("Published log cannot be deleted");
 		}
-		
-		FacilioModule module = ModuleFactory.getCommissioningLogModule();
-		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
-			.table(module.getTableName())
-			.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		deleteRecordBuilder.delete();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
+		if(module != null) {
+			DeleteRecordBuilder deleteRecordBuilder = new DeleteRecordBuilder()
+					.module(module)
+					.andCondition(CriteriaAPI.getIdCondition(id, module));
+			deleteRecordBuilder.delete();
+		}
+		else {
+			module = ModuleFactory.getCommissioningLogModule();
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+			deleteRecordBuilder.table(module.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(id, module));
+			deleteRecordBuilder.delete();
+		}
 		
 		return false;
 	}
