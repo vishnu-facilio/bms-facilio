@@ -35,27 +35,11 @@ files:
     destination: /home/facilio
 
 permissions:
-  - object: /home/facilio
-    pattern: "deployment-files"
-    owner: facilio
-    group: facilio
-    mode: 755
-    type:
-      - directory
-
   - object: /home/facilio/tomcat/webapps
     pattern: "ROOT.war"
     owner: facilio
     group: facilio
     mode: 644
-
-  - object: /home/facilio/deployment-files/
-    pattern: "**"
-    owner: facilio
-    group: facilio
-    mode: 644
-    type:
-      - file
 
   - object: /home/facilio
     pattern: "*.sh"
