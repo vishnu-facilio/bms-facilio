@@ -3211,7 +3211,8 @@ public class FacilioConstants {
 	public static class Shift {
 		public static final String SHIFT = "shift";
 		public static final String TIMELINE_METRIC = "timelineMetric";
-		public static final String TIMELINE_VALUE = "timelineValue";
+		public static final String RANGE_FROM = "rangeFrom";
+		public static final String RANGE_TO = "rangeTo";
 		public static final String PEOPLE_ID = "peopleID";
 		public static final String SHIFT_ID = "shiftID";
 		public static final String SHIFT_START = "shiftStart";
