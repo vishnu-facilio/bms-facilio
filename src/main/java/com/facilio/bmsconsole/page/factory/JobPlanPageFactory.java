@@ -68,8 +68,18 @@ public class JobPlanPageFactory extends PageFactory {
         return  page;
     }
     private static void addInventoryTab(Page page) throws Exception {
-        Page.Tab itemsAndLaborTab = page.new Tab("Plans");
+        Page.Tab itemsAndLaborTab = page.new Tab("Items & Tools");
         page.addTab(itemsAndLaborTab);
+
+        Page.Tab plans = page.new Tab("plans");
+        page.addTab(plans);
+
+        Page.Section planSection = page.new Section();
+        plans.addSection(planSection);
+
+        PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.JOBPLAN_PLANNER);
+        plansWidget.addToLayoutParams(planSection, 24, 14);
+        planSection.addWidget(plansWidget);
 
         Page.Section itemsAndLaborSection = page.new Section();
         itemsAndLaborTab.addSection(itemsAndLaborSection);
@@ -80,11 +90,6 @@ public class JobPlanPageFactory extends PageFactory {
         PageWidget overallCost = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_OVERALL_COST);
         overallCost.addToLayoutParams(0, 0, 5, 8);
         itemsAndLaborSection.addWidget(overallCost);
-
-        // labor
-        PageWidget labor = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_LABOR);
-        labor.addToLayoutParams(5, yOffset, 19, 7);
-        itemsAndLaborSection.addWidget(labor);
 
         // items
         PageWidget items = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_ITEMS);
