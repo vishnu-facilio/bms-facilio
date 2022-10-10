@@ -2212,6 +2212,10 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="formUnusedFieldList">
 		</action>
+		<action name="formFieldUsages"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="findFormFieldUsages">
+		</action>
 	</package>
 	<package name="formSectionApiv2"
 		namespace="/api/v2/forms/sections" extends="v2Api">

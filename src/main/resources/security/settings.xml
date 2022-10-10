@@ -1108,4 +1108,9 @@
         </urlparams>
     </request>-->
 
+    <request path="/api/v2/forms/fields/formFieldUsages">
+        <requestbody type="object">
+            <property name="formFieldId" type="number"/>
+        </requestbody>
+    </request>
 </config>
