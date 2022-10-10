@@ -21,6 +21,13 @@ public class AddPMDetailsBeforeUpdateCommand extends FacilioCommand {
             PlannedMaintenance pm = (PlannedMaintenance) record;
             // update modifiedTime manually as it's not a system field.
             pm.setModifiedTime(System.currentTimeMillis());
+
+            // Adding site ID if there's only one site. Add to support Global Site Filter.
+            if(pm.getSites() != null && pm.getSites().size() == 1){
+                pm._setSiteId(pm.getSites().get(0).getId());
+            }else {
+                pm._setSiteId(null);
+            }
         }
 
         return false;
