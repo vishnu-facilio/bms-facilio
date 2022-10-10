@@ -8,12 +8,10 @@ import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.util.FacilioUtil;
-import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-@Log4j
 public class UpdateRecipientStatusCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
