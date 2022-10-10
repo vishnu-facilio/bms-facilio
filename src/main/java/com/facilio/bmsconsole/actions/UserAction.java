@@ -437,31 +437,25 @@ public class UserAction extends FacilioAction {
 			if (e.getCause() != null && e.getCause() instanceof AccountException) {
 				AccountException ae = (AccountException) e.getCause();
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
-					addFieldError("error", "This user already exists in the app of your organization.");
-					return ERROR;
+					throw new IllegalArgumentException("This user already exists in the app of your organization.");
 				}
 				else if (ae.getErrorCode().equals(AccountException.ErrorCode.NOT_PERMITTED)) {
-					addFieldError("error", "Not Permitted to do this operation");
-					return ERROR;
+					throw new IllegalArgumentException("Not Permitted to do this operation");
 				}
 				else if (ae.getErrorCode().equals(AccountException.ErrorCode.USER_ALREADY_EXISTS_IN_APP)) {
-					addFieldError("error", "This user already exists in the app of your organization.");
-					return ERROR;
+					throw new IllegalArgumentException("This user already exists in the app of your organization.");
 				} else if (ae.getErrorCode().equals(AccountException.ErrorCode.DUPLICATE_USER)) {
-					addFieldError("error", "User already exists in app.");
-					return ERROR;
+					throw new IllegalArgumentException("User already exists in app.");
 				}
 			} else if (e.getCause() != null && e.getCause() instanceof IAMUserException) {
 				IAMUserException ame = (IAMUserException) e.getCause();
 				if(ame.getErrorCode().equals(IAMUserException.ErrorCode.USERNAME_HAS_WHITESPACE)){
-					addFieldError("error", ame.getMessage());
-					return ERROR;
+					throw new IllegalArgumentException(ame.getMessage());
 				}
 			}
 			log.info("Exception occurred ", e);
-			addFieldError("error", e.getMessage());
-			
-			return ERROR;
+			throw new IllegalArgumentException(e.getMessage());
+
 		}
 		setUserId(user.getId());
 		return SUCCESS;
