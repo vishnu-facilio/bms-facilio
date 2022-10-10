@@ -49,9 +49,10 @@ public class GetVerifiedEmailAddressFromAWSJob extends FacilioJob {
 		
 		List<EmailFromAddress> unverifiedEmailFromAddress = select.get();
 		
-		LOGGER.error("unverifiedEmailFromAddress -- "+unverifiedEmailFromAddress);
+
 		
 		if(unverifiedEmailFromAddress != null && !unverifiedEmailFromAddress.isEmpty()) {
+			LOGGER.error("unverifiedEmailFromAddress -- "+unverifiedEmailFromAddress);
 			
 			Map<String, List<EmailFromAddress>> emailMap = unverifiedEmailFromAddress.stream().collect(Collectors.groupingBy(EmailFromAddress::getEmail));
 			
