@@ -31,9 +31,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class GetFormMetaCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(GetFormMetaCommand.class);
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
@@ -75,6 +78,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 					if (form == null) {
 						childModule = formModule;
 						form = getChildForm(childModule, appLinkName);
+					}else{
+						LOGGER.info("formFactoryTracking formName : "+ formName +"for module : "+ formModuleName + "get from form builder");
 					}
 				}
 				else {
@@ -88,6 +93,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					}
 					else {
 						form = new FacilioForm(FormFactory.getForm(formName));
+						LOGGER.info("formFactoryTracking formName : "+ formName +"for module : "+ form.getModule().getName()  + " get from form builder");
 					}
 				}
 				if (form == null) {

@@ -1197,6 +1197,8 @@ public class FormsAPI {
 			if (CollectionUtils.isNotEmpty(forms)) {
 				return forms.get(0);
 			}
+		}else {
+			LOGGER.info("formFactoryTracking formName : "+ defaultForm.getName() +"for module : "+ moduleName +" get from form builder : From factory first.If not (for custom module ");
 		}
 		return defaultForm;
 
@@ -1221,6 +1223,7 @@ public class FormsAPI {
 			if (defaultForm != null) {
 				form = new FacilioForm(defaultForm);
 				form.setSections(defaultForm.getSections());
+				LOGGER.info("formFactoryTracking formName : "+ defaultForm.getName() +"for module : "+ module.getName() + " while get form with module name and link name");
 			}
 		}
 		return form;
