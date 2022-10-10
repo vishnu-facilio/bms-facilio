@@ -98,6 +98,13 @@ public class FormRuleContext {
 		this.type = FormRuleType.getAllRuleType().get(type);
 	}
 
+	private Boolean isDefault = false;
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
 	public boolean evaluateCriteria (Map<String, Object> record,FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
 		criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
