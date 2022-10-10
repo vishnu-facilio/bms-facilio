@@ -620,6 +620,7 @@ public class UserAction extends FacilioAction {
 	
 	public String updateMyProfile() throws Exception{
 		subscriptionInfo();
+		user.setUid(AccountUtil.getCurrentAccount().getUser().getUid());
 		AccountUtil.getUserBean().updateUser(user);
 		
 		return SUCCESS;
