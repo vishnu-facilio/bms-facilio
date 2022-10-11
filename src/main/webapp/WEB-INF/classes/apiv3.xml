@@ -1024,8 +1024,9 @@
         <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
     </package>
 
-    <package name="ogmail" namespace="/api/v3/historymail" extends="v3Api">
-        <action name="rerun" class="com.facilio.mailtracking.actions.HistoricalMailAction" method="pushMailsToWms"/>
+    <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
+        <action name="history" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="resendFailedMails"/>
+        <action name="apiStats" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="apiStats"/>
     </package>
 
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">
