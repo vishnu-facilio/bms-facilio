@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.service.FacilioHttpStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.workflows.context.WorkflowContext;
@@ -21,6 +23,7 @@ public class ValidateWorkflowCommand extends FacilioCommand {
 		boolean validationResult = workflow.validateWorkflow();
 		if(!validationResult) {
 			context.put(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, workflow.getErrorListener());
+			context.put(FacilioConstants.ContextNames.STATUS, FacilioHttpStatus.FC_SCRIPT_SYNTAX_ERROR);
 			return true;
 		}
 		return false;

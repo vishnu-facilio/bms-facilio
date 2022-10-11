@@ -396,6 +396,7 @@ public class WorkflowContext extends ScriptContext{
 			        	else {
 			        		LOGGER.log(Level.SEVERE, "Workflow - "+getId()+" has syntax errors - "+getErrorListener().getErrorsAsString());
 			        	}
+
 			        	WorkflowUtil.sendScriptLogs(this,null,WorkflowLogStatus.SYNTAX_ERROR,getErrorListener().getErrorsAsString());
 			        }
 			        

@@ -3,6 +3,7 @@ package com.facilio.workflows.command;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.service.FacilioHttpStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -26,9 +27,13 @@ public class ExecuteWorkflowCommand extends FacilioCommand {
 			workflowContext.setWorkflowV2String(wf.getWorkflowV2String());
 		}
 		fillWorkflowContext(workflowContext, context);
-		
-		workflowContext.executeWorkflow();
-		
+		try{
+			workflowContext.executeWorkflow();
+			context.put("status", FacilioHttpStatus.SC_OK);
+		}catch (Exception e) {
+			context.put("status",FacilioHttpStatus.FC_SCRIPT_EXECUTION_ERROR);
+			throw e;
+		}
 		return false;
 	}
 
