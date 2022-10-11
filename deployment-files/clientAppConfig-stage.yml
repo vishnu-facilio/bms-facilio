@@ -1,0 +1,17 @@
+version: 1.0
+clientapps:
+  - name: default
+    baseUrl: https://static.facilio.in
+    stageBaseUrl: https://static.facilio.in/dev
+  - name: auth
+    baseUrl: https://static.facilio.in/auth
+    stageBaseUrl: https://static.facilio.in/dev
+  - name: stateflow
+    baseUrl: https://static.facilio.in/stateflow
+    stageBaseUrl: https://static.facilio.in/dev
+  - name: dataloader
+    baseUrl: https://static.facilio.in/dataloader
+    stageBaseUrl: https://static.facilio.in/dev
+  - name: setup
+    baseUrl: https://static.facilio.in/setup
+    stageBaseUrl: https://static.facilio.in/dev

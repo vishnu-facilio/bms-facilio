@@ -28,6 +28,7 @@ else
 fi
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
+rm -rf $FACILIO_HOME/deployment-files/*
 
 #remove build_update file so that monit will monitor and start the server if it quits
 if [ "$LIFECYCLE_EVENT" = "ApplicationStart" ];
