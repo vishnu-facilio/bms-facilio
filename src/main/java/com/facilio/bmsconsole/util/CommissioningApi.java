@@ -54,14 +54,14 @@ public class CommissioningApi {
 	}
 	
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination) throws Exception {
-		return commissioniongList(ids,fetchControllers,pagination,null);
+		return commissioniongList(ids,fetchControllers,pagination,null,null);
 	}
-	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status) throws Exception {
+	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status,Criteria criteria) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
 		List<Map<String,Object>>props = new ArrayList<>();
 		if(module != null){
-			SelectRecordsBuilder builder = getLogsBuilder(ids,status);
+			SelectRecordsBuilder builder = getLogsBuilder(ids,status,criteria);
 			if (pagination != null) {
 				int page = (int) pagination.get("page");
 				int perPage = (int) pagination.get("perPage");
@@ -370,12 +370,12 @@ public class CommissioningApi {
 		}
 		return null;
 	}
-	public static Long getCommissioningListCount(List<Long> ids,String status)throws Exception{
+	public static Long getCommissioningListCount(List<Long> ids,String status,Criteria criteria)throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
 		Long count;
 		if(module != null){
-			SelectRecordsBuilder builder = getLogsBuilder(ids, status);
+			SelectRecordsBuilder builder = getLogsBuilder(ids, status,criteria);
 //			FacilioModule module = ModuleFactory.getCommissioningLogModule();
 			builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
 			builder.select(new ArrayList<>());
@@ -392,7 +392,7 @@ public class CommissioningApi {
 		}
 		return count;
 	}
-	public static SelectRecordsBuilder getLogsBuilder(List<Long> ids,String status) throws Exception {
+	public static SelectRecordsBuilder getLogsBuilder(List<Long> ids,String status,Criteria criteria) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
 		List<FacilioField>fields = modBean.getAllFields(module.getName());
@@ -416,6 +416,11 @@ public class CommissioningApi {
 		}
 		if (ids != null) {
 			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		}
+		if(criteria != null){
+			if(criteria.getConditions() != null && !criteria.getConditions().isEmpty()){
+				builder.andCriteria(criteria);
+			}
 		}
 		return builder;
 	}

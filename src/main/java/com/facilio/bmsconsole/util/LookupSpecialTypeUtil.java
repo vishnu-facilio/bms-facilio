@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
@@ -243,6 +244,25 @@ public class LookupSpecialTypeUtil {
 														.map(kpi -> new FieldOption<>(kpi.getId(), kpi.getName()))
 														.collect(Collectors.toList());
 				return kpiCategoryList;
+			}
+		}
+		else if(ContextNames.AGENT.equals(specialType)) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getNewAgentFields())
+					.table(ModuleFactory.getNewAgentModule().getTableName());
+
+			String search = (String) paramsMap.get("search");
+			if(StringUtils.isNotEmpty(search)){
+				selectBuilder.andCondition(CriteriaAPI.getCondition("DISPLAY_NAME", "displayName",search, StringOperators.CONTAINS));
+			}
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (CollectionUtils.isNotEmpty(props)) {
+				List<FacilioAgent> agentContext = FieldUtil.getAsBeanListFromMapList(props, FacilioAgent.class);
+				List<FieldOption<Long>> agentList = agentContext.stream()
+						.map(agent -> new FieldOption<>(agent.getId(), agent.getDisplayName()))
+						.collect(Collectors.toList());
+				return agentList;
 			}
 		}
 		return null;
@@ -887,6 +907,15 @@ public class LookupSpecialTypeUtil {
                 }
             }
         }
+		else if (ContextNames.AGENT.equals(specialType)) {
+			for(Object obj:listObjects) {
+
+				FacilioAgent agentContext = (FacilioAgent) obj;
+				if (agentContext != null) {
+					idVsKey.put(agentContext.getId(), agentContext.getDisplayName());
+				}
+			}
+		}
 		return idVsKey;
 	}
 	
