@@ -2372,6 +2372,7 @@ public class FacilioConstants {
 		//
 
 		public static final String SCOPE_VARIABLE = "scopeVariable";
+		public static final String SCOPE_VARIABLE_LIST = "scopeVariableList";
 
 		public static final String SWITCH_VARIABLE = "switchVariable";
 

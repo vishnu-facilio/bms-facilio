@@ -18,7 +18,6 @@ import java.util.Map;
 public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements GlobalScopeBean {
     @Override
     public Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> getAllScopeVariableAndValueGen(@NonNull Long appId) throws Exception {
-        checkAppAndThrowError(appId);
         FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
         String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), appId);
         return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(globalScopeVariableCache, key, () -> {
@@ -29,7 +28,6 @@ public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements Glo
     @Override
     public Long addScopeVariable(GlobalScopeVariableContext scopeVariable) throws Exception {
         if (scopeVariable != null) {
-            checkAppAndThrowError(scopeVariable.getAppId());
             FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
             Long id = super.addScopeVariable(scopeVariable);
             String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), scopeVariable.getAppId());
@@ -42,7 +40,6 @@ public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements Glo
     @Override
     public Long updateScopeVariable(GlobalScopeVariableContext scopeVariable) throws Exception {
         if (scopeVariable != null) {
-            checkAppAndThrowError(scopeVariable.getAppId());
             FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
             Long id = super.updateScopeVariable(scopeVariable);
             String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), scopeVariable.getAppId());
@@ -58,7 +55,6 @@ public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements Glo
             for (ScopeVariableModulesFields scopeVariableModuleField : scopeVariableModuleFields) {
                 GlobalScopeVariableContext scopeVariable = getScopeVariable(scopeVariableModuleField.getScopeVariableId());
                 if (scopeVariable != null) {
-                    checkAppAndThrowError(scopeVariable.getAppId());
                     FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
                     super.addScopeVariableModulesFields(Collections.singletonList(scopeVariableModuleField));
                     String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), scopeVariable.getAppId());
@@ -72,7 +68,6 @@ public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements Glo
     public void deleteScopeVariableModulesFieldsByScopeVariableId(Long scopeVariableId) throws Exception {
         GlobalScopeVariableContext scopeVariable = getScopeVariable(scopeVariableId);
         if (scopeVariable != null) {
-            checkAppAndThrowError(scopeVariable.getAppId());
             FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
             super.deleteScopeVariableModulesFieldsByScopeVariableId(scopeVariableId);
             String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), scopeVariable.getAppId());
@@ -80,21 +75,23 @@ public class GlobalScopeBeanCacheImpl extends GlobalScopeBeanImpl implements Glo
         }
     }
 
-    public void deleteScopeVariable(Long id) throws Exception {
-        GlobalScopeVariableContext scopeVariable = getScopeVariable(id);
-        if(scopeVariable == null){
-            throw new IllegalArgumentException("Scope variable does not exists");
-        }
-        checkAppAndThrowError(scopeVariable.getAppId());
+    public void deleteScopeVariable(Long id,Long appId) throws Exception {
         FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
-        super.deleteScopeVariable(id);
-        String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), scopeVariable.getAppId());
+        super.deleteScopeVariable(id,appId);
+        String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), appId);
+        globalScopeVariableCache.remove(key);
+    }
+    public void setStatus(Long appId, Long scopeVariableId,boolean status) throws Exception {
+        FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
+        super.setStatus(appId, scopeVariableId, status);
+        String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), appId);
         globalScopeVariableCache.remove(key);
     }
 
-    private void checkAppAndThrowError(Long appId){
-        if(appId == null){
-            throw new IllegalArgumentException("Appid cannot be null");
-        }
+    public void setSwitchStatus(Long appId, Long scopeVariableId,boolean status) throws Exception {
+        FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = LRUCache.getGlobalScopeVariableCache();
+        super.setSwitchStatus(appId, scopeVariableId,status);
+        String key = CacheUtil.GLOBAL_SCOPE_VARIABLE_KEY(AccountUtil.getCurrentOrg().getId(), appId);
+        globalScopeVariableCache.remove(key);
     }
 }

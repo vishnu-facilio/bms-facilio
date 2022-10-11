@@ -1111,11 +1111,22 @@
     <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
         </action>
+        <action name="detail" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="detail">
+        </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
         </action>
-
+        <action name="setStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setStatus">
+        </action>
+        <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setSwitchStatus">
+        </action>
+        <action name="meta" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getScopeMetaData">
+        </action>
+        <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicableFieldsMap">
+        </action>
+        <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicationValueGenerators">
+        </action>
     </package>
 
     <package name="switchVariable" namespace="/api/v3/switchVariable" extends="v3Api">

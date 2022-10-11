@@ -319,4 +319,34 @@ public class ReadOnlyChainFactoryV3 {
         chain.addCommand(new V3FetchPeopleGroupCommand());
         return chain;
     }
+
+    public static FacilioChain getScopeVariable() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FetchScopeVariableCommand());
+        return chain;
+    }
+
+    public static FacilioChain getScopeVariableList() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FetchScopeVariableListCommand());
+        return chain;
+    }
+
+    public static FacilioChain getGlobalScopeVariableMeta() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetGlobalScopeMetaCommand());
+        return chain;
+    }
+
+    public static FacilioChain getGlobalScopeVariableFields() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetGlobalScopeVariableFIeldsCommand());
+        return chain;
+    }
+
+    public static FacilioChain getValueGeneratorsForGlobalScopeVariable() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetValueGeneratorsForGlobalScopeCommand());
+        return chain;
+    }
 }

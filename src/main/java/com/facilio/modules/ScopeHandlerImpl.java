@@ -214,15 +214,25 @@ public class ScopeHandlerImpl extends ScopeHandler {
 	}
 
 	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module) throws Exception {
+		List<FacilioField> fieldList = new ArrayList<>();
+		Criteria criteria = new Criteria();
 		Map<String, GlobalScopeVariableContext> globalScopeVariableList = AccountUtil.getGlobalScopeVariableValues();
 		if(globalScopeVariableList != null && !globalScopeVariableList.isEmpty()){
 			for(Map.Entry<String,GlobalScopeVariableContext> entry : globalScopeVariableList.entrySet()){
 				GlobalScopeVariableContext globalScopeVariable = entry.getValue();
 				if(module != null) {
 					Pair<List<FacilioField>, Criteria> criteriaAndFields = globalScopeVariable.getGlobalScopeVariableCriteriaForModule(module.getName());
-					return criteriaAndFields;
+					if(criteriaAndFields != null) {
+						if (CollectionUtils.isNotEmpty(criteriaAndFields.getLeft())) {
+							fieldList.addAll(criteriaAndFields.getLeft());
+						}
+						if (criteriaAndFields.getRight() != null){
+							criteria.andCriteria(criteriaAndFields.getRight());
+						}
+					}
 				}
 			}
+			return Pair.of(fieldList, criteria);
 		}
 		return null;
 	}

@@ -3,6 +3,7 @@ package com.facilio.beans;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -28,6 +29,13 @@ public interface GlobalScopeBean {
 
     public Map<String, Pair<GlobalScopeVariableContext,ValueGeneratorContext>> getAllScopeVariableAndValueGen(Long appId) throws Exception;
 
-    public void deleteScopeVariable(Long id) throws Exception;
+    public List<GlobalScopeVariableContext> getAllScopeVariable(Long appId, int page,int perPage, String searchQuery, boolean fetchDeleted) throws Exception;
 
+    public void deleteScopeVariable(Long id,Long appId) throws Exception;
+
+    public long getScopeVariableCount(Long appId, String searchQuery) throws Exception;
+
+    public void setStatus(Long appId, Long scopeVariableId,boolean status) throws Exception;
+
+    public void setSwitchStatus(Long appId,Long scopeVariableId,boolean status) throws Exception;
 }

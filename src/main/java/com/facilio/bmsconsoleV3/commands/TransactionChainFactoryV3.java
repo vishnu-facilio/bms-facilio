@@ -2254,6 +2254,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addOrUpdateScopeVariable() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateScopeVariable());
+        c.addCommand(new FetchScopeVariableCommand());
         return c;
     }
 
@@ -2287,6 +2288,23 @@ public class TransactionChainFactoryV3 {
     public static Command getTicketAfterFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTicketLookups());
+        return c;
+    }
+    public static FacilioChain setSwitchStatus() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetSwitchVariableStatusCommand());
+        return c;
+    }
+
+    public static FacilioChain setGlobalScopeVariableStatus() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetGlobalScopeVariableStatusCommand());
+        return c;
+    }
+
+    public static FacilioChain deleteGlobalScopeVariable() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteGlobalScopeVariableCommand());
         return c;
     }
 }

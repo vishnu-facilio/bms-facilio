@@ -1,4 +1,5 @@
 package com.facilio.bmsconsoleV3.util;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
@@ -131,6 +132,18 @@ public class V3ModuleAPI {
         for (MODULES module : MODULES.values()) {
             FacilioModule facilioModule = modBean.getModule(module.getModuleName());
             sysModules.add(facilioModule);
+        }
+        return sysModules;
+    }
+
+    public static List<FacilioModule> getSystemModuleWithFeatureLicenceCheck() throws Exception {
+        List<FacilioModule> sysModules = new ArrayList<>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        for (MODULES module : MODULES.values()) {
+            if (AccountUtil.isModuleLicenseEnabled(module.getModuleName())) {
+                FacilioModule facilioModule = modBean.getModule(module.getModuleName());
+                sysModules.add(facilioModule);
+            }
         }
         return sysModules;
     }

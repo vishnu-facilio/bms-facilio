@@ -32,15 +32,18 @@ public class GlobalScopeVariableContext implements Serializable {
     private long id = -1L;
     private String linkName;
     private String displayName;
+    private String description;
     private Long valueGeneratorId;
+    private String valueGeneratorDisplayName;
     private String applicableModuleName;
+    private String applicableModuleDisplayName;
     private Long applicableModuleId;
     private long sysCreatedTime = -1L;
     private long sysModifiedTime = -1L;
     private long sysDeletedTime = -1L;
-    private long sysCreatedBy = -1L;
-    private long sysModifiedBy = -1L;
-    private long sysDeletedBy = -1L;
+    private Long sysCreatedBy;
+    private Long sysModifiedBy;
+    private Long sysDeletedBy;
     private Boolean showSwitch;
     private Boolean status;
     private Long appId;
@@ -102,6 +105,14 @@ public class GlobalScopeVariableContext implements Serializable {
 
     public void setApplicableModuleName(String applicableModuleName) {
         this.applicableModuleName = applicableModuleName;
+    }
+
+    public String getApplicableModuleDisplayName() {
+        return applicableModuleDisplayName;
+    }
+
+    public void setApplicableModuleDisplayName(String applicableModuleDisplayName) {
+        this.applicableModuleDisplayName = applicableModuleDisplayName;
     }
 
     public long getId() {
@@ -168,19 +179,19 @@ public class GlobalScopeVariableContext implements Serializable {
         this.sysModifiedTime = sysModifiedTime;
     }
 
-    public long getSysCreatedBy() {
+    public Long getSysCreatedBy() {
         return sysCreatedBy;
     }
 
-    public void setSysCreatedBy(long sysCreatedBy) {
+    public void setSysCreatedBy(Long sysCreatedBy) {
         this.sysCreatedBy = sysCreatedBy;
     }
 
-    public long getSysModifiedBy() {
+    public Long getSysModifiedBy() {
         return sysModifiedBy;
     }
 
-    public void setSysModifiedBy(long sysModifiedBy) {
+    public void setSysModifiedBy(Long sysModifiedBy) {
         this.sysModifiedBy = sysModifiedBy;
     }
 
@@ -224,12 +235,28 @@ public class GlobalScopeVariableContext implements Serializable {
         this.sysDeletedTime = sysDeletedTime;
     }
 
-    public long getSysDeletedBy() {
+    public Long getSysDeletedBy() {
         return sysDeletedBy;
     }
 
-    public void setSysDeletedBy(long sysDeletedBy) {
+    public void setSysDeletedBy(Long sysDeletedBy) {
         this.sysDeletedBy = sysDeletedBy;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getValueGeneratorDisplayName() {
+        return valueGeneratorDisplayName;
+    }
+
+    public void setValueGeneratorDisplayName(String valueGeneratorDisplayName) {
+        this.valueGeneratorDisplayName = valueGeneratorDisplayName;
     }
 
     public GlobalScopeVariableContext(String linkName, List<ScopeVariableModulesFields> scopeVariableModulesFieldsList) {
@@ -254,6 +281,10 @@ public class GlobalScopeVariableContext implements Serializable {
                         String fieldName = scopeVariableModulesField.getFieldName();
                         if (fieldName != null && module != null) {
                             FacilioField field = modBean.getField(fieldName, module.getName());
+                            boolean relRecField = false;
+                            if (field.getDataTypeEnum().isRelRecordField()) {
+                                relRecField = true;
+                            }
                             if (CollectionUtils.isNotEmpty(values)) {
                                 Operator operator = PickListOperators.IS;
                                 if (field instanceof MultiLookupField) {
@@ -263,13 +294,17 @@ public class GlobalScopeVariableContext implements Serializable {
                                 }
                                 if (field != null) {
                                     criteria.addAndCondition(CriteriaAPI.getCondition(field, values, operator));
-                                    fields.add(field);
+                                    if(!relRecField) {
+                                        fields.add(field);
+                                    }
                                 }
                             }
                             else {
                                 if (field != null) {
                                     criteria.addAndCondition(CriteriaAPI.getCondition(field, StringUtils.EMPTY, MultiFieldOperators.CONTAINS));
-                                    fields.add(field);
+                                    if(!relRecField) {
+                                        fields.add(field);
+                                    }
                                 }
                             }
                         }

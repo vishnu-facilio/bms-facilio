@@ -16,5 +16,7 @@ public interface ValueGeneratorBean {
 
     public void addValueGenerators(List<ValueGeneratorContext> valueGenerators) throws Exception;
 
+    public List<ValueGeneratorContext> getValueGenerators(List<String> applicableModuleNames,List<Long> applicableModuleIds) throws Exception;
+
 //    public Map<String, Pair<String,ValueGeneratorContext>> getValueGenFieldMapForModule(FacilioModule module) throws Exception;
 }

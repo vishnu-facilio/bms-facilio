@@ -2096,7 +2096,7 @@ public class ModuleBeanImpl implements ModuleBean {
 						List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 						if (CollectionUtils.isNotEmpty(fields)) {
 								relatedList.put(subModule, fields);
-							}
+						}
 					}
 			}
 		return relatedList;
