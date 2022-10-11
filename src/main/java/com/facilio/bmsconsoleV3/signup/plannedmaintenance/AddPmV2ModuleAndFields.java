@@ -15,6 +15,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,8 @@ import java.util.Objects;
  * - pmTasksImport
  */
 public class AddPmV2ModuleAndFields extends SignUpData {
+
+    private static final Logger LOGGER = LogManager.getLogger(AddPmV2ModuleAndFields.class.getName());
 
     @Override
     public void addData() throws Exception {
@@ -54,20 +58,26 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 
         /* Stage 3 */
         FacilioModule pmTriggerV2Module = constructPmTriggerV2Module(modBean, orgId);
-        FacilioModule pmJobPlanModule = constructPmJobPlanModule(modBean, orgId);
+        //FacilioModule pmJobPlanModule = constructPmJobPlanModule(modBean, orgId);
         // add the modules
-        SignupUtil.addModules(pmTriggerV2Module, pmJobPlanModule);
+        //SignupUtil.addModules(pmTriggerV2Module, pmJobPlanModule);
+        SignupUtil.addModules(pmTriggerV2Module);
 
         /* Stage 4 */
-        FacilioModule pmPlannerModule = constructPmPlannerModule(modBean, orgId, pmJobPlanModule, pmTriggerV2Module);
+        FacilioModule pmPlannerModule = constructPmPlannerModule(modBean, orgId, null, pmTriggerV2Module);
         // add the modules
         SignupUtil.addModules(pmPlannerModule);
         /* Adding SubModulesRel for plannedmaintenance & pmPlanner */
         modBean.addSubModule(plannedMaintenanceModule.getModuleId(), pmPlannerModule.getModuleId());
 
+        FacilioModule jobPlanModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
+        if(jobPlanModule == null){
+            LOGGER.error("JobPlan module not found for the org " + orgId);
+            throw new Exception("JobPlan module not found for the org " + orgId);
+        }
         /* Stage 5 */
-        FacilioModule pmResourcePlannerModule = constructPmResourcePlannerModule(modBean, orgId, pmJobPlanModule, pmPlannerModule);
-        FacilioModule pmImportModule = constructPmImportModule(modBean, orgId, plannedMaintenanceModule, pmPlannerModule, pmJobPlanModule, pmTriggerV2Module);
+        FacilioModule pmResourcePlannerModule = constructPmResourcePlannerModule(modBean, orgId, jobPlanModule, pmPlannerModule);
+        FacilioModule pmImportModule = constructPmImportModule(modBean, orgId, plannedMaintenanceModule, pmPlannerModule, jobPlanModule, pmTriggerV2Module);
         FacilioModule pmTasksImportModule = constructPmTasksImportModule(modBean, orgId, plannedMaintenanceModule);
         // add the modules
         SignupUtil.addModules(pmResourcePlannerModule, pmImportModule, pmTasksImportModule);
@@ -290,17 +300,18 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(pmIdField);
 
-        /* adhocJobPlan Field */
-        LookupField adhocJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "adhocJobPlan", "As Hoc Task",
-                "JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
-                false, false, true, orgId);
-        fields.add(adhocJobPlanField);
-
-        /* preReqJobPlan Field */
-        LookupField preReqJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "preReqJobPlan", "Job Plan",
-                "PREREQ_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
-                false, false, true, orgId);
-        fields.add(preReqJobPlanField);
+//        pmJobPlanModule will be null now.
+//        /* adhocJobPlan Field */
+//        LookupField adhocJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "adhocJobPlan", "As Hoc Task",
+//                "JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
+//                false, false, true, orgId);
+//        fields.add(adhocJobPlanField);
+//
+//        /* preReqJobPlan Field */
+//        LookupField preReqJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "preReqJobPlan", "Job Plan",
+//                "PREREQ_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
+//                false, false, true, orgId);
+//        fields.add(preReqJobPlanField);
 
         /* trigger Field */
         LookupField triggerField = SignupUtil.getLookupField(module, pmTriggerV2Module, "trigger", "Trigger",
@@ -344,10 +355,11 @@ public class AddPmV2ModuleAndFields extends SignUpData {
     /**
      * Construct pmResourcePlanner Module
      */
-    private FacilioModule constructPmResourcePlannerModule(ModuleBean moduleBean, long orgId, FacilioModule pmJobPlanModule, FacilioModule pmPlannerModule) throws Exception {
+    private FacilioModule constructPmResourcePlannerModule(ModuleBean moduleBean, long orgId, FacilioModule jobPlanModule, FacilioModule pmPlannerModule) throws Exception {
         FacilioModule module = new FacilioModule("pmResourcePlanner", "Resource Planner",
                 "PM_V2_Resource_Planner", FacilioModule.ModuleType.BASE_ENTITY, true);
         module.setOrgId(orgId);
+        module.setTrashEnabled(false);
 
         /**
          * Adding fields pmPlanner Module
@@ -365,7 +377,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         fields.add(resourceField);
 
         /* jobPlan Field */
-        LookupField jobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "jobPlan", "Job Plan",
+        LookupField jobPlanField = SignupUtil.getLookupField(module, jobPlanModule, "jobPlan", "Job Plan",
                 "JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(jobPlanField);
@@ -390,7 +402,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
      * Construct pmImport Module
      */
     private FacilioModule constructPmImportModule(ModuleBean moduleBean, long orgId, FacilioModule plannedMaintenanceModule,
-                                                  FacilioModule pmPlannerModule, FacilioModule pmJobPlanModule,
+                                                  FacilioModule pmPlannerModule, FacilioModule jobPlanModule,
                                                   FacilioModule pmTriggerV2Module) throws Exception {
         FacilioModule module = new FacilioModule("resourceplanner", "Resource Planner", "PM_Import",
                 FacilioModule.ModuleType.BASE_ENTITY, true);
@@ -430,13 +442,13 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         fields.add(plNameField);
 
         /* pm planner - plJobPlan Field */
-        LookupField plJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "plJobPlan", "Planner Job Plan",
+        LookupField plJobPlanField = SignupUtil.getLookupField(module, jobPlanModule, "plJobPlan", "Planner Job Plan",
                 "PL_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(plJobPlanField);
 
         /* pm planner - plPreReqJobPlan Field */
-        LookupField plPreReqJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "plPreReqJobPlan", "Planner Prerequisite Job Plan",
+        LookupField plPreReqJobPlanField = SignupUtil.getLookupField(module, jobPlanModule, "plPreReqJobPlan", "Planner Prerequisite Job Plan",
                 "PL_PREREQ_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(plPreReqJobPlanField);

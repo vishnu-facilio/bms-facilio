@@ -113,6 +113,21 @@ public class V3WorkOrderContext extends V3TicketContext {
         this.pm = pm;
     }
 
+    @Getter
+    @Setter
+    private Long pmV2;
+
+    @Getter
+    @Setter
+    private Long pmResourcePlanner;
+
+    @Getter
+    @Setter
+    private Long pmTriggerV2;
+
+    @Getter
+    @Setter
+    private Long pmPlanner;
 
     public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
@@ -761,7 +776,7 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     private LinkedHashMap<String, List<V3TaskContext>> tasksString;
-    
+
     @Getter
     @Setter
     private RoutesContext route;

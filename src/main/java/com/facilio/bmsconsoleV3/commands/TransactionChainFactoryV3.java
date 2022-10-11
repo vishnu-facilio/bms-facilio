@@ -1974,6 +1974,25 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getExecuteNow() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PMExecuteNowContextCommand());
+        return c;
+    }
+
+    public static FacilioChain getPublishPM() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidatePublishCommand());
+        c.addCommand(new MarkPMAsActiveCommand());
+        c.addCommand(new PublishPMCommand());
+        return c;
+    }
+
+    public static FacilioChain getDeactivatePM() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MarkPMAsDeactivatedCommand());
+        return c;
+    }
 
     public static FacilioChain addVisitsAndInvitesForms() {
         FacilioChain chain = getDefaultChain();

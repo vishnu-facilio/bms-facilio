@@ -166,4 +166,8 @@ public interface ModuleCRUDBean {
 	public void initMLService(Map<String,Object> requestJson) throws Exception;
 
 	ApplicationContext getApplicationForLinkName(String appName) throws Exception;
+
+	void schedulePM(long plannerId) throws Exception;
+
+	void extendPlanner(long plannerId, Duration duration) throws Exception;
 }

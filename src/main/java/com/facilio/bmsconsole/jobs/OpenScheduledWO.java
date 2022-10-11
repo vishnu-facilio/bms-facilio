@@ -127,12 +127,12 @@ public class OpenScheduledWO extends FacilioJob {
             }  */
 
             if(wo.getTrigger() != null && wo.getTrigger().getId() > 0) {
-            	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
-            	wo.setTrigger(trigger);
+                PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
+                wo.setTrigger(trigger);
             }
 
             wo.setJobStatus(WorkOrderContext.JobsStatus.COMPLETED);
-            
+
             UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
             updateRecordBuilder.module(module)
                     .fields(Arrays.asList(fieldMap.get("status"), fieldMap.get("jobStatus")))
@@ -207,8 +207,8 @@ public class OpenScheduledWO extends FacilioJob {
             }
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
-            
-            
+
+
             FacilioChain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
             c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
             c.execute(context);
@@ -217,7 +217,7 @@ public class OpenScheduledWO extends FacilioJob {
             pmToWo.put(pm.getId(), wo);
 
             PreventiveMaintenanceAPI.schedulePostReminder(Arrays.asList(pm), wo.getResource().getId(), pmToWo, wo.getScheduledStart());
-            
+
         } catch (Exception e) {
             CommonCommandUtil.emailException("OpenScheduledWO", ""+jc.getJobId(), e);
             LOGGER.error("WorkOrder Status Change failed: ", e);
