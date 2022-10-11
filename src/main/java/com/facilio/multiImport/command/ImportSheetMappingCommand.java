@@ -2,8 +2,10 @@ package com.facilio.multiImport.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.util.MultiImportApi;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -17,49 +19,40 @@ public class ImportSheetMappingCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         List<ImportFileSheetsContext> importSheetList = (List<ImportFileSheetsContext>) context.get(FacilioConstants.ContextNames.IMPORT_SHEET_LIST);
+        Long importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
 
-        if (CollectionUtils.isEmpty(importSheetList)){
-            throw new IllegalArgumentException("Import sheet cannot be empty");
+        FacilioUtil.throwIllegalArgumentException(importId==-1L,"Import Id is Empty");
+        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(importSheetList),"Import sheet cannot be empty");
+
+        Set<Long> sheetIds = new HashSet<>();
+        for (ImportFileSheetsContext sheet : importSheetList) {
+            sheetIds.add(sheet.getId());
         }
 
-        List<Long> sheetId = new ArrayList<>();
-        for(ImportFileSheetsContext sheet : importSheetList){
-            sheetId.add(sheet.getId());
-        }
-        List<ImportFileSheetsContext> existingImportFileSheets = MultiImportApi.getImportSheets(sheetId);
-        if (CollectionUtils.isEmpty(existingImportFileSheets)){
-            throw new IllegalArgumentException("Existing Import sheet doesn't exist");
-        }
+        validateImportSheetList(sheetIds,importId);
 
-        Map<Long, ImportFileSheetsContext> sheetIdVsModuleMap = importSheetList.stream()
-                                                    .collect(Collectors.toMap(ImportFileSheetsContext::getId, Function.identity()));
+        Set<Long> moduleIds = new HashSet<>();
+        long duplicateModuleEntry = importSheetList.stream()
+                .map(moduleId -> moduleId.getModuleId())
+                .filter(moduleId -> !moduleIds.add(moduleId))
+                .count();
 
-            for (ImportFileSheetsContext existingSheet : existingImportFileSheets) {
-                long id = existingSheet.getId();
-                ImportFileSheetsContext sheet = sheetIdVsModuleMap.get(id);
-                existingSheet.setModuleId(sheet.getModuleId());
-            }
-
-
-          Set<Long> moduleIds = new HashSet<>();
-
-
-            long duplicateModuleEntry = existingImportFileSheets.stream()
-                    .map(moduleId -> moduleId.getModuleId())
-                    .filter(moduleId -> !moduleIds.add(moduleId))
-                    .count();
-
-            if (duplicateModuleEntry > 0) {
-                throw new IllegalArgumentException("Module cannot be mapped twice");
-            }
-
-       for (ImportFileSheetsContext importFileSheet : existingImportFileSheets){
-           MultiImportApi.updateImportSheetsWithModule(importFileSheet);
+        if (duplicateModuleEntry > 0) {
+            throw new IllegalArgumentException("Module cannot be mapped twice");
         }
 
-        context.put(FacilioConstants.ContextNames.IMPORT_FILE_DETAILS, existingImportFileSheets);
+        MultiImportApi.batchUpdateImportSheetWithModule(importSheetList);
+        context.put(FacilioConstants.ContextNames.IMPORT_FILE_DETAILS, importSheetList);
 
         return false;
     }
 
+    private void validateImportSheetList(Set<Long> sheetIds,Long importId) throws Exception{
+        Set<Long> dbSheetIds=MultiImportApi.getSheetIdsByImportId(importId);
+
+        FacilioUtil.throwIllegalArgumentException(sheetIds.size()!=dbSheetIds.size(),"Invalid Import Sheets");
+
+        dbSheetIds.removeAll(sheetIds);
+        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isNotEmpty(dbSheetIds),"Some Import Sheets are doesn't exists");
+    }
 }

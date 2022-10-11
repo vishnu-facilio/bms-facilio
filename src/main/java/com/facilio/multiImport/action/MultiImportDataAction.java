@@ -88,6 +88,7 @@ public class MultiImportDataAction extends FacilioAction {
         FacilioChain chain = MultiImportChain.getImportSheetMappingChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.IMPORT_SHEET_LIST,importSheetList);
+        context.put(FacilioConstants.ContextNames.IMPORT_ID,importId);
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.IMPORT_SHEETS,context.get(FacilioConstants.ContextNames.IMPORT_SHEETS));
