@@ -14,6 +14,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -48,7 +49,7 @@ public class FilterImportDataCommand extends FacilioCommand {
             List<FacilioField> criteriaFields = getFieldList(module, insertFields);
 
             for (Map<String, Object> datum : rawInputs) {
-                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, allFields, criteriaFields, datum);
+                V3Context dbRecord = getDBRecord(module, allFields, criteriaFields, datum);
                 if (dbRecord == null) { // add only when the record is not found in database.
                     newRawInputs.add(datum);
                 }
@@ -64,9 +65,9 @@ public class FilterImportDataCommand extends FacilioCommand {
             List<FacilioField> fieldList = getFieldList(module, updateFields);
 
             List<Map<String, Object>> newRawInputs = new ArrayList<>();
-            List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+            List<V3Context> oldRecords = new ArrayList<>();
             for (Map<String, Object> datum : rawInputs) {
-                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, allFields, fieldList, datum);
+                V3Context dbRecord = getDBRecord(module, allFields, fieldList, datum);
                 if (dbRecord == null || dbRecord.getId() <= 0) { // skip if the record is not found id db.
                     continue;
                 }
@@ -96,10 +97,10 @@ public class FilterImportDataCommand extends FacilioCommand {
 
             List<Map<String, Object>> newCreateInputs = new ArrayList<>();
             List<Map<String, Object>> newUpdateInputs = new ArrayList<>();
-            List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+            List<V3Context> oldRecords = new ArrayList<>();
 
             for (Map<String, Object> datum : rawInputs) {
-                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, allFields, fieldList, datum);
+                V3Context dbRecord = getDBRecord(module, allFields, fieldList, datum);
                 if (dbRecord == null) {
                     newCreateInputs.add(datum);
                 } else {
@@ -137,11 +138,11 @@ public class FilterImportDataCommand extends FacilioCommand {
         return fields;
     }
 
-    private ModuleBaseWithCustomFields getDBRecord(FacilioModule module, List<FacilioField> allFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+    private V3Context getDBRecord(FacilioModule module, List<FacilioField> allFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
+        SelectRecordsBuilder<V3Context> builder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .select(allFields)
-                .beanClass(ModuleBaseWithCustomFields.class);
+                .beanClass(V3Context.class);
 
         List<SupplementRecord> supplements = new ArrayList<>();
         for (FacilioField field : allFields) {
@@ -155,7 +156,7 @@ public class FilterImportDataCommand extends FacilioCommand {
         if (!criteria.isEmpty()) {
             builder.andCriteria(criteria);
         }
-        ModuleBaseWithCustomFields record = builder.fetchFirst();
+        V3Context record = builder.fetchFirst();
 
         return record;
     }
