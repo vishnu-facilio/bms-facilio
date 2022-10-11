@@ -45,6 +45,7 @@ public class DesksModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         return allView;
     }

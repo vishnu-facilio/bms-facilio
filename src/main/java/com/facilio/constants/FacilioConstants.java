@@ -3156,6 +3156,7 @@ public class FacilioConstants {
 		public static final String KIOSK_APP = "visitor_kiosk";
 
 		public static final String EMPLOYEE_PORTAL_APP = "employee";
+		public static final String IWMS_APP = "iwms";
 
 	}
 
@@ -3176,6 +3177,8 @@ public class FacilioConstants {
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
 
 		public static final String EMPLOYEE_ADMIN = "Employee Admin";
+
+		public static final String IWMS_ADMIN = "IWMS Admin";
 
 	}
 

@@ -123,6 +123,25 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
 
+		long iwmsAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+		if (iwmsAppId > 0) {
+			Role iwmsAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+					FacilioConstants.DefaultRoleNames.IWMS_ADMIN);
+			clonedUser.setApplicationId(iwmsAppId);
+			clonedUser.setRole(iwmsAdmin);
+			clonedUser.setRoleId(iwmsAdmin.getRoleId());
+			ScopingContext scoping = new ScopingContext();
+			scoping.setScopeName("Default scoping for app - " + iwmsAppId + " admin");
+			scoping.setDescription("Default scoping for app - " + iwmsAppId + " admin");
+			scoping.setApplicationId(iwmsAppId);
+			scoping.setIsDefault(true);
+			long scopingId = ApplicationApi.addScoping(scoping);
+			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
+			clonedUser.setScoping(adminScoping);
+			clonedUser.setApplicationId(iwmsAppId);
+			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
+		}
+
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
 	}

@@ -52,7 +52,7 @@ public class DeliveryAreaModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
-
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -66,7 +66,7 @@ public class DeliveryAreaModule extends BaseModuleConfig{
         deliveryAreaForm.setName("default_deliveryArea_web");
         deliveryAreaForm.setModule(deliveryAreaModule);
         deliveryAreaForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        deliveryAreaForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        deliveryAreaForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> deliveryAreaFormFields = new ArrayList<>();
         deliveryAreaFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

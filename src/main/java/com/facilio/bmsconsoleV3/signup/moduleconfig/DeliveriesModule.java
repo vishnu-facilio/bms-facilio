@@ -57,6 +57,7 @@ public class DeliveriesModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -72,7 +73,7 @@ public class DeliveriesModule extends BaseModuleConfig{
         deliveriesForm.setName("default_deliveries_web");
         deliveriesForm.setModule(deliveriesModule);
         deliveriesForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        deliveriesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        deliveriesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> deliveriesFormFields = new ArrayList<>();
         FormField nameField = new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.OPTIONAL, 1, 1);

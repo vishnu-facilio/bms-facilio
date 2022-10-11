@@ -54,7 +54,7 @@ public class MovesModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
-
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -68,7 +68,7 @@ public class MovesModule extends BaseModuleConfig{
         movesForm.setName("default_move_web");
         movesForm.setModule(movesModule);
         movesForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        movesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        movesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> movesFormFields = new ArrayList<>();
         movesFormFields.add(new FormField("moveType", FacilioField.FieldDisplayType.SELECTBOX, "Move Type", FormField.Required.REQUIRED, 1, 2));
