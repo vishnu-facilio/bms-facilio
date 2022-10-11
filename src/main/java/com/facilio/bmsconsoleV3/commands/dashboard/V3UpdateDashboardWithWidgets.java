@@ -115,6 +115,7 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
     {
         List<DashboardWidgetContext> update_widget_list = new ArrayList<DashboardWidgetContext>();
         List<DashboardWidgetContext> widget_list = ((WidgetSectionContext) widget).getWidgets_in_section();
+        V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widget_list, dashboard.getId(), null);
         for(DashboardWidgetContext dashboard_widget: widget_list)
         {
             if( dashboard_widget.getId() <=0) {
