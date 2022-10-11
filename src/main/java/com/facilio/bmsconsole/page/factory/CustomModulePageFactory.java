@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.modules.fields.LookupField;
@@ -137,7 +138,8 @@ public class CustomModulePageFactory extends PageFactory {
 		}
 
 		ApplicationContext app = AccountUtil.getCurrentApp();
-		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP) && module != null && !"serviceRequest".equalsIgnoreCase(module.getName())) {
+
+		if (app != null && app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex() && module != null && !"serviceRequest".equalsIgnoreCase(module.getName())) {
 			 Page.Tab tab3 = page.new Tab("History");;
 		        page.addTab(tab3);
 		        Page.Section tab4Sec1 = page.new Section();
