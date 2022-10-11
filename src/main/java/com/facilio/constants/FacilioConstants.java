@@ -944,6 +944,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY_ID = "assetcategoryId";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String ASSET_SPARE_PARTS = "assetSpareParts";
 		public static final String WATER_METER = "watermeter";
 		public static final String CHILLER = "chiller";
 		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";

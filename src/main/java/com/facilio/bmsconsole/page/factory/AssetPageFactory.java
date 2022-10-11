@@ -244,6 +244,14 @@ public class AssetPageFactory extends PageFactory {
 					tab9.addSection(tab5Sec1);
 					addInventoryTransactionsWidget(tab5Sec1, "toolTransactions");
 				}
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_SPARE_PARTS)) {
+					Tab tab10 = page.new Tab("spare parts");
+					page.addTab(tab10);
+					Section sparePartsSection = page.new Section();
+					tab10.addSection(sparePartsSection);
+					addSparePartsWidget(sparePartsSection);
+				}
+
 			}
 
 			FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
@@ -370,7 +378,12 @@ public class AssetPageFactory extends PageFactory {
 		readingsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(readingsWidget);
 	}
-	
+
+	private static void addSparePartsWidget(Section section) {
+		PageWidget sparePartsWidget = new PageWidget(WidgetType.SPARE_PARTS);
+		sparePartsWidget.addToLayoutParams(section, 24, 11);
+		section.addWidget(sparePartsWidget);
+	}
 	private static void addAssetMovementsWidget(Section section) {
 		PageWidget assetMovementsWidget = new PageWidget(WidgetType.LIST, "assetMovements");
 		assetMovementsWidget.addToLayoutParams(section, 24, 50);

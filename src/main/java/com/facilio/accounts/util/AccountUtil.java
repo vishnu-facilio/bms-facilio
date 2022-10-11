@@ -513,7 +513,8 @@ public class AccountUtil {
 		EMAIL_TRACKING(86,4194304,LicenseMapping.GROUP2LICENSE), // 2^22
 
 		WORKPLACE_APPS(87, 8388608, LicenseMapping.GROUP2LICENSE), // 2^23
-		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) ;
+		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) , // 2^24
+		ASSET_SPARE_PARTS(89,33554432,LicenseMapping.GROUP2LICENSE); // 2^25
 
 		public int featureId;
 		private long license;
