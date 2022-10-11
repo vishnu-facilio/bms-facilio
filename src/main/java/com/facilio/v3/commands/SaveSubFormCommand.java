@@ -8,6 +8,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -67,23 +68,6 @@ public class SaveSubFormCommand extends FacilioCommand {
         return false;
     }
 
-    /*
-    * Finds lookup field relation in child module
-    *  if parent module is workorder (workorder extends ticket) and child module is ticketattachment,
-    *  the look up is present for ticket module in ticketattachment.
-    */
-    private LookupField findLookupFieldInChildModule(@NotNull FacilioModule parentModule, @NotNull Map<String, LookupField> childLookupFields) throws Exception {
-        LookupField lookupField = childLookupFields.get(parentModule.getName());
-        if (lookupField == null) {
-            FacilioModule extendModule = parentModule.getExtendModule();
-            if (extendModule == null) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR);
-            }
-            return findLookupFieldInChildModule(extendModule, childLookupFields);
-        }
-        return lookupField;
-    }
-
     private List<ModuleBaseWithCustomFields> insert(Context context, String mainModuleName, String moduleName, List<Map<String, Object>> subForm, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -116,7 +100,7 @@ public class SaveSubFormCommand extends FacilioCommand {
         parentObject.put("id", recordId);
         LookupField lookupField;
         try {
-            lookupField = findLookupFieldInChildModule(mainModule, getAllLookupFields(modBean, module));
+            lookupField = CommandUtil.findLookupFieldInChildModule(mainModule, getAllLookupFields(modBean, module));
         } catch (RESTException ex) {
             throw new RESTException(ex.getErrorCode(), "There is no relationship between " + mainModuleName + " and " + moduleName);
         }
