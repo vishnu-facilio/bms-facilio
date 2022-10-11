@@ -58,7 +58,10 @@ public class GetViewListCommand extends FacilioCommand {
 		if (appId > 0) {
 			 app = ApplicationApi.getApplicationForId(appId);
 		} else {
-			app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			app = AccountUtil.getCurrentApp();
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
 			appId = app.getId();
 		}
 
