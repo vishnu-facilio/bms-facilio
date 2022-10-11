@@ -49,7 +49,6 @@ public class PMPlannerHandler extends BaseHandler {
                     moduleCRUD.extendPlanner(plannerId, getDuration(message));
                     break;
             }
-            moduleCRUD.schedulePM(plannerId);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

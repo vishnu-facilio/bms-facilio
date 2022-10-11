@@ -67,6 +67,11 @@ public class ScheduleWOStatusChange extends FacilioJob {
                     .skipModuleCriteria();
 			List<Map<String, Object>> workOrderProps = selectRecordsBuilder.getAsProps();
 
+			List<Long> workOrderIds = workOrderProps.stream()
+														.map(map -> (Long) map.get("id"))
+														.collect(Collectors.toList());
+			LOGGER.info("execute() -> workOrderProps size: " + workOrderIds.size() + ". WorkOrder IDs = " + workOrderIds);
+
 			List<WorkOrderContext> workOrderContexts = new ArrayList<>();
 			List<V3WorkOrderContext> v3WorkOrderContexts = new ArrayList<>();
 
@@ -89,6 +94,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     }
 
 	private void handlePMV2Scheduling(List<V3WorkOrderContext> v3WorkOrderContexts) throws Exception {
+		LOGGER.info("handlePMV2Scheduling():");
 		// TODO(3a): ensure "N" WorkOrders get into next job queue
 		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
 			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
@@ -96,6 +102,8 @@ public class ScheduleWOStatusChange extends FacilioJob {
 					// TODO(3b):WOs for next 30 mins is set to Job here.
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
 				} catch (Exception e) { //Delete job entry if any and try again
+					CommonCommandUtil.emailException("ScheduleWOStatusChange", "handlePMV2Scheduling() | workOrder= " + v3WorkOrderContext, e);
+					LOGGER.error("PM Execution failed in handlePMV2Scheduling():", e);
 					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduleWOV2");
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
 				}
@@ -105,12 +113,17 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
 
 	private void handlePMV1Scheduling(List<WorkOrderContext> workOrderContexts) throws Exception {
+		LOGGER.info("handlePMV1Scheduling():");
 		if (CollectionUtils.isNotEmpty(workOrderContexts)) {
+			LOGGER.info("Before modifyWorkflowBasedOnRule() call.");
 			modifyWorkflowBasedOnRule(workOrderContexts);
+			LOGGER.info("After modifyWorkflowBasedOnRule() call.");
 			for (WorkOrderContext wo : workOrderContexts) {
 				try {
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
 				} catch (Exception e) { //Delete job entry if any and try again
+					CommonCommandUtil.emailException("ScheduleWOStatusChange", "handlePMV1Scheduling() | workOrder= " + wo, e);
+					LOGGER.error("PM Execution failed in handlePMV1Scheduling():", e);
 					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
 					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
 				}
@@ -120,7 +133,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
 
 	private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
-    	
+		LOGGER.info("modifyWorkflowBasedOnRule():");
     	if(wos == null) {
     		return;
     	}
@@ -195,7 +208,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
     
     private void compareAndRemoveTask(Map<Integer, List<TaskContext>> child,Map<Integer, List<TaskContext>> parent, List<Integer> uniqueIds) throws Exception {
-		
+		LOGGER.info("compareAndRemoveTask():");
     	List<TaskContext> deleteTasks = new ArrayList<>();
 		for(Integer uniqueId :uniqueIds) {
 			List<TaskContext> childTasks = child.get(uniqueId);
@@ -217,6 +230,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
 
 	public Map<Integer,List<TaskContext>> getUniqueMapFromWO(WorkOrderContext wo) {
+		LOGGER.info("getUniqueMapFromWO():");
     	Map<Integer,List<TaskContext>> uniqueIdVsParentIdMap = new HashMap<>();
     	if(wo.getTasks() != null) {
     		for(List<TaskContext> tasks :wo.getTasks().values()) {
@@ -236,6 +250,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     }
 
 	private void updateV3JobStatus(List<V3WorkOrderContext> wos) throws Exception {
+		LOGGER.info("updateV3JobStatus():");
 		if (wos == null || wos.isEmpty()) {
 			return;
 		}
@@ -254,6 +269,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	}
 
 	private void updateJobStatus(List<WorkOrderContext> wos) throws Exception {
+		LOGGER.info("updateJobStatus():");
         if (wos == null || wos.isEmpty()) {
             return;
         }
