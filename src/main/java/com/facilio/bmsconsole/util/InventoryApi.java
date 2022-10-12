@@ -297,7 +297,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		json.put("to", userEmailStr);
 		json.put("subject", "Alert: ${item.itemType.name} - Out Of Stock");
 		json.put("name", "Storeroom Notification Template");
-		String message = "Hi,\nThis is to Notify you that #${item.id} ${item.itemType.name} in ${item.storeRoom.name} is currently Out of Stock.\nPlease click the link https://app.facilio.com/app/at/purchase/new/po?create=new to initiate new stock request.\nRegards,\n Facilio";
+		String message = "Hi,\nThis is to Notify you that #${item.id} ${item.itemType.name} in ${item.storeRoom.name} is currently Out of Stock.\nPlease initiate new stock request.\nRegards,\n Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		
@@ -442,7 +442,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		json.put("to", userEmailStr);
 		json.put("subject", "Alert: ${tool.toolType.name} - Out Of Stock");
 		json.put("name", "Storeroom Notification Template");
-		String message = "Hi,\nThis is to Notify you that #${tool.id} ${tool.toolType.name} in ${tool.storeRoom.name} is currently Out of Stock.\nPlease click the link https://app.facilio.com/app/at/purchase/new/po?create=new to initiate new stock request.\nRegards,\n Facilio";
+		String message = "Hi,\nThis is to Notify you that #${tool.id} ${tool.toolType.name} in ${tool.storeRoom.name} is currently Out of Stock.\nPlease initiate new stock request.\nRegards,\n Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		
@@ -588,7 +588,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		json.put("to", userEmailStr);
 		json.put("subject", "Alert: ${item.itemType.name} - About to Reach Out Of Stock");
 		json.put("name", "Storeroom Notification Template");
-		String message = "Hi,\nThis is to Notify you that #${item.id} ${item.itemType.name} in ${item.storeRoom.name} is nearing Lowest Inventory limit.\nPlease click the link https://app.facilio.com/app/at/purchase/new/po?create=new to initiate new stock request.\nRegards,\n Facilio";
+		String message = "Hi,\nThis is to Notify you that #${item.id} ${item.itemType.name} in ${item.storeRoom.name} is nearing Lowest Inventory limit.\nPlease initiate new stock request.\nRegards,\n Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		
@@ -736,7 +736,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		json.put("to", userEmailStr);
 		json.put("subject", "Alert: ${tool.toolType.name} - About to Reach Out Of Stock");
 		json.put("name", "Storeroom Notification Template");
-		String message = "Hi,\nThis is to Notify you that #${tool.id} ${tool.toolType.name} in ${tool.storeRoom.name} is nearing Lowest Inventory limit.\nPlease click the link https://app.facilio.com/app/at/purchase/new/po?create=new to initiate new stock request.\nRegards,\n Facilio";
+		String message = "Hi,\nThis is to Notify you that #${tool.id} ${tool.toolType.name} in ${tool.storeRoom.name} is nearing Lowest Inventory limit.\nPlease initiate new stock request.\nRegards,\n Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		
