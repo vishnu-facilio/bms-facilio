@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -236,5 +237,36 @@ public class NotesAPI {
 			commentsSharingContexts = FieldUtil.getAsBeanListFromMapList(props, CommentSharingContext.class);
 		}
 		return commentsSharingContexts;
+	}
+
+	public static void addCommentSharing(String moduleName,long parentId, List<String> linkNames) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule notesModule = modBean.getModule(moduleName);
+		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
+		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
+		Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(allFields);
+		List<CommentSharingContext> addCommentSharingList = new ArrayList<>();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(commentsSharingModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("parentModuleId"), String.valueOf(notesModule.getModuleId()), NumberOperators.EQUALS));
+		builder.delete();
+			for (String link : linkNames) {
+				CommentSharingContext commentSharing = new CommentSharingContext();
+				commentSharing.setParentId(parentId);
+				commentSharing.setParentModuleId(notesModule.getModuleId());
+				commentSharing.setAppId(ApplicationApi.getApplicationIdForLinkName(link));
+				commentSharing.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				if(commentSharing.getAppId()>0) {
+					addCommentSharingList.add(commentSharing);
+				}
+			}
+			if(addCommentSharingList != null && !addCommentSharingList.isEmpty()) {
+				InsertRecordBuilder<CommentSharingContext> commentsSharingBuilder = new InsertRecordBuilder<CommentSharingContext>()
+						.module(commentsSharingModule)
+						.fields(allFields);
+				commentsSharingBuilder.addRecords(addCommentSharingList);
+				commentsSharingBuilder.save();
+			}
 	}
 }
