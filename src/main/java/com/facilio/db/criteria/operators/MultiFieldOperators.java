@@ -189,18 +189,15 @@ public enum MultiFieldOperators implements Operator<String> {
 					
 					FacilioModule relModule = null;
 					String parentName = null;
-					String childName = null;
 					if (field instanceof MultiLookupField) {
 						MultiLookupField multiField = (MultiLookupField)field;
 						relModule = multiField.getRelModule();
-						parentName = multiField.parentColumnName();
-						childName = multiField.childColumnName();
+						parentName = modBean.getField(multiField.parentFieldName(), relModule.getName()).getColumnName();
 					}
 					else if (field instanceof MultiEnumField) {
 						MultiEnumField multiField = (MultiEnumField)field;
 						relModule = multiField.getRelModule();
-						parentName = multiField.parentColumnName();
-						childName = multiField.valueColumnName();
+						parentName = modBean.getField(multiField.PARENT_FIELD_NAME, relModule.getName()).getColumnName();
 					}
 
 					if(module != null) {
@@ -249,14 +246,14 @@ public enum MultiFieldOperators implements Operator<String> {
 					if (field instanceof MultiLookupField) {
 						MultiLookupField multiField = (MultiLookupField)field;
 						relModule = multiField.getRelModule();
-						parentName = multiField.parentColumnName();
-						childName = multiField.childColumnName();
+						parentName = modBean.getField(multiField.parentFieldName(), relModule.getName()).getColumnName();
+						childName = modBean.getField(multiField.childFieldName(), relModule.getName()).getColumnName();
 					}
 					else if (field instanceof MultiEnumField) {
 						MultiEnumField multiField = (MultiEnumField)field;
 						relModule = multiField.getRelModule();
-						parentName = multiField.parentColumnName();
-						childName = multiField.valueColumnName();
+						parentName = modBean.getField(multiField.PARENT_FIELD_NAME, relModule.getName()).getColumnName();
+						childName = modBean.getField(multiField.VALUE_FIELD_NAME, relModule.getName()).getColumnName();
 					}
 
 					if(module != null) {
