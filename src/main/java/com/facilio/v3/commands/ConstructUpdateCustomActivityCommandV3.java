@@ -33,7 +33,7 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordMap.get(Constants.getModuleName(context));
+        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordMap.get(ContextNames.ASSET);
 
         for (var record: moduleBaseWithCustomFields) {
             long recordId = record.getId();

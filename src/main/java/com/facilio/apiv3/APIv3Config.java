@@ -126,7 +126,6 @@ import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServices
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
@@ -2085,12 +2084,12 @@ public class APIv3Config {
                         new ValidateQrValueCommandV3())
                 .afterSave(new ConstructAddAssetActivityCommandV3(), new AddRotatingItemToolCommandV3(),
                         new AssetAfterSaveCommandV3(), FacilioChainFactory.getCategoryReadingsChain(),
-                        new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand())
+                        new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .update()
                 .beforeSave(new CheckPMForAssetsCommandV3(), new AssetCategoryAdditionInExtendModuleCommand(),
                         new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),
                         new ValidateQrValueCommandV3())
-                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(),new RemoveAssetExtendedModulesFromRecordMap())
                 .delete()
                 .summary()
                 .beforeFetch(new AssetSupplementsSupplyCommand())
