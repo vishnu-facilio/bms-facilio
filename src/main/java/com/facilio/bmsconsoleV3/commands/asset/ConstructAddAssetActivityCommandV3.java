@@ -31,9 +31,9 @@ public class ConstructAddAssetActivityCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordMap.get(FacilioConstants.ContextNames.ASSET);
+        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordMap.get(Constants.getModuleName(context));
 
-        List<ModuleBaseWithCustomFields> assetList = (List<ModuleBaseWithCustomFields>) (recordMap.get(FacilioConstants.ContextNames.ASSET));
+        List<ModuleBaseWithCustomFields> assetList = (List<ModuleBaseWithCustomFields>) (recordMap.get(Constants.getModuleName(context)));
         AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(((V3AssetContext)(assetList.get(0))).getCategory().getId());
         long assetModuleID = assetCategory.getAssetModuleID();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
