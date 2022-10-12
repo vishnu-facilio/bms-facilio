@@ -1,5 +1,5 @@
 Map cardLayout(Map params) {
-    result = {};
+   result = {};
 
     moduleName = params.moduleName;
     assetCategoryId = params.assetCategoryId;
@@ -12,8 +12,6 @@ Map cardLayout(Map params) {
     }
     period =null;
     dateRangeObj=null;
-
-    
   	date = new NameSpace("date");
 
     if(params.cardFilters!=null)
@@ -90,6 +88,8 @@ Map cardLayout(Map params) {
     assetModule = Module(moduleName);
     assetList = assetModule.fetch(assetDb);
 
+    fieldList = [];
+
     rows = [];
     if (assetList != null) {
         for each index, asset in assetList {
@@ -103,7 +103,7 @@ Map cardLayout(Map params) {
                 if (column.type == "field") {
                     fieldObj = new NameSpace("module").getField(column.fieldName, moduleName);
                     fieldMapInfo = fieldObj.asMap();
-                    
+                    fieldList.add(fieldMapInfo);
                     fieldValue = asset.get(column.fieldName);
                     if (fieldMapInfo.get("dataTypeEnum") == "LOOKUP" && fieldValue != null && fieldValue.id != null) {
                         cell["id"] = fieldValue.id;
@@ -125,6 +125,11 @@ Map cardLayout(Map params) {
                         else {
                             cell["value"] = "---";
                         }
+                    }
+                    else if (fieldMapInfo.get("dataTypeEnum") == "DATE_TIME" && fieldValue != null) {
+                        format = "MMM dd, yyyy hh:mm a";
+                        formattedTime = new NameSpace("date").getFormattedTime(fieldValue, format);
+                        cell["value"] = formattedTime;
                     }
                     else {
                         cell["value"] = fieldValue;

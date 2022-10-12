@@ -24,6 +24,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import java.util.stream.IntStream;
 
 public class GetViewListCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = Logger.getLogger(GetViewListCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -55,15 +57,18 @@ public class GetViewListCommand extends FacilioCommand {
 
 		if (appId > 0) {
 			 app = ApplicationApi.getApplicationForId(appId);
+		} else {
+			app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			appId = app.getId();
 		}
 
-		Map<String,FacilioView> viewMap = new HashMap();
+		Map<String,FacilioView> factoryViewsMap = new HashMap();
 
 		// ViewFactory views
 		if (((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) ||
 				(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) &&
 						(viewType == FacilioView.ViewType.TABLE_LIST))  {
-			 viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
+			 factoryViewsMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		}
 		
 		//db group views
@@ -83,7 +88,7 @@ public class GetViewListCommand extends FacilioCommand {
 			}
 			// Temp...till mobile alarm module is split
 			if (AccountUtil.getCurrentAccount().isFromMobile() && moduleName.equals(ContextNames.NEW_READING_ALARM)) {
-				addMobilelarmViews(appId, modBean, dbViews, viewMap, viewGroups,viewType,groupType, getOnlyBasicViewDetails);
+				addMobilelarmViews(appId, modBean, dbViews, factoryViewsMap, viewGroups,viewType,groupType, getOnlyBasicViewDetails);
 			}
 		}
 		
@@ -97,7 +102,7 @@ public class GetViewListCommand extends FacilioCommand {
 				}
 			}
 		}
-			viewMap.entrySet().removeIf(enrty -> {
+			factoryViewsMap.entrySet().removeIf(enrty -> {
 				try {
 					return (enrty.getValue().isHidden() ||
 							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS)));
@@ -108,7 +113,7 @@ public class GetViewListCommand extends FacilioCommand {
 				return false;
 			});
 
-		dbViews = filterAccessibleViews(dbViews);
+		dbViews = filterAccessibleViews(appId, dbViews);
 
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
@@ -127,7 +132,7 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		
 				
-		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
+		List<FacilioView> allViews = new ArrayList<>(factoryViewsMap.values());
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
 		
 		boolean isMainApp = (app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
@@ -146,13 +151,13 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			
 			// groupViews from ViewFactory
-			List<Map<String, Object>> groupViews = new ArrayList<>();
+			List<Map<String, Object>> factoryViewGroups = new ArrayList<>();
 			if (isMainApp && (groupType == ViewGroups.ViewGroupType.TABLE_GROUP)) {
-				groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
+				factoryViewGroups = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
-				if (!groupViews.isEmpty()) {
+				if (!factoryViewGroups.isEmpty()) {
 						
-					addChildModuleViews(appId, moduleName, groupViews, customViews,viewType, getOnlyBasicViewDetails);
+					addChildModuleViews(appId, moduleName, factoryViewGroups, customViews,viewType, getOnlyBasicViewDetails);
 					
 					// Temp handling for qualityfm
 					if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
@@ -173,19 +178,19 @@ public class GetViewListCommand extends FacilioCommand {
 						groupDetails1.put("name", "cleaning");
 						groupDetails1.put("displayName", "Cleaning and Disinfection");
 						groupDetails1.put("views", cadViews);
-						groupViews.add(4, groupDetails1);
+						factoryViewGroups.add(4, groupDetails1);
 					}
 						
-					int customGroupIdx = getCustomGroupIdx(groupViews);
+					int customGroupIdx = getCustomGroupIdx(factoryViewGroups);
 					if (customGroupIdx != -1) {
 						if (!customViews.isEmpty()) {
-							Map<String, Object> mutatedDetail = new HashMap<>(groupViews.get(customGroupIdx));
+							Map<String, Object> mutatedDetail = new HashMap<>(factoryViewGroups.get(customGroupIdx));
 							mutatedDetail.remove("type");
 							mutatedDetail.put("views", customViews);
-							groupViews.set(customGroupIdx, mutatedDetail);
+							factoryViewGroups.set(customGroupIdx, mutatedDetail);
 						}
 						else {
-							groupViews.remove(customGroupIdx);
+							factoryViewGroups.remove(customGroupIdx);
 						}
 					}
 					
@@ -194,7 +199,7 @@ public class GetViewListCommand extends FacilioCommand {
 						groupDetails1.put("name", "upcoming");
 						groupDetails1.put("displayName", "Upcoming Work Orders");
 						groupDetails1.put("views", Arrays.asList(upcomingView.get()));
-						groupViews.add(groupDetails1);
+						factoryViewGroups.add(groupDetails1);
 					}
 	
 					if (myupcomingView.isPresent()) {
@@ -202,38 +207,38 @@ public class GetViewListCommand extends FacilioCommand {
 						groupDetails1.put("name", "myupcoming");
 						groupDetails1.put("displayName", "My Upcoming Work Orders");
 						groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
-						groupViews.add(groupDetails1);
+						factoryViewGroups.add(groupDetails1);
 					}
 					
 				}
 				
 				
 				else {
-					groupViews = new ArrayList<>();
+					factoryViewGroups = new ArrayList<>();
 					Map<String, Object> groupDetails = new HashMap<>();
 					if (moduleObj != null && moduleObj.isCustom()) {
 						groupDetails.put("name", "allViews");
 						groupDetails.put("displayName", "All Views");
 						groupDetails.put("views", allViews);
-						groupViews.add(groupDetails);
+						factoryViewGroups.add(groupDetails);
 					}
 					else {
 						groupDetails.put("name", "systemviews");
 						groupDetails.put("displayName", "System Views");
 						groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
-						groupViews.add(groupDetails);
+						factoryViewGroups.add(groupDetails);
 						if (!customViews.isEmpty() ) {
 							groupDetails = new HashMap<>();
 							groupDetails.put("name", "customviews");
 							groupDetails.put("displayName", "Custom Views");
 							groupDetails.put("views", customViews);
-							groupViews.add(groupDetails);
+							factoryViewGroups.add(groupDetails);
 						}
 					}
 				}
 			}
 			
-			sortGroupViews(groupViews, viewMap, viewGroups);
+			sortGroupViews(factoryViewGroups, factoryViewsMap, viewGroups, moduleName);
 			// TODO remove 
 			
 			if (AccountUtil.getCurrentAccount().isFromMobile()) {
@@ -270,7 +275,7 @@ public class GetViewListCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void sortGroupViews(List<Map<String, Object>> groupViews, Map<String, FacilioView> viewMap, List<ViewGroups> viewGroups) {
+	private void sortGroupViews(List<Map<String, Object>> groupViews, Map<String, FacilioView> viewMap, List<ViewGroups> viewGroups, String moduleName) {
 		if (groupViews != null) {
 			for(Map<String, Object> group : groupViews) {
 				List<ViewGroups> sysAndCusViewGroup = viewGroups.stream().filter(viewGroup -> viewGroup.getName().equals(group.get("name"))).collect(Collectors.toList());
@@ -286,6 +291,7 @@ public class GetViewListCommand extends FacilioCommand {
 						for(String viewName: ((List<String>)group.get("views"))) {
 							FacilioView view = viewMap.get(viewName);
 							if (view != null ) {
+								LOGGER.info(String.format("ViewFactoryTracking - GetViewListCommand.sortGroupViews() - ModuleName - %s GroupName - %s ViewName - %s", moduleName, group.get("name"), viewName));
 								viewsList.add(view);
 							}
 						}
@@ -402,16 +408,20 @@ public class GetViewListCommand extends FacilioCommand {
 		return view;
 	}
 
-	public List<FacilioView> filterAccessibleViews(List<FacilioView> dbViews) throws Exception {
+	public List<FacilioView> filterAccessibleViews(long currAppId, List<FacilioView> dbViews) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		List<FacilioView> resultViews = new ArrayList<>();
 
 		User currentUser = AccountUtil.getCurrentUser();
+		long currUserAppId = currentUser.getApplicationId();
+		if (currUserAppId == -1) {
+			currUserAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
 		Long currentUserId = currentUser.getId();
 		Long currentUserRoleId = currentUser.getRoleId();
 		Boolean isSuperAdmin = currentUser.isSuperAdmin();
-		Boolean isPrivileged = currentUser.getRole().isPrevileged();
 		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
+		Boolean isPrivileged = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
 
 		Role adminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
 		Long adminRoleId = adminRole.getId();

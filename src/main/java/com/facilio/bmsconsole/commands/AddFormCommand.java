@@ -23,10 +23,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class AddFormCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(AddFormCommand.class);
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
@@ -56,7 +58,10 @@ public class AddFormCommand extends FacilioCommand {
 		if (form.getSections() == null && !module.isCustom()) {
 			FacilioForm defaultForm = null;
 			if (defaultFormName != null) {
-				defaultForm = FormFactory.getForm(moduleName, defaultFormName);	// if form already present in factory
+				defaultForm = FormFactory.getForm(moduleName, defaultFormName);// if form already present in factory
+				if(defaultForm != null){
+					LOGGER.info("formFactoryTracking formName : "+ defaultFormName +"for module : "+ moduleName +" while addform from form builder");
+				}
 			}
 			if (defaultForm == null) {
 				defaultForm = FormsAPI.getDefaultForm(moduleName, form.getAppLinkName());

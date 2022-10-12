@@ -1271,7 +1271,7 @@ public class AddInspectionModules extends BaseModuleConfig {
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Inspection", assignedStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,null);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "End Inspection", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,null);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null,null);
-         
+		 addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Complete Inspection", assignedStatus,resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,null);
     }
     
     private ActionContext getUpdateActualStartTimeField() {

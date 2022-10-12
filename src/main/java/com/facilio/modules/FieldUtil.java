@@ -451,7 +451,8 @@ public class FieldUtil {
 					FacilioConstants.Induction.INDUCTION_TEMPLATE,
 					FacilioConstants.Induction.INDUCTION_RESPONSE,
 					FacilioConstants.Survey.SURVEY_TEMPLATE,
-					FacilioConstants.Survey.SURVEY_RESPONSE
+					FacilioConstants.Survey.SURVEY_RESPONSE,
+					ContextNames.PLANNEDMAINTENANCE
 					)));
 
 

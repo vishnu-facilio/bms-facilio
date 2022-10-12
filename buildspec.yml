@@ -24,6 +24,5 @@ artifacts:
     - scripts/threaddump.sh
     - scripts/monitor_server.sh
     - scripts/validate_health.sh
-    - deployment-files/*
   discard-paths: yes
 

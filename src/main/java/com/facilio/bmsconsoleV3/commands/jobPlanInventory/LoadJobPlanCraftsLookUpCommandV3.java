@@ -11,10 +11,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class LoadJobPlanCraftsLookUpCommandV3 extends FacilioCommand {
     @Override
@@ -30,11 +27,11 @@ public class LoadJobPlanCraftsLookUpCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-        List<LookupField>fetchLookup = Arrays.asList(
-                (LookupField) fieldsAsMap.get("craft"),
-                (LookupField) fieldsAsMap.get("skill"),
-                (LookupField) fieldsAsMap.get("jobPlan")
-        );
+        List<LookupField>fetchLookup = new ArrayList<LookupField>(){{
+                add((LookupField) fieldsAsMap.get("craft"));
+                add((LookupField) fieldsAsMap.get("skill"));
+                add((LookupField) fieldsAsMap.get("jobPlan"));
+        }};
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,fetchLookup);
 

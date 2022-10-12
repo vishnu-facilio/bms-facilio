@@ -54,7 +54,7 @@ public class MultiResourceModule extends BaseModuleConfig{
 
         List<FacilioField> fields = new ArrayList<>();
 
-        NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
+        NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER, FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(siteField);
 
         LookupField asset = FieldFactory.getDefaultField("asset","Asset","ASSET_ID",FieldType.LOOKUP);
@@ -101,7 +101,7 @@ public class MultiResourceModule extends BaseModuleConfig{
         FormSection section = new FormSection();
         section.setName("Add Associated Asset / Space ");
         section.setSectionType(FormSection.SectionType.FIELDS);
-        section.setShowLabel(true);
+        section.setShowLabel(false);
 
         List<FormField> fields = new ArrayList<>();
         int seq = 0;

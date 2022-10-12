@@ -478,7 +478,8 @@ public class PageWidget {
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
 		CLASSIFICATION("classification"),
 		NEW_RELATED_LIST("newRelatedList"),
-		MULTIRESOURCE("multiResource");
+		MULTIRESOURCE("multiResource"),
+		JOBPLAN_PLANNER("jobPlanPlanner");
 
 		private String name;
 

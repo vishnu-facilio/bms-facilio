@@ -11,7 +11,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
@@ -29,10 +28,8 @@ import com.facilio.client.app.beans.ClientAppBean;
 import com.facilio.client.app.pojo.ClientAppConfig;
 import com.facilio.client.app.util.ClientAppUtil;
 import com.facilio.fw.cache.LRUCache;
-import com.facilio.fw.validators.CustomFields;
+import com.facilio.fw.validators.*;
 import com.facilio.fw.validators.Date;
-import com.facilio.fw.validators.DateTime;
-import com.facilio.fw.validators.V3fields;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.security.requestvalidator.type.TypeFactory;
@@ -181,6 +178,8 @@ public class FacilioContextListener implements ServletContextListener {
 		TypeFactory.registerType("v3fields", V3fields::new);
 		TypeFactory.registerType("date", Date::new);
 		TypeFactory.registerType("date_time", DateTime::new);
+		TypeFactory.registerType("formData", FormData::new);
+		TypeFactory.registerType("lookup",LookUpDataType::new);
 
 	}
 

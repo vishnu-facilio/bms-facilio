@@ -1,31 +1,33 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsole.formFactory.FacilioFormChainFactory;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.formFactory.FacilioFormChainFactory;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
-import com.facilio.bmsconsole.forms.FormFactory;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.FacilioException;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class FormAction extends FacilioAction {
 	
@@ -328,7 +330,15 @@ public class FormAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+	public String findFormFieldUsages() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getFormFieldUsageChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.FORM_FIELD_ID, this.formFieldId);
+		chain.execute();
+		return  SUCCESS;
+	}
+
 	public String formFieldList() throws Exception {
 		List<FormField> fields = FormsAPI.getAllFormFields(moduleName, appLinkName);
 		setResult("fields", fields);

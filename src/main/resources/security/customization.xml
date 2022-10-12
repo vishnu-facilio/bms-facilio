@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+<!--    <request path="/api/v2/form/rule/executeFormActionRules">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="formId" type="number"/>-->
+<!--            <property name="subFormId" type="number"/>-->
+<!--            <property name="formFieldId" type="number"/>-->
+<!--            <property name="triggerType" type="number"/>-->
+<!--            <property name="formData" type="formData"/>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+</config>

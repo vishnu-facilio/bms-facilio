@@ -1,11 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,9 +19,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class GetFormListCommand extends FacilioCommand {
-	
+
+	private static final Logger LOGGER = LogManager.getLogger(GetFormListCommand.class);
 	long appId = -1;
 
 	@Override
@@ -118,6 +116,19 @@ public class GetFormListCommand extends FacilioCommand {
 		}
 		
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap(moduleName, fetchExtendedModuleForms, fetchDisabledForms, appId);
+		if(!forms.isEmpty() ){
+			for(String formName : forms.keySet()){
+				if(dbForms != null && !dbForms.isEmpty()){
+					Set<String> dbFormsName = dbForms.keySet();
+					if(!dbFormsName.contains(formName)){
+						LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName);
+					}
+				}
+				else {
+					LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName);
+				}
+			}
+		}
 		if (dbForms != null) {
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
 				FacilioForm dbForm = entry.getValue();

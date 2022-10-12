@@ -57,6 +57,7 @@ public class ViewFactory {
 	}
 	
 	public static FacilioView getView(String moduleName, FacilioModule module, String viewName, ModuleBean modBean) throws Exception {
+		LOGGER.info(String.format("ViewFactoryTracking - getView() - ModuleName - %s ViewName - %s", moduleName, viewName));
 		FacilioView view = null;
 		if (viewName != null) {
 			
@@ -113,7 +114,7 @@ public class ViewFactory {
 	}
 
 	public static Map<String, List<String>> getGroupViews(String moduleName1) {
-		
+
 		Map<String, List<String>> moduleViews1 = new LinkedHashMap<>();
 		if (groupViews.containsKey(moduleName1)) {
 			moduleViews1.putAll(groupViews.get(moduleName1));
@@ -4012,6 +4013,7 @@ public class ViewFactory {
 	}
 
 	public static List<Map<String, Object>> getSubViewsCriteria(String moduleName, String viewName) {
+		LOGGER.info(String.format("ViewFactoryTracking - getSubViewsCriteria() - ModuleName - %s ViewName - %s", moduleName, viewName));
 		String name = moduleName + "-" + viewName;
 		if (!subViews.containsKey(name)) {
 			return null;
@@ -5061,7 +5063,7 @@ public class ViewFactory {
 		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
 		moduleView.setSortFields(getSortFields(parentModuleName));
 
-		moduleView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		LOGGER.info(String.format("ViewFactoryTracking - getModuleView() - ChildModuleName - %s ParentModuleName - ", childModule.getName(), parentModuleName));
 
 		return moduleView;
 	}
