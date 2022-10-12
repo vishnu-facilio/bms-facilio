@@ -57,9 +57,9 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         //notesWidget.addToLayoutParams(summaryTabSection, 24, 8);
         subModuleGroup.addToWidget(notesWidget);
 
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        //PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
         //attachmentWidget.addToLayoutParams(summaryTabSection, 24, 8);
-        subModuleGroup.addToWidget(attachmentWidget);
+        //subModuleGroup.addToWidget(attachmentWidget);
     }
 
     private static void addPlannerTab(Page page) {
