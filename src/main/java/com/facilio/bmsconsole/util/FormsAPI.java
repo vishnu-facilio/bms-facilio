@@ -1067,6 +1067,7 @@ public class FormsAPI {
 				formFieldMap.put(formField.getName(),formField);
 			}
 			else{
+				LOGGER.info("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
 				if(formField.getFieldId() != -1){
 					formFieldMap.put(formField.getName(),formField);
 				}

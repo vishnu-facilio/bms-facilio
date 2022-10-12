@@ -64,13 +64,13 @@ public class GetFormMetaCommand extends FacilioCommand {
 							formFieldMap.put(formField.getName(),formField);
 						}
 						else{
+							LOGGER.info("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
 							if(formField.getFieldId() != -1){
 								formFieldMap.put(formField.getName(),formField);
 							}
 						}
 					}
 					List<FormField> newFormFields = new ArrayList<FormField>(formFieldMap.values().stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList()));
-//					List<FormField> newFormFields1 = newFormFields.stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList());
 					formSection.setFields(newFormFields);
 					formFields.addAll((newFormFields));
 					newFormSection.add(formSection);
