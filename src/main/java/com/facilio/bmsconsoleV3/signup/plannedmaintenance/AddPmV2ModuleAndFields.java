@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.signup.plannedmaintenance;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
@@ -10,17 +11,13 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.qa.signup.AddQAndAModules;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * AddRevampedPmModuleAndFields adds the following Modules and its related Fields.
@@ -81,6 +78,10 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         FacilioModule pmTasksImportModule = constructPmTasksImportModule(modBean, orgId, plannedMaintenanceModule);
         // add the modules
         SignupUtil.addModules(pmResourcePlannerModule, pmImportModule, pmTasksImportModule);
+
+        /* Stage 6 - Adding RollUp Fields */
+        addRollUpField(modBean, pmPlannerModule, pmResourcePlannerModule,"resourceCount", "planner",
+                "Resource Count of Planner");
     }
 
     /**
@@ -558,5 +559,31 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 
         module.setFields(fields);
         return module;
+    }
+
+    /**
+     * Helper function to add RollUp field.
+     *
+     * @param modBean
+     * @param parentModule
+     * @param childModule
+     * @param rollUpFieldName
+     * @param childFieldName
+     * @throws Exception
+     */
+    private void addRollUpField(ModuleBean modBean, FacilioModule parentModule, FacilioModule childModule,
+                                String rollUpFieldName, String childFieldName, String description) throws Exception {
+
+        List<FacilioField> parentModuleFields = modBean.getAllFields(parentModule.getName());
+        Map<String, FacilioField> parentModuleFieldsMap = FieldFactory.getAsMap(parentModuleFields);
+
+        List<FacilioField> childModuleFields = modBean.getAllFields(childModule.getName());
+        Map<String, FacilioField> childModuleFieldsMap = FieldFactory.getAsMap(childModuleFields);
+
+        // Later constructRollUpField can be moved to some Util class
+        RollUpField rollUpField = AddQAndAModules.constructRollUpField(description, childModule,
+                childModuleFieldsMap.get(childFieldName), parentModule,
+                parentModuleFieldsMap.get(rollUpFieldName), null);
+        RollUpFieldUtil.addRollUpField(Collections.singletonList(rollUpField));
     }
 }
