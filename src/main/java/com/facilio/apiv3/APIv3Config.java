@@ -1,6 +1,7 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
 import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
 import com.facilio.attribute.context.ClassificationAttributeContext;
@@ -2296,6 +2297,19 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .summary()
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.AGENT_ALARM)
+    public static Supplier<V3Config> getAgentAlarm() {
+        return () -> new V3Config(AgentAlarmContext.class, new ModuleCustomFieldCount30())
+                .update()
+                .afterSave(new UpdateOccurrenceCommand())
+                .list()
+                .beforeFetch(new LoadSupplementsForAgentAlarmCommand())
+                .summary()
+                .beforeFetch(new LoadSupplementsForAgentAlarmCommand())
                 .delete()
                 .build();
     }

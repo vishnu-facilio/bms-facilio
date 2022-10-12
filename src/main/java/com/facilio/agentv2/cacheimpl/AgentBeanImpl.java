@@ -504,7 +504,7 @@ public class AgentBeanImpl implements AgentBean {
             selectRecordBuilder.andCriteria(criteria);
         }
         List<Map<String, Object>> maps = selectRecordBuilder.get();
-        return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
+        return FieldUtil.getAsBeanListFromMapList(maps, FacilioAgent.class);
     }
 
     @Override

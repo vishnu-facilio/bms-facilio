@@ -385,14 +385,13 @@ public class LookupSpecialTypeUtil {
 			return null;
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-			return WorkflowRuleAPI.getWorkflowRule(id, false, false);
-		}else if (ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)){
-			AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-			return agentBean.getAgent(id);
-		}
-		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
-			return SensorRuleUtil.getSensorRuleByIds(Collections.singletonList(id));
-		}
+            return WorkflowRuleAPI.getWorkflowRule(id, false, false);
+        } else if (ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)) {
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            return agentBean.getAgent(id);
+        } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+            return SensorRuleUtil.getSensorRuleByIds(Collections.singletonList(id));
+        }
 		return null;
 	}
 	
@@ -534,7 +533,13 @@ public class LookupSpecialTypeUtil {
             if (CollectionUtils.isNotEmpty(sensorRules)) {
                 return sensorRules.stream().collect(Collectors.toMap(SensorRuleContext::getId, Function.identity()));
             }
-		}
+        } else if (ContextNames.AGENT.equals(specialType)) {
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            List<FacilioAgent> agents = agentBean.getAgents(ids);
+            if (CollectionUtils.isNotEmpty(agents)) {
+                return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+            }
+        }
 		return null;
 	}
 	
@@ -575,8 +580,11 @@ public class LookupSpecialTypeUtil {
             }
             return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
         } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
-			return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
-		}
+            return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
+        } else if (ContextNames.AGENT.equals(specialType)) {
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            return agentBean.getAgents(ids);
+        }
 		return null;
 	}
 	
@@ -908,11 +916,10 @@ public class LookupSpecialTypeUtil {
             }
         }
 		else if (ContextNames.AGENT.equals(specialType)) {
-			for(Object obj:listObjects) {
-
-				FacilioAgent agentContext = (FacilioAgent) obj;
-				if (agentContext != null) {
-					idVsKey.put(agentContext.getId(), agentContext.getDisplayName());
+			for (Object obj : listObjects) {
+				FacilioAgent agent = (FacilioAgent) obj;
+				if (agent != null) {
+					idVsKey.put(agent.getId(), agent.getDisplayName());
 				}
 			}
 		}

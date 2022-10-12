@@ -377,7 +377,16 @@ public class FieldFactory extends BaseFieldFactory {
                 "writable"
         }));
 
-        public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+        public static final List<String> AGENT_ALARM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
+                "agent",
+                "agentAlarmType",
+                "severity",
+                "lastClearedTime",
+                "lastCreatedTime",
+                "lastOccurredTime",
+        }));
+
+        public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
                 "category",
                 "department",
                 "description",
