@@ -24,7 +24,7 @@ public class HomepageWidgetData {
     String moduleName;
     Long RecordId;
     String secondaryText2;
-    String date;
+    Long date;
     String time;
     V3SpaceContext Space;
     //List<JSONObject> params;

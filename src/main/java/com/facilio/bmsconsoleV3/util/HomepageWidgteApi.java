@@ -114,30 +114,30 @@ public class HomepageWidgteApi {
         if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
             widget.setPrimaryText("You desk is " + space.getName());
             widget.setSpace(space);
-            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            widget.setDate(spaceBooking.getBookingStartTime());
             String time = "";
             time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
-            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingEndTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
         }
         else if(parkingModule.getModuleId() == spaceBooking.getParentModuleId()) {
             widget.setPrimaryText("Slot No " + space.getName());
             widget.setSpace(space);
-            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            widget.setDate(spaceBooking.getBookingStartTime());
             String time = "";
             time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
-            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingEndTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
         }
         else {
             widget.setPrimaryText("You space is " + space.getName());
             widget.setSpace(space);
-            widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
+            widget.setDate(spaceBooking.getBookingStartTime());
             String time = "";
             time += new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
-            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingEndTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
         }
@@ -234,7 +234,7 @@ public class HomepageWidgteApi {
                     widget.setRecordId(visitor.getId());
 
 
-                    widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(visitor.getExpectedCheckInTime() ));
+                    widget.setDate(visitor.getExpectedCheckInTime());
 
                   String time = "";
                   time += new SimpleDateFormat("hh:mm a").format(visitor.getExpectedCheckInTime());
@@ -339,7 +339,7 @@ public class HomepageWidgteApi {
                     widget.setRecordId(deliveries.getId());
     
 
-                    widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(deliveries.getReceivedTime() ));
+                    widget.setDate((deliveries.getReceivedTime()));
 
                     widgets.add(widget);
                 });
@@ -435,16 +435,12 @@ public class HomepageWidgteApi {
             int startDay = (int) startTimeData.get("day");
             widget.setTitle(booking.getModuleState().getDisplayName());
             widget.setRecordId(booking.getId());
-            widget.setModuleName(SpaceBookingModule.getName());
             widget.setSpace(space);
-            String date = "";
-            date+= new SimpleDateFormat("dd/MMM/yyyy").format(booking.getBookingStartTime());
-            date+= "-" + startDay;
-            widget.setDate(date);
+            widget.setDate(booking.getBookingStartTime());
             
             String time = "";
             time += new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
-            time += " to " + new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
+            time += " to " + new SimpleDateFormat("hh:mm a").format(booking.getBookingEndTime());
             time = time.replace("am", "AM").replace("pm", "PM");
             widget.setTime(time);
 
@@ -455,13 +451,19 @@ public class HomepageWidgteApi {
              if(deskModule.getModuleId() == booking.getParentModuleId()) {
 
                 widget.setPrimaryText("You desk is " + space.getName());
-            }
+                widget.setModuleName(deskModule.getName());
+
+             }
             else if(parkingModule.getModuleId() == booking.getParentModuleId()) {
                 widget.setPrimaryText("Slot No " + space.getName());
-            }
+                 widget.setModuleName(parkingModule.getName());
+
+             }
             else {
                 widget.setPrimaryText("You space is " + space.getName());
-            }
+                 widget.setModuleName(SpaceBookingModule.getName());
+
+             }
 
                 return widget;
             }
@@ -615,7 +617,7 @@ public class HomepageWidgteApi {
                     secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
 
                 }
-                widgetData.setDate(date);
+                widgetData.setDate(booking.getBookingStartTime());
                 widgetData.setSecondaryText2(secondaryText2);
 
             widgetDataList.add(widgetData);
@@ -940,7 +942,7 @@ public class HomepageWidgteApi {
 
                     }
                     widget.setSecondaryText(latestBooking.getSpace().getName());
-                    widget.setDate(date);
+                    widget.setDate(durationstartTime);
                     widget.setSecondaryText2(secondaryText2);
                     widget.setModuleName(module.getName());
                     return widget;
