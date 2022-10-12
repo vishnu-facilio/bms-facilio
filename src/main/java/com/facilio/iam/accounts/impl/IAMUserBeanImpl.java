@@ -120,7 +120,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		int updatedRows = updateBuilder.update(props);
 
 		if (fieldMap.containsKey("securityPolicyId")) {
-			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getId()));
+			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getUid()));
 		}
 		
 		return (updatedRows > 0);
