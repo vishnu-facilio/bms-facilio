@@ -2086,12 +2086,12 @@ public class APIv3Config {
                         new ValidateQrValueCommandV3())
                 .afterSave(new ConstructAddAssetActivityCommandV3(), new AddRotatingItemToolCommandV3(),
                         new AssetAfterSaveCommandV3(), FacilioChainFactory.getCategoryReadingsChain(),
-                        new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand())
+                        new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .update()
                 .beforeSave(new CheckPMForAssetsCommandV3(), new AssetCategoryAdditionInExtendModuleCommand(),
                         new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),
                         new ValidateQrValueCommandV3())
-                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(),new RemoveAssetExtendedModulesFromRecordMap())
                 .delete()
                 .summary()
                 .beforeFetch(new AssetSupplementsSupplyCommand())
