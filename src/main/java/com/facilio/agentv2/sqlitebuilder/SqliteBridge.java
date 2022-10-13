@@ -132,7 +132,7 @@ public class SqliteBridge{
                         newController.setSiteId(newAgent.getSiteId());
                         try {
                             //addFieldDevice(newController);
-                            long newControllerId = ControllerApiV2.addController(newController, newAgent);
+                            long newControllerId = ControllerApiV2.addController(newController, newAgent, false);
 
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId);
                             if (newControllerId > 0) {
