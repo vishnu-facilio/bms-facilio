@@ -12,6 +12,7 @@
 	<job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange'
 		 transactionTimeout='900000'/>
 	<job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>
+	<job name='OpenScheduleWOV2' classname='com.facilio.bmsconsole.jobs.OpenScheduleWOV2' transactionTimeout='300000'/>
 	<job name='VirtualMeterCalculation' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator'
 		 transactionTimeout='300000'/>
 	<job name='HistoricalVMCalculation' classname='com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob'
