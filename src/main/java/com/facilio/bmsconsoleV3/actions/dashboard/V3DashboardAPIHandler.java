@@ -267,18 +267,51 @@ public class V3DashboardAPIHandler {
             for(DashboardTriggerAndTargetWidgetContext target_widget : target_widgets)
             {
                 target_widget.setActionId(actionId);
-                Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(target_widget.getCriteria(), target_widget.getModuleName());
-                if(criteriaId > 0){
-                    target_widget.setCriteriaId(criteriaId);
-                }
-                GenericInsertRecordBuilder insert_builder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getDashboardRuleTargetWidgetModule().getTableName())
-                        .fields(FieldFactory.getDashboardRuleTargetWidgetFields());
+                if(target_widget.getDataPointList() != null && target_widget.getDataPointList().size() > 0)
+                {
+                    for(DashboardReadingTargetWidgetContext reading_target_widget: target_widget.getDataPointList())
+                    {
+                        if(reading_target_widget != null)
+                        {
+                            if(reading_target_widget.getCriteria() != null) {
+                                Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(reading_target_widget.getCriteria(), reading_target_widget.getModuleName());
+                                if (criteriaId > 0) {
+                                    reading_target_widget.setCriteriaId(criteriaId);
+                                }
+                            }
+                            reading_target_widget.setActionId(actionId);
+                            reading_target_widget.setTarget_widget_id(target_widget.getTarget_widget_id());
+                            reading_target_widget.setDataPointMetaStr(reading_target_widget.toDataPointJson().toJSONString());
+                            GenericInsertRecordBuilder insert_builder = new GenericInsertRecordBuilder()
+                                    .table(ModuleFactory.getDashboardRuleTargetWidgetModule().getTableName())
+                                    .fields(FieldFactory.getDashboardRuleTargetWidgetFields());
 
-                Map<String, Object> props = FieldUtil.getAsProperties(target_widget);
-                insert_builder.addRecord(props);
-                insert_builder.save();
-                target_widget.setId((Long) props.get("id"));
+                            Map<String, Object> props = FieldUtil.getAsProperties(reading_target_widget);
+                            insert_builder.addRecord(props);
+                            insert_builder.save();
+                        }
+                    }
+                }
+                else
+                {
+                    Long criteriaId = V3DashboardAPIHandler.generateDashboardCriteriaId(target_widget.getCriteria(), target_widget.getModuleName());
+                    if (criteriaId > 0) {
+                        target_widget.setCriteriaId(criteriaId);
+                    }
+                    GenericInsertRecordBuilder insert_builder = new GenericInsertRecordBuilder()
+                            .table(ModuleFactory.getDashboardRuleTargetWidgetModule().getTableName())
+                            .fields(FieldFactory.getDashboardRuleTargetWidgetFields());
+
+                    Map<String, Object> props = FieldUtil.getAsProperties(target_widget);
+                    insert_builder.addRecord(props);
+                    insert_builder.save();
+                    target_widget.setId((Long) props.get("id"));
+                }
+
+
+
+
+
             }
         }
     }
@@ -513,7 +546,7 @@ public class V3DashboardAPIHandler {
             if (trigger_widget_Id != null && trigger_widget_Id > 0)
             {
                 /** code to construct dashboard rules data for trigger widget id*/
-                Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id);
+                Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id, dashboard_execute_meta.getDashboardId());
                 if(dashboard_rule_id != null && dashboard_rule_id > 0) {
                     result_json_arr = V3DashboardAPIHandler.executeDashboardActions(dashboard_rule_id, trigger_widget_Id, dashboard_execute_meta, 2 );
                     dashboard_execute_meta.setMain_result_array(result_json_arr);
@@ -555,6 +588,10 @@ public class V3DashboardAPIHandler {
 
         for (DashboardWidgetContext dashboardWidgetContext : widgets)
         {
+            if(dashboardWidgetContext.getWidgetType() != null && dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.SECTION))
+            {
+                continue;
+            }
             Long widget_id = dashboardWidgetContext.getId();
             if(dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id) || (is_trigger_widget_type && !dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id))){
                 continue;
@@ -726,7 +763,7 @@ public class V3DashboardAPIHandler {
         return null;
     }
 
-    public static Long checkIsDashboardRuleApplied(Long trigger_widget_id)throws Exception
+    public static Long checkIsDashboardRuleApplied(Long trigger_widget_id, Long dashboardId)throws Exception
     {
         GenericSelectRecordBuilder select_builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getDashboardTriggerWidgetModule().getTableName())
@@ -734,14 +771,50 @@ public class V3DashboardAPIHandler {
                 .andCustomWhere("TRIGGER_WIDGET_ID = ?", trigger_widget_id);
 
         List<Map<String , Object>> props = select_builder.get();
+        List<Long> dashboard_rules_list = new ArrayList<>();
         if(props != null && props.size() > 0)
         {
-            DashboardTriggerWidgetContext trigger_widget = FieldUtil.getAsBeanFromMap(props.get(0), DashboardTriggerWidgetContext.class);
-            if(trigger_widget != null){
-                return trigger_widget.getDashboard_rule_id();
+            int rule_len = props.size();
+            for(int i=0;i<rule_len;i++){
+                DashboardTriggerWidgetContext trigger_widget = FieldUtil.getAsBeanFromMap(props.get(i), DashboardTriggerWidgetContext.class);
+                if(trigger_widget != null) {
+                    dashboard_rules_list.add(trigger_widget.getDashboard_rule_id());
+                }
+            }
+        }
+        if(dashboard_rules_list.size() > 0)
+        {
+            for(Long rule_id : dashboard_rules_list)
+            {
+                Boolean isActiveRule = V3DashboardAPIHandler.isActiveRule(rule_id, dashboardId);
+                if(isActiveRule){
+                    return rule_id;
+                }
             }
         }
         return null;
+    }
+
+    public static Boolean isActiveRule(Long rule_id, Long dashboardId)throws Exception
+    {
+        GenericSelectRecordBuilder select_builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getDashboardRuleModule().getTableName())
+                .select(FieldFactory.getDashboardRuleFields())
+                .andCustomWhere("ID = ?", rule_id)
+                .andCustomWhere("STATUS = ?", true);
+
+        List<Map<String , Object>> props = select_builder.get();
+        if(props.size() > 0){
+            int len =props.size() ;
+            for(int i =0 ;i <len ;i++ )
+            {
+                DashboardRuleContext dashboardRule = FieldUtil.getAsBeanFromMap(props.get(0), DashboardRuleContext.class);
+                if(dashboardRule != null && dashboardRule.getDashboardId() == dashboardId){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -999,5 +1072,81 @@ public class V3DashboardAPIHandler {
         ModuleBaseWithCustomFields moduleData = builder.fetchFirst();
         Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
         return params;
+    }
+    public static void returnDashboardPlaceholders(Map<String,Object> placeholder_vs_value_map, Map<String, Object> value_placeholders_map, String moduleName, String replacedKey)throws Exception
+    {
+        for(Map.Entry<String, Object> entry : value_placeholders_map.entrySet())
+        {
+            String newkey = String.valueOf(entry.getKey());
+            if(newkey != null && newkey.startsWith(moduleName)){
+                newkey = newkey.replaceFirst(moduleName, replacedKey);
+            }
+            placeholder_vs_value_map.put(newkey, entry.getValue());
+        }
+    }
+
+    public static void constructDashboardRulePlaceHolders(DashboardWidgetContext trigger_widget, DashboardExecuteMetaContext dashboard_execute_meta, String recordId, ArrayList value_arr, HashMap widget_value)throws Exception
+    {
+        Map<String, Object> placeholder_vs_value_map = new HashMap<>();
+        JSONObject placeHoldersMeta = dashboard_execute_meta.getPlaceHoldersMeta();
+        if (placeHoldersMeta.containsKey(trigger_widget.getLinkName()))
+        {
+            HashMap widget_meta = (HashMap) placeHoldersMeta.get(trigger_widget.getLinkName());
+            if (widget_meta != null && widget_meta.containsKey("moduleName")) {
+                String moduleName = (String) widget_meta.get("moduleName");
+                if (recordId != null) {
+                    Map<String, Object> value_placeholders_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
+                    if (value_arr != null && value_arr.size() > 1) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Object val : value_arr) {
+                            sb.append(val).append(',');
+                        }
+                        String selected_val_string = sb.toString();
+                        selected_val_string = selected_val_string.substring(0, selected_val_string.length() - 1);
+                        if (widget_value != null && widget_value.containsKey("value")) {
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), selected_val_string);
+                            V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".value").toString());
+                        } else if (widget_value != null && widget_value.containsKey("dimension")) {
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), selected_val_string);
+                            V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString());
+                        }
+                    } else {
+                        if (widget_value != null && widget_value.containsKey("value")) {
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), recordId);
+                            V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".value").toString());
+                        }
+                        if (widget_value != null && widget_value.containsKey("dimension")) {
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), recordId);
+                            V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString());
+                        }
+                        if (widget_value != null && widget_value.containsKey("group_by")) {
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
+                            if(dashboard_execute_meta.getGroupByMeta() != null && dashboard_execute_meta.getGroupByMeta().containsKey(trigger_widget.getLinkName())){
+                                JSONObject group_by_meta_obj = dashboard_execute_meta.getGroupByMeta();
+                                HashMap group_by_module_obj = (HashMap) group_by_meta_obj.get(trigger_widget.getLinkName());
+                                if(group_by_module_obj != null ) {
+                                    String groupByModuleName = (String) group_by_module_obj.get("groupByModuleName");
+                                    if(groupByModuleName != null && !groupByModuleName.equals(moduleName))
+                                    {
+                                        String group_by_id = (String)widget_value.get("group_by");
+                                        if(group_by_id != null) {
+                                            Map<String, Object> groupBy_placeholder_vs_value = new HashMap<>();
+                                            Map<String, Object> groupby_value_placeholders_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(groupByModuleName, Long.parseLong(group_by_id));
+                                            V3DashboardAPIHandler.returnDashboardPlaceholders(groupBy_placeholder_vs_value, groupby_value_placeholders_map, groupByModuleName, new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString());
+                                            dashboard_execute_meta.setGroupby_placeholder_vs_value_map(groupBy_placeholder_vs_value);
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        //                                           else if (widget_value != null && widget_value.containsKey("criteria")) {
+                        //                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
+                        //                                           }
+                    }
+                }
+            }
+            dashboard_execute_meta.setPlaceholder_vs_value_map(placeholder_vs_value_map);
+        }
     }
 }

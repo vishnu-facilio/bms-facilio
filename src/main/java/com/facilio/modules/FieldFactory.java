@@ -10435,6 +10435,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("target_widget_id","TARGET_WIDGET_ID", module,FieldType.NUMBER));
         fields.add(getField("datapoint_id","DATAPOINT_ID", module,FieldType.NUMBER));
         fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.STRING));
+        fields.add(getField("targetWidgetMetaStr", "TARGET_WIDGET_META", module, FieldType.STRING));
+        fields.add(getField("dataPointMetaStr", "DATAPOINT_META", module, FieldType.STRING));
         return fields;
     }
 

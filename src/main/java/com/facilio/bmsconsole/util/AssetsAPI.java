@@ -1300,6 +1300,9 @@ public class AssetsAPI {
 		return data;
 	}
 	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints) throws Exception{
+		return getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints, null);
+	}
+	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints, Criteria criteria) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
@@ -1341,6 +1344,9 @@ public class AssetsAPI {
 		}
 		if (buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+		}
+		if(criteria != null){
+			selectBuilder.andCriteria(criteria);
 		}
 		
 		List<AssetContext> assets = selectBuilder.get();

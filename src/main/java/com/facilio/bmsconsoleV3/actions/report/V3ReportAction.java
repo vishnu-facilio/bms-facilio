@@ -3,26 +3,18 @@ package com.facilio.bmsconsoleV3.actions.report;
 import java.util.*;
 import java.util.function.Function;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.V3DashboardActionContext;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
+import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleReportActionContext;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fs.FileInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
-import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -96,7 +88,7 @@ public class V3ReportAction extends V3Action {
     private ReportTemplateContext template;
     private List<Long> ids;
     ReportInfo reportInfo;
-    public V3DashboardActionContext ruleInfo;
+    public V3DashboardRuleReportActionContext ruleInfo;
 
     public JSONArray getyField(JSONArray yField) { return yField; }
     public void setyField(JSONArray yField) {
@@ -306,6 +298,14 @@ public class V3ReportAction extends V3Action {
             if(ruleInfo.getTrigger_widget_criteria() != null) {
                 context.put("trigger_widget_criteria", ruleInfo.getTrigger_widget_criteria());
             }
+        }
+        if(ruleInfo != null && ruleInfo.getDatapointList() != null && ruleInfo.getDatapointList().size()>0){
+            JSONObject dpAlias_vs_criteria = new JSONObject();
+            for(V3DashboardRuleDPContext dp_rule_context : ruleInfo.getDatapointList())
+            {
+                dpAlias_vs_criteria.put(dp_rule_context.getDatapoint_link(), dp_rule_context.getCriteria());
+            }
+            context.put("datapoint_rule", dpAlias_vs_criteria);
         }
     }
     public String execute() throws Exception {

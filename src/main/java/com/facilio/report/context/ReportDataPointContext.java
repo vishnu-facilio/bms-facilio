@@ -1,6 +1,7 @@
 package com.facilio.report.context;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ReportDataPointContext {
+public class ReportDataPointContext implements  Cloneable{
 
 	private long id = -1; 
 	public long getId() {
@@ -53,6 +54,25 @@ public class ReportDataPointContext {
 		this.buildingId = buildingId;
 	}
 
+	public List<Long> getDp_parent_ids() {
+		return dp_parent_ids;
+	}
+
+	public void setDp_parent_ids(List<Long> dp_parent_ids) {
+		this.dp_parent_ids = dp_parent_ids;
+	}
+
+	public List<Long> dp_parent_ids;
+
+	public String getRule_aggr_type() {
+		return rule_aggr_type;
+	}
+
+	public void setRule_aggr_type(String rule_aggr_type) {
+		this.rule_aggr_type = rule_aggr_type;
+	}
+
+	public String rule_aggr_type = "SUM";
 	private String resourceName;
 	public String getResourceName() {
 		return resourceName;
@@ -453,5 +473,9 @@ public class ReportDataPointContext {
 					.append("yField : (").append(yAxis).append("), ")
 					.append("]")
 					.toString();
+	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

@@ -43,6 +43,9 @@ public enum DashboardRuleActionType {
             JSONObject placeHoldersMeta = dashboard_execute_meta.getPlaceHoldersMeta();
             for(DashboardTriggerAndTargetWidgetContext target_widget : dashboard_rule_action.getTarget_widgets())
             {
+                if(dashboard_rule_action.getAction_meta() != null && dashboard_rule_action.getAction_meta().getAction_detail() != null) {
+                    target_widget.setTargetWidgetMeta(dashboard_rule_action.getAction_meta().getAction_detail());
+                }
                 result_json = new JSONObject();
                 Long target_widget_id = target_widget.getTarget_widget_id();
                 DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(trigger_widget_id);
@@ -74,46 +77,7 @@ public enum DashboardRuleActionType {
                                         }
                                     }
                                 }
-                            }
-                            if(placeHoldersMeta.containsKey(trigger_widget.getLinkName()))
-                            {
-                                HashMap widget_meta = (HashMap) placeHoldersMeta.get(trigger_widget.getLinkName());
-                                if(widget_meta != null && widget_meta.containsKey("moduleName")){
-                                   String moduleName = (String) widget_meta.get("moduleName");
-                                   if(recordId != null ) {
-                                       placeholder_vs_value_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
-                                       if(value_arr != null && value_arr.size() > 1)
-                                       {
-                                           placeholder_vs_value_map = new HashMap<>();
-                                           StringBuilder sb = new StringBuilder();
-                                           for(Object val : value_arr){
-                                               sb.append(val).append(',');
-                                           }
-                                           String selected_val_string= sb.toString();
-                                           selected_val_string  = selected_val_string.substring(0, selected_val_string.length() -1);
-                                           if (widget_value != null && widget_value.containsKey("value")) {
-                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), selected_val_string);
-                                           } else if (widget_value != null && widget_value.containsKey("dimension")) {
-                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), selected_val_string);
-                                           }
-                                       }
-                                       else
-                                       {
-                                           if (widget_value != null && widget_value.containsKey("value")) {
-                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), recordId);
-                                           }
-                                           if (widget_value != null && widget_value.containsKey("dimension")) {
-                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), recordId);
-                                           }
-                                           if (widget_value != null && widget_value.containsKey("group_by")) {
-                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
-                                           }
-//                                           else if (widget_value != null && widget_value.containsKey("criteria")) {
-//                                               placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
-//                                           }
-                                       }
-                                   }
-                                }
+                                V3DashboardAPIHandler.constructDashboardRulePlaceHolders(trigger_widget, dashboard_execute_meta, recordId, value_arr, widget_value);
                             }
                         }
                         if(recordId != null && !recordId.equals(""))
@@ -121,7 +85,8 @@ public enum DashboardRuleActionType {
                             for (String key : target_widget_criteria.getConditions().keySet()) {
                                 Condition condition = target_widget_criteria.getConditions().get(key);
                                 if (condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-                                    String replaced_value = StringSubstitutor.replace(condition.getValue(), placeholder_vs_value_map);
+                                    String replaced_value = StringSubstitutor.replace(condition.getValue(), dashboard_execute_meta.getPlaceholder_vs_value_map());
+                                    replaced_value = StringSubstitutor.replace(replaced_value, dashboard_execute_meta.getGroupby_placeholder_vs_value_map());
                                     condition.setValue(replaced_value);
                                     condition.setComputedWhereClause(null);
                                 }
@@ -136,7 +101,7 @@ public enum DashboardRuleActionType {
                 DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
                 if(widgetType != null && widgetType == DashboardWidgetContext.WidgetType.FILTER)
                 {
-                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName());
+                    setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName(), target_widget);
                 }
                 else if(widget != null && widgetType == DashboardWidgetContext.WidgetType.CHART)
                 {
@@ -153,31 +118,51 @@ public enum DashboardRuleActionType {
                                 JSONArray datapoint_meta = (JSONArray)actionMeta.get("datapoint");
                                 if(datapoint_meta != null && !datapoint_meta.isEmpty()) {
                                     JSONObject datapoint_json = new JSONObject();
-                                    datapoint_json.put("datapoint_id", target_widget.getDatapoint_id());
-                                    datapoint_json.put("criteria", target_widget_criteria);
-                                    datapoint_meta.add(datapoint_json);
-                                    actionMeta.put("datapoint", datapoint_meta);
-                                    result_json.put("actionMeta", actionMeta);
+                                    if(target_widget.getDataPointMeta() != null)
+                                    {
+                                        if(target_widget_criteria != null)
+                                        {
+                                            JSONObject dataPoing_obj = (JSONObject) target_widget.getDataPointMeta();
+                                            datapoint_json.put("datapoint_id", dataPoing_obj.containsKey("datapoint_link") ? dataPoing_obj.get("datapoint_link") : null);
+                                            datapoint_json.put("criteria", target_widget_criteria);
+                                            datapoint_meta.add(datapoint_json);
+                                            actionMeta.put("datapoint", datapoint_meta);
+                                        }
+
+                                        JSONObject temp = new JSONObject();
+                                        temp.put("FILTER", actionMeta);
+                                        result_json.put("actionMeta", temp);
+                                    }
                                 }
 
                             }
                             else
                             {
-                                result_json.put("actionType", DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).getName());
+                                result_json.put("widgetType", widgetType);
                                 result_json.put("widget_id", target_widget_id);
                                 JSONObject actionMeta= new JSONObject();
                                 JSONArray datapoint_meta = new JSONArray();
                                 JSONObject datapoint_json = new JSONObject();
-                                datapoint_json.put("datapoint_id", target_widget.getDatapoint_id());
-                                datapoint_json.put("criteria" ,target_widget_criteria);
-                                datapoint_meta.add(datapoint_json);
-                                actionMeta.put("datapoint", datapoint_meta);
-                                result_json.put("actionMeta", actionMeta);
+                                if(target_widget.getDataPointMeta() != null)
+                                {
+                                    JSONObject dataPoing_obj = (JSONObject) target_widget.getDataPointMeta();
+                                    if(target_widget_criteria != null) {
+                                        datapoint_json.put("datapoint_link", dataPoing_obj.containsKey("datapoint_link") ? dataPoing_obj.get("datapoint_link") : null);
+                                        datapoint_json.put("criteria", target_widget_criteria);
+                                        datapoint_meta.add(datapoint_json);
+                                        actionMeta.put("datapoint", datapoint_meta);
+                                    }
+                                }
+                                JSONObject temp = new JSONObject();
+                                temp.put("FILTER", actionMeta);
+                                V3DashboardAPIHandler.setUserFilterResp(temp, target_widget_id, dashboard_execute_meta.getGlobal_filter_widget_map(), dashboard_execute_meta.getPlaceHolders());
+                                V3DashboardAPIHandler.setTimeLineFilterResp(temp, target_widget_id, dashboard_execute_meta.getTimeline_widget_field_map(), dashboard_execute_meta.getGlobal_timeline_filter_widget_map());
+                                result_json.put("actionMeta", temp);
                             }
                         }
                         else
                         {
-                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName());
+                            setResult(result_json, widgetType, target_widget_id, target_widget_criteria, dashboard_execute_meta, trigger_widget.getLinkName(), target_widget);
                         }
                     }
                 }
@@ -187,7 +172,7 @@ public enum DashboardRuleActionType {
             }
         }
 
-        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data, String trigger_widget_link_name)throws Exception
+        private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data, String trigger_widget_link_name, DashboardTriggerAndTargetWidgetContext dashboard_widget)throws Exception
         {
             result_json.put("widgetType" , widgetType);
             result_json.put("widget_id", target_widget_id);
@@ -197,12 +182,16 @@ public enum DashboardRuleActionType {
             JSONObject placeHoldes = dashboard_execute_data.getPlaceHolders();
             if(placeHoldes != null && placeHoldes.containsKey(trigger_widget_link_name))
             {
-                JSONObject temp_rule_info= new JSONObject();
-                HashMap trigger_widget_obj = (HashMap) placeHoldes.get(trigger_widget_link_name);
-                if(trigger_widget_obj != null && trigger_widget_obj.containsKey("criteria")) {
-                    temp_rule_info.put("trigger_widget_criteria", trigger_widget_obj.get("criteria"));
+                JSONObject target_widget_meta = dashboard_widget.getTargetWidgetMeta();
+                if(target_widget_meta != null && target_widget_meta.containsKey("isTriggerCriteriaEnabled"))
+                {
+                    JSONObject temp_rule_info = new JSONObject();
+                    HashMap trigger_widget_obj = (HashMap) placeHoldes.get(trigger_widget_link_name);
+                    if (trigger_widget_obj != null && trigger_widget_obj.containsKey("criteria")) {
+                        temp_rule_info.put("trigger_widget_criteria", trigger_widget_obj.get("criteria"));
+                    }
+                    temp.put("ruleInfo", temp_rule_info);
                 }
-                temp.put("ruleInfo", temp_rule_info);
             }
             actionData.put("FILTER", temp);
             V3DashboardAPIHandler.setUserFilterResp(actionData, target_widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
@@ -222,11 +211,31 @@ public enum DashboardRuleActionType {
                 {
                     JSONObject result_json = new JSONObject();
                     String url = (String) action_details.get("url");
-                    String replaced_url = FormRuleAPI.replacePlaceHoldersAndGetResult(dashboard_execute_meta.getPlaceHolders(), url);
-                    DashboardWidgetContext widget  = DashboardUtil.getWidget(trigger_widget_id);
-                    DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
-                    result_json.put("widgetType", widgetType);
-                    result_json.put("widget_id", trigger_widget_id);
+                    DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(trigger_widget_id);
+                    JSONObject placeHoldersMeta = dashboard_execute_meta.getPlaceHoldersMeta();
+                    JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
+                    ArrayList value_arr = null;
+                    HashMap widget_value = null;
+                    String recordId = null;
+                    if(trigger_widget.getLinkName() != null && placeHoldersMeta  != null)
+                    {
+                        if (placeHolders.containsKey(trigger_widget.getLinkName())) {
+                            widget_value = (HashMap) placeHolders.get(trigger_widget.getLinkName());
+                            if (widget_value != null && (widget_value.containsKey("value") || widget_value.containsKey("dimension"))) {
+                                value_arr = widget_value.containsKey("value") ? (ArrayList) widget_value.get("value") : (ArrayList) widget_value.get("dimension");
+                                if (value_arr.size() > 0) {
+                                    String value = (String) value_arr.get(0);
+                                    if (value != null && !value.equals("") && !value.equals("all") && !value.equals("All") && !value.equals("ALL")) {
+                                        recordId = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    V3DashboardAPIHandler.constructDashboardRulePlaceHolders(trigger_widget, dashboard_execute_meta, recordId, value_arr, widget_value);
+                    String replaced_url = StringSubstitutor.replace(url, dashboard_execute_meta.getPlaceholder_vs_value_map());
+                    replaced_url = StringSubstitutor.replace(replaced_url, dashboard_execute_meta.getGroupby_placeholder_vs_value_map());
+                    result_json.put("actionType", "url");
                     JSONObject actionMeta = new JSONObject();
                     JSONObject url_action = new JSONObject();
                     url_action.put("url", replaced_url);
@@ -252,14 +261,10 @@ public enum DashboardRuleActionType {
                     JSONObject show_section = new JSONObject();
                     JSONObject actionMeta = new JSONObject();
                     int len = section_ids.size();
-                    for(int i=0 ;i< len; i++)
-                    {
-                        Long section_widget_id = (Long) section_ids.get(i);
-                        show_section.put("section_widget_id", section_widget_id);
-                        actionMeta.put("SHOW_SECTIONS", show_section);
-                        result_json.put("actionMeta", actionMeta);
-                        dashboard_rule.getResult_json().add(result_json);
-                    }
+                    show_section.put("section_ids", section_ids);
+                    actionMeta.put("SHOW_SECTIONS", show_section);
+                    result_json.put("actionMeta", actionMeta);
+                    dashboard_rule.getResult_json().add(result_json);
                 }
             }
         }
@@ -278,15 +283,10 @@ public enum DashboardRuleActionType {
                     result_json.put("actionType", DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).getName());
                     JSONObject show_section = new JSONObject();
                     JSONObject actionMeta = new JSONObject();
-                    int len = section_ids.size();
-                    for(int i=0 ;i< len; i++)
-                    {
-                        Long section_widget_id = (Long) section_ids.get(i);
-                        show_section.put("section_widget_id", section_widget_id);
-                        actionMeta.put("HIDE_SECTIONS", show_section);
-                        result_json.put("actionMeta", actionMeta);
-                        dashboard_rule.getResult_json().add(result_json);
-                    }
+                    show_section.put("section_ids", section_ids);
+                    actionMeta.put("HIDE_SECTIONS", show_section);
+                    result_json.put("actionMeta", actionMeta);
+                    dashboard_rule.getResult_json().add(result_json);
                 }
             }
         }
