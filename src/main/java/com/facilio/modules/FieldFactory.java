@@ -8190,6 +8190,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("folderType", "FOLDER_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         return fields;
     }
