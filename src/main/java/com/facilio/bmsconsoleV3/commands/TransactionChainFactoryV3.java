@@ -112,13 +112,14 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
+import com.facilio.ns.command.SetParentIdForNamespaceCommand;
 import com.facilio.readingkpi.commands.create.PrepareReadingKpiCreationCommand;
 import com.facilio.readingkpi.commands.create.SetFieldAndModuleIdCommand;
-import com.facilio.readingkpi.commands.create.SetParentRuleIdForNamespaceCommand;
 import com.facilio.readingkpi.commands.list.AddNamespaceInKpiListCommand;
 import com.facilio.readingkpi.commands.list.FetchMetricAndUnitCommand;
 import com.facilio.readingkpi.commands.update.PrepareReadingKpiForUpdateCommand;
 import com.facilio.readingkpi.commands.update.UpdateNamespaceAndFieldsCommand;
+import com.facilio.readingrule.command.*;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
 import com.facilio.relation.command.GenerateRelationDeleteAPIDataCommand;
@@ -135,8 +136,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.Collections;
 
-import static com.facilio.bmsconsole.commands.TransactionChainFactory.addNamespaceAndFieldsChain;
-import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCategoryReadingChain;
+import static com.facilio.bmsconsole.commands.TransactionChainFactory.*;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -2127,7 +2127,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain addReadingKpiNamespace() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new SetParentRuleIdForNamespaceCommand());
+        chain.addCommand(new SetParentIdForNamespaceCommand());
         chain.addCommand(addNamespaceAndFieldsChain());
         return chain;
     }
@@ -2305,6 +2305,41 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain deleteGlobalScopeVariable() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteGlobalScopeVariableCommand());
+        return c;
+    }
+    public static FacilioChain addReadingRuleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReadingRuleDependenciesCommand());
+        c.addCommand(getAddCategoryReadingChain());
+        c.addCommand(new AddNewReadingRuleCommand());
+        return c;
+    }
+    public static FacilioChain afterSaveReadingRuleChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddAlarmDetailsCommand());
+        c.addCommand(new SetParentIdForNamespaceCommand());
+        c.addCommand(addNamespaceAndFieldsChain());
+        c.addCommand(new AddRCARulesCommand());
+        c.addCommand(new AddFaultImpactRelationCommand());
+        return c;
+    }
+    public static FacilioChain beforeFetchReadingRuleSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadSupplementsForNewReadingRule());
+        return c;
+    }
+    public static FacilioChain fetchReadingRuleSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchReadingRuleSummaryCommand());
+        return c;
+    }
+    public static FacilioChain updateReadingRuleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PrepareReadingRuleForUpdateCommand());
+        c.addCommand(addOrDeleteFaultImpactChain());
+        c.addCommand(new UpdateReadingRuleCommand());
+        c.addCommand(new UpdateWorkflowCommand());
+        c.addCommand(new AddRCARulesCommand());
         return c;
     }
 }

@@ -9,7 +9,9 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +25,12 @@ public class AddRCARulesCommand extends FacilioCommand {
         List<Long> alarmRCARules = rule.getAlarmRCARules();
         Long ruleId = rule.getId();
 
-        //TODO:SPK, need to validate RCA rules already exists or not
-
-        if (!alarmRCARules.isEmpty()) {
+        if (CollectionUtils.isEmpty(alarmRCARules)) {
+            List<Long> rcaRuleIds = NewReadingRuleAPI.getRCARulesForReadingRule(ruleId);
+            if (!rcaRuleIds.isEmpty()) {
+                deleteIfAlreadyExists(rule);
+            }
+        } else {
             for (Long rcaID : alarmRCARules) {
                 if (ruleId == rcaID) {
                     throw new IllegalArgumentException("Same Rule cannot be added as RCA");
@@ -45,6 +50,7 @@ public class AddRCARulesCommand extends FacilioCommand {
             }
             mappingInsert.save();
         }
+
         return false;
     }
 
@@ -54,4 +60,5 @@ public class AddRCARulesCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
         delBuilder.delete();
     }
+
 }

@@ -5,15 +5,19 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
+import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,29 +26,27 @@ import java.util.stream.Collectors;
 public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        NewReadingRuleContext newRuleCtx = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        newRuleCtx.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
-        NewReadingRuleContext oldRule = NewReadingRuleAPI.getRule(newRuleCtx.getId());
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        NewReadingRuleContext readingRule = (NewReadingRuleContext) recordMap.get(moduleName).get(0);
+        NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
+        WorkflowContext workflow = readingRule.getNs().getWorkflowContext();
+        workflow.setId(nameSpaceContext.getWorkflowId());
+        NewReadingRuleContext oldRule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingRule.getId())).get(0);
         if (oldRule == null) {
-            throw new Exception("Rule (" + newRuleCtx.getId() + ") is not found!");
+            throw new Exception("Rule (" + readingRule.getId() + ") is not found!");
         }
-        constructRuleDetails(context, newRuleCtx, oldRule);
+        constructRuleDetails(context, readingRule, oldRule);
         setAssets(oldRule);
         context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
-        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getNs().getWorkflowContext());
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 
         return false;
     }
 
     private void constructRuleDetails(Context ctx, NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) {
-        if (newCtx.getName() != null) {
-            oldRule.setName(newCtx.getName());
-        }
-        if (newCtx.getDescription() != null) {
-            oldRule.setDescription(newCtx.getDescription());
-        }
-        if (newCtx.getAssetCategoryId() != null) {
-            oldRule.setAssetCategoryId(newCtx.getAssetCategoryId());
+        if (newCtx.getAssetCategory() != null) {
+            oldRule.setAssetCategory(newCtx.getAssetCategory());
         }
         if (newCtx.getAppliedTo() != null) {
             oldRule.setAppliedTo(newCtx.getAppliedTo());
@@ -58,7 +60,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         if (newCtx.getAlarmRCARules() != null) {
             oldRule.setAlarmRCARules(newCtx.getAlarmRCARules());
         }
-        if (newCtx.getNs() != null && newCtx.getNs().getWorkflowContext()!=null) {
+        if (newCtx.getNs() != null && newCtx.getNs().getWorkflowContext() != null) {
             newCtx.getNs().setId(oldRule.getNs().getId());
             newCtx.getNs().getWorkflowContext().setId(oldRule.getNs().getWorkflowId());
             newCtx.getNs().setWorkflowId(newCtx.getNs().getWorkflowContext().getId());
@@ -66,10 +68,21 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         }
 
         if (newCtx.getImpact() != null) {
+            if (oldRule.getImpact() != null) {
+                if (oldRule.getImpact().getId() != newCtx.getImpact().getId()) {
+                    ctx.put("canDeleteFaultImpact", true);
+                }
+                if (oldRule.getImpact().getId() == newCtx.getImpact().getId()) {
+                    ctx.put("addFaultImpact", false);
+                }
+            }
             oldRule.setImpact(newCtx.getImpact());
             if (newCtx.getImpact().getId() == -1) {
                 ctx.put("canDeleteFaultImpact", true);
             }
+        }
+        if (newCtx.getStatus() != oldRule.getStatus()) {
+            oldRule.setStatus(newCtx.getStatus());
         }
     }
 
@@ -89,5 +102,6 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
             rule.setMatchedResources(resourcesMap);
         }
     }
+
 
 }

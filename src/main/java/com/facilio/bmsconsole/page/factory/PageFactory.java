@@ -137,6 +137,8 @@ public class PageFactory {
 			case ContextNames.READING_RULE_MODULE:
 			case ContextNames.NEW_READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
+			case FacilioConstants.ReadingRules.NEW_READING_RULE:
+				return RulePageFactory.getNewRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);
 			case ContextNames.ML_ANOMALY_ALARM:

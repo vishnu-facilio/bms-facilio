@@ -850,6 +850,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain fetchRcaRules(){
+		FacilioChain c= getDefaultChain();
+		c.addCommand(new GetRulesForRootCauseCommand());
+		return c;
+		}
 		public static FacilioChain addReadingAlarmRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddReadingAlarmRuleCommand());

@@ -334,9 +334,12 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SurveyResponseModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkflowLogModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.PreventiveMaintenanceModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingRuleModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingRulesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ReadingRuleModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FormulaFieldModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.EventModule
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
+
+  #Adding ReadingRule Modules
+  - com.facilio.bmsconsoleV3.signup.readingRulemodule.AddReadingRuleModules

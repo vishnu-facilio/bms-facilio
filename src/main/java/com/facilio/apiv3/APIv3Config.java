@@ -202,6 +202,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.readingrule.command.DeleteNamespaceReadingRuleCommand;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
@@ -2460,6 +2462,26 @@ public class APIv3Config {
                 .build();
 
     }
+
+    @Module(FacilioConstants.ReadingRules.NEW_READING_RULE)
+    public static Supplier<V3Config> getReadingRule(){
+        return () -> new V3Config(NewReadingRuleContext.class,null )
+                .create()
+                .beforeSave(TransactionChainFactoryV3.addReadingRuleChain())
+                .afterSave(TransactionChainFactoryV3.afterSaveReadingRuleChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.updateReadingRuleChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
+                .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
+                .summary()
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
+                .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
+                .delete()
+                .afterDelete(new DeleteNamespaceReadingRuleCommand())
+                .build();
+    }
+
 
     @Module(FacilioConstants.PeopleGroup.PEOPLE_GROUP)
     public static Supplier<V3Config> getPeopleGroups() {

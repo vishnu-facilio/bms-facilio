@@ -216,7 +216,7 @@ public class LookupSpecialTypeUtil {
 
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getRules();
+				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getAllRules();
 				return getNewRulePickList(readingRules);
 			}else{
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
@@ -433,7 +433,7 @@ public class LookupSpecialTypeUtil {
 		}
         else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                return NewReadingRuleAPI.getRules();
+                return NewReadingRuleAPI.getAllRules();
             }else{
                 return ReadingRuleAPI.getReadingRules(criteria);
             }
@@ -520,7 +520,7 @@ public class LookupSpecialTypeUtil {
             }
             if (CollectionUtils.isNotEmpty(ids)) {
                 if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                    List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getRules(ids);
+                    List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getReadingRules((List<Long>) ids);
                     return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
                 }
                 List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
@@ -576,7 +576,7 @@ public class LookupSpecialTypeUtil {
 
         } else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                return NewReadingRuleAPI.getRules(ids);
+                return NewReadingRuleAPI.getReadingRules((List<Long>) ids);
             }
             return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
         } else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
