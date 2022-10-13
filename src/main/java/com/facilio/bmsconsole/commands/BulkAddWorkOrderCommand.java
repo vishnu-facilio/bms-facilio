@@ -20,6 +20,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -35,8 +37,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(BulkAddWorkOrderCommand.class.getName());
 
     public boolean executeCommand(Context context) throws Exception {
-        PreventiveMaintenanceAPI.logIf(92L, "Entering BulkAddWorkOrderCommand");
-        BulkWorkOrderContext bulkWorkOrderContext = (BulkWorkOrderContext) context.get(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT);
+
+    	BulkWorkOrderContext bulkWorkOrderContext = (BulkWorkOrderContext) context.get(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT);
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -57,6 +59,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
                 .withChangeSet()
                 .withLocalId();
 
+        List<WorkOrderContext> woToBeRemoved = new ArrayList<>();
+        
         for (int i = 0; i < workOrders.size(); i++) {
             WorkOrderContext workOrder = workOrders.get(i);
             try {
@@ -77,7 +81,16 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
             if (isFromImport == null || (isFromImport != null && !isFromImport)) {
                 if (workOrder.getScheduledStart() > 0) {
                     if (workOrder.getWoCreationOffset() > -1) {
-                        workOrder.setCreatedTime(workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L));
+                    	
+                    	long updatedCreatedTime = workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L);
+                    	if(updatedCreatedTime > DateTimeUtil.getCurrenTime()) {
+                    		workOrder.setCreatedTime(updatedCreatedTime);
+                    	}
+                    	else {
+                    		woToBeRemoved.add(workOrder);
+                    		LOGGER.log(Level.SEVERE, "Skipping current workorder since its createdtime is less than current time : "+updatedCreatedTime);
+                    	}
+                    	
                     } else {
                         workOrder.setCreatedTime(workOrder.getScheduledStart());
                         workOrder.setScheduledStart(workOrder.getCreatedTime());
@@ -99,8 +112,11 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
 				    workOrder.setClient(null);
 			    }
             }
-            builder.addRecord(workOrder);
         }
+        
+        workOrders.removeAll(woToBeRemoved);
+        
+        builder.addRecords(workOrders);
 
         builder.save();
 
