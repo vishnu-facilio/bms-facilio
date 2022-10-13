@@ -33,7 +33,7 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
 
 
         String[] supplementFieldNames = new String[]{"type", "category", "priority", "tenant",
-                "vendor", "createdBy", "resource", "status"};
+                "vendor", "createdBy", "resource", "status","assignmentGroup","assignedTo","assignedBy","moduleState","approvalStatus"};
         for (String fieldName : supplementFieldNames) {
             fetchLookupsList.add((LookupField) fieldsAsMap.get(fieldName));
         }
@@ -44,6 +44,12 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
 
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
             fetchLookupsList.add((LookupField) fieldsAsMap.get("safetyPlan"));
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)){
+            fetchLookupsList.add((LookupField) fieldsAsMap.get("serviceRequest"));
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES)){
+            fetchLookupsList.add((LookupField) fieldsAsMap.get("failureClass"));
         }
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
