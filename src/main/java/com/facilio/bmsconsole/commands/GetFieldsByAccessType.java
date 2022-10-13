@@ -39,9 +39,9 @@ public class GetFieldsByAccessType extends FacilioCommand {
 
         // TODO Should be removed when all system fields are migrated
 //        if (ChainUtil.getV3Config(moduleName) == null) {
-            if (FieldUtil.isSiteIdFieldPresent(module, true)) {
-                selectedFields.add(FieldFactory.getSiteIdField(module));
-            }
+        if (FieldUtil.isSiteIdFieldPresent(module, true) && selectedFields.stream().noneMatch(field -> field.getName().equals("siteId"))) {
+            selectedFields.add(FieldFactory.getSiteIdField(module));
+        }
 //        }
 
         context.put(FacilioConstants.ContextNames.FIELDS, selectedFields);
