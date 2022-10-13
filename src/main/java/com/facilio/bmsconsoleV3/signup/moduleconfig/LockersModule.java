@@ -52,7 +52,7 @@ public class LockersModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
-
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -66,7 +66,7 @@ public class LockersModule extends BaseModuleConfig{
         lockersForm.setName("default_lockers_web");
         lockersForm.setModule(lockersModule);
         lockersForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        lockersForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        lockersForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> lockersFormFields = new ArrayList<>();
         lockersFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.context;
 
-public class ScopeVariableModulesFields {
+import java.io.Serializable;
+
+public class ScopeVariableModulesFields implements Serializable {
     private long id = -1L;
     private Long moduleId;
     private String fieldName;

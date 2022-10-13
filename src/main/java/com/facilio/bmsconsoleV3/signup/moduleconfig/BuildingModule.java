@@ -98,6 +98,7 @@ public class BuildingModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -112,7 +113,7 @@ public class BuildingModule extends BaseModuleConfig {
         defaultBuildingForm.setName("default_building_web");
         defaultBuildingForm.setModule(buildingModule);
         defaultBuildingForm.setDisplayName("Building");
-        defaultBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
         defaultBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultBuildingForm.setShowInWeb(true);
 

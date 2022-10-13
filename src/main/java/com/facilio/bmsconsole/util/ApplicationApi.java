@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 
+import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -93,6 +94,9 @@ public class ApplicationApi {
         }
         else if (appLinkName.equals("employee")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP;
+        }
+        else if (appLinkName.equals("iwms")) {
+            appLinkName = FacilioConstants.ApplicationLinkNames.IWMS_APP;
         }
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -532,6 +536,12 @@ public class ApplicationApi {
         AppDomain employeePortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getEmployeeAppDomain());
         ApplicationContext employeePortalApplication = new ApplicationContext(orgId, "Employee Portal", true, employeePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Employee Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
+        ApplicationContext workplaceApplication = new ApplicationContext(orgId, "IWMS App", false,
+                facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.IWMS_APP,
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Improve space utilization and streamline workplace administration",
+                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+        workplaceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
+
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
         applicationsDefault.add(servicePortalapplication);
@@ -543,6 +553,7 @@ public class ApplicationApi {
         applicationsDefault.add(dataLoaderApplication);
         applicationsDefault.add(kioskApplication);
         applicationsDefault.add(employeePortalApplication);
+        applicationsDefault.add(workplaceApplication);
 
         List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
 
@@ -759,6 +770,24 @@ public class ApplicationApi {
             addEmployeeAppWebTabs(layout);
             Role employeeAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.EMPLOYEE_ADMIN);
             addAppRoleMapping(employeeAdmin.getRoleId(), employeePortal.getId());
+        }
+
+        ApplicationContext workplaceApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+        if(workplaceApp.getId() >0)
+        {
+            addDefaultScoping(workplaceApp.getId());
+            //Workplace App Layout
+            ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
+                    ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+            addApplicationLayout(workplaceLayout);
+            addWorkplaceAppWebTabs(workplaceLayout);
+            //ApplicationLayoutContext workplaceLayoutSetup = new ApplicationLayoutContext(maintenance.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+            //addApplicationLayout(workplaceLayoutSetup);
+            //addIWMSSetupLayoutWebGroups(workplaceLayoutSetup);
+
+            Role workplaceAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.IWMS_ADMIN);
+            addAppRoleMapping(workplaceAdmin.getRoleId(), workplaceApp.getId());
+
         }
 
     }
@@ -1606,6 +1635,122 @@ public class ApplicationApi {
         }
 
 
+    }
+    public static void addWorkplaceAppWebTabs(ApplicationLayoutContext layout) {
+        ModuleBean modBean = null;
+        try {
+            modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+            int groupOrder = 1;
+            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 1, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Reports","reports",WebTabContext.Type.REPORT,Arrays.asList(modBean.getModule("spacebooking").getModuleId()),layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("home", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Space", "space", layout.getId(), 29, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Desks", "desks", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("desks").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Parkings", "parkings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("parkingstall").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Lockers", "lockers", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("lockers").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Amenity", "amenity", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("amenity").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("space", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Floor Map & Booking", "floorplan", layout.getId(), 31, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Floor Map", "floor-map", WebTabContext.Type.INDOOR_FLOORPLAN, null, layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Bookings", "bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("spacebooking").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Scheduler","booking-scheduler",WebTabContext.Type.TIMELINE,Arrays.asList(modBean.getModule("spacebooking").getModuleId()),layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Moves", "moves", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("moves").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("floorplan", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Employee Directory", "employee-directory", layout.getId(), 14, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Employees", "employee", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("employee").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Departments", "departments", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("department").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("employee-directory", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Visitors", "visitor", layout.getId(), 16, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), layout.getApplicationId(), null,  AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlog").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            webTabs.add(new WebTabContext("Visitors", "visitors", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitor").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            webTabs.add(new WebTabContext("Watchlist", "watchlist", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("watchlist").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            groupNameVsWebTabsMap.put("visitor", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Deliveries", "deliveries", layout.getId(), 28, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Deliveries", "my-deliveries", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("deliveries").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Delivery Areas", "delivery-areas", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("deliveryArea").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("deliveries", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Help Center", "helpcenter", layout.getId(), 8, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Service Requests", "service-request", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("serviceRequest").getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Service Catalog", "service-catalog", WebTabContext.Type.SERVICE_CATALOG, null, layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Documents", "documents", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("admindocuments").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("helpcenter", webTabs);
+
+
+
+
+            webTabGroups.add(new WebTabGroupContext("Survey", "survey", layout.getId(), 37, groupOrder++));
+            webTabs = new ArrayList<>();
+            
+             webTabs.add(new WebTabContext("Survey", "iwms-survey", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"iwms-survey\" }", 1,null,layout.getApplicationId()));
+             webTabs.add(new WebTabContext("Survey Template", "survey-template", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"survey-template\" }", 1,null,layout.getApplicationId()));
+            groupNameVsWebTabsMap.put("survey", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Analytics", "analytics", layout.getId(), 5, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Stacking Analytics", "stacking-analytics", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"stacking-analytics\" }", 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Occupancy Analytics", "occupancy-analytics", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"workplace-analytics\" }", 1,null,layout.getApplicationId()));
+            groupNameVsWebTabsMap.put("analytics", webTabs);
+
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
             public static void addWebTab(WebTabContext webtab) throws Exception {
 
@@ -2628,6 +2773,143 @@ public class ApplicationApi {
 
     }
 
+    public static void addIWMSSetupLayoutWebGroups(ApplicationLayoutContext layout) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            int groupOrder = 1;
+
+            long appId = layout.getApplicationId();
+
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+
+            webTabGroups.add(new WebTabGroupContext("General", "general", layout.getId(), 200, groupOrder++));
+            webTabs = new ArrayList<>();
+            //configJSON = new JSONObject();
+            //configJSON.put("type", "portalOverview");
+            webTabs.add(new WebTabContext("Company Profile", "companyprofile", WebTabContext.Type.COMPANY_PROFILE, null, appId, null));
+            webTabs.add(new WebTabContext("Portals", "portal", WebTabContext.Type.PORTALS, null, appId, null));
+            webTabs.add(new WebTabContext("Visitor Settings", "visitorsettings", WebTabContext.Type.VISITOR_SETTINGS, null, appId, null));
+            webTabs.add(new WebTabContext("Feedback & Complaints", "feedbacksettings", WebTabContext.Type.FEEDBACK_COMPLAINTS, null, appId, null));
+            webTabs.add(new WebTabContext("Smart Controls", "smartcontrolsettings", WebTabContext.Type.SMART_CONTROLS, null, appId, null));
+            webTabs.add(new WebTabContext("Service Catalogs", "catalogs", WebTabContext.Type.SERVICE_CATALOGS, null, appId, null));
+            webTabs.add(new WebTabContext("Tax", "tax", WebTabContext.Type.TAX, null, appId, null));
+
+            groupNameVsWebTabsMap.put("general", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Users Management", "resource", layout.getId(), 201, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Users", "users", WebTabContext.Type.USERS, null, appId, null));
+            webTabs.add(new WebTabContext("Teams", "teams", WebTabContext.Type.TEAMS, null, appId, null));
+            webTabs.add(new WebTabContext("Roles", "roles", WebTabContext.Type.ROLES, null, appId, null));
+            webTabs.add(new WebTabContext("Labor", "labor", WebTabContext.Type.LABOUR, null, appId, null));
+            webTabs.add(new WebTabContext("Crafts", "crafts", WebTabContext.Type.CRAFTS, null, appId, null));
+            webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
+
+            groupNameVsWebTabsMap.put("resource", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Security Settings", "security", layout.getId(), 202, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Single Sign-On", "sso", WebTabContext.Type.SINGLE_SIGN_ON, null, appId, null));
+            webTabs.add(new WebTabContext("Security Policy", "securitypolicy", WebTabContext.Type.SECURITY_POLICY, null, appId, null));
+
+            groupNameVsWebTabsMap.put("security", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Space Settings", "spacesettings", layout.getId(), 204, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Space categories", "spacecategory", WebTabContext.Type.SPACE_CATEGORIES, null, appId, null));
+            webTabs.add(new WebTabContext("Operating Hours", "operatinghours", WebTabContext.Type.OPERATING_HOURS, null, appId, null));
+
+            groupNameVsWebTabsMap.put("spacesettings", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Automation", "automations", layout.getId(), 205, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Workflows", "workflows", WebTabContext.Type.WORKFLOWS, null, appId, null));
+            webTabs.add(new WebTabContext("Notifications", "notifications", WebTabContext.Type.NOTIFICATIONS, null, appId, null));
+            webTabs.add(new WebTabContext("Triggers", "triggers", WebTabContext.Type.TRIGGERS, null, appId, null));
+            webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
+            webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
+            webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
+
+            groupNameVsWebTabsMap.put("automations", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Process", "process", layout.getId(), 0, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Stateflows", "stateflows", WebTabContext.Type.STATEFLOWS, null, appId, null));
+            webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.APPROVALS, null, appId, null));
+
+            groupNameVsWebTabsMap.put("process", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Customization", "customization", layout.getId(), 1, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Modules", "modules", WebTabContext.Type.MODULES, null, appId, null));
+            webTabs.add(new WebTabContext("Tabs and Layouts", "webtabs/:appId?", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
+            webTabs.add(new WebTabContext("Connected Apps", "connectedapps", WebTabContext.Type.CONNECTED_APPS, null, appId, null));
+            webTabs.add(new WebTabContext("Connectors", "connections", WebTabContext.Type.CONNECTORS, null, appId, null));
+            webTabs.add(new WebTabContext("Functions", "functions", WebTabContext.Type.FUNCTIONS, null, appId, null));
+            webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
+            webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null));
+            webTabs.add(new WebTabContext("User Scopes", "userscopes", WebTabContext.Type.USER_SCOPES, null, appId, null));
+
+            groupNameVsWebTabsMap.put("customization", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext( "Booking Settings","bookingsettings", layout.getId(),207, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Booking Policy", "bookingpolicy", WebTabContext.Type.BOOKING_POLICY, null, appId, null));
+
+            groupNameVsWebTabsMap.put("bookingsettings", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext( "Logs","logs", layout.getId(),207, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null));
+            webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
+
+            groupNameVsWebTabsMap.put("logs", webTabs);
+
+
+
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static Map<String, String> evaluateValueGenerators() throws Exception {
 
         Map<String, String> valueGeneratorMap = new HashMap<>();
@@ -2769,5 +3051,4 @@ public class ApplicationApi {
         return null;
 
     }
-
 }

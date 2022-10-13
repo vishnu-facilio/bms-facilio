@@ -54,7 +54,7 @@ public class DepartmentModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
-
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -68,7 +68,7 @@ public class DepartmentModule extends BaseModuleConfig{
         departmentForm.setName("default_department_web");
         departmentForm.setModule(departmentModule);
         departmentForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        departmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        departmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> departmentFormFields = new ArrayList<>();
         departmentFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

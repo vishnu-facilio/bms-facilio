@@ -15,26 +15,25 @@ import org.apache.log4j.Logger;
 public class ShiftAction extends V3Action {
     private static Logger LOGGER = LogManager.getLogger(ShiftAction.class.getName());
 
-    private String timelineMetric;
-    private Long timelineValue;
+    private Long rangeFrom;
+    private Long rangeTo;
     private Long peopleID;
     private Long shiftID;
     private Long shiftStart;
     private Long shiftEnd;
 
     public String list() throws Exception {
-        if (timelineValue == null || timelineMetric == null || peopleID == null) {
-            LOGGER.trace("timelineValue, timelineMetric & peopleID are mandatory");
+        if (rangeFrom == null || rangeTo == null | peopleID == null) {
+            LOGGER.trace("rangeFrom, rangeTo & peopleID are mandatory");
             return ERROR;
         }
 
         FacilioChain chain = TransactionChainFactoryV3.getShiftPlannerListChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.Shift.TIMELINE_METRIC, timelineMetric);
-        context.put(FacilioConstants.Shift.TIMELINE_VALUE, timelineValue);
+        context.put(FacilioConstants.Shift.RANGE_FROM, rangeFrom);
+        context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
         context.put(FacilioConstants.Shift.PEOPLE_ID, peopleID);
         chain.execute();
-
 
         setData("shifts", context.get("shifts"));
         return SUCCESS;

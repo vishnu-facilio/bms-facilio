@@ -12,13 +12,11 @@ public class ListShiftPlannerCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        Long timelineValue = (Long) context.get(FacilioConstants.Shift.TIMELINE_VALUE);
-        String timelineMetric = (String) context.get(FacilioConstants.Shift.TIMELINE_METRIC);
+        Long rangeFrom = (Long) context.get(FacilioConstants.Shift.RANGE_FROM);
+        Long rangeTo = (Long) context.get(FacilioConstants.Shift.RANGE_TO);
         Long peopleID = (Long) context.get(FacilioConstants.Shift.PEOPLE_ID);
 
-        List<Map<String, Object>> shifts = timelineMetric.equals("month") ?
-                ShiftAPI.getMonthlyShiftList(peopleID, timelineValue) :
-                ShiftAPI.getWeeklyShiftList(peopleID, timelineValue);
+        List<Map<String, Object>> shifts = ShiftAPI.getShiftList(peopleID, rangeFrom, rangeTo);
 
         context.put("shifts", shifts);
         return false;

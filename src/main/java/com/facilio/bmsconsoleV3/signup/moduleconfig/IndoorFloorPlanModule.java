@@ -30,7 +30,7 @@ public class IndoorFloorPlanModule extends BaseModuleConfig{
         floorPlanAddForm.setName("default_floorplan_web");
         floorPlanAddForm.setModule(indoorFloorPlanModule);
         floorPlanAddForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        floorPlanAddForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        floorPlanAddForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
 
         List<FormField> floorPlanAddFormFields = new ArrayList<>();

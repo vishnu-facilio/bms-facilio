@@ -513,7 +513,8 @@ public class AccountUtil {
 		EMAIL_TRACKING(86,4194304,LicenseMapping.GROUP2LICENSE), // 2^22
 
 		WORKPLACE_APPS(87, 8388608, LicenseMapping.GROUP2LICENSE), // 2^23
-		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) ;
+		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) , // 2^24
+		ASSET_SPARE_PARTS(89,33554432,LicenseMapping.GROUP2LICENSE); // 2^25
 
 		public int featureId;
 		private long license;
@@ -739,6 +740,7 @@ public class AccountUtil {
 										|| (AccountUtil.getCurrentOrg().getOrgId() == 183l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool")))
 										|| (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST) || module.getName().equals(ContextNames.RECEIVABLE)))
 										|| (AccountUtil.getCurrentOrg().getOrgId() == 418l && (module.getName().equals(ContextNames.VENDORS) || module.getName().equals(ContextNames.VISITOR_LOG) || module.getName().equals(ContextNames.INVITE_VISITOR) || module.getName().equals(ContextNames.BASE_VISIT) || module.getName().equals("custom_vendormapping") || module.getName().equals("custom_utilityaccounts") || module.getName().equals("custom_utilityconnections") || module.getName().equals("custom_utilitybill") || module.getName().equals("custom_utilitybilllineitems") || module.getName().equals("custom_incidentmanagement_1") || module.getName().equals("custom_quoteselectionform") || module.getName().equals("custom_supplierquotation") || module.getName().equals("custom_supplierquote") || module.getName().equals(ContextNames.VENDOR_CONTACT)))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 176l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool") || module.getName().equals("toolTypes") || module.getName().equals("itemTypes") || module.getName().equals("inventoryrequest")))
 								)
 				) {
 					return true;

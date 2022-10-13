@@ -136,6 +136,7 @@ public class FloorModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -150,7 +151,7 @@ public class FloorModule extends BaseModuleConfig {
         defaultFloorForm.setName("default_floor_web");
         defaultFloorForm.setModule(floorModule);
         defaultFloorForm.setDisplayName("Floor");
-        defaultFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
         defaultFloorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultFloorForm.setShowInWeb(true);
 

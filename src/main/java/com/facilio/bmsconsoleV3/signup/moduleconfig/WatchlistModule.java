@@ -66,6 +66,7 @@ public class WatchlistModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         view.setAppLinkNames(appLinkNames);
 
         return view;
@@ -84,6 +85,7 @@ public class WatchlistModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         view.setAppLinkNames(appLinkNames);
 
         return view;
@@ -98,6 +100,7 @@ public class WatchlistModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -113,7 +116,7 @@ public class WatchlistModule extends BaseModuleConfig{
         watchListForm.setName("default_watch_list_web");
         watchListForm.setModule(watchlistModule);
         watchListForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        watchListForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        watchListForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> watchListFormFields = new ArrayList<>();
         watchListFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));

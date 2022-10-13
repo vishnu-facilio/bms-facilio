@@ -4,8 +4,12 @@ import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -47,5 +51,24 @@ public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
             insertBuilder.addRecords(props);
             insertBuilder.save();
         }
+    }
+
+    @Override
+    public List<ValueGeneratorContext> getValueGenerators(List<String> applicableModuleNames, List<Long> applicableModuleIds) throws Exception{
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getValueGeneratorModule().getTableName())
+                .select(FieldFactory.getValueGeneratorFields());
+        if(CollectionUtils.isNotEmpty(applicableModuleNames)) {
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("SPECIAL_MODULE_NAME","specialModuleName", StringUtils.join(applicableModuleNames,","), StringOperators.IS));
+        }
+        if(CollectionUtils.isNotEmpty(applicableModuleIds)) {
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULEID","moduleId", StringUtils.join(applicableModuleIds,","), NumberOperators.EQUALS));
+        }
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            List<ValueGeneratorContext> valueGenerators = FieldUtil.getAsBeanListFromMapList(props, ValueGeneratorContext.class);
+            return valueGenerators;
+        }
+        return null;
     }
 }

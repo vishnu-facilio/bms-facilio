@@ -205,6 +205,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.RDMControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TicketCategoryModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.PeopleModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AssetSparePartsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ServiceRequestModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ClientModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderRequestModule

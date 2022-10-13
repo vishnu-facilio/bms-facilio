@@ -1024,8 +1024,9 @@
         <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
     </package>
 
-    <package name="ogmail" namespace="/api/v3/historymail" extends="v3Api">
-        <action name="rerun" class="com.facilio.mailtracking.actions.HistoricalMailAction" method="pushMailsToWms"/>
+    <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
+        <action name="history" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="resendFailedMails"/>
+        <action name="apiStats" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="apiStats"/>
     </package>
 
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">
@@ -1110,11 +1111,22 @@
     <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
         </action>
+        <action name="detail" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="detail">
+        </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
         </action>
-
+        <action name="setStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setStatus">
+        </action>
+        <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setSwitchStatus">
+        </action>
+        <action name="meta" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getScopeMetaData">
+        </action>
+        <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicableFieldsMap">
+        </action>
+        <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicationValueGenerators">
+        </action>
     </package>
 
     <package name="switchVariable" namespace="/api/v3/switchVariable" extends="v3Api">
@@ -1138,5 +1150,11 @@
     </package>
     <package name="peoplefilter" namespace="/api/v3/people/filters" extends="v3Api">
         <action name="filter" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchActivePeoples"/>
+    </package>
+
+    <package name="workflowApiV3" namespace="/api/v3/script/execute" extends="v3Api">
+        <action name="runScript/*" class="com.facilio.bmsconsoleV3.actions.V3WorkflowAction" method="runWorkflow">
+            <param name="workflowId">{1}</param>
+        </action>
     </package>
 </struts>

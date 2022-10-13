@@ -2642,6 +2642,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain getCommissioningLogsChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GetCommissioningLogsCommand());
 		return chain;
 	}

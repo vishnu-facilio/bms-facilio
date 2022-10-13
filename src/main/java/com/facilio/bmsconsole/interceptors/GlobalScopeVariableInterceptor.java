@@ -33,7 +33,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
     @WithSpan
     public String intercept(ActionInvocation invocation) throws Exception {
         try {
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
                 return computeScopeVariable(invocation);
             }
         } catch (Exception e) {

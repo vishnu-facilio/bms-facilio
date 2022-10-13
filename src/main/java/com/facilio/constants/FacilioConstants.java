@@ -944,6 +944,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY_ID = "assetcategoryId";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String ASSET_SPARE_PARTS = "assetSpareParts";
 		public static final String WATER_METER = "watermeter";
 		public static final String CHILLER = "chiller";
 		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";
@@ -2371,6 +2372,7 @@ public class FacilioConstants {
 		//
 
 		public static final String SCOPE_VARIABLE = "scopeVariable";
+		public static final String SCOPE_VARIABLE_LIST = "scopeVariableList";
 
 		public static final String SWITCH_VARIABLE = "switchVariable";
 
@@ -3155,6 +3157,7 @@ public class FacilioConstants {
 		public static final String KIOSK_APP = "visitor_kiosk";
 
 		public static final String EMPLOYEE_PORTAL_APP = "employee";
+		public static final String IWMS_APP = "iwms";
 
 	}
 
@@ -3175,6 +3178,8 @@ public class FacilioConstants {
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
 
 		public static final String EMPLOYEE_ADMIN = "Employee Admin";
+
+		public static final String IWMS_ADMIN = "IWMS Admin";
 
 	}
 
@@ -3207,7 +3212,8 @@ public class FacilioConstants {
 	public static class Shift {
 		public static final String SHIFT = "shift";
 		public static final String TIMELINE_METRIC = "timelineMetric";
-		public static final String TIMELINE_VALUE = "timelineValue";
+		public static final String RANGE_FROM = "rangeFrom";
+		public static final String RANGE_TO = "rangeTo";
 		public static final String PEOPLE_ID = "peopleID";
 		public static final String SHIFT_ID = "shiftID";
 		public static final String SHIFT_START = "shiftStart";

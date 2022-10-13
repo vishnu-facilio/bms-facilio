@@ -91,6 +91,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
+		moduleMap.put(ContextNames.ASSET_SPARE_PARTS,getAssetSparePartsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS_FOLDER, getGraphicsFolderModule());
@@ -3585,6 +3586,13 @@ public class ModuleFactory {
 		module.setName("attendance");
 		module.setDisplayName("Attendance");
 		module.setTableName("Attendance");
+		return module;
+	}
+	public static FacilioModule getAssetSparePartsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("assetSpareParts");
+		module.setDisplayName("Asset Spare Parts");
+		module.setTableName("Asset_Spare_Parts");
 		return module;
 	}
 

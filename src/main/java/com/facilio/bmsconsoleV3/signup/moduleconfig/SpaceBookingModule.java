@@ -31,7 +31,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING +"_web");
         spaceBookingModuleForm.setModule(spaceBookingModule);
         spaceBookingModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        spaceBookingModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        spaceBookingModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> spaceBookingModuleFormFields = new ArrayList<>();
         spaceBookingModuleFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
@@ -75,7 +75,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleDeskBookingForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.DESK_BOOKING +"_web");
         spaceBookingModuleDeskBookingForm.setModule(spaceBookingModule);
         spaceBookingModuleDeskBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        spaceBookingModuleDeskBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        spaceBookingModuleDeskBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> spaceBookingModuleDeskBookingFormFields = new ArrayList<>();
         spaceBookingModuleDeskBookingFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
@@ -101,7 +101,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         spaceBookingModuleParkingBookingForm.setName("default_"+ FacilioConstants.ContextNames.SpaceBooking.PARKING_BOOKING +"_web");
         spaceBookingModuleParkingBookingForm.setModule(spaceBookingModule);
         spaceBookingModuleParkingBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        spaceBookingModuleParkingBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        spaceBookingModuleParkingBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> spaceBookingModuleParkingBookingFormFields = new ArrayList<>();
         spaceBookingModuleParkingBookingFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
@@ -160,6 +160,7 @@ public class SpaceBookingModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;

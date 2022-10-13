@@ -205,6 +205,7 @@ public class PageWidget {
 	public enum WidgetType {
 		DETAILS_WIDGET("detailsWidget"),
 		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
+		SPARE_PARTS("spareParts"),
 		MV_DETAILS_WIDGET("mvSummaryWidget"),
 		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
 		WORKORDER_SECONDARY_DETAILS_WIDGET("workOrderSecondaryDetailsWidget"),
@@ -509,6 +510,7 @@ public class PageWidget {
 		WO_DETAILS("woDetails"),
 		RECENTLY_CLOSED_PM("recentlyClosedPm"),
 		ASSET_LIFE("assetLife"),
+		SPARE_PARTS("spareParts"),
 		TIME("time"),
 		ALARM_INSIGHTS("alarmInsights"),
 		LAST_DOWNTIME("lastDownTime"),

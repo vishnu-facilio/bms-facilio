@@ -231,23 +231,23 @@ public class ScheduleWOStatusChange extends FacilioJob {
 
 	public Map<Integer,List<TaskContext>> getUniqueMapFromWO(WorkOrderContext wo) {
 		LOGGER.info("getUniqueMapFromWO():");
-		Map<Integer,List<TaskContext>> uniqueIdVsParentIdMap = new HashMap<>();
-		if(wo.getTasks() != null) {
-			for(List<TaskContext> tasks :wo.getTasks().values()) {
-				for(TaskContext task :tasks) {
-					if(uniqueIdVsParentIdMap.containsKey(task.getUniqueId())) {
-						uniqueIdVsParentIdMap.get(task.getUniqueId()).add(task);
-					}
-					else {
-						List<TaskContext> tasksTemp = new ArrayList<>();
-						tasksTemp.add(task);
-						uniqueIdVsParentIdMap.put(task.getUniqueId(), tasksTemp);
-					}
-				}
-			}
-		}
-		return uniqueIdVsParentIdMap;
-	}
+    	Map<Integer,List<TaskContext>> uniqueIdVsParentIdMap = new HashMap<>();
+    	if(wo.getTasks() != null) {
+    		for(List<TaskContext> tasks :wo.getTasks().values()) {
+    			for(TaskContext task :tasks) {
+    				if(uniqueIdVsParentIdMap.containsKey(task.getUniqueId())) {
+    					uniqueIdVsParentIdMap.get(task.getUniqueId()).add(task);
+    				}
+    				else {
+    					List<TaskContext> tasksTemp = new ArrayList<>();
+    					tasksTemp.add(task);
+    					uniqueIdVsParentIdMap.put(task.getUniqueId(), tasksTemp);
+    				}
+    			}
+    		}
+    	}
+    	return uniqueIdVsParentIdMap;
+    }
 
 	private void updateV3JobStatus(List<V3WorkOrderContext> wos) throws Exception {
 		LOGGER.info("updateV3JobStatus():");
@@ -270,20 +270,20 @@ public class ScheduleWOStatusChange extends FacilioJob {
 
 	private void updateJobStatus(List<WorkOrderContext> wos) throws Exception {
 		LOGGER.info("updateJobStatus():");
-		if (wos == null || wos.isEmpty()) {
-			return;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<Long> woIds = wos.stream().map(WorkOrderContext::getId).collect(Collectors.toList());
-		WorkOrderContext wo = new WorkOrderContext();
-		wo.setJobStatus(WorkOrderContext.JobsStatus.SCHEDULED);
-		UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-		updateRecordBuilder.fields(Arrays.asList(fieldMap.get("jobStatus")))
-				.module(module)
-				.andCondition(CriteriaAPI.getIdCondition(woIds, module))
-				.update(wo);
-	}
+        if (wos == null || wos.isEmpty()) {
+            return;
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        List<Long> woIds = wos.stream().map(WorkOrderContext::getId).collect(Collectors.toList());
+        WorkOrderContext wo = new WorkOrderContext();
+        wo.setJobStatus(WorkOrderContext.JobsStatus.SCHEDULED);
+        UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+        updateRecordBuilder.fields(Arrays.asList(fieldMap.get("jobStatus")))
+                .module(module)
+                .andCondition(CriteriaAPI.getIdCondition(woIds, module))
+                .update(wo);
+    }
 }

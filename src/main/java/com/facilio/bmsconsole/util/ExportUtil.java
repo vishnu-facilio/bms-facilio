@@ -619,6 +619,7 @@ public class ExportUtil {
 		case BOOLEAN:case DECIMAL:case MISC:case STRING:
 			break;
 			case ENUM:
+            case SYSTEM_ENUM:
 				return ((BaseEnumField)field).getValue((int) value);
 			case MULTI_ENUM:
 				return ((MultiEnumField)field).getValue((List) value);

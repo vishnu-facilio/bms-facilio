@@ -11042,6 +11042,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("applicableModuleId", "APPLICABLE_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("valueGeneratorId", "VALUE_GENERATOR_ID", module, FieldType.NUMBER));
         fields.add(getField("showSwitch", "SHOW_SWITCH", module, FieldType.BOOLEAN));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));

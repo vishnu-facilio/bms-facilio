@@ -10,6 +10,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -56,7 +57,8 @@ public class PatchSubFormCommand extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
-        LookupField lookupField = allLookupFields.get(mainModuleName);
+        FacilioModule mainModule = modBean.getModule(mainModuleName);
+        LookupField lookupField = CommandUtil.findLookupFieldInChildModule(mainModule, allLookupFields);
 
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);

@@ -168,25 +168,11 @@ public class ShiftAPI {
         insertBuilder.save();
     }
 
-    public static List<Map<String, Object>> getWeeklyShiftList(Long peopleID, Long timelineValue) {
-        List<Map<String, Object>> shifts = new ArrayList<>();
-        return shifts;
-    }
-
-    public static List<Map<String, Object>> getMonthlyShiftList(Long peopleID, Long timelineValue) throws Exception {
-
-        Map<Integer, Integer> monthDaysCountEncoding = getMonthDaysCount();
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date(timelineValue));
-        int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
-        int month = cal.get(Calendar.MONTH) + 1;
-        DateTime rangeStart = DateTime.now().minusDays(dayOfMonth - 1);
-        DateTime rangeEnd = rangeStart.plusDays(monthDaysCountEncoding.get(month) - 1);
+    public static List<Map<String, Object>> getShiftList(Long peopleID, Long rangeFrom, Long rangeTo) throws Exception {
 
         // People's shift updates along with shift information
         Pair<Map<String, Object>, List<Map<String, Object>>> userShifts =
-                getPeopleShifts(peopleID, rangeStart, rangeEnd);
+                getPeopleShifts(peopleID, rangeFrom, rangeTo);
         Map<String, Object> defaultShiftMap = userShifts.getLeft();
         List<Map<String, Object>> updatedShiftsMap = userShifts.getRight();
 
@@ -194,9 +180,9 @@ public class ShiftAPI {
         List<Map<String, Object>> shiftSchedule = new ArrayList<>();
         // day schedule is added to list and also a reference is stored in map
         // for applying update spreads
-        Map<String, Map<String, Object>> shiftScheduleMap = new HashMap();
+        Map<String, Map<String, Object>> shiftScheduleMap = new HashMap<>();
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
-        for (long time = rangeStart.getMillis(); time <= rangeEnd.getMillis(); time += DAY_IN_MILLIS) {
+        for (long time = rangeFrom; time <= rangeTo; time += DAY_IN_MILLIS) {
             Map<String, Object> shift = new HashMap<>();
             String date = formatter.format(new Date(time));
             shift.put("date", date);
@@ -225,23 +211,6 @@ public class ShiftAPI {
         return shiftSchedule;
     }
 
-    private static Map<Integer, Integer> getMonthDaysCount() {
-        Map<Integer, Integer> monthDaysCountEncoding = new HashMap<>();
-        monthDaysCountEncoding.put(1, 31);
-        monthDaysCountEncoding.put(2, LocalDate.now().isLeapYear() ? 29 : 28);
-        monthDaysCountEncoding.put(3, 31);
-        monthDaysCountEncoding.put(4, 30);
-        monthDaysCountEncoding.put(5, 31);
-        monthDaysCountEncoding.put(6, 30);
-        monthDaysCountEncoding.put(7, 31);
-        monthDaysCountEncoding.put(8, 31);
-        monthDaysCountEncoding.put(9, 30);
-        monthDaysCountEncoding.put(10, 31);
-        monthDaysCountEncoding.put(11, 30);
-        monthDaysCountEncoding.put(12, 31);
-        return monthDaysCountEncoding;
-    }
-
     private static String dayEpochToString(Object time) {
         return LocalTime.ofSecondOfDay((Long) time).toString();
     }
@@ -249,7 +218,7 @@ public class ShiftAPI {
     // Pair's left: default shift - can never be null
     // Pair's right: list of updated shifts - can be empty
     private static Pair<Map<String, Object>, List<Map<String, Object>>>
-    getPeopleShifts(Long peopleID, DateTime rangeStart, DateTime rangeEnd) throws Exception {
+    getPeopleShifts(Long peopleID, Long rangeStart, Long rangeEnd) throws Exception {
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getShiftPeopleRelModuleFields());
 
@@ -262,12 +231,12 @@ public class ShiftAPI {
         // B. Updated Shifts Condition
         // (SHIFT_START >= $1)
         Condition shiftStartCondition = CriteriaAPI.getCondition(fieldMap.get("startTime"),
-                Collections.singletonList(rangeStart.getMillis()),
+                Collections.singletonList(rangeStart),
                 NumberOperators.GREATER_THAN_EQUAL);
 
         // (SHIFT_END <= $1)
         Condition shiftEndCondition = CriteriaAPI.getCondition(fieldMap.get("endTime"),
-                Collections.singletonList(rangeEnd.getMillis()),
+                Collections.singletonList(rangeEnd),
                 NumberOperators.LESS_THAN_EQUAL);
 
         // (SHIFT_START >= $1) AND (SHIFT_END <= $1)

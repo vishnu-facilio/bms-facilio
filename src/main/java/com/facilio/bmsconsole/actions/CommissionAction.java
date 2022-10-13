@@ -84,10 +84,20 @@ public class CommissionAction extends FacilioAction{
 		this.status = status;
 	}
 
+	public String getFilters() {
+		return filters;
+	}
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+	private String filters;
+
+
 	public String logList() throws Exception {
 			FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();
 			FacilioContext context = chain.getContext();
 			context.put("status",status);
+			context.put(ContextNames.MODULE_NAME,ContextNames.COMMISSIONING_LOG);
 			constructListContext(context);
 
 			chain.execute();
@@ -99,6 +109,7 @@ public class CommissionAction extends FacilioAction{
 		FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();
 		FacilioContext context = chain.getContext();
 		context.put("status",status);
+		context.put(ContextNames.MODULE_NAME,ContextNames.COMMISSIONING_LOG);
 		setFetchCount(true);
 		constructListContext(context);
 

@@ -52,7 +52,7 @@ public class ParkingStallModule extends BaseModuleConfig{
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
-
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -66,7 +66,7 @@ public class ParkingStallModule extends BaseModuleConfig{
         parkingStallForm.setName("default_parking_stall_web");
         parkingStallForm.setModule(parkingStallModule);
         parkingStallForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        parkingStallForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        parkingStallForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> parkingStallFormFields = new ArrayList<>();
         parkingStallFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
