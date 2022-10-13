@@ -2178,6 +2178,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSubFormModulesCommand());
 		return chain;
 	}
+	public static FacilioChain getFormFromDBChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetFormFromDBCommand());
+		return chain;
+	}
 	public static FacilioChain getFormFieldUsageChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetFormFieldUsageCommand());

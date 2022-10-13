@@ -339,6 +339,18 @@ public class FormAction extends FacilioAction {
 		return  SUCCESS;
 	}
 
+	public String getFormFormDB() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getFormFromDBChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.FORM_NAME, formName);
+		context.put(ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		setResult("form",context.get(ContextNames.FORM));
+		return  SUCCESS;
+
+	}
 	public String formFieldList() throws Exception {
 		List<FormField> fields = FormsAPI.getAllFormFields(moduleName, appLinkName);
 		setResult("fields", fields);

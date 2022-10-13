@@ -2105,6 +2105,11 @@
 
 	<package name="formsApiv2" namespace="/api/v2/form"
 		extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="getFormFormDB">
+			<param name="formName">{1}</param>
+		</action>
 		<action name="fields"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="loadApprovalFormFields">
