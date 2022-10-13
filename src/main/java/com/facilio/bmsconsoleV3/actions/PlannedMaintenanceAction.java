@@ -6,30 +6,55 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
 import java.util.List;
+import java.util.Objects;
 
+@Log4j
 public class PlannedMaintenanceAction extends V3Action {
 
-    @Getter
-    @Setter
     private long plannerId;
+    public long getPlannerId() {
+        return plannerId;
+    }
+    public void setPlannerId(long plannerId) {
+        this.plannerId = plannerId;
+    }
 
-    @Getter
-    @Setter
     private long resourceId;
+    public long getResourceId() {
+        return resourceId;
+    }
+    public void setResourceId(long resourceId) {
+        this.resourceId = resourceId;
+    }
 
-    @Getter
-    @Setter
     private long pmId;
+    public long getPmId() {
+        return pmId;
+    }
+    public void setPmId(long pmId) {
+        this.pmId = pmId;
+    }
 
-    @Getter
-    @Setter
     private List<Long> pmIds;
+    public List<Long> getPmIds() {
+        return pmIds;
+    }
+    public void setPmIds(List<Long> pmIds) {
+        this.pmIds = pmIds;
+    }
 
     public String executeNow() throws Exception {
         FacilioChain executeNowChain = TransactionChainFactoryV3.getExecuteNow();
         FacilioContext context = executeNowChain.getContext();
+
+        LOGGER.error("[execute now] pmId : " + pmId);
+        LOGGER.error("[execute now] pmIds : " + String.valueOf(pmIds));
+        LOGGER.error("[execute now] planner Id : " + plannerId);
+        LOGGER.error("[execute now] resource Id : " + resourceId);
+
         context.put("plannerId", plannerId);
         context.put("resourceId", resourceId);
         executeNowChain.execute();
