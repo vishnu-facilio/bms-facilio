@@ -52,19 +52,10 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
                 }
                 if (!controllerNameMap.containsKey(point.get("deviceName"))) {
                     Map<String, Map<String, Map<Long, String>>>pointsMap = new HashMap<>();
-                        if (agent.getAgentType() == AgentType.NIAGARA.getKey()) {
-                            pointsMap.put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
-                        }
-                        else{
-                            pointsMap.put((String) point.get(AgentConstants.NAME), pointMap);
-                        }
-                        controllerNameMap.put((String) point.get("deviceName"), pointsMap);
+                    pointsMap.put((String) point.get(AgentConstants.NAME), pointMap);
+                    controllerNameMap.put((String) point.get("deviceName"), pointsMap);
                 } else {
-                        if (agent.getAgentType() == AgentType.NIAGARA.getKey()) {
-                            ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.DISPLAY_NAME), pointMap);
-                        } else {
-                            ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.NAME), pointMap);
-                        }
+                        ((Map<String, Map<String, Map<Long, String>>>)controllerNameMap.get(point.get("deviceName"))).put((String) point.get(AgentConstants.NAME), pointMap);
                     }
                 }
             }
