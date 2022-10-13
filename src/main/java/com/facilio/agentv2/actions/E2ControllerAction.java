@@ -45,7 +45,7 @@ public class E2ControllerAction extends AgentIdAction {
             e2Controller.setName(name);
             e2Controller.setAgentId(getAgentId());
             e2Controller.setControllerType(getControllerType());
-            ControllerApiV2.addController(e2Controller);
+            ControllerApiV2.addController(e2Controller, false);
             setResult(AgentConstants.RESULT,SUCCESS);
         }
         catch (Exception e){

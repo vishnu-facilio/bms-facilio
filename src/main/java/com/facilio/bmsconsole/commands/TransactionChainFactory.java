@@ -4399,14 +4399,18 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddControllerChain() {
+	public static FacilioChain getAddControllerChain(boolean fromAgent) {
 		FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddRtuNetworkCommand());
 		chain.addCommand(new SetAssetCategoryCommand());
 		chain.addCommand(new GenericAddModuleDataCommand());
 		chain.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 		chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		chain.addCommand(new AddAgentServiceControllerCommand());
+		// If message is from agent, controllers will be already added in agent and only need to add in facilio.
+		// No need to send to agent again
+		if (!fromAgent) {
+			chain.addCommand(new AddAgentServiceControllerCommand());
+		}
 		//chain.addCommand(new AddControllerCommand());
 		return chain;
 	}

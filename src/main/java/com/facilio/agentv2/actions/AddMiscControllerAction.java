@@ -33,7 +33,7 @@ public class AddMiscControllerAction extends AgentIdAction{
                     context.setName(getName());
                     context.setControllerType(getControllerType());
                 //    context.setDeviceId(deviceId);
-                    controllerId = ControllerApiV2.addController(context);
+                    controllerId = ControllerApiV2.addController(context, false);
                 // }
                 if (controllerId != null && controllerId > 0) {
                     //     FieldDeviceApi.updateDeviceConfigured(deviceId);
