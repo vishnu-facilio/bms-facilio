@@ -11,8 +11,11 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationUtil;
+import com.facilio.relation.util.RelationshipDataUtil;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
@@ -26,6 +29,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -209,4 +214,32 @@ public class WeatherAPI {
 		return result.get(0);
 	}
 
+	public static void associateSiteWithWeatherStation(long siteId, long stationId) throws Exception {
+		Map<String, List<Object>> queryParameters = new HashMap<>();
+		queryParameters.put("relationName", new ArrayList(){{
+			add("belongsto");
+		}});
+		queryParameters.put("parentId", new ArrayList(){{
+				add(siteId);
+			}});
+		Map<String,Object> relationValue = new HashMap();
+		List<Long> idlist = new ArrayList();
+		idlist.add(stationId);
+		relationValue.put("weatherstation", idlist);
+		RelationshipDataUtil.associateRelation("site", FieldUtil.getAsJSON(relationValue), queryParameters, null);
+	}
+
+	public static long getStationIdForSiteId(Long siteId) throws Exception {
+		String revLinkName = "beingusedby";
+		String requiredModuleName = "weatherstation";
+		JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(revLinkName, requiredModuleName, siteId, -1, -1);
+		JSONObject data = (JSONObject) recordsWithRelationship.get("data");
+		if(data != null) {
+			List<Map> resources = (ArrayList<Map>) data.get(requiredModuleName);
+			if(!resources.isEmpty()) {
+				return (long) resources.get(0).get("id");
+			}
+		}
+		return 0;
+	}
 }

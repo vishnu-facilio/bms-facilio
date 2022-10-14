@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.signup.weather;
+package com.facilio.weather.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;

@@ -129,8 +129,7 @@ classes:
     #  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
 
   #Adding Weather service modules
-  - com.facilio.bmsconsoleV3.signup.weather.AddWeatherModules
-
+  - com.facilio.weather.signup.AddWeatherModules
 
     # JobPlan
   #Adding Fields for JobPlan Task Section module

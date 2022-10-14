@@ -1005,12 +1005,21 @@
     </package>
 
     <package name="weather" namespace="/api/v3/weather" extends="v3Api">
-        <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
+        <action name="stationcode"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getStationCode"/>
+        <action name="currentdata"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getCurrentWeather"/>
     </package>
 
     <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
-        <action name="history" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="resendFailedMails"/>
-        <action name="apiStats" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="apiStats"/>
+        <action name="history"
+                class="com.facilio.mailtracking.actions.OutgoingMailAction"
+                method="resendFailedMails"/>
+        <action name="apiStats"
+                class="com.facilio.mailtracking.actions.OutgoingMailAction"
+                method="apiStats"/>
     </package>
 
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">

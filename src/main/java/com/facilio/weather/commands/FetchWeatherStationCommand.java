@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.weather.commands;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.WeatherAPI;
