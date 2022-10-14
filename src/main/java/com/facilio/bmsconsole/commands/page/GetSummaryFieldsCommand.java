@@ -350,6 +350,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
 		fieldMap.put("custom_vendormapping", vendorMapping);
+		fieldMap.put("workorder", workOrderMappingAtre);
 
 		return fieldMap;
 	}
@@ -482,6 +483,22 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedTime",
 			"sysModifiedTime",
 			"sysCreatedBy"
+	}));
+
+	private static final List<String> workOrderMappingAtre = Collections.unmodifiableList(Arrays.asList(new String[]{
+			"siteId", // Site
+			"resource", // Space / Asset
+			"assignedTo", // Staff
+			"lookup_3", // Managed By
+			"category", // Category
+			"lookup_1", // Sub Category
+			"item", // Item
+			"createdTime", // Created Time
+			"actualWorkEnd", // Resolved Time
+			"vendor", // Vendor
+			"type", // Type
+			"lookup" // Tenant Unit
+
 	}));
 
 	/******* ATRE End ******************/
