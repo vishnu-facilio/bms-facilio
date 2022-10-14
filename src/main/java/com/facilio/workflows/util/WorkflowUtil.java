@@ -2623,7 +2623,7 @@ public class WorkflowUtil {
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
         	 SessionManager.getInstance().sendMessage(new Message()
-                     .setTopic(ScriptLogHander.TOPIC)
+                     .setTopic(ScriptLogHander.TOPIC+"/"+orgId+"/"+workflowContext.getId())
                      .setOrgId(orgId)
                      .setContent(json)
              );
