@@ -349,6 +349,14 @@ public class FacilioForm implements Serializable {
 		this.appLinkNamesForForm = appLinkNamesForForm;
 	}
 
+	private List<FormRuleContext> defaultFormRules;
+	public List<FormRuleContext> getDefaultFormRules() {
+		return defaultFormRules;
+	}
+	public void setDefaultFormRules(List<FormRuleContext> defaultFormRules) {
+		this.defaultFormRules = defaultFormRules;
+	}
+
 	public long getAppId() {
 		return appId;
 	}

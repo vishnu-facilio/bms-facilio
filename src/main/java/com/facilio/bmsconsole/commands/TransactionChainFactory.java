@@ -2898,6 +2898,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getAddDefaultFormRule(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddDefaultFormRuleSignupCommand());
+			return c;
+		}
 		public static FacilioChain getAddSubformChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidateSubFormRequestCommand());
