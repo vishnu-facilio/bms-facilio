@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
@@ -39,39 +40,42 @@ public class TenantPageFactory extends PageFactory{
 
 		tab1.addSection(tab1Sec1);
 
-
-		PageWidget detailsWidgetPrimaryContact= new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
-		detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 4);
-		detailsWidgetPrimaryContact.addToWidgetParams("card","tenantdetailcontact");
-		tab1Sec1.addWidget(detailsWidgetPrimaryContact);
-
-		PageWidget detailsWidgetOverview= new PageWidget(WidgetType.TENANT_DETAIL_OVERVIEW);
-		detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 4);
-		detailsWidgetOverview.addToWidgetParams("card","tenantdetailoverview");
-		tab1Sec1.addWidget(detailsWidgetOverview);
-
-		if (record.getDescription() != null && !record.getDescription().isEmpty()) {
-			PageWidget descWidget = new PageWidget(PageWidget.WidgetType.TENANT_DESCRIPTION);
-			descWidget.addToLayoutParams(tab1Sec1,24, 2);
-			tab1Sec1.addWidget(descWidget);
+		if(AccountUtil.getCurrentApp().getAppCategory() == ApplicationContext.AppCategory.PORTALS.getIndex()) {
+			addSecondaryDetailsWidget(tab1Sec1);
 		}
+		else {
+			PageWidget detailsWidgetPrimaryContact = new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
+			detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 4);
+			detailsWidgetPrimaryContact.addToWidgetParams("card", "tenantdetailcontact");
+			tab1Sec1.addWidget(detailsWidgetPrimaryContact);
 
-		PageWidget card2= new PageWidget(PageWidget.WidgetType.TENANT_WORKORDERS);
-		card2.addToLayoutParams(tab1Sec1, 12, 7);
-		card2.addToWidgetParams("card","tenantworkorders");
-		tab1Sec1.addWidget(card2);
+			PageWidget detailsWidgetOverview = new PageWidget(WidgetType.TENANT_DETAIL_OVERVIEW);
+			detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 4);
+			detailsWidgetOverview.addToWidgetParams("card", "tenantdetailoverview");
+			tab1Sec1.addWidget(detailsWidgetOverview);
 
-		PageWidget card3= new PageWidget(PageWidget.WidgetType.TENANT_BOOKINGS);
-		card3.addToLayoutParams(tab1Sec1, 12, 7);
-		card3.addToWidgetParams("card","tenantbookings");
-		tab1Sec1.addWidget(card3);
+			if (record.getDescription() != null && !record.getDescription().isEmpty()) {
+				PageWidget descWidget = new PageWidget(PageWidget.WidgetType.TENANT_DESCRIPTION);
+				descWidget.addToLayoutParams(tab1Sec1, 24, 2);
+				tab1Sec1.addWidget(descWidget);
+			}
+
+			PageWidget card2 = new PageWidget(PageWidget.WidgetType.TENANT_WORKORDERS);
+			card2.addToLayoutParams(tab1Sec1, 12, 7);
+			card2.addToWidgetParams("card", "tenantworkorders");
+			tab1Sec1.addWidget(card2);
+
+			PageWidget card3 = new PageWidget(PageWidget.WidgetType.TENANT_BOOKINGS);
+			card3.addToLayoutParams(tab1Sec1, 12, 7);
+			card3.addToWidgetParams("card", "tenantbookings");
+			tab1Sec1.addWidget(card3);
 
 
+			addTenantSpecialWidget(tab1Sec1);
 
-		addTenantSpecialWidget(tab1Sec1);
 
-
-		addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
+			addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
+		}
 		if (record == null) {
 			return page;
 		}
