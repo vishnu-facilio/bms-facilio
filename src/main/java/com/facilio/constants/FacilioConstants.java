@@ -3641,10 +3641,17 @@ public class FacilioConstants {
 		public static final String KPI_TYPE = "kpiType";
 	}
 
+
 	public static class ReadingRules{
 		public static final String NEW_READING_RULE= "newreadingrules";
 
 		public static final String NEW_READING_RULE_LIST="newreadingrulelist";
 
+	}
+
+	public static class TransactionRule{
+		public static final String CreationModuleName="transaction";
+		public static final String TransactionRollUpModuleName="budgetmonthlyamount";
+		public static final String TransactionRollUpFieldName="actualMonthlyAmount";
 	}
 }

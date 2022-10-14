@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsole.workflow.rule.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -20,6 +9,7 @@ import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -29,6 +19,13 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 public class WorkflowRuleAction extends FacilioAction {
@@ -241,6 +238,7 @@ public class WorkflowRuleAction extends FacilioAction {
 	public String addTransactionRule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		transactionRule.setRuleType(WorkflowRuleContext.RuleType.TRANSACTION_RULE);
+		 transactionRule.configToProp();
 		if(transactionRule.isValidated()) {
 			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
 			FacilioChain addRule = TransactionChainFactory.addWorkflowRuleChain();
@@ -254,6 +252,7 @@ public class WorkflowRuleAction extends FacilioAction {
 	public String updateTransactionRule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		transactionRule.setRuleType(WorkflowRuleContext.RuleType.TRANSACTION_RULE);
+		transactionRule.configToProp();
 		if(transactionRule.isValidated()) {
 			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
 			FacilioChain addRule = TransactionChainFactory.updateWorkflowRuleChain();

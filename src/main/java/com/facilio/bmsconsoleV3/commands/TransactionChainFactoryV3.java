@@ -668,8 +668,6 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); // update purchase request total cost
         c.addCommand(new UpdateTransactionEventTypeV3Command());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
         return c;
     }
 
@@ -850,8 +848,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateIsPoCreatedCommand());
         c.addCommand(new POAfterCreateOrEditV3Command());
         c.addCommand(new UpdateTransactionEventTypeV3Command());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY));
         return c;

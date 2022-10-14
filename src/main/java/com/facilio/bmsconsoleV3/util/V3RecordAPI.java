@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -287,14 +288,15 @@ public class V3RecordAPI {
         return recordMap;
     }
 
-    public static List<? extends V3Context> getTransactionRecordsList (String modName, String sourceModName, Long sourceId) throws Exception{
+    public static V3TransactionContext getTransactionRecord (String modName, Long sourceModId, Long sourceId, long ruleId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         if(MapUtils.isNotEmpty(fieldsAsMap)) {
-            FacilioField sourceModNameField = fieldsAsMap.get("transactionSourceModuleName");
+            FacilioField sourceModIdField = fieldsAsMap.get("transactionSourceModuleId");
             FacilioField sourceRecId = fieldsAsMap.get("transactionSourceRecordId");
+            FacilioField ruleIdField=fieldsAsMap.get("ruleId");
 
 
             Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
@@ -307,16 +309,15 @@ public class V3RecordAPI {
                     .select(fields);
 
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(sourceModNameField, sourceModName, StringOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(sourceModIdField, String.valueOf(sourceModId),NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition(sourceRecId, String.valueOf(sourceId), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(ruleIdField,String.valueOf(ruleId),NumberOperators.EQUALS));
 
             builder.andCriteria(criteria);
 
-            List<? extends V3Context> records = builder.get();
-            if (CollectionUtils.isNotEmpty(records)) {
-                return records;
-            } else {
-                return null;
+            V3TransactionContext record = (V3TransactionContext) builder.fetchFirst();
+            if(record!=null){
+                return record;
             }
         }
         return null;

@@ -1,17 +1,14 @@
 package com.facilio.bmsconsoleV3.commands.budget;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
-import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class SetDislayNameForTransactionSourceModuleName extends FacilioCommand {
@@ -27,17 +24,9 @@ public class SetDislayNameForTransactionSourceModuleName extends FacilioCommand 
         
         if (transaction != null ) {
             for (V3TransactionContext transactions : transaction) {
-                FacilioModule module = modBean.getModule(transactions.getTransactionSourceModuleName());
-                if (transactions.getTransactionSourceModuleName() != null) {
-
-                    if (hashMap.containsKey(transactions.getTransactionSourceModuleName())) {
-                       String tr = (hashMap.get(transactions.getTransactionSourceModuleName()));
-                        transactions.setTransactionSourceModuleName(tr);
-                    } else {
-                        hashMap.put(transactions.getTransactionSourceModuleName(), module.getDisplayName());
-                        transactions.setTransactionSourceModuleName(module.getDisplayName());
-
-                    }
+                if(transactions.getTransactionSourceModuleId() != null) {
+                    FacilioModule module = modBean.getModule(transactions.getTransactionSourceModuleId());
+                    transactions.setTransactionSourceModuleName(module.getDisplayName());
                 }
             }
         }

@@ -218,6 +218,7 @@ public class ChainUtil {
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new SaveCommand(module));
+        transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         transactionChain.addCommand(new AddOrUpdateClassificationDataCommand(true));
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveCommand", moduleName));
         addIfNotNull(transactionChain, activityCommand);
@@ -389,6 +390,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeDeleteCommand);
         transactionChain.addCommand(new DeleteCommand());
+        transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         addIfNotNull(transactionChain, afterDeleteCommand);
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
@@ -450,6 +452,7 @@ public class ChainUtil {
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         transactionChain.addCommand(new AddOrUpdateClassificationDataCommand());
         transactionChain.addCommand(activityCommand);
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());
@@ -624,6 +627,7 @@ public class ChainUtil {
         chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
         );
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new ExecuteSLAWorkFlowsCommand());
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
         chain.addCommand(new ExecuteRollUpFieldCommand());
@@ -638,6 +642,7 @@ public class ChainUtil {
         chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
         );
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         chain.addCommand(new ExecuteRollUpFieldCommand());

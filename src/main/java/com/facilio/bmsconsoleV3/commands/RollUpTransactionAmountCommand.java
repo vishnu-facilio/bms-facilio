@@ -1,13 +1,10 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -17,18 +14,18 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
-import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class RollUpTransactionAmountCommand extends FacilioCommand {
     @Override
@@ -44,8 +41,6 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
 
         selectFields.add(fieldMap.get("account"));
         selectFields.add(fieldMap.get("transactionResource"));
-        selectFields.add(fieldMap.get("transactionRollUpModuleName"));
-        selectFields.add(fieldMap.get("transactionRollUpFieldName"));
 
         selectFields.add(FieldFactory.getField("creditAmount", "sum(case WHEN TRANSACTION_TYPE = 1 THEN TRANSACTION_AMOUNT END )",
                 FieldType.DECIMAL));
@@ -58,7 +53,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .select(selectFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), "1", CommonOperators.IS_NOT_EMPTY))
                // .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), "1", CommonOperators.IS_NOT_EMPTY))
-                .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName() +"," +fieldMap.get("transactionRollUpFieldName").getCompleteColumnName() +"," + fieldMap.get("transactionRollUpModuleName").getCompleteColumnName())
+                .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName())
                 ;
 
         builder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
@@ -77,9 +72,9 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 Double amount = creditAmount - debitAmount;
 
                 Map<String, Object> resourceMap = (Map<String, Object>)map.get("transactionResource");
-                String rollUpModName = (String)map.get("transactionRollUpModuleName");
+                String rollUpModName = FacilioConstants.TransactionRule.TransactionRollUpModuleName;
                 Long minMonthStartDate = (Long)map.get("transactionDate");
-                String rollUpFieldName = (String)map.get("transactionRollUpFieldName");
+                String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
                 Map<String, Object> accountMap = (Map<String, Object>) map.get("account");
                 final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
                 Double actualAmount = Double.valueOf(df.format(amount));
@@ -104,42 +99,28 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .beanClass(V3Context.class)
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), String.valueOf(accountMap.get("id")), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("startDate"), String.valueOf(startDate), DateOperators.IS))
-                ;
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("startDate"), String.valueOf(startDate), DateOperators.IS));
 
-        if(MapUtils.isNotEmpty(resourceMap) && resourceMap.containsKey("id")){
+        if (MapUtils.isNotEmpty(resourceMap) && resourceMap.containsKey("id")) {
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS));
-        }
-        else {
+        } else {
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), "1", CommonOperators.IS_EMPTY));
         }
 
         List<Map<String, Object>> mapList = builder.getAsProps();
 
-        if(CollectionUtils.isNotEmpty(mapList)){
-            Collection<JSONObject> jsonList = new ArrayList<>();
-            for(Map<String, Object> map : mapList){
+        List<Long> ids = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(mapList)) {
+            for (Map<String, Object> map : mapList) {
+                ids.add((Long) map.get("id"));
                 map.put(rollUpFieldName, amount);
-                JSONObject json = new JSONObject();
-                json.putAll(map);
-                jsonList.add(json);
             }
-
-            FacilioChain patchChain = ChainUtil.getBulkPatchChain(rollUpModName);
-
-            FacilioContext context = patchChain.getContext();
-            V3Config v3Config = ChainUtil.getV3Config(rollUpModName);
-            Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-
-            Constants.setModuleName(context, rollUpModName);
-            Constants.setBulkRawInput(context, (Collection)jsonList);
-            context.put(Constants.BEAN_CLASS, beanClass);
-            context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-            context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-            patchChain.execute();
-
         }
-
-
+        if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(mapList)) {
+            FacilioContext summaryContext = V3Util.getSummary(rollUpModName, ids);
+            List<ModuleBaseWithCustomFields> oldRecord = Constants.getRecordListFromContext(summaryContext, rollUpModName);
+            V3Util.processAndUpdateBulkRecords(module, oldRecord, mapList, null, null, null,
+                    null, null, null, false);
+        }
     }
 }

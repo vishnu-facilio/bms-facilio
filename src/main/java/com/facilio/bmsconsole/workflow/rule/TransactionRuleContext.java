@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
+import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -13,30 +10,48 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.v3.context.Constants;
-import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import org.apache.commons.beanutils.BeanUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Getter @Setter
 public class TransactionRuleContext extends WorkflowRuleContext{
 
+    private Long transactionDateFieldId;
+    private Long accountId;
+    private Long transactionType;
+    private Long transactionAmountFieldId;
 
     private JSONObject transactionConfigJson;
 
-    public JSONObject getTransactionConfigJson() {
+    public JSONObject getTransactionConfigJson() throws Exception{
+        if(transactionConfigJson==null){
+            transactionConfigJson=new JSONObject();
+            if(this.transactionDateFieldId !=null && this.transactionAmountFieldId !=null) {
+                ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioField transactionDateField = moduleBean.getField(this.transactionDateFieldId, getModuleName());
+                FacilioField transactionAmountField = moduleBean.getField(this.transactionAmountFieldId, getModuleName());
+                transactionConfigJson.put("transactionDate", transactionDateField.getName());
+                transactionConfigJson.put("transactionAmount",transactionAmountField.getName());
+            }
+            transactionConfigJson.put("account",String.valueOf(this.accountId));
+            transactionConfigJson.put("transactionType",String.valueOf(this.transactionType));
+        }
         return transactionConfigJson;
     }
 
@@ -52,7 +67,9 @@ public class TransactionRuleContext extends WorkflowRuleContext{
     }
     public void setConfigJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
         JSONParser parser = new JSONParser();
-        this.transactionConfigJson = (JSONObject)parser.parse(jsonString);
+        if(jsonString!=null) {
+            this.transactionConfigJson = (JSONObject) parser.parse(jsonString);
+        }
     }
 
     @Override
@@ -60,116 +77,91 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         if (!(currentRecord instanceof ModuleBaseWithCustomFields)) {
             throw new Exception("Invalid record");
         }
-        JSONObject obj = getTransactionConfigJson();
-        if(obj == null){
-            throw new Exception("Invalid config for transaction rule");
-        }
-        String moduleName = (String) obj.get("creationModuleName");
-        String sourceModName = (String) obj.get("transactionSourceModuleName");
+
+        String creationModuleName = FacilioConstants.TransactionRule.CreationModuleName;
+        Long sourceModId =  getModuleId();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> fields = modBean.getAllFields(moduleName);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
-        List<String> keysToBeRemoved = new ArrayList<>();
-        obj.keySet().forEach(keyStr ->
-        {
-            Object keyvalue = (Object) obj.get(keyStr);
-            try {
-                FacilioField field = fieldsMap.get(keyStr);
-                String val = BeanUtils.getNestedProperty(currentRecord, (String) keyvalue);
-                if (StringUtils.isNotEmpty(val)) {
-                    if (field instanceof LookupField) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", val);
-                        obj.put(keyStr, map);
-                    } else {
-                        obj.put(keyStr, val);
-                    }
-                }
-            }
-            catch(NoSuchMethodException e){
-                obj.put(keyStr, keyvalue);
-            }
-            catch(Exception e){
-                keysToBeRemoved.add(String.valueOf(keyStr));
-            }
+        ModuleBaseWithCustomFields record= (ModuleBaseWithCustomFields) currentRecord;
+        if(FieldUtil.getValue(record,modBean.getField(this.transactionAmountFieldId))==null){
+            return;
+        }
+        Map<String,Object> data=new HashMap<>();
+        data.put("transactionDate",FieldUtil.getValue(record,modBean.getField(this.transactionDateFieldId)));
+        data.put("transactionAmount",FieldUtil.getValue(record,modBean.getField(this.transactionAmountFieldId)));
+        data.put("transactionType",transactionType);
 
-        });
-        obj.keySet()
-                .removeIf(
-                        entry -> (keysToBeRemoved.contains(entry)));
-        obj.put("transactionSourceRecordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
+        Map<String, Long> accountMap = new HashMap<>();
+        accountMap.put("id", accountId);
+        data.put("account", accountMap);
 
-        Class beanClassName = V3CustomModuleData.class;
-        ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        data.put("transactionSourceRecordId",record.getId());
+        data.put("transactionSourceModuleId",getModuleId());
+        data.put("ruleId",this.getId());
 
-        FacilioChain chain = null;
-        FacilioContext recordContext = null;
-        FacilioModule module = ChainUtil.getModule(moduleName);
-        recordMap.put(moduleName, Collections.singletonList(record));
-
-        Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-
-
+        FacilioModule module = ChainUtil.getModule(creationModuleName);
         List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
-        List<? extends V3Context> list = V3RecordAPI.getTransactionRecordsList(moduleName, sourceModName, ((ModuleBaseWithCustomFields) currentRecord).getId());
+        V3TransactionContext transactionRecord = V3RecordAPI.getTransactionRecord(creationModuleName, sourceModId, record.getId(),this.getId());
 
         if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.DELETE)) {
-            if(CollectionUtils.isNotEmpty(list)) {
-                chain = ChainUtil.getDeleteChain(moduleName);
-                recordContext = chain.getContext();
-                Constants.setRecordIds(recordContext, Collections.singletonList(list.get(0).getId()));
-                Constants.setRawInput(recordContext, FieldUtil.getAsProperties(list.get(0)));
+            if (transactionRecord!=null) {
+                Map<String,Object>recordId=new HashMap<>();
+                ArrayList id=new ArrayList<>();
+                id.add(transactionRecord.getId());
+                recordId.put(creationModuleName,id);
+                V3Util.deleteRecords(creationModuleName,recordId,null,null,false);
             }
-        }
-        else {
-            if (CollectionUtils.isEmpty(list)) {//creation
-                chain = ChainUtil.getCreateChain(moduleName);
-                recordContext = chain.getContext();
-                Constants.setRecordMap(recordContext, recordMap);
-                recordContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-            } else {//updation
-                chain = ChainUtil.getUpdateChain(moduleName);
-                recordContext = chain.getContext();
-                recordContext.put(Constants.RECORD_ID, list.get(0).getId());
-                Constants.setRawInput(recordContext, obj);
-                recordContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        } else {
+            if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.CREATE)) {//create;
+                V3Util.createRecord(module, data, null, null);
             }
-            recordContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+            else {//update
+                if (transactionRecord!=null) {
+                    V3Util.processAndUpdateSingleRecord(creationModuleName,transactionRecord.getId(), data,null,null,null,null,null,null);
+                }
+            }
 
         }
-
-        if(recordContext != null) {
-            Constants.setModuleName(recordContext, moduleName);
-            recordContext.put(Constants.BEAN_CLASS, beanClass);
-        }
-        if(chain != null){
-            chain.execute();
-        }
-
 
         super.executeTrueActions(currentRecord, context, placeHolders);
     }
 
     public Boolean isValidated(){
-        if(transactionConfigJson == null || StringUtils.isEmpty((String)transactionConfigJson.get("transactionDate")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionSourceModuleName")) || transactionConfigJson.get("account") instanceof Map
-                || StringUtils.isEmpty((String)transactionConfigJson.get("creationModuleName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionAmount")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionType"))) {
-            return  false;
+        if(this.transactionDateFieldId == null || this.transactionAmountFieldId == null  || this.transactionType==null|| this.accountId ==null) {
+            return false;
         }
         ModuleBean modBean = null;
         try {
             modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule((String) transactionConfigJson.get("creationModuleName"));
-            List<FacilioField> fields = modBean.getAllFields((String) transactionConfigJson.get("creationModuleName"));
+            FacilioModule module = modBean.getModule(FacilioConstants.TransactionRule.CreationModuleName);
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.TransactionRule.CreationModuleName);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-            if (!fieldMap.containsKey("transactionSourceModuleName") || !fieldMap.containsKey("transactionSourceRecordId")) {
+            if (!fieldMap.containsKey("transactionSourceModuleId") || !fieldMap.containsKey("transactionSourceRecordId")) {
                 return false;
             }
-        }
-        catch(Exception e){
-            return  false;
+        } catch (Exception e) {
+            return false;
         }
         return true;
+    }
+    public void configToProp()throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField transactionDateField= modBean.getField((String) transactionConfigJson.get("transactionDate"),getModuleName());
+        FacilioField transactionAmountField=modBean.getField((String) transactionConfigJson.get("transactionAmount"),getModuleName());
+
+        if(transactionConfigJson!=null) {
+            if (transactionConfigJson.containsKey("transactionDate")){
+                this.setTransactionDateFieldId(transactionDateField.getFieldId());
+            }
+            if(transactionConfigJson.containsKey("account")){
+                this.setAccountId(Long.parseLong(String.valueOf(transactionConfigJson.get("account"))));
+            }
+            if(transactionConfigJson.containsKey("transactionType")){
+                this.setTransactionType(Long.parseLong(String.valueOf(transactionConfigJson.get("transactionType"))));
+            }
+            if(transactionConfigJson.containsKey("transactionAmount")){
+                this.setTransactionAmountFieldId(transactionAmountField.getFieldId());
+            }
+        }
     }
 }
