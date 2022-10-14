@@ -106,17 +106,6 @@ public class SpaceManagementPageFactory extends PageFactory {
 			    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
 			    tab2Sec1.addWidget(activityWidget);
 
-				if(AccountUtil.getCurrentUser().getOrgId()==173){
-					Page.Tab tab3 = page.new Tab("Specification");
-					page.addTab(tab3);
-					Page.Section tab3Sec1 = page.new Section();
-					tab3.addSection(tab3Sec1);
-					PageWidget classificationWidget = new PageWidget(WidgetType.CLASSIFICATION);
-					classificationWidget.setName("Classification");
-					classificationWidget.addToLayoutParams(tab3Sec1, 24, 3);
-					classificationWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
-					tab3Sec1.addWidget(classificationWidget);
-				}
 		}
 
         return page;
