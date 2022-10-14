@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.signup;
 import java.util.*;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 
 public abstract class SignUpData {
     public abstract void addData() throws Exception;
@@ -17,4 +18,11 @@ public abstract class SignUpData {
     public List<FacilioForm> getModuleForms() throws Exception{
         return new ArrayList<>();
     }
+
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception{
+        return new ArrayList<>();
+    }
+
+    public void addGlobalScopeConfig() throws Exception {}
+
 }

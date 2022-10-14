@@ -48,6 +48,13 @@ public class PermissionUtil {
 	}
 
     public static Criteria getCurrentUserScopeCriteria (String moduleName, FacilioField...fields) {
+		try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPE_VARIABLE)) {
+				return null;
+			}
+		} catch (Exception e){
+			log.info(e);
+		}
         return getUserScopeCriteria(AccountUtil.getCurrentUser(), moduleName, fields);
     }
 

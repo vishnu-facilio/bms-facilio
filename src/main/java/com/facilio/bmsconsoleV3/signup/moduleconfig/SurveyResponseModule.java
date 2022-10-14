@@ -1,9 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 
@@ -48,6 +53,21 @@ public class SurveyResponseModule extends BaseModuleConfig{
         appDomains.add(AppDomain.AppDomainType.FACILIO);
 
         return allView;
+    }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
+        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_site"));
+        maintenanceApp.setModuleId(module.getModuleId());
+        maintenanceApp.setFieldName("siteId");
+
+        scopeConfigList = Arrays.asList(maintenanceApp);
+        return scopeConfigList;
     }
 }
 

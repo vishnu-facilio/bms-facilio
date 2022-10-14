@@ -66,7 +66,7 @@ public class AddEmailConversationModules extends SignUpData {
 		
 		insert.save();
 		
-		addScoping(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+		//addScoping(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
 	}
 
 	public void addScoping(FacilioModule module) throws Exception {

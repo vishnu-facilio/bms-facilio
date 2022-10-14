@@ -8,6 +8,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -68,6 +69,22 @@ public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
         if (CollectionUtils.isNotEmpty(props)) {
             List<ValueGeneratorContext> valueGenerators = FieldUtil.getAsBeanListFromMapList(props, ValueGeneratorContext.class);
             return valueGenerators;
+        }
+        return null;
+    }
+
+    @Override
+    public ValueGeneratorContext getValueGenerator(String linkName) throws Exception {
+        if (StringUtils.isNotEmpty(linkName)) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getValueGeneratorModule().getTableName())
+                    .select(FieldFactory.getValueGeneratorFields())
+                    .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkname",linkName,StringOperators.IS));
+            Map<String, Object> prop = selectRecordBuilder.fetchFirst();
+            if (MapUtils.isNotEmpty(prop)) {
+                ValueGeneratorContext valueGenerator = FieldUtil.getAsBeanFromMap(prop, ValueGeneratorContext.class);
+                return valueGenerator;
+            }
         }
         return null;
     }

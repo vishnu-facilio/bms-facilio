@@ -2,12 +2,15 @@ package com.facilio.modules;
 
 import java.util.*;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +21,6 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -214,6 +216,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 	}
 
 	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module) throws Exception {
+		if(module != null && (module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE))){
+			return getDefaultCriteriaForModules(module);
+		}
 		List<FacilioField> fieldList = new ArrayList<>();
 		Criteria criteria = new Criteria();
 		Map<String, GlobalScopeVariableContext> globalScopeVariableList = AccountUtil.getGlobalScopeVariableValues();
@@ -235,5 +240,47 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			return Pair.of(fieldList, criteria);
 		}
 		return null;
+	}
+
+
+	//only for induction template and inspection template - need to remove this once sites are moved to single field in module
+	private Pair<List<FacilioField>, Criteria> getDefaultCriteriaForModules(FacilioModule module) throws Exception {
+		List<FacilioField> fieldList = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)){
+			FacilioField siteId = modBean.getField("siteId",module.getName());
+			fieldList.add(siteId);
+			Condition condition = CriteriaAPI.getCondition(siteId, getEvaluatedValuesForValueGenerator("com.facilio.modules.SiteValueGenerator"), PickListOperators.IS);
+			condition.setModuleName(module.getName());
+			criteria.addAndCondition(condition);
+			FacilioField multiSiteField = modBean.getField("sites",module.getName());
+			Condition condition1 = CriteriaAPI.getCondition(multiSiteField,getEvaluatedValuesForValueGenerator("com.facilio.modules.ContainsSiteValueGenerator"), MultiFieldOperators.CONTAINS);
+			condition1.setModuleName(module.getName());
+			criteria.addOrCondition(condition1);
+		} else if(module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)){
+			FacilioField siteId = modBean.getField("siteApplyTo",module.getName());
+			fieldList.add(siteId);
+			Condition condition = CriteriaAPI.getCondition(siteId, Boolean.TRUE.toString(), BooleanOperators.IS);
+			condition.setModuleName(module.getName());
+			criteria.addAndCondition(condition);
+			FacilioField multiSiteField = modBean.getField("sites",module.getName());
+			Condition condition1 = CriteriaAPI.getCondition(multiSiteField,getEvaluatedValuesForValueGenerator("com.facilio.modules.ContainsSiteValueGenerator"), MultiFieldOperators.CONTAINS);
+			condition1.setModuleName(module.getName());
+			criteria.addOrCondition(condition1);
+		} else {
+			return null;
+		}
+		return Pair.of(fieldList, criteria);
+	}
+
+	private String getEvaluatedValuesForValueGenerator(String className) throws Exception {
+		Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(className);
+		ValueGenerator valueGenerator = classObject.newInstance();
+		String val = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
+		if(StringUtils.isNotEmpty(val)){
+			return val;
+		}
+		return StringUtils.EMPTY;
 	}
 }

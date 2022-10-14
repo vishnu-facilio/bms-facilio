@@ -37,6 +37,8 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.UrlOperators
   - types: [ RELATIONSHIP ]
     enumClassName: com.facilio.db.criteria.operators.RelationshipOperator
+  - types: [ SCOPE ]
+    enumClassName: com.facilio.db.criteria.operators.ScopeOperator
 
 validators:
   - type: STRING

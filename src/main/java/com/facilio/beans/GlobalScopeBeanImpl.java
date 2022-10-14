@@ -75,6 +75,7 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
         fieldList.add(FieldFactory.getField("scopeVariableId", "ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
         fieldList.add(FieldFactory.getField("appId", "APP_ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
         fieldList.add(FieldFactory.getField("applicableModuleId", "APPLICABLE_MODULE_ID", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
+        fieldList.add(FieldFactory.getField("applicableModuleName", "APPLICABLE_MODULE_NAME", ModuleFactory.getGlobalScopeVariableModule(), FieldType.STRING));
         fieldList.add(FieldFactory.getField("sysDeleted", "SYS_DELETED", ModuleFactory.getGlobalScopeVariableModule(), FieldType.BOOLEAN));
         fieldList.add(FieldFactory.getField("type", "TYPE", ModuleFactory.getGlobalScopeVariableModule(), FieldType.NUMBER));
 
@@ -100,6 +101,9 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                 scopeVariableContext.setType((int) prop.get("type"));
                 if (prop.containsKey("applicableModuleId")) {
                     scopeVariableContext.setApplicableModuleId(Long.valueOf(String.valueOf(prop.get("applicableModuleId"))));
+                }
+                if (prop.containsKey("applicableModuleName")) {
+                    scopeVariableContext.setApplicableModuleName(String.valueOf(prop.get("applicableModuleName")));
                 }
                 scopeVariableContext.setScopeVariableModulesFieldsList(getScopeVariableModulesFields(Long.parseLong(String.valueOf(prop.get("scopeVariableId")))));
                 scopeVsValGen.put(String.valueOf(prop.get("scopeVariableLinkName")), Pair.of(scopeVariableContext, valGenContext));
@@ -505,10 +509,14 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                         List<ScopeVariableModulesFields> modulesFieldsList = iterScopeVariable.getScopeVariableModulesFieldsList();
                         if (CollectionUtils.isNotEmpty(modulesFieldsList)) {
                             for (ScopeVariableModulesFields moduleField : modulesFieldsList) {
-                                if (iterScopeVariable.getApplicableModuleId() != null) {
-                                    FacilioModule module = modBean.getModule(iterScopeVariable.getApplicableModuleId());
-                                    List<Long> extendedModuleIds = module.getExtendedModuleIds();
-                                    if (extendedModuleIds.contains(moduleField.getModuleId())) {
+                                if (iterScopeVariable.getApplicableModuleId() != null || StringUtils.isNotEmpty(iterScopeVariable.getApplicableModuleName())) {
+                                    List<Long> extendedModuleIds = new ArrayList<>();
+                                    FacilioModule module;
+                                    if(iterScopeVariable.getApplicableModuleId() != null) {
+                                        module = modBean.getModule(iterScopeVariable.getApplicableModuleId());
+                                        extendedModuleIds = module.getExtendedModuleIds();
+                                    }
+                                    if (CollectionUtils.isNotEmpty(extendedModuleIds) && extendedModuleIds.contains(moduleField.getModuleId())) {
                                         throw new CircularDependencyException("Circular dependency detected");
                                     }
                                     if (moduleField.getModuleId() != null && currentVariableModuleId != null) {

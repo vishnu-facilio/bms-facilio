@@ -1,10 +1,15 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.LookupField;
@@ -73,5 +78,20 @@ public class TaskModule extends BaseModuleConfig{
         myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
 
         return myUserCondition;
+    }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
+        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_site"));
+        maintenanceApp.setModuleId(module.getModuleId());
+        maintenanceApp.setFieldName("siteId");
+
+        scopeConfigList = Arrays.asList(maintenanceApp);
+        return scopeConfigList;
     }
 }

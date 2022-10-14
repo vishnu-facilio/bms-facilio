@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -1275,5 +1277,35 @@ public class WorkOrderModule extends BaseModuleConfig {
     }
     public static FormField getWoResourceField() {
         return new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 6, 1);
+    }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
+        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_site"));
+        maintenanceApp.setModuleId(module.getModuleId());
+        maintenanceApp.setFieldName("siteId");
+
+        ScopeVariableModulesFields occupantApp = new ScopeVariableModulesFields();
+        occupantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_occupant_user"));
+        occupantApp.setModuleId(module.getModuleId());
+        occupantApp.setFieldName("requester");
+
+        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
+        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
+        tenantApp.setModuleId(module.getModuleId());
+        tenantApp.setFieldName("tenant");
+
+        ScopeVariableModulesFields vendorApp = new ScopeVariableModulesFields();
+        vendorApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_vendor_user"));
+        vendorApp.setModuleId(module.getModuleId());
+        vendorApp.setFieldName("vendor");
+
+        scopeConfigList = Arrays.asList(maintenanceApp,occupantApp,tenantApp,vendorApp);
+        return scopeConfigList;
     }
 }

@@ -19,4 +19,7 @@ public interface ValueGeneratorBean {
     public List<ValueGeneratorContext> getValueGenerators(List<String> applicableModuleNames,List<Long> applicableModuleIds) throws Exception;
 
 //    public Map<String, Pair<String,ValueGeneratorContext>> getValueGenFieldMapForModule(FacilioModule module) throws Exception;
+
+    public ValueGeneratorContext getValueGenerator(String linkName) throws Exception;
+
 }

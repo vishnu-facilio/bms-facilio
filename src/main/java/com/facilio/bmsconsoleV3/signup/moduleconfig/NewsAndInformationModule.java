@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -95,5 +97,20 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         newsAndInformationForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(newsAndInformationForm);
+    }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
+        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_audience"));
+        tenantApp.setModuleId(module.getModuleId());
+        tenantApp.setFieldName("audience");
+
+        scopeConfigList = Arrays.asList(tenantApp);
+        return scopeConfigList;
     }
 }

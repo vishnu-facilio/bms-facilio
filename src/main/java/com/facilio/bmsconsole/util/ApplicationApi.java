@@ -1945,22 +1945,24 @@ public class ApplicationApi {
                         if (!field.getDataTypeEnum().isRelRecordField()) {
                             scopingFields.add(field);
                         }
-                        if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
-                            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
-                            ValueGenerator valueGenerator = classObject.newInstance();
-                            condition.setOperatorId(valueGenerator.getOperatorId());
-                            condition.setColumnName(field.getCompleteColumnName());
-                            String val = null;
-                            if (valueGenerators.containsKey(condition.getValue())) {
-                                val = valueGenerators.get(condition.getValue());
-                            } else {
-                                val = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
-                                valueGenerators.put(condition.getValue(), val);
-                            }
-                            if (StringUtils.isNotEmpty(val)) {
-                                condition.setValue(val);
-                            } else {
-                                condition.setValue("");
+                        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)){
+                            if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
+                                Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
+                                ValueGenerator valueGenerator = classObject.newInstance();
+                                condition.setOperatorId(valueGenerator.getOperatorId());
+                                condition.setColumnName(field.getCompleteColumnName());
+                                String val = null;
+                                if (valueGenerators.containsKey(condition.getValue())) {
+                                    val = valueGenerators.get(condition.getValue());
+                                } else {
+                                    val = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
+                                    valueGenerators.put(condition.getValue(), val);
+                                }
+                                if (StringUtils.isNotEmpty(val)) {
+                                    condition.setValue(val);
+                                } else {
+                                    condition.setValue("");
+                                }
                             }
                         }
                         nullCondition = FieldUtil.cloneBean(condition, Condition.class);
@@ -1972,13 +1974,15 @@ public class ApplicationApi {
                 }
                 Long currentSiteId = (Long) AccountUtil.getSwitchScopingFieldValue("siteId");
                 User currentUser = AccountUtil.getCurrentAccount().getUser();
-                if (!(currentSiteId != null && currentSiteId > 0) && hasSiteField && !nullConditionMap.isEmpty()
-                        && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS
-                                .getIndex()) {
-                    if (CollectionUtils.isEmpty(currentUser.getAccessibleSpace())) {
-                        Criteria nullCriteria = FieldUtil.cloneBean(sc.getCriteria(), Criteria.class);
-                        nullCriteria.setConditions(nullConditionMap);
-                        sc.getCriteria().orCriteria(nullCriteria);
+                if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+                    if (!(currentSiteId != null && currentSiteId > 0) && hasSiteField && !nullConditionMap.isEmpty()
+                            && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS
+                            .getIndex()) {
+                        if (CollectionUtils.isEmpty(currentUser.getAccessibleSpace())) {
+                            Criteria nullCriteria = FieldUtil.cloneBean(sc.getCriteria(), Criteria.class);
+                            nullCriteria.setConditions(nullConditionMap);
+                            sc.getCriteria().orCriteria(nullCriteria);
+                        }
                     }
                 }
                 AccountUtil.setValueGenerator(valueGenerators);
