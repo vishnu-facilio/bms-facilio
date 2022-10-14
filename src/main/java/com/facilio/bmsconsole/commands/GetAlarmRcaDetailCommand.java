@@ -114,7 +114,7 @@ public class GetAlarmRcaDetailCommand extends FacilioCommand {
                 selectFields.add(fieldMap.get("rule"));
                 SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>().module(module)
                         .beanClass(ReadingAlarmOccurrenceContext.class).select(selectFields)
-                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), ruleIds, NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), rcaIds, NumberOperators.EQUALS))
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(baseAlarm.getResource().getId()), NumberOperators.EQUALS))
 //                    .fetchLookup(rulelookup)
                         .groupBy(fieldMap.get("rule").getCompleteColumnName());
