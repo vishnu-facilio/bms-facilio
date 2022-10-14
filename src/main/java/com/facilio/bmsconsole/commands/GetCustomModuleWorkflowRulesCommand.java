@@ -44,7 +44,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
             if (type == null) {
                 type = WorkflowRuleContext.RuleType.MODULE_RULE;
             }
-            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, pagination, "EXECUTION_ORDER");
+            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, pagination, null);
             if (workflowRules == null) {
                 workflowRules = new ArrayList<>();
             }

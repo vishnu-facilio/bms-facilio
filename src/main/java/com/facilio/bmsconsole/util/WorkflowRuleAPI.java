@@ -606,9 +606,8 @@ public class WorkflowRuleAPI {
 		if(criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
-		if (StringUtils.isNotEmpty(orderBy)) {
-			builder.orderBy(orderBy);
-		}
+		orderBy = (StringUtils.isNotEmpty(orderBy)) ? orderBy : ("EXECUTION_ORDER, ID ASC");
+		builder.orderBy(orderBy);
 
 		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
