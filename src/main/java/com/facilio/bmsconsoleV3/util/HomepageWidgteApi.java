@@ -439,7 +439,8 @@ public class HomepageWidgteApi {
             widget.setSpace(space);
             String date = "";
             date+= new SimpleDateFormat("dd/MMM/yyyy").format(booking.getBookingStartTime());
-            date+= "-" + startDay;
+//            date+= "-" + startDay;
+            widget.setDay(startDay);
             widget.setDate(date);
             
             String time = "";

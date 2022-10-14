@@ -104,7 +104,6 @@ public class PeopleAPI {
 			people.setPhone(user.getMobile());
 			people.setPeopleType(PeopleType.EMPLOYEE);
 			people.setIsAppAccess(true);
-//			people.setUser(true);
 			people.setRoleId(user.getRoleId());
 
 			people.setLanguage(user.getLanguage());
@@ -112,11 +111,17 @@ public class PeopleAPI {
 			if(isSignup) {
 				people.setLocalId(1);
 			}
+
+			if (isSignup || user.getInviteAcceptStatus()){
+				people.setUser(true);
+			}
 			RecordAPI.addRecord(!isSignup, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 			pplId = people.getId();
 		}
 		else {
-			peopleExisiting.setUser(true);
+			if (user.getInviteAcceptStatus()) {
+				peopleExisiting.setUser(true);
+			}
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsAppAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));

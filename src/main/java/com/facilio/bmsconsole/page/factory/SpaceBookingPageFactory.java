@@ -34,7 +34,7 @@ public class SpaceBookingPageFactory extends PageFactory{
         PageWidget bookingAttachment = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
         bookingAttachment.addToLayoutParams(tab1Sec1,0,18,16,6);
         PageWidget bookingCardDetails = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_CARD_DETAILS);
-        bookingCardDetails.addToLayoutParams(tab1Sec1,16,0,8,24);
+        bookingCardDetails.addToLayoutParams(tab1Sec1,16,0,8,23);
 
 
         tab1Sec1.addWidget(bookingFullSmmary);
@@ -56,16 +56,16 @@ public class SpaceBookingPageFactory extends PageFactory{
 
         // Service Request Tab
 
-        Page.Tab tab3 = page.new Tab("Service Request");
-        page.addTab(tab3);
+//        Page.Tab tab3 = page.new Tab("Service Request");
+//        page.addTab(tab3);
 
-        Page.Section tab3Sec1 = page.new Section();
-        tab1.addSection(tab3Sec1);
+//        Page.Section tab3Sec1 = page.new Section();
+//        tab1.addSection(tab3Sec1);
 
         // Tasks Tab
 
-        Page.Tab tab4 = page.new Tab("Tasks");
-        page.addTab(tab4);
+//        Page.Tab tab4 = page.new Tab("Tasks");
+//        page.addTab(tab4);
 
 //        Page.Section tab4Sec1 = page.new Section();
 //        tab1.addSection(tab2Sec1);

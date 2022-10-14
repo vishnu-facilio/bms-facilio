@@ -27,6 +27,7 @@ public class HomepageWidgetData {
     String date;
     String time;
     V3SpaceContext Space;
+    Integer day;
     //List<JSONObject> params;
     JSONObject params;
 

@@ -1215,7 +1215,7 @@ public class UserBeanImpl implements UserBean {
 		return false;
 	}
 
-	private void updateUserStatusInPeople(long peopleId) throws Exception {
+	public static void updateUserStatusInPeople(long peopleId) throws Exception {
 
 		ModuleBean bean = Constants.getModBean();
 		FacilioModule module = bean.getModule(FacilioConstants.ContextNames.PEOPLE);

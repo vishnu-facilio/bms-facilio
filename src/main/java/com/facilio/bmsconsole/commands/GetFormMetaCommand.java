@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,6 +54,61 @@ public class GetFormMetaCommand extends FacilioCommand {
 		if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			if (form != null) {
+				List<FormSection> newFormSection = new ArrayList<>();
+				List<FormField> formFields = new ArrayList<>();
+				for(FormSection formSection : form.getSections()) {
+					if (formSection.getSubForm() != null) {
+						List<FormSection> newSubFormSection = new ArrayList<>();
+						List<FormField> subFormFields = new ArrayList<>();
+						for (FormSection subFormSection : formSection.getSubForm().getSections()) {
+							List<FormField> subFormSectionFields = subFormSection.getFields();
+							if(subFormSectionFields == null){
+								continue;
+							}
+							Map<String, FormField> formFieldMap = new HashMap<>();
+							for (FormField formField : subFormSectionFields) {
+								if (!formFieldMap.containsKey(formField.getName())) {
+									formFieldMap.put(formField.getName(), formField);
+								} else {
+									LOGGER.info("formField " + formField.getName() + " duplicate for form id : " + formSection.getSubForm().getId());
+									if (formField.getFieldId() != -1) {
+										formFieldMap.put(formField.getName(), formField);
+									}
+								}
+							}
+							List<FormField> newFormFields = new ArrayList<FormField>(formFieldMap.values().stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList()));
+							subFormSection.setFields(newFormFields);
+							subFormFields.addAll((newFormFields));
+							newSubFormSection.add(subFormSection);
+						}
+						formSection.getSubForm().setFields(subFormFields);
+						formSection.getSubForm().setSections(newSubFormSection);
+						newFormSection.add(formSection);
+					} else {
+						List<FormField> formSectionFields = formSection.getFields();
+						if(formSectionFields==null){
+							continue;
+						}
+						Map<String, FormField> formFieldMap = new HashMap<>();
+						for (FormField formField : formSectionFields) {
+							if (!formFieldMap.containsKey(formField.getName())) {
+								formFieldMap.put(formField.getName(), formField);
+							} else {
+								LOGGER.info("formField " + formField.getName() + " duplicate for form id : " + formId);
+								if (formField.getFieldId() != -1) {
+									formFieldMap.put(formField.getName(), formField);
+								}
+							}
+						}
+						List<FormField> newFormFields = new ArrayList<FormField>(formFieldMap.values().stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList()));
+						formSection.setFields(newFormFields);
+						formFields.addAll((newFormFields));
+						newFormSection.add(formSection);
+					}
+					form.setSections(newFormSection);
+					form.setFields(formFields);
+				}
+
 				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
 			}
 		}

@@ -23,7 +23,7 @@ import java.util.Map;
 @Getter
 @Setter
 
-public abstract class Controller extends AssetContext {
+public class Controller extends AssetContext {
 
     public final String IDENTIFIER_SEPERATER = "-";
 
@@ -244,7 +244,9 @@ public abstract class Controller extends AssetContext {
      * @return {@link JSONObject}
      */
     @JsonIgnore
-    public abstract JSONObject getChildJSON();
+    public JSONObject getChildJSON() {
+        return null;
+    }
 
     /**
      * gives Controller as JSON with just parent controller's data.
@@ -375,11 +377,15 @@ public abstract class Controller extends AssetContext {
     }
 
     @JsonIgnore
-    public abstract List<Condition> getControllerConditions() throws Exception;
-    
+    public List<Condition> getControllerConditions() throws Exception {
+        return null;
+    }
+
     @JsonIgnore
-    public abstract String getIdentifier() throws Exception;
-    
+    public String getIdentifier() throws Exception {
+        return null;
+    }
+
     @Override
 	public ResourceType getResourceTypeEnum() {
 		return ResourceType.CONTROLLER;

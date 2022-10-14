@@ -5,7 +5,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import java.util.Collection;
 import java.util.Map;
@@ -49,5 +48,4 @@ public interface AgentBean {
     public void scheduleRestJob(FacilioAgent agent) throws Exception;
 
     public void schedulePointsDataMissingJob(FacilioAgent agent) throws Exception;
-
 }

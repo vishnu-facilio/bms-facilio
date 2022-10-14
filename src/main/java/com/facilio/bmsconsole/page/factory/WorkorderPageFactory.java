@@ -482,13 +482,13 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Section planSection = page.new Section();
         plans.addSection(planSection);
 
-        PageWidget plansCostWidget = new PageWidget(PageWidget.WidgetType.PLANS_COST);
-        plansCostWidget.addToLayoutParams(planSection, 4, 8);
-        planSection.addWidget(plansCostWidget);
-
         PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.PLANS);
         plansWidget.addToLayoutParams(planSection, 20, 15);
         planSection.addWidget(plansWidget);
+
+        PageWidget plansCostWidget = new PageWidget(PageWidget.WidgetType.PLANS_COST);
+        plansCostWidget.addToLayoutParams(planSection, 4, 8);
+        planSection.addWidget(plansCostWidget);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {

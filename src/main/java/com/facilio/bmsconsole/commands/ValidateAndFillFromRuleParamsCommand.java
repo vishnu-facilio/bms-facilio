@@ -5,13 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.owasp.esapi.util.CollectionsUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,11 +96,24 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		List<Long> triggerFieldIds = new ArrayList<>();
 		List<FormField> fields = form.getFields();
-		Map<String, FormField> fieldMap = fields.stream().collect
-				  (Collectors.toMap
-				  (field -> ((field.getField() != null && field.getField().getName() != null) ? field.getField().getName():field.getName()),
-				   Function.identity()));
-		
+//		Map<String, FormField> fieldMap = fields.stream().collect
+//				  (Collectors.toMap
+//				  (field -> ((field.getField() != null && field.getField().getName() != null) ? field.getField().getName():field.getName()),
+//				   Function.identity()));
+
+		Map<String, FormField> fieldMap = new HashMap<>();
+		for(FormField formField : fields){
+			if ((formField.getField() != null && formField.getField().getName() != null) && !fieldMap.containsKey(formField.getName())){
+				fieldMap.put(formField.getName(),formField);
+			}
+			else{
+				LOGGER.info("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
+				if((formField.getField() != null && formField.getField().getName() != null) && formField.getFieldId() != -1){
+					fieldMap.put(formField.getName(),formField);
+				}
+			}
+		}
+
 		if (formData != null && !formData.isEmpty()) {
 					
 			if (formData.containsKey("data")) {

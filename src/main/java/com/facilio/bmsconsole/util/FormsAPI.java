@@ -1059,8 +1059,20 @@ public class FormsAPI {
 			fields = getFormFieldsFromSections(form.getSections());
 			form.setFields(fields);
 		}
-		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
-		
+
+//		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
+		Map<String, FormField> formFieldMap = new HashMap<>();
+		for(FormField formField : fields){
+			if (!formFieldMap.containsKey(formField.getName())){
+				formFieldMap.put(formField.getName(),formField);
+			}
+			else{
+				LOGGER.info("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
+				if(formField.getFieldId() != -1){
+					formFieldMap.put(formField.getName(),formField);
+				}
+			}
+		}
 		List<FormField> systemFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (form.getModule().isCustom()) {
@@ -1091,7 +1103,7 @@ public class FormsAPI {
 			customFields = customFields.stream().filter(field -> !formFieldMap.containsKey(field.getName())).collect(Collectors.toList());
 			customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
 		}
-		
+
 		Map<String, List<FormField>> formMap = new HashMap<>();
 		formMap.put("systemFields", systemFields);
 		formMap.put("customFields", customFormFields);
