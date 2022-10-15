@@ -242,6 +242,8 @@ public class PageFactory {
 				return ServiceRequestPageFactory.getServiceRequestPage((V3ServiceRequestContext) record, module);
 			case ContextNames.LOCKERS:
 				return LockersPageFactory.getLockersPage((V3LockersContext) record, module);
+			case ContextNames.ROOMS:
+				return RoomsPageFactory.getRoomsPage((V3RoomsContext) record, module);
 			case ContextNames.PARKING_STALL:
 				return ParkingStallPageFactory.getParkingStallPage((V3ParkingStallContext) record, module);
 			case ContextNames.Floorplan.DESKS:

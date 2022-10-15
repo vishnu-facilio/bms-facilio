@@ -312,6 +312,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlActionCommandModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.IndoorFloorPlanModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DesksModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.RoomsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MovesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LockersModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ParkingStallModule

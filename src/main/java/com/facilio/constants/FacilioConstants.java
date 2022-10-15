@@ -2158,6 +2158,7 @@ public class FacilioConstants {
 		public static final String SCOPING_ID = "scopingId";
 
 		public static final String SPACE_BOOKING = "spacebooking";
+		public static final String ROOMS = "rooms";
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
 		}

@@ -1957,6 +1957,23 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("rooms")
+    public static Supplier<V3Config> getRooms() {
+        return () -> new V3Config(V3RoomsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new AddRoomSpaceCommand(), new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new CreateFacilityForParkingCommandV3())
+                .update()
+                .beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new CreateFacilityForParkingCommandV3())
+                .list()
+                .beforeFetch(new LoadRoomsLookupCommand())
+                .summary()
+                .beforeFetch(new LoadRoomsLookupCommand())
+                .build();
+    }
+
     @Module("site")
     public static Supplier<V3Config> getSite() {
         return () -> new V3Config(V3SiteContext.class, new ModuleCustomFieldCount30())
