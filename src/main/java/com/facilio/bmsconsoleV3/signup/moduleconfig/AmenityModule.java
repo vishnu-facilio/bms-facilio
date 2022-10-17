@@ -69,7 +69,7 @@ public class AmenityModule extends BaseModuleConfig{
         amenityForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.AMENITY +"_web");
         amenityForm.setModule(amenityModule);
         amenityForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        amenityForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        amenityForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> amenityFormFields = new ArrayList<>();
         amenityFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));

@@ -134,4 +134,16 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	public void setFolderType(FolderType folderType) {
 		this.folderType = folderType;
 	}
+
+	public Long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
+
+	public Long appId;
+
+
 }

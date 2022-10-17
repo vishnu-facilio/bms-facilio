@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
+import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleReportActionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -85,6 +87,7 @@ public class V3AnalyticsReportAction extends V3Action {
     private Map<String, Object> renderParams;
     private EMailTemplate emailTemplate;
     private String ttimeFilter;
+    public V3DashboardRuleReportActionContext ruleInfo;
 
 
     private AggregateOperator xAggr;
@@ -444,6 +447,14 @@ public class V3AnalyticsReportAction extends V3Action {
         }
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
         context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+        if(ruleInfo != null && ruleInfo.getDatapointList() != null && ruleInfo.getDatapointList().size()>0){
+            JSONObject dpAlias_vs_criteria = new JSONObject();
+            for(V3DashboardRuleDPContext dp_rule_context : ruleInfo.getDatapointList())
+            {
+                dpAlias_vs_criteria.put(dp_rule_context.getDatapoint_link(), dp_rule_context.getCriteria());
+            }
+            context.put("datapoint_rule", dpAlias_vs_criteria);
+        }
     }
 
     public String viewData() throws Exception

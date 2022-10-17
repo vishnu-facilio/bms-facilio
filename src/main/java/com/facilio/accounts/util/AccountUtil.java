@@ -717,6 +717,9 @@ public class AccountUtil {
 	public static Boolean applyDBScoping(FacilioModule module) {
 		try {
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+				if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPE_VARIABLE)){
+					return true;
+				}
 				if(AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
 					return true;
 				}

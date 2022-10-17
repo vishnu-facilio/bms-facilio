@@ -18,6 +18,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,9 @@ public class RulePageFactory extends PageFactory {
 	public static Page getRulePage(AlarmRuleContext alarmRule) throws Exception {
 		return getDefaultRuleSummaryPage(alarmRule);
 	}
-	
+	public static Page getNewRulePage(AlarmRuleContext alarmRule) throws Exception {
+		return getDefaultRuleSummaryPage(alarmRule);
+	}
 	private static Page getDefaultRuleSummaryPage(AlarmRuleContext alarmRule) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -79,15 +82,16 @@ public class RulePageFactory extends PageFactory {
 			{
 				List<ActionContext> actions = alarmRule.getAlarmTriggerRule().getActions();
 				for (ActionContext action: actions) {
-					if (action.template.getOriginalTemplate() != null && action.template.getOriginalTemplate().containsKey("impact")) {
-						Tab tab5 = page.new Tab("rule_impact");
-						page.addTab(tab5);
-						Section tab5Sec1 = page.new Section();
-						tab5.addSection(tab5Sec1);
-						addImpactWidget(tab5Sec1, criteria);
-						break;
+					if(action.template!=null) {
+						if (action.template.getOriginalTemplate() != null && action.template.getOriginalTemplate().containsKey("impact")) {
+							Tab tab5 = page.new Tab("rule_impact");
+							page.addTab(tab5);
+							Section tab5Sec1 = page.new Section();
+							tab5.addSection(tab5Sec1);
+							addImpactWidget(tab5Sec1, criteria);
+							break;
+						}
 					}
-
 				}
 			}
 		}

@@ -1,22 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
 
@@ -44,7 +43,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
             if (type == null) {
                 type = WorkflowRuleContext.RuleType.MODULE_RULE;
             }
-            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, pagination, "EXECUTION_ORDER");
+            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, pagination, null);
             if (workflowRules == null) {
                 workflowRules = new ArrayList<>();
             }

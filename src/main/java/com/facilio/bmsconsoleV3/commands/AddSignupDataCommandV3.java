@@ -90,6 +90,11 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
                     }
                 }
             }
+            for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                if(signUpData instanceof BaseModuleConfig) {
+                    signUpData.addGlobalScopeConfig();
+                }
+            }
         }
         return false;
     }

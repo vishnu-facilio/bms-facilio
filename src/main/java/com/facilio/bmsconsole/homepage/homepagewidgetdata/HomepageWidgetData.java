@@ -30,6 +30,8 @@ public class HomepageWidgetData {
     Integer day;
     //List<JSONObject> params;
     JSONObject params;
+    Long startTime;
+    Long endTime;
 
 
 }

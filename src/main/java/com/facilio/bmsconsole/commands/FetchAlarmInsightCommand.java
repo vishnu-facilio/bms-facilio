@@ -79,8 +79,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (assetId > 0) {
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
-				List<NewReadingRuleContext> rulesList = NewReadingRuleAPI.getRules(new Condition[]{
-						CriteriaAPI.getIdCondition(ruleIds, ModuleFactory.getNewReadingRuleModule())});
+				List<NewReadingRuleContext> rulesList = NewReadingRuleAPI.getReadingRules(ruleIds);
 				if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
 					Map<Long, NewReadingRuleContext> rules = rulesList.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
 					for (Map<String, Object> prop : props) {

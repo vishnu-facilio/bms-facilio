@@ -128,7 +128,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
 
     private static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
-        String switchVariable = request.getHeader("x-switch-value");
+        String switchVariable = request.getHeader("X-Switch-Value");
         if (switchVariable != null) {
             byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
             if (decodedBytes != null) {

@@ -1,6 +1,7 @@
 Map cardLayout(Map params) {
    result = {};
 
+    siteIdVsNameMap = {};
     moduleName = params.moduleName;
     assetCategoryId = params.assetCategoryId;
     buildingId = params.buildingId;
@@ -105,7 +106,21 @@ Map cardLayout(Map params) {
                     fieldMapInfo = fieldObj.asMap();
                     fieldList.add(fieldMapInfo);
                     fieldValue = asset.get(column.fieldName);
-                    if (fieldMapInfo.get("dataTypeEnum") == "LOOKUP" && fieldValue != null && fieldValue.id != null) {
+                     if(fieldMapInfo.get("dataTypeEnum")=="NUMBER" && fieldMapInfo.get("columnName")=="SITE_ID"){
+                                            siteName = siteIdVsNameMap.get(fieldValue);
+                                            if (siteName != null) {
+                                                cell["value"]= siteName;
+                                            }
+                                            else {
+                                            records = Module(column.moduleName).fetch([id==fieldValue]);
+                                            for each index , record in records{
+                                                cell["value"]= record.name;
+                                                siteIdVsNameMap[fieldValue] = record.name;
+                                            }
+                                            }
+
+                                        }
+                    else if (fieldMapInfo.get("dataTypeEnum") == "LOOKUP" && fieldValue != null && fieldValue.id != null) {
                         cell["id"] = fieldValue.id;
                         cell["module"] = fieldMapInfo.lookupModule.name;
                         lookupModule = Module(fieldMapInfo.lookupModule.name);
@@ -125,11 +140,6 @@ Map cardLayout(Map params) {
                         else {
                             cell["value"] = "---";
                         }
-                    }
-                    else if (fieldMapInfo.get("dataTypeEnum") == "DATE_TIME" && fieldValue != null) {
-                        format = "MMM dd, yyyy hh:mm a";
-                        formattedTime = new NameSpace("date").getFormattedTime(fieldValue, format);
-                        cell["value"] = formattedTime;
                     }
                     else {
                         cell["value"] = fieldValue;

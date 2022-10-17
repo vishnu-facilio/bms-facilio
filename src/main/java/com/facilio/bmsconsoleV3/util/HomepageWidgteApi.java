@@ -142,6 +142,9 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
 
+        widget.setStartTime(spaceBooking.getBookingStartTime());
+        widget.setEndTime(spaceBooking.getBookingEndTime());
+
         return widget;
     }
     public static List<V3SpaceBookingContext> getMySpaceBookings()throws Exception {
@@ -240,6 +243,8 @@ public class HomepageWidgteApi {
                   time += new SimpleDateFormat("hh:mm a").format(visitor.getExpectedCheckInTime());
                   time += " to " + new SimpleDateFormat("hh:mm a").format(visitor.getExpectedCheckOutTime());
                   time = time.replace("am", "AM").replace("pm","PM");
+                  widget.setStartTime(visitor.getExpectedCheckInTime());
+                  widget.setEndTime(visitor.getExpectedCheckOutTime());
                   widget.setTime(time);
                    widgets.add(widget);
 
@@ -340,6 +345,7 @@ public class HomepageWidgteApi {
     
 
                     widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(deliveries.getReceivedTime() ));
+                    widget.setStartTime(deliveries.getReceivedTime());
 
                     widgets.add(widget);
                 });
@@ -447,6 +453,8 @@ public class HomepageWidgteApi {
             time += new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
             time += " to " + new SimpleDateFormat("hh:mm a").format(booking.getBookingStartTime());
             time = time.replace("am", "AM").replace("pm", "PM");
+            widget.setStartTime((booking.getBookingStartTime()));
+            widget.setEndTime(booking.getBookingEndTime());
             widget.setTime(time);
 
              params.put("record", booking);

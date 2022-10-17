@@ -7,6 +7,7 @@ import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,9 @@ public class DeleteNamespaceReadingKpiCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ReadingKPIContext> list = recordMap.get(moduleName);
         ReadingKPIContext readingKPIContext = list.get(0);
-        NamespaceAPI.deleteNameSpacesFromRuleId(readingKPIContext.getId(), NSType.KPI_RULE);
+        List<NSType> nsList =new ArrayList<>();
+        nsList.add(NSType.KPI_RULE);
+        NamespaceAPI.deleteNameSpacesFromRuleId(readingKPIContext.getId(),nsList);
         return false;
     }
 }

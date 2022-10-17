@@ -7,13 +7,11 @@ import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.MultiFieldOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
@@ -274,6 +272,17 @@ public class GlobalScopeVariableContext implements Serializable {
             return null;
         }
         if(module != null) {
+            String modName = module.getName();
+            FacilioModule applicableModule = null;
+            if(applicableModuleId != null) {
+                applicableModule = modBean.getModule(applicableModuleId);
+            }
+            if(StringUtils.isNotEmpty(modName) && (modName.equals(applicableModuleName) || (applicableModule != null && modName.equals(applicableModule.getName())))){
+                FacilioField idField = FieldFactory.getIdField(modBean.getModule(modName));
+                fields.add(idField);
+                criteria.addAndCondition(CriteriaAPI.getCondition(idField, StringUtils.join(values,","), NumberOperators.EQUALS));
+                return Pair.of(fields, criteria);
+            }
             List<ScopeVariableModulesFields> scopeVariableModulesFieldsList = this.scopeVariableModulesFieldsList;
             if (CollectionUtils.isNotEmpty(scopeVariableModulesFieldsList)) {
                 for (ScopeVariableModulesFields scopeVariableModulesField : scopeVariableModulesFieldsList) {

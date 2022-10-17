@@ -202,6 +202,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.readingrule.command.DeleteNamespaceReadingRuleCommand;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
@@ -1955,6 +1957,23 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("rooms")
+    public static Supplier<V3Config> getRooms() {
+        return () -> new V3Config(V3RoomsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new AddRoomSpaceCommand(), new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new CreateFacilityForParkingCommandV3())
+                .update()
+                .beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new CreateFacilityForParkingCommandV3())
+                .list()
+                .beforeFetch(new LoadRoomsLookupCommand())
+                .summary()
+                .beforeFetch(new LoadRoomsLookupCommand())
+                .build();
+    }
+
     @Module("site")
     public static Supplier<V3Config> getSite() {
         return () -> new V3Config(V3SiteContext.class, new ModuleCustomFieldCount30())
@@ -2460,6 +2479,26 @@ public class APIv3Config {
                 .build();
 
     }
+
+    @Module(FacilioConstants.ReadingRules.NEW_READING_RULE)
+    public static Supplier<V3Config> getReadingRule(){
+        return () -> new V3Config(NewReadingRuleContext.class,null )
+                .create()
+                .beforeSave(TransactionChainFactoryV3.addReadingRuleChain())
+                .afterSave(TransactionChainFactoryV3.afterSaveReadingRuleChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.updateReadingRuleChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
+                .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
+                .summary()
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
+                .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
+                .delete()
+                .afterDelete(new DeleteNamespaceReadingRuleCommand())
+                .build();
+    }
+
 
     @Module(FacilioConstants.PeopleGroup.PEOPLE_GROUP)
     public static Supplier<V3Config> getPeopleGroups() {

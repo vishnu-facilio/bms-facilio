@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.systemfunctions.*;
+import com.facilio.workflows.functions.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -88,38 +89,6 @@ import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
-import com.facilio.workflows.functions.FacilioAssetFunctions;
-import com.facilio.workflows.functions.FacilioBusinessHourFunctions;
-import com.facilio.workflows.functions.FacilioChatBotFunctions;
-import com.facilio.workflows.functions.FacilioConnectedAppFunctions;
-import com.facilio.workflows.functions.FacilioConnectionFunctions;
-import com.facilio.workflows.functions.FacilioConsumptionFunctions;
-import com.facilio.workflows.functions.FacilioControlFunctions;
-import com.facilio.workflows.functions.FacilioCostFunctions;
-import com.facilio.workflows.functions.FacilioCriteriaFunctions;
-import com.facilio.workflows.functions.FacilioDateFunction;
-import com.facilio.workflows.functions.FacilioDateRangeFunctions;
-import com.facilio.workflows.functions.FacilioDefaultFunction;
-import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
-import com.facilio.workflows.functions.FacilioEventFunctions;
-import com.facilio.workflows.functions.FacilioFieldFunctions;
-import com.facilio.workflows.functions.FacilioFileFunction;
-import com.facilio.workflows.functions.FacilioFunctionsParamType;
-import com.facilio.workflows.functions.FacilioMLNameSpaceFunctions;
-import com.facilio.workflows.functions.FacilioModuleFunctions;
-import com.facilio.workflows.functions.FacilioNotificationFunctions;
-import com.facilio.workflows.functions.FacilioOrgSpecificFunctions;
-import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
-import com.facilio.workflows.functions.FacilioReadingFunctions;
-import com.facilio.workflows.functions.FacilioRelationshipFunctions;
-import com.facilio.workflows.functions.FacilioResourceFunction;
-import com.facilio.workflows.functions.FacilioScheduleFunctions;
-import com.facilio.workflows.functions.FacilioSystemFunctions;
-import com.facilio.workflows.functions.FacilioWMSFunctions;
-import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
-import com.facilio.workflows.functions.MLFunctions;
-import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -2230,6 +2199,9 @@ public class WorkflowUtil {
 				case RELATIONSHIP:
 					facilioWorkflowFunction = FacilioRelationshipFunctions.getFacilioRelationshipFunction(functionName);
 					break;
+				case COMMENTS:
+					facilioWorkflowFunction = FacilioCommentsFunction.getFacilioCommentsFunctions(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2363,6 +2335,9 @@ public class WorkflowUtil {
 					break;
 				case RELATIONSHIP:
 					facilioWorkflowFunction = new ArrayList<>(FacilioRelationshipFunctions.getAllFunctions().values());
+					break;
+				case COMMENTS:
+					facilioWorkflowFunction = new ArrayList<>(FacilioCommentsFunction.getAllFunctions().values());
 					break;
 			}
 		}
@@ -2648,7 +2623,7 @@ public class WorkflowUtil {
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
         	 SessionManager.getInstance().sendMessage(new Message()
-                     .setTopic(ScriptLogHander.TOPIC)
+                     .setTopic(ScriptLogHander.TOPIC+"/"+orgId+"/"+workflowContext.getId())
                      .setOrgId(orgId)
                      .setContent(json)
              );

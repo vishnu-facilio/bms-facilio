@@ -8,15 +8,20 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UpdateReadingRuleCommand extends FacilioCommand {
@@ -29,6 +34,9 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
         updateAlarmDetails();
         updateNamespace();
         updateNamespaceFields();
+        updateNamespaceStatus();
+        updateNamespaceInclusions();
+
 
         return false;
     }
@@ -65,5 +73,20 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
     private void updateNamespaceFields() throws Exception {
         List<NameSpaceField> fields = rule.getNs().getFields();
         NewReadingRuleAPI.addNamespaceFields(rule.getNs().getId(), rule.getMatchedResources(), fields);
+    }
+    private void updateNamespaceStatus() throws Exception {
+            List<NSType> nsTypeList = new ArrayList<>();
+            nsTypeList.add(NSType.READING_RULE);
+            nsTypeList.add(NSType.FAULT_IMPACT_RULE);
+            NamespaceAPI.updateNsStatus(rule.getId(), rule.getStatus(), nsTypeList);
+    }
+    private void updateNamespaceInclusions() throws Exception {
+        List<Long> oldIncludedAssetIds = rule.getNs().getIncludedAssetIds();
+        NameSpaceContext ns = this.rule.getNs();
+        List<Long> includedAssetIds = ns.getIncludedAssetIds();
+        if(CollectionUtils.isEmpty(includedAssetIds) && CollectionUtils.isNotEmpty(oldIncludedAssetIds)) {
+            NamespaceAPI.deleteExistingInclusionRecords(ns);
+        }
+        NamespaceAPI.addInclusions(ns);
     }
 }

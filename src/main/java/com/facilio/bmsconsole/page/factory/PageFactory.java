@@ -137,6 +137,8 @@ public class PageFactory {
 			case ContextNames.READING_RULE_MODULE:
 			case ContextNames.NEW_READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
+			case FacilioConstants.ReadingRules.NEW_READING_RULE:
+				return RulePageFactory.getNewRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);
 			case ContextNames.ML_ANOMALY_ALARM:
@@ -240,6 +242,8 @@ public class PageFactory {
 				return ServiceRequestPageFactory.getServiceRequestPage((V3ServiceRequestContext) record, module);
 			case ContextNames.LOCKERS:
 				return LockersPageFactory.getLockersPage((V3LockersContext) record, module);
+			case ContextNames.ROOMS:
+				return RoomsPageFactory.getRoomsPage((V3RoomsContext) record, module);
 			case ContextNames.PARKING_STALL:
 				return ParkingStallPageFactory.getParkingStallPage((V3ParkingStallContext) record, module);
 			case ContextNames.Floorplan.DESKS:

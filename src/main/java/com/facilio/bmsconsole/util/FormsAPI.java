@@ -1517,4 +1517,69 @@ public class FormsAPI {
 		}
 		return formsMap.get(formName);
 	}
+
+	public static void insertFormField(String moduleName,String formName,String fieldName,int sequenceNumber,long sectionId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long moduleId = modBean.getModule(moduleName).getModuleId();
+
+		Map<String,FacilioField> formFieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(formFieldMap.get("id")))
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULEID","moduleId", String.valueOf(moduleId),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("NAME","name", formName,StringOperators.IS));
+
+		Map<String, Object> formMap = selectRecordBuilder.fetchFirst();
+
+		long formId = (long) formMap.get("id");
+		FacilioField facilioField = modBean.getField(fieldName, moduleName);
+
+		FormField formField = getFormFieldFromFacilioField(facilioField,sequenceNumber);
+		formField.setField(facilioField);
+
+		formField.setSectionId(sectionId);
+		formField.setFormId(formId);
+
+		Map<String, Object> props = FieldUtil.getAsProperties(formField);
+
+		Map<String,FacilioField> formFieldFieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
+
+		GenericSelectRecordBuilder formFieldRecordBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFieldsFields())
+				.table(ModuleFactory.getFormFieldsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("FORMID","formId", String.valueOf(formId),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SEQUENCE_NUMBER","sequenceNumber", String.valueOf(sequenceNumber),NumberOperators.GREATER_THAN_EQUAL));
+
+		List<Map<String, Object>> formFieldFieldList = formFieldRecordBuilder.get();
+
+		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+		for(Map<String,Object> formFieldFieldsMap: formFieldFieldList) {
+			GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+			updateVal.addUpdateValue("sequenceNumber",(int)formFieldFieldsMap.get("sequenceNumber") + 1);
+			updateVal.addWhereValue("id", formFieldFieldsMap.get("id"));
+			batchUpdateList.add(updateVal);
+		}
+
+		FacilioField fieldIdField = formFieldFieldMap.get("id");
+		List<FacilioField> whereFields = new ArrayList<>();
+		whereFields.add(fieldIdField);
+
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormFieldsModule().getTableName())
+				.fields(Collections.singletonList(formFieldFieldMap.get("sequenceNumber")));
+
+		updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);
+
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getFormFieldsModule().getTableName())
+				.fields(FieldFactory.getFormFieldsFields());
+
+		long formFieldId = insertRecordBuilder.insert(props);
+
+
+	}
+
 }

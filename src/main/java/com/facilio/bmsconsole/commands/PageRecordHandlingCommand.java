@@ -29,13 +29,17 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				MVProjectWrapper project = MVUtil.getMVProject(recordId);
 				context.put(ContextNames.RECORD, project);
 				break;
-				
 			case FacilioConstants.ContextNames.READING_RULE_MODULE:
 				FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 				fetchAlarmChain.execute(context);
 				context.put(ContextNames.RECORD, context.get(ContextNames.ALARM_RULE));
 				break;
-				
+			case FacilioConstants.ReadingRules.NEW_READING_RULE:
+				FacilioChain fetchAlarm= ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
+				context.put(FacilioConstants.ContextNames.IS_NEW_READING_RULE, moduleName.equals(FacilioConstants.ReadingRules.NEW_READING_RULE));
+				fetchAlarm.execute(context);
+				context.put(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.ALARM_RULE));
+				break;
 			case ContextNames.FORMULA_FIELD:
 				FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(recordId);
 				context.put(ContextNames.RECORD, formula);

@@ -1,11 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import java.util.*;
+
+import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -95,6 +98,15 @@ public abstract class BaseModuleConfig extends SignUpData {
         triggerAddOrUpdateChain.execute();
 
         return trigger;
+    }
+
+    @Override
+    public void addGlobalScopeConfig() throws Exception {
+        List<ScopeVariableModulesFields> scopeVariableModulesFields = getGlobalScopeConfig();
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        if(CollectionUtils.isNotEmpty(scopeVariableModulesFields)) {
+            scopeBean.addScopeVariableModulesFields(scopeVariableModulesFields);
+        }
     }
 
 }

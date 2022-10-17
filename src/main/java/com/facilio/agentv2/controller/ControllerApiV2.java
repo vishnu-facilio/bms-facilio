@@ -70,13 +70,16 @@ public class ControllerApiV2 {
     private static final FacilioModule RESOURCE_MODULE = ModuleFactory.getResourceModule();
 
     public static long addController(Controller controller) {
+        return addController(controller, true);
+    }
+    public static long addController(Controller controller, boolean fromAgent) {
         try {
             long agentId = controller.getAgentId();
             if (agentId > 0) {
                 AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
                 FacilioAgent agent = agentBean.getAgent(agentId);
                 if (agent != null) {
-                    return addController(controller, agent);
+                    return addController(controller, agent, fromAgent);
                 } else {
                     throw new Exception(" No agent for id -> " + agentId);
                 }
@@ -89,10 +92,10 @@ public class ControllerApiV2 {
         return -1;
     }
 
-    public static long addController(Controller controller, FacilioAgent agent) throws Exception {
+    public static long addController(Controller controller, FacilioAgent agent, boolean fromAgent) throws Exception {
         if (controller != null) {
             if (agent != null) {
-                FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
+                FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain(fromAgent);
                 FacilioContext context = addControllerChain.getContext();
                 if(controller.getControllerType() == FacilioControllerType.SYSTEM.asInt()){
                     context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());

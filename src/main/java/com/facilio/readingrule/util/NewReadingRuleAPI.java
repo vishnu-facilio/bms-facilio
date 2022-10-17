@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -29,6 +31,8 @@ import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,18 +54,6 @@ public class NewReadingRuleAPI {
 
     public static final String READING_RULE_FIELD_TABLE_NAME = "Rule_Readings";
 
-    public static void addReadingRule(NewReadingRuleContext ruleCtx) throws Exception {
-        updateModuleAndFields(ruleCtx);
-        Map<String, Object> fieldMap = FieldUtil.getAsProperties(ruleCtx);
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getNewReadingRuleModule().getTableName())  //Table: New_Reading_Rule
-                .fields(FieldFactory.getNewReadingRuleFields());
-        long id = insertBuilder.insert(fieldMap);
-        LOGGER.info("new reading rule added : " + fieldMap);
-        ruleCtx.setId(id);
-        addAlarmDetails(ruleCtx);
-    }
-
     private static void updateModuleAndFields(NewReadingRuleContext ruleCtx) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule ruleModule = modBean.getModule(ruleCtx.getReadingModuleId());
@@ -71,23 +63,6 @@ public class NewReadingRuleAPI {
             ruleCtx.setReadingField(customFields.get(0));
             ruleCtx.setReadingFieldId(customFields.get(0).getFieldId());
         }
-    }
-
-    private static void addAlarmDetails(NewReadingRuleContext ruleCtx) throws Exception {
-        RuleAlarmDetails alarmDetails = ruleCtx.getAlarmDetails();
-        alarmDetails.setRuleId(ruleCtx.getId());
-        AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(alarmDetails.getSeverity());
-        Objects.requireNonNull(alarmSeverity, "Invalid severity value found!");
-        alarmDetails.setSeverityId(alarmSeverity.getId());
-
-        Map<String, Object> props = FieldUtil.getAsProperties(alarmDetails);
-
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getRuleAlarmDetailsModule().getTableName())
-                .fields(FieldFactory.getRuleAlarmDetailsFields());
-        long id = builder.insert(props);
-        LOGGER.info("new reading rule : alarm details added ");
-        alarmDetails.setId(id);
     }
 
     public static List<NewReadingRuleContext> getRules() throws Exception {
@@ -141,17 +116,9 @@ public class NewReadingRuleAPI {
         return rules;
     }
 
-    private static void updateFaultImpact(NewReadingRuleContext readingRule) throws Exception {
-        if (readingRule.getImpactId() != null) {
-            FaultImpactContext faultImpactContext = FaultImpactAPI.getFaultImpactContext(readingRule.getImpactId());
-            readingRule.setImpact(faultImpactContext);
-        }
-    }
-
-
     private static void updateNamespaceAndFields(NewReadingRuleContext readingRule) throws Exception {
         NameSpaceContext nsCtx = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
-        readingRule.setAssets(NamespaceAPI.getMatchedResources(nsCtx));
+        readingRule.setAssets(NamespaceAPI.getMatchedResources(nsCtx,readingRule));
         readingRule.setNs(nsCtx);
     }
 
@@ -194,6 +161,22 @@ public class NewReadingRuleAPI {
         return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
 
+    public static List<NewReadingRuleContext> getAllRules() throws Exception {
+        String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
+        FacilioContext fetch=V3Util.fetchList(moduleName,true,null,null,false,null,null,null,null,0,50,false,null,null);
+        Map<String,Object> newReadingRuleContexts= (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
+
+        List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
+        return rules;
+    }
+
+    public static List<NewReadingRuleContext> getReadingRules(List<Long> recordId) throws Exception {
+        String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
+        FacilioContext summary = V3Util.getSummary(moduleName, recordId);
+        List<NewReadingRuleContext> readingRules = Constants.getRecordListFromContext(summary, moduleName);
+        return readingRules;
+    }
+
     public static NewReadingRuleContext getRuleByNSId(Long nsId) throws Exception {
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
                 CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS)});
@@ -228,31 +211,15 @@ public class NewReadingRuleAPI {
         for (NameSpaceField fld : fields) {
             Long resourceID = (fld.getResourceId() != null && fld.getResourceId() != -1) ? fld.getResourceId() : -1;
             if (resourceID == -1) {
-                if (assetsMap != null) {
-                    for (ResourceContext asset : assetsMap.values()) {
-                        if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
-                            RelationMappingContext mapping = RelationUtil.getRelationMapping(fld.getRelMapContext().getMappingLinkName());
-                            fld.setRelMapId(mapping.getId());
-                            fld.setRelMapContext(mapping);
-                            prepareNSField(fld, nsId,asset.getId(), false);
-                            assetList.add(FieldUtil.getAsProperties(fld));
-                        } else {
-                            prepareNSField(fld, nsId, asset.getId(), true);
-                            assetList.add(FieldUtil.getAsProperties(fld));
-                        }
-                    }
-                } else {
-                        if (fld.getRelMapContext()!=null && fld.getRelMapContext().getMappingLinkName() != null) {
-                            RelationMappingContext mapping = RelationUtil.getRelationMapping(fld.getRelMapContext().getMappingLinkName());
-                            fld.setRelMapId(mapping.getId());
-                            fld.setRelMapContext(mapping);
-                            prepareNSField(fld, nsId, resourceID, false);
-                            assetList.add(FieldUtil.getAsProperties(fld));
+                    if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
+                        getRelationMappingFields(fld);
+                        prepareNSField(fld, nsId, resourceID, false);
+                        assetList.add(FieldUtil.getAsProperties(fld));
                     } else {
                         prepareNSField(fld, nsId, resourceID, true);
                         assetList.add(FieldUtil.getAsProperties(fld));
                     }
-                }
+
             } else {
                 prepareNSField(fld, nsId, resourceID, false);
                 assetList.add(FieldUtil.getAsProperties(fld));
@@ -266,7 +233,11 @@ public class NewReadingRuleAPI {
 
         insertBuilder.save();
     }
-
+    private static  void getRelationMappingFields(NameSpaceField nsField) throws Exception{
+        RelationMappingContext mapping = RelationUtil.getRelationMapping(nsField.getRelMapContext().getMappingLinkName());
+        nsField.setRelMapId(mapping.getId());
+        nsField.setRelMapContext(mapping);
+    }
     private static void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
         GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
@@ -292,28 +263,14 @@ public class NewReadingRuleAPI {
 
         String s = "(" + StringUtils.join(ruleIds, ",") + ")";
         Map<Long, String> nameMap = new HashMap<>();
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getNewReadingRuleFields())
-                .table(ModuleFactory.getNewReadingRuleModule().getTableName())
-                .andCustomWhere("ID in " + s);
-        List<Map<String, Object>> resList = selectBuilder.get();
+
+        List<NewReadingRuleContext> resList = getReadingRules(ruleIds);
         if (resList != null) {
-            for (Map<String, Object> props : resList) {
-                nameMap.put((Long) props.get("id"), (String) props.get("name"));
+            for (NewReadingRuleContext props : resList) {
+                nameMap.put(props.getId(),  props.getName());
             }
         }
         return nameMap;
-    }
-
-    public static int updateReadingRuleStatus(NewReadingRuleContext rule) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
-        FacilioModule module = ModuleFactory.getNewReadingRuleModule();
-        Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(module.getTableName())
-                .fields(FieldFactory.getNewReadingRuleFields())
-                .andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
-        int cnt = updateBuilder.update(ruleProps);
-        return cnt;
     }
 
     public static Long getPrimaryFieldId(NewReadingRuleContext readingRule) {

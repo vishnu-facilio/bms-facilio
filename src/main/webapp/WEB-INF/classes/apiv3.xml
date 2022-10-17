@@ -167,9 +167,13 @@
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
+            <param name="permission">POST:CREATE,UPDATE;GET:READ,READ_TEAM,READ_OWN;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+            <param name="checkPermission">true</param>
         </action>
         <action name="*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
+            <param name="checkPermission">true</param>
         </action>
         <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -834,28 +838,8 @@
 
 
     <package name="newAlarmRules" namespace="/api/v3/readingrule" extends="v3Api">
-		<action name="addNew"  class="com.facilio.readingrule.action.ReadingRuleAction" method="addNewReadingRule">
-			<param name="permission">CREATE</param>
-		</action>
-        <action name="updateNew"  class="com.facilio.readingrule.action.ReadingRuleAction" method="updateNewReadingRule">
-			<param name="moduleName">alarmrules</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-		</action>
-        <action name="fetchRuleSummary" class="com.facilio.readingrule.action.ReadingRuleAction" method="fetchReadingRuleSummary">
-			<param name="moduleName">alarmrules</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-		</action>
-        <action name="delete"  class="com.facilio.readingrule.action.ReadingRuleAction" method="deleteReadingRule">
-            <param name="moduleName">alarmrules</param>
-			<param name="permission">ALARM_SETTINGS</param>
-		</action>
-        <action name="update"  class="com.facilio.readingrule.action.ReadingRuleAction" method="updateReadingRule">
-            <param name="moduleName">alarmrules</param>
-			<param name="permission">ALARM_SETTINGS</param>
-		</action>
-        <action name="status" class="com.facilio.readingrule.action.ReadingRuleAction" method="changeReadingRuleStatus">
-            <param name="moduleName">alarmrules</param>
-            <param name="permission">ALARM_SETTINGS</param>
+        <action name="fetchRules" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaRuleList">
+            <param name="permission">READ,READ_TEAM,READ_OWN</param>
         </action>
 
 	</package>
@@ -1021,12 +1005,21 @@
     </package>
 
     <package name="weather" namespace="/api/v3/weather" extends="v3Api">
-        <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
+        <action name="stationcode"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getStationCode"/>
+        <action name="currentdata"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getCurrentWeather"/>
     </package>
 
     <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
-        <action name="history" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="resendFailedMails"/>
-        <action name="apiStats" class="com.facilio.mailtracking.actions.OutgoingMailAction" method="apiStats"/>
+        <action name="history"
+                class="com.facilio.mailtracking.actions.OutgoingMailAction"
+                method="resendFailedMails"/>
+        <action name="apiStats"
+                class="com.facilio.mailtracking.actions.OutgoingMailAction"
+                method="apiStats"/>
     </package>
 
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">

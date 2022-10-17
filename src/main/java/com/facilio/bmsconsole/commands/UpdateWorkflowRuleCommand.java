@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
-
-import com.facilio.constants.FacilioConstants;
 
 public class UpdateWorkflowRuleCommand extends FacilioCommand {
 
@@ -83,7 +82,11 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 			ScoringRuleAPI.updateScoringRule((ScoringRuleContext) rule, (ScoringRuleContext) oldRule);
 		}else if(rule instanceof SystemButtonRuleContext){
 			rule = ApprovalRulesAPI.updateSystemButtonRuleWithChildren((SystemButtonRuleContext) rule,(SystemButtonRuleContext) oldRule);
-		}else {
+		}
+		else if(rule instanceof TransactionRuleContext){
+			rule = WorkflowRuleAPI.updateTransactionRuleWithChildren((TransactionRuleContext) rule,(TransactionRuleContext) oldRule);
+		}
+		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
 		}
 	}

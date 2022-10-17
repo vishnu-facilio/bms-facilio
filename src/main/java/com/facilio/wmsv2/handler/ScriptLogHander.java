@@ -8,7 +8,7 @@ import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 
 @TopicHandler(
-        topic = ScriptLogHander.TOPIC,
+        topic = ScriptLogHander.TOPIC+"/#/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
         sendToAllWorkers = false

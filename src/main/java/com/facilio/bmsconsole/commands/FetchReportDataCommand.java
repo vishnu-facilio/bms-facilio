@@ -4,6 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -37,8 +39,10 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -164,6 +168,13 @@ public class FetchReportDataCommand extends FacilioCommand {
             sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked, getModuleFromDp);
             reportData.add(sortedData);
         }
+        if (globalContext != null && globalContext.containsKey("datapoint_rule") && globalContext.get("datapoint_rule") != null) {
+            List<ReportDataPointContext> datapoints_with_rule = constructDataPointsForRule(dataPoints, report);
+            if(datapoints_with_rule != null && datapoints_with_rule.size() > 0)
+            {
+                dataPoints = datapoints_with_rule;
+            }
+        }
         List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum(), report.getDateRange());
         if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
             for (int i = 0; i < groupedDataPoints.size(); i++) {
@@ -187,7 +198,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
 
         context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
-        context.put(FacilioConstants.ContextNames.PIVOT_EXTENDED_MODULE_IDS, baseModule.getExtendedModuleIds());
+        context.put(FacilioConstants.ContextNames.PIVOT_EXTENDED_MODULE_IDS, baseModule != null ? baseModule.getExtendedModuleIds() : null);
         return false;
     }
 
@@ -608,6 +619,14 @@ public class FetchReportDataCommand extends FacilioCommand {
                 newSelectBuilder.andCriteria((Criteria) globalContext.get("trigger_widget_criteria"));
             }
         }
+        if(dp.getDp_parent_ids() != null && dp.getDp_parent_ids().size() > 0)
+        {
+            StringBuilder sb = new StringBuilder(dp.getyAxis().getField().getTableName());
+            String tableName = sb.toString();
+            String parent_id_condition = new StringBuilder(" AND (" ).append(tableName+".PARENT_ID IN (" ).append(Strings.join(dp.getDp_parent_ids(), ',') ).append("))").toString();
+            newSelectBuilder.andCustomWhere("ORGID = ?" + parent_id_condition, AccountUtil.getCurrentOrg().getOrgId());
+            newSelectBuilder.groupBy(null);
+        }
         List<Map<String, Object>> props = new ArrayList<>();
 
         ReportFieldContext reportFieldContext = dp.getxAxis();
@@ -898,9 +917,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 }
             }
-
             List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
-            for (ReportDataPointContext dataPoint : dataPoints) {
+            for (ReportDataPointContext dataPoint : dataPoints)
+            {
                 if (dataPoint.getTypeEnum() == null) {
                     dataPoint.setType(DataPointType.MODULE.getValue());
                 }
@@ -1739,5 +1758,183 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
         return null;
+    }
+
+
+    public static Set<Long> getDataPointDetails(Criteria criteria, Long fieldId, JSONObject result_json)throws Exception
+    {
+        if(result_json != null && result_json.containsKey("fields"))
+        {
+            HashMap fields = (HashMap) result_json.get("fields");
+            JSONObject categoryWithFields = (JSONObject) result_json.get("categoryWithFields");
+            if(fields !=  null && fields.containsKey(fieldId))
+            {
+                HashMap fieldObj = (HashMap)fields.get(fieldId);
+                if(fieldObj != null && fieldObj.containsKey("module"))
+                {
+                    Map module = (Map)fieldObj.get("module");
+                    if(module != null && module.containsKey("type"))
+                    {
+                        Integer category = (Integer) module.get("type");
+                        if(categoryWithFields != null && categoryWithFields.containsKey(Long.valueOf(category)))
+                        {
+                            HashMap fieldVsAssetList =(HashMap) categoryWithFields.get(Long.valueOf(category));
+                            if(fieldVsAssetList != null && fieldVsAssetList.containsKey(fieldId))
+                            {
+                                Set<Long> parent_ids = (HashSet<Long>) fieldVsAssetList.get(fieldId);
+                                if(parent_ids != null && parent_ids.size() <= 10)
+                                {
+                                    return parent_ids;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public List<ReportDataPointContext> constructDataPointsForRule(List<ReportDataPointContext> dataPoints, ReportContext report)throws Exception
+    {
+        List<ReportDataPointContext> newDataPointsList = new ArrayList<>();
+        JSONObject chartState_alias_vs_dp = new JSONObject();
+        JSONArray new_chartState_alias_vs_dp = new JSONArray();
+        if(report != null && (report.getChartState() != null && !"".equals(report.getChartState())))
+        {
+            JSONParser parser = new JSONParser();
+            JSONObject chartState = (JSONObject) parser.parse(report.getChartState());
+            if(chartState != null && chartState.containsKey("dataPoints"))
+            {
+                JSONArray datapoint_arr = (JSONArray) chartState.get("dataPoints");
+                if(datapoint_arr != null)
+                {
+                    int len = datapoint_arr.size();
+                    for(int i=0;i<len ;i++)
+                    {
+                        JSONObject datapoint = (JSONObject)  datapoint_arr.get(i);
+                        chartState_alias_vs_dp.put(datapoint.get("alias"), datapoint);
+                    }
+                }
+            }
+        }
+        if(dataPoints != null)
+        {
+            for(ReportDataPointContext report_dp : dataPoints)
+            {
+                LinkedHashMap dp_alias_map = (LinkedHashMap) report_dp.getAliases();
+                JSONObject dpAlias_vs_rule_criteria = (JSONObject) globalContext.get("datapoint_rule");
+                if (dpAlias_vs_rule_criteria != null)
+                {
+                        if (dp_alias_map != null && dp_alias_map.containsKey("actual"))
+                        {
+                            String dp_alias = (String) dp_alias_map.get("actual");
+                            if (dp_alias != null && dpAlias_vs_rule_criteria != null && dpAlias_vs_rule_criteria.containsKey(dp_alias))
+                            {
+                                Criteria dp_rule_criteria = (Criteria) dpAlias_vs_rule_criteria.get(dp_alias);
+                                if (dp_rule_criteria != null)
+                                {
+                                    JSONObject  result_json = AssetsAPI.getAssetsWithReadingsForSpecificCategory(null, null,false, dp_rule_criteria);
+                                    JSONObject assets_id_vs_name = result_json.containsKey("assets") ? (JSONObject) result_json.get("assets") : null;
+                                    Set<Long> parentIds = getDataPointDetails(dp_rule_criteria, report_dp.getyAxis().getFieldId(), result_json);
+                                        report_dp.setRule_aggr_type("SPLIT");
+                                        if(report_dp.getRule_aggr_type() == null || !report_dp.getRule_aggr_type().equals("SPLIT"))
+                                        {
+                                            List<Long> parentid_list = new ArrayList<>();
+                                            parentid_list.addAll(parentIds);
+                                            if(report.getAnalyticsType() == ReadingAnalysisContext.AnalyticsType.PORTFOLIO.getIntVal())
+                                            {
+                                                newDataPointsList.add(report_dp);
+                                            }
+                                            else
+                                            {
+                                                report_dp.setDp_parent_ids(parentid_list);
+                                                if(report_dp.getCriteria() != null)
+                                                {
+                                                    report_dp.setCriteria(null);
+                                                }
+                                            }
+                                            newDataPointsList.add(report_dp);
+                                        }
+                                        else if(report_dp.getRule_aggr_type() != null && report_dp.getRule_aggr_type().equals("SPLIT"))
+                                        {
+                                            if(report.getAnalyticsType() == ReadingAnalysisContext.AnalyticsType.PORTFOLIO.getIntVal())
+                                            {
+                                                newDataPointsList.add(report_dp);
+                                            }
+                                            else
+                                            {
+                                                if (parentIds != null && parentIds.size() <= 10)
+                                                {
+                                                    for (Long parent_asset_id : parentIds) {
+                                                        ReportDataPointContext cloned_datapoint = (ReportDataPointContext) report_dp.clone();
+                                                        LinkedHashMap cloned_aliases = (LinkedHashMap) cloned_datapoint.getAliases();
+                                                        LinkedHashMap new_cloned_alias = (LinkedHashMap) cloned_aliases.clone();
+                                                        String new_alias = new StringBuilder((String) cloned_aliases.get("actual")).append('_').append(parent_asset_id).toString();
+                                                        new_cloned_alias.put("actual", new_alias);
+                                                        cloned_datapoint.setAliases(new_cloned_alias);
+                                                        if (cloned_datapoint.getMetaData() != null && cloned_datapoint.getMetaData().containsKey("parentIds")) {
+                                                            cloned_datapoint.getMetaData().put("parentIds", Arrays.asList(parent_asset_id));
+                                                        }
+                                                        if (cloned_datapoint.getName() != null && assets_id_vs_name.containsKey(parent_asset_id) && cloned_datapoint.getResourceName() != null) {
+                                                            cloned_datapoint.setName(cloned_datapoint.getName().replaceAll(cloned_datapoint.getResourceName(), (String) assets_id_vs_name.get(parent_asset_id)));
+                                                            cloned_datapoint.setResourceName(assets_id_vs_name.containsKey(parent_asset_id) ? (String) assets_id_vs_name.get(parent_asset_id) : cloned_datapoint.getResourceName());
+                                                        }
+                                                        if (cloned_datapoint.getCriteria() != null) {
+                                                            Criteria criteria = cloned_datapoint.getCriteria().clone();
+                                                            cloned_datapoint.setCriteria(criteria);
+                                                            if (criteria != null) {
+                                                                Map<String, Condition> conditions = criteria.getConditions();
+                                                                if (conditions != null) {
+                                                                    for (String key : conditions.keySet()) {
+                                                                        Condition condition = conditions.get(key);
+                                                                        if (condition.getFieldName() != null && condition.getFieldName().equals("parentId")) {
+                                                                            condition.setValue(parent_asset_id.toString());
+
+                                                                        }
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        }
+                                                        newDataPointsList.add(cloned_datapoint);
+
+                                                        if (chartState_alias_vs_dp.containsKey(dp_alias)) {
+                                                            JSONObject chartState_dp = (JSONObject) chartState_alias_vs_dp.get(dp_alias);
+                                                            JSONObject new_chartState_dp = (JSONObject) chartState_dp.clone();
+                                                            new_chartState_dp.put("alias", new_alias);
+                                                            new_chartState_dp.put("key", new_alias);
+                                                            new_chartState_dp.put("parentId", parent_asset_id);
+                                                            new_chartState_alias_vs_dp.add(new_chartState_dp);
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                    }
+                                    else {
+                                        String s= "there are more that 10 asset present with this datapoint in the selected space";
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    if(report_dp.getRule_aggr_type() !=null && report_dp.getRule_aggr_type().equals("SPLIT") && dp_alias_map != null && dp_alias_map.containsKey("actual"))
+                    {
+                        JSONObject datapoint = (JSONObject)chartState_alias_vs_dp.get(dp_alias_map.get("actual"));
+                        new_chartState_alias_vs_dp.add(datapoint);
+                    }
+                    newDataPointsList.add(report_dp);
+                }
+        }
+        if(new_chartState_alias_vs_dp != null && new_chartState_alias_vs_dp.size() > 0)
+        {
+            JSONParser parser = new JSONParser();
+            JSONObject chartState = (JSONObject) parser.parse(report.getChartState());
+            chartState.put("dataPoints", new_chartState_alias_vs_dp);
+        }
+        return newDataPointsList;
     }
 }

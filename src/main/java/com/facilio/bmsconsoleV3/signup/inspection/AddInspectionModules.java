@@ -107,7 +107,7 @@ public class AddInspectionModules extends BaseModuleConfig {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
         
-        addScoping(inspection);
+      	addScoping(inspection);
 		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 		addScopingMaintenanceApp(inspection,applicationScopingId);
 

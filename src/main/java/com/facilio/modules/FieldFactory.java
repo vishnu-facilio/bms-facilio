@@ -15,7 +15,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bouncycastle.math.raw.Mod;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8190,6 +8189,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("folderType", "FOLDER_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -10434,6 +10434,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("target_widget_id","TARGET_WIDGET_ID", module,FieldType.NUMBER));
         fields.add(getField("datapoint_id","DATAPOINT_ID", module,FieldType.NUMBER));
         fields.add(getField("criteriaId","CRITERIA_ID", module,FieldType.STRING));
+        fields.add(getField("targetWidgetMetaStr", "TARGET_WIDGET_META", module, FieldType.STRING));
+        fields.add(getField("dataPointMetaStr", "DATAPOINT_META", module, FieldType.STRING));
         return fields;
     }
 
@@ -10552,7 +10554,10 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> list = new ArrayList<>();
 
         list.add(getField("id", "ID", module, FieldType.NUMBER));
-        list.add(getField("configJson", "TRANSACTION_CONFIG_JSON", module, FieldType.STRING));
+        list.add(getField("transactionDateFieldId","TRANSACTION_DATE_FIELD_ID",module,FieldType.NUMBER));
+        list.add(getField("accountId","ACCOUNT_ID",module,FieldType.NUMBER));
+        list.add(getField("transactionType","TRANSACTION_TYPE",module,FieldType.NUMBER));
+        list.add(getField("transactionAmountFieldId","TRANSACTION_AMOUNT_FIELD_ID",module,FieldType.NUMBER));
         return list;
     }
 

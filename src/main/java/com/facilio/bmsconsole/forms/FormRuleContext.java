@@ -105,6 +105,15 @@ public class FormRuleContext {
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
 	}
+
+	private List<String> appLinkNamesForRule;
+	public List<String> getAppLinkNamesForRule() {
+		return appLinkNamesForRule;
+	}
+	public void setAppLinkNamesForRule(List<String> appLinkNamesForRule) {
+		this.appLinkNamesForRule = appLinkNamesForRule;
+	}
+
 	public boolean evaluateCriteria (Map<String, Object> record,FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
 		criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);

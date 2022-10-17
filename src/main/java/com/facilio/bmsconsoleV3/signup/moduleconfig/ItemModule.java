@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -195,5 +197,19 @@ public class ItemModule extends BaseModuleConfig{
         itemForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(itemForm);
+    }
+
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
+        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_storeroom"));
+        maintenanceApp.setModuleId(module.getModuleId());
+        maintenanceApp.setFieldName("storeRoom");
+
+        scopeConfigList = Arrays.asList(maintenanceApp);
+        return scopeConfigList;
     }
 }

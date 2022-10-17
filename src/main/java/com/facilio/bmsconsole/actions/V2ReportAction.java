@@ -1337,7 +1337,7 @@ public class V2ReportAction extends FacilioAction {
         List<ReadingRuleInterface> readingRules = new ArrayList<>();
         if (isWithPrerequsite) { // new 1st
             if (isNewReadingRule) {
-                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingAlarmContext.getRule().getId());
+                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingAlarmContext.getRule().getId())).get(0);
                 readingRules.add(newRuleCtx);
             } else {
                 AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));

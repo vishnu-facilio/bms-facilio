@@ -1648,27 +1648,28 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 1, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
             webTabs.add(new WebTabContext("Reports","reports",WebTabContext.Type.REPORT,Arrays.asList(modBean.getModule("spacebooking").getModuleId()),layout.getApplicationId(), null));
             groupNameVsWebTabsMap.put("home", webTabs);
 
 
-            webTabGroups.add(new WebTabGroupContext("Space", "space", layout.getId(), 29, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Office", "office", layout.getId(), 29, groupOrder++));
             webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Floor Map", "floor-map", WebTabContext.Type.INDOOR_FLOORPLAN, null, layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Rooms", "rooms", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("rooms").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Desks", "desks", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("desks").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Parkings", "parkings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("parkingstall").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Lockers", "lockers", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("lockers").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Amenity", "amenity", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("amenity").getModuleId()), layout.getApplicationId(), null));
-            groupNameVsWebTabsMap.put("space", webTabs);
+            webTabs.add(new WebTabContext("Moves", "moves", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("moves").getModuleId()), layout.getApplicationId(), null));
+            groupNameVsWebTabsMap.put("office", webTabs);
 
 
-            webTabGroups.add(new WebTabGroupContext("Floor Map & Booking", "floorplan", layout.getId(), 31, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Booking", "booking", layout.getId(), 31, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Floor Map", "floor-map", WebTabContext.Type.INDOOR_FLOORPLAN, null, layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Bookings", "bookings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("spacebooking").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Scheduler","booking-scheduler",WebTabContext.Type.TIMELINE,Arrays.asList(modBean.getModule("spacebooking").getModuleId()),layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Moves", "moves", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("moves").getModuleId()), layout.getApplicationId(), null));
-            groupNameVsWebTabsMap.put("floorplan", webTabs);
+            groupNameVsWebTabsMap.put("booking", webTabs);
 
 
             webTabGroups.add(new WebTabGroupContext("Employee Directory", "employee-directory", layout.getId(), 14, groupOrder++));
@@ -1680,8 +1681,8 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Visitors", "visitor", layout.getId(), 16, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), layout.getApplicationId(), null,  AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlog").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), layout.getApplicationId(), null,  AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             webTabs.add(new WebTabContext("Visitors", "visitors", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitor").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             webTabs.add(new WebTabContext("Watchlist", "watchlist", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("watchlist").getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             groupNameVsWebTabsMap.put("visitor", webTabs);
@@ -1697,24 +1698,13 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Help Center", "helpcenter", layout.getId(), 8, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Service Requests", "service-request", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("serviceRequest").getModuleId()), layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Service Catalog", "service-catalog", WebTabContext.Type.SERVICE_CATALOG, null, layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Documents", "documents", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("admindocuments").getModuleId()), layout.getApplicationId(), null));
             groupNameVsWebTabsMap.put("helpcenter", webTabs);
 
 
 
-
-            webTabGroups.add(new WebTabGroupContext("Survey", "survey", layout.getId(), 37, groupOrder++));
-            webTabs = new ArrayList<>();
-            
-             webTabs.add(new WebTabContext("Survey", "iwms-survey", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"iwms-survey\" }", 1,null,layout.getApplicationId()));
-             webTabs.add(new WebTabContext("Survey Template", "survey-template", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"survey-template\" }", 1,null,layout.getApplicationId()));
-            groupNameVsWebTabsMap.put("survey", webTabs);
-
-
             webTabGroups.add(new WebTabGroupContext("Analytics", "analytics", layout.getId(), 5, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Stacking Analytics", "stacking-analytics", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"stacking-analytics\" }", 1,null,layout.getApplicationId()));
             webTabs.add(new WebTabContext("Occupancy Analytics", "occupancy-analytics", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"workplace-analytics\" }", 1,null,layout.getApplicationId()));
             groupNameVsWebTabsMap.put("analytics", webTabs);
 
@@ -1945,22 +1935,24 @@ public class ApplicationApi {
                         if (!field.getDataTypeEnum().isRelRecordField()) {
                             scopingFields.add(field);
                         }
-                        if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
-                            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
-                            ValueGenerator valueGenerator = classObject.newInstance();
-                            condition.setOperatorId(valueGenerator.getOperatorId());
-                            condition.setColumnName(field.getCompleteColumnName());
-                            String val = null;
-                            if (valueGenerators.containsKey(condition.getValue())) {
-                                val = valueGenerators.get(condition.getValue());
-                            } else {
-                                val = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
-                                valueGenerators.put(condition.getValue(), val);
-                            }
-                            if (StringUtils.isNotEmpty(val)) {
-                                condition.setValue(val);
-                            } else {
-                                condition.setValue("");
+                        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)){
+                            if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
+                                Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
+                                ValueGenerator valueGenerator = classObject.newInstance();
+                                condition.setOperatorId(valueGenerator.getOperatorId());
+                                condition.setColumnName(field.getCompleteColumnName());
+                                String val = null;
+                                if (valueGenerators.containsKey(condition.getValue())) {
+                                    val = valueGenerators.get(condition.getValue());
+                                } else {
+                                    val = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
+                                    valueGenerators.put(condition.getValue(), val);
+                                }
+                                if (StringUtils.isNotEmpty(val)) {
+                                    condition.setValue(val);
+                                } else {
+                                    condition.setValue("");
+                                }
                             }
                         }
                         nullCondition = FieldUtil.cloneBean(condition, Condition.class);
@@ -1972,13 +1964,15 @@ public class ApplicationApi {
                 }
                 Long currentSiteId = (Long) AccountUtil.getSwitchScopingFieldValue("siteId");
                 User currentUser = AccountUtil.getCurrentAccount().getUser();
-                if (!(currentSiteId != null && currentSiteId > 0) && hasSiteField && !nullConditionMap.isEmpty()
-                        && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS
-                                .getIndex()) {
-                    if (CollectionUtils.isEmpty(currentUser.getAccessibleSpace())) {
-                        Criteria nullCriteria = FieldUtil.cloneBean(sc.getCriteria(), Criteria.class);
-                        nullCriteria.setConditions(nullConditionMap);
-                        sc.getCriteria().orCriteria(nullCriteria);
+                if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+                    if (!(currentSiteId != null && currentSiteId > 0) && hasSiteField && !nullConditionMap.isEmpty()
+                            && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS
+                            .getIndex()) {
+                        if (CollectionUtils.isEmpty(currentUser.getAccessibleSpace())) {
+                            Criteria nullCriteria = FieldUtil.cloneBean(sc.getCriteria(), Criteria.class);
+                            nullCriteria.setConditions(nullConditionMap);
+                            sc.getCriteria().orCriteria(nullCriteria);
+                        }
                     }
                 }
                 AccountUtil.setValueGenerator(valueGenerators);

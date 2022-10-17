@@ -417,19 +417,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
 		return c;
 	}
-
-	public static FacilioChain fetchReadingRules () {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetNewReadingRulesCommand());
-		return c;
-	}
-	
-	
 	public static FacilioChain fetchWorkflowRuleWithActionsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchWorkflowRuleCommand());
@@ -2189,6 +2176,11 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getSubFormModulesChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetSubFormModulesCommand());
+		return chain;
+	}
+	public static FacilioChain getFormFromDBChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetFormFromDBCommand());
 		return chain;
 	}
 	public static FacilioChain getFormFieldUsageChain(){

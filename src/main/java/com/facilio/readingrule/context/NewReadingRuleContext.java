@@ -1,7 +1,9 @@
 package com.facilio.readingrule.context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.fw.BeanFactory;
@@ -11,6 +13,7 @@ import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.rule.AbstractRuleInterface;
+import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,29 +24,19 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class  NewReadingRuleContext implements ReadingRuleInterface, AbstractRuleInterface, Cloneable {
+public class  NewReadingRuleContext extends V3Context implements ReadingRuleInterface, AbstractRuleInterface, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
-    long id;
-
-    long orgId;
-
-    Long assetCategoryId;
+    long siteId;
 
     String name;
 
     String description;
 
-    Long createdTime;
-
-    Long createdBy;
-
-    Long modifiedTime;
-
-    Long modifiedBy;
-
     String appliedTo;
+
+    String moduleName;
 
     List<Long> assets;
 
@@ -62,6 +55,10 @@ public class  NewReadingRuleContext implements ReadingRuleInterface, AbstractRul
     Boolean autoClear;
 
     Boolean status;
+
+    private SpaceCategoryContext spaceCategory;
+
+    private AssetCategoryContext assetCategory;
 
     public void setStatus(Boolean status) {
         this.status = status;
@@ -91,10 +88,6 @@ public class  NewReadingRuleContext implements ReadingRuleInterface, AbstractRul
     Long readingModuleId;
 
     Long readingFieldId;
-
-    public String toString() {
-        return "id: " + id + ", name : " + name;
-    }
 
     public void setNullForResponse() {
         setMatchedResources(null);

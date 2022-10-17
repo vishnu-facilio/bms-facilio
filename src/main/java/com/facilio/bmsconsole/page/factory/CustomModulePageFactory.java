@@ -137,6 +137,18 @@ public class CustomModulePageFactory extends PageFactory {
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false);
 		}
 
+		if(AccountUtil.getCurrentUser().getOrgId()==173L){
+			Page.Tab tab3 = page.new Tab("Specification");
+			page.addTab(tab3);
+			Page.Section tab3Sec1 = page.new Section();
+			tab3.addSection(tab3Sec1);
+			PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
+			classificationWidget.setName("Classification");
+			classificationWidget.addToLayoutParams(tab3Sec1, 24, 8);
+			classificationWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
+			tab3Sec1.addWidget(classificationWidget);
+		}
+
 		ApplicationContext app = AccountUtil.getCurrentApp();
 
 		if (app != null && app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex() && module != null && !"serviceRequest".equalsIgnoreCase(module.getName())) {

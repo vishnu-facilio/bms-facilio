@@ -107,14 +107,17 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpAlarmScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpEventScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
-  - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
-  - com.facilio.bmsconsoleV3.signup.serviceRequest.AddServiceRequestForm
-  - com.facilio.bmsconsoleV3.signup.inspection.AddFaultImpactModules
   - com.facilio.bmsconsoleV3.signup.scoping.StoreroomScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ItemScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ToolScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
+
+
+
+  - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
+  - com.facilio.bmsconsoleV3.signup.serviceRequest.AddServiceRequestForm
+  - com.facilio.bmsconsoleV3.signup.inspection.AddFaultImpactModules
 
   # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams
@@ -126,8 +129,7 @@ classes:
     #  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
 
   #Adding Weather service modules
-  - com.facilio.bmsconsoleV3.signup.weather.AddWeatherModules
-
+  - com.facilio.weather.signup.AddWeatherModules
 
     # JobPlan
   #Adding Fields for JobPlan Task Section module
@@ -175,6 +177,7 @@ classes:
 
   #Add System Value Generators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
+  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
 
   #Adding System Views and Forms
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LocationModule
@@ -309,6 +312,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlActionCommandModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.IndoorFloorPlanModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DesksModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.RoomsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MovesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LockersModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ParkingStallModule
@@ -334,9 +338,12 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SurveyResponseModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkflowLogModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.PreventiveMaintenanceModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingRuleModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingRulesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ReadingRuleModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FormulaFieldModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.EventModule
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
+
+  #Adding ReadingRule Modules
+  - com.facilio.bmsconsoleV3.signup.readingRulemodule.AddReadingRuleModules

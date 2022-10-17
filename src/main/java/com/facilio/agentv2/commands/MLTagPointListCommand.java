@@ -26,6 +26,7 @@ public class MLTagPointListCommand extends AgentV2Command{
             FacilioAgent agent = controller.getAgent();
             pointsMap.put("agentName", agent.getName());
             pointsMap.put("agentType", AgentType.valueOf(agent.getAgentType()).toString() );
+            pointsMap.put("siteId",agent.getSiteId());
 
 //            pointsMap.put("agentId",agent.getId());
                 BmsPointsTaggingUtil.tagPointListV1(Collections.singletonList(pointsMap));

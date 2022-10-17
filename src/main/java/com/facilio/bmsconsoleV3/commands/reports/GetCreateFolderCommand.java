@@ -29,6 +29,7 @@ public class GetCreateFolderCommand extends FacilioCommand {
         String actionType = (String) context.get("actionType");
         ReportFolderContext reportFolder = (ReportFolderContext)  context.get("reportFolder");
         if(reportFolder != null) {
+            reportFolder.setAppId(AccountUtil.getCurrentUser().getApplicationId());
             if (actionType != null && actionType.equals("ADD")) {
                 String moduleName = (String) context.get("moduleName");
                 if (moduleName != null) {

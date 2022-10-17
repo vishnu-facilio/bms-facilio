@@ -240,5 +240,14 @@ public class SignupUtil {
                 context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
                 context.put(FacilioConstants.ContextNames.FORM,form);
                 newForm.execute();
+                if(form.getDefaultFormRules()!=null) {
+                        addDefaultFormRule(form);
+                }
+        }
+        private static void addDefaultFormRule(FacilioForm form) throws  Exception{
+                FacilioChain defaultFormRuleChain = TransactionChainFactory.getAddDefaultFormRule();
+                FacilioContext context= defaultFormRuleChain.getContext();
+                context.put(FacilioConstants.ContextNames.FORM,form);
+                defaultFormRuleChain.execute();
         }
 }

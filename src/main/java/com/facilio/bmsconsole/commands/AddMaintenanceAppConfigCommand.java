@@ -42,19 +42,21 @@ public class AddMaintenanceAppConfigCommand extends FacilioCommand {
                         AddInductionModules inductionModules = new AddInductionModules();
                         inductionModules.addScopingForMaintenanceApp(module, scopingId);
                     } else {
-                        //adding site scope in application
-                        ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
-                        Criteria criteria_maintenance = new Criteria();
-                        Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-                        maintenance_condition.setModuleName(module.getName());
-                        criteria_maintenance.addAndCondition(maintenance_condition);
-                        maintenanceScoping.setScopingId(scopingId);
-                        maintenanceScoping.setModuleId(module.getModuleId());
-                        maintenanceScoping.setCriteria(criteria_maintenance);
-                        maintenanceScoping.setModuleId(module.getModuleId());
-                        List<ScopingConfigContext> scopingConfig = new ArrayList<>();
-                        scopingConfig.add(maintenanceScoping);
-                        ApplicationApi.addScopingConfigForApp(scopingConfig);
+                        if (!moduleName.equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) && !moduleName.equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
+                            //adding site scope in application
+                            ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
+                            Criteria criteria_maintenance = new Criteria();
+                            Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+                            maintenance_condition.setModuleName(module.getName());
+                            criteria_maintenance.addAndCondition(maintenance_condition);
+                            maintenanceScoping.setScopingId(scopingId);
+                            maintenanceScoping.setModuleId(module.getModuleId());
+                            maintenanceScoping.setCriteria(criteria_maintenance);
+                            maintenanceScoping.setModuleId(module.getModuleId());
+                            List<ScopingConfigContext> scopingConfig = new ArrayList<>();
+                            scopingConfig.add(maintenanceScoping);
+                            ApplicationApi.addScopingConfigForApp(scopingConfig);
+                        }
                     }
                 }
             }

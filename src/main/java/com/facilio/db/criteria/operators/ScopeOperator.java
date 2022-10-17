@@ -21,10 +21,12 @@ import com.google.common.base.Objects;
 
 public enum ScopeOperator implements Operator<Object> {
 
-    SCOPING_IS(93, " scoping_is ") {
+    SCOPING_IS(113, " scoping_is ") {
         @Override
         public String getWhereClause(String s, Object o) {
-            return null;
+
+            //temp handling to remove value generator from user scoping - needs to be removed after complete migration
+            return "1=1";
         }
 
         @Override

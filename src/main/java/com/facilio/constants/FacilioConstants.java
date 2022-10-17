@@ -2158,6 +2158,7 @@ public class FacilioConstants {
 		public static final String SCOPING_ID = "scopingId";
 
 		public static final String SPACE_BOOKING = "spacebooking";
+		public static final String ROOMS = "rooms";
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
 		}
@@ -3639,5 +3640,19 @@ public class FacilioConstants {
 		public static final String READING_KPI_JOB_NAME = "ExecuteScheduledReadingKpi";
 		public static final String SCHEDULED_KPI_LOGGER_MODULE = "scheduledKpiLogger";
 		public static final String KPI_TYPE = "kpiType";
+	}
+
+
+	public static class ReadingRules{
+		public static final String NEW_READING_RULE= "newreadingrules";
+
+		public static final String NEW_READING_RULE_LIST="newreadingrulelist";
+
+	}
+
+	public static class TransactionRule{
+		public static final String CreationModuleName="transaction";
+		public static final String TransactionRollUpModuleName="budgetmonthlyamount";
+		public static final String TransactionRollUpFieldName="actualMonthlyAmount";
 	}
 }
