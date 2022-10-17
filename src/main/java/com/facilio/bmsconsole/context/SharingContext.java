@@ -106,7 +106,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return isAppSharingMatched && havePermission;
 	}
 
-	public boolean isMatching (SingleSharingContext permission, User user, Object object, DelegationType delegationType) throws Exception {
+	public static boolean isMatching (SingleSharingContext permission, User user, Object object, DelegationType delegationType) throws Exception {
 		List<User> delegationUsers = null;
 		if (delegationType != null) {
 			delegationUsers = DelegationUtil.getUsers(user, System.currentTimeMillis(), delegationType);
@@ -223,7 +223,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return false;
 	}
 
-	private List<Long> getUserIdsForField(Map<String, Object> moduleDataMap, FacilioField field) {
+	private static List<Long> getUserIdsForField(Map<String, Object> moduleDataMap, FacilioField field) {
 		List<Long> objIds = new ArrayList<>();
 		if (field instanceof MultiLookupField) {
 			List<Map<String, Object>> list = (List<Map<String, Object>>) moduleDataMap.get(field.getName());
@@ -243,7 +243,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return objIds;
 	}
 
-	private boolean isMatchingPeopleField(SingleSharingContext permission, Object object, User user, String moduleName) throws Exception {
+	private static boolean isMatchingPeopleField(SingleSharingContext permission, Object object, User user, String moduleName) throws Exception {
 		if (permission.getFieldId() > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField field = modBean.getField(permission.getFieldId());

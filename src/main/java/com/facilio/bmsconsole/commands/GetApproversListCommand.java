@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.bmsconsole.context.SharingContext;
@@ -9,6 +12,7 @@ import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApproverWorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,13 +43,24 @@ public class GetApproversListCommand extends FacilioCommand {
                     Map<Long, Map<String, Object>> previousStepMap = previousSteps.stream().collect(Collectors.toMap(t -> (Long) t.get("approverGroup"), Function.identity()));
 
                     if (CollectionUtils.isNotEmpty(workflowRule.getApprovers())) {
-                        SharingContext sharingContext = new SharingContext(workflowRule.getApprovers());
+                        SharingContext<ApproverContext> sharingContext = new SharingContext(workflowRule.getApprovers());
+
+                        User user=AccountUtil.getCurrentUser();
+                        Map<Long,Boolean> approverPermissionMap=new HashMap<>();
+                        for(ApproverContext aprrover:sharingContext ){
+                           long approverId=aprrover.getId();
+                           boolean hasPermissionToApprove= SharingContext.isMatching(aprrover,user,moduleRecord,DelegationType.APPROVAL);
+                           approverPermissionMap.put(approverId,hasPermissionToApprove);
+                        }
+
                         List<Map<String, Object>> sharingDetails = sharingContext.getSharingDetails(moduleRecord);
                         for (Map<String, Object> details : sharingDetails) {
                             Object id = details.get("approverGroup");
                             if (previousStepMap.containsKey(id)) {
                                 details.putAll(previousStepMap.get(id));
                             }
+                            Boolean hasPermissionToApprove= approverPermissionMap.get(id);
+                            details.put("hasPermissionToApprove",hasPermissionToApprove);
                         }
                         context.put(FacilioConstants.ContextNames.APPROVAL_LIST, sharingDetails);
                     }
