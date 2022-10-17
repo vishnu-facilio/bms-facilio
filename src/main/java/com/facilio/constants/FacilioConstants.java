@@ -1388,6 +1388,7 @@ public class FacilioConstants {
 		public static final String PLANNED_TOOLS_COST = "plannedToolsCost";
 		public static final String PLANNED_ITEMS_COST = "plannedItemsCost";
 		public static final String PLANNED_SERVICES_COST = "plannedServicesCost";
+		public static final String PLANNED_LABOUR_COST = "plannedLabourCost";
 
 		public static final String TIMESTAMP = "timestamp";
 		public static final String DEVICE_DATA = "deviceData";

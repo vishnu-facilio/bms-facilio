@@ -26,6 +26,7 @@ public class WorkOrderPlansCostAction  extends V3Action {
         setData(FacilioConstants.ContextNames.PLANNED_ITEMS_COST, context.get(FacilioConstants.ContextNames.PLANNED_ITEMS_COST));
         setData(FacilioConstants.ContextNames.PLANNED_TOOLS_COST, context.get(FacilioConstants.ContextNames.PLANNED_TOOLS_COST));
         setData(FacilioConstants.ContextNames.PLANNED_SERVICES_COST, context.get(FacilioConstants.ContextNames.PLANNED_SERVICES_COST));
+        setData(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, context.get(FacilioConstants.ContextNames.PLANNED_LABOUR_COST));
         return V3Action.SUCCESS;
     }
 }

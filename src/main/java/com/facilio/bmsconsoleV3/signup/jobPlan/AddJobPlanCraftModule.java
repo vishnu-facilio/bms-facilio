@@ -66,10 +66,10 @@ public class AddJobPlanCraftModule extends BaseModuleConfig {
         skill.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.CraftAndSKills.SKILLS),"Skill module doesn't exists."));
         fields.add(skill);
 
-        fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("rate","Rate per Hour","RATE",FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("totalPrice","Total Price","TOTAL_PRICE",FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("totalPrice","Total Amount","TOTAL_PRICE",FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
 
         module.setFields(fields);
 
