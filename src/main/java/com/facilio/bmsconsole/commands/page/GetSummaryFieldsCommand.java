@@ -333,7 +333,12 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 		int count = 0;
 		for (String fieldName: atreFields) {
-			FacilioField field = fieldMap.get(fieldName);
+			FacilioField field;
+			if(fieldName.equals("siteId")){
+				field = FieldFactory.getSiteIdField(module);
+			} else {
+				field = fieldMap.get(fieldName);
+			}
 			fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 		}
 		return fields;
@@ -487,8 +492,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 	private static final List<String> workOrderMappingAtre = Collections.unmodifiableList(Arrays.asList(new String[]{
 			"siteId", // Site
+			"lookup", // Tenant Unit
 			"resource", // Space / Asset
-			"assignedTo", // Staff
 			"lookup_3", // Managed By
 			"category", // Category
 			"lookup_1", // Sub Category
@@ -496,9 +501,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"createdTime", // Created Time
 			"actualWorkEnd", // Resolved Time
 			"vendor", // Vendor
-			"type", // Type
-			"lookup" // Tenant Unit
-
+			"type" // Type
 	}));
 
 	/******* ATRE End ******************/
