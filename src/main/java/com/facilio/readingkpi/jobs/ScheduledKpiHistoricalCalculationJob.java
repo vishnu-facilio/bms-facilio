@@ -39,13 +39,13 @@ public class ScheduledKpiHistoricalCalculationJob extends FacilioJob {
             context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds == null ? kpi.getMatchedResourcesIds() : historicalLoggerAssetIds);
             execKpiChain.execute();
 
-            BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
             LOGGER.info("Time taken for ScheduledKpiHistoricalCalculation job : "+(System.currentTimeMillis() - jobStartTime));
 
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
-            BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
             throw e;
+        } finally{
+            BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
         }
     }
 }
