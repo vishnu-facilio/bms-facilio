@@ -1936,7 +1936,7 @@ public class ApplicationApi {
                             scopingFields.add(field);
                         }
                         if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)){
-                            if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
+                            if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId() || condition.getOperatorId() == 93) {
                                 Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
                                 ValueGenerator valueGenerator = classObject.newInstance();
                                 condition.setOperatorId(valueGenerator.getOperatorId());
