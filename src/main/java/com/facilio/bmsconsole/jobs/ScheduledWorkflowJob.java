@@ -36,7 +36,7 @@ public class ScheduledWorkflowJob extends FacilioJob{
 		try {
 			long id = jc.getJobId();
 			
-			LOGGER.error("ScheduledWorkflowJob for ID - "+ id +" Started at "+System.currentTimeMillis());
+			LOGGER.info("ScheduledWorkflowJob for ID - "+ id +" Started at "+System.currentTimeMillis());
 			
 			ScheduledWorkflowContext scheduledWorkflowContext = ScheduledWorkflowJob.getScheduledWorkflowContext(id,true);
 			
@@ -62,7 +62,7 @@ public class ScheduledWorkflowJob extends FacilioJob{
 //				chain.execute(context);
 			}
 			
-			LOGGER.error("ScheduledWorkflowJob for ID - "+ id +" Completed at "+System.currentTimeMillis());
+			LOGGER.info("ScheduledWorkflowJob for ID - "+ id +" Completed at "+System.currentTimeMillis());
 		}
 		catch (Exception e) {
 			CommonCommandUtil.emailException("Scheduled Workflow Failed", "Orgid -- "+AccountUtil.getCurrentOrg().getId() + " jobid -- "+jc.getJobId(), e);
