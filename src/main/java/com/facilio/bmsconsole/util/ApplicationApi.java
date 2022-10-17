@@ -1955,6 +1955,7 @@ public class ApplicationApi {
                                 }
                             }
                         }
+                        condition.setComputedWhereClause(null);
                         nullCondition = FieldUtil.cloneBean(condition, Condition.class);
                         if (isCurrentFieldSite) {
                             nullCondition.setOperatorId(CommonOperators.IS_EMPTY.getOperatorId());
@@ -2213,6 +2214,31 @@ public class ApplicationApi {
         return null;
     }
 
+    public static List<ScopingConfigContext> getScopingConfigForModuleApp(long appId,long moduleId) throws Exception {
+        List<FacilioField> selectFields = FieldFactory.getScopingConfigFields();
+        selectFields.addAll(FieldFactory.getScopingFields());
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .innerJoin(ModuleFactory.getScopingConfigModule().getTableName())
+                .on("Scoping_Config.SCOPING_ID = Scoping.ID")
+                .select(selectFields);
+
+        if (appId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId),
+                    NumberOperators.EQUALS));
+        }
+        if (moduleId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId),
+                    NumberOperators.EQUALS));
+        }
+        List<Map<String, Object>> map = builder.get();
+        if (CollectionUtils.isNotEmpty(map)) {
+            return FieldUtil.getAsBeanListFromMapList(map, ScopingConfigContext.class);
+        }
+
+        return null;
+    }
+
     public static long addScoping(ScopingContext scoping) throws Exception {
         List<FacilioField> fields = FieldFactory.getScopingFields();
 
@@ -2309,6 +2335,14 @@ public class ApplicationApi {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getScopingConfigModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId),
+                        NumberOperators.EQUALS));
+        int rows = builder.delete();
+    }
+
+    public static void deleteScopingConfigForId(long scopingConfigId) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getScopingConfigModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingConfigId),
                         NumberOperators.EQUALS));
         int rows = builder.delete();
     }

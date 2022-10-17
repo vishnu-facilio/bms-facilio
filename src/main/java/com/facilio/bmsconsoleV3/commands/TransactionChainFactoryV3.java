@@ -2251,8 +2251,10 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain addOrUpdateScopeVariable() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new AddOrUpdateScopeVariable());
         c.addCommand(new FetchScopeVariableCommand());
+        c.addCommand(new AddUserScopeCriteriaForGlobalScope());
         return c;
     }
 
@@ -2296,12 +2298,15 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain setGlobalScopeVariableStatus() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new SetGlobalScopeVariableStatusCommand());
+        c.addCommand(new AddUserScopeCriteriaForGlobalScope());
         return c;
     }
 
     public static FacilioChain deleteGlobalScopeVariable() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new DeleteGlobalScopeVariableCommand());
         return c;
     }

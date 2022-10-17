@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -24,6 +25,8 @@ public class SetSwitchVariableStatusCommand extends FacilioCommand {
         if(status == null){
             throw new IllegalArgumentException("Status cannot be null");
         }
+        scopeVariable.setShowSwitch(status);
+        ScopingUtil.checkUserSwitchAndThrowError(scopeVariable);
         scopeBean.setSwitchStatus(scopeVariable.getAppId(),scopeVariableId,status);
         return false;
     }

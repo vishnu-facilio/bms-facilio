@@ -138,7 +138,13 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         maintenanceApp.setModuleId(module.getModuleId());
         maintenanceApp.setFieldName("siteId");
 
-        scopeConfigList = Arrays.asList(maintenanceApp);
+        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
+        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
+        tenantApp.setModuleId(module.getModuleId());
+        tenantApp.setFieldName("tenant");
+
+
+        scopeConfigList = Arrays.asList(maintenanceApp,tenantApp);
         return scopeConfigList;
     }
 }

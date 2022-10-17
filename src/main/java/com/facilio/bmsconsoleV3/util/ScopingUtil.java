@@ -3,14 +3,21 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.MultiFieldOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.BaseLookupField;
@@ -18,6 +25,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
@@ -31,13 +39,9 @@ import static com.facilio.util.FacilioStreamUtil.distinctByKey;
 public class ScopingUtil {
 
     public static ValueGenerator getValueGeneratorForLinkName(String linkName) throws Exception {
-        Reflections reflections = new Reflections(linkName);
-        Set<Class<? extends ValueGenerator>> valueGeneratorClasses = reflections.getSubTypesOf(ValueGenerator.class);
-        if (CollectionUtils.isNotEmpty(valueGeneratorClasses)) {
-            for (Class<? extends ValueGenerator> valueGenerator : valueGeneratorClasses) {
-                ValueGenerator obj = valueGenerator.newInstance();
-                return obj;
-            }
+        Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(linkName);
+        if(classObject != null){
+            return classObject.newInstance();
         }
         return null;
     }
@@ -173,7 +177,8 @@ public class ScopingUtil {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> moduleList = V3ModuleAPI.getSystemModuleWithFeatureLicenceCheck();
 
-        List<String> otherModulesList = Arrays.asList("users", "people");
+        List<String> otherModulesList = Arrays.asList("users", "people","ticket");
+        List<String> excludeModules = Arrays.asList(FacilioConstants.Inspection.INSPECTION_TEMPLATE,FacilioConstants.Induction.INDUCTION_TEMPLATE);
 
         //temp handling - can be removed once all fields are moved to people
         for (String modName : otherModulesList) {
@@ -185,6 +190,8 @@ public class ScopingUtil {
         }
         if (CollectionUtils.isNotEmpty(moduleList)) {
             moduleList = moduleList.stream()
+                    .filter(mod -> mod != null)
+                    .filter(module -> !excludeModules.contains(module.getName()))
                     .filter(distinctByKey(mod -> mod.getName()))
                     .sorted(Comparator.comparing(FacilioModule::getDisplayName))
                     .collect(Collectors.toList());
@@ -199,5 +206,203 @@ public class ScopingUtil {
             return scopeVariableContext.getId();
         }
         return null;
+    }
+
+    //As user is special module it cannot be scoped in select record builder
+    public static void checkUserSwitchAndThrowError(GlobalScopeVariableContext scopeVariableContext){
+        if(scopeVariableContext != null) {
+            String applicableModuleName = scopeVariableContext.getApplicableModuleName();
+            if (applicableModuleName != null && applicableModuleName.equals(FacilioConstants.ContextNames.USERS) && scopeVariableContext.isSwitch()) {
+                throw new IllegalArgumentException("User module cannot be enabled as switch");
+            }
+        }
+    }
+
+    public static void deleteUserscopeConfigForGlobalScope(long scopeVariableId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        GlobalScopeVariableContext scopeVariable = scopeBean.getScopeVariable(scopeVariableId);
+        if (scopeVariable != null) {
+            if (scopeVariable.getAppId() == null) {
+                throw new IllegalArgumentException("Appid cannot be null");
+            }
+            List<Long> moduleIds = new ArrayList<>();
+            if (scopeVariable.getId() > 0) {
+                GlobalScopeVariableContext fetchedScopeVariable = scopeBean.getScopeVariable(scopeVariable.getId());
+                List<ScopeVariableModulesFields> scopeVariableModulesFieldsList = fetchedScopeVariable.getScopeVariableModulesFieldsList();
+                List<String> fieldsToRemove = new ArrayList<>();
+                Map<Long,String> fieldToRemoveMap = new HashMap<>();
+                fieldsToRemove.add("id");
+                fieldToRemoveMap.put(fetchedScopeVariable.getApplicableModuleId(),"id");
+                moduleIds.add(fetchedScopeVariable.getApplicableModuleId());
+                if(CollectionUtils.isNotEmpty(scopeVariableModulesFieldsList)){
+                    for(ScopeVariableModulesFields moduleField : scopeVariableModulesFieldsList) {
+                        String fieldName = moduleField.getFieldName();
+                        fieldsToRemove.add(fieldName);
+                        fieldToRemoveMap.put(moduleField.getModuleId(),moduleField.getFieldName());
+                        moduleIds.add(moduleField.getModuleId());
+                    }
+                }
+                List<ScopingConfigContext> newScopingConfigList = new ArrayList<>();
+                if(CollectionUtils.isNotEmpty(moduleIds)) {
+                    for(Long moduleId : moduleIds) {
+                        if (moduleId != null) {
+                            List<ScopingConfigContext> scopingConfigList = ApplicationApi.getScopingConfigForModuleApp(scopeVariable.getAppId(), moduleId);
+                            if (CollectionUtils.isNotEmpty(scopingConfigList)) {
+                                for (ScopingConfigContext scopingConfig : scopingConfigList) {
+                                    Criteria newCriteria = new Criteria();
+                                    Criteria criteria = CriteriaAPI.getCriteria(scopingConfig.getCriteriaId());
+                                    Map<String, Condition> conditionsMap = criteria.getConditions();
+                                    if (MapUtils.isNotEmpty(conditionsMap)) {
+                                        for (Map.Entry<String, Condition> conditionEntry : conditionsMap.entrySet()) {
+                                            Condition condition = conditionEntry.getValue();
+                                            if (condition != null) {
+                                                FacilioModule mod = modBean.getModule(scopingConfig.getModuleId());
+                                                FacilioField field = modBean.getField(condition.getFieldName(), mod.getName());
+                                                if(field == null) {
+                                                    String[] modFieldArr = condition.getFieldName().split("\\.");
+                                                    field = modBean.getField(modFieldArr[1], mod.getName());
+                                                }
+                                                String actualFieldName = field.getName();
+                                                if (!fieldToRemoveMap.containsKey(mod.getModuleId()) || (fieldToRemoveMap.containsKey(mod.getModuleId()) && !fieldToRemoveMap.get(mod.getModuleId()).equals(actualFieldName))) {
+                                                    newCriteria.addAndCondition(condition);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(MapUtils.isNotEmpty(newCriteria.getConditions())) {
+                                        scopingConfig.setCriteria(newCriteria);
+                                        newScopingConfigList.add(scopingConfig);
+                                    }
+                                    ApplicationApi.deleteScopingConfigForId(scopingConfig.getId());
+                                }
+                            }
+                        }
+                    }
+                }
+                if(CollectionUtils.isNotEmpty(newScopingConfigList)) {
+                    ApplicationApi.addScopingConfigForApp(newScopingConfigList);
+                }
+            }
+        }
+    }
+
+    public static void addUserscopeConfigForGlobalScope(long scopeVariableId) throws Exception {
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        GlobalScopeVariableContext scopeVariable = scopeBean.getScopeVariable(scopeVariableId);
+        if (scopeVariable != null && scopeVariable.getStatus()) {
+            if (scopeVariable.getValueGeneratorId() != null) {
+                ValueGeneratorContext valueGeneratorContext = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
+                if (scopeVariable.getAppId() == null) {
+                    throw new IllegalArgumentException("Appid cannot be null");
+                }
+                if (scopeVariable.getId() > 0) {
+                    GlobalScopeVariableContext fetchedScopeVariable = scopeBean.getScopeVariable(scopeVariable.getId());
+                    List<ScopeVariableModulesFields> scopeVariableModulesFieldsList = fetchedScopeVariable.getScopeVariableModulesFieldsList();
+                    Map<Long, String> moduleIdVsFieldNameMap = new HashMap<>();
+                    ValueGeneratorContext valueGenerator = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
+                    if(includeSelfModule(fetchedScopeVariable.getApplicableModuleId())) {
+                        moduleIdVsFieldNameMap.put(fetchedScopeVariable.getApplicableModuleId(), "id");
+                    }
+                    if (CollectionUtils.isNotEmpty(scopeVariableModulesFieldsList)) {
+                        for (ScopeVariableModulesFields moduleField : scopeVariableModulesFieldsList) {
+                            if(moduleField.getModuleId() != null) {
+                                moduleIdVsFieldNameMap.put(moduleField.getModuleId(), moduleField.getFieldName());
+                                moduleIdVsFieldNameMap.put(moduleField.getModuleId(), moduleField.getFieldName());
+                            }
+                        }
+                    }
+                    List<ScopingConfigContext> newScopingConfigList = new ArrayList<>();
+                    List<ScopingContext> scopings = ApplicationApi.getScopingForApp(scopeVariable.getAppId());
+                    if (CollectionUtils.isNotEmpty(scopings)) {
+                        for (ScopingContext scoping : scopings) {
+                            Map<Long, ScopingConfigContext> scopingConfigMap = ApplicationApi.getScopingMapForApp(scoping.getId());
+                            List<Long> visited = new ArrayList<>();
+                            if (MapUtils.isNotEmpty(moduleIdVsFieldNameMap)) {
+                                for (Map.Entry<Long, String> modIdFieldEntry : moduleIdVsFieldNameMap.entrySet()) {
+                                    if(modIdFieldEntry.getKey() != null) {
+                                        boolean hasConfig = false;
+                                        if (MapUtils.isNotEmpty(scopingConfigMap)) {
+                                            for (ScopingConfigContext scopingConfig : scopingConfigMap.values()) {
+                                                if (scopingConfig.getModuleId() == modIdFieldEntry.getKey() && moduleIdVsFieldNameMap.containsKey(scopingConfig.getModuleId()) && !visited.contains(scopingConfig.getModuleId())) {
+                                                    hasConfig = true;
+                                                    Criteria criteria = CriteriaAPI.getCriteria(scopingConfig.getCriteriaId());
+                                                    if (criteria != null) {
+                                                        FacilioModule module = modBean.getModule(modIdFieldEntry.getKey());
+                                                        FacilioField field = modBean.getField(modIdFieldEntry.getValue(), module.getName());
+                                                        if (field instanceof MultiLookupField) {
+                                                            String valGenLinkName = getAlternateLinkNameForMultiLookupHandling(valueGenerator.getLinkName(),field);
+                                                            criteria.addAndCondition(CriteriaAPI.getCondition(field.getCompleteColumnName(), module.getName() + "." + field.getName(), valGenLinkName, ScopeOperator.SCOPING_IS));
+                                                        } else {
+                                                            criteria.addAndCondition(CriteriaAPI.getCondition(field, valueGenerator.getLinkName(), ScopeOperator.SCOPING_IS));
+                                                        }
+                                                        scopingConfig.setCriteria(criteria);
+                                                    }
+                                                    ApplicationApi.deleteScopingConfigForId(scopingConfig.getId());
+                                                    newScopingConfigList.add(scopingConfig);
+                                                    visited.add(scopingConfig.getModuleId());
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (!hasConfig) {
+                                            ScopingConfigContext newScopingConfig = new ScopingConfigContext();
+                                            newScopingConfig.setModuleId(modIdFieldEntry.getKey());
+                                            newScopingConfig.setScopingId(scoping.getId());
+                                            Criteria criteria = new Criteria();
+                                            if (criteria != null) {
+                                                FacilioModule module = modBean.getModule(modIdFieldEntry.getKey());
+                                                FacilioField field = modBean.getField(modIdFieldEntry.getValue(), module.getName());
+                                                if (field instanceof MultiLookupField) {
+                                                    String valGenLinkName = getAlternateLinkNameForMultiLookupHandling(valueGenerator.getLinkName(),field);
+                                                    criteria.addAndCondition(CriteriaAPI.getCondition(field.getCompleteColumnName(), module.getName() + "." + field.getName(), valGenLinkName, ScopeOperator.SCOPING_IS));
+                                                } else {
+                                                    criteria.addAndCondition(CriteriaAPI.getCondition(field, valueGenerator.getLinkName(), ScopeOperator.SCOPING_IS));
+                                                }
+                                                newScopingConfig.setCriteria(criteria);
+                                            }
+                                            newScopingConfigList.add(newScopingConfig);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    List<ScopingConfigContext> newNewScopingConfigList = newScopingConfigList;
+                    ApplicationApi.addScopingConfigForApp(newNewScopingConfigList);
+                }
+            }
+        }
+    }
+
+    private static boolean includeSelfModule(Long modId) throws Exception {
+        if(modId == null) {
+            return true;
+        }
+        List<String> excludeModules = Arrays.asList(FacilioConstants.ContextNames.STORE_ROOM);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(modId);
+        if(module != null && excludeModules.contains(module.getName())) {
+            return false;
+        }
+        return true;
+    }
+
+    private static String getAlternateLinkNameForMultiLookupHandling(String linkName, FacilioField field) {
+        if(field instanceof MultiLookupField) {
+            switch (linkName) {
+                case "com.facilio.modules.SiteValueGenerator":
+                    return "com.facilio.modules.ContainsSiteValueGenerator";
+                case "com.facilio.modules.OrgUserValueGenerator":
+                case "com.facilio.modules.CurrentUserValueGenerator" :
+                case "com.facilio.modules.VendorValueGenerator" :
+                case "com.facilio.modules.TenantValueGenerator" :
+                    return "com.facilio.modules.ContainsUserValueGenerator";
+            }
+        }
+        return linkName;
     }
 }

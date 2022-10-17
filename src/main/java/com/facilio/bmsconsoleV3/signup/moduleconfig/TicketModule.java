@@ -9,10 +9,11 @@ import com.facilio.modules.FacilioModule;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class TicketModule extends BaseModuleConfig{
 
-    public TicketModule(){
+    public TicketModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.TICKET);
     }
 
@@ -27,7 +28,17 @@ public class TicketModule extends BaseModuleConfig{
         maintenanceApp.setModuleId(module.getModuleId());
         maintenanceApp.setFieldName("siteId");
 
-        scopeConfigList = Arrays.asList(maintenanceApp);
+        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
+        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
+        tenantApp.setModuleId(module.getModuleId());
+        tenantApp.setFieldName("tenant");
+
+        ScopeVariableModulesFields vendorApp = new ScopeVariableModulesFields();
+        vendorApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_vendor_user"));
+        vendorApp.setModuleId(module.getModuleId());
+        vendorApp.setFieldName("vendor");
+
+        scopeConfigList = Arrays.asList(maintenanceApp,tenantApp,vendorApp);
         return scopeConfigList;
     }
 }
