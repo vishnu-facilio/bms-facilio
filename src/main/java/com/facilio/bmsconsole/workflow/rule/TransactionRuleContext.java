@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -73,6 +74,18 @@ public class TransactionRuleContext extends WorkflowRuleContext{
     }
 
     @Override
+    public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Object transactionAmountFieldValue = FieldUtil.getValue((ModuleBaseWithCustomFields) record, modBean.getField(this.transactionAmountFieldId));
+        Object transactionDateFieldValue = FieldUtil.getValue((ModuleBaseWithCustomFields) record, modBean.getField(this.transactionDateFieldId));
+        if(transactionDateFieldValue == null || transactionAmountFieldValue == null ){
+            return false;
+        }
+        return super.evaluateMisc(moduleName, record, placeHolders, context);
+    }
+    
+
+    @Override
     public void executeTrueActions(Object currentRecord, Context context, Map<String, Object> placeHolders) throws Exception {
         if (!(currentRecord instanceof ModuleBaseWithCustomFields)) {
             throw new Exception("Invalid record");
@@ -83,9 +96,6 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         ModuleBaseWithCustomFields record= (ModuleBaseWithCustomFields) currentRecord;
-        if(FieldUtil.getValue(record,modBean.getField(this.transactionAmountFieldId))==null){
-            return;
-        }
         Map<String,Object> data=new HashMap<>();
         data.put("transactionDate",FieldUtil.getValue(record,modBean.getField(this.transactionDateFieldId)));
         data.put("transactionAmount",FieldUtil.getValue(record,modBean.getField(this.transactionAmountFieldId)));
