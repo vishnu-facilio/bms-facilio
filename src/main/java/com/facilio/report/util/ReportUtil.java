@@ -290,158 +290,132 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 	}
 	
 	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText, Boolean isPivot) throws Exception {
+		ApplicationContext app = ApplicationApi.getApplicationForId(AccountUtil.getCurrentUser().getApplicationId());
+		boolean isMainApp = (app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+		long appId = (long) AccountUtil.getCurrentUser().getApplicationId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
-		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
-		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if(isMainApp) {
+			FacilioModule module = modBean.getModule(moduleName);
+			reportFolders.addAll(ReportUtil.getReportFolders(module.getModuleId(), searchText, isMainApp, isPivot));
+		}
+		else
+		{
+			List<Long> moduleIds = new ArrayList<>();
+			if( appId != 0) {
+				List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
+				for (WebTabContext webtab : webtabs) {
+					if (webtab.getTypeEnum() == WebTabContext.Type.MODULE) {
+						moduleIds = ApplicationApi.getModuleIdsForTab(webtab.getId());
+					}
+				}
+			}
+			if(moduleIds != null && !moduleIds.isEmpty())
+			{
+				FacilioChain chain = ReadOnlyChainFactory.getAutomationModules();
+				FacilioContext context = chain.getContext();
+				chain.execute();
+				List<FacilioModule> modules = (ArrayList) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				List<Long> moduleIds_list = new ArrayList<>();
+				for(FacilioModule module_obj : modules){
+					moduleIds_list.add(module_obj.getModuleId());
+				}
+				if(isPivot)
+				{
+					FacilioModule energyData = modBean.getModule("energyData");
+					moduleIds.add(energyData.getModuleId());
+					moduleIds_list.add(energyData.getModuleId());
+				}
+				for(long moduleId : moduleIds)
+				{
+					if(moduleIds_list != null && moduleIds_list.contains(moduleId)) {
+						reportFolders.addAll(ReportUtil.getReportFolders(moduleId, searchText, isMainApp, isPivot));
+					}
+				}
+			}
+		}
+		return getFilteredReport(reportFolders);
+	}
+
+	public static List<ReportFolderContext> getReportFolders(Long moduleId, String searchText, Boolean isMainApp, Boolean isPivot)throws Exception
+	{
+		long appId = (long) AccountUtil.getCurrentUser().getApplicationId();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule othermodule = modBean.getModule(moduleId);
+		List<FacilioField> otherfields = FieldFactory.getReport1FolderFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(otherfields);
 
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-													.select(fields)
-													.table(reportFoldermodule.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
-													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+				.select(otherfields)
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(othermodule.getModuleId()), NumberOperators.EQUALS));
 
-		if(isPivot) {
-			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
-					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.IS));
-		} else {
-			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
-					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+		if(isPivot)
+		{
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"), String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.IS));
+			if(isMainApp){
+				select.andCriteria(ReportUtil.getReportAppIdCriteria(fieldMap, appId));
+			} else{
+				select.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(appId), NumberOperators.EQUALS));
+			}
 		}
-
+		else
+		{
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"), String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+			Criteria addAppIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, appId);
+			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			if(mainAppId > 0) {
+				addAppIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
+			}
+			select.andCriteria(addAppIdCriteria);
+		}
 		if (searchText != null) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
 		}
 
 		FacilioModule reportModule = ModuleFactory.getReportModule();
-        List<FacilioField> reportSelectFields = new ArrayList<>();
+		List<FacilioField> otherreportSelectFields = new ArrayList<>();
 
-        reportSelectFields.add(FieldFactory.getIdField(reportModule));
-        reportSelectFields.add(FieldFactory.getSiteIdField(reportModule));
-        reportSelectFields.add(FieldFactory.getField("reportFolderId", "REPORT_FOLDER_ID", reportModule, FieldType.LOOKUP));
-        reportSelectFields.add(FieldFactory.getField("name", "NAME", reportModule, FieldType.STRING));
-        reportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
-        reportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", reportModule, FieldType.NUMBER));
-        reportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", reportModule, FieldType.NUMBER));
-		reportSelectFields.add(FieldFactory.getModuleIdField(reportModule));
-		reportSelectFields.add(FieldFactory.getField("createdTime", "CREATED_TIME", reportModule, FieldType.NUMBER));
-		reportSelectFields.add(FieldFactory.getField("modifiedTime", "MODIFIED_TIME", reportModule, FieldType.NUMBER));
-		reportSelectFields.add(FieldFactory.getField("createdBy", "CREATED_BY", reportModule, FieldType.NUMBER));
-		reportSelectFields.add(FieldFactory.getField("modifiedBy", "MODIFIED_BY", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getIdField(reportModule));
+		otherreportSelectFields.add(FieldFactory.getSiteIdField(reportModule));
+		otherreportSelectFields.add(FieldFactory.getField("reportFolderId", "REPORT_FOLDER_ID", reportModule, FieldType.LOOKUP));
+		otherreportSelectFields.add(FieldFactory.getField("name", "NAME", reportModule, FieldType.STRING));
+		otherreportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
+		otherreportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getModuleIdField(reportModule));
+		otherreportSelectFields.add(FieldFactory.getField("createdTime", "CREATED_TIME", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getField("modifiedTime", "MODIFIED_TIME", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getField("createdBy", "CREATED_BY", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getField("modifiedBy", "MODIFIED_BY", reportModule, FieldType.NUMBER));
+		otherreportSelectFields.add(FieldFactory.getField("appId", "APP_ID", reportModule, FieldType.NUMBER));
 
-		List<Map<String, Object>> props = select.get();
+		List<Map<String, Object>> otherprops = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
-		if(props != null && !props.isEmpty()) {
+		if (otherprops != null && !otherprops.isEmpty()) {
 
-			for(Map<String, Object> prop :props) {
-
+			for (Map<String, Object> prop : otherprops) {
 				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
-				if(isWithReports) {
-					List<ReportContext> reports = getReportsFromFolderId(folder.getId(), reportSelectFields);
-					folder.setReports(reports);
-				}
+				List<ReportContext> reports = getReportsFromFolderId(folder.getId(), otherreportSelectFields, isMainApp, isPivot);
+				folder.setReports(reports);
 				reportFolders.add(folder);
 			}
-
 		}
-		Map<Long, SharingContext<SingleSharingContext>> map = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
+		Map<Long, SharingContext<SingleSharingContext>> othermap = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
 		for (int i = 0; i < reportFolders.size(); i++) {
 
-			if (map.containsKey(reportFolders.get(i).getId())) {
-
-				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));
+			if (othermap.containsKey(reportFolders.get(i).getId())) {
+				reportFolders.get(i).setReportSharing(othermap.get(reportFolders.get(i).getId()));
 			}
 		}
-
-		List<Long> moduleIds = new ArrayList<>();
-		long appId = (long) AccountUtil.getCurrentUser().getApplicationId();
-		if( appId != 0)
-		{
-			ApplicationContext application = ApplicationApi.getApplicationForId(appId);
-			if (application != null) {
-				List<ApplicationLayoutContext> appLayouts = ApplicationApi.getLayoutsForAppId(application.getId());
-				if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(appLayouts)) {
-					for (ApplicationLayoutContext layout : appLayouts) {
-						List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupForLayoutID(layout);
-						if (webTabGroups != null && !webTabGroups.isEmpty()) {
-							for (WebTabGroupContext webTabGroup : webTabGroups) {
-								List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
-								if (webTabs != null && !webTabs.isEmpty()) {
-									for (WebTabContext webtab : webTabs) {
-										if (webtab.getConfigJSON() != null && webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("module_reports")) {
-											List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
-											if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
-												for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
-													if (tabIdAppIdMappingContext.getModuleId() > 0) {
-														moduleIds.add(tabIdAppIdMappingContext.getModuleId());
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if(!moduleIds.isEmpty())
-		{
-			reportFolders = new ArrayList<>();
-			for(long moduleId : moduleIds) {
-				FacilioModule othermodule = modBean.getModule(moduleId);
-
-				FacilioModule otherReportFoldermodule = ModuleFactory.getReportFolderModule();
-				List<FacilioField> otherfields = FieldFactory.getReport1FolderFields();
-				Map<String, FacilioField> otherfieldMap = FieldFactory.getAsMap(otherfields);
-
-				select = new GenericSelectRecordBuilder()
-						.select(otherfields)
-						.table(otherReportFoldermodule.getTableName())
-						.andCondition(CriteriaAPI.getCondition(otherfieldMap.get("moduleId"), String.valueOf(othermodule.getModuleId()), NumberOperators.EQUALS));
-					select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
-							String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
-
-				if (searchText != null) {
-					select.andCondition(CriteriaAPI.getCondition(otherfieldMap.get("name"), searchText, StringOperators.CONTAINS));
-				}
-
-				FacilioModule otherreportModule = ModuleFactory.getReportModule();
-				List<FacilioField> otherreportSelectFields = new ArrayList<>();
-
-				otherreportSelectFields.add(FieldFactory.getIdField(otherreportModule));
-				otherreportSelectFields.add(FieldFactory.getSiteIdField(otherreportModule));
-				otherreportSelectFields.add(FieldFactory.getField("reportFolderId", "REPORT_FOLDER_ID", otherreportModule, FieldType.LOOKUP));
-				otherreportSelectFields.add(FieldFactory.getField("name", "NAME", otherreportModule, FieldType.STRING));
-				otherreportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", otherreportModule, FieldType.STRING));
-				otherreportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", otherreportModule, FieldType.NUMBER));
-				otherreportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", otherreportModule, FieldType.NUMBER));
-
-				List<Map<String, Object>> otherprops = select.get();
-				if (otherprops != null && !otherprops.isEmpty()) {
-
-					for (Map<String, Object> prop : otherprops) {
-						ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
-						List<ReportContext> reports = getReportsFromFolderId(folder.getId(), otherreportSelectFields);
-						folder.setReports(reports);
-						reportFolders.add(folder);
-					}
-				}
-				Map<Long, SharingContext<SingleSharingContext>> othermap = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
-				for (int i = 0; i < reportFolders.size(); i++) {
-
-					if (othermap.containsKey(reportFolders.get(i).getId())) {
-						reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));
-					}
-				}
-			}
-		}
-
-
-		return getFilteredReport(reportFolders);
+		return reportFolders;
+	}
+	public static Criteria getReportAppIdCriteria(Map<String, FacilioField> fieldMap, long appId)throws Exception
+	{
+		Criteria appCriteria = new Criteria();
+		appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(appId), NumberOperators.EQUALS));
+		appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), "NULL", CommonOperators.IS_EMPTY));
+		return appCriteria;
 	}
 	@SuppressWarnings("unlikely-arg-type")
 	public static List<ReportFolderContext> getFilteredReport(List<ReportFolderContext> reportFolders) throws Exception {
@@ -502,18 +476,34 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return reports;
 	}
-	
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields) throws Exception {
+		return getReportsFromFolderId(folderId, selectFields, true, false);
+	}
+	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields, boolean isMainApp, boolean isPivot) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
-		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(selectFields)
 													.table(module.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
 													;
-		
+		if(isMainApp)
+		{
+			select.andCriteria(ReportUtil.getReportAppIdCriteria(fieldMap, AccountUtil.getCurrentUser().getApplicationId()));
+		}
+		else if(!isMainApp && isPivot){
+			select.andCondition(CriteriaAPI.getCondition(module.getTableName()+".APP_ID", "appId", AccountUtil.getCurrentUser().getApplicationId()+"", NumberOperators.EQUALS));
+		}
+		if(!isMainApp && !isPivot){
+			Criteria appIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, AccountUtil.getCurrentUser().getApplicationId());
+			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			if(mainAppId > 0) {
+				appIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
+			}
+			select.andCriteria(appIdCriteria);
+		}
 		List<Map<String, Object>> props = select.get();
 		List<ReportContext> reports = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {

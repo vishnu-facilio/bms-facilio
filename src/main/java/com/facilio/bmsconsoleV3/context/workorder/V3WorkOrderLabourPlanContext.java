@@ -17,4 +17,5 @@ public class V3WorkOrderLabourPlanContext extends V3Context {
     private Long quantity;
     private Double rate;
     private Double totalPrice;
+    private Long duration;
 }

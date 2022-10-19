@@ -1,14 +1,18 @@
 package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.CraftContext;
+import com.facilio.bmsconsoleV3.context.SkillsContext;
 import com.facilio.bmsconsoleV3.context.V3ServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanCraftsContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
+import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
 import com.facilio.command.FacilioCommand;
 
 import com.facilio.constants.FacilioConstants;
@@ -46,11 +50,13 @@ public class CreateWorkOrderPlannedInventoryCommandV3 extends FacilioCommand {
                 List<WorkOrderPlannedItemsContext> workOrderPlannedItems = getWorkOrderPlannedItems(jobPlanId,workOrderContext);
                 List<WorkOrderPlannedToolsContext> workOrderPlannedTools = getWorkOrderPlannedTools(jobPlanId,workOrderContext);
                 List<WorkOrderPlannedServicesContext> workOrderPlannedServices = getWorkOrderPlannedServices(jobPlanId,workOrderContext);
+                List<V3WorkOrderLabourPlanContext> workOrderPlannedLabour = getWorkOrderPlannedLabour(jobPlanId,workOrderContext);
+
 
                 V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_ITEMS), FieldUtil.getAsMapList(workOrderPlannedItems, WorkOrderPlannedItemsContext.class),null,null);
                 V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_TOOLS), FieldUtil.getAsMapList(workOrderPlannedTools, WorkOrderPlannedToolsContext.class),null,null);
                 V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_SERVICES), FieldUtil.getAsMapList(workOrderPlannedServices, WorkOrderPlannedServicesContext.class),null,null);
-
+                V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN), FieldUtil.getAsMapList(workOrderPlannedLabour, V3WorkOrderLabourPlanContext.class),null,null);
             }
         }
         return false;
@@ -136,6 +142,27 @@ public class CreateWorkOrderPlannedInventoryCommandV3 extends FacilioCommand {
         return workOrderPlannedServices;
     }
 
+    public List<V3WorkOrderLabourPlanContext> getWorkOrderPlannedLabour(Long jobPlanId, V3WorkOrderContext workOrder) throws Exception {
+        List<V3WorkOrderLabourPlanContext> workOrderPlannedLabours = new ArrayList<>();
+        List<JobPlanCraftsContext> jobPlanLabours = getJobPlanLabour(jobPlanId);
+        for(JobPlanCraftsContext jobPlanLabour : jobPlanLabours){
+
+            V3WorkOrderLabourPlanContext workOrderPlannedLabour = new V3WorkOrderLabourPlanContext();
+
+            workOrderPlannedLabour.setParent(workOrder);
+            workOrderPlannedLabour.setCraft(jobPlanLabour.getCraft());
+            workOrderPlannedLabour.setSkill(jobPlanLabour.getSkill());
+            workOrderPlannedLabour.setQuantity(jobPlanLabour.getQuantity());
+            workOrderPlannedLabour.setDuration(jobPlanLabour.getDuration());
+            workOrderPlannedLabour.setRate(jobPlanLabour.getRate());
+            workOrderPlannedLabour.setTotalPrice(jobPlanLabour.getTotalPrice());
+
+            workOrderPlannedLabours.add(workOrderPlannedLabour);
+        }
+
+        return workOrderPlannedLabours;
+    }
+
     public List<JobPlanItemsContext> getJobPlanItems(Long jobPlanId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = FacilioConstants.ContextNames.JOB_PLAN_ITEMS;
@@ -180,5 +207,21 @@ public class CreateWorkOrderPlannedInventoryCommandV3 extends FacilioCommand {
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("service")));
         List<JobPlanServicesContext> jobPlanServices = builder.get();
         return jobPlanServices;
+    }
+    public List<JobPlanCraftsContext> getJobPlanLabour(Long jobPlanId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = FacilioConstants.ContextNames.JOB_PLAN_CRAFTS;
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<JobPlanCraftsContext> builder = new SelectRecordsBuilder<JobPlanCraftsContext>()
+                .moduleName(moduleName)
+                .select(fields)
+                .beanClass(JobPlanCraftsContext.class)
+                .andCondition(CriteriaAPI.getCondition("JOB_PLAN_ID", "jobPlan", String.valueOf(jobPlanId), NumberOperators.EQUALS))
+                .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("craft"), (LookupField) fieldsAsMap.get("skill")));
+
+        List<JobPlanCraftsContext> jobPlanLabour = builder.get();
+        return jobPlanLabour;
     }
 }

@@ -161,6 +161,13 @@ public class GlobalScopeVariableContext implements Serializable {
         return showSwitch;
     }
 
+    public boolean isSwitch() {
+        if(showSwitch == null) {
+            return false;
+        }
+        return showSwitch;
+    }
+
     public void setShowSwitch(Boolean showSwitch) {
         this.showSwitch = showSwitch;
     }
@@ -202,6 +209,13 @@ public class GlobalScopeVariableContext implements Serializable {
     }
 
     public Boolean getStatus() {
+        return status;
+    }
+
+    public boolean isActive() {
+        if(status == null) {
+            return false;
+        }
         return status;
     }
 

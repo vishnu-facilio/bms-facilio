@@ -79,7 +79,7 @@ public class ReadingKpiAPI {
 
         List<ReadingKPIContext> kpis = setNamespaceAndMatchedResources(selectRecordsBuilder.get());
         if (CollectionUtils.isEmpty(kpis)) {
-            return null;
+            return new HashMap<>();
         }
         Map<Long, List<Long>> dependentKpiIdFieldIdsMap = segregateDependentKpis(kpis);
 

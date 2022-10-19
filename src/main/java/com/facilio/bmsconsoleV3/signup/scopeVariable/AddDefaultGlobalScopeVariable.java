@@ -112,5 +112,17 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         tenantAudienceScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
         tenantAudienceScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AudienceValueGenerator").getId());
         scopeBean.addScopeVariable(tenantAudienceScopeVariable);
+
+        //Tenant app - site
+        GlobalScopeVariableContext tenantSiteScopeVariable = new GlobalScopeVariableContext();
+        tenantSiteScopeVariable.setLinkName("default_tenant_site");
+        tenantSiteScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.SITE).getModuleId());
+        tenantSiteScopeVariable.setStatus(true);
+        tenantSiteScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
+        tenantSiteScopeVariable.setDescription("Default Site Scope Variable");
+        tenantSiteScopeVariable.setDisplayName("Site Scope Variable");
+        tenantSiteScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
+        tenantSiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.SiteValueGenerator").getId());
+        scopeBean.addScopeVariable(tenantSiteScopeVariable);
     }
 }

@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -30,6 +31,7 @@ public class AddOrUpdateScopeVariable extends FacilioCommand {
                 if(scopeVariable.getAppId() == null){
                     throw new IllegalArgumentException("Appid cannot be null");
                 }
+                ScopingUtil.checkUserSwitchAndThrowError(scopeVariable);
                 if (scopeVariable.getId() > 0) {
                     scopeVariableId = scopeBean.updateScopeVariable(scopeVariable);
                 } else {

@@ -227,7 +227,8 @@ public class WebTabContext implements Serializable {
         INSTALL_BUNDLE("Install Bundle",false,TabType.SETUP),
         EMAIL_LOGS("Email Logs",false,TabType.SETUP),
         AUDIT_LOGS("Audit Logs",false,TabType.SETUP),
-        BOOKING_POLICY("Booking Policy",false,TabType.SETUP);
+        BOOKING_POLICY("Booking Policy",false,TabType.SETUP),
+        PIVOT("Pivot",false,TabType.NORMAL);
 
 
         public void setName(String name) {

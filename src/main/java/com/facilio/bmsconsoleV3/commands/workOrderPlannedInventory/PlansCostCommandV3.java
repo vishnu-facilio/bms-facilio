@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
+import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -82,6 +83,23 @@ public class PlansCostCommandV3  extends FacilioCommand {
                     context.put(FacilioConstants.ContextNames.PLANNED_SERVICES_COST, recordListServices.get(0).getTotalCost());
             }
 
+            //PLANNED LABOUR COST
+            moduleName = FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN;
+            fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
+            totalCost = fieldMap.get("totalPrice");
+
+            SelectRecordsBuilder<V3WorkOrderLabourPlanContext> recordsBuilderLabour = new SelectRecordsBuilder<V3WorkOrderLabourPlanContext>()
+                    .moduleName(moduleName)
+                    .beanClass(V3WorkOrderLabourPlanContext.class)
+                    .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parent", String.valueOf(workOrderId), NumberOperators.EQUALS));
+
+            recordsBuilderLabour.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
+            List<V3WorkOrderLabourPlanContext> recordListLabour = recordsBuilderLabour.get();
+            if(recordListLabour.size()<1){
+                context.put(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, 0);
+            }else{
+                context.put(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, recordListLabour.get(0).getTotalPrice());
+            }
         }
         return false;
     }

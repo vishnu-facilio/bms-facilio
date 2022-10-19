@@ -189,10 +189,10 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
 				Pair<List<FacilioField>, Criteria> fieldsAndCriteria = constructScopeVariableCriteria(module);
 				if (fieldsAndCriteria != null) {
-					if (CollectionUtils.isNotEmpty(fieldsAndCriteria.getLeft())) {
-						fields.addAll(fieldsAndCriteria.getLeft());
-					}
 					if(!isInsert) {
+						if (CollectionUtils.isNotEmpty(fieldsAndCriteria.getLeft())) {
+							fields.addAll(fieldsAndCriteria.getLeft());
+						}
 						if (criteria == null) {
 							criteria = new Criteria();
 						}
@@ -203,8 +203,8 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
 			ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
 			if(moduleScoping != null) {
-				fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 				if(!isInsert) {
+					fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 					if (criteria == null) {
 						criteria = new Criteria();
 					}

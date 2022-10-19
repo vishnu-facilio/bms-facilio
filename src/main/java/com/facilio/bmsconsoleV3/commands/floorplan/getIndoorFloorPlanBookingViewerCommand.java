@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands.floorplan;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -26,9 +25,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.apache.commons.collections4.MapUtils;
 
 public class getIndoorFloorPlanBookingViewerCommand extends FacilioCommand {
 

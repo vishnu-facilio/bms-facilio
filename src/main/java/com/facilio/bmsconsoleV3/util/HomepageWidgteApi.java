@@ -132,7 +132,7 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
         else {
-            widget.setPrimaryText("You space is " + space.getName());
+            widget.setPrimaryText(spaceBooking.getName());
             widget.setSpace(space);
             widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
             String time = "";
@@ -463,7 +463,7 @@ public class HomepageWidgteApi {
 
              if(deskModule.getModuleId() == booking.getParentModuleId()) {
 
-                widget.setPrimaryText("You desk is " + space.getName());
+                widget.setPrimaryText(booking.getName());
             }
             else if(parkingModule.getModuleId() == booking.getParentModuleId()) {
                 widget.setPrimaryText("Slot No " + space.getName());

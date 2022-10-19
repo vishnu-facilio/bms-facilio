@@ -97,13 +97,14 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
-			c.addCommand(new AddMaintenanceAppConfigCommand());
+//			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceApplicationLayout());
 			c.addCommand(new AddMaintenanceApplicationDefaultViews());
 			c.addCommand(new AddMaintenanceApplicationDefaultForms());
 			c.addCommand(new AddDefaultRolesMaintenanceApp());
 			c.addCommand(addEmployeePortalChain());
+			c.addCommand(addScopingChain());
 			return c;
 		}
 
@@ -6629,7 +6630,11 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-
+	public static FacilioChain addScopingChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddUserScopeForGlobalScopeCommand());
+		return c;
+	}
 }
 
 

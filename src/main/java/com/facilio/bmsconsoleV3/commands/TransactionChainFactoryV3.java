@@ -45,6 +45,8 @@ import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
+import com.facilio.bmsconsoleV3.commands.formrelation.AddFormRelationCommand;
+import com.facilio.bmsconsoleV3.commands.formrelation.UpdateFormRelationCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
@@ -2248,8 +2250,10 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain addOrUpdateScopeVariable() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new AddOrUpdateScopeVariable());
         c.addCommand(new FetchScopeVariableCommand());
+        c.addCommand(new AddUserScopeCriteriaForGlobalScope());
         return c;
     }
 
@@ -2293,12 +2297,15 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain setGlobalScopeVariableStatus() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new SetGlobalScopeVariableStatusCommand());
+        c.addCommand(new AddUserScopeCriteriaForGlobalScope());
         return c;
     }
 
     public static FacilioChain deleteGlobalScopeVariable() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopeCriteriaForGlobalScope());
         c.addCommand(new DeleteGlobalScopeVariableCommand());
         return c;
     }
@@ -2335,6 +2342,18 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateReadingRuleCommand());
         c.addCommand(new UpdateWorkflowCommand());
         c.addCommand(new AddRCARulesCommand());
+        return c;
+    }
+
+    public static FacilioChain createFormRelationChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddFormRelationCommand());
+        return c;
+    }
+
+    public static FacilioChain updateFormRelationChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateFormRelationCommand());
         return c;
     }
 }

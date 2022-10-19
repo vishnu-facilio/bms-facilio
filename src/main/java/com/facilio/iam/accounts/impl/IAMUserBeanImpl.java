@@ -120,7 +120,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		int updatedRows = updateBuilder.update(props);
 
 		if (fieldMap.containsKey("securityPolicyId")) {
-			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getId()));
+			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getUid()));
 		}
 		
 		return (updatedRows > 0);
@@ -489,7 +489,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			deletedTime.setDataType(FieldType.NUMBER);
 			deletedTime.setColumnName("DELETED_TIME");
 			deletedTime.setModule(IAMAccountConstants.getAccountOrgUserModule());
-			
+
 			if(user.isDefaultOrg()) {
 				updateDefaultOrgForUser(user.getUid(), user.getOrgId());
 			}
@@ -502,11 +502,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			
+
 			Map<String, Object> props = new HashMap<>();
 			props.put("deletedTime", System.currentTimeMillis());
 			
 			int updatedRows = updateBuilder.update(props);
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(IAMAccountConstants.getAccountsOrgUserFields())
+					.table("Account_ORG_Users");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+
+			List<Map<String , Object>> mapList = selectBuilder.get();
+
+			if(CollectionUtils.isEmpty(mapList)){
+				updateUserVerifiedAndPasswordFields();
+			}
+
 			if (updatedRows > 0) {
 				return true;
 			}
@@ -515,6 +528,36 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		else {
 			throw new AccountException(ErrorCode.USER_ALREADY_DELETED, "IAMUser is already deleted");
 		}
+	}
+
+	private void updateUserVerifiedAndPasswordFields() throws Exception{
+
+		FacilioField userVerified = new FacilioField();
+		userVerified.setName("userVerified");
+		userVerified.setDataType(FieldType.NUMBER);
+		userVerified.setColumnName("USER_VERIFIED");
+		userVerified.setModule(IAMAccountConstants.getAccountsUserModule());
+
+		FacilioField password = new FacilioField();
+		password.setName("password");
+		password.setDataType(FieldType.STRING);
+		password.setColumnName("PASSWORD");
+		password.setModule(IAMAccountConstants.getAccountsUserModule());
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(userVerified);
+		fields.add(password);
+
+		GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "0", NumberOperators.GREATER_THAN));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED","userVerified","1",NumberOperators.EQUALS));
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("userVerified",0);
+		props.put("password","NULL");
+		updateBuilder.update(props);
 	}
 
 	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {

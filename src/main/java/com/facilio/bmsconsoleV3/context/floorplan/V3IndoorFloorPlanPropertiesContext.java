@@ -45,6 +45,10 @@ private Long spaceId;
 
 private String spaceCategory;
 
+@Getter @Setter
+private Long spaceCategoryId;
+
+
 private Boolean isBooked;
 
 private Boolean isOccupied;

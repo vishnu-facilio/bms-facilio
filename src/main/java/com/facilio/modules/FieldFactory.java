@@ -11100,15 +11100,14 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("scopeVariableId", "SCOPE_VARIABLE_ID", module, FieldType.NUMBER));
         return fields;
     }
-    public static List<FacilioField> getSpaceCategoryFormRelation(){
+    public static List<FacilioField> getSpaceCategoryFormRelationFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getSpaceBookingFormRelationModule();
         fields.add(getIdField(module));
-        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("categoryId", "CATEGORY_ID", module, FieldType.NUMBER));
-        fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+        fields.add(getField("moduleFormId", "MODULE_FORM_ID", module, FieldType.NUMBER));
         return fields;
     }
 

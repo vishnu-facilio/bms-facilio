@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.util;
 
 import java.util.*;
+
+import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -131,6 +133,21 @@ public class V3FloorPlanAPI {
 			}
 
 		return properties;
+	}
+
+	public static String getSecondaryLabelFromSpacebooking(List<V3SpaceBookingContext>  bookingList) {
+
+		Map<Long, String> bookingRequester = new HashMap<>();
+
+
+		bookingList.forEach(booking -> {
+			if(booking != null) {
+				if (booking.getHost() != null && booking.getHost().getName() != null) {
+					bookingRequester.put(booking.getHost().getId(), booking.getHost().getName());
+				}
+			}
+		});
+		return String.join(", ",bookingRequester.values());
 	}
 
 	public static String getSecondaryLabelFromBookingsSlots( List<BookingSlotsContext>  bookingSlots, Map<Long, V3FacilityBookingContext> bookingMap) {
@@ -598,6 +615,7 @@ public class V3FloorPlanAPI {
 				}
 				else if (module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
 					V3ParkingStallContext parking = (V3ParkingStallContext) record;
+					properties.setSpaceCategoryId(parking.getSpaceCategoryId());
 
 					if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
 						setParkingAssignmentStyle(parking, properties, context);

@@ -22,6 +22,19 @@ import lombok.Setter;
 public class FloorplanAction extends V3Action {
 
 	private static final long serialVersionUID = 1L;
+
+	public Boolean getNewBooking() {
+		if (newBooking == null) {
+			return false;
+		}
+		return newBooking;
+	}
+
+	public void setNewBooking(Boolean newBooking) {
+		this.newBooking = newBooking;
+	}
+
+	private Boolean newBooking;
 	
 	private List<Long> spaceIds;
 	public List<Long> getSpaceIds() {
@@ -180,6 +193,7 @@ public class FloorplanAction extends V3Action {
 			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
 			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
 			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+
 			chain.execute();
 
 			List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_MARKERS");
@@ -191,17 +205,24 @@ public class FloorplanAction extends V3Action {
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
 			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
-
 		}
 		else if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
 
+
 			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanBookingObjectChain();
+
+
+			if (getNewBooking() == true) {
+				chain = ReadOnlyChainFactoryV3.getfloorplanNewBookingObjectChain();
+			}
 			FacilioContext context = chain.getContext();
+
 			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
 			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
 			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+			context.put("IS_NEW_BOOKING", getNewBooking());
 			chain.execute();
 
 			setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));

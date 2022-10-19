@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
+import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
@@ -37,6 +38,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.relation.command.AppendRelationFilterCommand;
 import com.facilio.relation.command.UpdateRelationSupplementsCommand;
 import com.facilio.relation.command.ValidateRelationParamCommand;
+import org.apache.commons.chain.Command;
 
 public class ReadOnlyChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -187,6 +189,16 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
         c.addCommand(new FetchFloorplanFacilitiesCommmand());
         c.addCommand(new getIndoorFloorPlanBookingResultCommands());
+        c.addCommand(new getFloorplanLayerCommand());
+        return c;
+    }
+    public static FacilioChain getfloorplanNewBookingObjectChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetDefaultFloorplanBookingVariableCommand());
+        c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
+        c.addCommand(new FetchSpaceBookingCommand());
+        c.addCommand(new getIndoorFloorPlanBookingNewResultCommands());
+        c.addCommand(new SetBookingFormIDCommand());
         c.addCommand(new getFloorplanLayerCommand());
         return c;
     }
@@ -342,5 +354,11 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetValueGeneratorsForGlobalScopeCommand());
         return chain;
+    }
+
+    public static FacilioChain getFormRelationList() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetFormRelationListCommand());
+        return c;
     }
 }

@@ -1388,6 +1388,7 @@ public class FacilioConstants {
 		public static final String PLANNED_TOOLS_COST = "plannedToolsCost";
 		public static final String PLANNED_ITEMS_COST = "plannedItemsCost";
 		public static final String PLANNED_SERVICES_COST = "plannedServicesCost";
+		public static final String PLANNED_LABOUR_COST = "plannedLabourCost";
 
 		public static final String TIMESTAMP = "timestamp";
 		public static final String DEVICE_DATA = "deviceData";
@@ -2290,6 +2291,7 @@ public class FacilioConstants {
 		}
 
 		public static class Floorplan {
+			public static final String SPACE_BOOKING_MAP = "spacebookingmap";
 			public static final String INDOOR_FLOORPLAN_ID = "indoorfloorplanId";
 			public static final String INDOOR_FLOORPLAN = "indoorfloorplan";
 			public static final String INDOOR_FLOORPLAN_OBJECTS = "indoorfloorplanobjects";
@@ -2358,6 +2360,8 @@ public class FacilioConstants {
 			public static final String BUILDING_ID = "buildingId";
 			public static final String OPERATING_HOUR = "operatingHour";
 			public static final String CURRENT_TIME = "currentTime";
+
+			public static final String SPACE_BOOKING_LIST = "spacebookinglist";
 
 
 		}
