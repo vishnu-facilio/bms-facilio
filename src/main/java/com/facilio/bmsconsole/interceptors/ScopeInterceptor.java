@@ -284,24 +284,24 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
                         Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");
                         Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
-                        Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
+//                        Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
                         }
 
-                        String method = request.getMethod();
-                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null){
-                            String actions = action.toString();
-                            List<String> actionList = Arrays.asList(actions.split(";"));
-                            for(String act : actionList){
-                                String[] actList = act.split(":");
-                                if(actList[0].equals(method)){
-                                    action = getActionParam(actList[1]);
-                                    break;
-                                }
-                            }
-                        }
+//                        String method = request.getMethod();
+//                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null){
+//                            String actions = action.toString();
+//                            List<String> actionList = Arrays.asList(actions.split(";"));
+//                            for(String act : actionList){
+//                                String[] actList = act.split(":");
+//                                if(actList[0].equals(method)){
+//                                    action = getActionParam(actList[1]);
+//                                    break;
+//                                }
+//                            }
+//                        }
 
 //                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
 //                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
