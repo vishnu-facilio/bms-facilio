@@ -27,6 +27,10 @@ public class PickListUtil {
         return getSpecialModulesPickList(moduleName,page,perPage,search,null,null);
     }
     public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search,String filters,String _default) throws Exception {
+        return getSpecialModulesPickList(moduleName,page,perPage,search,filters,_default, null);
+    }
+        
+    public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search,String filters,String _default, Criteria criteria) throws Exception {
         Map<String,Object> paramsData = new HashMap<>();
         paramsData.put("page", page);
         paramsData.put("perPage", perPage);
@@ -37,6 +41,9 @@ public class PickListUtil {
         }
         if(StringUtils.isNotEmpty(_default)){
             paramsData.put("_default",_default);
+        }
+        if(criteria != null) {
+            paramsData.put("serverCriteria", criteria);
         }
         return LookupSpecialTypeUtil.getNewPickList(moduleName, paramsData);
     }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.context.MailSourceType;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -77,6 +79,7 @@ public class ViewEmailScheduler extends FacilioJob {
 					toList = (String) emailTemplate.get("to");
 				}
 
+				emailTemplate.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.SCHEDULED_VIEW.name());
 				log.error("to list: " + StringUtils.join(toList, ", "));
 				log.error("email template " + emailTemplate.toJSONString());
 				log.error(fileUrl);

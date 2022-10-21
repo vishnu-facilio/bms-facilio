@@ -15,6 +15,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
@@ -44,11 +45,11 @@ public interface OrgBean {
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception;
 
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception;
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception;
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status) throws Exception;
 
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception;
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception;
 
 	public User getAppUser(long orgId, long appId, long ouId) throws Exception;
 

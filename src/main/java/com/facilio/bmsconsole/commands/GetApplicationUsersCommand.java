@@ -42,11 +42,11 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 		boolean fetchNonAppUsers= (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, false);
 		if(getCount == null || !getCount) {
 			if(userStatus != null){
-				List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery, inviteAcceptStatus,userStatus,null,null,null);
+				List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery, inviteAcceptStatus,userStatus,null,null,null, null);
 				context.put(FacilioConstants.ContextNames.USERS, users);
 			}
 			else {
-				List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery, inviteAcceptStatus,null,null,null);
+				List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery, inviteAcceptStatus,null,null,null,null);
 				context.put(FacilioConstants.ContextNames.USERS, users);
 			}
 		}
@@ -54,10 +54,10 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 			List<User> users = null;
 			int count = 0;
 			if(userStatus != null){
-				users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, 0, 5000, searchQuery, inviteAcceptStatus,userStatus,null,null,null);
+				users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, 0, 5000, searchQuery, inviteAcceptStatus, userStatus,null,null,null, null);
 			}
 			else{
-				users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, 0, 5000, searchQuery, inviteAcceptStatus,null,null,null);
+				users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, 0, 5000, searchQuery, inviteAcceptStatus,null,null,null, null);
 			}
 
 			if(CollectionUtils.isNotEmpty(users)){

@@ -126,12 +126,12 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status) throws Exception {
-		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,null,null,null);
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,null,null,null,null);
 	}
 
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception {
-		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds,defaultIds);
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception {
+		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds,defaultIds, criteria);
 		List<User> finalList = new ArrayList<>();
 		int recordsAdded = 0,actualRecordsSkipped = 0;
 		if(CollectionUtils.isNotEmpty(users)) {
@@ -158,10 +158,10 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
-		return getAppUsers(orgId, appId, ouId, checkAccessibleSites, fetchNonAppUsers, offset, perPage,searchQuery,inviteAcceptStatus,null,null,null);
+		return getAppUsers(orgId, appId, ouId, checkAccessibleSites, fetchNonAppUsers, offset, perPage,searchQuery,inviteAcceptStatus,null,null,null,null);
 	}
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -258,6 +258,9 @@ public class OrgBeanImpl implements OrgBean {
 		if(inviteAcceptStatus != null)
 		{
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
+		}
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

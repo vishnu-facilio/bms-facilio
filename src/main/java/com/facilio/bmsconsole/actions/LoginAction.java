@@ -985,7 +985,7 @@ public class LoginAction extends FacilioAction {
 		if(CollectionUtils.isNotEmpty(allApps)) {
 			List<Long> appIds = allApps.stream().map(ApplicationContext::getId).collect(Collectors.toList());
 			users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, true,
-					false, 0, 5000, null, true, true, null, appIds, null);
+					false, 0, 5000, null, true, true, null, appIds, null, null);
 		}
 
 		Map<Long, Set<Long>> userSites = new HashMap<>();

@@ -2972,6 +2972,7 @@ public class ApplicationApi {
         String search = null;
         Long _default = null;
         List<Long> defaultIdList = new ArrayList<>();
+        Criteria serverCriteria = null;
         if (!paramsMap.isEmpty()) {
             page = (int) paramsMap.get("page");
             perPage = (int) paramsMap.get("perPage");
@@ -3002,6 +3003,9 @@ public class ApplicationApi {
                     }
                 }
             }
+            if (paramsMap.containsKey("serverCriteria")) {
+            	serverCriteria = (Criteria) paramsMap.get("serverCriteria");
+            }
         }
         if (CollectionUtils.isEmpty(applicationIds)) {
             ApplicationContext maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -3013,8 +3017,9 @@ public class ApplicationApi {
                 applicationIds = allApps.stream().map(ApplicationContext::getId).collect(Collectors.toList());
            }
         }
+        //TODO - Send criteria object here to filter users in picklist api
         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false,
-                false, offset, perPage, search, true, true, teamIds, applicationIds, defaultIdList);
+                false, offset, perPage, search, true, true, teamIds, applicationIds, defaultIdList, serverCriteria);
         if (CollectionUtils.isNotEmpty(users)) {
             return users;
         }

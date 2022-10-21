@@ -51,7 +51,7 @@ public class TimelineAction extends RESTAPIHandler {
 		if(groupByField instanceof LookupField) {
 			setModuleName(((LookupField) (((TimelineViewContext) viewObj).getGroupByField())).getLookupModule().getName());
 			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
-				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch()));
+				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, ((TimelineViewContext) viewObj).getGroupCriteria()));
 				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 				setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(getModuleName()));
 			} else {
