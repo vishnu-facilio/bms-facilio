@@ -49,4 +49,10 @@ sources:
     configs:
       broker: b-3.sydkafka.sl94ay.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-1.sydkafka.sl94ay.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-2.sydkafka.sl94ay.c2.kafka.ap-southeast-2.amazonaws.com:9096 
       auth: true
+      iot.rule.arn: arn:aws:iot:ap-southeast-2:668907905219:ruledestination/vpc/8a718229-3e80-4475-8bff-c5ced70e73b1
+      iot.rule.security.protocol: SASL_SSL
+      iot.rule.sasl.mechanism: SCRAM-SHA-512
+      iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_IoTKafka','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+      iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_IoTKafka','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+
             

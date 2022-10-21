@@ -147,6 +147,14 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "syd-kafka" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-syd-kafka.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-syd -kafka.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user-critical" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-syd-user-critical.properties $CONF_DIR/awsprops.properties
