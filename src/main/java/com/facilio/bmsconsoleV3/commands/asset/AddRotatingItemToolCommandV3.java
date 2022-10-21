@@ -12,6 +12,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,13 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<V3AssetContext> assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("asset"));
+        List<V3AssetContext> assetList = new ArrayList<>();
+        if(context.get(FacilioConstants.ContextNames.RECORD)!=null){
+            assetList = (List<V3AssetContext>) context.get(FacilioConstants.ContextNames.RECORD);
+        }
+        else{
+            assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("asset"));
+        }
         for(V3AssetContext asset:assetList){
             if (asset != null) {
                 if ((asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) && (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0)) {

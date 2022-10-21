@@ -14,7 +14,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -1121,12 +1124,12 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 
-
-			AssetContext asset = (AssetContext) RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET, Long.valueOf(objects[0].toString()));
-			FacilioChain c = TransactionChainFactory.getTagAssetASRotatingChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD, asset);
+			V3AssetContext asset =  V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET, Long.valueOf(objects[0].toString()),V3AssetContext.class);
+			List<V3AssetContext> assets = new ArrayList<>();
+			assets.add(asset);
+			FacilioChain c = TransactionChainFactoryV3.getTagAssetASRotatingChainV3();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD, assets);
 			c.execute();
-
 
 			return null;
 		}
