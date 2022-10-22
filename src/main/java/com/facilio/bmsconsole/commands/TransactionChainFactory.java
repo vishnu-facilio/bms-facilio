@@ -6635,6 +6635,25 @@ public class TransactionChainFactory {
 		c.addCommand(new AddUserScopeForGlobalScopeCommand());
 		return c;
 	}
+
+	public static FacilioChain getAddOrUpdateCurrencyChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new CurrencyObjectValidator());
+		c.addCommand(new AddOrUpdateCurrencyCommand());
+		return c;
+	}
+
+	public static FacilioChain getUpdateCurrencyStatusChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateCurrencyStatusCommand());
+		return c;
+	}
+
+	public static FacilioChain getAllCurrenciesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAllCurrenciesCommand());
+		return c;
+	}
 }
 
 

@@ -157,6 +157,7 @@ public class ModuleFactory {
 		moduleMap.put("customPageWidget", getCustomPageWidgetModule());
 		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
 		moduleMap.put("customWidgetGroupFields", getSummaryWidgetGroupFieldsModule());
+		moduleMap.put("currency", getCurrencyModule());
 
 		moduleMap.put(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION,getSpaceBookingFormRelationModule());
 		return moduleMap;
@@ -5359,5 +5360,13 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		shiftUserRel.setDisplayName("Shift People Rel");
 		shiftUserRel.setTableName("Shift_People_Rel");
 		return shiftUserRel;
+	}
+
+	public static FacilioModule getCurrencyModule() {
+		FacilioModule currencyModule = new FacilioModule();
+		currencyModule.setName("currencies");
+		currencyModule.setDisplayName("Currencies");
+		currencyModule.setTableName("Currencies");
+		return currencyModule;
 	}
 }

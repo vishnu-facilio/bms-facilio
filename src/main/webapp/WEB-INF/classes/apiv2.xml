@@ -6947,4 +6947,16 @@
 				method="getAllLicensedPortals">
 		</action>
 	</package>
+
+	<package name="multicurrency" namespace="/api/v2/multicurrency" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.CurrencyAction" method="addOrUpdateCurrency">
+		</action>
+		<action name="updateStatus"
+				class="com.facilio.bmsconsole.actions.CurrencyAction" method="updateStatus">
+		</action>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getAllCurrencies">
+		</action>
+	</package>
 </struts>

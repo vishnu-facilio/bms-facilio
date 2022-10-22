@@ -43,7 +43,8 @@ public class AddSystemLookupModules extends SignUpData {
 		fields.add(FieldFactory.getDefaultField(SystemLookupCRUDHandler.FIELD_ID_FIELD_NAME, "Field Id", "FIELD_ID", FieldType.NUMBER));
 		fields.add(FieldFactory.getDefaultField("currencyCode", "Currency Code", "CURRENCY_CODE", FieldType.STRING));
 		fields.add(FieldFactory.getDefaultField("currencyValue", "Currency Value", "CURRENCY_VALUE", FieldType.DECIMAL));
-
+        fields.add(FieldFactory.getDefaultField("exchangeRate", "Exchange Rate", "EXCHANGE_RATE", FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("baseCurrencyValue", "BaseCurrency Value", "BASECURRENCY_VALUE", FieldType.DECIMAL));
 
 		module.setFields(fields);
 		return module;

@@ -1138,4 +1138,35 @@
             </property>
         </requestbody>
     </request>
+
+    <request path="/api/v2/multicurrency/addCurrency">
+        <requestbody type="object">
+            <property name="currency" type="object">
+                <property name="currencyCode" type="string" mandatory="true"/>
+                <property name="displaySymbol" type="string" mandatory="true"/>
+                <property name="exchangeRate" type="number"/>
+                <property name="decimalPlace" type="number"/>
+                <property name="isBaseCurrency" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/multicurrency/updateCurrency">
+        <requestbody type="object">
+            <property name="currency" type="object">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="currencyCode" type="string" mandatory="true"/>
+                <property name="displaySymbol" type="string" mandatory="true"/>
+                <property name="exchangeRate" type="number" mandatory="true"/>
+                <property name="decimalPlace" type="number" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/multicurrency/updateStatus">
+        <requestbody type="object">
+            <property name="currency" type="object">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
 </config>

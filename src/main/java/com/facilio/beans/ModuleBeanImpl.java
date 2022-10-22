@@ -673,7 +673,7 @@ public class ModuleBeanImpl implements ModuleBean {
 							break;
 						case CURRENCY_FIELD:
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							field = constructSystemLookupField(prop, CurrencyField.class);
+							field = FieldUtil.getAsBeanFromMap(prop, CurrencyField.class);
 							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);

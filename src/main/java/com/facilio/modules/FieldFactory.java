@@ -11111,6 +11111,23 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getCurrencyFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCurrencyModule();
+        fields.add(getIdField(module));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("currencyCode", "CURRENCY_CODE", module, FieldType.STRING));
+        fields.add(getField("displaySymbol", "DISPLAY_SYMBOL", module, FieldType.STRING));
+        fields.add(getField("exchangeRate", "EXCHANGE_RATE", module, FieldType.DECIMAL));
+        fields.add(getField("decimalPlaces", "DECIMAL_PLACE", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

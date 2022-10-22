@@ -182,7 +182,10 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
-
+		public static final String CURRENCY = "currency";
+		public static final String OLD_CURRENCY = "oldCurrency";
+		public static final String CURRENCIES_LIST = "currencies";
+		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
 		public static final String READING_IMPORT_APP = "readingimport";
 
 		public static class HomePage {
