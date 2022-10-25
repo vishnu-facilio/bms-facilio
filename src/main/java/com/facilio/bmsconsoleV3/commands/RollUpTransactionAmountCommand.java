@@ -9,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,14 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TRANSACTION);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        List<V3TransactionContext> recordList = Constants.getRecordListFromMap(recordMap, module.getName());
+        List<Long>accountIds=new ArrayList<>();
+        for(V3TransactionContext record:recordList){
+            if(!accountIds.contains(record.getAccount().getId())){
+                accountIds.add(record.getAccount().getId());
+            }
+        }
 
         FacilioField timeFieldCloned = fieldMap.get("transactionDate").clone();
         FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTH.getSelectField(timeFieldCloned);
@@ -51,7 +61,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .module(module)
                 .beanClass(V3TransactionContext.class)
                 .select(selectFields)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), "1", CommonOperators.IS_NOT_EMPTY))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), StringUtils.join(accountIds, ","), NumberOperators.EQUALS))
                // .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), "1", CommonOperators.IS_NOT_EMPTY))
                 .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName())
                 ;
@@ -79,8 +89,28 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
                 Double actualAmount = Double.valueOf(df.format(amount));
                 Long monthStartDate = DateTimeUtil.getMonthStartTimeOf(minMonthStartDate, false);
-                if(StringUtils.isNotEmpty(rollUpModName) && StringUtils.isNotEmpty(rollUpFieldName)) {
-                    rollUpData(actualAmount, accountMap, resourceMap, rollUpModName, rollUpFieldName, monthStartDate);
+                rollUpData(actualAmount, accountMap, resourceMap, rollUpModName, rollUpFieldName, monthStartDate);
+
+            }
+
+        }
+        else{
+            if(CollectionUtils.isNotEmpty(recordList)) {
+                for(V3TransactionContext record:recordList){
+
+                    final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+
+                    Long minMonthStartDate = record.getTransactionDate();
+                    Long monthStartDate = DateTimeUtil.getMonthStartTimeOf(minMonthStartDate, false);
+
+                    Map<String, Object> accountMap = new HashMap<>();
+                    accountMap.put("id", record.getAccount().getId());
+
+                    String rollUpModName = FacilioConstants.TransactionRule.TransactionRollUpModuleName;
+                    String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
+
+                    rollUpData(Double.valueOf(df.format(0)), accountMap, null, rollUpModName, rollUpFieldName, monthStartDate);
+
                 }
 
             }
