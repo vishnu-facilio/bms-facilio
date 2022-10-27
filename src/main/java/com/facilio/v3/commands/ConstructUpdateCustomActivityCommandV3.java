@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -26,6 +27,7 @@ import com.facilio.v3.context.Constants;
 
 import lombok.var;
 
+@Log4j
 public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
 
 	@Override
@@ -51,6 +53,13 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
                 long fieldid = changeset.getFieldId();
                 Object oldValue = changeset.getOldValue();
                 Object newValue = changeset.getNewValue();
+
+                if (newValue == null && oldValue == null) {
+                    continue;
+                }
+
+                LOGGER.debug("Asset Update activity command Field Id : "+fieldid +" moduleName : "+ moduleName);
+
                 FacilioField field = modBean.getField(fieldid, moduleName);
 
                 JSONObject changeObj = new JSONObject();
@@ -78,6 +87,8 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
                 changeList.add(changeObj);
             }
             info.put("changeSet", changeList);
+
+            LOGGER.debug("Asset Activity info : "+ info);
 
             // Adding this conditional check as this is used in both Create & Update Chain
             EventType eventType = (EventType) context.get(ContextNames.EVENT_TYPE);

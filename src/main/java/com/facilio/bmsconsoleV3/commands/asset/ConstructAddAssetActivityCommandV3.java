@@ -18,6 +18,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
 import lombok.var;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class ConstructAddAssetActivityCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -56,6 +58,11 @@ public class ConstructAddAssetActivityCommandV3 extends FacilioCommand {
                 long fieldid = changeset.getFieldId();
                 Object oldValue = changeset.getOldValue();
                 Object newValue = changeset.getNewValue();
+
+                if (newValue ==null && oldValue == null) {
+                    continue;
+                }
+
                 FacilioField field = modBean.getField(fieldid, moduleName);
 
                 JSONObject changeObj = new JSONObject();
@@ -83,6 +90,8 @@ public class ConstructAddAssetActivityCommandV3 extends FacilioCommand {
                 changeList.add(changeObj);
             }
             info.put("changeSet", changeList);
+
+            LOGGER.debug("Asset Activity info : "+ info);
 
             CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD, info, (FacilioContext) context);
         }
