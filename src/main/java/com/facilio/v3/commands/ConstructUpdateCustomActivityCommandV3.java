@@ -49,6 +49,11 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
             List<Object> changeList = new ArrayList<Object>();
             for (UpdateChangeSet changeset : changeSets) {
                 long fieldid = changeset.getFieldId();
+
+                if (fieldid <= 0L) {
+                    continue;
+                }
+
                 Object oldValue = changeset.getOldValue();
                 Object newValue = changeset.getNewValue();
                 FacilioField field = modBean.getField(fieldid, moduleName);
