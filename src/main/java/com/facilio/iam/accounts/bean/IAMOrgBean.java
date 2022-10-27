@@ -4,13 +4,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.db.criteria.Criteria;
 
@@ -67,4 +64,10 @@ public interface IAMOrgBean {
 	public void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception;
 
 	public boolean updateDomainSSOStatus(String domain, boolean status) throws Exception;
+
+	public boolean addOrUpdateDomainLink(AppDomainLink domainLink) throws Exception;
+
+	public AppDomainLink getDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception;
+
+	public boolean deleteDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception;
 }

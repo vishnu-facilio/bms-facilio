@@ -110,6 +110,7 @@ publicTables: #Tables without orgId. Error will be thrown if org is not present 
   - MessageTopic
   - Agent_Disable
   - Domain_SSO
+  - Domain_Links
   - FacilioAudit
   - UserPrevPwds
   - DC_Lookup

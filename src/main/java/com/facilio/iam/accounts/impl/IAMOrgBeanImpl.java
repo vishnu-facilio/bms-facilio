@@ -3,6 +3,7 @@ package com.facilio.iam.accounts.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.modules.FieldFactory;
@@ -12,10 +13,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -694,5 +691,83 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
 		}
 		return Collections.EMPTY_LIST;
+	}
+
+	public boolean addOrUpdateDomainLink(AppDomainLink domainLink) throws Exception {
+		AppDomainLink existsDomainLink = getDomainLink(domainLink.getAppDomainId(), domainLink.getLinkTypeEnum());
+		if (existsDomainLink == null) {
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.fields(IAMAccountConstants.getAppDomainLinkFields())
+					.table(IAMAccountConstants.getAppDomainLinkModule().getTableName());
+
+			Map<String, Object> props = FieldUtil.getAsProperties(domainLink);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+
+			long ssoId = (Long) props.get("id");
+			domainLink.setId(ssoId);
+			return true;
+		}
+		else {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.fields(IAMAccountConstants.getAppDomainLinkFields())
+					.table(IAMAccountConstants.getAppDomainLinkModule().getTableName());
+
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(existsDomainLink.getId()), NumberOperators.EQUALS));
+
+			Map<String, Object> props = FieldUtil.getAsProperties(domainLink);
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
+	public AppDomainLink getDomainLink(Long appDomainId, AppDomainLink.LinkType linkType) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainLinkFields())
+				.table(IAMAccountConstants.getAppDomainLinkModule().getTableName());
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Domain_Links.APP_DOMAIN_ID", "appDomainId", appDomainId+"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			AppDomainLink domainLink = FieldUtil.getAsBeanFromMap(props.get(0), AppDomainLink.class);
+			return domainLink;
+		}
+		return null;
+	}
+
+	public AppDomainLink getDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainLinkFields())
+				.table(IAMAccountConstants.getAppDomainLinkModule().getTableName())
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Domain_Links.APP_DOMAIN_ID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Domain_Links.LINK_TYPE", "linkType", linkType.getIndex()+"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			AppDomainLink domainLink = FieldUtil.getAsBeanFromMap(props.get(0), AppDomainLink.class);
+			return domainLink;
+		}
+		return null;
+	}
+
+	public boolean deleteDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception {
+		AppDomainLink existsDomainLink = getDomainLink(domain, linkType);
+		if (existsDomainLink != null) {
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(IAMAccountConstants.getAppDomainLinkModule().getTableName());
+
+			builder.andCondition(CriteriaAPI.getIdCondition(existsDomainLink.getId(), IAMAccountConstants.getAppDomainLinkModule()));
+			return builder.delete() > 0;
+		}
+		return false;
 	}
 }

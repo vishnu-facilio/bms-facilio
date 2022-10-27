@@ -2794,4 +2794,40 @@ public class FacilioAuthAction extends FacilioAction {
 	public void setMfaConfigToken(String mfaConfigToken) {
 		this.mfaConfigToken = mfaConfigToken;
 	}
+
+	public String fetchLogo() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+		String logoURL = null;
+		if (appDomain != null && appDomain.getOrgId() > 0) {
+			Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
+			if (org != null) {
+				logoURL = org.getLogoUrl();
+			}
+		}
+		setResult("url", logoURL);
+		return SUCCESS;
+	}
+
+	public String fetchPrivacyPolicy() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+		AppDomainLink domainLink = null;
+		if (appDomain != null) {
+			domainLink = IAMOrgUtil.getDomainLink(appDomain.getDomain(), AppDomainLink.LinkType.PRIVACY_POLICY);
+		}
+		setResult("privacyPolicy", domainLink);
+		return SUCCESS;
+	}
+
+	public String fetchTermsOfService() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+		AppDomainLink domainLink = null;
+		if (appDomain != null) {
+			domainLink = IAMOrgUtil.getDomainLink(appDomain.getDomain(), AppDomainLink.LinkType.TERMS_OF_USE);
+		}
+		setResult("termsOfService", domainLink);
+		return SUCCESS;
+	}
 }

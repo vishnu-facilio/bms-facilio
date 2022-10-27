@@ -167,6 +167,12 @@ public class FacilioProperties {
     @Getter
     private static String portalProxyUserUrl;
 
+    @Getter
+    private static String privacyPolicyURL;
+
+    @Getter
+    private static String termsOfServiceURL;
+
     static {
         loadProperties();
     }
@@ -330,6 +336,9 @@ public class FacilioProperties {
 
             proxyUrl = PROPERTIES.getProperty("proxyUrl");
             portalProxyUserUrl = PROPERTIES.getProperty("portalProxyUrl");
+
+            privacyPolicyURL = (String) PROPERTIES.getOrDefault("privacyPolicyURL", "https://facilio.com/privacy-policy");
+            termsOfServiceURL = (String) PROPERTIES.getOrDefault("termsOfServiceURL", "https://facilio.com/terms-of-service");
 
             if (PROPERTIES.containsKey("iot.endpoint.port")) {
                 try {

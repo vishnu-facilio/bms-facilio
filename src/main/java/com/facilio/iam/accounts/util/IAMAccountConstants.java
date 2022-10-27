@@ -1175,6 +1175,15 @@ public class IAMAccountConstants {
 			return accountSSOModule;
 		}
 
+		public static FacilioModule getAppDomainLinkModule() {
+			FacilioModule domainLink = new FacilioModule();
+			domainLink.setName("appDomainLink");
+			domainLink.setDisplayName("App Domain Links");
+			domainLink.setTableName("Domain_Links");
+
+			return domainLink;
+		}
+
 		public static List<FacilioField> getDomainSSOFields() {
 			FacilioModule module = getDomainSSOModule();
 			List<FacilioField> fields = new ArrayList<>();
@@ -1343,6 +1352,97 @@ public class IAMAccountConstants {
 			modifiedBy.setModule(module);
 			fields.add(modifiedBy);
 			
+			return fields;
+		}
+
+		public static List<FacilioField> getAppDomainLinkFields() {
+			FacilioModule module = getAppDomainLinkModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField appDomainId = new FacilioField();
+			appDomainId.setName("appDomainId");
+			appDomainId.setDataType(FieldType.NUMBER);
+			appDomainId.setColumnName("APP_DOMAIN_ID");
+			appDomainId.setModule(module);
+			fields.add(appDomainId);
+
+			FacilioField name = new FacilioField();
+			name.setName("name");
+			name.setDataType(FieldType.STRING);
+			name.setColumnName("NAME");
+			name.setModule(module);
+			fields.add(name);
+
+			FacilioField type = new FacilioField();
+			type.setName("linkType");
+			type.setDataType(FieldType.NUMBER);
+			type.setColumnName("LINK_TYPE");
+			type.setModule(module);
+			fields.add(type);
+
+			FacilioField isExternalURL = new FacilioField();
+			isExternalURL.setName("isExternalURL");
+			isExternalURL.setDataType(FieldType.BOOLEAN);
+			isExternalURL.setColumnName("IS_EXTERNAL_URL");
+			isExternalURL.setModule(module);
+			fields.add(isExternalURL);
+
+			FacilioField content = new FacilioField();
+			content.setName("content");
+			content.setDataType(FieldType.STRING);
+			content.setColumnName("CONTENT");
+			content.setModule(module);
+			fields.add(content);
+
+			FacilioField externalURL = new FacilioField();
+			externalURL.setName("externalURL");
+			externalURL.setDataType(FieldType.STRING);
+			externalURL.setColumnName("EXTERNAL_URL");
+			externalURL.setModule(module);
+			fields.add(externalURL);
+
+			FacilioField showInMenu = new FacilioField();
+			showInMenu.setName("showInMenu");
+			showInMenu.setDataType(FieldType.BOOLEAN);
+			showInMenu.setColumnName("SHOW_IN_MENU");
+			showInMenu.setModule(module);
+			fields.add(showInMenu);
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("createdTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(module);
+			fields.add(createdTime);
+
+			FacilioField createdBy = new FacilioField();
+			createdBy.setName("createdBy");
+			createdBy.setDataType(FieldType.NUMBER);
+			createdBy.setColumnName("CREATED_BY");
+			createdBy.setModule(module);
+			fields.add(createdBy);
+
+			FacilioField modifiedTime = new FacilioField();
+			modifiedTime.setName("modifiedTime");
+			modifiedTime.setDataType(FieldType.NUMBER);
+			modifiedTime.setColumnName("MODIFIED_TIME");
+			modifiedTime.setModule(module);
+			fields.add(modifiedTime);
+
+			FacilioField modifiedBy = new FacilioField();
+			modifiedBy.setName("modifiedBy");
+			modifiedBy.setDataType(FieldType.NUMBER);
+			modifiedBy.setColumnName("MODIFIED_BY");
+			modifiedBy.setModule(module);
+			fields.add(modifiedBy);
+
 			return fields;
 		}
 }

@@ -5,10 +5,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomainLink;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.service.FacilioService;
@@ -124,5 +126,33 @@ public class IAMOrgUtil {
 
 	public static List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getCustomAppDomain(type, orgId));
+	}
+
+	public static boolean addOrUpdateDomainLink(AppDomainLink domainLink) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().addOrUpdateDomainLink(domainLink));
+	}
+
+	public static AppDomainLink getDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception {
+		AppDomainLink domainLink = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getDomainLink(domain, linkType));
+		if (domainLink == null) {
+			if (linkType == AppDomainLink.LinkType.PRIVACY_POLICY) {
+				domainLink = new AppDomainLink();
+				domainLink.setName("Privacy policy");
+				domainLink.setLinkType(linkType);
+				domainLink.setIsExternalURL(true);
+				domainLink.setExternalURL(FacilioProperties.getPrivacyPolicyURL());
+			} else if (linkType == AppDomainLink.LinkType.TERMS_OF_USE) {
+				domainLink = new AppDomainLink();
+				domainLink.setName("Terms of service");
+				domainLink.setLinkType(linkType);
+				domainLink.setIsExternalURL(true);
+				domainLink.setExternalURL(FacilioProperties.getTermsOfServiceURL());
+			}
+		}
+		return domainLink;
+	}
+
+	public static boolean deleteDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().deleteDomainLink(domain, linkType));
 	}
 }
