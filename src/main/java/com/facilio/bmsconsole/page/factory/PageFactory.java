@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.bmsconsole.page.RelatedListContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
-import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
@@ -28,9 +28,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BMSAlarmContext;
@@ -76,9 +73,6 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
@@ -94,14 +88,11 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
-import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
-import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -116,8 +107,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-import com.facilio.relation.context.RelationRequestContext;
-import com.facilio.relation.util.RelationUtil;
 
 public class PageFactory {
 
@@ -467,13 +456,31 @@ public class PageFactory {
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(fields)) {
 					for (FacilioField field : fields) {
-						PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
-						JSONObject relatedList = new JSONObject();
-						relatedList.put("module", subModule);
-						relatedList.put("field", field);
-						relatedListWidget.setRelatedList(relatedList);
-						relatedListWidget.addToLayoutParams(section, 24, 8);
-						section.addWidget(relatedListWidget);
+
+						Organization organization = AccountUtil.getCurrentOrg();
+						if(organization != null && organization.getId() == 173l) {
+							PageWidget relatedListWidget = new PageWidget(WidgetType.NEW_RELATED_LIST);
+							JSONObject relatedList = new JSONObject();
+							relatedList.put("module", subModule);
+							relatedList.put("field", field);
+
+							relatedList.put("isEditable", !(RelatedListContext.EDIT_DISABLED_MODULES.contains(subModule.getName())));
+							relatedList.put("isDeletable", !(RelatedListContext.DELETE_DISABLED_MODULES.contains(subModule.getName())));
+							relatedList.put("isCreateAllowed", RelatedListContext.CREATE_ENABLED_MODULES.contains(subModule.getName()));
+
+							relatedListWidget.setRelatedList(relatedList);
+							relatedListWidget.addToLayoutParams(section, 24, 8);
+							section.addWidget(relatedListWidget);
+						}
+						else {
+							PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+							JSONObject relatedList = new JSONObject();
+							relatedList.put("module", subModule);
+							relatedList.put("field", field);
+							relatedListWidget.setRelatedList(relatedList);
+							relatedListWidget.addToLayoutParams(section, 24, 8);
+							section.addWidget(relatedListWidget);
+						}
 					}
 				}
 			}
