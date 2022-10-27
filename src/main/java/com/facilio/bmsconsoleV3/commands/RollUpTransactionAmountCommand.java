@@ -9,7 +9,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -21,13 +20,9 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RollUpTransactionAmountCommand extends FacilioCommand {
     @Override
@@ -37,12 +32,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         List<V3TransactionContext> recordList = Constants.getRecordListFromMap(recordMap, module.getName());
-        List<Long>accountIds=new ArrayList<>();
-        for(V3TransactionContext record:recordList){
-            if(!accountIds.contains(record.getAccount().getId())){
-                accountIds.add(record.getAccount().getId());
-            }
-        }
+        V3TransactionContext record= recordList.get(0);
 
         FacilioField timeFieldCloned = fieldMap.get("transactionDate").clone();
         FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTH.getSelectField(timeFieldCloned);
@@ -61,7 +51,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .module(module)
                 .beanClass(V3TransactionContext.class)
                 .select(selectFields)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), StringUtils.join(accountIds, ","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), String.valueOf(record.getAccount().getId()), PickListOperators.IS))
                // .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), "1", CommonOperators.IS_NOT_EMPTY))
                 .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName())
                 ;
@@ -95,8 +85,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
 
         }
         else{
-            if(CollectionUtils.isNotEmpty(recordList)) {
-                for(V3TransactionContext record:recordList){
+            if(record!=null) {
 
                     final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
 
@@ -110,8 +99,6 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                     String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
 
                     rollUpData(Double.valueOf(df.format(0)), accountMap, null, rollUpModName, rollUpFieldName, monthStartDate);
-
-                }
 
             }
         }
