@@ -119,7 +119,7 @@ public class ScopingUtil {
                         }
                     }
                     //site ID field temp handling
-                    if (FieldUtil.isSiteIdFieldPresent(module) && lookupModuleName.equals("site")) {
+                    if ((FieldUtil.isSiteIdFieldPresent(module) || module.isCustom()) && lookupModuleName.equals("site")) {
                         Map<String, Object> fieldsMap = new HashMap<>();
                         fieldsMap.put("name", "siteId");
                         fieldsMap.put("displayName", "Site");

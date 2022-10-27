@@ -228,7 +228,8 @@ public class WebTabContext implements Serializable {
         EMAIL_LOGS("Email Logs",false,TabType.SETUP),
         AUDIT_LOGS("Audit Logs",false,TabType.SETUP),
         BOOKING_POLICY("Booking Policy",false,TabType.SETUP),
-        PIVOT("Pivot",false,TabType.NORMAL);
+        PIVOT("Pivot",false,TabType.NORMAL),
+        SCOPING("Scoping",false,TabType.SETUP);
 
 
         public void setName(String name) {

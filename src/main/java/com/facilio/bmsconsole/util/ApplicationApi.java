@@ -2663,6 +2663,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Labor", "labor", WebTabContext.Type.LABOUR, null, appId, null));
             webTabs.add(new WebTabContext("Crafts", "crafts", WebTabContext.Type.CRAFTS, null, appId, null));
             webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
+            webTabs.add(new WebTabContext("Scoping", "scoping", WebTabContext.Type.SCOPING, null, appId, null));
 
             groupNameVsWebTabsMap.put("resource", webTabs);
 

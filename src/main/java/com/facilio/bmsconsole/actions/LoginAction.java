@@ -230,6 +230,7 @@ public class LoginAction extends FacilioAction {
 					FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.in");
 
 					FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+					FacilioCookie.eraseUserCookie(request, response, "fc.switchValue", null);
 					FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 
 					if(mobileInstanceId != null) {
@@ -590,6 +591,7 @@ public class LoginAction extends FacilioAction {
 			}
 			else {
 				FacilioCookie.eraseUserCookie(request, httpResponse, "fc.currentSite", null);
+				FacilioCookie.eraseUserCookie(request, httpResponse, "fc.switchValue", null);
 			}
 		}
 		data.put("connectedScreen", remoteScreen);
@@ -701,6 +703,7 @@ public class LoginAction extends FacilioAction {
 		FacilioCookie.addOrgDomainCookie(getSwitchOrgDomain(), response);
 
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.switchValue", null);
 		return SUCCESS;
 	}
 

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.logging.FacilioLogHandler;
 import lombok.Getter;
@@ -76,7 +77,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, ScopingConfigContext> scopingMap;
 	private Map<String, String> valueGenerators;
-	private Map<String, GlobalScopeVariableContext> globalScopeVariableValues;
+	private Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues;
 
 	private Boolean shouldApplySwitchScope;
 
@@ -721,11 +722,11 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 		this.valueGenerators = valueGenerators;
 	}
 
-	public Map<String, GlobalScopeVariableContext> getGlobalScopeVariableValues() {
+	public Map<String, GlobalScopeVariableEvaluationContext> getGlobalScopeVariableValues() {
 		return globalScopeVariableValues;
 	}
 
-	public void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableContext> globalScopeVariableValues) {
+	public void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues) {
 		this.globalScopeVariableValues = globalScopeVariableValues;
 	}
 }

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import com.facilio.accounts.bean.*;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -701,7 +702,7 @@ public class AccountUtil {
 		return true;
 	}
 
-	public static Map<String, GlobalScopeVariableContext> getGlobalScopeVariableValues() {
+	public static Map<String, GlobalScopeVariableEvaluationContext> getGlobalScopeVariableValues() {
 		Account account = getCurrentAccount();
 		if(account != null) {
 			return account.getGlobalScopeVariableValues();
@@ -709,7 +710,7 @@ public class AccountUtil {
 		return null;
 	}
 
-	public static void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableContext> globalScopeVariableValues) {
+	public static void setGlobalScopeVariableValues(Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues) {
 		if(getCurrentAccount() != null) {
 			getCurrentAccount().setGlobalScopeVariableValues(globalScopeVariableValues);
 		}

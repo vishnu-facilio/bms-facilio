@@ -2738,6 +2738,7 @@ public class FacilioAuthAction extends FacilioAction {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
 						}
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+						FacilioCookie.eraseUserCookie(request, response, "fc.switchValue", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 						
 					}

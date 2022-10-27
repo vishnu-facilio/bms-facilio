@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
@@ -53,42 +55,47 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
             Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(appId);
             if (scopeVsValueGen != null && !scopeVsValueGen.isEmpty()) {
                 if (scopeVsValueGen != null && switchMap != null && !scopeVsValueGen.keySet().containsAll(switchMap.keySet())) {
-                    return "invalid"; //Invalid switch variable linkname given. Throws 400 Bad Request.
+                    LOGGER.error("Invalid switch variable linkname given. Throws 400 Bad Request");
+//                    return "invalid";
                 }
                 for (Map.Entry<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> entry : scopeVsValueGen.entrySet()) {
                     Pair<GlobalScopeVariableContext, ValueGeneratorContext> scopeVariableValGenPair = entry.getValue();
                     ValueGeneratorContext valueGeneratorContext = scopeVariableValGenPair.getRight();
                     String ValueGenLinkName = valueGeneratorContext.getLinkName();
-                    GlobalScopeVariableContext scopeVariable = scopeVariableValGenPair.getLeft();
+                    GlobalScopeVariableContext gs = scopeVariableValGenPair.getLeft();
                     List<Long> switchValues = getFilterRecordIdFromHeader(switchMap, entry.getKey());
                     List<Long> computedValGenIds = null;
-                    if(scopeVariable.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()){
+                    List<Long> evaluatedValues = null;
+                    if(gs.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()){
                         computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
                     }
                     if (CollectionUtils.isNotEmpty(switchValues)) {
                         if (computedValGenIds != null) { //When empty list all values are accessible
                             if (!computedValGenIds.containsAll(switchValues)) {
-                                return "invalid"; //Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request.
+                                LOGGER.error("Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request");
+//                              return "invalid";
                             }
                         }
-                        scopeVariable.setValues(switchValues);
+                        evaluatedValues = switchValues;
                     } else {
-                        scopeVariable.setValues(computedValGenIds);
+                        evaluatedValues = computedValGenIds;
                     }
-                    setGlobalScopeVariableValues(scopeVariable);
+                    GlobalScopeVariableEvaluationContext scopeVariableEvaluation = new GlobalScopeVariableEvaluationContext(gs.getLinkName(),gs.getApplicableModuleName(),gs.getApplicableModuleId(),gs.getScopeVariableModulesFieldsList(),evaluatedValues,gs.getTypeEnum());
+                    setGlobalScopeVariableValues(scopeVariableEvaluation);
                 }
             } else {
                 if (switchMap != null) {
-                    return "invalid"; //When no scope variable is active and value from switch throw 400.
+                    LOGGER.error("When no scope variable is active and value from switch throw 400");
+//                    return "invalid";
                 }
             }
         }
         return invocation.invoke();
     }
 
-    private static void setGlobalScopeVariableValues(GlobalScopeVariableContext scopeVariable) {
+    private static void setGlobalScopeVariableValues(GlobalScopeVariableEvaluationContext scopeVariable) {
         if(scopeVariable != null && StringUtils.isNotEmpty(scopeVariable.getLinkName())) {
-            Map<String, GlobalScopeVariableContext> globalScopeVariableValues = AccountUtil.getGlobalScopeVariableValues();
+            Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues = AccountUtil.getGlobalScopeVariableValues();
             if (globalScopeVariableValues == null) {
                 globalScopeVariableValues = new HashMap<>();
             }
@@ -129,7 +136,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
     private static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         String switchVariable = request.getHeader("X-Switch-Value");
-        if (switchVariable != null) {
+        if (StringUtils.isNotEmpty(switchVariable)) {
             byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
             if (decodedBytes != null) {
                 String decodedString = new String(decodedBytes);

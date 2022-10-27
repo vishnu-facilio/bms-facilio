@@ -5,6 +5,7 @@ import java.util.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
@@ -221,12 +222,12 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		}
 		List<FacilioField> fieldList = new ArrayList<>();
 		Criteria criteria = new Criteria();
-		Map<String, GlobalScopeVariableContext> globalScopeVariableList = AccountUtil.getGlobalScopeVariableValues();
-		if(globalScopeVariableList != null && !globalScopeVariableList.isEmpty()){
-			for(Map.Entry<String,GlobalScopeVariableContext> entry : globalScopeVariableList.entrySet()){
-				GlobalScopeVariableContext globalScopeVariable = entry.getValue();
+		Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationList = AccountUtil.getGlobalScopeVariableValues();
+		if(MapUtils.isNotEmpty(variableEvaluationList)){
+			for(Map.Entry<String,GlobalScopeVariableEvaluationContext> entry : variableEvaluationList.entrySet()){
+				GlobalScopeVariableEvaluationContext variableEvaluation = entry.getValue();
 				if(module != null) {
-					Pair<List<FacilioField>, Criteria> criteriaAndFields = globalScopeVariable.getGlobalScopeVariableCriteriaForModule(module.getName());
+					Pair<List<FacilioField>, Criteria> criteriaAndFields = variableEvaluation.getGlobalScopeVariableCriteriaForModule(module.getName());
 					if(criteriaAndFields != null) {
 						if (CollectionUtils.isNotEmpty(criteriaAndFields.getLeft())) {
 							fieldList.addAll(criteriaAndFields.getLeft());
