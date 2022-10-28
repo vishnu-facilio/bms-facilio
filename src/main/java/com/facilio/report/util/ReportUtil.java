@@ -306,7 +306,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
 				for (WebTabContext webtab : webtabs) {
 					if (webtab.getTypeEnum() == WebTabContext.Type.MODULE) {
-						moduleIds = ApplicationApi.getModuleIdsForTab(webtab.getId());
+						moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
 					}
 				}
 			}

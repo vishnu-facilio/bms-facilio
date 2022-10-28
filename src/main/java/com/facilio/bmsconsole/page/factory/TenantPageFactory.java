@@ -42,6 +42,7 @@ public class TenantPageFactory extends PageFactory{
 
 		if(AccountUtil.getCurrentApp().getAppCategory() == ApplicationContext.AppCategory.PORTALS.getIndex()) {
 			addSecondaryDetailsWidget(tab1Sec1);
+			addNotesAttachmentsModule(tab1Sec1);
 		}
 		else {
 			PageWidget detailsWidgetPrimaryContact = new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
@@ -80,17 +81,19 @@ public class TenantPageFactory extends PageFactory{
 			return page;
 		}
 
-		Page.Tab tab2 = page.new Tab("Notes and Information");
-		page.addTab(tab2);
-		Page.Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
-		addSecondaryDetailsWidget(tab2Sec1);
-		if(record.getAddress()!=null) {
-			Section tab1Sec2 = page.new Section();
-			tab1.addSection(tab1Sec2);
-			addAddressInfoWidget(tab2Sec1);
+		if(AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS.getIndex()) {
+			Page.Tab tab2 = page.new Tab("Notes and Information");
+			page.addTab(tab2);
+			Page.Section tab2Sec1 = page.new Section();
+			tab2.addSection(tab2Sec1);
+			addSecondaryDetailsWidget(tab2Sec1);
+			if (record.getAddress() != null) {
+				Section tab1Sec2 = page.new Section();
+				tab1.addSection(tab1Sec2);
+				addAddressInfoWidget(tab2Sec1);
+			}
+			addNotesAttachmentsModule(tab2Sec1);
 		}
-		addNotesAttachmentsModule(tab2Sec1);
 
 		Tab tab3 = page.new Tab("Related");
 		page.addTab(tab3);
