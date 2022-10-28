@@ -12,6 +12,7 @@ public class MailTransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateOutgoingMailCommand());
         c.addCommand(new InsertOutgoingMailLoggerCommand());
+        c.addCommand(new InsertOutgoingRecipientsCommand());
         c.addCommand(new PushOutgoingMailToQueueCommand());
         return c;
     }
@@ -21,7 +22,6 @@ public class MailTransactionChainFactory {
         c.addCommand(new LoadMailContentCommand());
         c.addCommand(new UpdateGlobalMapperIdCommand());
         c.addCommand(new InsertOutgoingMailAttachmentsCommand());
-        c.addCommand(new InsertOutgoingRecipientsCommand());
         return c;
     }
 
@@ -36,6 +36,14 @@ public class MailTransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateRecipientStatusCommand());
         c.addCommand(new UpdatePostMailLoggerCommand());
+        return c;
+    }
+
+    public static FacilioChain pushToMailTemp() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertToMailLoggerRecord());
+        c.addCommand(new InsertOutgoingRecipientsCommand());
+        c.addCommand(new PushOutgoingMailToQueueCommand());
         return c;
     }
 

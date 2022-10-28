@@ -5,6 +5,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -55,6 +56,18 @@ public class OutgoingMailAPI {
     public static void updateV3(String moduleName, V3Context record) throws Exception {
         Map<String, Object> row = FieldUtil.getAsJSON(record);
         V3Util.processAndUpdateSingleRecord(moduleName, record.getId(), row, null, null, null, null, null,null);
+    }
+
+    public static long updateRecord(long id, String moduleName, Map<String, Object> row) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getModuleFields(moduleName);
+        Condition condition = CriteriaAPI.getIdCondition(id, module);
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(fields)
+                .andCondition(condition);
+        return builder.update(row);
     }
 
     public static List<V3OutgoingMailAttachmentContext> getMailAttachments(long mailId) throws Exception {

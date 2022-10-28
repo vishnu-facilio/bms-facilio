@@ -34,7 +34,13 @@ public class RunHistoricalMailCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long startId = (long) context.get("startId");
         long endId = (long) context.get("endId");
+        boolean runAll = (boolean) context.get("runAll");
+        if(endId == 0) {
+            endId = startId;
+            runAll = true;
+        }
 
+        JSONObject response = new JSONObject();
         ModuleBean modBean = Constants.getModBean();
         String moduleName = MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER;
         FacilioModule module = modBean.getModule(moduleName);
@@ -52,11 +58,13 @@ public class RunHistoricalMailCommand extends FacilioCommand {
                 .select(fields)
                 .fetchSupplement((SupplementRecord) fieldMap.get("textContent"))
                 .fetchSupplement((SupplementRecord) fieldMap.get("htmlContent"))
-                .andCondition(recipientCount)
                 .andCondition(startIdCond)
                 .andCondition(endIdCond);
+        if(!runAll) {
+            selectBuilder.andCondition(recipientCount);
+        }
         List<V3OutgoingMailLogContext> rows = selectBuilder.get();
-
+        response.put("rowCount", rows.size());
 
         Map<Long, Long> attachmentMapper = new HashMap<>();
 //        attachmentMapper.put(16428L, 1195617L);
@@ -65,10 +73,11 @@ public class RunHistoricalMailCommand extends FacilioCommand {
 //        attachmentMapper.put(16577L, 1196297L);
 
         FileStore fs = FacilioFactory.getFileStore();
+        int successCnt = 0;
         for(V3OutgoingMailLogContext row : rows) {
             Long loggerId = null;
             try {
-                FacilioChain chain = MailReadOnlyChainFactory.pushToMailTemp();
+                FacilioChain chain = MailTransactionChainFactory.pushToMailTemp();
                 FacilioContext newContext = chain.getContext();
                 JSONObject mailJson = convertToMailJson(row);
                 if (mailJson == null) {
@@ -86,10 +95,15 @@ public class RunHistoricalMailCommand extends FacilioCommand {
                     newContext.put(MailConstants.Params.FILES, files);
                 }
                 chain.execute();
+                successCnt++;
             } catch (Exception e) {
                 LOGGER.error("Failed.. skipping LOGGER_ID :: "+loggerId, e);
             }
         }
+
+        response.put("mailSent", successCnt);
+        context.put("response", response);
+
         return false;
     }
 

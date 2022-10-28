@@ -25,6 +25,9 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
 
         V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
 
+        if(mailLogContext.getRecipientCount() != 0 ) {  // while re-sending mail through api, we should not add recipients more than once.
+            return false;
+        }
         List<V3OutgoingRecipientContext> records = new ArrayList<>();
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalTo()));
         records.addAll(this.getRecipientRecords(mailLogContext, mailLogContext.getOriginalCc()));

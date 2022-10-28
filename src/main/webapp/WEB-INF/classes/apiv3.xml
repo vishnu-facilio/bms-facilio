@@ -1007,6 +1007,9 @@
         <action name="currentdata"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getCurrentWeather"/>
+        <action name="sitestationid"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getAssociatedStationId"/>
     </package>
 
     <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">

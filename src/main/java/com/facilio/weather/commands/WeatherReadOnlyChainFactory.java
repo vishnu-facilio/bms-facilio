@@ -19,4 +19,10 @@ public class WeatherReadOnlyChainFactory {
         c.addCommand(new GetCurrentWeatherDataCommand());
         return c;
     }
+
+    public static FacilioChain getSiteWeatherStationChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSiteStationCommand());
+        return c;
+    }
 }

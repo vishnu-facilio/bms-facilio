@@ -9,11 +9,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.EnumFieldValue;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.*;
 import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -121,13 +120,38 @@ public class AddWeatherModules extends SignUpData {
         iconField.setValues(iconValues);
         fields.add(iconField);
 
-        fields.add(FieldFactory.getDefaultField("temperature", "Temperature", "TEMPERATURE", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("apparentTemperature", "Apparent Temperature", "APPARENT_TEMPERATURE", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("dewPoint", "Dew Point", "DEW_POINT", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("pressure", "Pressure", "Pressure", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("humidity", "Humidity", "HUMIDITY", FieldType.DECIMAL));
+        NumberField temperatureField = FieldFactory.getDefaultField("temperature", "Temperature", "TEMPERATURE", FieldType.DECIMAL);
+        temperatureField.setMetric(Metric.TEMPERATURE.getMetricId());
+        temperatureField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(temperatureField);
+
+        NumberField apparentTempField = FieldFactory.getDefaultField("apparentTemperature", "Apparent Temperature", "APPARENT_TEMPERATURE", FieldType.DECIMAL);
+        apparentTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        apparentTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(apparentTempField);
+
+        NumberField dewPointField = FieldFactory.getDefaultField("dewPoint", "Dew Point", "DEW_POINT", FieldType.DECIMAL);
+        dewPointField.setMetric(Metric.TEMPERATURE.getMetricId());
+        dewPointField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(dewPointField);
+
+        NumberField pressureField = FieldFactory.getDefaultField("pressure", "Pressure", "Pressure", FieldType.DECIMAL);
+        pressureField.setMetric(Metric.PRESSURE.getMetricId());
+        pressureField.setUnitId(Unit.HECTOPASCAL.getUnitId());
+        fields.add(pressureField);
+
+        NumberField humidityField = FieldFactory.getDefaultField("humidity", "Humidity", "HUMIDITY", FieldType.DECIMAL);
+        humidityField.setMetric(Metric.PERCENTAGE.getMetricId());
+        humidityField.setUnitId(Unit.PERCENTAGE.getUnitId());
+        fields.add(humidityField);
+
         fields.addAll(FieldFactory.getDefaultReadingFields(module));
-        fields.add(FieldFactory.getDefaultField("precipitationIntensity", "Precipitation Intensity", "PRECIPITATION_INTENSITY", FieldType.DECIMAL));
+        NumberField precipitationIntensityField = FieldFactory.getDefaultField("precipitationIntensity",
+                "Precipitation Intensity", "PRECIPITATION_INTENSITY", FieldType.DECIMAL);
+        precipitationIntensityField.setMetric(Metric.PRECIPITATION_INTENSITY.getMetricId());
+        precipitationIntensityField.setUnitId(Unit.MILLIPERHOUR.getUnitId());
+        fields.add(precipitationIntensityField);
+
         fields.add(FieldFactory.getDefaultField("precipitationIntensityError", "Precipitation Intensity Error", "PRECIPITATION_INTENSITY_ERROR", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("precipitationProbability", "Precipitation Probability", "PRECIPITATION_PROBABILITY", FieldType.DECIMAL));
 
@@ -140,13 +164,38 @@ public class AddWeatherModules extends SignUpData {
         precipitationTypeField.setValues(precipitationValues);
         fields.add(precipitationTypeField);
 
-        fields.add(FieldFactory.getDefaultField("windSpeed", "Wind Speed", "WIND_SPEED", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("windDegree", "Wind Degree", "WIND_DEGREE", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("windGust", "Wind Gust", "WIND_GUST", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("windBearing", "Wind Bearing", "WIND_BEARING", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("cloudCover", "Cloud Cover", "CLOUD_COVER", FieldType.DECIMAL));
+        NumberField windSpeedField = FieldFactory.getDefaultField("windSpeed", "Wind Speed", "WIND_SPEED", FieldType.DECIMAL);
+        windSpeedField.setMetric(Metric.SPEED.getMetricId());
+        windSpeedField.setUnitId(Unit.METERPERSECOND.getUnitId());
+        fields.add(windSpeedField);
+
+        NumberField windDegreeField = FieldFactory.getDefaultField("windDegree", "Wind Degree", "WIND_DEGREE", FieldType.DECIMAL);
+        windDegreeField.setMetric(Metric.ANGLE.getMetricId());
+        windDegreeField.setUnitId(Unit.DEGREE.getUnitId());
+        fields.add(windDegreeField);
+
+        NumberField windGustField = FieldFactory.getDefaultField("windGust", "Wind Gust", "WIND_GUST", FieldType.DECIMAL);
+        windGustField.setMetric(Metric.SPEED.getMetricId());
+        windGustField.setUnitId(Unit.METERPERSECOND.getUnitId());
+        fields.add(windGustField);
+
+        NumberField windBearingField = FieldFactory.getDefaultField("windBearing", "Wind Bearing", "WIND_BEARING", FieldType.DECIMAL);
+        windBearingField.setMetric(Metric.ANGLE.getMetricId());
+        windBearingField.setUnitId(Unit.DEGREE.getUnitId());
+        fields.add(windBearingField);
+
+        NumberField cloudCoverField = FieldFactory.getDefaultField("cloudCover", "Cloud Cover", "CLOUD_COVER", FieldType.DECIMAL);
+        cloudCoverField.setMetric(Metric.PERCENTAGE.getMetricId());
+        cloudCoverField.setUnitId(Unit.PERCENTAGE.getUnitId());
+        fields.add(cloudCoverField);
+
         fields.add(FieldFactory.getDefaultField("uvIndex", "UV Index", "UV_INDEX", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("visibility", "Visibility", "VISIBILITY", FieldType.DECIMAL));
+
+        NumberField visibilityField = FieldFactory.getDefaultField("visibility", "Visibility", "VISIBILITY", FieldType.DECIMAL);
+        visibilityField.setMetric(Metric.LENGTH.getMetricId());
+        visibilityField.setUnitId(Unit.METER.getUnitId());
+        fields.add(visibilityField);
+
         fields.add(FieldFactory.getDefaultField("ozone", "Ozone", "OZONE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("nearestStormDistance", "Nearest Storm Distance", "NEAREST_STORM_DISTANCE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("nearestStormBearing", "Nearest Storm Bearing", "NEAREST_STORM_BEARING", FieldType.DECIMAL));
@@ -161,9 +210,22 @@ public class AddWeatherModules extends SignUpData {
         module.setDataInterval(30);
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("dewPointTemperature", "Dew Point Temperature", "DEWPOINT_TEMPERATURE", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("wetBulbTemperature", "Wet Bulb Temperature", "WETBULB_TEMPERATURE", FieldType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("enthalpy", "Enthalpy", "ENTHALPY", FieldType.DECIMAL));
+
+        NumberField dewPointTempField = FieldFactory.getDefaultField("dewPointTemperature", "Dew Point Temperature", "DEWPOINT_TEMPERATURE", FieldType.DECIMAL);
+        dewPointTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        dewPointTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(dewPointTempField);
+
+        NumberField webBulbTempField = FieldFactory.getDefaultField("wetBulbTemperature", "Wet Bulb Temperature", "WETBULB_TEMPERATURE", FieldType.DECIMAL);
+        webBulbTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        webBulbTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(webBulbTempField);
+
+        NumberField enthalpyField = FieldFactory.getDefaultField("enthalpy", "Enthalpy", "ENTHALPY", FieldType.DECIMAL);
+        enthalpyField.setMetric(Metric.TEMPERATURE.getMetricId());
+        enthalpyField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(enthalpyField);
+
         fields.addAll(FieldFactory.getDefaultReadingFields(module));
 
         module.setFields(fields);

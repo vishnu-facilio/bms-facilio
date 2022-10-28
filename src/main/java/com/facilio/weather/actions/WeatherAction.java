@@ -34,4 +34,16 @@ public class WeatherAction extends V3Action {
         setData((JSONObject) context.get("data"));
         return V3Action.SUCCESS;
     }
+
+    public String getAssociatedStationId() throws Exception {
+        FacilioChain chain = WeatherReadOnlyChainFactory.getSiteWeatherStationChain();
+        FacilioContext context = chain.getContext();
+        context.put("SITE_ID", siteId);
+        chain.execute();
+        setData("stationId", context.get("STATION_ID"));
+        if(context.get("MESSAGE")!=null) {
+            setMessage((String) context.get("MESSAGE"));
+        }
+        return V3Action.SUCCESS;
+    }
 }

@@ -36,7 +36,7 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
         JSONObject data = new JSONObject();
         if(stationId == 0) {
             stationId = WeatherAPI.getStationIdForSiteId(siteId);
-            V3Util.throwRestException(stationId == 0, ErrorCode.VALIDATION_ERROR,
+            V3Util.throwRestException(stationId == 0, ErrorCode.RESOURCE_NOT_FOUND,
                     "given siteId is not associated with any weather station");
         }
 

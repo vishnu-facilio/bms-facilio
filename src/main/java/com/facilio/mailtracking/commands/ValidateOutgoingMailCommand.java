@@ -17,10 +17,19 @@ public class ValidateOutgoingMailCommand extends FacilioCommand {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.TRIGGERED.name());
         this.validateAddresses(mailJson);
+        this.validateContent(mailJson);
         return false;
     }
 
-    private void validateAddresses(JSONObject mailJson) throws Exception {
+    private void validateContent(JSONObject mailJson) {
+        Object message = mailJson.get(MailConstants.Email.MESSAGE);
+        if(message!=null && !(message instanceof String)) {
+            LOGGER.error("OG_MAIL_ERROR :: Given message content is not a string :: "+message);
+            mailJson.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.INVALID.name());
+        }
+    }
+
+    private void validateAddresses(JSONObject mailJson) {
         String nodes[] = new String[] {
                 MailConstants.Email.ORIGINAL_TO,
                 MailConstants.Email.ORIGINAL_CC,

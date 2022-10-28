@@ -27,3 +27,5 @@ agentIntegration.properties
 out/
 /apache-*
 classpath
+SysErr
+SysOut
