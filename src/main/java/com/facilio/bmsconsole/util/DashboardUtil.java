@@ -365,14 +365,14 @@ public class DashboardUtil {
 				co2Skip = true;
 			}
 			if(meterList != null && !meterList.isEmpty() && !co2Skip) {
-				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
+				LOGGER.log(Level.INFO, "meterList --- "+meterList);
 				List<Long> bb = new ArrayList<Long>();
 		        bb.add(null);
 		        meterList.removeAll(bb);
 				if(!meterList.isEmpty()) {
 					
 					List<String> uniqueList = SetUniqueList.decorate(meterList);
-					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
+					LOGGER.log(Level.INFO, "uniqueList --- "+uniqueList);
 			        if(uniqueList.size() == 1) {
 			        	
 			        	long meterID = Long.parseLong(uniqueList.get(0));
@@ -414,9 +414,9 @@ public class DashboardUtil {
 			        					
 			        					double eui = value/grossFloorArea;
 					        			hourlyeuis.add(eui);
-					        			LOGGER.log(Level.SEVERE, "hour -- "+hour +" eui --"+eui);
+					        			LOGGER.log(Level.INFO, "hour -- "+hour +" eui --"+eui);
 			        				}
-			        				LOGGER.log(Level.SEVERE, "hourlyeuis -- "+hourlyeuis);
+			        				LOGGER.log(Level.INFO, "hourlyeuis -- "+hourlyeuis);
 			        				sum = 0d;
 			        				for(Double hourlyeui :hourlyeuis) {
 			        					sum = sum + hourlyeui;
@@ -496,14 +496,14 @@ public class DashboardUtil {
 				co2Skip = true;
 			}
 			if(meterList != null && !meterList.isEmpty() && !co2Skip) {
-				LOGGER.log(Level.SEVERE, "meterList --- "+meterList);
+				LOGGER.log(Level.INFO, "meterList --- "+meterList);
 				List<Long> bb = new ArrayList<Long>();
 		        bb.add(null);
 		        meterList.removeAll(bb);
 				if(!meterList.isEmpty()) {
 					
 					List<String> uniqueList = SetUniqueList.decorate(meterList);
-					LOGGER.log(Level.SEVERE, "uniqueList --- "+uniqueList);
+					LOGGER.log(Level.INFO, "uniqueList --- "+uniqueList);
 			        if(uniqueList.size() == 1) {
 			        	
 			        	long meterID = Long.parseLong(uniqueList.get(0));
@@ -545,9 +545,9 @@ public class DashboardUtil {
 			        					
 			        					double eui = value/grossFloorArea;
 					        			hourlyeuis.add(eui);
-					        			LOGGER.log(Level.SEVERE, "hour -- "+hour +" eui --"+eui);
+					        			LOGGER.log(Level.INFO, "hour -- "+hour +" eui --"+eui);
 			        				}
-			        				LOGGER.log(Level.SEVERE, "hourlyeuis -- "+hourlyeuis);
+			        				LOGGER.log(Level.INFO, "hourlyeuis -- "+hourlyeuis);
 			        				sum = 0d;
 			        				for(Double hourlyeui :hourlyeuis) {
 			        					sum = sum + hourlyeui;
@@ -583,7 +583,7 @@ public class DashboardUtil {
 		Map<Integer, Double> res = new HashMap<>();
 		for(Map<String, Object> prop :props) {
 			
-			LOGGER.log(Level.SEVERE, "getHourlyAggregatedData prop ---- "+prop);
+			LOGGER.log(Level.INFO, "getHourlyAggregatedData prop ---- "+prop);
 			long ttime = Long.parseLong(prop.get("label").toString());
 			Double value = Double.parseDouble(prop.get("value").toString());
 			
@@ -605,7 +605,7 @@ public class DashboardUtil {
 				res.put(zdt.getHour(), value);
 			}
 			
-			LOGGER.log(Level.SEVERE, "getHourlyAggregatedData res ---- "+res);
+			LOGGER.log(Level.INFO, "getHourlyAggregatedData res ---- "+res);
 		}
 		return res;
 	}
@@ -781,7 +781,7 @@ public class DashboardUtil {
 				.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID = ?", reportId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		LOGGER.severe("111."+props);
+		LOGGER.log(Level.INFO, "111."+props);
 		if (props != null && !props.isEmpty()) {
 			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
 			return widgetReportContext;
@@ -1032,7 +1032,7 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		LOGGER.log(Level.SEVERE, "selectBuilder getDashboardWithWidgets --"+selectBuilder +" props -- "+props);
+		LOGGER.log(Level.INFO, "selectBuilder getDashboardWithWidgets --"+selectBuilder +" props -- "+props);
 		
 		if (props != null && !props.isEmpty()) {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
@@ -2854,7 +2854,7 @@ public class DashboardUtil {
 			
 			
 			Map<String, Object> reportProp = FieldUtil.getAsProperties(reportContext);
-			LOGGER.log(Level.SEVERE, "Update Report Prop --"+reportProp);
+			LOGGER.log(Level.INFO, "Update Report Prop --"+reportProp);
 			update.update(reportProp);
 			
 
@@ -3487,7 +3487,7 @@ public class DashboardUtil {
 			}
 			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 			
-			LOGGER.severe("rdms ---- "+rdms.size());
+			LOGGER.log(Level.INFO,"rdms ---- "+rdms.size());
 			
 			for(ReadingDataMeta rdm :rdms) {
 				try {

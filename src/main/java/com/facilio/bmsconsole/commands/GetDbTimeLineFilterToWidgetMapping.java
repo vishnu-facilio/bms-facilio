@@ -92,7 +92,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 		  Map<String, String> dateField=null;
 		  
 		  JSONObject widgetSettings = widget.getWidgetSettings();
-			boolean isFilterExclude = (boolean) widgetSettings.get("excludeDbFilters");
+			boolean isFilterExclude = widgetSettings != null && widgetSettings.containsKey("excludeDbFilters") ? (boolean) widgetSettings.get("excludeDbFilters") : false;
 			if (!isFilterExclude) {
 
 				// for reports/charts , modular chart alone timeField differs or is optional ,
@@ -166,9 +166,11 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 								JSONObject kpiObj = (JSONObject) cardParams.get("kpi");
 								long kpiId = (long) kpiObj.get("kpiId");
 								KPIContext kpi = KPIUtil.getKPI(kpiId,false);
-								String dateFieldName = kpi.getDateField().getName();
-								dateField=new HashMap<>(
-										Collections.singletonMap("dateField", dateFieldName));
+								if(kpi != null && kpi.getDateField() != null) {
+									String dateFieldName = kpi.getDateField().getName();
+									dateField = new HashMap<>(
+											Collections.singletonMap("dateField", dateFieldName));
+								}
 							}
 						} else if (kpiType.equalsIgnoreCase("reading")) {
 							dateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
