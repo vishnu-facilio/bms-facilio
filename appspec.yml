@@ -55,6 +55,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-stage.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-stage2.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-kafka.properties
