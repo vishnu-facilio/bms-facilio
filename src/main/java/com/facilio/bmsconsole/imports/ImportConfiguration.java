@@ -1,15 +1,11 @@
 package com.facilio.bmsconsole.imports;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
-import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.WhitelistSystemFields;
@@ -30,7 +26,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
 import org.apache.commons.chain.Context;
-import org.everit.json.schema.ValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -130,7 +125,6 @@ public class ImportConfiguration {
 
                 .importHandler()
                 .lookupMainFieldMap("plannedmaintenance", "name")
-                .lookupMainFieldMap("users", "email")
                 .afterImportCommand(new HandleResourcePlannerImportCommand())
                 .done()
                 .build();

@@ -8,15 +8,22 @@ import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PMTriggerV2.PMTriggerFrequency;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.bmsconsoleV3.util.V3ResourceAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -107,13 +114,20 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
             V3ResourceContext resource = V3ResourceAPI.getResource(resourceID);
             resourcePlanner.setResource(resource);
 
-            Object assignedToObj = record.get("rpAssignedTo");
-            if (assignedToObj != null) {
-                long assignedToID = FacilioUtil.parseLong(assignedToObj);
-                User assignedTo = new User();
-                assignedTo.setId(assignedToID);
-                resourcePlanner.setAssignedTo(assignedTo);
+            Map<String, Object> jpObj = (Map<String, Object>) record.get("rpJobPlan");
+            if (jpObj != null) {
+                long jpID = FacilioUtil.parseLong(jpObj.get("id"));
+                resourcePlanner.setJobPlan(JobPlanAPI.getJobPlan(jpID));
             }
+
+            Map<String, Object> assignedTo = (Map<String, Object>) record.get("rpAssignedTo");
+            if (assignedTo != null) {
+                long userID = FacilioUtil.parseLong(assignedTo.get("id"));
+                User user = new User();
+                user.setId(userID);
+                resourcePlanner.setAssignedTo(user);
+            }
+
 
             resourcePlanner.setPmId(pmID);
             resourcePlanner.setPlanner(planner);
@@ -156,8 +170,17 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
 
         processRecords(recordsClassifiedByPM);
 
-        // truncate table
+        flushTable(recordsClassifiedByPM.keySet());
 
         return false;
+    }
+
+    private void flushTable(Set<Long> pmIDs) throws Exception {
+        FacilioField pmID = FieldFactory.getNumberField("pmID", "PM_ID", null);
+        String ids = StringUtils.join(pmIDs, ",");
+        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                .table("PM_IMPORT")
+                .andCondition(CriteriaAPI.getCondition(pmID, ids, NumberOperators.EQUALS));
+        deleteBuilder.delete();
     }
 }

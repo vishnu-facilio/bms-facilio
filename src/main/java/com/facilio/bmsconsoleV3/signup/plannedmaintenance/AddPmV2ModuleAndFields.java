@@ -536,11 +536,29 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          * Adding fields pmImport Module
          */
         List<FacilioField> fields = new ArrayList<>();
-        /* pmId Field */
-        LookupField pmIdField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "pmId", "PM ID",
-                "PM_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
-                false, true, orgId);
-        fields.add(pmIdField);
+        /* name Field */
+        StringField nameField = SignupUtil.getStringField(module, "name", "Name", "NAME",
+                FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
+        fields.add(nameField);
+
+        /* category Field */
+        SystemEnumField assignmentTypeField = SignupUtil.getSystemEnumField(module, "category", "Scope Category",
+                "CATEGORY", "PMScopeAssigmentType", FacilioField.FieldDisplayType.TEXTBOX,
+                false, false, true, orgId);
+        fields.add(assignmentTypeField);
+
+        /* assetCategory Field */
+        LookupField assetCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
+                "assetCategory", "Asset Category", "ASSET_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(assetCategoryField);
+
+        /* spaceCategory Field */
+        LookupField spaceCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY),
+                "spaceCategory", "Space Category", "SPACE_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(spaceCategoryField);
+
 
         /* sectionName Field */
         StringField sectionNameField = SignupUtil.getStringField(module, "sectionName", "Section", "SECTION",
@@ -552,10 +570,25 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(taskField);
 
-        /* isPrerequisite Field */
-        StringField isPrerequisiteField = SignupUtil.getStringField(module, "isPrerequisite", "IS PREREQUISITE", "IS_PREREQUISITE",
+        /* task description Field */
+        StringField taskDescriptionField = SignupUtil.getStringField(module, "taskDescription", "Task Description", "TASK_DESCRIPTION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
-        fields.add(isPrerequisiteField);
+        fields.add(taskDescriptionField);
+
+        /* input type Field */
+        StringField inputTypeField = SignupUtil.getStringField(module, "inputType", "Input Type", "INPUT_TYPE",
+                FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
+        fields.add(inputTypeField);
+
+        /* default value Field */
+        StringField defaultValueField = SignupUtil.getStringField(module, "defaultValue", "Default Value", "DEFAULT_VALUE",
+                FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
+        fields.add(defaultValueField);
+
+        /* options Field */
+        StringField optionsField = SignupUtil.getStringField(module, "options", "Options", "OPTIONS",
+                FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
+        fields.add(optionsField);
 
         module.setFields(fields);
         return module;

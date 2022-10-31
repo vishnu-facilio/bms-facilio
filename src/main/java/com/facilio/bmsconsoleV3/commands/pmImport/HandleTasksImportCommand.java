@@ -1,23 +1,30 @@
 package com.facilio.bmsconsoleV3.commands.pmImport;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMJobPlan;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
+import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class HandleTasksImportCommand extends FacilioCommand {
 
@@ -33,130 +40,179 @@ public class HandleTasksImportCommand extends FacilioCommand {
         }
         List<Map<String, Object>> records = (List<Map<String, Object>>) recordsObj;
 
-        Map<Long, List<Map<String, Object>>> recordsClassifiedByPM = Util.classifyByPM(records);
+        Map<String, List<Map<String, Object>>> recordsClassifiedByPM = classifyByJobPlanName(records);
 
         processRecords(recordsClassifiedByPM);
 
         return false;
     }
 
-    private void processRecords(Map<Long, List<Map<String, Object>>> recordsClassifiedByPM) throws Exception {
-        // for every batch of PMs.
-        for (Map.Entry<Long, List<Map<String, Object>>> entry : recordsClassifiedByPM.entrySet()) {
-            Long pmID = entry.getKey();
-            List<Map<String, Object>> pmList = entry.getValue();
+    private void processRecords(Map<String, List<Map<String, Object>>> recordsClassifiedByPM) throws Exception {
+        // for every batch of JP.
+        for (Map.Entry<String, List<Map<String, Object>>> entry : recordsClassifiedByPM.entrySet()) {
+            String jpName = entry.getKey();
+            List<Map<String, Object>> tasks = entry.getValue();
 
-            List<Map<String, Object>> prerequisiteTasks = getPrerequisiteTasks(pmList);
-            createPreRequisiteJobPlan(pmID, prerequisiteTasks);
-
-            List<Map<String, Object>> tasks = getTasks(pmList);
-            createJobPlan(pmID, tasks);
+            createJobPlan(jpName, tasks);
         }
     }
 
-    private List<Map<String, Object>> getPrerequisiteTasks(List<Map<String, Object>> recList) {
-        return recList.stream().
-                filter(rec -> FacilioUtil.parseBoolean(rec.get("isPrerequisite"))).
-                collect(Collectors.toList());
-    }
-
-
-    private List<Map<String, Object>> getTasks(List<Map<String, Object>> recList) {
-        return recList.stream().
-                filter(rec -> !FacilioUtil.parseBoolean(rec.get("isPrerequisite"))).
-                collect(Collectors.toList());
-    }
-
-    private void createJobPlan(Long pmID, List<Map<String, Object>> records) throws Exception {
+    private void createJobPlan(String jpName, List<Map<String, Object>> records) throws Exception {
         if (records.size() == 0) {
-            LOGGER.info("no tasks for PM " + pmID + "; skipping");
+            LOGGER.info("no tasks for JP " + jpName + "; skipping");
             return;
         }
 
-        PMJobPlan jobPlan = new PMJobPlan();
-        jobPlan.setPmId(pmID);
-        jobPlan.setPreRequisite(false);
-        jobPlan.setIsActive(true);
+        Map<String, Object> firstRecord = records.get(0);
+
+        JobPlanContext jobPlan = new JobPlanContext();
+        jobPlan.setIsActive(false);
         jobPlan.setIsDisabled(false);
-        jobPlan.setName("pm-" + pmID + "-import");
+        jobPlan.setName(jpName);
 
-        final String jobPlanModuleName = "pmJobPlan";
-        jobPlan = (PMJobPlan) Util.persistModuleRecord(jobPlanModuleName, jobPlan);
-
-        Map<String, List<Map<String, Object>>> recordsClassifiedBySection = classifyBySection(records);
-        createSectionAndTasks(jobPlan, recordsClassifiedBySection);
-    }
-
-    private void createPreRequisiteJobPlan(Long pmID, List<Map<String, Object>> records) throws Exception {
-        if (records.size() == 0) {
-            LOGGER.info("no prerequisites for PM " + pmID + "; skipping");
-            return;
+        // setting category
+        Object categoryObj = firstRecord.get("category");
+        if (categoryObj == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Category is mandatory for Job Plan");
         }
-        PMJobPlan jobPlan = new PMJobPlan();
-        jobPlan.setPmId(pmID);
-        jobPlan.setIsActive(true);
-        jobPlan.setIsDisabled(false);
-        jobPlan.setPreRequisite(true);
-        jobPlan.setName("pm-pre-" + pmID + "-import");
+        jobPlan.setJobPlanCategory(FacilioUtil.parseInt(categoryObj));
 
-        final String jobPlanModuleName = "pmJobPlan";
-        jobPlan = (PMJobPlan) Util.persistModuleRecord(jobPlanModuleName, jobPlan);
+        // setting asset category
+        Object assetCategoryObj = firstRecord.get("assetCategory");
+        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY)
+                && assetCategoryObj == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Asset Category is mandatory when Scope is Asset Category");
+        }
+        if (assetCategoryObj != null) {
+            Map<String, Object> catObj = (Map<String, Object>) assetCategoryObj;
+            V3AssetCategoryContext cat = new V3AssetCategoryContext();
+            cat.setId(FacilioUtil.parseLong(catObj.get("id")));
+            jobPlan.setAssetCategory(cat);
+        }
 
-        Map<String, List<Map<String, Object>>> recordsClassifiedBySection = classifyBySection(records);
+
+        // setting space category
+        Object spaceCategoryObj = firstRecord.get("assetCategory");
+        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY)
+                && spaceCategoryObj == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Space Category is mandatory when Scope is Space Category");
+        }
+        if (spaceCategoryObj != null) {
+            Map<String, Object> catObj = (Map<String, Object>) spaceCategoryObj;
+            V3SpaceCategoryContext cat = new V3SpaceCategoryContext();
+            cat.setId(FacilioUtil.parseLong(catObj.get("id")));
+            jobPlan.setSpaceCategory(cat);
+        }
+
+        final String jobPlanModuleName = "jobplan";
+        jobPlan = (JobPlanContext) Util.persistModuleRecord(jobPlanModuleName, jobPlan);
+
+        Map<String, List<Map<String, Object>>> recordsClassifiedBySection = classifyBySectionName(records);
         createSectionAndTasks(jobPlan, recordsClassifiedBySection);
     }
 
-    private void createSectionAndTasks(PMJobPlan jobPlan, Map<String, List<Map<String, Object>>> recordsClassifiedBySection) throws Exception {
+    private void createSectionAndTasks(JobPlanContext jobPlan, Map<String, List<Map<String, Object>>> recordsClassifiedBySection) throws Exception {
+        int seqNumber = 0;
         for (Map.Entry<String, List<Map<String, Object>>> entry : recordsClassifiedBySection.entrySet()) {
             String sectionName = entry.getKey();
             List<Map<String, Object>> recList = entry.getValue();
 
-            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName);
+            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName, ++seqNumber);
             createTasks(jobPlan, section, recList);
         }
     }
 
-    private JobPlanTaskSectionContext createSection(PMJobPlan jobPlan, String sectionName) throws Exception {
+    private JobPlanTaskSectionContext createSection(JobPlanContext jobPlan, String sectionName, int seqNumber) throws Exception {
         JobPlanTaskSectionContext jpSection = new JobPlanTaskSectionContext();
         jpSection.setName(sectionName);
         jpSection.setJobPlan(jobPlan);
+        jpSection.setInputType(JobPlanTaskSectionContext.InputType.NONE);
+        jpSection.setSequenceNumber(seqNumber);
 
         final String jpSectionModuleName = "jobplansection";
-        return (JobPlanTaskSectionContext) Util.persistModuleRecord(jpSectionModuleName, jobPlan);
+        return (JobPlanTaskSectionContext) Util.persistModuleRecord(jpSectionModuleName, jpSection);
     }
 
-    private void createTasks(PMJobPlan jobPlan, JobPlanTaskSectionContext section, List<Map<String, Object>> recList) throws Exception {
+    private void createTasks(JobPlanContext jobPlan, JobPlanTaskSectionContext section, List<Map<String, Object>> recList) throws Exception {
 
-        List<Map<String, Object>> mutatedTaskList = new ArrayList<>();
+        int seq = 0;
+        List<JobPlanTasksContext> tasks = new ArrayList<>();
+        List<TaskInputOptionsContext> allTaskInputOptions = new ArrayList<>();
 
         for (Map<String, Object> rec : recList) {
+            JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec, ++seq);
 
-            JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec);
-            
-            mutatedTaskList.add(FieldUtil.getAsProperties(jpTask));
+            if (jpTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
+                List<TaskInputOptionsContext> taskInputOptions = createJpTaskInputOptions(rec);
+                for (TaskInputOptionsContext option : taskInputOptions) {
+                    option.setJobPlanTask(jpTask);
+                }
+                allTaskInputOptions.addAll(taskInputOptions);
+            }
+
+            tasks.add(jpTask);
         }
 
+        // saving jobPlan tasks
+        final String jpTaskModuleName = "jobplantask";
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule jpTaskModule = modBean.getModule("jobplantask");
+        FacilioModule jobPlanTaskModule = modBean.getModule(jpTaskModuleName);
+        List<FacilioField> fields = modBean.getAllFields(jobPlanTaskModule.getName());
+        V3RecordAPI.addRecord(false, tasks, jobPlanTaskModule, fields);
 
-        V3Util.createRecordList(jpTaskModule, mutatedTaskList, null, null);
+        // saving jobPlan task options
+        FacilioModule taskInputMod = ModuleFactory.getJobPlanTaskInputOptionsModule();
+        List<Map<String, Object>> taskInputOptionMapList = FieldUtil.getAsMapList(allTaskInputOptions, TaskInputOptionsContext.class);
+        V3Util.createRecordList(taskInputMod, taskInputOptionMapList, null, null);
     }
 
+    private List<TaskInputOptionsContext> createJpTaskInputOptions(Map<String, Object> rec) throws Exception {
+        List<TaskInputOptionsContext> options = new ArrayList<>();
 
+        Object optionsObj = rec.get("options");
+        if (FacilioUtil.isEmptyOrNull(optionsObj)) {
+            return options;
+        }
 
-    private Map<String, List<Map<String, Object>>> classifyBySection(List<Map<String, Object>> pmList) {
+        String[] optionValues = explodeAndStrip((String) optionsObj);
+        int seq = 0;
+        for (String op : optionValues) {
+            TaskInputOptionsContext taskOption = new TaskInputOptionsContext();
+            taskOption.setLabel(op);
+            taskOption.setValue(op);
+            taskOption.setSequence(++seq);
+            options.add(taskOption);
+        }
+
+        return options;
+    }
+
+    private String[] explodeAndStrip(String value) {
+        String[] explodedValues = StringUtils.split(value, ",");
+        return StringUtils.stripAll(explodedValues);
+    }
+
+    private Map<String, List<Map<String, Object>>> classifyByJobPlanName(List<Map<String, Object>> records) {
+        return classifyByKey("name", records);
+    }
+
+    private Map<String, List<Map<String, Object>>> classifyBySectionName(List<Map<String, Object>> records) {
+        return classifyByKey("section", records);
+    }
+
+    private Map<String, List<Map<String, Object>>> classifyByKey(String key, List<Map<String, Object>> records) {
         Map<String, List<Map<String, Object>>> classification = new HashMap<>();
-        for (Map<String, Object> rec : pmList) {
-            Object sectionNameObj = rec.get("sectionName");
-            String sectionName = (String) sectionNameObj;
-            if (classification.containsKey(sectionName)) {
-                classification.get(sectionName).add(rec);
+        for (Map<String, Object> rec : records) {
+            String keyValue = (String) rec.get(key);
+            if (classification.containsKey(keyValue)) {
+                classification.get(keyValue).add(rec);
             } else {
                 List<Map<String, Object>> newBin = new ArrayList<>();
                 newBin.add(rec);
-                classification.put(sectionName, newBin);
+                classification.put(keyValue, newBin);
             }
         }
         return classification;
     }
+
 }

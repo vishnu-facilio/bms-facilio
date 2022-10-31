@@ -12,16 +12,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TimelineViewContext extends FacilioView {
+public class TimelineViewContext extends FacilioView implements Serializable {
 
     private long startDateFieldId;
+
     public void setStartDateFieldId(long startDateFieldId) {
         this.startDateFieldId = startDateFieldId;
     }
+
     public long getStartDateFieldId() {
         return startDateFieldId;
     }

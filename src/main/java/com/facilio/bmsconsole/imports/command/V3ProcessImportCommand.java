@@ -1,16 +1,20 @@
 package com.facilio.bmsconsole.imports.command;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
-import com.facilio.bmsconsole.context.ImportRowContext;
-import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -33,6 +37,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class V3ProcessImportCommand extends FacilioCommand {
@@ -300,36 +306,53 @@ public class V3ProcessImportCommand extends FacilioCommand {
         }
 
         for (BaseLookupField lookupField : lookupMap.keySet()) {
-            List<FacilioField> fieldsList = new ArrayList<>();
-            fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
-            FacilioField primaryField = getImportLookupMainField(modBean, context, lookupField.getLookupModule().getName());
-            fieldsList.add(primaryField);
-            SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
-                    .module(lookupField.getLookupModule())
-                    .select(fieldsList);
-            if (lookupField.getName().equals("moduleState")) {
-                selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(lookupField.getModule().getModuleId()), NumberOperators.EQUALS));
-            } else if (lookupField.getName().equals("approvalStatus")) {
-                selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", null, CommonOperators.IS_EMPTY));
+            String lookupModuleName="";
+            if(lookupField.getLookupModule() == null && lookupField.getSpecialType() != null) {
+                lookupModuleName = lookupField.getSpecialType();
             }
-
-
-            Set<String> set = new HashSet<>();
+            else {
+                lookupModuleName = lookupField.getLookupModule().getName();
+            }
             Map<String, Object> nameIdMap = lookupMap.get(lookupField);
-            for (String name : nameIdMap.keySet()) {
-                set.add(name.replace(",", StringOperators.DELIMITED_COMMA));
-            }
-            selectBuilder.andCondition(CriteriaAPI.getCondition(primaryField, StringUtils.join(set, ","), StringOperators.IS));
-            List<Map<String, Object>> props = selectBuilder.getAsProps();
-            if (CollectionUtils.isNotEmpty(props)) {
-                Map<String, Map<String, Object>> propMap = props.stream().collect(Collectors.toMap(prop -> (String) prop.get(primaryField.getName()), Function.identity(), (a, b) -> a));
-                for (String name : propMap.keySet()) {
-                    String nameLower = name.toLowerCase().trim();
-                    if (propMap.containsKey(name)) {
-                        nameIdMap.put(nameLower, propMap.get(name));
+            if(LookupSpecialTypeUtil.isSpecialType(lookupModuleName)) {
+                    for(String name:nameIdMap.keySet()){
+                        Map<String,Object> propValue=getSpecialLookupProps(lookupField,name,lookupModuleName);
+                        nameIdMap.put(name,propValue);
+                    }
+            }else{
+                List<FacilioField> fieldsList = new ArrayList<>();
+                fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
+                FacilioField primaryField = getImportLookupMainField(modBean, context, lookupField.getLookupModule().getName());
+                fieldsList.add(primaryField);
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
+                        .module(lookupField.getLookupModule())
+                        .select(fieldsList);
+                if (lookupField.getName().equals("moduleState")) {
+                    selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(lookupField.getModule().getModuleId()), NumberOperators.EQUALS));
+                } else if (lookupField.getName().equals("approvalStatus")) {
+                    selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", null, CommonOperators.IS_EMPTY));
+                }
+
+
+                Set<String> set = new HashSet<>();
+
+                for (String name : nameIdMap.keySet()) {
+                    set.add(name.replace(",", StringOperators.DELIMITED_COMMA));
+                }
+
+                selectBuilder.andCondition(CriteriaAPI.getCondition(primaryField, StringUtils.join(set, ","), StringOperators.IS));
+                List<Map<String, Object>> props = selectBuilder.getAsProps();
+                if (CollectionUtils.isNotEmpty(props)) {
+                    Map<String, Map<String, Object>> propMap = props.stream().collect(Collectors.toMap(prop -> (String) prop.get(primaryField.getName()), Function.identity(), (a, b) -> a));
+                    for (String name : propMap.keySet()) {
+                        String nameLower = name.toLowerCase().trim();
+                        if (propMap.containsKey(name)) {
+                            nameIdMap.put(nameLower, propMap.get(name));
+                        }
                     }
                 }
             }
+
         }
         return lookupMap;
     }
@@ -377,4 +400,50 @@ public class V3ProcessImportCommand extends FacilioCommand {
         }
         return fields;
     }
+    public static Map<String, Object> getSpecialLookupProps(BaseLookupField lookupField,Object value,String moduleName) throws Exception{
+        String key = lookupField.getModule().getName() + "__" + lookupField.getName();
+        try {
+            if(value == null || value.toString().isEmpty()) {
+                if (!lookupField.isRequired()) {
+                    return null;
+                } else {
+                    throw new Exception("Field value missing under column " + key + ".");
+                }
+            }
+
+            switch (moduleName) {
+                case "users": {
+                    long appId=ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+
+                    String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+                    Pattern pattern = Pattern.compile(emailRegex);
+                    Matcher matcher= pattern.matcher(value.toString());
+
+                    if(matcher.matches()){
+                       User user=AccountUtil.getUserBean().getUserFromEmail(value.toString(),appDomainObj != null ? appDomainObj.getIdentifier() : null,AccountUtil.getCurrentOrg().getOrgId());
+                       if(user!=null){
+                           return FieldUtil.getAsProperties(user);
+                       }
+
+                    }
+                }
+                case "role":{
+                    long appId=ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    Role role = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRole(AccountUtil.getCurrentOrg().getOrgId(),value.toString());
+                    if(role!=null){
+                        return FieldUtil.getAsProperties(role);
+                    }
+
+                }
+
+            }
+
+        } catch (Exception e) {
+            LOGGER.severe("Exception occurred for special lookup: " + e.toString());
+            throw e;
+        }
+        return null;
+    }
+
 }

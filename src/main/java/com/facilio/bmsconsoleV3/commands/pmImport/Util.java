@@ -2,10 +2,10 @@ package com.facilio.bmsconsoleV3.commands.pmImport;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMJobPlan;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.chain.FacilioContext;
@@ -17,6 +17,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.Strings;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -232,47 +234,56 @@ public class Util {
     }
 
 
-    public static JobPlanTasksContext createJobPlanTask(PMJobPlan jobPlan,
+    public static JobPlanTasksContext createJobPlanTask(JobPlanContext jobPlan,
                                                         JobPlanTaskSectionContext section,
-                                                        Map<String, Object> rec) {
+                                                        Map<String, Object> rec,
+                                                        int seq) throws ParseException {
 
         JobPlanTasksContext jpTask = new JobPlanTasksContext();
+        jpTask.setAdditionInfo(new JSONObject());
         jpTask.setTaskSection(section);
         jpTask.setJobPlan(jobPlan);
+        jpTask.setSequence(seq);
         jpTask.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());
         jpTask.setCreatedBy(AccountUtil.getCurrentUser());
         jpTask.setCreatedTime(System.currentTimeMillis());
 
-        Object subjectObj = rec.get("jpTaskSubject");
+        Object subjectObj = rec.get("task");
         if (subjectObj != null) {
             jpTask.setSubject((String) subjectObj);
         }
 
-        Object descriptionObj = rec.get("jpTaskDescription");
+        Object descriptionObj = rec.get("taskDescription");
         if (descriptionObj != null) {
             jpTask.setDescription((String) descriptionObj);
         }
 
         // input type
-        jpTask.setInputType(getTaskInputType(rec.get("jpInputType")));
+        int inputType = getTaskInputType(rec.get("inputType"));
+        jpTask.setInputType(inputType);
+        if (inputType > 1) {
+            JSONObject json = new JSONObject();
+            json.put("enableInput", true);
+            jpTask.setAdditionalInfoJsonStr(json.toJSONString());
+        }
 
         // default value
-        Object defaultValueObj = rec.get("jpDefaultValue");
-        String defaultValue = defaultValueObj == null ? "" : (String) defaultValueObj;
-        jpTask.addAdditionInfo("defaultValue", defaultValue);
+        Object defaultValueObj = rec.get("defaultValue");
+        String defaultValue = defaultValueObj == null ? "" : String.valueOf(defaultValueObj);
+        jpTask.setDefaultValue(defaultValue);
 
-        // remarks
-        Object remarksRequired = rec.get("jpRemarksRequired");
-        Boolean remarksRequiredValue = remarksRequired != null;
-        jpTask.addAdditionInfo("remarksRequired", remarksRequiredValue);
-
-        Object remarkOptionValuesObj = rec.get("jpRemarkOptionValues");
-        if (remarkOptionValuesObj == null) {
-            jpTask.addAdditionInfo("remarkOptionValues", new String[]{});
-        } else {
-            String[] remarkOptionValues = explode((String) remarkOptionValuesObj);
-            jpTask.addAdditionInfo("remarkOptionValues", remarkOptionValues);
-        }
+//        // remarks
+//        Object remarksRequired = rec.get("jpRemarksRequired");
+//        Boolean remarksRequiredValue = remarksRequired != null;
+//        jpTask.addAdditionInfo("remarksRequired", remarksRequiredValue);
+//
+//        Object remarkOptionValuesObj = rec.get("jpRemarkOptionValues");
+//        if (remarkOptionValuesObj == null) {
+//            jpTask.addAdditionInfo("remarkOptionValues", new String[]{});
+//        } else {
+//            String[] remarkOptionValues = explode((String) remarkOptionValuesObj);
+//            jpTask.addAdditionInfo("remarkOptionValues", remarkOptionValues);
+//        }
 
         return jpTask;
     }

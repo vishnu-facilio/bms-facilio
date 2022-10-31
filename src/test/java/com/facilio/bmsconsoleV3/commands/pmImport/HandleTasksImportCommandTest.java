@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -19,7 +20,7 @@ class HandleTasksImportCommandTest {
     final String REMARKS_OPTIONS = "remarkOptionValues";
 
     @Test
-    void taskWithNoInput() {
+    void taskWithNoInput() throws ParseException {
         Map<String, Object> rec = new HashMap<>();
         rec.put("jpTaskSubject", "subject");
         rec.put("jpTaskDescription", "desc");
@@ -27,7 +28,7 @@ class HandleTasksImportCommandTest {
         PMJobPlan jp = new PMJobPlan();
         JobPlanTaskSectionContext section = new JobPlanTaskSectionContext();
 
-        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec);
+        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec, 1);
         assertEquals(task.getSubject(), "subject");
         assertEquals(task.getDescription(), "desc");
         assertEquals(task.getInputTypeEnum(), V3TaskContext.InputType.NONE);
@@ -39,7 +40,7 @@ class HandleTasksImportCommandTest {
     }
 
     @Test
-    void taskWithDefaultValue() {
+    void taskWithDefaultValue() throws ParseException {
         Map<String, Object> rec = new HashMap<>();
         rec.put("jpTaskSubject", "subject");
         rec.put("jpTaskDescription", "desc");
@@ -48,7 +49,7 @@ class HandleTasksImportCommandTest {
         PMJobPlan jp = new PMJobPlan();
         JobPlanTaskSectionContext section = new JobPlanTaskSectionContext();
 
-        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec);
+        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec, 1);
         assertEquals(task.getSubject(), "subject");
         assertEquals(task.getDescription(), "desc");
 
@@ -57,7 +58,7 @@ class HandleTasksImportCommandTest {
     }
 
     @Test
-    void taskWithTextInput() {
+    void taskWithTextInput() throws ParseException {
         Map<String, Object> rec = new HashMap<>();
         rec.put("jpTaskSubject", "subject");
         rec.put("jpTaskDescription", "desc");
@@ -66,7 +67,7 @@ class HandleTasksImportCommandTest {
         PMJobPlan jp = new PMJobPlan();
         JobPlanTaskSectionContext section = new JobPlanTaskSectionContext();
 
-        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec);
+        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec, 1);
         assertEquals(task.getSubject(), "subject");
         assertEquals(task.getDescription(), "desc");
         assertEquals(task.getInputTypeEnum(), V3TaskContext.InputType.TEXT);
@@ -78,7 +79,7 @@ class HandleTasksImportCommandTest {
     }
 
     @Test
-    void taskWithRadio() {
+    void taskWithRadio() throws ParseException {
         Map<String, Object> rec = new HashMap<>();
         rec.put("jpTaskSubject", "subject");
         rec.put("jpTaskDescription", "desc");
@@ -87,7 +88,7 @@ class HandleTasksImportCommandTest {
         PMJobPlan jp = new PMJobPlan();
         JobPlanTaskSectionContext section = new JobPlanTaskSectionContext();
 
-        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec);
+        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec, 1);
         assertEquals(task.getSubject(), "subject");
         assertEquals(task.getDescription(), "desc");
         assertEquals(V3TaskContext.InputType.RADIO, task.getInputTypeEnum());
@@ -98,7 +99,7 @@ class HandleTasksImportCommandTest {
     }
 
     @Test
-    void taskWithNumber() {
+    void taskWithNumber() throws ParseException {
         Map<String, Object> rec = new HashMap<>();
         rec.put("jpTaskSubject", "subject");
         rec.put("jpTaskDescription", "desc");
@@ -107,7 +108,7 @@ class HandleTasksImportCommandTest {
         PMJobPlan jp = new PMJobPlan();
         JobPlanTaskSectionContext section = new JobPlanTaskSectionContext();
 
-        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec);
+        JobPlanTasksContext task = Util.createJobPlanTask(jp, section, rec, 1);
         assertEquals(task.getSubject(), "subject");
         assertEquals(task.getDescription(), "desc");
         assertEquals(V3TaskContext.InputType.RADIO, task.getInputTypeEnum());
