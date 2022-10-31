@@ -218,7 +218,10 @@ public class ScopeHandlerImpl extends ScopeHandler {
 
 	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module) throws Exception {
 		if(module != null && (module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE))){
-			return getDefaultCriteriaForModules(module);
+			if(AccountUtil.getCurrentApp() != null) {
+				return getDefaultCriteriaForModules(module);
+			}
+			return null;
 		}
 		List<FacilioField> fieldList = new ArrayList<>();
 		Criteria criteria = new Criteria();
