@@ -279,6 +279,9 @@ public class CommunityFeaturesAPI {
         List<V3PeopleContext> people = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(ppl)) {
             for (V3PeopleContext person : ppl) {
+                if(person == null){
+                    continue;
+                }
                 count++;
                 if(count > skipCount && recCount < perPage) {
                     recCount++;
