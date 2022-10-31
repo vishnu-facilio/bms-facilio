@@ -50,6 +50,21 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 		}
 		return -1;
 	}
+
+	public static void updateConditionField(String moduleName,Criteria criteria) throws Exception{
+
+		if (criteria == null){
+			return;
+		}
+
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for (String key : criteria.getConditions().keySet()){
+			Condition condition = criteria.getConditions().get(key);
+			FacilioField field = moduleBean.getField(condition.getFieldName(),moduleName);
+			condition.setField(field);
+		}
+
+	}
 	
 	private static void addConditions(Map<String, Condition> conditions, long parentCriteriaId, long orgId) throws Exception {
 		if(conditions != null && !conditions.isEmpty()) {

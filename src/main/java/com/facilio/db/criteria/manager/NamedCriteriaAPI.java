@@ -63,9 +63,8 @@ public class NamedCriteriaAPI {
         for (String key : namedCriteria.getConditions().keySet()) {
             NamedCondition namedCondition = namedCriteria.getConditions().get(key);
             if (namedCondition.getType() == NamedCondition.Type.CRITERIA.getIndex()) {
-                Condition condition = namedCondition.getCriteria().getConditions().get(key);
-                FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
-                condition.setField(field);
+                Criteria criteria = namedCondition.getCriteria();
+                CriteriaAPI.updateConditionField(moduleName,criteria);
             }
             namedCondition.validateAndAddChildren();
             namedCondition.setNamedCriteriaId(namedCriteria.getId());
