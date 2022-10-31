@@ -11,9 +11,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
 import com.facilio.field.validation.string.StringValidator;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
@@ -166,29 +168,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public List<FacilioModule> getModuleList(ModuleType moduleType, boolean onlyCustom) throws Exception {
-		FacilioModule moduleModule = ModuleFactory.getModuleModule();
-
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(moduleModule.getTableName())
-				.select(FieldFactory.getModuleFields())
-				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(1), NumberOperators.NOT_EQUALS));
-
-		if (onlyCustom) {
-			builder.andCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(onlyCustom), BooleanOperators.IS));
-		}
-
-
-		List<Map<String, Object>> props = builder.get();
-		for (Map<String, Object> prop : props) {
-			if (prop.containsKey("createdBy")) {
-				IAMUser user = new IAMUser();
-				user.setId((long) prop.get("createdBy"));
-				prop.put("createdBy", user);
-			}
-		}
-		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
-		return moduleList;
+		return getModuleList(moduleType, onlyCustom, null, null);
 	}
 
 	@Override
@@ -370,14 +350,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.ModuleType... types) throws Exception {
-		if (types == null || types.length == 0) {
-			return null;
-		}
-		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
-		}
-		FacilioModule parentModule = getMod(moduleName);
-		return getSubModuleFromParent(parentModule, types);
+		return getSubModules(moduleName, null, null, types);
 	}
 	
 	@Override
@@ -403,50 +376,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override //This doesn't fetch grand child and so on
 	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception {
-		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
-			return null;
-		}
-		PreparedStatement pstmt = null;
-		Connection conn  =null;
-		ResultSet rs = null;
-		try {
-			 conn = getConnection();
-
-			 String sql = DBConf.getInstance().getQuery("module.child.modules");
-			 pstmt = conn.prepareStatement(sql);
-
-			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, parentModule.getModuleId());
-
-			List<FacilioModule> modules = new ArrayList<>();
-			rs = pstmt.executeQuery();
-
-			while(rs.next()) {
-				FacilioModule currentModule = new FacilioModule();
-				currentModule.setModuleId(rs.getLong("MODULEID"));
-				currentModule.setOrgId(rs.getLong("ORGID"));
-				currentModule.setName(rs.getString("NAME"));
-				currentModule.setDisplayName(rs.getString("DISPLAY_NAME"));
-				currentModule.setTableName(rs.getString("TABLE_NAME"));
-				currentModule.setType(rs.getInt("MODULE_TYPE"));
-				currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
-				currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
-				currentModule.setExtendModule(parentModule);
-				int dataInterval = rs.getInt("DATA_INTERVAL");
-				if (dataInterval != 0) {
-					currentModule.setDataInterval(dataInterval);
-				}
-				modules.add(currentModule);
-			}
-			return modules;
-		}
-		catch(SQLException e) {
-			LOGGER.info("Exception occurred ", e);
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn,pstmt, rs);
-		}
+		return getChildModules(parentModule, null, null);
 	}
 	
 	private FacilioModule getMod(String moduleName) throws Exception {
@@ -888,24 +818,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
-
-		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			return LookupSpecialTypeUtil.getAllFields(moduleName);
-		}
-
-		FacilioModule module = getMod(moduleName);
-		Map<Long, FacilioModule> moduleMap = splitModules(module);
-
-		List<Long> extendedModuleIds = module.getExtendedModuleIds();
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getSelectFieldFields())
-														.table("Fields")
-														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> fieldProps = selectBuilder.get();
-		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
-		return fields;
+		return getAllFields(moduleName, null, null);
 	}
 	
 	@Override
@@ -2102,5 +2015,209 @@ public class ModuleBeanImpl implements ModuleBean {
 		return relatedList;
 	}
 
+	@Override
+	public List<FacilioModule> getModuleList(List<String> moduleNames) throws Exception {
+		List<FacilioModule> moduleList = new ArrayList<>();
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(moduleFields);
 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(moduleFields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), StringUtils.join(moduleNames, ","), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		for (Map<String, Object> prop : props) {
+			if (prop.containsKey("createdBy")) {
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
+		moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+
+		return moduleList;
+	}
+
+	@Override
+	public List<FacilioModule> getModuleList(ModuleType moduleType, boolean onlyCustom, JSONObject pagination, String searchString) throws Exception {
+		List<FacilioModule> moduleList = new ArrayList<>();
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(moduleFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(moduleFields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), String.valueOf(moduleType.getValue()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS));
+
+		if (onlyCustom) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(onlyCustom), BooleanOperators.IS));
+		}
+
+		if (StringUtils.isNotEmpty(searchString)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+		}
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+		selectBuilder.orderBy(fieldsMap.get("moduleId").getCompleteColumnName() + " ASC");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		for (Map<String, Object> prop : props) {
+			if (prop.containsKey("createdBy")) {
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
+		moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+
+		return moduleList;
+	}
+
+	@Override
+	public List<FacilioField> getAllFields(String moduleName, JSONObject pagination, String searchString) throws Exception {
+
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getAllFields(moduleName);
+		}
+		List<FacilioField> fields = null;
+		FacilioModule module = getMod(moduleName);
+		FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module while getting module");
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSelectFieldFields())
+				.table("Fields")
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
+		if (StringUtils.isNotEmpty(searchString)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
+		}
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(fieldProps)) {
+			fields = getFieldFromPropList(fieldProps, moduleMap);
+		}
+		return fields;
+	}
+
+	@Override
+	public List<FacilioModule> getSubModules(String moduleName, JSONObject pagination, String searchString, FacilioModule.ModuleType... types) throws Exception {
+		if (types == null || types.length == 0) {
+			return null;
+		}
+		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule parentModule = modBean.getModule(moduleName);
+		return getSubModuleFromParent(parentModule, pagination, searchString, types);
+	}
+
+	private List<FacilioModule> getSubModuleFromParent(FacilioModule parentModule, JSONObject pagination, String searchString, FacilioModule.ModuleType... types) throws Exception {
+		FacilioUtil.throwIllegalArgumentException(parentModule == null, "Invalid module while getting sub modules");
+
+		List<FacilioModule> subModules = new ArrayList<>();
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		FacilioModule relModule = ModuleFactory.getSubModulesRelModule();
+		Map<String, FacilioField> modFieldsMap = FieldFactory.getAsMap(FieldFactory.getModuleFields());
+		Map<String, FacilioField> relModFieldsMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(relModule.getTableName())
+				.select(FieldFactory.getSubModuleRelFields())
+				.innerJoin(moduleModule.getTableName())
+				.on(relModule.getTableName() + ".CHILD_MODULE_ID = " + moduleModule.getTableName() + ".MODULEID")
+				.andCondition(CriteriaAPI.getCondition(relModFieldsMap.get("parentModuleId"), parentModule.getExtendedModuleIds(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(modFieldsMap.get("type"), getTypes(types), StringOperators.IS));
+
+		if (StringUtils.isNotEmpty(searchString)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modFieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+		}
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+		selectBuilder.orderBy(relModFieldsMap.get("parentModuleId").getCompleteColumnName() + " ASC");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (CollectionUtils.isNotEmpty(props)) {
+			for (Map<String, Object> prop : props) {
+				long moduleId = (long) prop.get("childModuleId");
+				subModules.add(modBean.getModule(moduleId));
+			}
+		}
+
+		return subModules;
+	}
+
+	@Override
+	public List<FacilioModule> getChildModules(FacilioModule parentModule, JSONObject pagination, String searchString) throws Exception {
+		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
+			return null;
+		}
+
+		List<FacilioModule> childModules = new ArrayList<>();
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(moduleFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(moduleFields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("extendsId"), String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
+
+		if (StringUtils.isNotEmpty(searchString)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+		}
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+		selectBuilder.orderBy(fieldsMap.get("moduleId").getCompleteColumnName() + " ASC");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			childModules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+		}
+
+		return childModules;
+	}
 }

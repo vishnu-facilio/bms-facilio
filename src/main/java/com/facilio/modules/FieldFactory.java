@@ -1419,7 +1419,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
-
+        fields.add(getField("extendsId", "EXTENDS_ID", module, FieldType.NUMBER));
         return fields;
     }
 

@@ -1416,4 +1416,25 @@ public class WorkflowRuleAPI {
 		rule.setExecutionOrder(executionOrder);
 	}
 
+	public static long getCustomButtonsCount(FacilioModule module, String searchString) throws Exception {
+		FacilioModule customButtonRuleModule = ModuleFactory.getCustomButtonRuleModule();
+		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(workflowRuleModule.getTableName())
+				.select(FieldFactory.getCountField())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+				.innerJoin(customButtonRuleModule.getTableName()).on("Workflow_Rule.ID = " + customButtonRuleModule.getTableName() + ".ID");
+
+		if (searchString!= null) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+		}
+
+		Map<String, Object> modulesMap = builder.fetchFirst();
+		long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
+
+		return count;
+	}
 }

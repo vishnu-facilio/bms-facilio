@@ -10,6 +10,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -64,6 +65,15 @@ public class CustomButtonAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getAllCustomButtonChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", getPage());
+        pagination.put("perPage", getPerPage());
+        if (getPerPage() < 0) {
+            pagination.put("perPage", 5000);
+        }
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 
         chain.execute();
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));

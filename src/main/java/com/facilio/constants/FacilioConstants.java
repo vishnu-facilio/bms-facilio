@@ -201,6 +201,9 @@ public class FacilioConstants {
 
 		}
 
+		public static final String SUMMARY = "summary";
+		public static final String CUSTOMIZATION = "customization";
+
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
 
@@ -668,6 +671,7 @@ public class FacilioConstants {
 		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
 
 		public static final String MODULE_NAME = "moduleName";
+		public static final String MODULE_SETTING = "setting";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String DUPLICATE_OBJECT = "duplicateObj";

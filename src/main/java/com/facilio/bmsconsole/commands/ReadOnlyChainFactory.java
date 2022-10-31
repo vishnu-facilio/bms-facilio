@@ -1309,6 +1309,71 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getSystemModulesListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetSystemModulesListCommand());
+		return c;
+	}
+
+	public static FacilioChain getSystemModulesCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetSystemModulesCountCommand());
+		return c;
+	}
+
+	public static FacilioChain getCustomModulesListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCustomModulesListCommand());
+		return c;
+	}
+
+	public static FacilioChain getCustomModulesCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCustomModulesCountCommand());
+		return c;
+	}
+
+	public static FacilioChain getModuleFieldsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAllModuleFieldsCommand());
+		return c;
+	}
+
+	public static FacilioChain getModuleFieldsCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAllModuleFieldsCountCommand());
+		return c;
+	}
+
+	public static FacilioChain getRelatedModulesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedModulesCommand());
+		return c;
+	}
+
+	public static FacilioChain getRelatedModulesCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedModulesCountCommand());
+		return c;
+	}
+
+	public static FacilioChain getExtendedModulesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetExtendedModulesCommand());
+		return c;
+	}
+
+	public static FacilioChain getExtendedModulesCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetExtendedModulesCountCommand());
+		return c;
+	}
+
+	public static FacilioChain getModuleSummaryChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetModuleSummaryCommand());
+		return c;
+	}
 	public static FacilioChain getTranslationListChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new CreateTranslationJSONCommand());
@@ -2007,6 +2072,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getCustomButtonsCountChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCustomButtonsCountCommand());
+		return chain;
+	}
+
 	public static FacilioChain getCustomButtonsListForRecords(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new FetchRecordMapCommand());
@@ -2389,6 +2460,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getRelationListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllRelationForSetupPageCommand());
+		return chain;
+	}
+
+	public static FacilioChain getRelationCountChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllRelationsCountCommand());
 		return chain;
 	}
 

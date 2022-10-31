@@ -24,7 +24,7 @@ import com.facilio.modules.FacilioModule;
 // This command is used for showing module list under Customization tab
 public class GetModulesListCommand extends FacilioCommand {
 
-	private static final List<String> MODULES = Arrays.asList(new String[] {
+	public static final List<String> MODULES = Arrays.asList(
 			ContextNames.WORK_ORDER,
 			ContextNames.ASSET,
 			ContextNames.VENDORS,
@@ -59,8 +59,7 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.REQUEST_FOR_QUOTATION,
 			ContextNames.PLANNEDMAINTENANCE,
 			ContextNames.ANNOUNCEMENT,
-			ContextNames.JOB_PLAN,
-	});
+			ContextNames.JOB_PLAN);
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

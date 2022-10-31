@@ -886,6 +886,83 @@ public class FormsAPI {
 		return forms;
 			
 	}
+
+	public static long getFormsCount(String moduleName, Boolean fetchExtendedModuleForms, Boolean fetchDisabledForms, long appId) throws Exception{
+		FacilioModule formModule = ModuleFactory.getFormModule();
+
+		List<FacilioField> fields = FieldFactory.getFormFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String, FacilioField> formSiteFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSiteRelationFields());
+
+		List<Long> spaces = new ArrayList<>();
+		if (AccountUtil.getCurrentSiteId() > 0) {
+			spaces.add(AccountUtil.getCurrentSiteId());
+
+		}
+		else if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getAccessibleSpace() != null) {
+			spaces = AccountUtil.getCurrentUser().getAccessibleSpace();
+		}
+		GenericSelectRecordBuilder forms1 = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+				.select(Collections.singleton(formSiteFieldMap.get("formId")))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getFormSiteRelationModule()));
+
+		if (spaces != null && spaces.size() > 0) {
+			StringJoiner spaceIds = new StringJoiner(",");
+			spaces.stream().forEach(f -> spaceIds.add(String.valueOf(f)));
+			forms1.andCondition(CriteriaAPI.getCondition(formSiteFieldMap.get("siteId"), spaceIds.toString(),NumberOperators.EQUALS));
+		}
+		GenericSelectRecordBuilder forms2 = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+				.select(Collections.singleton(formSiteFieldMap.get("formId")))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getFormSiteRelationModule()));
+
+
+		GenericSelectRecordBuilder formListBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getCountField())
+				.table(formModule.getTableName())
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), formModule));
+
+		if (moduleName != null) {
+			List<Long> moduleIds = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			long moduleId=module.getModuleId();
+			moduleIds.add(moduleId);
+			if (module.getExtendModule() != null && fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
+				moduleIds.add(module.getExtendModule().getModuleId());
+				StringJoiner ids = new StringJoiner(",");
+				moduleIds.stream().forEach(f -> ids.add(String.valueOf(f)));
+				formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), ids.toString(), NumberOperators.EQUALS));
+			}
+			else {
+				formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+			}
+		}
+
+		if (spaces != null && spaces.size() > 0) {
+			formListBuilder.andCustomWhere("(" + FieldFactory.getIdField().getColumnName() + " in (" + forms1.constructSelectStatement() + ")");
+			formListBuilder.orCustomWhere(FieldFactory.getIdField().getColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
+		}
+
+		if (fetchDisabledForms != null && fetchDisabledForms) {
+		}
+		else {
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("showInWeb"), "true", BooleanOperators.IS));
+		}
+
+		ApplicationContext app = null;
+		if (appId > 0) {
+			app = ApplicationApi.getApplicationForId(appId);
+			List<Long> appIds = Collections.singletonList(app.getId());
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));
+		}
+
+		Map<String, Object> modulesMap = formListBuilder.fetchFirst();
+		long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
+
+		return count;
+	}
 	
 	private static List<FacilioForm> getAsFormSiteRelationListMap(List<FacilioForm> forms, List<Long> spaces) throws Exception {
 			List<Long> formIds = forms.stream().map(FacilioForm::getId).collect(Collectors.toList());
