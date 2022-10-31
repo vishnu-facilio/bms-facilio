@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.pmImport;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
@@ -126,7 +127,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
         JobPlanTaskSectionContext jpSection = new JobPlanTaskSectionContext();
         jpSection.setName(sectionName);
         jpSection.setJobPlan(jobPlan);
-        jpSection.setInputType(JobPlanTaskSectionContext.InputType.NONE);
+        jpSection.setInputType(TaskContext.InputType.NONE);
         jpSection.setSequenceNumber(seqNumber);
 
         final String jpSectionModuleName = "jobplansection";
