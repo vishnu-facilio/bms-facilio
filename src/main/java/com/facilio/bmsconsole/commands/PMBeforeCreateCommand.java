@@ -1,16 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
 
 public class PMBeforeCreateCommand extends FacilioCommand {
     @Override
@@ -23,9 +25,9 @@ public class PMBeforeCreateCommand extends FacilioCommand {
             pm.setSourceType(V3TicketContext.SourceType.PM_TEMPLATE.getIntVal());
             pm.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED.getValue());
 
-            if (pm.getAssignmentTypeEnum() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY) {
+            if (pm.getAssignmentTypeEnum() == PMScopeAssigmentType.SPACECATEGORY) {
                 pm.setAssetCategory(null);
-            } else if (pm.getAssignmentTypeEnum() == PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY) {
+            } else if (pm.getAssignmentTypeEnum() == PMScopeAssigmentType.ASSETCATEGORY) {
                 pm.setSpaceCategory(null);
             } else {
                 pm.setSpaceCategory(null);

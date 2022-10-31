@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +15,13 @@ import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
+@Getter
+@Setter
 public class JobPlanTasksContext extends V3TaskContext {
+	
+	private V3AssetCategoryContext assetCategory;
+
+    private V3SpaceCategoryContext spaceCategory;
 
     private static Logger log = LogManager.getLogger(JobPlanTasksContext.class.getName());
 
@@ -26,49 +35,15 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.taskSection = taskSection;
     }
 
-    private JobPlanTaskCategory jobPlanTaskCategory;
-
-    public enum JobPlanTaskCategory implements FacilioIntEnum {
-        ALL_FLOORS("All Floors"),
-        ALL_SPACES("All Spaces"),
-        SPACE_CATEGORY("Space Category"),
-        ASSET_CATEGORY("Asset Category"),
-        CURRENT_ASSET("Current Asset"),
-        SPECIFIC_ASSET("Specific Asset"),
-        ALL_BUILDINGS("All Buildings"),
-        ALL_SITES("All Sites")
-        ;
-        private String name;
-
-        JobPlanTaskCategory(String name) {
-            this.name = name;
-        }
-
-        public static JobPlanTaskCategory valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-    }
+    private PreventiveMaintenance.PMAssignmentType jobPlanTaskCategory;
 
     public void setJobPlanTaskCategory(Integer type) {
         if (type != null) {
-            this.jobPlanTaskCategory = JobPlanTaskCategory.valueOf(type);
+            this.jobPlanTaskCategory = PreventiveMaintenance.PMAssignmentType.valueOf(type);
         }
     }
 
-    public JobPlanTaskCategory getJobPlanTaskCategoryEnum() {
+    public PreventiveMaintenance.PMAssignmentType getJobPlanTaskCategoryEnum() {
         return jobPlanTaskCategory;
     }
     public Integer getJobPlanTaskCategory() {
@@ -77,26 +52,6 @@ public class JobPlanTasksContext extends V3TaskContext {
         }
         return null;
     }
-
-    private Long assetCategoryId;
-
-    public Long getAssetCategoryId() {
-        return assetCategoryId;
-    }
-
-    public void setAssetCategoryId(Long assetCategoryId) {
-        this.assetCategoryId = assetCategoryId;
-    }
-
-    public Long getSpaceCategoryId() {
-        return spaceCategoryId;
-    }
-
-    public void setSpaceCategoryId(Long spaceCategoryId) {
-        this.spaceCategoryId = spaceCategoryId;
-    }
-
-    private Long spaceCategoryId;
 
     private JobPlanContext jobPlan;
 
@@ -109,6 +64,8 @@ public class JobPlanTasksContext extends V3TaskContext {
     }
 
     // declarations for additionalInfoJsonStr
+    
+    // should remove all these
     private String additionalInfoJsonStr;
     public String getAdditionalInfoJsonStr() {
         if(additionInfo != null) {

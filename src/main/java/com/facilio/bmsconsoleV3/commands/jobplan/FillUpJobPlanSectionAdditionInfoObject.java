@@ -35,7 +35,7 @@ public class FillUpJobPlanSectionAdditionInfoObject extends FacilioCommand {
 
                     List<Map<String, Object>> sectionMapList = new ArrayList<>();
                     for (JobPlanTaskSectionContext section : taskSections) {
-                        List<JobPlanTasksContext> taskList = FieldUtil.getAsBeanListFromMapList(section.getTasks(), JobPlanTasksContext.class);
+                        List<JobPlanTasksContext> taskList = section.getTasks();
 
                         if (CollectionUtils.isEmpty(taskList)) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Task list is mandatory for a task section");

@@ -30,7 +30,7 @@ public class FillTasksAndPrerequisitesCommand extends FacilioCommand {
         V3WorkOrderContext workOrderContext = wos.get(0);
 
         // allTasks stores all the tasks. [ This has to be added to tasksString in V3WorkOrderContext ]
-        LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();
+        LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();							// should change this model. 
 
         // Get the JobPlanContext
         JobPlanContext jobPlan = workOrderContext.getJobPlan(); // jobPlanContext will be available in workOrderContext
@@ -42,19 +42,19 @@ public class FillTasksAndPrerequisitesCommand extends FacilioCommand {
         }
 
         if (jobPlan != null) {
-            Map<String, List<V3TaskContext>> jobPlanTasks = JobPlanAPI.getTasksForWo(jobPlan, false);
+            Map<String, List<V3TaskContext>> jobPlanTasks = JobPlanAPI.getScopedTasksForWo(jobPlan, false, workOrderContext);
             allTasks.putAll(jobPlanTasks);
         }
 
         // Get the JobPlanContext for Ahoc tasks
         if (adhocJobPlan != null) {
-            Map<String, List<V3TaskContext>> jobPlanTasks = JobPlanAPI.getTasksForWo(adhocJobPlan, false);
+            Map<String, List<V3TaskContext>> jobPlanTasks = JobPlanAPI.getScopedTasksForWo(adhocJobPlan, false, workOrderContext);
             allTasks.putAll(jobPlanTasks);
         }
 
         // Get the JobPlanContext for Prerequisite tasks
         if (prerequisiteJobPlan != null) {
-            Map<String, List<V3TaskContext>> jobPlanPrerequisites = JobPlanAPI.getTasksForWo(prerequisiteJobPlan, true);
+            Map<String, List<V3TaskContext>> jobPlanPrerequisites = JobPlanAPI.getScopedTasksForWo(prerequisiteJobPlan, true, workOrderContext);
             context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, jobPlanPrerequisites);
         }
 

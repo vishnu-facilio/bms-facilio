@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.tasks;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
@@ -50,14 +51,14 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
                 for (JobPlanTaskSectionContext section : jobPlanTaskSectionList) {
 
                     // set input options for section
-                    if (section.getInputTypeEnum().equals(JobPlanTaskSectionContext.InputType.RADIO)) {
+                    if (section.getInputTypeEnum().equals(TaskContext.InputType.RADIO)) {
                         List<Map<String, Object>> options = JobPlanAPI.fetchSectionInputOptions(modBean, section);
                         if (options != null) {
                             section.setInputOptions(options);
                         }
                     }
 
-                    List<JobPlanTasksContext> taskList = FieldUtil.getAsBeanListFromMapList(section.getTasks(), JobPlanTasksContext.class);
+                    List<JobPlanTasksContext> taskList = section.getTasks();
                     if (taskList != null && !taskList.isEmpty()) {
 
                         // jobPlan task level
@@ -70,7 +71,7 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
                             }
                         }
                         // Set the tasks - so that it reflects in back in recordMap object
-                        section.setTasks(FieldUtil.getAsMapList(taskList, JobPlanTasksContext.class));
+                        section.setTasks(taskList);
                     }
                 }
             }

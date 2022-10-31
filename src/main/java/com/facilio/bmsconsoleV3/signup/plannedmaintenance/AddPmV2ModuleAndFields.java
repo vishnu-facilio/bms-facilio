@@ -333,6 +333,16 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
         fields.add(resourceCountField);
 
+        NumberField resourceTimelineViewIdField = SignupUtil.getNumberField(module, "resourceTimelineViewId",
+                "Space/Asset Timeline View", "RESOURCE_TIMELINE_VIEW_ID",
+                FacilioField.FieldDisplayType.NUMBER,false,false,true, orgId);
+        fields.add(resourceTimelineViewIdField);
+
+        NumberField staffTimelineViewIdField = SignupUtil.getNumberField(module, "staffTimelineViewId",
+                "Staff Timeline View", "STAFF_TIMELINE_VIEW_ID",
+                FacilioField.FieldDisplayType.NUMBER,false,false,true, orgId);
+        fields.add(staffTimelineViewIdField);
+
         module.setFields(fields);
 
         return module;

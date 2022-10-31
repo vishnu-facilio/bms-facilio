@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
 
@@ -15,4 +16,8 @@ public class PMPlanner extends V3Context {
     private List<PMResourcePlanner> resourcePlanners;
     private long generatedUpto;
     private Long resourceCount;
+    private Long resourceTimelineViewId;
+    private Long staffTimelineViewId;
+    private FacilioView resourceTimelineView;
+    private FacilioView staffTimelineView;
 }

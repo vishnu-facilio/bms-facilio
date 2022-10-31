@@ -241,7 +241,7 @@ public class Util {
 
         JobPlanTasksContext jpTask = new JobPlanTasksContext();
         jpTask.setAdditionInfo(new JSONObject());
-        jpTask.setTaskSection(section);
+        jpTask.setTaskSection(new JobPlanTaskSectionContext(section.getId()));
         jpTask.setJobPlan(jobPlan);
         jpTask.setSequence(seq);
         jpTask.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());

@@ -59,7 +59,8 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     private Long dueDuration;
     private Long estimatedDuration;
     private List<V3SiteContext> sites;
-
+    
+    
     public enum PMScopeAssigmentType implements FacilioIntEnum {
         ASSETS("Assets"),
         SPACES("Spaces"),
@@ -90,4 +91,5 @@ public class PlannedMaintenance extends V3WorkOrderContext {
             return ordinal() + 1;
         }
     }
+
 }

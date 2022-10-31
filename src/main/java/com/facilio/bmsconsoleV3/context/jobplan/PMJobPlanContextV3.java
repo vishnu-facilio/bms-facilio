@@ -72,12 +72,12 @@ public class PMJobPlanContextV3 implements Serializable {
            for(JobPlanTaskSectionContext ts : sections) {
                TaskSectionTemplate taskSectionTemplate = new TaskSectionTemplate();
                taskSectionTemplate.setAssignmentType(ts.getJobPlanSectionCategory());
-               taskSectionTemplate.setAssetCategoryId(ts.getAssetCategoryId());
-               taskSectionTemplate.setSpaceCategoryId(ts.getSpaceCategoryId());
+               taskSectionTemplate.setAssetCategoryId(ts.getAssetCategory().getId());
+               taskSectionTemplate.setSpaceCategoryId(ts.getSpaceCategory().getId());
                taskSectionTemplate.setSequenceNumber(ts.getSequenceNumber());
                taskSectionTemplate.setName(ts.getName());
                if(CollectionUtils.isNotEmpty(ts.getTasks())) {
-                   List<JobPlanTasksContext> jobPlanTasks = FieldUtil.getAsBeanListFromMapList(ts.getTasks(), JobPlanTasksContext.class);
+                   List<JobPlanTasksContext> jobPlanTasks = ts.getTasks();
                    for(JobPlanTasksContext jpTask : jobPlanTasks) {
                        TaskTemplate taskTemplate = new TaskTemplate();
                        taskTemplate.setAssignmentType(jpTask.getJobPlanTaskCategory());

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.tasks;
 
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
@@ -40,7 +41,7 @@ public class AddJobPlanSectionInputOptions extends FacilioCommand {
         // iterate sections
         for (JobPlanTaskSectionContext section : taskSections) {
 
-            if (section.getInputTypeEnum() == JobPlanTaskSectionContext.InputType.RADIO) {
+            if (section.getInputTypeEnum() == TaskContext.InputType.RADIO) {
 
                 if (section.getInputOptions() != null && !section.getInputOptions().isEmpty()) {
 

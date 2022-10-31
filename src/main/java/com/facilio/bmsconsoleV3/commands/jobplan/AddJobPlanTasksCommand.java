@@ -15,6 +15,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class AddJobPlanTasksCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -35,19 +39,20 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(taskSections)) {
             List<JobPlanTasksContext> allTasks = new ArrayList<>();
             for(JobPlanTaskSectionContext section : taskSections) {
-                List<JobPlanTasksContext> taskList = FieldUtil.getAsBeanListFromMapList(section.getTasks(), JobPlanTasksContext.class);
+                List<JobPlanTasksContext> taskList = section.getTasks();
                 if(CollectionUtils.isEmpty(taskList)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Task list is mandatory for a task section");
                 }
 
-                JobPlanAPI.deleteJobPlanTasks(section.getId());
+                JobPlanAPI.deleteJobPlanTasks( section.getId());
                 for(JobPlanTasksContext task : taskList) {
                     // deletion of  JobPlan Task Input option will be done automatically as Cascade delete is given
-                    task.setTaskSection(section);
+                    task.setTaskSection(new JobPlanTaskSectionContext(section.getId()));
                     task.setJobPlan(section.getJobPlan());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
                     task.setCreatedTime(System.currentTimeMillis());
                 }
+                LOGGER.error("task map  ---- "+FieldUtil.getAsJSONArray(taskList, JobPlanTasksContext.class));
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);
                 allTasks.addAll(taskList); // Collecting all task to update the InputOptions.
             }

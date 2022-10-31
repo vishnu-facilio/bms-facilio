@@ -87,13 +87,21 @@ public class JobPlanAPI {
         List<JobPlanTaskSectionContext> sections = builder.get();
         if (CollectionUtils.isNotEmpty(sections)) {
             for (JobPlanTaskSectionContext section : sections) {
+            	
+            	if (section.getInputTypeEnum().equals(TaskContext.InputType.RADIO)) {		
+                    List<Map<String, Object>> options = fetchSectionInputOptions(modBean, section);
+                    if (options != null) {
+                    	section.setInputOptions(options);
+                    }
+                }
+            	
                 List<JobPlanTasksContext> splitList = getTasks(section.getId());
                 if (CollectionUtils.isNotEmpty(splitList)) {
-                    List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, JobPlanTasksContext.class);
-                    for (Map<String, Object> map : mapList) {
-                        map.values().removeAll(Collections.singleton(null));
-                    }
-                    section.setTasks(mapList);
+//                    List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, JobPlanTasksContext.class);
+//                    for (Map<String, Object> map : mapList) {
+//                        map.values().removeAll(Collections.singleton(null));
+//                    }
+                    section.setTasks(splitList);
                 }
             }
             return sections;
@@ -114,6 +122,18 @@ public class JobPlanAPI {
 
         List<JobPlanTasksContext> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
+        	
+        	for(JobPlanTasksContext jobPlanTask : list) {
+        		if (jobPlanTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
+                    List<Map<String, Object>> optionsMap = fetchTaskInputOptions(modBean, jobPlanTask);
+                    List<TaskInputOptionsContext> taskInputOptions = FieldUtil.getAsBeanListFromMapList(optionsMap, TaskInputOptionsContext.class);
+
+                    List<String> options = taskInputOptions.stream().map(TaskInputOptionsContext::getValue).collect(Collectors.toList());
+                    if (options != null) {
+                    	jobPlanTask.setOptions(options);
+                    }
+                }
+        	}
             return list;
         }
         return null;
@@ -154,7 +174,7 @@ public class JobPlanAPI {
     public static Map<String, List<TaskContext>> getTaskMapFromJobPlan(List<JobPlanTaskSectionContext> sections, Long woResourceId) throws Exception {
         Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
         for (JobPlanTaskSectionContext jobPlanSection : sections) {
-            List<Long> resourceIds = getMatchingResourceIdsForJobPlan(jobPlanSection.getJobPlanSectionCategory().intValue(), woResourceId, jobPlanSection.getSpaceCategoryId(), jobPlanSection.getAssetCategoryId(), -1L);
+            List<Long> resourceIds = getMatchingResourceIdsForJobPlan(jobPlanSection.getJobPlanSectionCategory().intValue(), woResourceId, jobPlanSection.getSpaceCategory().getId(), jobPlanSection.getAssetCategory().getId(), -1L);
 
             Map<String, Integer> dupSectionNameCount = new HashMap<>();
             for (Long resourceId : resourceIds) {
@@ -176,14 +196,14 @@ public class JobPlanAPI {
                 }
 
                 Integer sectionCategory = jobPlanSection.getJobPlanSectionCategory();
-                List<JobPlanTasksContext> tasks = FieldUtil.getAsBeanListFromMapList(jobPlanSection.getTasks(), JobPlanTasksContext.class);
+                List<JobPlanTasksContext> tasks = jobPlanSection.getTasks();
 
                 List<TaskContext> woTasks = new ArrayList<TaskContext>();
                 for (JobPlanTasksContext jobPlanTask : tasks) {
                     if (jobPlanTask.getJobPlanTaskCategory() != null) {
-                        List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId(), -1L);
+                        List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory().getId(), -1L);
                         for (Long taskResourceId : taskResourceIds) {
-                            if (sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.ASSET_CATEGORY.getIndex() || sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.SPACE_CATEGORY.getIndex()) {
+                            if (sectionCategory == PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getIndex() || sectionCategory == PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getIndex()) {
                                 if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
                                     continue;
                                 }
@@ -340,68 +360,78 @@ public class JobPlanAPI {
 
     /**
      * Methods with {@link V3WorkOrderContext}
+     * @param workOrderContext 
      */
 
-    public static Map<String, List<V3TaskContext>> getTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest) throws Exception {
+    public static Map<String, List<V3TaskContext>> getScopedTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest, V3WorkOrderContext workOrderContext) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();
 
-        List<JobPlanTaskSectionContext> taskSections = setJobPlanDetails(jobPlan.getId());
-        if (taskSections != null) {
-            for (JobPlanTaskSectionContext sectionContext : taskSections) {
+        List<JobPlanTaskSectionContext> initalTaskSections = setJobPlanDetails(jobPlan.getId());
+        
+        List<JobPlanTaskSectionContext> updatedTaskSections = new ArrayList<>();
+        
+        
+        if (initalTaskSections != null) {
+            for (JobPlanTaskSectionContext initalTaskSection : initalTaskSections) {
+            	
+            	List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
+            	
+            	if(CollectionUtils.isNotEmpty(sectionResourceList)) {
+            		
+            		for(ResourceContext sectionResource : sectionResourceList) {
+                		
+                		JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
+                		updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
+                		updatedTaskSection.setResource(sectionResource);
+                		updatedTaskSections.add(updatedTaskSection);
+                	}
+            	}
+           }
+            int taskUniqueId = 1;
+            if(CollectionUtils.isNotEmpty(updatedTaskSections)) {
+            	
+            	for (JobPlanTaskSectionContext sectionContext : updatedTaskSections) {
+             	   
+            		if (sectionContext.getTasks() != null) {
 
-                // set input options for section
-                if (sectionContext.getInputTypeEnum().equals(JobPlanTaskSectionContext.InputType.RADIO)) {
-                    List<Map<String, Object>> options = fetchSectionInputOptions(modBean, sectionContext);
-                    if (options != null) {
-                        sectionContext.setInputOptions(options);
-                    }
-                }
+                        List<V3TaskContext> tasks = new ArrayList<>();
 
-                // for each JobPlanTaskSectionContext
-                if (sectionContext.getTasks() != null) {
-
-                    // get tasks from JobPlanTaskSectionContext
-                    List<Map<String, Object>> tasksMappings = sectionContext.getTasks(); // assuming Map<String, List<V3TaskContext>>
-                    List<V3TaskContext> tasks = new ArrayList<>();
-
-                    String sectionName = sectionContext.getName();
-                    int taskUniqueId = 1;
-
-                    for (Map<String, Object> taskMap : tasksMappings) {
-                        V3TaskContext task = FieldUtil.getAsBeanFromMap(taskMap, V3TaskContext.class);
-                        JobPlanTasksContext jobPlanTask = FieldUtil.getAsBeanFromMap(taskMap, JobPlanTasksContext.class);
-
-                        if (task != null) {
-
-                            // handle when task InputType is RADIO (options).
-                            if (jobPlanTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
-                                List<Map<String, Object>> optionsMap = fetchTaskInputOptions(modBean, jobPlanTask);
-                                List<TaskInputOptionsContext> taskInputOptions = FieldUtil.getAsBeanListFromMapList(optionsMap, TaskInputOptionsContext.class);
-
-                                List<String> options = taskInputOptions.stream().map(TaskInputOptionsContext::getValue).collect(Collectors.toList());
-                                if (options != null) {
-                                    task.setOptions(options);
+                        for (JobPlanTasksContext jobPlanTask : sectionContext.getTasks()) {
+                        	
+                        	List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
+                        	
+                        	if(CollectionUtils.isNotEmpty(taskResourceList)) {
+                        		
+                        		for (ResourceContext taskResource : taskResourceList) {
+                        			V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
+                        			task.setResource(taskResource);
+                        			task.setUniqueId(taskUniqueId++);
+                            		tasks.add(task);
+                            	}
+                        	}
+                        }
+                        
+                        String sectionName = sectionContext.getName();
+                        
+                        if(CollectionUtils.isNotEmpty(tasks)) {
+                        	for(V3TaskContext task : tasks) {
+                                if (isPreRequest) {
+                                	task.setPreRequest(true);
+                                    task.setInputType(V3TaskContext.InputType.BOOLEAN.getVal());
                                 }
-                            }
-
-                            task.setUniqueId(taskUniqueId++);
-
-                            if (!isPreRequest) {
-                                tasks.add(task);  // adding tasks
-                            } else {
-                                task.setPreRequest(true);
-                                task.setInputType(V3TaskContext.InputType.BOOLEAN.getVal());
-                                tasks.add(task); // adding prerequisites
-                            }
+                        	}
+                        }
+                        	
+                        if (sectionName != null && CollectionUtils.isNotEmpty(tasks)) {
+                            allTasks.put(sectionName, tasks);
                         }
                     }
-                    if (sectionName != null && tasks.size() > 0) {
-                        allTasks.put(sectionName, tasks);
-                    }
+             	   
                 }
+            	
             }
         }
         return allTasks;

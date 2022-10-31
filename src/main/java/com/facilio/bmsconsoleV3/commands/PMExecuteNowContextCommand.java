@@ -69,9 +69,9 @@ public class PMExecuteNowContextCommand extends FacilioCommand {
         pmPlanner.setResourcePlanners(pmResourcePlanners);
 
         List<V3WorkOrderContext> workOrderContexts = executeNowExecutor.execute(context, plannedmaintenance, pmPlanner);
-        FacilioModule plannedmaintenanceMod = modBean.getModule("workorder");
+        FacilioModule workorderModule = modBean.getModule("workorder");
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = workOrderContexts.stream().map(i -> (ModuleBaseWithCustomFields) i).collect(Collectors.toList());
-        V3Util.createRecord(plannedmaintenanceMod, moduleBaseWithCustomFields);
+        V3Util.createRecord(workorderModule, moduleBaseWithCustomFields);
         return false;
     }
 }

@@ -211,15 +211,6 @@ enums:
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
 
-  - name: JobPlanCategory
-    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
-
-  - name: JobPlanSectionCategory
-    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext$JobPlanSectionCategory
-
-  - name: JobPlanTaskCategory
-    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext$JobPlanTaskCategory
-
   - name: MoveType
     enumClassName: com.facilio.bmsconsoleV3.context.V3MovesContext$MoveType
 
@@ -256,9 +247,6 @@ enums:
   - name: AggregationType
     enumClassName: com.facilio.ns.context.AggregationType
 
-  - name: PMScopeAssigmentType
-    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
-
   - name: PMTriggerType
     enumClassName: com.facilio.bmsconsole.context.PMTriggerV2$PMTriggerType
 
@@ -284,3 +272,6 @@ enums:
 
   - name: InventoryReservationStatus
     enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$InventoryReservationStatus
+  
+  - name: PMScopeAssigmentType
+    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType

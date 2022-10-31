@@ -63,6 +63,7 @@ public abstract class ExecutorBase implements Executor {
                 workOrderCopy.setEstimatedEnd(workOrderCopy.getDueDate());
 
                 workOrderCopy.setCreatedBy(AccountUtil.getCurrentUser());
+                workOrderCopy.setAssignedTo(pmResourcePlanner.getAssignedTo());
 
                 result.add(workOrderCopy);
             }

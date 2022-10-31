@@ -21,7 +21,7 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         //addExecutedWorkOrdersTab(page);
 
         // Scheduler
-        //addSchedulerTab(page);
+        addSchedulerTab(page);
 
         // History
         //addHistoryTab(page);
@@ -98,7 +98,7 @@ public class PlannedMaintenancePageFactory extends PageFactory{
         schedulerTab.addSection(schedulerSection);
 
         PageWidget schedulerDetailsWidget = new PageWidget(PageWidget.WidgetType.PM_SCHEDULER_DETAILS);
-        schedulerDetailsWidget.addToLayoutParams(schedulerSection, 24, 13);
+        schedulerDetailsWidget.addToLayoutParams(schedulerSection, 24, 14);
         schedulerDetailsWidget.addToWidgetParams("card", "pmSchedulerDetails");
         schedulerSection.addWidget(schedulerDetailsWidget);
     }

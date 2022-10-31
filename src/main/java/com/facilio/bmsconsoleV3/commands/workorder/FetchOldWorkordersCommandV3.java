@@ -44,7 +44,8 @@ public class FetchOldWorkordersCommandV3 extends FacilioCommand {
                         .beanClass(V3WorkOrderContext.class)
                         .select(fields)
                         .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
-                        .orderBy("ID");
+                        .orderBy("ID")
+                        .skipModuleCriteria();
 
                 List<V3WorkOrderContext> workOrderContexts = builder.get();
                 if(CollectionUtils.isNotEmpty(workOrderContexts)) {

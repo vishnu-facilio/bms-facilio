@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
-import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.v3.context.V3Context;
@@ -12,15 +13,15 @@ import java.util.List;
 public class JobPlanContext extends V3Context {
 
     private String name;
-    private PMScopeAssigmentType jobPlanCategory;
+    private PlannedMaintenance.PMScopeAssigmentType jobPlanCategory;
 
     public void setJobPlanCategory(Integer type) {
         if (type != null) {
-            this.jobPlanCategory = PMScopeAssigmentType.valueOf(type);
+            this.jobPlanCategory = PlannedMaintenance.PMScopeAssigmentType.valueOf(type);
         }
     }
 
-    public PMScopeAssigmentType getJobPlanCategoryEnum() {
+    public PlannedMaintenance.PMScopeAssigmentType getJobPlanCategoryEnum() {
         return jobPlanCategory;
     }
     public Integer getJobPlanCategory() {

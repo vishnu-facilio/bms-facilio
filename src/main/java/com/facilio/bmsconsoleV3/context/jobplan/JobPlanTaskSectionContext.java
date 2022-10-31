@@ -1,10 +1,16 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,14 +23,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class JobPlanTaskSectionContext extends V3Context {
+@Getter 
+@Setter
+@NoArgsConstructor
+public class JobPlanTaskSectionContext extends V3Context{
+	
+	public JobPlanTaskSectionContext(long id) {
+		this.setId(id);
+	}
 
+	private V3AssetCategoryContext assetCategory;
 
-    private Long assetCategoryId;
-    private Long spaceCategoryId;
-
+    private V3SpaceCategoryContext spaceCategory;
 
     private JobPlanContext jobPlan;
+    
+    private ResourceContext resource;	// for internal purpose only 
+    
+    List<JobPlanTasksContext> tasks;
 
     public JobPlanContext getJobPlan() {
         return jobPlan;
@@ -34,49 +50,16 @@ public class JobPlanTaskSectionContext extends V3Context {
         this.jobPlan = jobPlan;
     }
 
-    private JobPlanSectionCategory jobPlanSectionCategory;
+    private PreventiveMaintenance.PMAssignmentType jobPlanSectionCategory;
 
-    public enum JobPlanSectionCategory implements FacilioIntEnum {
-        ALL_FLOORS("All Floors"),
-        ALL_SPACES("All Spaces"),
-        SPACE_CATEGORY("Space Category"),
-        ASSET_CATEGORY("Asset Category"),
-        CURRENT_ASSET("Current Asset"),
-        SPECIFIC_ASSET("Specific Asset"),
-        ALL_BUILDINGS("All Buildings"),
-        ALL_SITES("All Sites")
-        ;
-        private String name;
-
-        JobPlanSectionCategory(String name) {
-            this.name = name;
-        }
-
-        public static JobPlanSectionCategory valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-    }
 
     public void setJobPlanSectionCategory(Integer type) {
         if (type != null) {
-            this.jobPlanSectionCategory = JobPlanSectionCategory.valueOf(type);
+            this.jobPlanSectionCategory = PreventiveMaintenance.PMAssignmentType.valueOf(type);
         }
     }
 
-    public JobPlanSectionCategory getJobPlanSectionCategoryEnum() {
+    public PreventiveMaintenance.PMAssignmentType getJobPlanSectionCategoryEnum() {
         return jobPlanSectionCategory;
     }
     public Integer getJobPlanSectionCategory() {
@@ -84,22 +67,6 @@ public class JobPlanTaskSectionContext extends V3Context {
             return jobPlanSectionCategory.getIndex();
         }
         return null;
-    }
-
-    public Long getAssetCategoryId() {
-        return assetCategoryId;
-    }
-
-    public void setAssetCategoryId(Long assetCategoryId) {
-        this.assetCategoryId = assetCategoryId;
-    }
-
-    public Long getSpaceCategoryId() {
-        return spaceCategoryId;
-    }
-
-    public void setSpaceCategoryId(Long spaceCategoryId) {
-        this.spaceCategoryId = spaceCategoryId;
     }
 
     private Integer sequenceNumber ;
@@ -120,18 +87,8 @@ public class JobPlanTaskSectionContext extends V3Context {
         this.name = name;
     }
 
-    private List<Map<String, Object>> tasks;
-
-    public List<Map<String, Object>> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Map<String, Object>> tasks) {
-        this.tasks = tasks;
-    }
-
     // declarations for InputType
-    private JobPlanTaskSectionContext.InputType inputType;
+    private TaskContext.InputType inputType;
     public int getInputType() {
         if(inputType != null) {
             return inputType.getVal();
@@ -139,38 +96,20 @@ public class JobPlanTaskSectionContext extends V3Context {
         return -1;
     }
     public void setInputType(int inputType) {
-        this.inputType = JobPlanTaskSectionContext.InputType.valueOf(inputType);
+        this.inputType = TaskContext.InputType.valueOf(inputType);
     }
-    public void setInputType(JobPlanTaskSectionContext.InputType inputType) {
+    public void setInputType(TaskContext.InputType inputType) {
         this.inputType = inputType;
     }
-    public JobPlanTaskSectionContext.InputType getInputTypeEnum() {
+    public TaskContext.InputType getInputTypeEnum() {
         return inputType;
     }
 
-    public enum InputType {
-        NONE,
-        READING,
-        TEXT,
-        NUMBER,
-        RADIO,
-        //CHECKBOX,
-        BOOLEAN
-        ;
-
-        public int getVal() {
-            return ordinal()+1;
-        }
-
-        public static JobPlanTaskSectionContext.InputType valueOf(int val) {
-            if(val > 0 && val <= values().length) {
-                return values()[val - 1];
-            }
-            return null;
-        }
-    }
-
-    // declarations for additionInfo
+    // declarations for additionInfo 
+    
+    
+    // should remove all these
+    
     private JSONObject additionInfo;
     public JSONObject getAdditionInfo() {
         if(additionInfo == null){
@@ -476,5 +415,4 @@ public class JobPlanTaskSectionContext extends V3Context {
     @Getter
     @Setter
     private List<Map<String, Object>> inputOptions;
-
 }
