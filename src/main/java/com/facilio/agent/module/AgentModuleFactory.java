@@ -39,4 +39,13 @@ public class AgentModuleFactory {
 		lonworksModule.setExtendModule(ModuleFactory.getPointModule());
         return lonworksModule;
 	}
+
+	public static FacilioModule getE2PointModule() {
+		FacilioModule e2Module = new FacilioModule();
+		e2Module.setName("e2Point");
+		e2Module.setDisplayName("E2 Point");
+		e2Module.setTableName("E2_Point");
+		e2Module.setExtendModule(ModuleFactory.getPointModule());
+		return e2Module;
+	}
 }

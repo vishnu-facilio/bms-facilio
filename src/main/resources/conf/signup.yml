@@ -197,6 +197,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.RestControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BACnetipControllerModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.E2ControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.NiagaraControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LonWorksControllerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ModbusRtuControllerModule

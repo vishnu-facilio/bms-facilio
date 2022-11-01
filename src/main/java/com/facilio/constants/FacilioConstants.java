@@ -2,6 +2,7 @@ package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agentv2.E2.E2ControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
@@ -2447,6 +2448,7 @@ public class FacilioConstants {
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
 			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpControllerContext.class);
+			classMap.put(E2_CONTROLLER_MODULE_NAME, E2ControllerContext.class);
 			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaControllerContext.class);
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaControllerContext.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraControllerContext.class);

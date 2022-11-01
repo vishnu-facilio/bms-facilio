@@ -69,17 +69,6 @@ public class Controller extends AssetContext {
     @JsonIgnore
     private Map<String, FacilioField> fieldsMap;
 
-    @JsonInclude
-    private long deviceId=-1;
-
-    public long getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(long deviceId) {
-        this.deviceId = deviceId;
-    }
-
     private final long DEFAULT_DATA_INTERVAL = 900000;
 
     //private final boolean DEFAULT_ACTIVE = true;

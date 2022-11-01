@@ -7,7 +7,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 
 public class E2ControllerAction extends AgentIdAction {
 
-    private int portNumber;
+    private int port;
     private String ipAddress;
     private String name;
 
@@ -30,18 +30,18 @@ public class E2ControllerAction extends AgentIdAction {
     }
 
     public int getPortNumber() {
-        return portNumber;
+        return port;
     }
 
     public void setPortNumber(int portNumber) {
-        this.portNumber = portNumber;
+        this.port = portNumber;
     }
 
     public String addController(){
         try {
             E2ControllerContext e2Controller = new E2ControllerContext();
             e2Controller.setIpAddress(ipAddress);
-            e2Controller.setPortNumber(portNumber);
+            e2Controller.setPort(port);
             e2Controller.setName(name);
             e2Controller.setAgentId(getAgentId());
             e2Controller.setControllerType(getControllerType());

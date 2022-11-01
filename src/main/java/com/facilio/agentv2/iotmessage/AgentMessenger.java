@@ -65,6 +65,10 @@ public class AgentMessenger {
                     if(agent.getDiscoverControllersTimeOut()>0) {
                         messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverControllersTimeOut());
                     }
+                    if (extraMsgContent != null && type == FacilioControllerType.E2 && extraMsgContent.containsKey(AgentConstants.IP_ADDRESS) && extraMsgContent.containsKey(AgentConstants.PORT)){
+                        messageBody.put(AgentConstants.IP_ADDRESS, extraMsgContent.get(AgentConstants.IP_ADDRESS));
+                        messageBody.put(AgentConstants.PORT, extraMsgContent.get(AgentConstants.PORT));
+                    }
                      break;
                 case DISCOVER_POINTS:
                     if(agent.getDiscoverPointsTimeOut()>0) {
@@ -175,6 +179,18 @@ public class AgentMessenger {
     public static boolean discoverController(Long agentId, FacilioControllerType controllerType) throws Exception {
         if (agentId > 0) {
             IotData data = constructNewIotAgentMessage((long) agentId, FacilioCommand.DISCOVER_CONTROLLERS, (FacilioContext) null, controllerType);
+            MessengerUtil.addAndPublishNewAgentData(data);
+            return true;
+        }
+        return true;
+    }
+
+    public static boolean discoverController(Long agentId, FacilioControllerType controllerType, String ipAddress, Long port) throws Exception {
+        if (agentId > 0) {
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.IP_ADDRESS, ipAddress);
+            context.put(AgentConstants.PORT, port);
+            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, context, controllerType);
             MessengerUtil.addAndPublishNewAgentData(data);
             return true;
         }

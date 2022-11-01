@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -17,7 +19,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.chain.FacilioContext;
-
+@Getter @Setter
 public class TypeAgentAction extends AgentIdAction {
 
     private static final Logger LOGGER = LogManager.getLogger(TypeControllerAction.class.getName());
@@ -30,9 +32,16 @@ public class TypeAgentAction extends AgentIdAction {
     @NotNull
     private  Integer controllerType;
 
+    private  String ipAddress;
+    private  Long port;
+
     public String discoverControllers(){
         try {
-            setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+            if(FacilioControllerType.valueOf(getControllerType()) == FacilioControllerType.E2 && getIpAddress() != null && getPort() != null){
+                setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType()), getIpAddress(), getPort()));
+            } else {
+                setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+            }
             setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT,SUCCESS);
         }catch (Exception e){

@@ -223,6 +223,7 @@ public class ControllerApiV2 {
                 controller = FieldUtil.getAsBeanFromMap(map, RdmControllerContext.class);
                 break;
             case E2:
+                E2ControllerContext.validateControllerJSON(map);
                 controller = FieldUtil.getAsBeanFromMap(map,E2ControllerContext.class);
                 break;
             default:

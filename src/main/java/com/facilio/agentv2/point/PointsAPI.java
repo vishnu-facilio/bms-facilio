@@ -6,6 +6,7 @@ import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.E2.E2PointContext;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
@@ -74,6 +75,8 @@ public class PointsAPI {
             	return AgentModuleFactory.getLonWorksPointModule();
             case RDM:
                 return AgentModuleFactory.getRdmPointModule();
+            case E2:
+                return AgentModuleFactory.getE2PointModule();
             case REST:
             case CUSTOM:
             case BACNET_MSTP:
@@ -110,6 +113,8 @@ public class PointsAPI {
             	return AgentFieldFactory.getLonWorksPointFields(fetchExtended);
             case RDM:
                 return AgentFieldFactory.getRdmPointFields(fetchExtended);
+            case E2:
+                return AgentFieldFactory.getE2PointFields(fetchExtended);
             case REST:
             case CUSTOM:
             case BACNET_MSTP:
@@ -151,6 +156,8 @@ public class PointsAPI {
                 	return LonWorksPointContext.getPointFromMap(payload);
                 case RDM:
                     return RdmPointContext.getPointFromMap(payload);
+                case E2:
+                    return E2PointContext.getPointFromMap(payload);
                 default:
                     throw new Exception("no implementation for " + controllerType.asString());
             }
@@ -442,6 +449,8 @@ public class PointsAPI {
                 return SystemPointContext.class;
             case RDM:
                 return RdmPointContext.class;
+            case E2:
+                return E2PointContext.class;
             case BACNET_MSTP:
             default:
                 throw new Exception(" No implementation for " + type.asString() + " point");

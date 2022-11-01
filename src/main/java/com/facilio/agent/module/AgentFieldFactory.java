@@ -69,4 +69,26 @@ public class AgentFieldFactory {
 		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", module, FieldType.STRING));
 		return fields;
 	}
+
+	public static List<FacilioField> getE2PointFields(boolean fetchExtended) throws Exception {
+		FacilioModule module = AgentModuleFactory.getE2PointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		if (fetchExtended) {
+			fields.addAll(FieldFactory.getPointFields());
+		}
+		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getControllerIdField(module));
+		fields.add(FieldFactory.getField(AgentConstants.GROUP_NAME, "GROUP_NAME", module, FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_NAME, "PROP_NAME", module, FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.PARENT_ID, "PARENT_ID", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PARENT_TYPE, "PARENT_TYPE", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.APP_ID, "APP_ID", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.APP_INDEX, "APP_INDEX", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_STATUS, "PROP_STATUS", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_NUMBER, "PROP_NUMBER", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_MODE, "PROP_MODE", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_TYPE, "PROP_TYPE", module, FieldType.NUMBER));
+		fields.add(FieldFactory.getField(AgentConstants.PROP_DATA_TYPE, "PROP_DATA_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
 }

@@ -21,7 +21,10 @@ public class AgentConstants
     public static final String CONTROLLER_PROPS_AS_PROPSSTR = "propsStr";
     public static final String CONTROLLER_PROPS = "controllerProps";
     public static final String AVAILABLE_POINTS = "availablePoints";
+    public static final String PORT = "port";
     public static final String PORT_NUMBER = "portNumber";
+    public static final String MINOR_VERSION = "minorVersion";
+    public static final String MAJOR_VERSION = "majorVersion";
     public static final String CREATED_TIME = "createdTime";
     public static final String LAST_MODIFIED_TIME = AgentKeys.LAST_MODIFIED_TIME;
     public static final String LAST_DATA_SENT_TIME = "lastDataSentTime";
@@ -70,6 +73,18 @@ public class AgentConstants
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String PATH = "path";
+
+    //e2
+    public static final String GROUP_NAME = "groupName";
+    public static final String PROP_NAME = "propName";
+    public static final String PARENT_TYPE = "parentType";
+    public static final String APP_ID = "appId";
+    public static final String APP_INDEX = "appIndex";
+    public static final String PROP_STATUS = "propStatus";
+    public static final String PROP_NUMBER = "propNumber";
+    public static final String PROP_MODE = "propMode";
+    public static final String PROP_TYPE = "propType";
+    public static final String PROP_DATA_TYPE = "propDataType";
 
     // tables
     public static final String AGENT_CONTROLLER_TABLE = "Agent_Controller";
