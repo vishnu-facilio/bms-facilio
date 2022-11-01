@@ -89,6 +89,9 @@ public class IamClient {
     }
     
     public static void addUserToDC(String name, GroupType groupType) throws Exception {
+        if(FacilioProperties.isOnpremise()){
+            return;
+        }
         var url = FacilioProperties.getIAMAddUserURL();
         JSONObject params = new JSONObject();
         params.put("userName", name);
