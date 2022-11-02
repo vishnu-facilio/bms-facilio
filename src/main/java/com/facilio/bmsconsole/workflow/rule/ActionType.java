@@ -1734,6 +1734,7 @@ public enum ActionType {
 					FacilioForm form = FormsAPI.getFormFromDB(formId);
 
 					FacilioModule module = form.getModule();
+					obj.put("sourceType", V3ServiceRequestContext.SourceType.EMAIL_REQUEST.getIntVal());
 
 					Long recordId = null;
 					if (mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
