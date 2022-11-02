@@ -402,7 +402,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         }
 
         Map<String,PMTriggerContext> triggerMap = new HashMap<>();
-        if (pms.get(0).getTriggers() != null && !pms.get(0).getTriggers().isEmpty()) {
+        if (pms.get(0).isActive() && pms.get(0).getTriggers() != null && !pms.get(0).getTriggers().isEmpty()) {
             List<PMTriggerContext> pmTriggerContexts = pms.get(0).getTriggers().stream().filter(i -> i.getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.SCHEDULE).collect(Collectors.toList());
 
             if (CollectionUtils.isEmpty(pmTriggerContexts)) {
