@@ -178,8 +178,11 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
     private void flushTable(Set<Long> pmIDs) throws Exception {
         FacilioField pmID = FieldFactory.getNumberField("pmID", "PM_ID", null);
         String ids = StringUtils.join(pmIDs, ",");
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule resourcePlannerMod = modBean.getModule("resourceplanner");
         GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-                .table("PM_IMPORT")
+                .table(resourcePlannerMod.getTableName())
                 .andCondition(CriteriaAPI.getCondition(pmID, ids, NumberOperators.EQUALS));
         deleteBuilder.delete();
     }
