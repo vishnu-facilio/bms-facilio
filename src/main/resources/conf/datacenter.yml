@@ -29,3 +29,6 @@ datacenters:
 
   7:
     mainapp: app.facilio.ae
+
+  8:
+    mainapp: stage2.facilio.in
