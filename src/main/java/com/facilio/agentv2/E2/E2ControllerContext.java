@@ -25,9 +25,9 @@ public class E2ControllerContext extends Controller {
 
     private String ipAddress;
     private long port = -1;
-    private int deviceId;
-    private int minorVersion;
-    private int majorVersion;
+    private int deviceId = -1;
+    private int minorVersion = -1;
+    private int majorVersion = -1;
     private String identifier;
 
     public E2ControllerContext() {
