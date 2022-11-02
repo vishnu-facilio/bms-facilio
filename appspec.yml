@@ -40,7 +40,9 @@ files:
   - source: /awsprops-scheduler-app.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-kafka.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-kafka.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-stage.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage2.properties
@@ -60,6 +62,8 @@ files:
   - source: /log4j-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-kafka.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-syd-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler-app.properties
     destination: /home/facilio/deployment-files/
