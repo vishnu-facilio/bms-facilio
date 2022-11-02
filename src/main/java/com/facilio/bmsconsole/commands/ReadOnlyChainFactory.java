@@ -47,6 +47,7 @@ import com.facilio.relation.command.ViewRelationCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.v3.commands.AddCustomLookupInSupplementCommand;
+import com.facilio.v3.commands.CustomButtonForDataListCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Context;
@@ -2003,6 +2004,13 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetCustomButtonListCommand());
 		chain.addCommand(new GetActionListForWorkflowRulesCommand());
+		return chain;
+	}
+
+	public static FacilioChain getCustomButtonsListForRecords(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchRecordMapCommand());
+		chain.addCommand(new CustomButtonForDataListCommand());
 		return chain;
 	}
 

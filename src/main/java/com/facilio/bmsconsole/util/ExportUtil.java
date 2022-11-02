@@ -772,7 +772,7 @@ public class ExportUtil {
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
-		context.put(Constants.FOR_EXPORT, true);
+		context.put(Constants.WITHOUT_CUSTOMBUTTONS, true);
 		
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);

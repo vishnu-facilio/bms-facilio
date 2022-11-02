@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -115,6 +117,21 @@ public class CustomButtonAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.CUSTOM_BUTTON.getIntVal());
         chain.execute();
 
+        return SUCCESS;
+    }
+
+    @Getter @Setter
+    private List<Long> recordIds;
+    @Getter @Setter
+    private List<Integer> positionTypes;
+    public String getAvailableButtonsForRecords() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getCustomButtonsListForRecords();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+        context.put(FacilioConstants.ContextNames.POSITION_TYPE,positionTypes);
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.CUSTOM_BUTTONS,context.get(FacilioConstants.ContextNames.CUSTOM_BUTTONS));
         return SUCCESS;
     }
 }

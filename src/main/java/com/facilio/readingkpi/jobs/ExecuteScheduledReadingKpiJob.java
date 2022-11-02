@@ -20,6 +20,8 @@ public class ExecuteScheduledReadingKpiJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jc) throws Exception {
+        Long jobStartTime = System.currentTimeMillis();
+        LOGGER.info("job Start Time " + jobStartTime );
         try {
             JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
             Long scheduleType = (Long) props.get(FacilioConstants.ReadingKpi.SCHEDULE_TYPE);
@@ -30,6 +32,7 @@ public class ExecuteScheduledReadingKpiJob extends FacilioJob {
             LOGGER.info("Execution of scheduled kpi failed", e);
             CommonCommandUtil.emailException("ExecuteScheduledReadingKpiJob", "Execution of scheduled kpi failed", e);
         }
+        LOGGER.info("Time taken for job execution " + (System.currentTimeMillis() - jobStartTime));
     }
 
     @Override

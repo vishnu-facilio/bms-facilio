@@ -421,6 +421,9 @@
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
 			<param name="translationImpl">ButtonTranslation</param>
 		</action>
+
+		<action name="getAvailableButtonsForRecords" class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtonsForRecords">
+		</action>
 	</package>
 
 	<package name="systemButton" namespace="/api/v2/systemButton" extends="v2Api">

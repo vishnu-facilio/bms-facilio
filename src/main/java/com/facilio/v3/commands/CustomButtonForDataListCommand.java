@@ -1,11 +1,11 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.jobs.ScheduledWorkflowJob;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.CustomButtonAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -26,8 +26,8 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        Object forExport = context.get(Constants.FOR_EXPORT);
-        if (forExport != null && (Boolean) forExport) {
+        Object withoutCustomButton = context.get(Constants.WITHOUT_CUSTOMBUTTONS); ;
+        if (withoutCustomButton != null && (Boolean)withoutCustomButton){
             LOGGER.info("skipping command for export");
             return false;
         }
@@ -35,12 +35,20 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<? extends ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
-
+        List<Integer> positionTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.POSITION_TYPE);
         if (CollectionUtils.isNotEmpty(records)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
+            List<WorkflowRuleContext> customButtons;
+            positionTypes = CollectionUtils.isEmpty(positionTypes) ? new ArrayList<Integer>(){{
+                add(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+                add(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+            }} : positionTypes;
 
-            List<WorkflowRuleContext> customButtons = CustomButtonAPI.getCustomButtons(module, CustomButtonRuleContext.PositionType.LIST_BAR, CustomButtonRuleContext.PositionType.LIST_ITEM);
+            final List<Integer> finalPositionTypes = positionTypes;
+            List<CustomButtonRuleContext.PositionType> positionTypeList = EnumSet.allOf(CustomButtonRuleContext.PositionType.class).stream().filter(positionType -> finalPositionTypes.contains(positionType.getIndex())).collect(Collectors.toList());
+            customButtons = CustomButtonAPI.getCustomButtons(module,positionTypeList.toArray(new CustomButtonRuleContext.PositionType[positionTypeList.size()]));
+
             Set<WorkflowRuleContext> evaluatedCustomButtons = new HashSet<>();
             if (CollectionUtils.isNotEmpty(customButtons)) {
                 for (ModuleBaseWithCustomFields record : records) {

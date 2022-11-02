@@ -32,6 +32,7 @@ public class Constants {
     public static final String JOINS = "joins";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String WITH_COUNT = "withCount";
+    public static final String WITHOUT_CUSTOMBUTTONS = "withoutCustomButtons";
     public static final String BEAN_CLASS = "beanClass";
     public static final String FROM_SCRIPT = "fromScript";
     public static final String ROWS_UPDATED = "rowsUpdated";

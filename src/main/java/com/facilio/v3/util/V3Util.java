@@ -490,7 +490,14 @@ public class V3Util {
     }
 
     public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
-                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception {
+                                           Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception{
+
+        return fetchList(moduleName,isV3,viewName,filters,excludeParentFilter,clientCriteria,
+                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false);
+    }
+
+    public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
+                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
 
@@ -541,6 +548,7 @@ public class V3Util {
             context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
             context.put(Constants.WITH_COUNT, withCount);
             context.put(Constants.QUERY_PARAMS, queryParameters);
+            context.put(Constants.WITHOUT_CUSTOMBUTTONS,withoutCustomButtons);
         } else {
             context.put(Constants.QUERY_PARAMS, queryParameters);
 

@@ -19,14 +19,17 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j
 public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -48,6 +51,7 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
             }
             ScheduleInfo schedule = ReadingKpiAPI.getSchedule(kpi.getFrequencyEnum());
             List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
+            LOGGER.info("Going to execute scheduled kpi : " + kpi.getName() + "for intervals: " + intervals);
             List<ReadingContext> currentReadings = ReadingKpiAPI.calculateReadingKpi(resourceId, kpi, intervals, isHistorical);
             if (CollectionUtils.isNotEmpty(currentReadings)) {
                 readings.addAll(currentReadings);

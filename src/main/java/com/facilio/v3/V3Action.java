@@ -169,6 +169,26 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 		this.withCount = withCount;
 	}
 
+	private boolean withoutCustomButtons;
+
+	public void setWithoutCustomButtons(boolean withoutCustomButtons) {
+		this.withoutCustomButtons = withoutCustomButtons;
+	}
+
+	public boolean getWithoutCustomButtons() {
+		return withoutCustomButtons;
+	}
+
+	private boolean fetchOnlyViewGroupColumn;
+
+	public void setFetchOnlyViewGroupColumn(boolean fetchOnlyViewGroupColumn) {
+		this.fetchOnlyViewGroupColumn = fetchOnlyViewGroupColumn;
+	}
+
+	public boolean getFetchOnlyViewGroupColumn() {
+		return fetchOnlyViewGroupColumn;
+	}
+
 	public JSONObject getMeta() {
 		return meta;
 	}

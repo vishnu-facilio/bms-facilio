@@ -8,7 +8,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.time.DateTimeUtil;
@@ -16,7 +15,6 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.json.simple.JSONObject;
@@ -47,6 +45,16 @@ public class ExecuteSchKpiOfACategoryCommand extends FacilioCommand implements P
             LOGGER.info("No Active Kpis");
             return true;
         }
+
+        List<Long> indepKpiIds = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(independentKpis)) {
+            indepKpiIds = independentKpis.stream().map(x -> x.getId()).collect(Collectors.toList());
+        }
+        List<Long> depKpiIds = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(dependentKpis)) {
+            depKpiIds = dependentKpis.stream().map(x -> x.getId()).collect(Collectors.toList());
+        }
+        LOGGER.info("Independent Kpi Ids: " + indepKpiIds + " Dependent Kpi Ids: " + depKpiIds );
         List<Set<Long>> orderOfExecution = new ArrayList<>();
         orderOfExecution.add(independentKpis.stream().map(x -> x.getId()).collect(Collectors.toSet()));
         for (Graph<Long, DefaultEdge> graph : dependencyGraphs) {
@@ -75,7 +83,6 @@ public class ExecuteSchKpiOfACategoryCommand extends FacilioCommand implements P
                     while (it.hasNext()) {
                         ReadingKPIContext kpi = it.next();
                         if (kpi != null) {
-                            LOGGER.debug("Gonna execute scheduled kpi : " + kpi.getName() + ", KPI matched resources : " + StringUtils.join(kpi.getMatchedResourcesIds(), ","));
                             try {
                                 FacilioChain execKpiChain = TransactionChainFactory.fetchIntervalsAndCalculateKpiChain();
                                 FacilioContext ctx = execKpiChain.getContext();

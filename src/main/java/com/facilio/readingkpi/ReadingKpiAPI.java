@@ -94,10 +94,11 @@ public class ReadingKpiAPI {
             }
         }
 
-
-        List<Graph<Long, DefaultEdge>> dependencyGraphs = getGraphsOfDependentKpis(dependentKpiIdFieldIdsMap);
-
-        LOGGER.info(" active schedule formula:  types: " + scheduleTypes + " , qry : " + selectRecordsBuilder);
+        List<Graph<Long, DefaultEdge>> dependencyGraphs = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(dependentKpis)) {
+            dependencyGraphs = getGraphsOfDependentKpis(dependentKpiIdFieldIdsMap);
+        }
+        LOGGER.info("valid frequency types: " + scheduleTypes + " , qry : " + selectRecordsBuilder);
         Map<String, Object> mapOfIndepAndDepKpisWithGraph = new HashMap<>();
         mapOfIndepAndDepKpisWithGraph.put("independentKpis", independentKpis);
         mapOfIndepAndDepKpisWithGraph.put("dependentKpis", dependentKpis);
@@ -325,7 +326,7 @@ public class ReadingKpiAPI {
                         ReadingKpiAPI.updateLog(kpi.getId(), resourceId, HistoricalLoggerContext.LoggerStatus.FAILED.getIndex(), iStartTime, System.currentTimeMillis(), "One of the fields does not have data, Evaluation returned null");
                     }
                     long timeTaken = System.currentTimeMillis() - startTime;
-                    LOGGER.debug("Time taken for evaluation of kpi " + kpi.getId() + " for resource " + resourceId + " for interval " + interval + " is " + timeTaken);
+                    LOGGER.info("Time taken for evaluation of kpi " + kpi.getId() + " for resource " + resourceId + " for interval " + interval + " is " + timeTaken);
 
                 } catch (SQLException e) {
                     ReadingKpiAPI.updateLog(kpi.getId(), resourceId, HistoricalLoggerContext.LoggerStatus.FAILED.getIndex(), iStartTime, System.currentTimeMillis(), e.getMessage());
