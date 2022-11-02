@@ -35,11 +35,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		if (log.getPublishedTime() == -1) {
 			setPoints(log, isNiagra);
 		}
-
+		List<Map<String,Object>>controllers = log.getControllers();
+		Map<Long,String>controllerIdVSNameMap = controllers.stream().collect(Collectors.toMap(prop -> (Long) prop.get("id"), prop -> (String)prop.get("name")));
 		JSONArray points = log.getPoints();
 		if (points != null) {
 			Set<Long> resourceIds = new HashSet<>();
-			Set<Long> fieldIds = new HashSet<>(); 
+			Set<Long> fieldIds = new HashSet<>();
 			JSONArray finalPoints  = new JSONArray();
 			List<String> headers = log.getHeaders().stream().map(header -> (String)header.get("name")).collect(Collectors.toList());
 			Map<Integer, String> unitMap = new HashMap<>();
@@ -59,6 +60,11 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 					}
 					else {
 						point.put("unit", null); // since unit is set as 0 by default in points table even if there is no data
+					}
+				}
+				if(point.get("controllerId") != null){
+					if(controllerIdVSNameMap.containsKey(point.get("controllerId"))){
+						point.put("controllerName",controllerIdVSNameMap.get(point.get("controllerId")));
 					}
 				}
 				if(isNiagra && StringUtils.isNotEmpty((String)point.get("displayName"))) { // Temp
@@ -149,9 +155,13 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		header.put("name", AgentConstants.NAME);
 		headers.add(header);
 
-		header = new HashMap<>();
-		header.put("name", AgentConstants.DEVICE_NAME);
-		headers.add(header);
+
+		if(log.getControllerIds().size() != 1){
+			header = new HashMap<>();
+			header.put("name", AgentConstants.CONTROLLER_NAME);
+			headers.add(header);
+		}
+
 
 		List<Map<String, Object>> typeBasedHeaders = getTypeBasedHeaders(log.getControllerTypeEnum());
 		headers.addAll(typeBasedHeaders);
