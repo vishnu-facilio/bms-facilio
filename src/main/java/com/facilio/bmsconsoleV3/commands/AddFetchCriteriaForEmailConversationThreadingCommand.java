@@ -28,7 +28,8 @@ public class AddFetchCriteriaForEmailConversationThreadingCommand extends Facili
 		// TODO Auto-generated method stub
 		
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
-		if(currentApp != null && !currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+		
+		if(currentApp != null && currentApp.getAppCategory()==ApplicationContext.AppCategory.PORTALS.getIndex()) {
 			
 			Criteria criteria = new Criteria();
 			
