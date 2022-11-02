@@ -91,13 +91,12 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec5 = page.new Section();
         tab1.addSection(tab1Sec5);
 
-
         Page.Tab tab2 = page.new Tab("Notes & Information");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
 
-        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
         tab2Sec1.addWidget(detailsWidget);
         if (!AccountUtil.getCurrentUser().isPortalUser()) {
