@@ -171,9 +171,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain);
                             ApplicationApi.setThisAppForUser(user, appToBeAssigned, false);
                         } else {
-                            //return "usernotinapp";
+                            if(isAuthRequired()) {
+                                LOGGER.log(Level.DEBUG, "Auth required - User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
+                                //We can check logs for a somedays and uncomment usernotinapp
+                                //return "usernotinapp";
+                            }
                             //temp handling - need to be removed
-                            LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
+                            //LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
                             ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()), true);
                         }
                     }
@@ -486,5 +490,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
     private Parameter getActionParam(String action){
         return new Parameter.Request(FacilioConstants.ContextNames.ACTION,action);
+    }
+
+    private boolean isAuthRequired() {
+        String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+        if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
+            return true;
+        }
+        return false;
     }
 }

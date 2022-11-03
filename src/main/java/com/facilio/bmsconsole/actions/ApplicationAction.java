@@ -302,7 +302,13 @@ public class ApplicationAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		if(AccountUtil.getCurrentUser() != null){
 			Role currentUserRole = AccountUtil.getCurrentUser().getRole();
+			if(currentUserRole == null) {
+				return "unauthorized";
+			}
 			if(currentUserRole != null) {
+				if(currentUserRole.getId() < 0) {
+					return "unauthorized";
+				}
 				if (currentUserRole.getIsPrevileged() == null || !currentUserRole.getIsPrevileged()) {
 					if (CollectionUtils.isEmpty(currentUserRole.getPermissions()) && CollectionUtils.isEmpty(currentUserRole.getNewPermissions())) {
 						return "unauthorized";
