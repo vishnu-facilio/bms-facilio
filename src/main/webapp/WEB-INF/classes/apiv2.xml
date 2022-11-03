@@ -6521,6 +6521,11 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />
 	</package>
+
+	<package name="bmsPointsTagging" namespace="/api/v2/bmsPointsTagging/internal" extends="v2Api">
+		<action name="update" class="com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil" method="updateInternalApi" />
+		<action name="delete" class="com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil" method="deleteInternalApi" />
+	</package>
 	
 	<package name="mlService" namespace="/api/v2/mlService" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.MLServiceAction" method="addMLModel" />
