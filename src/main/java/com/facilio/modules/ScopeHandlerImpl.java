@@ -103,6 +103,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 						}
 					}
 				}
+				if (FieldUtil.isSiteIdFieldPresent(module)) {
+					return constructSiteFieldsAndCriteria(module, true);
+				}
         	}
         	else if (FieldUtil.isSiteIdFieldPresent(module)) {
 			    long currentSiteId = AccountUtil.getCurrentSiteId();
