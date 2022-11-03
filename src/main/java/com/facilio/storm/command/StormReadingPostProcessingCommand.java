@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.messageQueue.MessageQueue;
@@ -41,10 +42,19 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                         String fieldName = readingEntry.getKey();
                         Object readingVal = readingEntry.getValue();
 
-                        FacilioField field = modBean.getField(fieldName, moduleName);
+                        if(readingVal == null) {
+                            LOGGER.info("reading value is null while pushing reading to storm queue " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                            continue;
+                        }
 
-                        if(field == null) {//TODO: find the problem and delete this check.
+                        FacilioField field = modBean.getField(fieldName, moduleName);
+                        if (field == null) {//TODO: find the problem and delete this check.
                             LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                            continue;
+                        }
+
+                        if (field.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && field.getColumnName().equals("SYS_INFO")) {
+                            //SYS_INFO for only for debugging purpose. No need to push to storm kafka queue. Intentionally omitted.
                             continue;
                         }
 
@@ -55,7 +65,9 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                         json.put("fieldId", field.getFieldId());
                         json.put("ttime", readingContext.getTtime());
 
-                        mq.put(getTopicName(), new FacilioRecord("rule-exec", json));
+                        String partitionKey = "rule-exec/" + readingContext.getOrgId() + "/" + readingContext.getParentId();
+
+                        mq.put(getTopicName(), new FacilioRecord(partitionKey, json));
                     }
                 }
             }
