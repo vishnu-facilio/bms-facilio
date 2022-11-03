@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -132,6 +133,7 @@ public class CustomButtonAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.POSITION_TYPE,positionTypes);
         chain.execute();
         setResult(FacilioConstants.ContextNames.CUSTOM_BUTTONS,context.get(FacilioConstants.ContextNames.CUSTOM_BUTTONS));
+        setResult(Constants.CUSTOM_BUTTONS_RECORDS,context.get(Constants.CUSTOM_BUTTONS_RECORDS));
         return SUCCESS;
     }
 }

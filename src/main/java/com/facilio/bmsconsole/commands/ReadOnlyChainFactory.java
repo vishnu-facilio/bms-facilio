@@ -2011,6 +2011,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new FetchRecordMapCommand());
 		chain.addCommand(new CustomButtonForDataListCommand());
+		chain.addCommand(new EvaluatedCustomButtonsForRecords());
 		return chain;
 	}
 
