@@ -7,6 +7,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -20,9 +22,7 @@ public class FetchRelatedParentIdsCommand extends FacilioCommand {
         Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
         String relMapLinkName = (String) context.get(FacilioConstants.ContextNames.RELATION_MAPPING);
         RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relMapLinkName);
-        if (relationMapping == null) {
-            throw new Exception("Relation mapping link name is not found!!");
-        }
+        V3Util.throwRestException(relationMapping == null, ErrorCode.RESOURCE_NOT_FOUND, "Relation mapping link name(" + relMapLinkName + ") is not found!!");
 
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule resModule = bean.getModule(relationMapping.getFromModuleId());

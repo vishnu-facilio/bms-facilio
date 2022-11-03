@@ -109,7 +109,7 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         builder.select(new HashSet<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, rdmFieldMap.get("id"));
 
         long count = 0;
-        Map<String, Object> props = builder.fetchFirst();
+        Map<String, Object> props = builder.offset(0).fetchFirst();
         if (MapUtils.isNotEmpty(props)) {
             count = (long) props.get("id");
         }

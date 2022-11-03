@@ -82,6 +82,12 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 				}
 				else if (inputType.equals("readable")) {
 					readingType = ReadingType.READ;
+				} else if (inputType.equals("all")) {
+					readingInputTypes = EnumSet.allOf(ReadingInputType.class)
+							.stream()
+							.filter(type -> type != ReadingInputType.HIDDEN_FORMULA_FIELD)
+							.collect(Collectors.toList());
+					excludeEmptyFields = false;
 				}
 			}
 			

@@ -480,7 +480,8 @@ public class PageWidget {
 		CLASSIFICATION("classification"),
 		NEW_RELATED_LIST("newRelatedList"),
 		MULTIRESOURCE("multiResource"),
-		JOBPLAN_PLANNER("jobPlanPlanner");
+		JOBPLAN_PLANNER("jobPlanPlanner"),
+		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails");
 
 		private String name;
 

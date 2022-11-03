@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RelationUtil {
 
@@ -160,6 +161,37 @@ public class RelationUtil {
         List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, module.getModuleId());
         return relationRequests;
     }
+
+    /**
+     * Method will fetch all the relationships and filtered with parent id which is associated with any relationships.
+     *
+     * @param module - source module
+     * @param parentId - resource id which is associated with relationships
+     * @return Map of resource list
+     * @throws Exception
+     */
+    public static Map<RelationRequestContext, List<Long>> getAllRelationsWithReverseResourceList(FacilioModule module, Long parentId) throws Exception {
+        List<RelationRequestContext> allRelations = getAllRelations(module);
+        Map<RelationRequestContext, List<Long>> relReqResMap = new HashMap<>();
+
+        for (RelationRequestContext relReqContext : allRelations) {
+            JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(relReqContext.getReverseRelationLinkName(), relReqContext.getToModuleName(), parentId, 1, -1);
+            if (recordsWithRelationship == null) {
+                continue;
+            }
+            JSONObject data = (JSONObject) recordsWithRelationship.get("data");
+            if (data != null) {
+                List<LinkedHashMap> resObjList = (List<LinkedHashMap>) data.get(relReqContext.getToModuleName());
+                List<Long> resourceList = resObjList.stream().map(lhm -> (Long) lhm.get("id")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(resourceList)) {
+                    relReqResMap.put(relReqContext, resourceList);
+                }
+            }
+
+        }
+        return relReqResMap;
+    }
+
 
     public static RelationContext getRelation(FacilioModule relationModule, boolean fetchRelations) throws Exception {
         FacilioModule module = ModuleFactory.getRelationModule();

@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -14,6 +16,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -52,12 +55,6 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         titles.put("notes", "Comment");
         addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, false, WidgetType.COMMENT);
 
-        Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
-        page.addTab(tab4);
-
-        Section tab4Sec1 = page.new Section();
-        tab4.addSection(tab4Sec1);
-
 
         Page.Tab tab2 = page.new Tab("insight");
         page.addTab(tab2);
@@ -72,22 +69,29 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
         addImpactDetails(tab2Sec1, criteria, alarms.getLastOccurrence());
-        
-        // History Tab
-        Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
-        page.addTab(tab3);
 
+        // More Information Tab
+        Page.Tab tab3 = page.new Tab("moreinfo");
+        page.addTab(tab3);
         Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
+        addFieldDetailsWidget(tab3Sec1,module);
+        
+        // History Tab
+        Page.Tab tab4 = page.new Tab("occurrenceHistory", "occurrenceHistory");
+        page.addTab(tab4);
 
-        addOccurrenceHistoryWidget(tab3Sec1);
-//        Page.Tab tab5 = page.new Tab("activity", "activity");
-//        page.addTab(tab5);
-//
-//        Section tab5Sec1 = page.new Section();
-//        tab5.addSection(tab5Sec1);
-//
-//        addActivityWidget(tab5Sec1);
+        Section tab4Sec1 = page.new Section();
+        tab4.addSection(tab4Sec1);
+
+        addOccurrenceHistoryWidget(tab4Sec1);
+
+        Page.Tab tab5 = page.new Tab("alarmRca", "alarmRca");
+        page.addTab(tab5);
+
+        Section tab5Sec1 = page.new Section();
+        tab5.addSection(tab5Sec1);
+
         return  page;
     }
     protected  static  void  addTimeLineWidget(Page.Section section, ReadingAlarm alarms) throws Exception {
@@ -159,11 +163,6 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(occurrenceListWidget);
         return occurrenceListWidget;
     }
-//    private static PageWidget addActivityWidget (Section section) {
-//        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY_WIDGET);
-//        section.addWidget(activityWidget);
-//        return activityWidget;
-//    }
 
     public static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
@@ -200,6 +199,19 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         impactCard.addToLayoutParams(section, 24, 8);
         section.addWidget(impactCard);
         return impactCard;
+    }
+    public static void addFieldDetailsWidget (Page.Section section, FacilioModule module) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        PageWidget pageWidget = new PageWidget(WidgetType.ALARM_SECONDARY_DETAILS);
+        pageWidget.setTitle("Fields");
+        pageWidget.addToLayoutParams(section, 24, 12);
+        JSONObject widgetParams = new JSONObject();
+        JSONArray fieldList = new JSONArray();
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        fieldList.addAll(fields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+        widgetParams.put("fields", fieldList);
+        pageWidget.setWidgetParams(widgetParams);
+        section.addWidget(pageWidget);
     }
 }
 

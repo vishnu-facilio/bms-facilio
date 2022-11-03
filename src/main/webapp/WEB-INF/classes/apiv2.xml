@@ -2477,6 +2477,14 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingDataForSpaces">
 		</action>
+		<action name="getReadingsRelationships"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getReadingsRelationships">
+		</action>
+		<action name="getRelatedData"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLatestRelatedReadingData">
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">

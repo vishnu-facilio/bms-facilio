@@ -1,44 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.taskengine.common.JobConstants;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
-import com.facilio.bmsconsole.context.FormulaFieldResourceContext;
-import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ResetCounterMetaContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -53,12 +23,28 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.facilio.accounts.util.AccountUtil.FeatureLicense.NEW_READING_RULE;
 
@@ -1547,7 +1533,7 @@ public class ReadingAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
 		return SUCCESS;
 	}
-	
+
 	public String v2GetLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
@@ -1556,7 +1542,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		context.put(ContextNames.FIELD_ID, fieldId);
-		
+
 		if (isFetchCount()) {
 			context.put(FacilioConstants.ContextNames.FETCH_COUNT, isFetchCount());
 		}
@@ -1567,30 +1553,70 @@ public class ReadingAction extends FacilioAction {
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());
 			pagination.put("perPage", getPerPage());
-			
+
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 		if (StringUtils.isNotEmpty(getReadingType())) {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
 
-		if (getRelMapLinkName() != null) {
-			context.put(ContextNames.RELATION_MAPPING, getRelMapLinkName());
-			FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestRelationReadingDataChain();
-			latestAssetData.execute(context);
-		} else {
-			FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
-			latestAssetData.execute(context);
-		}
+		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		latestAssetData.execute(context);
 
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
-		}
-		else {
+		} else {
 			setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		}
-		
-		
+
+
+		return SUCCESS;
+	}
+
+	public String v2GetLatestRelatedReadingData() throws Exception {
+
+		V3Util.throwRestException(getRelMapLinkName() == null, ErrorCode.RESOURCE_NOT_FOUND, "relMapLinkName cannot be null");
+		V3Util.throwRestException(getResourceId() == -1, ErrorCode.RESOURCE_NOT_FOUND, "resourceId cannot be null");
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_FORECAST, excludeForecastReadings != null ? excludeForecastReadings : true);
+		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
+		context.put(ContextNames.FIELD_ID, fieldId);
+
+		if (isFetchCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, isFetchCount());
+		}
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		if (getPerPage() != -1) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		context.put(ContextNames.RELATION_MAPPING, getRelMapLinkName());
+		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestRelationReadingDataChain();
+		latestAssetData.execute(context);
+
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		} else {
+			List<Long> relIds = (List<Long>) context.get(ContextNames.PARENT_ID_LIST);
+			List<ResourceContext> resourcesList = CollectionUtils.isNotEmpty(relIds) ? ResourceAPI.getResources(relIds, true) : new ArrayList<>();
+			Map<Long, ResourceContext> resMap = resourcesList.stream().collect(Collectors.toMap(ResourceContext::getId, Function.identity()));
+			setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+			setResult("resources", resMap);
+		}
+
 		return SUCCESS;
 	}
 	
@@ -1606,6 +1632,41 @@ public class ReadingAction extends FacilioAction {
 		
 		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		
+		return SUCCESS;
+	}
+
+	public String getReadingsRelationships() throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = bean.getModule(moduleName);
+
+		Map<RelationRequestContext, List<Long>> allRelationsWithReverseResourceList = RelationUtil.getAllRelationsWithReverseResourceList(module, resourceId);
+		List<RelationRequestContext> rels = new ArrayList<>();
+
+		for(Map.Entry<RelationRequestContext, List<Long>> entry : allRelationsWithReverseResourceList.entrySet()) {
+			RelationRequestContext relContext = entry.getKey();
+			List<Long> resourceList = entry.getValue();
+			System.out.println(resourceList);
+
+			FacilioChain latestDataChain = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+			FacilioContext ctx = latestDataChain.getContext();
+			ctx.put(FacilioConstants.ContextNames.PARENT_ID_LIST, resourceList);
+			ctx.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, Boolean.FALSE);
+			ctx.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, Boolean.TRUE);
+			ctx.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, Boolean.TRUE);
+			latestDataChain.execute();
+
+			List<ReadingDataMeta> metaDataList = (List<ReadingDataMeta>) ctx.get(ContextNames.READING_DATA_META_LIST);
+			if (CollectionUtils.isNotEmpty(metaDataList)) {
+				boolean isReadingField = metaDataList.stream()
+						.anyMatch(rdm -> rdm.getField().getModule() != null && rdm.getField().getModule().getTypeEnum() == FacilioModule.ModuleType.READING);
+				if(isReadingField) {
+					rels.add(relContext);
+				}
+			}
+		}
+
+		setResult("result", rels);
+
 		return SUCCESS;
 	}
 	
