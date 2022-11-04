@@ -13,6 +13,10 @@ import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
+import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDepreciationExistingCommand;
+import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.DeleteAssetDepreciationCalCommand;
+import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.SaveDepreciationLastCalCommand;
+import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.ValidateAssetDepreciationRelCommand;
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
@@ -2744,6 +2748,19 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(new V3LoadWorkAssetLookUpsCommand())
                 .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.ASSET_DEPRECIATION_REL)
+    public static Supplier<V3Config> getAssetDepreciationRel() {
+        return () -> new V3Config(V3AssetDepreciationRelContext.class,new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new ValidateAssetDepreciationRelCommand(), new CheckAssetDepreciationExistingCommand())
+                .afterSave(new SaveDepreciationLastCalCommand())
+                .list()
+                .update()
+                .beforeSave(new ValidateAssetDepreciationRelCommand(),new DeleteAssetDepreciationCalCommand())
+                .afterSave(new SaveDepreciationLastCalCommand())
                 .build();
     }
 }

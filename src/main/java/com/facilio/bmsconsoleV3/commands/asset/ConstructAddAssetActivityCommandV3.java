@@ -63,7 +63,14 @@ public class ConstructAddAssetActivityCommandV3 extends FacilioCommand {
                     continue;
                 }
 
+                LOGGER.debug("Asset Add activity command Field Id : "+fieldid +" moduleName : "+ moduleName);
+
                 FacilioField field = modBean.getField(fieldid, moduleName);
+
+                if (field == null) {
+                    LOGGER.debug("Field is null for Add Activity command");
+                    continue;
+                }
 
                 JSONObject changeObj = new JSONObject();
                 changeObj.put("field", field.getName());

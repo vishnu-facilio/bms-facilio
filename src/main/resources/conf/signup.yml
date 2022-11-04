@@ -365,4 +365,6 @@ classes:
 
   #Adding ReadingRule Modules
   - com.facilio.bmsconsoleV3.signup.readingRulemodule.AddReadingRuleModules
+
+  - com.facilio.bmsconsoleV3.signup.asset.AddAssetDepreciationRelModule
   

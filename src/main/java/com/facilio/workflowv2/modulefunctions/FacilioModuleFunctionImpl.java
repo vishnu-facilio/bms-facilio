@@ -454,7 +454,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		return result;
 	}
-	
+
+	@Override
+	public Object fetchAttachment(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		return null;
+	}
+
 	@Override
 	public Object fetch(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		

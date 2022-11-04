@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetDepreciationCalculationContext;
-import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddAssetToDepreciationCommand extends FacilioCommand {
 
@@ -20,26 +20,14 @@ public class AddAssetToDepreciationCommand extends FacilioCommand {
         Long assetId = (Long) context.get(FacilioConstants.ContextNames.ASSET_ID);
 
         if (id != null && assetId != null) {
-            AssetDepreciationContext assetDepreciationContext = AssetDepreciationAPI.getAssetDepreciation(id);
-            if (assetDepreciationContext == null) {
-                throw new IllegalArgumentException("Depreciation is not found");
-            }
-            AssetContext assetInfo = AssetsAPI.getAssetInfo(assetId);
-            if (assetInfo == null) {
-                throw new IllegalArgumentException("Invalid asset");
-            }
 
-            // check whether that asset is found in other depreciation - for now one asset can have one depreciation
-            AssetDepreciationContext depreciationOfAsset = AssetDepreciationAPI.getDepreciationOfAsset(assetId);
-            if (depreciationOfAsset != null) {
-                throw new IllegalArgumentException("Asset already found in depreciation: " + depreciationOfAsset.getName());
-            }
+            FacilioModule assetDepreciationRelModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.ASSET_DEPRECIATION_REL);
 
-            AssetDepreciationAPI.addAsset(assetDepreciationContext.getId(), Collections.singletonList(assetId));
+            Map<String,Object> prop = new HashMap<>();
+            prop.put("asset", AssetsAPI.getAssetInfo(assetId));
+            prop.put("depreciation", AssetDepreciationAPI.getAssetDepreciation(id));
 
-            List<AssetDepreciationCalculationContext> assetDepreciationCalculationContexts = AssetDepreciationAPI.calculateAssetDepreciation(
-                    assetDepreciationContext, assetInfo, null);
-            AssetDepreciationAPI.saveDepreciationCalculationList(assetDepreciationCalculationContexts, assetDepreciationContext);
+            V3Util.createRecord(assetDepreciationRelModule, prop);
         }
 
         return false;

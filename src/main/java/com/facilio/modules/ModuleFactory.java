@@ -539,7 +539,7 @@ public class ModuleFactory {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.ASSET_DEPRECIATION_REL);
 		module.setDisplayName("Asset Depreciation Rel");
-		module.setTableName("Asset_Depreication_Rel");
+		module.setTableName("Asset_Depreciation_Rel");
 		return module;
 	}
 

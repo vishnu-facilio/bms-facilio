@@ -6,6 +6,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
+@Deprecated
 public class AssetDepreciationAction extends FacilioAction {
 
     private Long id;

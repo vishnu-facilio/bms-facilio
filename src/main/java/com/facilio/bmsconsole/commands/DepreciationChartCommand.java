@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetDepreciationCalculationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
@@ -34,59 +35,10 @@ public class DepreciationChartCommand extends FacilioCommand {
             if (assetContext == null) {
                 throw new IllegalArgumentException("Asset not found");
             }
+            List<AssetDepreciationCalculationContext> assetDepreciationCalculationContexts = AssetDepreciationAPI.calculateAssetDepreciation(
+                    assetDepreciation, assetContext, null);
 
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-            FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-            Float totalPrice = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule)).floatValue();
-            if (totalPrice == null || totalPrice == -1) {
-                throw new IllegalArgumentException("Price cannot be empty");
-            }
-            Float salvageAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule)).floatValue();
-            Long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
-            if (date == null || date == -1) {
-                throw new IllegalArgumentException("Start date cannot be empty");
-            }
-
-            AssetDepreciationContext.DepreciationType depreciationType = assetDepreciation.getDepreciationTypeEnum();
-
-            List<Map<String, Object>> mapList = new ArrayList<>();
-
-            float unitPrice = totalPrice;
-            float lastDepreciation = 0;
-
-            // remove the salvage amount from total depreciate amount
-            float endValue = 0;
-            if (salvageAmount != null && salvageAmount > 0) {
-                endValue = salvageAmount;
-                totalPrice -= salvageAmount;
-            }
-
-            date = DateTimeUtil.getMonthStartTimeOf(date);
-
-            int counter = 0;
-            while (counter <= assetDepreciation.getFrequency()) {
-
-                Map<String, Object> map = new HashMap<>();
-
-                map.put("price", Math.floor(unitPrice));
-                map.put("date", date);
-                map.put("depreciationAmount", Math.floor(lastDepreciation));
-                mapList.add(map);
-
-                if (Math.floor(unitPrice) <= endValue) {
-                    break;
-                }
-
-                date = assetDepreciation.nextDate(date);
-                float currentPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
-                lastDepreciation = unitPrice - currentPrice;
-                unitPrice = currentPrice;
-
-                counter ++;
-            }
-
-            context.put("depreciationList", mapList);
+            context.put("depreciationList", FieldUtil.getAsMapList(assetDepreciationCalculationContexts,AssetDepreciationCalculationContext.class));
         }
         return false;
     }

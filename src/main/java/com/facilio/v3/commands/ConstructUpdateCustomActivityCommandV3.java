@@ -62,6 +62,11 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
 
                 FacilioField field = modBean.getField(fieldid, moduleName);
 
+                if (field == null) {
+                    LOGGER.debug("Field is null for Update Activity command");
+                    continue;
+                }
+
                 JSONObject changeObj = new JSONObject();
                 changeObj.put("field", field.getName());
                 changeObj.put("displayName", field.getDisplayName());
