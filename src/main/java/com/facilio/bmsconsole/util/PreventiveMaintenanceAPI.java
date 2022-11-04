@@ -268,6 +268,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void schedulePM(long pmId, ScheduleActions action, long endTime) throws Exception {
+		LOGGER.log(Level.ERROR, "schedulePM(): pmId = " + pmId);
 		JSONObject jobProp = new JSONObject();
 		jobProp.put("endTime", endTime);
 		jobProp.put("action", action.getVal());
@@ -593,6 +594,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, long minTime, WorkorderTemplate woTemplate) throws Exception {
+		LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM()");
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis();
@@ -2691,7 +2693,9 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void updateWorkOrderCreationStatus(Connection conn, List<Long> ids, int status) throws Exception {
+		LOGGER.log(Level.ERROR, "updateWorkOrderCreationStatus(): ids = " + ids);
 		if (ids == null || ids.isEmpty()) {
+			LOGGER.log(Level.ERROR, "updateWorkOrderCreationStatus(): IDs are empty.");
 			return;
 		}
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();

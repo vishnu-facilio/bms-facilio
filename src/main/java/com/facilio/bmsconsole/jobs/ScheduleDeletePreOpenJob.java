@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -24,6 +24,7 @@ public class ScheduleDeletePreOpenJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jc) throws Exception {
+        LOGGER.log(Level.ERROR, "ScheduleDeletePreOpenJob ->  execute(JobContext): jobId = " + jc.getJobId());
         long pmId = jc.getJobId();
         List<Long> pmIds = Collections.singletonList(pmId);
         PreventiveMaintenanceAPI.deleteScheduledWorkorders(pmIds);
@@ -41,7 +42,7 @@ public class ScheduleDeletePreOpenJob extends FacilioJob {
 
         Boolean status = (Boolean) props.get(0).get("woGenerationStatus");
         if (status) {
-            LOGGER.log(Level.SEVERE, "status should be 0, but instead 1 pmID: " + pmId);
+            LOGGER.log(Level.ERROR, "status should be 0, but instead 1 pmID: " + pmId);
         }
     }
 }

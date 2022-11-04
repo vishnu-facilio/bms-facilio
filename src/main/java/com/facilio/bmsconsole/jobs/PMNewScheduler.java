@@ -9,6 +9,7 @@ import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -52,6 +53,7 @@ public class PMNewScheduler extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
+		LOGGER.log(Level.ERROR, "PMNewScheduler ->  execute(JobContext): ");
 		// TODO Auto-generated method stub
 		try {
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
@@ -113,6 +115,11 @@ public class PMNewScheduler extends FacilioJob {
 				if (!bulkWorkOrderContexts.isEmpty()) {
 					FacilioContext context = new FacilioContext();
 					BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+					if(bulkWorkOrderContext.getWorkOrderContexts() != null) {
+						LOGGER.log(Level.ERROR, "bulkWorkOrderContexts Size = " + bulkWorkOrderContext.getWorkOrderContexts().size());
+					}else{
+						LOGGER.log(Level.ERROR, "bulkWorkOrderContext.getWorkOrderContexts() is null.");
+					}
 					PreventiveMaintenanceAPI.logIf(92L,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
 					context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
 					context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
@@ -284,6 +291,7 @@ public class PMNewScheduler extends FacilioJob {
 		for (PMTriggerContext trigger: triggers) {
 			if (trigger.getSchedule() != null) {
 				long startTimeInSecond = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+				LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM() - 4");
 				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTimeInSecond, endTime, minTime, workorderTemplate);
 				bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 			}

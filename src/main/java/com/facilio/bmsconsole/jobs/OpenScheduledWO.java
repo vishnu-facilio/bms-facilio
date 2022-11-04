@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.modules.*;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -49,6 +50,7 @@ public class OpenScheduledWO extends FacilioJob {
 
     @Override
     public void execute(JobContext jc) throws Exception {
+        LOGGER.log(Level.ERROR, "OpenScheduledWO -> execute(JobContext)");
         try {
             long woId = jc.getJobId();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -65,6 +67,7 @@ public class OpenScheduledWO extends FacilioJob {
                     .skipModuleCriteria();
             List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
             if (workOrderContexts == null || workOrderContexts.isEmpty()) {
+                LOGGER.log(Level.ERROR, "Null workOrderContexts.");
                 return;
             }
 
@@ -218,6 +221,7 @@ public class OpenScheduledWO extends FacilioJob {
 
             PreventiveMaintenanceAPI.schedulePostReminder(Arrays.asList(pm), wo.getResource().getId(), pmToWo, wo.getScheduledStart());
 
+            LOGGER.log(Level.ERROR, "WorkOrder Status Change success: WO_ID = " + wo.getId());
         } catch (Exception e) {
             CommonCommandUtil.emailException("OpenScheduledWO", ""+jc.getJobId(), e);
             LOGGER.error("WorkOrder Status Change failed: ", e);

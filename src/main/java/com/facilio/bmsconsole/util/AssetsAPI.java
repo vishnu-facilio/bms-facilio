@@ -266,6 +266,7 @@ public class AssetsAPI {
 		selectField.setName(categoryField.getName());
 		selectField.setDisplayName(categoryField.getDisplayName());
 		selectField.setColumnName("DISTINCT(" + categoryField.getColumnName() + ")");
+		selectField.setDataType(categoryField.getDataTypeEnum());
 
 		selectFields.add(selectField);
 
