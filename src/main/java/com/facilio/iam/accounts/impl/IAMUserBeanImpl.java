@@ -54,6 +54,7 @@ import lombok.SneakyThrows;
 import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -100,6 +101,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private static final Logger USER_LOGIN = LogManager.getLogger("UserLogin");
 	private static final Logger LOGGER = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 	public static final String JWT_DELIMITER = "#";
+	public static int YEAR_IN_SECONDS = 365 * 24 * 3600;
 
 	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
 		return updateUserEntryv2(user, fields);
@@ -1173,13 +1175,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
+		if (userSecurityPolicy == null){
+			return -1L;
+		}
 
-		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
-			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
+		boolean isWebSessManagementEnabled = BooleanUtils.isTrue(userSecurityPolicy.getIsWebSessManagementEnabled());
+
+		if (userSecurityPolicy != null && isWebSessManagementEnabled) {
+			Integer webSessLifeTime;
 			Long startTime = (Long) prop.get("startTime");
-			if (startTime != null) {
-				Instant startInstant = Instant.ofEpochMilli(startTime);
-				return startInstant.plus(webSessLifeTime, ChronoUnit.DAYS).toEpochMilli();
+			Instant startInstant = Instant.ofEpochMilli(startTime);
+			if(userSecurityPolicy.getWebSessLifeTime() != null ){
+				webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
+				return startInstant.plus(webSessLifeTime,ChronoUnit.DAYS).toEpochMilli();
+				}
+			else if(userSecurityPolicy.getWebSessLifeTimesec() != null) {
+				webSessLifeTime = userSecurityPolicy.getWebSessLifeTimesec();
+				return startInstant.plus(webSessLifeTime, ChronoUnit.SECONDS).toEpochMilli();
 			}
 		}
 
@@ -1204,14 +1216,27 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 
-		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
-			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
+		if (userSecurityPolicy == null){
+			return false;
+		}
+
+		boolean isWebSessManagementEnabled = BooleanUtils.isTrue(userSecurityPolicy.getIsWebSessManagementEnabled());
+
+		if (userSecurityPolicy != null && isWebSessManagementEnabled) {
+			Duration duration = null;
+			if(userSecurityPolicy.getWebSessLifeTime() != null ){
+				duration = Duration.ofDays(userSecurityPolicy.getWebSessLifeTime());
+				LOGGER.info("Session Expired " + userSecurityPolicy.getWebSessLifeTime()+" days");
+			}
+			else if (userSecurityPolicy.getWebSessLifeTimesec() != null) {
+				duration = Duration.ofSeconds(userSecurityPolicy.getWebSessLifeTimesec());
+				LOGGER.info("Session Expired  " + userSecurityPolicy.getWebSessLifeTimesec() +" seconds" );
+			}
 			Long startTime = (Long) prop.get("startTime");
 			if (startTime != null) {
 				Instant startInstant = Instant.ofEpochMilli(startTime);
 				Instant currentInstant = Instant.ofEpochMilli(System.currentTimeMillis());
 				Duration durationBetween = Duration.between(startInstant, currentInstant);
-				Duration duration = Duration.ofDays(webSessLifeTime);
 				if (durationBetween.compareTo(duration) >= 0) {
 					return true;
 				}
@@ -1220,6 +1245,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		return false;
 	}
+
 
 	@Override
 	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception
@@ -3010,9 +3036,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 	}
-
+	private void throwInvalidWebSessLifeTime(SecurityPolicy securityPolicy){
+		if (securityPolicy.getWebSessLifeTimesec() != null){
+			if(securityPolicy.getWebSessLifeTimesec() < 3600) {
+				throw new IllegalArgumentException("Minimum Session Life Time should be 1 hour" );
+			}
+			if(securityPolicy.getWebSessLifeTimesec() > YEAR_IN_SECONDS){
+				throw new IllegalArgumentException("Session Life Time should be less than 365 days");
+			}
+		}
+	}
 	@Override
 	public long createSecurityPolicy(SecurityPolicy securityPolicy) throws Exception {
+		throwInvalidWebSessLifeTime(securityPolicy);
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
 		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
 		insertRecordBuilder
@@ -3024,6 +3060,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public void updateSecurityPolicy(SecurityPolicy securityPolicy) throws Exception {
+		throwInvalidWebSessLifeTime(securityPolicy);
+		if(securityPolicy.getWebSessLifeTime() != null){
+			securityPolicy.setWebSessLifeTime(null);
+		}
 		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
 		updateRecordBuilder

@@ -30,6 +30,7 @@ public class SecurityPolicy implements Serializable {
     private Integer pwdPrevPassRefusal;
     private Boolean isWebSessManagementEnabled;
     private Integer webSessLifeTime;
+    private Integer webSessLifeTimesec;
     private Integer idleSessionTimeOut;
     private long orgId = -1L;
 
@@ -43,6 +44,7 @@ public class SecurityPolicy implements Serializable {
         securityPolicy.pwdMinAge = securityPolicy.pwdMinAge == null ? -99 : securityPolicy.pwdMinAge;
         securityPolicy.pwdPrevPassRefusal = securityPolicy.pwdPrevPassRefusal == null ? -99 : securityPolicy.pwdPrevPassRefusal;
         securityPolicy.webSessLifeTime = securityPolicy.webSessLifeTime == null ? -99 : securityPolicy.webSessLifeTime;
+        securityPolicy.webSessLifeTimesec = securityPolicy.webSessLifeTimesec == null ? -99 : securityPolicy.webSessLifeTimesec;
         securityPolicy.idleSessionTimeOut = securityPolicy.idleSessionTimeOut == null ? -99 : securityPolicy.idleSessionTimeOut;
         return FieldUtil.getAsProperties(securityPolicy);
     }
@@ -65,6 +67,7 @@ public class SecurityPolicy implements Serializable {
         this.pwdPrevPassRefusal = securityPolicy.pwdPrevPassRefusal;
         this.isWebSessManagementEnabled = securityPolicy.isWebSessManagementEnabled;
         this.webSessLifeTime = securityPolicy.webSessLifeTime;
+        this.webSessLifeTimesec=securityPolicy.webSessLifeTimesec;
         this.idleSessionTimeOut = securityPolicy.idleSessionTimeOut;
         this.orgId = securityPolicy.orgId;
     }

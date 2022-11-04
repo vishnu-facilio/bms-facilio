@@ -540,6 +540,13 @@ public class IAMAccountConstants {
 			idleSessionTimeOut.setModule(module);
 			fields.add(idleSessionTimeOut);
 
+			FacilioField webSessLifeTimesec = new FacilioField();
+			webSessLifeTimesec.setName("webSessLifeTimesec");
+			webSessLifeTimesec.setDataType(FieldType.NUMBER);
+			webSessLifeTimesec.setColumnName("WEB_SESSION_LIFE_TIME_SEC");
+			webSessLifeTimesec.setModule(module);
+			fields.add(webSessLifeTimesec);
+
 			return fields;
 		}
 
