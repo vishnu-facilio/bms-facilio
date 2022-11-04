@@ -75,5 +75,11 @@ sources:
   - name: msk-ae #ae region
     type: kafka
     configs:
-      broker: b-2.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-3.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-1.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096 
-      auth: true      
+      broker: b-2.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-3.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-1.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096
+      auth: true
+
+  - name: msk-ae1 #ae region
+    type: kafka
+    configs:
+      broker: b-2.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-1.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096
+      auth: true
