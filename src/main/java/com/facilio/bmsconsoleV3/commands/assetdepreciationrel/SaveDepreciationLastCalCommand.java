@@ -34,7 +34,7 @@ public class SaveDepreciationLastCalCommand extends FacilioCommand {
             AssetContext assetInfo = AssetsAPI.getAssetInfo(assetId);
 
             List<AssetDepreciationCalculationContext> assetDepreciationCalculationContexts = AssetDepreciationAPI.calculateAssetDepreciation(
-                    assetDepreciationContext, assetInfo, null);
+                    assetDepreciationContext, assetInfo, null,false);
 
             AssetDepreciationAPI.saveDepreciationCalculationList(assetDepreciationCalculationContexts, assetDepreciationContext);
         }

@@ -42,7 +42,7 @@ public class AssetDepreciationJob extends FacilioJob {
                             continue;
                         }
                         List<AssetDepreciationCalculationContext> newDepreciationCalculation =
-                                AssetDepreciationAPI.calculateAssetDepreciation(assetDepreciationContext, assetInfo, calculationMap.get(assetDepreciationRelContext.getLastCalculatedId()));
+                                AssetDepreciationAPI.calculateAssetDepreciation(assetDepreciationContext, assetInfo, calculationMap.get(assetDepreciationRelContext.getLastCalculatedId()),false);
                         if (CollectionUtils.isNotEmpty(newDepreciationCalculation)) {
                             newList.addAll(newDepreciationCalculation);
                         }

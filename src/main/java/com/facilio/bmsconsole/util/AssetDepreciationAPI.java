@@ -261,7 +261,7 @@ public class AssetDepreciationAPI {
     }
 
     public static List<AssetDepreciationCalculationContext> calculateAssetDepreciation(AssetDepreciationContext assetDepreciation, AssetContext assetContext,
-                                                                                       AssetDepreciationCalculationContext lastCalculation) throws Exception {
+                                                                                       AssetDepreciationCalculationContext lastCalculation,boolean isChartPreview) throws Exception {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -305,7 +305,7 @@ public class AssetDepreciationAPI {
             if (assetDepreciation.isActive()) {
                 while (counter <= assetDepreciation.getFrequency()) {
                     long nextDate = assetDepreciation.nextDate(date);
-                    if (nextDate > DateTimeUtil.getDayStartTime()) {
+                    if (!isChartPreview && (nextDate > DateTimeUtil.getDayStartTime())) {
                         // Still time hasn't arrived to calculate
                         break;
                     }

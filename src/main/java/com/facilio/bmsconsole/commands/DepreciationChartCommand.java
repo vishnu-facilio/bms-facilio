@@ -36,7 +36,7 @@ public class DepreciationChartCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Asset not found");
             }
             List<AssetDepreciationCalculationContext> assetDepreciationCalculationContexts = AssetDepreciationAPI.calculateAssetDepreciation(
-                    assetDepreciation, assetContext, null);
+                    assetDepreciation, assetContext, null,true);
 
             context.put("depreciationList", FieldUtil.getAsMapList(assetDepreciationCalculationContexts,AssetDepreciationCalculationContext.class));
         }
