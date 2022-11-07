@@ -2390,6 +2390,8 @@ public class FacilioConstants {
 
 		public static final String ACTIVITY_MODULE_NAME_FROM_SCRIPT = "activityModuleNameFromScript";
 
+		public static final String READ_PERMISSION = "READ";
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
 		private static Map<String, Class> initClassMap() {

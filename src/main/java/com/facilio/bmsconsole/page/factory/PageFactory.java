@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.page.RelatedListContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsoleV3.context.*;
@@ -452,6 +453,9 @@ public class PageFactory {
 						continue;
 					}
 				}
+				if(altayerDisableRelatedList(subModule)) {
+					continue;
+				}
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(fields)) {
@@ -811,5 +815,18 @@ public class PageFactory {
 		}
 		
 	}
-	
+
+	public static boolean altayerDisableRelatedList(FacilioModule module) throws Exception {
+		List<String> modNames = Arrays.asList("custom_payment","custom_receipts","custom_contracts","custom_referral","serviceRequest");
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 418l) {
+			if (modNames.contains(module.getName())) {
+				boolean hasPerm = false;
+				if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null) {
+					hasPerm = PermissionUtil.currentUserHasPermission(module.getName(), FacilioConstants.ContextNames.READ_PERMISSION, AccountUtil.getCurrentUser().getRole());
+				}
+				return !hasPerm;
+			}
+		}
+		return false;
+	}
 }

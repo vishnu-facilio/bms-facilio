@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -195,6 +197,10 @@ public class TenantPageFactory extends PageFactory{
 				}
 
 				if(subModule.getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+					continue;
+				}
+
+				if(altayerDisableRelatedList(subModule)) {
 					continue;
 				}
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
