@@ -377,6 +377,9 @@ public class CommunityFeaturesAPI {
         if (CollectionUtils.isNotEmpty(ppl)) {
             announcement = getAnnouncementById(announcement.getId());
             for (V3PeopleContext person : ppl) {
+                if(person == null){
+                    continue;
+                }
                 if(!pplIds.contains(person.getId())) {
                     pplIds.add(person.getId());
                     PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
