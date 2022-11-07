@@ -173,6 +173,9 @@ public class FacilioProperties {
     @Getter
     private static String termsOfServiceURL;
 
+    @Getter
+    private static String appProtocol;
+
     static {
         loadProperties();
     }
@@ -339,6 +342,7 @@ public class FacilioProperties {
 
             privacyPolicyURL = (String) PROPERTIES.getOrDefault("privacyPolicyURL", "https://facilio.com/privacy-policy");
             termsOfServiceURL = (String) PROPERTIES.getOrDefault("termsOfServiceURL", "https://facilio.com/terms-of-service");
+            appProtocol = (String) PROPERTIES.getOrDefault("app.protocol", "https");
 
             if (PROPERTIES.containsKey("iot.endpoint.port")) {
                 try {

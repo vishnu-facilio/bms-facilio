@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 
 public class PortalInfoContext  {
@@ -100,7 +101,7 @@ public class PortalInfoContext  {
 		this.saml_enabled = saml_enabled;
 	}
 	public String getLogin_url() {
-		String login_url = "https://"+AccountUtil.getCurrentOrg().getDomain()+"."+PortalAuthInterceptor.getPortalDomain() +"/";
+		String login_url = FacilioProperties.getAppProtocol()+ "://" +AccountUtil.getCurrentOrg().getDomain()+"."+PortalAuthInterceptor.getPortalDomain() +"/";
 		return login_url;
 	}
 	

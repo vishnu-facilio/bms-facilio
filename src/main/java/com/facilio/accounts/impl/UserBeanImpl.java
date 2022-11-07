@@ -1319,7 +1319,7 @@ public class UserBeanImpl implements UserBean {
 					break;
 				}
 			}
-			hostname = "https://" + appDomainObj.getDomain();
+			hostname = FacilioProperties.getAppProtocol()+ "://" + appDomainObj.getDomain();
 //				if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 //					hostname = hostname + "/service";
 //				} else {

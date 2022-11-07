@@ -107,7 +107,7 @@ public class FacilioCorsFilter implements Filter {
         String forwardedProtocol = request.getHeader(RequestUtil.X_FORWARDED_PROTO);
         if(forwardedProtocol != null) {
             if ("http".equalsIgnoreCase(forwardedProtocol)){
-                response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
+                response.sendRedirect("https://" +request.getServerName()+request.getRequestURI());
                 return;
             }
         }

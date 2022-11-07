@@ -2,6 +2,7 @@ package com.facilio.util;
 
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
@@ -30,7 +31,7 @@ public class PortalUtil {
 			
 			if(tab != null) {
 				
-				String appDomain = "https://"+appContext.getAppDomain().getDomain()+"/"+appContext.getLinkName()+"/";
+				String appDomain = FacilioProperties.getAppProtocol()+ "://" +appContext.getAppDomain().getDomain()+"/"+appContext.getLinkName()+"/";
 				
 				WebTabGroupContext webTabGroup = getWebTabGroupFromWebTab(tab);
 				
