@@ -57,7 +57,7 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.PURCHASE_REQUEST,
 			ContextNames.ANNOUNCEMENT,
 			ContextNames.Tenant.NEWS_AND_INFORMATION,
-			ContextNames.FAILURE_CLASS
+			ContextNames.FAILURE_CLASS,
 			ContextNames.NEW_READING_ALARM,
 			ContextNames.BMS_ALARM
 	});
