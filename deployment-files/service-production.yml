@@ -13,8 +13,8 @@ services:
     dbName: bms
 
   - serviceName: instantJob
-    instanceName: default
-    dbName: default
+    instanceName: instant-jobs-1
+    dbName: bms
 
   - serviceName: agent
     instanceName: default
