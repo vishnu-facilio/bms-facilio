@@ -11,6 +11,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -18,6 +22,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
@@ -30,25 +35,35 @@ public class MLBmsPointsTaggingJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
-            LOGGER.info("Inside MLBmsPointsTaggingJob, JOB ID :" + jc.getJobId());
-            JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-            String fieldNameString = (String) props.get("fieldNames");
-            String[] fieldNames = fieldNameString.split(",");
+             LOGGER.info("Inside MLBmsPointsTaggingJob, JOB ID :" + jc.getJobId());
+            //JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
+            //String fieldNameString = (String) props.get("fieldNames");
+            //String[] fieldNames = fieldNameString.split(",");
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule assetModule = modBean.getModule("asset");
             List<FacilioField> assetFields = modBean.getAllFields(assetModule.getName());
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(assetFields);
+            FacilioModule resourceModule = modBean.getModule("resource");
+            List<FacilioField> resourceFields = modBean.getAllFields(resourceModule.getName());
+            Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
             List<FacilioField> selectedFields = new ArrayList<FacilioField>();
             selectedFields.add(fieldsMap.get("name"));
+            selectedFields.add(fieldsMap.get("category"));
+            selectedFields.add(FieldFactory.getSiteField(resourceModule));
+
             selectedFields.add(FieldFactory.getIdField(assetModule));
-            for (String eachField : fieldNames) {
-                selectedFields.add(fieldsMap.get(eachField));
+
+            for (FacilioField field : assetFields) {
+                if(field.getColumnName().contains("STRING_CF"))
+                selectedFields.add(field);
             }
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .select(selectedFields)
                     .table("Assets")
                     .innerJoin("Resources")
-                    .on("Assets.ID = Resources.ID");
+                    .on("Assets.ID = Resources.ID")
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule),CommonOperators.IS_EMPTY));
+
             List<Map<String, Object>> selectedRecords = selectBuilder.get();
             List<AssetCategoryContext> categoryContextList = AssetsAPI.getCategoryList();
             Map<Long, String> categoryIdVsName = new HashMap<>();
