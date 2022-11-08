@@ -24,18 +24,35 @@ import com.facilio.v3.context.Constants;
 public class FacilioInspectionTemplateModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	public Object addInspections(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		
-		String inspectionTemplateName = (String) objects.get(1);
-		
+
+		String inspectionTemplateName = new String();
+		long inspectionTemplateId = -1;
+
+		if(objects.get(1) instanceof Number){
+			inspectionTemplateId = Long.parseLong(objects.get(1).toString());
+		}
+
+		if(inspectionTemplateId == -1 && objects.get(1) instanceof String){
+			inspectionTemplateName = objects.get(1).toString();
+		}
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		SelectRecordsBuilder<InspectionTemplateContext> select = new SelectRecordsBuilder<InspectionTemplateContext>()
 				.moduleName(FacilioConstants.Inspection.INSPECTION_TEMPLATE)
 				.beanClass(InspectionTemplateContext.class)
-				.select(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TEMPLATE))
-				.andCondition(CriteriaAPI.getNameCondition(inspectionTemplateName, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)))
-				;
-		
+				.select(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
+
+		if(inspectionTemplateId!=-1){
+			select.andCondition(CriteriaAPI.getIdCondition(inspectionTemplateId, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)));
+		}
+		else if(!inspectionTemplateName.isEmpty()){
+			select.andCondition(CriteriaAPI.getNameCondition(inspectionTemplateName, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)));
+		}
+		else{
+			throw new RuntimeException("Template Name or Id should be passed");
+		}
+
 		InspectionTemplateContext template = select.fetchFirst();
 		
 		if(template == null) {
