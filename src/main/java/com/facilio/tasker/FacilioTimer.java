@@ -90,11 +90,22 @@ public class FacilioTimer {
 	}
 
 	private static final String DEFAULT_INSTANT_JOB_EXECUTOR = "default";
+
+	/**
+	 * Please avoid using this and solve via WMS Frameword.
+	 * Any use case of InstantJob can be solved better with WMS Framework
+	 */
+	@Deprecated
 	public static void scheduleInstantJob(String jobName, FacilioContext context) throws Exception {
 		LOGGER.debug("Adding instant job : "+jobName);
 		FacilioInstantJobScheduler.addInstantJob(DEFAULT_INSTANT_JOB_EXECUTOR, jobName, context);
 	}
 
+	/**
+	 * Please avoid using this and solve via WMS Frameword.
+	 * Any use case of InstantJob can be solved better with WMS Framework
+	 */
+	@Deprecated
 	public static void scheduleInstantJob(String executorName, String jobName, FacilioContext context) throws Exception {
 		LOGGER.debug("Adding instant job : "+jobName);
 		FacilioInstantJobScheduler.addInstantJob(executorName, jobName, context);

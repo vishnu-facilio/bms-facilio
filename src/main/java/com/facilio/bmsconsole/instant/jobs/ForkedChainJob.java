@@ -12,6 +12,10 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.InstantJob;
 
+/**
+ * Please avoid using this and solve via WMS handler
+ */
+@Deprecated
 public class ForkedChainJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ForkedChainJob.class.getName());
