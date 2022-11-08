@@ -44,7 +44,16 @@ public class SetBookingFormIDCommand extends FacilioCommand {
         });
 
         geoZones.forEach(zone -> {
+            V3IndoorFloorPlanPropertiesContext properties = zone.getProperties();
 
+            try {
+                Long FormId = V3SpaceBookingApi.getSpaceCategoryRelationFormId(properties.getSpaceCategoryId(), spacebookingModule.getModuleId());
+                if(FormId != null) {
+                    zone.getProperties().setBookingFormId(FormId);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
         });
 

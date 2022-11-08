@@ -258,6 +258,16 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 				properties.setSecondaryLabel(bookingCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 
 
+				 String customString = bookingCustomization.getDeskSecondaryLabel().getCustomText();
+				   bookingCustomization.getDeskSecondaryLabel().getLabelType().setCustomText(customString);
+				   properties.setLabel(bookingCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
+
+				   customString = bookingCustomization.getDeskPrimaryLabel().getCustomText();
+				   bookingCustomization.getDeskPrimaryLabel().getLabelType().setCustomText(customString);
+				   properties.setSecondaryLabel(bookingCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
+				  
+
+
 				if (desk.getDepartment() != null) {
 					properties.setDepartmentId(desk.getDepartment().getId());
 				}

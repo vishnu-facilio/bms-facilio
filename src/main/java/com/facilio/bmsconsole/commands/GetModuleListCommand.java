@@ -59,7 +59,15 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.Tenant.NEWS_AND_INFORMATION,
 			ContextNames.FAILURE_CLASS,
 			ContextNames.NEW_READING_ALARM,
-			ContextNames.BMS_ALARM
+			ContextNames.BMS_ALARM,
+			ContextNames.DEPARTMENT,
+			ContextNames.EMPLOYEE,
+			ContextNames.Floorplan.DESKS,
+			ContextNames.MOVES,
+			ContextNames.DELIVERIES,
+			ContextNames.LOCKERS,
+			ContextNames.PARKING_STALL,
+			ContextNames.SPACE_BOOKING
 	});
 
 	@Override
@@ -100,16 +108,6 @@ public class GetModuleListCommand extends FacilioCommand {
 				if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
 					moduleList.add(modBean.getModule(moduleName));
 				}
-			}
-			
-			if(AccountUtil.getCurrentOrg().getOrgId() == 429l) { //temp
-				moduleList.add(modBean.getModule(ContextNames.DEPARTMENT));
-				moduleList.add(modBean.getModule(ContextNames.EMPLOYEE));
-				moduleList.add(modBean.getModule(ContextNames.Floorplan.DESKS));
-				moduleList.add(modBean.getModule(ContextNames.MOVES));
-				moduleList.add(modBean.getModule(ContextNames.DELIVERIES));
-				moduleList.add(modBean.getModule(ContextNames.LOCKERS));
-				moduleList.add(modBean.getModule(ContextNames.PARKING_STALL));
 			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);

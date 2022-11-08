@@ -489,6 +489,8 @@ public class V3FloorPlanAPI {
 		V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
 		String nonReservableColor = bookingCustomization.getBookingState().getNonReservableColor();
 
+		Map<Long, List<V3SpaceBookingContext>> spaceBookingMap = (Map<Long, List<V3SpaceBookingContext>>) context.get(FacilioConstants.ContextNames.Floorplan.SPACE_BOOKING_MAP);
+		Boolean isNewBooking = (Boolean) context.get("IS_NEW_BOOKING");
 
 		if (parking.getParkingMode() == 1) {
 			properties.setZoneBackgroundColor(nonReservableColor);
@@ -496,7 +498,20 @@ public class V3FloorPlanAPI {
 		}
 		else if (parking.getParkingMode() > 1) {
 			Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
-			if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap)) {
+
+			if (isNewBooking) {
+				List<V3SpaceBookingContext> spaceBookingList = spaceBookingMap.get(parking.getId());
+
+				if (spaceBookingList != null && spaceBookingList.size() > 0) {
+					properties.setSecondaryLabel(getSecondaryLabelFromSpacebooking(spaceBookingList));
+					properties.setIsBooked(true);
+				}
+				else {
+					properties.setSecondaryLabel("");
+					properties.setIsBooked(false);
+				}
+			}
+			else if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap)) {
 				List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(parking.getId());
 
 				if (facilityBooking != null && facilityBooking.size() > 0) {
@@ -519,6 +534,8 @@ public class V3FloorPlanAPI {
 
 	public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
 		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+		Map<Long, List<V3SpaceBookingContext>> spaceBookingMap = (Map<Long, List<V3SpaceBookingContext>>) context.get(FacilioConstants.ContextNames.Floorplan.SPACE_BOOKING_MAP);
+		Boolean isNewBooking = (Boolean) context.get("IS_NEW_BOOKING");
 
 		V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
 		V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
@@ -535,19 +552,30 @@ public class V3FloorPlanAPI {
 		if (zone.getSpace() != null) {
 			properties.setSpaceId(zone.getSpace().getId());
 			if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+                String customText =assignCustomization.getSpacePrimaryLabel().getCustomText();
+				assignCustomization.getSpacePrimaryLabel().getLabelType().setCustomText(customText);
 				properties.setLabel(assignCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+
+				customText =assignCustomization.getSpaceSecondaryLabel().getCustomText();
+				assignCustomization.getSpaceSecondaryLabel().getLabelType().setCustomText(customText);
 				properties.setSecondaryLabel(assignCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
 				properties.setZoneBackgroundColor(spaceColor);
 			}
 			else if(viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW))
 			{
+				String customText = bookingCustomization.getSpacePrimaryLabel().getCustomText();
+				bookingCustomization.getSpacePrimaryLabel().getLabelType().setCustomText(customText);
 				properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+
+				customText =bookingCustomization.getSpaceSecondaryLabel().getCustomText();
+				bookingCustomization.getSpaceSecondaryLabel().getLabelType().setCustomText(customText);
 				properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
 				properties.setZoneBackgroundColor(nonReservableColor);
 			}
 
 			if (zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
 				properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
+				properties.setSpaceCategoryId(zone.getSpace().getSpaceCategory().getId());
 
 			}
 
@@ -582,14 +610,27 @@ public class V3FloorPlanAPI {
 					else {
 						properties.setZoneBackgroundColor(nonReservableColor);
 					}
-					if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
-						List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
+					if(isNewBooking) {
+						if (MapUtils.isNotEmpty(spaceBookingMap) && zone.getSpace().getId() > 0) {
+							List<V3SpaceBookingContext> spaceBookingList = spaceBookingMap.get(zone.getSpace().getId());
 
-						if (CollectionUtils.isNotEmpty(facilityBooking)) {
-							properties.setZoneBackgroundColor(reservedColor);
-							properties.setIsBooked(true);
+							if (CollectionUtils.isNotEmpty(spaceBookingList)) {
+								properties.setZoneBackgroundColor(reservedColor);
+								properties.setIsBooked(true);
+							}
 						}
 					}
+					else {
+						if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
+							List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
+
+							if (CollectionUtils.isNotEmpty(facilityBooking)) {
+								properties.setZoneBackgroundColor(reservedColor);
+								properties.setIsBooked(true);
+							}
+						}
+					}
+
 				}
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -673,7 +714,12 @@ public class V3FloorPlanAPI {
 				   properties.setDeskCode(desk.getDeskCode());
 				   properties.setDeskId(desk.getId());
 				   properties.setDeskType(desk.getDeskType());
+				   String customString = assignCustomization.getDeskSecondaryLabel().getCustomText();
+				   assignCustomization.getDeskSecondaryLabel().getLabelType().setCustomText(customString);
 				   properties.setLabel(assignCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
+
+				   customString = assignCustomization.getDeskPrimaryLabel().getCustomText();
+				   assignCustomization.getDeskPrimaryLabel().getLabelType().setCustomText(customString);
 				   properties.setSecondaryLabel(assignCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 				   properties.setIsCustom(true); // need to change based on the desktype
 

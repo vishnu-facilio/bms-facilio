@@ -42,7 +42,6 @@ public class FetchSpaceBookingCommand extends FacilioCommand {
            }
         });
 
-        context.put(FacilioConstants.ContextNames.Floorplan.SPACE_MAP, spaceMap);
         context.put(FacilioConstants.ContextNames.Floorplan.SPACE_BOOKING_MAP, spaceMap);
 
 
