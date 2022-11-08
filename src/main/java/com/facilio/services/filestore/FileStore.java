@@ -3,7 +3,11 @@ package com.facilio.services.filestore;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +27,8 @@ import javax.imageio.ImageIO;
 
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -961,4 +967,19 @@ public abstract class FileStore {
 		return null;
 	}
 
+	public long addFileFromURL(String urlString) throws Exception {
+		URL url = new URL(urlString);
+		URLConnection uc = url.openConnection();
+		String fileName = FilenameUtils.getName(url.getPath());
+		File file = File.createTempFile(fileName, "");
+		FileUtils.copyURLToFile(url, file);
+		String mimeType = uc.getContentType();
+		return addFile(fileName, file, mimeType);
+	}
+
+	public long addFileFromStream(String fileName, String contentType, InputStream inputStream) throws Exception {
+		File file = File.createTempFile(fileName, "");
+		FileUtils.copyInputStreamToFile(inputStream, file);
+		return addFile(fileName, file, contentType);
+	}
 }

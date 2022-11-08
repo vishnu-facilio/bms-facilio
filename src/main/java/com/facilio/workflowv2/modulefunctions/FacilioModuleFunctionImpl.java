@@ -1,6 +1,7 @@
 
 package com.facilio.workflowv2.modulefunctions;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,7 +11,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.modules.*;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -944,28 +948,55 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	@Override
 	public void addAttachments(Map<String, Object> globalParams, List<Object> objects) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		FacilioModule module = (FacilioModule) objects.get(0);
 		Long recordId = Long.parseLong(objects.get(1).toString());
-		
-		List<Long> fileIds = null;
+
+		List<Object> filesList = null;
 		if(objects.get(2) instanceof List) {
-			fileIds = (List<Long>) objects.get(2);
+			filesList = (List<Object>) objects.get(2);
 		}
 		else {
-			fileIds = Collections.singletonList(Long.parseLong(objects.get(2).toString()));
+			filesList = Collections.singletonList(objects.get(2).toString());
 		}
-		
+		Boolean duplicateFiles = false;
+		if (objects.size() > 3 && objects.get(3) != null && (objects.get(3) instanceof Boolean)) {
+			duplicateFiles = (Boolean) objects.get(3);
+		}
+
+		List<Long> fileIds = new ArrayList<>();
+		if (filesList != null && !filesList.isEmpty()) {
+			for (Object fileObj : filesList) {
+				if (fileObj == null) {
+					continue;
+				}
+				try {
+					Long fileId = Long.parseLong(fileObj.toString());
+					if (duplicateFiles) {
+						FileInfo fileInfo = FacilioFactory.getFileStore().getFileInfo(fileId);
+						String fileName = fileInfo.getFileName();
+						String contentType = fileInfo.getContentType();
+						InputStream fileStream = FacilioFactory.getFileStore().readFile(fileId);
+						fileId = FacilioFactory.getFileStore().addFileFromStream(fileName, contentType, fileStream);
+					}
+					fileIds.add(fileId);
+				} catch (NumberFormatException e) {
+					Long fileId = FacilioFactory.getFileStore().addFileFromURL(fileObj.toString());
+					fileIds.add(fileId);
+				}
+			}
+		}
+
 		String customModuleAttachment = CommonCommandUtil.getModuleTypeModuleName(module.getName(), FacilioModule.ModuleType.ATTACHMENTS);
-		
+
 		if(customModuleAttachment == null) {
 			throw new Exception("Adding attachment is not possible, because attachment module is not available");
 		}
-		
+
 		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentFromFileIdsChain();
-		
+
 		FacilioContext context = addAttachmentChain.getContext();
-		
+
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME,customModuleAttachment);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST,fileIds);
