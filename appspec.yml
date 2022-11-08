@@ -65,6 +65,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-kafka.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-ae-kafka.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler-app.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-user.properties
@@ -84,6 +86,8 @@ files:
   - source: /log4j-ff-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-ff-kafka.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-ae-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-user.properties
     destination: /home/facilio/deployment-files/
