@@ -160,6 +160,15 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new ComputeScheduleForWorkPermitCommandV3());
+        c.addCommand(new ValidationForDateCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getWorkPermitBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new ValidationForDateCommandV3());
 
         return c;
     }

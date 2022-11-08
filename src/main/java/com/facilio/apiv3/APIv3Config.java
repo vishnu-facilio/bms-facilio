@@ -1265,6 +1265,7 @@ public class APIv3Config {
                         new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
 
                 .update()
+                .beforeSave(TransactionChainFactoryV3.getWorkPermitBeforeSaveOnUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
                 .afterTransaction(
                         new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
