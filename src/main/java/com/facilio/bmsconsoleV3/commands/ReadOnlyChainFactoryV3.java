@@ -15,6 +15,11 @@ import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionBeforeFetchCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanSection.AddSupplementForJobPlanSectionCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskBeforeFetchCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanTask.AddSupplementForJobPlanTaskCommand;
+import com.facilio.bmsconsoleV3.commands.jobplanTask.FillReadingObjForJobPlanTaskCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.V3FetchPeopleGroupCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
@@ -359,6 +364,26 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getFormRelationList() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetFormRelationListCommand());
+        return c;
+    }
+    
+    public static FacilioChain getJobPlanSectionBeforeListFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSupplementForJobPlanSectionCommand());
+        c.addCommand(new AddCriteriaForJobPlanSectionBeforeFetchCommand());
+        return c;
+    }
+    
+    public static FacilioChain getJobPlanTaskBeforeListFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSupplementForJobPlanTaskCommand());
+        c.addCommand(new AddCriteriaForJobPlanTaskBeforeFetchCommand());
+        return c;
+    }
+    
+    public static FacilioChain getJobPlanTaskAfterListFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillReadingObjForJobPlanTaskCommand());
         return c;
     }
 }

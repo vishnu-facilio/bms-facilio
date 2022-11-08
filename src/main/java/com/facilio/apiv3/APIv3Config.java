@@ -1623,7 +1623,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlanSection(){
         return () -> new V3Config(JobPlanTaskSectionContext.class, new ModuleCustomFieldCount30())
                 .list()
-                .beforeFetch(new AddCriteriaForJobPlanSectionBeforeFetchCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getJobPlanSectionBeforeListFetchChain())
                 .build();
     }
 
@@ -1631,7 +1631,8 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlanTask(){
         return () -> new V3Config(JobPlanTasksContext.class, new ModuleCustomFieldCount30())
                 .list()
-                .beforeFetch(new AddCriteriaForJobPlanTaskBeforeFetchCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getJobPlanTaskBeforeListFetchChain())
+                .afterFetch(ReadOnlyChainFactoryV3.getJobPlanTaskAfterListFetchChain())               
                 .build();
     }
 

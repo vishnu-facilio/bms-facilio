@@ -80,7 +80,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
 
         // setting asset category
         Object assetCategoryObj = firstRecord.get("assetCategory");
-        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY)
+        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY.getVal())
                 && assetCategoryObj == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Asset Category is mandatory when Scope is Asset Category");
         }
@@ -94,7 +94,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
 
         // setting space category
         Object spaceCategoryObj = firstRecord.get("assetCategory");
-        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY)
+        if (jobPlan.getJobPlanCategory().equals(PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY.getVal())
                 && spaceCategoryObj == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Space Category is mandatory when Scope is Space Category");
         }

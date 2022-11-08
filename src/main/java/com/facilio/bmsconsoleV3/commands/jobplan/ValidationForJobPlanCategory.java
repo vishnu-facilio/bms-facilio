@@ -19,19 +19,19 @@ public class ValidationForJobPlanCategory extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        List<JobPlanContext> category = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("jobplan"));
-        if(CollectionUtils.isNotEmpty(category)) {
-            for (JobPlanContext section : category) {
+        List<JobPlanContext> jobplans = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("jobplan"));
+        if(CollectionUtils.isNotEmpty(jobplans)) {
+            for (JobPlanContext jobplan : jobplans) {
                 // case for import - ad hoc tasks
-                if (section.getJobPlanCategory() == null) {
+                if (jobplan.getJobPlanCategory() == null) {
                     continue;
                 }
-                if(section.getJobPlanCategory() == PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal()
-                            && section.getSpaceCategory() == null ){
+                if(jobplan.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY.getVal()
+                            && jobplan.getSpaceCategory() == null ){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Space Category should not be null ");
                     }
-                    else if(section.getJobPlanCategory() == PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal()
-                            && section.getAssetCategory() == null){
+                    else if(jobplan.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY.getVal()
+                            && jobplan.getAssetCategory() == null){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Asset Category  should not be null ");
                     }
             }
