@@ -13,10 +13,7 @@ import com.facilio.audit.FacilioAuditOrgList;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ConnectedDeviceContext;
-import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +22,7 @@ import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
@@ -288,24 +286,26 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
                         Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");
                         Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
-//                        Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
+                        Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
                         }
 
-//                        String method = request.getMethod();
-//                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null){
-//                            String actions = action.toString();
-//                            List<String> actionList = Arrays.asList(actions.split(";"));
-//                            for(String act : actionList){
-//                                String[] actList = act.split(":");
-//                                if(actList[0].equals(method)){
-//                                    action = getActionParam(actList[1]);
-//                                    break;
-//                                }
-//                            }
-//                        }
+                        String method = request.getMethod();
+                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null){
+                            Parameter v3PermissionActions = action;
+                            action = null;
+                            String actions = v3PermissionActions.toString();
+                            List<String> actionList = Arrays.asList(actions.split(";"));
+                            for(String act : actionList){
+                                String[] actList = act.split(":");
+                                if(actList[0].equals(method)){
+                                    action = getActionParam(actList[1]);
+                                    break;
+                                }
+                            }
+                        }
 
 //                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
 //                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
@@ -470,8 +470,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 long tabId = Long.parseLong(currentTab);
                 boolean hasPerm = PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role);
                 if (!hasPerm) {
+                    permissionLogsForTabs(tabId,moduleName,role.getName(),action);
                     //temp handling - need to be removed
-                    LOGGER.log(Level.DEBUG, "Permission denied for role - " + role.getName() + " for action - " + action + " in tab - " + tabId);
+                    //LOGGER.log(Level.DEBUG, "Permission denied for role - " + role.getName() + " for action - " + action + " in tab - " + tabId);
                 }
                 return true;
             }
@@ -479,16 +480,20 @@ public class ScopeInterceptor extends AbstractInterceptor {
             if (isNewPermission) {
                 return true;
             }
-            return PermissionUtil.currentUserHasPermission(moduleName, action, role);
+            boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
+            if(!hasPerm) {
+                permissionLogsForModule(moduleName,role.getName(),action);
+            }
+            return true;
         }
         return false;
     }
 
-    private Parameter getModuleNameParam(String moduleName){
+    private Parameter getModuleNameParam(String moduleName) {
         return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
     }
 
-    private Parameter getActionParam(String action){
+    private Parameter getActionParam(String action) {
         return new Parameter.Request(FacilioConstants.ContextNames.ACTION,action);
     }
 
@@ -498,5 +503,41 @@ public class ScopeInterceptor extends AbstractInterceptor {
             return true;
         }
         return false;
+    }
+
+
+    private void permissionLogsForTabs(Long tabId,String moduleName,String roleName,String action) throws Exception {
+        try {
+            WebTabContext tab = ApplicationApi.getWebTab(tabId);
+            if (tab != null) {
+                ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
+                List<String> modulesList = ApplicationApi.getModulesForTab(tabId);
+                String commonString = " Role Name - " + roleName + " - Action " + action;
+                if (app == null) {
+                    LOGGER.info("scope interceptor tab permission Case 1 : Application is empty - tab name" + tab.getName() + commonString);
+                }
+                if (CollectionUtils.isEmpty(modulesList)) {
+                    LOGGER.info("scope interceptor tab permission Case 2 : Module for tab is empty - Tab name - " + tab.getName() + commonString);
+                }
+                if (modulesList.contains(moduleName)) {
+                    LOGGER.info("scope interceptor tab permission Case 3 : No permission - Tab config exists - Module exist - Application " + app.getLinkName() + "- Tab Name - " + tab.getName() + " - Module Name - " + moduleName + " - " + commonString);
+                } else {
+                    LOGGER.info("scope interceptor tab permission Case 4 : No permission - Tab config exists - Module not exist - Application " + app.getLinkName() + "- Tab Name - " + tab.getName() + " - Module Name - " + moduleName + " - " + commonString);
+                }
+            } else {
+                LOGGER.info("scope interceptor tab permission Case 5 : Tab not configured - no permission - Tab Id - " + tabId);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception in tab permission logs - " + e);
+        }
+    }
+
+    private void permissionLogsForModule(String moduleName,String roleName,String action) {
+        try {
+            //Handled in client - need to check after logs
+            LOGGER.info("scope interceptor module permission : Module Name - " + moduleName + " - Role Name - " + roleName + " - Action - " + action);
+        } catch (Exception e) {
+            LOGGER.info("Exception in module permission logs - " + e);
+        }
     }
 }
