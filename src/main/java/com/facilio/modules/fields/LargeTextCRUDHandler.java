@@ -69,12 +69,13 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
 		}
 
         Map<String, Object> relRecord = new HashMap<>();
-        File newFile = File.createTempFile("largeTextFile.txt",null);
+		String fileName = "largeTextFile_"+System.currentTimeMillis()+".txt";
+        File newFile = File.createTempFile(fileName,null);
 		try(FileOutputStream fileOut = new FileOutputStream(newFile);) {
 			fileOut.write(fileContent.getBytes());
 		}
 		FileStore fs = FacilioFactory.getFileStore();
-		long fileID = fs.addFile("largeTextFile.txt", newFile, "text");
+		long fileID = fs.addFile(fileName, newFile, "text");
 
         relRecord.put(PARENT_ID_FIELD_NAME, parentId);
         relRecord.put(FILE_ID_FIELD_NAME, fileID);
