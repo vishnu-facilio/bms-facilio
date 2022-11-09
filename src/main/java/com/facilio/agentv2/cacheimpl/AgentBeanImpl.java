@@ -361,16 +361,18 @@ public class AgentBeanImpl implements AgentBean {
         if (querySearch != null){
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),querySearch, StringOperators.CONTAINS));
         }
-
        String orderBy = "";
         if(fieldMap.containsKey(AgentConstants.CONNECTED)){
-            orderBy = fieldMap.get(AgentConstants.CONNECTED).getColumnName();
+            String orderByConnected = fieldMap.get(AgentConstants.CONNECTED).getCompleteColumnName();
+            String orderById = fieldMap.get(AgentConstants.ID).getCompleteColumnName();
+            orderBy = orderByConnected +","+orderById;
         }
         if (CollectionUtils.isNotEmpty(defaultIds)) {
             orderBy = RecordAPI.getDefaultIdOrderBy(agentDataModule, defaultIds,orderBy);
+        }
+        if (orderBy != null && !orderBy.isEmpty()){
             genericSelectRecordBuilder.orderBy(orderBy);
         }
-        genericSelectRecordBuilder.orderBy(orderBy);
         if (pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");

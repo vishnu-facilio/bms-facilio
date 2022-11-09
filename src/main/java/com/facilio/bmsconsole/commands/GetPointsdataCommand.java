@@ -28,9 +28,10 @@ public class GetPointsdataCommand extends FacilioCommand {
 
     Long deviceId;
     Integer controllerType;
-    Long controllerId;
+    List<Long> controllerIds;
     Long agentId;
     String status;
+    Long controllerId;
     
     private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields(true));
     private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
@@ -55,9 +56,12 @@ public class GetPointsdataCommand extends FacilioCommand {
 
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         status = (String) context.get("status");
-        controllerId = (Long) context.get("controllerId");
+        controllerIds = (List<Long>) context.get("controllerIds");
         controllerType = (Integer) context.get("controllerType");
         agentId = (Long) context.get("agentId");
+        if(context.containsKey("controllerId")) {
+            controllerId = (Long) context.get("controllerId");
+        }
         boolean fetchCount = context.containsKey(FacilioConstants.ContextNames.FETCH_COUNT);
 
         GetPointRequest point = new GetPointRequest();
@@ -89,12 +93,18 @@ public class GetPointsdataCommand extends FacilioCommand {
 
     private void sanityCheck(GetPointRequest point) throws Exception {
 
-        if (controllerType == null || controllerId == null) {
-            throw new IllegalArgumentException("Controller type/controllerId cannot be null");
+        if (controllerType == null) {
+            throw new IllegalArgumentException("Controller type cannot be null");
         }
         point.ofType(FacilioControllerType.valueOf(controllerType));
-        if(controllerId > 0){
-            point.withControllerId(controllerId);
+
+        if(!controllerIds.isEmpty()){
+            point.withControllerIds(controllerIds);
+        }
+        if(controllerId != null) {
+            if(controllerId >0) {
+                point.withControllerId(controllerId);
+            }
         }
         Criteria criteria = new Criteria();
         if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
@@ -102,10 +112,24 @@ public class GetPointsdataCommand extends FacilioCommand {
                     FILETR_JOIN, NumberOperators.EQUALS));
             point.withCriteria(criteria);
         }
-
-        if (controllerId == 0 && controllerType == 0) {
-            point.withLogicalControllers(agentId);
+        if(agentId != null && controllerIds.isEmpty()){
+            point.withAgentId(agentId);
         }
+        if(controllerId != null) {
+            if (controllerId == 0 && controllerType == 0) {
+                point.withLogicalControllers(agentId);
+            }
+        }
+
+        if (controllerIds.contains(0l) && controllerType == 0) {
+            if (controllerIds.size() > 1) {
+                throw new IllegalArgumentException("Logical controller can't be selected with other controllers");
+            }
+            else{
+                point.withLogicalControllers(agentId);
+            }
+        }
+
     }
     private void pointFilter(PointStatus status, GetPointRequest point) {
         if(status == null) {

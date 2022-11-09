@@ -48,6 +48,10 @@
         </action>
         
     </package>
-    
-     
+    <package name="PointV3Api" namespace="/api/v3/point" extends="v3Api">
+        <action name="list" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getPoints">
+        </action>
+        <action name="count" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getCount">
+        </action>
+    </package>
 </struts>

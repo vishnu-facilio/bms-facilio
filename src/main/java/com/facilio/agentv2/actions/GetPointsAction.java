@@ -31,8 +31,9 @@ public class GetPointsAction extends AgentActionV2 {
 	private Long deviceId;
 	private Integer controllerType;
 	private Long controllerId;
-//	private Long agentId;
+	private Long agentId;
 	private String filters;
+	private List<Long> controllerIds = new ArrayList<>();
 	/**
 	 * Get the Point count.Based on the Point filter. e.g.UNCONFIGURED..etc.
 	 *
@@ -49,6 +50,8 @@ public class GetPointsAction extends AgentActionV2 {
 			context.put("controllerId",controllerId);
 			context.put("controllerType",controllerType);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+			context.put("controllerIds",controllerIds);
+			context.put("agentId",agentId);
 			chain.execute();
 			setResult(AgentConstants.DATA,context.get("pointsCount"));
 			ok();
@@ -74,6 +77,8 @@ public class GetPointsAction extends AgentActionV2 {
 			context.put("controllerId",controllerId);
 			context.put("controllerType",controllerType);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+			context.put("controllerIds",controllerIds);
+			context.put("agentId",agentId);
 			chain.execute();
 			setResult("data",context.get("data"));
 			setResult("resourceMap",context.get("resourceMap"));
