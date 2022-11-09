@@ -1,7 +1,12 @@
 package com.facilio.qa.command;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
@@ -39,16 +44,31 @@ public class AddOrUpdateDisplayLogicCommand extends FacilioCommand {
 			.andCondition(CriteriaAPI.getCondition(FieldFactory.filterField(FieldFactory.getQAndADisplayLogicActionFields(), "displayLogicId"), displaylogic.getId()+"", NumberOperators.EQUALS));
 			
 			deleteRecordBuilder.delete();
-			
-			
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getQAndADisplayLogicModule().getTableName())
+					.select(FieldFactory.getQAndADisplayLogicFields())
+					.andCondition(CriteriaAPI.getIdCondition(displaylogic.getId(), ModuleFactory.getQAndADisplayLogicModule()));
+			List<Map<String, Object>> oldRecordMap = selectBuilder.get();
+			DisplayLogicContext oldRecord = FieldUtil.getAsBeanFromMap(oldRecordMap.get(0), DisplayLogicContext.class);
+
+			if(displaylogic.getCriteria()== null && displaylogic.getCriteriaId()==null){
+				displaylogic.setCriteriaId((long) -99);
+			}
+
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(ModuleFactory.getQAndADisplayLogicModule().getTableName())
 					.fields(FieldFactory.getQAndADisplayLogicFields())
 					.andCondition(CriteriaAPI.getIdCondition(displaylogic.getId(), ModuleFactory.getQAndADisplayLogicModule()));
-
 			Map<String, Object> props = FieldUtil.getAsProperties(displaylogic);
 			updateBuilder.update(props);
-			
+
+			if (oldRecord != null && oldRecord.getCriteriaId() != null) {
+				deleteRecordBuilder = new GenericDeleteRecordBuilder();
+				deleteRecordBuilder.table(ModuleFactory.getCriteriaModule().getTableName())
+								   .andCondition(CriteriaAPI.getCondition(FieldFactory.filterField(FieldFactory.getCriteriaFields(), "criteriaId"), oldRecord.getCriteriaId() + "", NumberOperators.EQUALS));
+				deleteRecordBuilder.delete();
+			}
 		}
 		else {
 			displaylogic.setStatus(Boolean.TRUE);

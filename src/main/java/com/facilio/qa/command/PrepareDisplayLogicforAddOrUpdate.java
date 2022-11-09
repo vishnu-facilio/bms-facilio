@@ -71,7 +71,7 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 			
 			displaylogic.setQuestion(questionMap.get(displaylogic.getQuestionId()));
 		}
-		
+
 		if(displaylogic.getCriteria() != null) {
 			for(String key : displaylogic.getCriteria().getConditions().keySet()) {
 				Condition condition = displaylogic.getCriteria().getConditions().get(key);

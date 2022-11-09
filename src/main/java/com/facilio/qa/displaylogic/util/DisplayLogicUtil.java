@@ -107,7 +107,9 @@ public class DisplayLogicUtil {
 			Map<Long, List<DisplayLogicAction>> actionMap = fetchActions(ids);
 			
 			for(DisplayLogicContext displayLogicContext : displayLogicContexts) {
-				displayLogicContext.setTriggerQuestions(triggerMap.get(displayLogicContext.getId()));
+				if(triggerMap!=null) {
+					displayLogicContext.setTriggerQuestions(triggerMap.get(displayLogicContext.getId()));
+				}
 				displayLogicContext.setActions(actionMap.get(displayLogicContext.getId()));
 			}
 			
