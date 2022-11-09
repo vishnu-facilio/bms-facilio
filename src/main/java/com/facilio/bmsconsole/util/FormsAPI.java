@@ -1269,6 +1269,16 @@ public class FormsAPI {
 	
 	// From factory first. If not (for custom module), then will check in db
 	public static FacilioForm getDefaultForm(String moduleName, String appLinkName, Boolean...onlyFields) throws Exception {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put(Builder.ORDER_BY, "id");
+		params.put(Builder.LIMIT, 1);
+		ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
+		List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId());
+		if (CollectionUtils.isNotEmpty(forms)) {
+			return forms.get(0);
+		}
+
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName,appLinkName,onlyFields);
 		if (defaultForm == null ) {
 			String linkName = isPortalApp(appLinkName) ? ApplicationLinkNames.OCCUPANT_PORTAL_APP : ApplicationLinkNames.FACILIO_MAIN_APP;
@@ -1277,17 +1287,8 @@ public class FormsAPI {
 				defaultForm.setAppLinkName(appLinkName);
 			}
 		}
-		if (defaultForm == null) {
-			Map<String, Object> params = new HashMap<>();
-			params.put(Builder.ORDER_BY, "id");
-			params.put(Builder.LIMIT, 1);
-			ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
-			List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId());
-			if (CollectionUtils.isNotEmpty(forms)) {
-				return forms.get(0);
-			}
-		}else {
-			LOGGER.info("formFactoryTracking formName : "+ defaultForm.getName() +"for module : "+ moduleName +" get from form builder : From factory first.If not (for custom module ");
+		if(defaultForm!=null){
+			LOGGER.info("formFactoryTracking formName : "+ defaultForm.getName() +"for module : "+ moduleName +" DB first modified");
 		}
 		return defaultForm;
 

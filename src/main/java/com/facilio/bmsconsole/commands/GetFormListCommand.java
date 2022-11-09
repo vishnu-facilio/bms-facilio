@@ -121,11 +121,11 @@ public class GetFormListCommand extends FacilioCommand {
 				if(dbForms != null && !dbForms.isEmpty()){
 					Set<String> dbFormsName = dbForms.keySet();
 					if(!dbFormsName.contains(formName)){
-						LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName);
+						LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName  + "list command");
 					}
 				}
 				else {
-					LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName);
+					LOGGER.info("formFactoryTracking formName : "+ formName +"And moduleName : "+ moduleName  + "list command");
 				}
 			}
 		}
