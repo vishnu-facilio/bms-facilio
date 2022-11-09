@@ -48,18 +48,9 @@ public class ToolModule extends BaseModuleConfig{
 
         FacilioModule toolmodule = ModuleFactory.getToolModule();
 
-        FacilioField createdTime = new LookupField();
-        createdTime.setName("toolType");
-        createdTime.setDataType(FieldType.LOOKUP);
-        createdTime.setColumnName("TOOL_TYPE_ID");
-        createdTime.setModule(toolmodule);
-
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
-
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Tools");
-        allView.setSortFields(sortFields);
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);

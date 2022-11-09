@@ -255,6 +255,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_CALL, true);
 		
 		FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
@@ -284,10 +285,8 @@ public class ViewAction extends FacilioAction {
 		addView.execute(context);
 		
 		this.viewId = viewObj.getId();	
-		if (orderBy != null) {
-			viewName = viewObj.getName();
-			customizeSortColumns();
-		}
+
+		customizeSortColumns();
 
 		addViewAuditLog(viewObj, "created");
 		return SUCCESS;
@@ -402,10 +401,7 @@ public String v2customizeView() throws Exception {
 		editView.execute(context);
 		
 		setViewName(viewObj.getName());
-		if (orderBy != null) {
-			viewName = viewObj.getName();
-			customizeSortColumns();
-		}
+		customizeSortColumns();
 		getViewDetail();
 		setResult("view", viewObj);
 
@@ -472,25 +468,51 @@ public String v2customizeView() throws Exception {
 	}
 	
 	public String customizeSortColumns() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		
-		JSONObject sortObject = new JSONObject();
-		sortObject.put("orderBy", getOrderBy());
-		sortObject.put("orderType", getOrderType());
-		
-		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
-		context.put(FacilioConstants.ContextNames.SORTING, sortObject);
-		if (appId > 0) {
-			context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		if (orderBy != null) {
+			FacilioContext context = new FacilioContext();
+			if (viewObj != null) {
+				context.put(FacilioConstants.ContextNames.CV_NAME, viewObj.getName());
+			} else {
+				context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+			}
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
+
+			JSONObject sortObject = new JSONObject();
+			sortObject.put("orderBy", getOrderBy());
+			sortObject.put("orderType", getOrderType());
+
+			context.put(FacilioConstants.ContextNames.SORTING, sortObject);
+			if (appId > 0) {
+				context.put(FacilioConstants.ContextNames.APP_ID, appId);
+			}
+
+			FacilioChain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
+			customizeSortColumnsChain.execute(context);
+
+			this.sortFields = (List<SortField>) context.get(FacilioConstants.ContextNames.SORT_FIELDS_OBJECT);
+		} else {
+			deleteSortColumns();
 		}
-		
-		FacilioChain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
-		customizeSortColumnsChain.execute(context);
-		
-		this.sortFields = (List<SortField>) context.get(FacilioConstants.ContextNames.SORT_FIELDS_OBJECT);
-		
+
+		return SUCCESS;
+	}
+
+	public String deleteSortColumns() throws Exception {
+		FacilioChain chain = FacilioChainFactory.getDeleteViewCustomizeSortColumnsChain();
+
+		Context context = chain.getContext();
+		if (viewObj != null) {
+			context.put(FacilioConstants.ContextNames.VIEWID, viewObj.getId());
+		} else {
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+			if (appId > 0) {
+				context.put(FacilioConstants.ContextNames.APP_ID, appId);
+			}
+		}
+		chain.execute();
+
 		return SUCCESS;
 	}
 	

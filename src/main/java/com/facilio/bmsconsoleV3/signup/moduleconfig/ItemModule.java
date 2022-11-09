@@ -54,18 +54,9 @@ public class ItemModule extends BaseModuleConfig{
 
         FacilioModule itemsModule = ModuleFactory.getInventryModule();
 
-        FacilioField createdTime = new LookupField();
-        createdTime.setName("itemType");
-        createdTime.setDataType(FieldType.LOOKUP);
-        createdTime.setColumnName("ITEM_TYPES_ID");
-        createdTime.setModule(ModuleFactory.getInventryModule());
-
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
-
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Items");
-        allView.setSortFields(sortFields);
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
@@ -105,18 +96,9 @@ public class ItemModule extends BaseModuleConfig{
 
         FacilioModule itemsModule = ModuleFactory.getInventryModule();
 
-        FacilioField createdTime = new LookupField();
-        createdTime.setName("itemType");
-        createdTime.setDataType(FieldType.LOOKUP);
-        createdTime.setColumnName("ITEM_TYPES_ID");
-        createdTime.setModule(ModuleFactory.getInventryModule());
-
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
-
         FacilioView allView = new FacilioView();
         allView.setName("understocked");
         allView.setDisplayName("Understocked Items");
-        allView.setSortFields(sortFields);
 
         allView.setCriteria(criteria);
 

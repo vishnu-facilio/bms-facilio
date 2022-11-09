@@ -541,6 +541,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							Long fieldID = modBean.getField(sortfield.getName(), module.getName()).getFieldId();
 							defaultSortFields.get(i).setFieldId(fieldID);
 							defaultSortFields.get(i).setOrgId(view.getOrgId());
+							defaultSortFields.get(i).setFieldName(sortfield.getName());
 						}
 						customizeViewSortColumns((long) viewProp.get("id"), defaultSortFields);
 					}

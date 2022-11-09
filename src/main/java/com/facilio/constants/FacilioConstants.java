@@ -1168,6 +1168,7 @@ public class FacilioConstants {
 		public static final String IS_APPROVAL = "isApproval";
 		public static final String WO_FETCH_ALL = "woFetchAll";
 
+		public static final String IS_FETCH_CALL = "isFetchCall";
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String NEW_CV = "newCV";

@@ -1489,6 +1489,12 @@ public class FacilioChainFactory {
 		c.addCommand(new SaveSortFieldsCommand());
 		return c;
 	}
+
+	public static FacilioChain getDeleteViewCustomizeSortColumnsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteSortFieldsCommand());
+		return c;
+	}
 	
 	public static FacilioChain getUpdateFieldChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

@@ -46,6 +46,7 @@ public class LoadViewCommand extends FacilioCommand {
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
+		boolean isFetchCall = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_FETCH_CALL, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(viewName != null && !viewName.isEmpty()) {
 			String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
@@ -118,12 +119,12 @@ public class LoadViewCommand extends FacilioCommand {
 					if(orderBy.length() != 0) {
 						context.put(FacilioConstants.ContextNames.SORTING_QUERY, orderBy.toString());
 					}
-				} else {
+				} else if (!isFetchCall) {
 					List<SortField> defaultSortFields = ColumnFactory.getDefaultSortField(moduleName);
 					if (defaultSortFields != null && !defaultSortFields.isEmpty()) {
 						StringJoiner joiner = new StringJoiner(",");
 						for (SortField sortField : defaultSortFields) {
-							joiner.add(getOrderClauseForLookupTable(sortField, moduleName));	
+							joiner.add(getOrderClauseForLookupTable(sortField, moduleName));
 						}
 						context.put(FacilioConstants.ContextNames.SORTING_QUERY, joiner.toString());
 						view.setSortFields(defaultSortFields);
