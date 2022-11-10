@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.db.criteria.Condition;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.modules.*;
@@ -92,6 +91,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.opensymphony.xwork2.ActionContext;
+import org.json.simple.parser.JSONParser;
 
 public class CommonCommandUtil {
     private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());
@@ -1108,11 +1108,11 @@ public class CommonCommandUtil {
         return result;
     }
 
-    public static void handleLookupFormData(List<FacilioField> fields, Map<String, Object> data) {
+    public static void handleLookupFormData(List<FacilioField> fields, Map<String, Object> data) throws Exception {
         handleFormDataAndSupplement(fields, data, new ArrayList<>());
     }
 
-    public static void handleFormDataAndSupplement(List<FacilioField> fields, Map<String, Object> data, List<SupplementRecord> supplements) {
+    public static void handleFormDataAndSupplement(List<FacilioField> fields, Map<String, Object> data, List<SupplementRecord> supplements) throws Exception {
         if (data == null) {
             return;
         }
@@ -1133,10 +1133,15 @@ public class CommonCommandUtil {
                     case MULTI_LOOKUP:
                         if (!(data.get(field.getName()) instanceof List)) {
                             String val = data.get(field.getName()).toString();
-                            List<Map<String, Object>> valList = Arrays.asList(val.split(",")).stream().map(recId -> {
-                                return FieldUtil.getEmptyLookedUpProp(Long.parseLong(recId));
-                            }).collect(Collectors.toList());
-                            data.put(field.getName(), valList);
+                            if (StringUtils.isNotEmpty(val)) {
+                                Object object = new JSONParser().parse(val);
+                                JSONArray jsonArray = (JSONArray) object;
+                                List<Map<String, Object>> valList = new ArrayList<>();
+                                for (Object id : jsonArray) {
+                                    valList.add(FieldUtil.getEmptyLookedUpProp((Long) id));
+                                }
+                                data.put(field.getName(), valList);
+                            }
                         }
                         supplements.add((MultiLookupField) field);
                         break;
