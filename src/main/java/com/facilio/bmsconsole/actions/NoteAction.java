@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -174,6 +175,12 @@ public class NoteAction extends FacilioAction {
 			}
 		} else if (moduleName.equals(FacilioConstants.ContextNames.SERVICE_REQUEST_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SERVICE_REQUEST_ACTIVITY);
+		}
+		else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_REQUEST_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_REQUEST_ACTIVITY);
+		}
+		else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY);
 		}
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

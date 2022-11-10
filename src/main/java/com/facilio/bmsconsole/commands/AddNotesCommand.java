@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityType;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
@@ -137,6 +138,12 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				} else if(moduleName.equals(FacilioConstants.ContextNames.SERVICE_REQUEST_NOTES)) {
 					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
 	     		}
+				 else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_REQUEST_NOTES)) {
+					 CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
+				}
+				else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES)) {
+					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
+				}
 				else  {
 					FacilioModule parentModule = modBean.getModule(parentModuleName);
 					if (parentModule.isCustom()) {
