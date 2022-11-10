@@ -4,7 +4,6 @@ global :
   exclude :
     - 339
     - 405
-    - 413
 executors :
   - name : default
     tableName : InstantJobQueue
