@@ -246,6 +246,14 @@ if (buildinfo == null) {
 <%--	                <%= buildinfo.get("version")%>--%>
 <%--	            </td>--%>
 <%--	        </tr>--%>
+            <tr>
+                <td>
+                    Client Ver:
+                </td>
+                <td>
+                    <%= ClientAppUtil.getClientBuildInfo(request).getVersion() %>
+                </td>
+            </tr>
 	        <tr>
 	            <td>
 	                Serving IP:
