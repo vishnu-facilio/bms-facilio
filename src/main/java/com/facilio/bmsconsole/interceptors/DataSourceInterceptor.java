@@ -109,6 +109,9 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
 			if (sessionExpired) {
 				LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
+				if(request.getRequestURI().endsWith("application/fetchDetails")) {
+					return "login";
+				}
 				return "sessionexpired";
 			}
 		}

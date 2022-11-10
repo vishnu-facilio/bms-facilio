@@ -111,6 +111,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 							if(iamAccount != null){
 								LOGGER.error("[session expiry] Web_session_expiry" +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
 							}
+							if(request.getRequestURI().endsWith("application/fetchDetails")) {
+								return "login";
+							}
 							return "sessionexpired";
 						}
 					} catch (Exception ex) {
@@ -120,6 +123,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 							if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {
 								if(iamAccount != null){
 									LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
+								}
+								if(request.getRequestURI().endsWith("application/fetchDetails")) {
+									return "login";
 								}
 								return "sessionexpired";
 							}
