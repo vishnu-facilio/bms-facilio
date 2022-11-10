@@ -9,7 +9,8 @@ public enum MailSourceType implements FacilioStringEnum {
     SCRIPT ("Facilio Script"),
     RULE_NOTIFICATION ("Notification"),
     INVITE_MAIL ("Invitation Mail"),
-    SERVICE_REQUEST("Service Request")
+    SERVICE_REQUEST("Service Request"),
+    REPORT("Report")
     ;
 
     private final String moduleName;

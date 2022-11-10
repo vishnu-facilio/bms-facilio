@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.context.MailSourceType;
+import com.facilio.report.context.ReportContext;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
@@ -45,6 +48,12 @@ public class SendReadingReportMailCommand extends FacilioCommand {
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), parameters);
 		
 		JSONObject template = eMailTemplate.getTemplate(parameters);
+		ReportContext reportContext = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
+		template.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.REPORT.name());
+		if(reportContext != null){
+			template.put(MailConstants.Params.RECORDS_MODULE_ID, reportContext.getModuleId());
+			template.put(MailConstants.Params.RECORD_ID, reportContext.getId());
+		}
 		String toList;
 		if (template.get("to") instanceof JSONArray) {
 			JSONArray array = (JSONArray) template.get("to");
