@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -87,6 +88,17 @@ public class V3ReportAction extends V3Action {
     private AggregateOperator groupByTimeAggr;
     private ReportTemplateContext template;
     private List<Long> ids;
+
+
+    public List<SingleSharingContext> getReportShareInfo() {
+        return reportShareInfo;
+    }
+
+    public void setReportShareInfo(List<SingleSharingContext> reportShareInfo) {
+        this.reportShareInfo = reportShareInfo;
+    }
+
+    public List<SingleSharingContext> reportShareInfo;
     ReportInfo reportInfo;
     public V3DashboardRuleReportActionContext ruleInfo;
 
@@ -198,6 +210,12 @@ public class V3ReportAction extends V3Action {
         }
 
     }
+
+    public void updateReportShareContext(FacilioContext context) throws Exception{
+        context.put("reportId", reportId);
+        context.put("reportShareInfo",reportShareInfo);
+        context.put("isCreate",true);
+    }
     private void updateModuleReportContext() throws Exception
     {
         reportContext.setChartState(chartState);
@@ -227,6 +245,46 @@ public class V3ReportAction extends V3Action {
         setMessage("Report created successfully!");
         return SUCCESS;
     }
+
+    public String share() throws Exception {
+        if(reportId == -1 || reportId <=0 ){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Report.");
+        }
+        try
+        {
+            FacilioChain chain = TransactionChainFactoryV3.getreportShareChain();
+            FacilioContext context = chain.getContext();
+            updateReportShareContext(context);
+            chain.execute();
+        }
+        catch(Exception e)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while sharing report");
+        }
+        return SUCCESS;
+    }
+
+    public String getReportShare() throws Exception{
+        if(reportId ==-1 || reportId<=0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Report.");
+        }
+        try{
+
+            FacilioChain chain = TransactionChainFactoryV3.getreportShareChain();
+            FacilioContext context = chain.getContext();
+            context.put("reportId",reportId);
+            context.put("isGet",true);
+            chain.execute();
+            if(context.containsKey("reportShareDetails")){
+                setData("reportShareDetails",context.get("reportShareDetails"));
+            }
+        }
+        catch(Exception e){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while getting report share details");
+        }
+        return SUCCESS;
+    }
+
 
     public String update() throws Exception {
         validateData(2);

@@ -173,6 +173,8 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	
 
 	private String linkName;
+	private Long target_app_id;
+	private Long cloned_app_id;
 	
 	private Integer displayOrder;
 	
@@ -219,9 +221,20 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
 	}
-	
+	 public Long getTarget_app_id(){
+		return target_app_id;
+	 }
+	 public void setTarget_app_id(){
+		this.target_app_id = target_app_id;
+	 }
+	public Long getCloned_app_id(){
+		return cloned_app_id;
+	}
+	public void setCloned_app_id(){
+		this.cloned_app_id = cloned_app_id;
+	}
 	private Long createdByUserId;
-	
+
 	public Long getCreatedByUserId() {
 		return createdByUserId;
 	}

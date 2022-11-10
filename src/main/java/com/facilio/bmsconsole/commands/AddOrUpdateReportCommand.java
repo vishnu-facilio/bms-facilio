@@ -27,9 +27,9 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		
 		report.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
-		if(report.getId() <= 0) {
+		if(report.getId() <= 0 || context.containsKey("dashboard_clone")) {
 			addWorkflow(report);
-			ReportUtil.addReport(report);
+			ReportUtil.addReport(report,context);
 		}
 		else {
 			long oldWorkflowId = -1;

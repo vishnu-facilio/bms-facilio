@@ -2,9 +2,7 @@ package com.facilio.bmsconsoleV3.commands.dashboard;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardTabContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
@@ -27,6 +25,8 @@ public class CloneDashboardCommand extends FacilioCommand {
         String dashboard_link_name  = (String) context.get("dashboard_link_name");
         String cloned_dashboard_name  = (String) context.get("cloned_dashboard_name");
         Long dashboard_folder_id  = (Long) context.get("folder_id");
+        Long target_app_id = (Long) context.get("target_app_id");
+        Long cloned_app_id = (Long) context.get("cloned_app_id");
         if(dashboard_link_name != null && !"".equals(dashboard_link_name))
         {
             DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboard_link_name, null);
@@ -55,7 +55,7 @@ public class CloneDashboardCommand extends FacilioCommand {
                 List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
                 if(widgets != null && widgets.size() > 0) {
                     List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(widgets);
-                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId());
+                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId(),null,null);
                 }
                 for(DashboardTabContext dashboardTabContext : dashboard.getDashboardTabContexts())
                 {
@@ -69,7 +69,7 @@ public class CloneDashboardCommand extends FacilioCommand {
                         if(dashboard_tab_widgets != null && dashboard_tab_widgets.size() > 0)
                         {
                             List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(dashboard_tab_widgets);
-                            addWidgetForDashboardTab(widgets_with_section , newDashboardTabContext.getId(), cloned_dashboard.getId());
+                            addWidgetForDashboardTab(widgets_with_section , newDashboardTabContext.getId(), cloned_dashboard.getId(), target_app_id, cloned_app_id);
                         }
                     }
                 }
@@ -80,7 +80,7 @@ public class CloneDashboardCommand extends FacilioCommand {
                 List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
                 List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(widgets);
                 if(widgets_with_section != null) {
-                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId());
+                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId(), target_app_id, cloned_app_id);
                     context.put("cloned_dashbaord", DashboardUtil.getDashboardWithWidgets(cloned_dashboard.getLinkName(), null));
                 }
             }
@@ -96,14 +96,14 @@ public class CloneDashboardCommand extends FacilioCommand {
         dashboard.setModuleId(modBean.getModule("workorder").getModuleId());
     }
 
-    private void cloneDashboardWidgets(List<DashboardWidgetContext> widgetContexts, Long dashboardId)throws Exception
+    private void cloneDashboardWidgets(List<DashboardWidgetContext> widgetContexts, Long dashboardId, Long target_app_id, Long cloned_app_id)throws Exception
     {
         for(DashboardWidgetContext widget : widgetContexts)
         {
             if(widget.getDashboardTabId() != null){
                 continue;
             }
-            createDashboardWidgetWithSections(widget , dashboardId, null);
+            createDashboardWidgetWithSections(widget , dashboardId, null, target_app_id, cloned_app_id);
         }
     }
     private DashboardTabContext setNewDashboardTabData(DashboardTabContext dashboardTabContext)throws Exception
@@ -121,17 +121,17 @@ public class CloneDashboardCommand extends FacilioCommand {
         FacilioChain addDashboardChain = TransactionChainFactory.getAddDashboardTabChain();
         addDashboardChain.execute(context);
     }
-    private void addWidgetForDashboardTab(List<DashboardWidgetContext> widgets, Long dashboardTabId, Long newdashboardId)throws Exception
+    private void addWidgetForDashboardTab(List<DashboardWidgetContext> widgets, Long dashboardTabId, Long newdashboardId, Long target_app_id, Long cloned_app_Id)throws Exception
     {
         for (DashboardWidgetContext widget : widgets)
         {
             widget.setId(-1);
-            createDashboardWidgetWithSections(widget, newdashboardId, dashboardTabId);
+            createDashboardWidgetWithSections(widget, newdashboardId, dashboardTabId, target_app_id, cloned_app_Id);
         }
     }
 
 
-    private void createDashboardWidgetWithSections(DashboardWidgetContext widget, Long dashboardId, Long dashboardTabId)throws Exception
+    private void createDashboardWidgetWithSections(DashboardWidgetContext widget, Long dashboardId, Long dashboardTabId, Long target_app_id, Long cloned_app_Id)throws Exception
     {
         FacilioChain addWidgetChain = null;
         FacilioContext context = null;
@@ -167,7 +167,12 @@ public class CloneDashboardCommand extends FacilioCommand {
             context = addWidgetChain.getContext();
             widget.setDashboardId(widget.getDashboardId() != null ? dashboardId : null);
             widget.setDashboardTabId(dashboardTabId);
+            if(target_app_id != cloned_app_Id){
+                context.put("isCloneToAnotherAPP",true);
+            }
             context.put(FacilioConstants.ContextNames.WIDGET, widget);
+            context.put("cloned_app_id",cloned_app_Id);
+            context.put("target_app_id",target_app_id);
             context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
             addWidgetChain.execute();
         }

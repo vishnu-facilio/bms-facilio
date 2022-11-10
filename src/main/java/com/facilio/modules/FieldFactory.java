@@ -8194,6 +8194,21 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getReportShareField() {
+        FacilioModule module = ModuleFactory.getReportShareModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("parentId","PARENT_ID",module,FieldType.NUMBER));
+        fields.add(getField("userId","ORG_USERID",module,FieldType.NUMBER));
+        fields.add(getField("roleId","ROLE_ID",module,FieldType.NUMBER));
+        fields.add(getField("groupId","GROUP_ID",module,FieldType.NUMBER));
+        fields.add(getField("appType","APP_TYPE",module,FieldType.NUMBER));
+        fields.add(getField("type","SHARING_TYPE",module,FieldType.NUMBER));
+
+        return fields;
+    }
+
+
     public static List<FacilioField> getReport1Fields() {
         FacilioModule module = ModuleFactory.getReportModule();
         List<FacilioField> fields = new ArrayList<>();

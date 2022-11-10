@@ -22,6 +22,7 @@ public class DashboardRuleActionMetaContext {
     public String moduleName;
     public Criteria criteria;
     public Long scriptId;
+    public String script;
     @JSON(serialize=false)
     public String getAction_detailStr() {
         if (action_detail != null) {

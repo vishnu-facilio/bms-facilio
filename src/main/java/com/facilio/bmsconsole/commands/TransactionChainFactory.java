@@ -6533,7 +6533,6 @@ public class TransactionChainFactory {
 
 	public static FacilioChain addOrUpdatePivotReport(){
 		FacilioChain chain = FacilioChain.getTransactionChain();
-
 		chain.addCommand(ReadOnlyChainFactory.fetchPivotReportChain());
 		chain.addCommand(new AddOrUpdateReportCommand());
 

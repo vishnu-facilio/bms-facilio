@@ -2770,6 +2770,15 @@ public class ModuleFactory {
 		costAssets.setTableName("Report1");
 		return costAssets;
 	}
+
+	public static FacilioModule getReportShareModule() {
+		FacilioModule costAssets = new FacilioModule();
+		costAssets.setName("reportShare");
+		costAssets.setDisplayName("Report Share");
+		costAssets.setTableName("Report_Sharing");
+		return costAssets;
+	}
+
 	public static FacilioModule getReportFieldsModule() {
 		FacilioModule costAssets = new FacilioModule();
 		costAssets.setName("reportFields");

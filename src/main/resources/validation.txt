@@ -1325,6 +1325,8 @@
 /api/v3/report/folder/permission/update
 /api/v3/report/export
 /api/v3/report/send
+/api/v3/report/share/create
+/api/v3/report/share/get
 /api/v3/report/details
 /api/v3/report/scheduled/create
 /api/v3/report/scheduled/update

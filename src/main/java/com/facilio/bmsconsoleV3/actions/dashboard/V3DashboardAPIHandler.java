@@ -248,6 +248,13 @@ public class V3DashboardAPIHandler {
             if(criteriaId > 0){
                 dashboard_actions_meta.setCriteriaId(criteriaId);
             }
+            if(dashboard_actions_meta.getScript() != null){
+                Long scriptId = V3DashboardAPIHandler.generateWorkflowScriptId(dashboard_actions_meta.getScript());
+                if(scriptId == null){
+                    throw new Exception("Invalid Script");
+                }
+                dashboard_actions_meta.setScriptId(scriptId != null ? (Long)scriptId : null);
+            }
 //          Criteria criteria = FieldUtil.getAsBeanFromMap(criteriaMap, Criteria.class);
             GenericInsertRecordBuilder insert_builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getDashboardRuleActionMetaModule().getTableName())
@@ -431,6 +438,10 @@ public class V3DashboardAPIHandler {
             if(action_meta.getCriteriaId() != null && action_meta.getCriteriaId() > 0) {
                 action_meta.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), action_meta.getCriteriaId()));
             }
+            if(action_meta.getScriptId() != null && action_meta.getScriptId() > 0){
+                WorkflowContext scriptWorkflow = WorkflowUtil.getWorkflowContext(action_meta.getScriptId());
+                action_meta.setScript(scriptWorkflow != null ? scriptWorkflow.getWorkflowV2String() : null);
+            }
             dashboard_rule_action.setAction_meta(action_meta);
         }
     }
@@ -521,6 +532,10 @@ public class V3DashboardAPIHandler {
                 if(action_meta != null && action_meta.getCriteriaId() != null && action_meta.getCriteriaId() > 0 )
                 {
                     CriteriaAPI.deleteCriteria(action_meta.getCriteriaId());
+                }
+                if(action_meta != null && action_meta.getScriptId() != null && action_meta.getScriptId() > 0 )
+                {
+                    WorkflowUtil.deleteWorkflow(action_meta.getScriptId());
                 }
 
                 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -640,6 +655,12 @@ public class V3DashboardAPIHandler {
                 timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
                 timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());
                 timeline_filter.put("dateOperator", placeHolders.containsKey("dateOperator") ? placeHolders.get("dateOperator") : operatorId);
+                if(placeHolders.containsKey("dateValueString")){
+                    timeline_filter.put("dateValueString",placeHolders.get("dateValueString"));
+                }
+                if(placeHolders.containsKey("dateLabel")){
+                    timeline_filter.put("dateLabel",placeHolders.get("dateLabel"));
+                }
                 dashboard_execute_data.getGlobal_timeline_filter_widget_map().put("TIMELINE_FILTER", timeline_filter);
             }
         }
@@ -691,24 +712,41 @@ public class V3DashboardAPIHandler {
                 List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
                 if(selected_filter_values != null && selected_filter_values.size() > 0 && !"".equals(selected_filter_values.get(0)))
                 {
-                    V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data);
+                    V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data, null);
                 }
             }
             else if (default_values != null && default_values.length > 0 && !( default_values[0].equals("all") || default_values[0].equals("ALL")|| default_values[0].equals("All")))
             {
-                V3DashboardAPIHandler.setUserFilterValues(user_filter, Arrays.asList(default_values), dashboard_executed_data);
+                V3DashboardAPIHandler.setUserFilterValues(user_filter, Arrays.asList(default_values), dashboard_executed_data, null);
+            }
+        }
+        else if((field != null && field.getDataTypeEnum() == FieldType.DATE_TIME))
+        {
+            if (placeHolders.containsKey(String.valueOf(user_filter.getLink_name())))
+            {
+                HashMap selected_filter_map = (HashMap) placeHolders.get(String.valueOf(user_filter.getLink_name()));
+                List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
+                if(selected_filter_values != null && selected_filter_values.size() > 0 && !"".equals(selected_filter_values.get(0)))
+                {
+                    ArrayList<String> operatorId_list = (ArrayList) selected_filter_map.get("operatorId");
+                    if(operatorId_list != null && operatorId_list.size()>0)
+                    {
+                        Integer operatorId = Integer.parseInt(operatorId_list.get(0));
+                        V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data, operatorId);
+                    }
+                }
             }
         }
     }
 
-    public static void setUserFilterValues(DashboardUserFilterContext user_filter, List<String> selected_values, DashboardExecuteMetaContext dashboard_executed_data)throws Exception
+    public static void setUserFilterValues(DashboardUserFilterContext user_filter, List<String> selected_values, DashboardExecuteMetaContext dashboard_executed_data, Integer operatorId)throws Exception
     {
         Map<Long, FacilioField> widget_field_map = user_filter.getWidgetFieldMap();
         for (Map.Entry<Long, FacilioField> widget_and_field : widget_field_map.entrySet())
         {
             Long widget_id = widget_and_field.getKey();
             FacilioField applied_widget_field = widget_and_field.getValue();
-            Operator operator = Operator.getOperator(36);
+            Operator operator = Operator.getOperator( operatorId != null && operatorId > 0 ? operatorId : 36);
             Condition condition = new Condition();
             condition.setField(applied_widget_field);
             condition.setOperatorId(operator.getOperatorId());
@@ -736,6 +774,7 @@ public class V3DashboardAPIHandler {
     }
     public static JSONObject constructUserFilterRepsonse(JSONObject user_filters_obj , JSONObject placeHolders)throws Exception
     {
+        List<Integer> tTimeOperators = Arrays.asList(103, 85,101);
         if(user_filters_obj != null && !user_filters_obj.isEmpty())
         {
             JSONObject result_json = new JSONObject();
@@ -755,7 +794,12 @@ public class V3DashboardAPIHandler {
                     }else {
                         temp.put("value", value);
                     }
-                    result_json.put(criteria_obj.getFieldName(), temp);
+                    if(criteria_obj.getFieldName() != null && criteria_obj.getFieldName().equals("ttime") && tTimeOperators.contains(criteria_obj.getOperatorId()))
+                    {
+                        result_json.put(new StringBuilder(criteria_obj.getFieldName()).append("_").append(criteria_obj.getOperatorId()).toString(), temp);
+                    }else {
+                        result_json.put(criteria_obj.getFieldName(), temp);
+                    }
                 }
             }
             return result_json;
@@ -1104,23 +1148,23 @@ public class V3DashboardAPIHandler {
                         String selected_val_string = sb.toString();
                         selected_val_string = selected_val_string.substring(0, selected_val_string.length() - 1);
                         if (widget_value != null && widget_value.containsKey("value")) {
-                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), selected_val_string);
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value.id").toString(), selected_val_string);
                             V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".value").toString());
                         } else if (widget_value != null && widget_value.containsKey("dimension")) {
-                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), selected_val_string);
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension.id").toString(), selected_val_string);
                             V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString());
                         }
                     } else {
                         if (widget_value != null && widget_value.containsKey("value")) {
-                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value").toString(), recordId);
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".value.id").toString(), recordId);
                             V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".value").toString());
                         }
                         if (widget_value != null && widget_value.containsKey("dimension")) {
-                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString(), recordId);
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".dimension.id").toString(), recordId);
                             V3DashboardAPIHandler.returnDashboardPlaceholders(placeholder_vs_value_map, value_placeholders_map, moduleName, new StringBuilder(trigger_widget.getLinkName()).append(".dimension").toString());
                         }
                         if (widget_value != null && widget_value.containsKey("group_by")) {
-                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by").toString(), widget_value.get("group_by"));
+                            placeholder_vs_value_map.put(new StringBuilder(trigger_widget.getLinkName()).append(".group_by.id").toString(), widget_value.get("group_by"));
                             if(dashboard_execute_meta.getGroupByMeta() != null && dashboard_execute_meta.getGroupByMeta().containsKey(trigger_widget.getLinkName())){
                                 JSONObject group_by_meta_obj = dashboard_execute_meta.getGroupByMeta();
                                 HashMap group_by_module_obj = (HashMap) group_by_meta_obj.get(trigger_widget.getLinkName());
@@ -1145,8 +1189,27 @@ public class V3DashboardAPIHandler {
                         //                                           }
                     }
                 }
+
+            }
+            if(dashboard_execute_meta.getPlaceHolders() != null){
+                JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
+                if(placeHolders != null && placeHolders.containsKey("startTime") && placeHolders.containsKey("endTime"))
+                {
+                    placeholder_vs_value_map.put("startTime", placeHolders.get("startTime"));
+                    placeholder_vs_value_map.put("endTime", placeHolders.get("endTime"));
+                }
             }
             dashboard_execute_meta.setPlaceholder_vs_value_map(placeholder_vs_value_map);
         }
+    }
+
+    public static Long generateWorkflowScriptId(String script)throws Exception
+    {
+        WorkflowContext workflow = new WorkflowContext();
+        workflow.setIsV2Script(true);
+        List<Object> paramsList = new ArrayList<Object>();
+        workflow.setWorkflowV2String(script);
+        workflow.setParams(paramsList);
+        return WorkflowUtil.addWorkflow(workflow);
     }
 }

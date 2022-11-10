@@ -19,9 +19,11 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -307,24 +309,48 @@ public enum DashboardRuleActionType {
                     FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
                     FacilioContext context = chain.getContext();
                     context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(dashboard_execute_meta.getPlaceHolders()));
-                    chain.execute();
-                    List returnList = (List) workflow.getReturnValue();
-                    JSONArray jsonArray = new JSONArray();
-                    if(returnList != null && !returnList.isEmpty()) {
-                        for(int i=0;i<returnList.size();i++) {
-                            Map<String,Object> fieldMap = (Map<String,Object>) returnList.get(i);
-
-                            JSONObject fieldJSON = mapToJson(fieldMap);
-
-                            jsonArray.add(fieldJSON);
+                    String recordId = null;
+                    DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(trigger_widget_id);
+                    if(trigger_widget.getLinkName() != null && dashboard_execute_meta.getPlaceHoldersMeta() != null )
+                    {
+                        JSONObject placeHolders =  dashboard_execute_meta.getPlaceHolders();
+                        ArrayList value_arr = null;
+                        HashMap widget_value = null;
+                        if(placeHolders.containsKey(trigger_widget.getLinkName()))
+                        {
+                            widget_value = (HashMap)  placeHolders.get(trigger_widget.getLinkName());
+                            if(widget_value != null && (widget_value.containsKey("value") || widget_value.containsKey("dimension")))
+                            {
+                                value_arr = widget_value.containsKey("value") ? (ArrayList) widget_value.get("value") : (ArrayList) widget_value.get("dimension");
+                                if(value_arr.size() > 0 )
+                                {
+                                    String value = (String)value_arr.get(0);
+                                    if(value != null  && !value.equals("") && !value.equals("all") && !value.equals("All") && !value.equals("ALL"))
+                                    {
+                                        recordId = value;
+                                    }
+                                }
+                            }
+                            V3DashboardAPIHandler.constructDashboardRulePlaceHolders(trigger_widget, dashboard_execute_meta, recordId, value_arr, widget_value);
                         }
-                        JSONObject temp = new JSONObject();
-                        temp.put("actionType", DashboardRuleActionType.getActionType(dashboard_rule_action.getType()).getName());
-                        JSONObject actionMeta = new JSONObject();
-                        actionMeta.put("script_result", jsonArray);
-                        temp.put("actionMeta", actionMeta);
-                        dashboard_rule.getResult_json().add(temp);
+                    }
+                    dashboard_execute_meta.getPlaceholder_vs_value_map().putAll(dashboard_execute_meta.getGroupby_placeholder_vs_value_map());
+                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(dashboard_execute_meta.getPlaceholder_vs_value_map()));
+                    chain.execute();
+                    if(workflow != null && workflow.getReturnType() == WorkflowFieldType.LIST.getIntValue())
+                    {
+                        List returnList = (List) workflow.getReturnValue();
+                        JSONArray jsonArray = new JSONArray();
+                        JSONParser parser = new JSONParser();
+                        if(returnList != null && !returnList.isEmpty()) {
+                            for(int i=0;i<returnList.size();i++) {
+                                Map<String,Object> fieldMap = (Map<String,Object>) returnList.get(i);
+                                String object_str = new ObjectMapper().writeValueAsString(fieldMap);
+                                JSONObject fieldJSON = (JSONObject)parser.parse(object_str);
+                                jsonArray.add(fieldJSON);
+                            }
+                            dashboard_rule.setResult_json(jsonArray);
+                        }
                     }
                 }
             }

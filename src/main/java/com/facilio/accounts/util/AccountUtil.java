@@ -517,8 +517,8 @@ public class AccountUtil {
 		ROUTES_AND_MULTI_RESOURCE(88,16777216,LicenseMapping.GROUP2LICENSE) , // 2^24
 		ASSET_SPARE_PARTS(89,33554432,LicenseMapping.GROUP2LICENSE), // 2^25
 		NEW_BOOKING(90,67108864,LicenseMapping.GROUP2LICENSE), // 2^26
-		WO_STATE_TRANSITION_V3(91,134217728,LicenseMapping.GROUP2LICENSE); //2^27
-
+		WO_STATE_TRANSITION_V3(91,134217728,LicenseMapping.GROUP2LICENSE), //2^27
+		REPORT_SHARE(92,268435456,LicenseMapping.GROUP2LICENSE);//2^28
 		public int featureId;
 		private long license;
 		private String[] modules;

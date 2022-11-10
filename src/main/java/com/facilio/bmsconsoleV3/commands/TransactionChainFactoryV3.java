@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.util.AddColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.DeleteColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
+import com.facilio.bmsconsole.commands.util.ReportSharePermission;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
@@ -1486,6 +1487,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructReportData());
         c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
+
+    public static FacilioChain getreportShareChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReportSharePermission());
         return c;
     }
 

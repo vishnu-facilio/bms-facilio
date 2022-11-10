@@ -1,13 +1,12 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardFilterContext;
-import com.facilio.bmsconsole.context.DashboardUserFilterContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -29,6 +28,16 @@ public class GetDashboardWidgetsCommand extends FacilioCommand {
                     if(widget != null && (widget.getWidgetType() == DashboardWidgetContext.WidgetType.CARD || widget.getWidgetType() == DashboardWidgetContext.WidgetType.CHART ||
                             widget.getWidgetType() == DashboardWidgetContext.WidgetType.FILTER || widget.getWidgetType() == DashboardWidgetContext.WidgetType.LIST_VIEW))
                     {
+                        if(widget instanceof WidgetChartContext){
+                            Long  reportId = ((WidgetChartContext)widget).getNewReportId();
+                            if(reportId != null && reportId >0)
+                            {
+                                ReportContext report = ReportUtil.getReport(reportId);
+                                if(report != null && report.getTypeEnum() != null){
+                                    ((WidgetChartContext) widget).setReportType(report.getTypeEnum().name());
+                                }
+                            }
+                        }
                         new_widget_list.add(widget);
                     }
                 }
@@ -39,20 +48,22 @@ public class GetDashboardWidgetsCommand extends FacilioCommand {
                 if(dashboard_user_filters != null && dashboard_user_filters.size() > 0){
                     for(DashboardUserFilterContext userFilterContext : dashboard_user_filters)
                     {
-                        WidgetDashboardFilterContext filter_widget = new WidgetDashboardFilterContext();
-                        filter_widget.setDashboardFilterId(userFilterContext.getDashboardFilterId());
-                        filter_widget.setLabel(userFilterContext.getLabel());
-                        filter_widget.setField(userFilterContext.getField());
-                        filter_widget.setFieldId(userFilterContext.getFieldId());
-                        filter_widget.setModuleName(userFilterContext.getModuleName());
-                        filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
-                        filter_widget.setId(userFilterContext.getId());
-                        filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getName());
-                        if(userFilterContext.getWidget_id() != null){
+                        if(userFilterContext.getWidget_id() != null && userFilterContext.getWidget_id() > 0)
+                        {
+                            WidgetDashboardFilterContext filter_widget = new WidgetDashboardFilterContext();
+                            filter_widget.setDashboardFilterId(userFilterContext.getDashboardFilterId());
+                            filter_widget.setLabel(userFilterContext.getLabel());
+                            filter_widget.setField(userFilterContext.getField());
+                            filter_widget.setFieldId(userFilterContext.getFieldId());
+                            filter_widget.setModuleName(userFilterContext.getModuleName());
+                            filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
+                            filter_widget.setId(userFilterContext.getWidget_id());
+                            filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getName());
                             DashboardWidgetContext user_filter_widget = DashboardUtil.getWidget(userFilterContext.getWidget_id());
                             filter_widget.setLinkName(user_filter_widget.getLinkName());
+                            filter_widget.setId(userFilterContext.getWidget_id());
+                            new_widget_list.add(filter_widget);
                         }
-                        new_widget_list.add(filter_widget);
                     }
                 }
             }

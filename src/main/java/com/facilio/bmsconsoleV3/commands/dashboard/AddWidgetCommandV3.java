@@ -1,26 +1,46 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.V2ReportAction;
+import com.facilio.bmsconsole.commands.FetchReportDataCommand;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.BaseLineContext;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
+import com.facilio.bmsconsole.util.ViewAPI;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class AddWidgetCommandV3 extends FacilioCommand {
+    private static final org.apache.log4j.Logger LOGGER = Logger.getLogger(AddWidgetCommandV3.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception
     {
@@ -262,7 +282,18 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                 insertBuilder = new GenericInsertRecordBuilder()
                         .table(ModuleFactory.getWidgetChartModule().getTableName())
                         .fields(FieldFactory.getWidgetChartFields());
-
+                try {
+                    if (context.containsKey("isCloneToAnotherAPP") && (Boolean) context.containsKey("isCloneToAnotherAPP")) {
+                        DashboardWidgetContext widgets = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
+                        Long reportId = ((WidgetChartContext)widgets).getNewReportId();
+                        Long new_reportId = ReportUtil.cloneReport(reportId,(Long) context.get("target_app_id"),(Long) context.get("cloned_app_id"));
+                        if(new_reportId != null && new_reportId >0){
+                            widgetChartContext.setNewReportId(new_reportId);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.debug("Error while creating report during dashboard clone", e);
+                }
                 props = FieldUtil.getAsProperties(widgetChartContext);
                 insertBuilder.addRecord(props);
                 insertBuilder.save();
@@ -273,7 +304,29 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                 insertBuilder = new GenericInsertRecordBuilder()
                         .table(ModuleFactory.getWidgetListViewModule().getTableName())
                         .fields(FieldFactory.getWidgetListViewFields());
-
+                try{
+                    if(context.containsKey("isCloneToAnotherAPP") && (Boolean)context.containsKey("isCloneToAnotherAPP") ){
+                        String moduleName = widgetListViewContext.getModuleName();
+                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean" );
+                        FacilioModule module= modBean.getModule(moduleName);
+                        long moduleId = module.getModuleId();
+                        long orgId = widgetListViewContext.getOrgId();
+                        String name = widgetListViewContext.getViewName();
+                        Long appId = (Long) context.get("cloned_app_id");
+                        Long targetId = (Long) context.get("target_app_id");
+                        if(moduleName != null && !"".equals(moduleName) &&  appId != null && appId > 0 && targetId != null && targetId > 0){
+                            FacilioView views = ViewAPI.getView(name, moduleId, orgId, targetId);
+                            if(views == null) {
+                                FacilioView view = ViewAPI.getView(name, moduleId, orgId, appId);
+                                view.setId(-1l);
+                                view.setAppId(targetId);
+                                ViewAPI.addView(view, orgId);
+                            }
+                        }
+                    }
+                }catch (Exception e){
+                    LOGGER.debug("Error while creating view during dashboard clone", e);
+                }
                 props = FieldUtil.getAsProperties(widgetListViewContext);
                 insertBuilder.addRecord(props);
                 insertBuilder.save();

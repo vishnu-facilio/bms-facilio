@@ -29,7 +29,7 @@ public class GetCreateFolderCommand extends FacilioCommand {
         String actionType = (String) context.get("actionType");
         ReportFolderContext reportFolder = (ReportFolderContext)  context.get("reportFolder");
         if(reportFolder != null) {
-            reportFolder.setAppId(AccountUtil.getCurrentUser().getApplicationId());
+            reportFolder.setAppId(reportFolder.getAppId() != null ? reportFolder.getAppId() : AccountUtil.getCurrentUser().getApplicationId());
             if (actionType != null && actionType.equals("ADD")) {
                 String moduleName = (String) context.get("moduleName");
                 if (moduleName != null) {
@@ -37,14 +37,14 @@ public class GetCreateFolderCommand extends FacilioCommand {
                     FacilioModule module = modBean.getModule(moduleName);
                     reportFolder.setModuleId(module.getModuleId());
 
-                    GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                            .select(FieldFactory.getReport1FolderFields())
-                            .table(ModuleFactory.getReportFolderModule().getTableName())
-                            .andCustomWhere("NAME = ?", reportFolder.getName());
-                    List<Map<String, Object>> props = select.get();
-                    if (props != null && props.size() > 0) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, new StringBuilder().append("Folder with name ").append(reportFolder.getName()).append(" already exists. Please choose different name.").toString());
-                    }
+//                    GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+//                            .select(FieldFactory.getReport1FolderFields())
+//                            .table(ModuleFactory.getReportFolderModule().getTableName())
+//                            .andCustomWhere("NAME = ?", reportFolder.getName());
+//                    List<Map<String, Object>> props = select.get();
+//                    if (props != null && props.size() > 0){
+//                        throw new RESTException(ErrorCode.VALIDATION_ERROR, new StringBuilder().append("Folder with name ").append(reportFolder.getName()).append(" already exists. Please choose different name.").toString());
+//                    }
                     reportFolder = ReportUtil.addReportFolder(reportFolder);
                     context.put("reportFolder", reportFolder);
                 }

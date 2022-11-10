@@ -50,6 +50,16 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public void setReportTemplate(String reportTemplate) {
 		this.reportTemplate = reportTemplate;
 	}
+
+	public String getReportType() {
+		return reportType;
+	}
+
+	public void setReportType(String reportType) {
+		this.reportType = reportType;
+	}
+
+	public String reportType;
 	@Override
 	public JSONObject widgetJsonObject(boolean optimize) {
 		JSONObject resultJson = new JSONObject();

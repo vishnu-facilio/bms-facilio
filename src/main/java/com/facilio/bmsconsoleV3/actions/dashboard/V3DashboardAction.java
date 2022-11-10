@@ -54,6 +54,8 @@ public class V3DashboardAction extends V3Action {
                     setData("dashboard_link_name", dashboard.getLinkName());
                     setData("dashboard_name", dashboard.getDashboardName());
                     setData("dashboard_id", dashboard.getId());
+                    setData("target_app_id" ,dashboard.getTarget_app_id());
+                    setData("cloned_app_id" ,dashboard.getCloned_app_id());
                 }
             }
         }
@@ -71,6 +73,8 @@ public class V3DashboardAction extends V3Action {
     private void updateContextToClone(Context context, JSONObject cloned_json) throws Exception{
         context.put("dashboard_link_name", cloned_json.get("dashboard_link_name"));
         context.put("cloned_dashboard_name", cloned_json.get("cloned_dashboard_name"));
+        context.put("target_app_id", cloned_json.get("target_app_id"));
+        context.put("cloned_app_id", cloned_json.get("cloned_app_id"));
         if(cloned_json.get("folder_id") != null && (Long) cloned_json.get("folder_id") >0 ){
             context.put("folder_id", (Long) cloned_json.get("folder_id"));
         }

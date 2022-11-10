@@ -7,16 +7,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
+import com.facilio.accounts.dto.Group;
+import com.amazonaws.services.dynamodbv2.xspec.NULL;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction;
+import com.facilio.bmsconsoleV3.actions.report.V3ReportAction;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -479,6 +491,57 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields) throws Exception {
 		return getReportsFromFolderId(folderId, selectFields, true, false);
 	}
+	private static List<Long> getLoggedInUserGroupIds () {
+		List<Long> objs = new ArrayList<Long>();
+		try {
+			List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+			if (myGroups != null && !myGroups.isEmpty()) {
+				objs = myGroups.stream().map(Group::getId).collect(Collectors.toList());
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred ", e);
+		}
+		return objs;
+	}
+
+	public static void getReportSharingPermission(List<ReportContext> reports, ReportContext report) throws Exception {
+		Long parentId = report.getId();
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getReportShareModule().getTableName())
+				.select(FieldFactory.getReportShareField())
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = select.get();
+		long currentUserId = AccountUtil.getCurrentUser().getId();
+		long currentUserRoleId = AccountUtil.getCurrentUser().getRoleId();
+		List<Long> currentUserGroupId = getLoggedInUserGroupIds();
+		if(props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				if (prop.containsKey("userId")) {
+					if (currentUserId == (Long) prop.get("userId")) {
+						reports.add(report);
+						break;
+					}
+				}
+				else if (prop.containsKey("roleId")) {
+					if (currentUserRoleId == (Long) prop.get("roleId")) {
+						reports.add(report);
+						break;
+					}
+				}
+				else if (prop.containsKey("groupId")) {
+					if(currentUserGroupId.contains((Long) prop.get("groupId"))){
+                         reports.add(report);
+						 break;
+					}
+				}
+			}
+		}
+		else{
+			reports.add(report);
+		}
+	}
+
+
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields, boolean isMainApp, boolean isPivot) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
@@ -516,7 +579,13 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 						module = modBean.getModule(report.getModuleId());
 						report.setModuleName(module.getDisplayName());
 					}
-					reports.add(report);
+					Boolean isUserPrevileged = AccountUtil.getCurrentUser().getRole().getIsPrevileged();
+					if(isUserPrevileged==null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.REPORT_SHARE)){
+						getReportSharingPermission(reports, report);
+					}
+					else{
+						reports.add(report);
+					}
 				}
 				catch (Exception e) {
 					LOGGER.info("Error in report conversion, folderId:" + folderId +", index: " + i, e);
@@ -808,7 +877,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		return deleteRecordBuilder.delete();
 	}
 	
-	public static long addReport(ReportContext reportContext) throws Exception {
+	public static long addReport(ReportContext reportContext, Context context) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getReportModule().getTableName())
@@ -816,13 +885,37 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		reportContext.setCreatedTime(System.currentTimeMillis());
 		reportContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
-		props.put("appId", AccountUtil.getCurrentUser().getApplicationId());
+		props.put("appId",context.containsKey("dashboard_clone") ? context.get("target_app_id") : AccountUtil.getCurrentUser().getApplicationId());
 		long id = insertBuilder.insert(props);
 		reportContext.setId(id);
 		
 		return id;
 	}
-	
+
+	public static long shareReport(SingleSharingContext reportShareContext) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReportShareModule().getTableName())
+				.fields(FieldFactory.getReportShareField());
+		Map<String, Object> props = FieldUtil.getAsProperties(reportShareContext);
+		return insertBuilder.insert(props);
+	}
+
+	public static void deleteReportShareRecords(Long parentId) throws Exception {
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getReportShareModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
+		deleteBuilder.delete();
+	}
+
+	public static List<Map<String, Object>> getReportShareDetails(Long parentId) throws Exception {
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getReportShareModule().getTableName())
+				.select(FieldFactory.getReportShareField())
+		        .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = select.get();
+		return props;
+	}
+
 	public static boolean updateReport(ReportContext reportContext) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
@@ -1064,6 +1157,114 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 		}
 		return getFilteredReport(reportFolders);
+	}
+	public static Long createFolder(String name, Integer folderType, long appid, String module) throws Exception{
+		ReportFolderContext reportFolder = new ReportFolderContext();
+		reportFolder.setName(name);
+		if(folderType != null && folderType >0){
+			reportFolder.setFolderType(folderType);
+		}
+		reportFolder.setAppId(appid);
+		FacilioChain chain = TransactionChainFactoryV3.getCreateReportFolderChain();
+		FacilioContext context = chain.getContext();
+		context.put("actionType", "ADD");
+		context.put("moduleName",module);
+		context.put("reportFolder", reportFolder);
+		chain.execute();
+		return reportFolder.getId();
+	}
+	public static Long checkFolder(ReportContext reportContext, Long target_app_id,Integer folder_type, String moduleName) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("energydata");
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReport1FolderFields())
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(target_app_id), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PARENT_FOLDER_ID", "parentFolderId", "NULL", CommonOperators.IS_EMPTY));
+				if(folder_type != null && folder_type > 0) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition("FOLDER_TYPE", "folderType", String.valueOf(folder_type), NumberOperators.EQUALS))
+							.andCustomWhere("MODULEID=?",module.getModuleId());
+				} else if (folder_type == null && moduleName.equals("energydata")) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition("FOLDER_TYPE", "folderType", "NULL", CommonOperators.IS_EMPTY))
+							.andCustomWhere("MODULEID=?",module.getModuleId());
+				}
+				else{
+					selectBuilder.andCondition(CriteriaAPI.getCondition("FOLDER_TYPE", "folderType", "NULL", CommonOperators.IS_EMPTY))
+							.andCustomWhere("MODULEID=?",reportContext.getModuleId());
+				}
+		List<Map<String, Object>> field = selectBuilder.get();
+		if (field != null && field.size() > 0) {
+			ReportFolderContext reportFolder = (ReportFolderContext) FieldUtil.getAsBeanFromMap(field.get(0), ReportFolderContext.class);
+			if(reportFolder == null){
+				return null;
+			}
+			return reportFolder.getId();
+		}else {
+			Long folderId = createFolder("Default Folder", folder_type, target_app_id, moduleName);
+			if (folderId == null || folderId <= 0) {
+				return null;
+			}
+			return folderId;
+		}
+	}
+	public static Long cloneReport(Long reportId, Long target_app_id, Long cloned_app_id) throws Exception{
+		FacilioContext newcontext = new FacilioContext();
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		reportContext.setId(-1);
+		newcontext.put("cloned_app_id", cloned_app_id);
+		newcontext.put("target_app_id", target_app_id);
+		newcontext.put("dashboard_clone", true);
+		if(reportContext.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT) {
+			Long folderId = checkFolder(reportContext,target_app_id,3, "energydata");
+			reportContext.setReportFolderId(folderId);
+			newcontext.put(FacilioConstants.ContextNames.REPORT, reportContext);
+			clonePivot(newcontext, reportContext);
+		}
+		else if (reportContext.getTypeEnum() == ReportContext.ReportType.WORKORDER_REPORT) {
+			Long folderId = checkFolder(reportContext,target_app_id, null, "workorder");
+			reportContext.setReportFolderId(folderId);
+			newcontext.put(FacilioConstants.ContextNames.REPORT, reportContext);
+			cloneWorkOrderReport(newcontext);
+		}
+		else {
+			Long folderId = checkFolder(reportContext,target_app_id, null,"energydata");
+			reportContext.setReportFolderId(folderId);
+			newcontext.put(FacilioConstants.ContextNames.REPORT, reportContext);
+			cloneAnalyticsReport(newcontext);
+		}
+		return reportContext.getId();
+	}
+	public static void clonePivot(FacilioContext newcontext, ReportContext reportContext) throws Exception{
+		FacilioChain chain = TransactionChainFactory.addOrUpdatePivotReport();
+		JSONParser parser = new JSONParser();
+		ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+				(JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+
+		newcontext.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+		newcontext.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+		newcontext.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
+		newcontext.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
+		newcontext.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+		newcontext.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+		newcontext.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		newcontext.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+		newcontext.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+		newcontext.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+		newcontext.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
+		newcontext.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+		newcontext.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
+		newcontext.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
+		newcontext.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+		newcontext.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		chain.execute(newcontext);
+	}
+	public static void cloneWorkOrderReport(FacilioContext newcontext) throws Exception{
+		ReportContext reportContext = (ReportContext) newcontext.get(FacilioConstants.ContextNames.REPORT);
+		addReport(reportContext, newcontext);
+	}
+	public static void cloneAnalyticsReport(FacilioContext newcontext) throws Exception{
+		ReportContext reportContext = (ReportContext) newcontext.get(FacilioConstants.ContextNames.REPORT);
+		addReport(reportContext, newcontext);
 	}
 	public static String getAlias(String previous){
 		String alias = "A";
