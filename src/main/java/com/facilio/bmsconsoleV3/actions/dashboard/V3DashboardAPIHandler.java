@@ -552,8 +552,22 @@ public class V3DashboardAPIHandler {
         {
             JSONArray result_json_arr = dashboard_execute_meta.getMain_result_array();
             /**code to construct dashboard data*/
-            DashboardContext dashboard = V3DashboardAPIHandler.constructDashboardData(dashboard_execute_meta.getDashboardId());
-            DashboardFilterContext dashboard_filter = dashboard.getDashboardFilter();
+            List<DashboardWidgetContext> widgets_list = new ArrayList<>();
+            DashboardFilterContext dashboard_filter = null;
+            if(dashboard_execute_meta.getDashboardTabId() == null) {
+                DashboardContext dashboard = V3DashboardAPIHandler.constructDashboardData(dashboard_execute_meta.getDashboardId());
+                if(dashboard != null){
+                    widgets_list = dashboard.getDashboardWidgets();
+                    dashboard_filter = dashboard.getDashboardFilter();
+                }
+            }
+            else if(dashboard_execute_meta.getDashboardTabId() != null && dashboard_execute_meta.getDashboardTabId() > 0) {
+                DashboardTabContext dashboard_tab = V3DashboardAPIHandler.constructDashboardTabData(dashboard_execute_meta.getDashboardTabId());
+                if(dashboard_tab != null){
+                    widgets_list = dashboard_tab.getDashboardWidgets();
+                    dashboard_filter = dashboard_tab.getDashboardFilter();
+                }
+            }
 
             /**code to set default and live datetime and user filter details in these objects*/
             V3DashboardAPIHandler.constructTimelineAndUserFilter(dashboard_filter, dashboard_execute_meta);
@@ -561,7 +575,7 @@ public class V3DashboardAPIHandler {
             if (trigger_widget_Id != null && trigger_widget_Id > 0)
             {
                 /** code to construct dashboard rules data for trigger widget id*/
-                Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id, dashboard_execute_meta.getDashboardId());
+                Long dashboard_rule_id = V3DashboardAPIHandler.checkIsDashboardRuleApplied(trigger_widget_Id, dashboard_execute_meta.getDashboardId(), dashboard_execute_meta.getDashboardTabId());
                 if(dashboard_rule_id != null && dashboard_rule_id > 0) {
                     result_json_arr = V3DashboardAPIHandler.executeDashboardActions(dashboard_rule_id, trigger_widget_Id, dashboard_execute_meta, 2 );
                     dashboard_execute_meta.setMain_result_array(result_json_arr);
@@ -582,7 +596,7 @@ public class V3DashboardAPIHandler {
                     }
                 }
                 /** code to set user/timelinefilter data for response widgets*/
-                List<DashboardWidgetContext> widgets_list = dashboard.getDashboardWidgets();
+//                List<DashboardWidgetContext> widgets_list = dashboard.getDashboardWidgets();
                 if (widgets_list != null && widgets_list.size() > 0)
                 {
                     V3DashboardAPIHandler.constructWidgetsCriteriaResp(widgets_list, dashboard_execute_meta);
@@ -625,6 +639,15 @@ public class V3DashboardAPIHandler {
                 dashboard_execute_data.getMain_result_array().add(widget_json);
             }
         }
+    }
+    public static DashboardTabContext constructDashboardTabData(Long dashboardTabId)throws Exception
+    {
+        DashboardTabContext dashboard_tab = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
+        FacilioChain getDashboardFilterChain = ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
+        FacilioContext getDashboardFilterContext = getDashboardFilterChain.getContext();
+        getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboard_tab);
+        getDashboardFilterChain.execute();
+        return dashboard_tab;
     }
     public static DashboardContext constructDashboardData(Long dashboardId)throws Exception
     {
@@ -807,7 +830,7 @@ public class V3DashboardAPIHandler {
         return null;
     }
 
-    public static Long checkIsDashboardRuleApplied(Long trigger_widget_id, Long dashboardId)throws Exception
+    public static Long checkIsDashboardRuleApplied(Long trigger_widget_id, Long dashboardId, Long dashboardTabId)throws Exception
     {
         GenericSelectRecordBuilder select_builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getDashboardTriggerWidgetModule().getTableName())
@@ -830,7 +853,7 @@ public class V3DashboardAPIHandler {
         {
             for(Long rule_id : dashboard_rules_list)
             {
-                Boolean isActiveRule = V3DashboardAPIHandler.isActiveRule(rule_id, dashboardId);
+                Boolean isActiveRule = V3DashboardAPIHandler.isActiveRule(rule_id, dashboardId, dashboardTabId);
                 if(isActiveRule){
                     return rule_id;
                 }
@@ -839,7 +862,7 @@ public class V3DashboardAPIHandler {
         return null;
     }
 
-    public static Boolean isActiveRule(Long rule_id, Long dashboardId)throws Exception
+    public static Boolean isActiveRule(Long rule_id, Long dashboardId, Long dashboardTabId)throws Exception
     {
         GenericSelectRecordBuilder select_builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getDashboardRuleModule().getTableName())
@@ -853,6 +876,9 @@ public class V3DashboardAPIHandler {
             for(int i =0 ;i <len ;i++ )
             {
                 DashboardRuleContext dashboardRule = FieldUtil.getAsBeanFromMap(props.get(0), DashboardRuleContext.class);
+                if(dashboardTabId != null && dashboardRule != null && dashboardRule.getDashboardTabId() == dashboardTabId){
+                    return true;
+                }
                 if(dashboardRule != null && dashboardRule.getDashboardId() == dashboardId){
                     return true;
                 }
@@ -896,8 +922,8 @@ public class V3DashboardAPIHandler {
                 {
                     String result_link_name = dashboard_widget.getHeaderText();
                     if (result_link_name != null && !"".equals(result_link_name)) {
-                        if(result_link_name.length() > 50){
-                            result_link_name = result_link_name.substring(0, 50);
+                        if(result_link_name.length() > 40){
+                            result_link_name = result_link_name.substring(0, 40);
                         }
                         result_link_name = result_link_name.replaceAll("[^a-zA-Z0-9]", "_");
                         result_link_name = result_link_name.toLowerCase();

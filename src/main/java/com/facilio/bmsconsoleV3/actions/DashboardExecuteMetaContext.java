@@ -19,6 +19,7 @@ public class DashboardExecuteMetaContext {
 
     public Long trigger_widget_id;
     public Long dashboardId;
+    public Long dashboardTabId;
     public JSONObject trigger_meta;
     public JSONObject placeHolders= new JSONObject();
     public JSONObject placeHoldersMeta= new JSONObject();
