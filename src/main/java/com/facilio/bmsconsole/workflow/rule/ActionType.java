@@ -2241,11 +2241,14 @@ public enum ActionType {
 			File file = File.createTempFile(tempFileName, "");
 			FileUtils.copyInputStreamToFile(downloadStream, file);
 			
+			long newFileId = fs.addFile(fileInfo.getFileName(), file, fileInfo.getContentType());
 			
 			 Map<String, Object> attachmentObject = new HashMap<>();
-             attachmentObject.put("fileFileName", fileInfo.getFileName());
-             attachmentObject.put("fileContentType", fileInfo.getContentType());
-             attachmentObject.put("file", file);
+//             attachmentObject.put("fileFileName", fileInfo.getFileName());
+//             attachmentObject.put("fileContentType", fileInfo.getContentType());
+//             attachmentObject.put("file", file);
+             attachmentObject.put("fileId", newFileId);
+             attachmentObject.put("createdTime", DateTimeUtil.getCurrenTime());
              attachmentObject.put("type", attachment.getDatum("type"));
              attachmentObject.put("contentId", attachment.getDatum("contentId"));
 
