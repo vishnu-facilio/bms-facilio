@@ -45,6 +45,10 @@ public abstract class BaseActivityForModuleCommand extends FacilioCommand {
 					Object newValue = changeSet.getNewValue();
 					FacilioField field = modBean.getField(fieldId, moduleName);
 
+					if(oldValue == null && newValue == null){
+						continue;
+					}
+
 					JSONObject changeObj = new JSONObject();
 					changeObj.put("field", field.getName());
 					changeObj.put("displayName", field.getDisplayName());

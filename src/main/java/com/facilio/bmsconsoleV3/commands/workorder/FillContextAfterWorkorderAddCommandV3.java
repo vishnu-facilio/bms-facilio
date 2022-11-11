@@ -75,6 +75,10 @@ public class FillContextAfterWorkorderAddCommandV3 extends FacilioCommand {
             Object newValue = changeset.getNewValue();
             FacilioField field = modBean.getField(fieldid, moduleName);
 
+            if(oldValue == null && newValue == null){
+                continue;
+            }
+
             JSONObject info = new JSONObject();
             info.put("field", field.getName());
             info.put("displayName", field.getDisplayName());
