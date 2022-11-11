@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -86,6 +87,14 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 					note.setNotifyRequester(true);
 				}
 				*/
+				ApplicationContext currentApp = AccountUtil.getCurrentApp();
+				if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
+						CommentSharingContext commentSharing = new CommentSharingContext();
+						commentSharing.setAppId(AccountUtil.getCurrentApp().getId());
+						List<CommentSharingContext> commentSharingContexts = new ArrayList<>();
+						commentSharingContexts.add(commentSharing);
+					    note.setCommentSharing(commentSharingContexts);
+				}
 
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();

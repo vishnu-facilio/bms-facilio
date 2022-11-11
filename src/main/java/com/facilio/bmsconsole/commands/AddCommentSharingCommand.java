@@ -34,18 +34,6 @@ public class AddCommentSharingCommand extends FacilioCommand {
         FacilioModule notesModule = modBean.getModule(moduleName);
 
         if (notes != null && !notes.isEmpty()) {
-            ApplicationContext currentApp = AccountUtil.getCurrentApp();
-            if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
-                for (NoteContext noteContext : notes) {
-                    CommentSharingContext commentSharing = new CommentSharingContext();
-                    commentSharing.setAppId(AccountUtil.getCurrentApp().getId());
-
-                    List<CommentSharingContext> commentSharingContexts = new ArrayList<>();
-                    commentSharingContexts.add(commentSharing);
-
-                    noteContext.setCommentSharing(commentSharingContexts);
-                }
-            }
 
             List<CommentSharingContext> addCommentSharingList = new ArrayList<>();
             for (NoteContext noteContext : notes) {
