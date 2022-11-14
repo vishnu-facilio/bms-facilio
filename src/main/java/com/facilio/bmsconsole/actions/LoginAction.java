@@ -975,7 +975,19 @@ public class LoginAction extends FacilioAction {
 		//should not be sending this.. making it available for now since its used for mobile  
 		account.put("License", AccountUtil.getFeatureLicense().get(AccountUtil.LicenseMapping.GROUP1LICENSE.getLicenseKey()));
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
+		List<User> users = null;
+
+		ApplicationContext maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+		if(maintenanceApp == null) {
+			maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
+		List<ApplicationContext> allApps = ApplicationApi.getAllApplicationsForDomain(maintenanceApp.getDomainType());
+		if(CollectionUtils.isNotEmpty(allApps)) {
+			List<Long> appIds = allApps.stream().map(ApplicationContext::getId).collect(Collectors.toList());
+			users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, true,
+					false, 0, 5000, null, true, true, null, appIds, null);
+		}
+
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));

@@ -2080,6 +2080,16 @@ public class ApplicationApi {
         return getFilteredApplications(applications);
     }
 
+    public static List<ApplicationContext> getAllApplicationsForDomain(Integer domainType) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields())
+                .andCondition(CriteriaAPI.getCondition("DOMAIN_TYPE","domainType",String.valueOf(domainType),NumberOperators.EQUALS));
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                ApplicationContext.class);
+        return getFilteredApplications(applications);
+    }
+
     public static void setThisAppForUser(User user, ApplicationContext app, boolean assignDefaultRole)
             throws Exception {
         AppDomain domain = app.getAppDomain();
@@ -2994,14 +3004,14 @@ public class ApplicationApi {
             }
         }
         if (CollectionUtils.isEmpty(applicationIds)) {
-            if (AccountUtil.getCurrentApp().getLinkName()
-                    .equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)) {
-                applicationIds.add(ApplicationApi
-                        .getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-            } else {
-                applicationIds.add(ApplicationApi
-                        .getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+            ApplicationContext maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            if(maintenanceApp == null) {
+                maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             }
+            List<ApplicationContext> allApps = ApplicationApi.getAllApplicationsForDomain(maintenanceApp.getDomainType());
+            if(org.apache.commons.collections.CollectionUtils.isNotEmpty(allApps)) {
+                applicationIds = allApps.stream().map(ApplicationContext::getId).collect(Collectors.toList());
+           }
         }
         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false,
                 false, offset, perPage, search, true, true, teamIds, applicationIds, defaultIdList);

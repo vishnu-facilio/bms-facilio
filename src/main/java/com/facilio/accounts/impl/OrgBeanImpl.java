@@ -54,6 +54,8 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.facilio.util.FacilioStreamUtil.distinctByKey;
+
 public class OrgBeanImpl implements OrgBean {
 
 	@Override
@@ -133,6 +135,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<User> finalList = new ArrayList<>();
 		int recordsAdded = 0,actualRecordsSkipped = 0;
 		if(CollectionUtils.isNotEmpty(users)) {
+			users = users.stream().filter(distinctByKey(user -> user.getOuid())).collect(Collectors.toList());
 			for (User user : users) {
 				if (perPage <= recordsAdded) {
 					break;
