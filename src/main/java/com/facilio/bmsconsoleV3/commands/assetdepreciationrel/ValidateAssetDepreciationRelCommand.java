@@ -9,7 +9,10 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetDepreciationRelContext;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -49,6 +52,13 @@ public class ValidateAssetDepreciationRelCommand extends FacilioCommand {
             FacilioUtil.throwIllegalArgumentException(assetInfo == null,"Invalid asset");
 
             FacilioUtil.throwIllegalArgumentException(assetInfo.getUnitPrice() <= 0 , "Unit Price is empty");
+
+            long startDateField = depreciation.getStartDateFieldId();
+
+            FacilioField field = Constants.getModBean().getField(startDateField,Constants.getModBean().getModule(FacilioConstants.ContextNames.ASSET).getName());
+            Long fieldValue = (Long) FieldUtil.getAsProperties(assetInfo).get(field.getName());
+
+            FacilioUtil.throwIllegalArgumentException(fieldValue == null || fieldValue <= 0,"Start date field is empty");
 
             assetIds.add(asset.getId());
         }

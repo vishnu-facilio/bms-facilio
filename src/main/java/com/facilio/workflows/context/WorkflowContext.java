@@ -135,7 +135,9 @@ public class WorkflowContext extends ScriptContext{
 
 	long parentId;
 	WorkflowLogType logType;
-	
+	@Getter@Setter
+	private Long recordModuleId;
+
 	public long getParentId() {
 		return parentId;
 	}

@@ -116,9 +116,9 @@ public class WorkFlowLogModules extends SignUpData{
 		logType.setEnumName("WorkflowLogTypes");
         fields.add(logType);
 		
-		fields.add((FacilioField) FieldFactory.getDefaultField("recordId", "Record_Id", "RECORD_ID", FieldType.NUMBER));
+		fields.add((FacilioField) FieldFactory.getDefaultField("recordId", "Module RecordId", "RECORD_ID", FieldType.NUMBER));
 		
-		fields.add((FacilioField) FieldFactory.getDefaultField("workflowId", "Workflow_Id", "WORKFLOW_ID", FieldType.NUMBER));
+		fields.add((FacilioField) FieldFactory.getDefaultField("workflowId", "Workflow Id", "WORKFLOW_ID", FieldType.NUMBER,true));
 		
 		SystemEnumField logStatus = (SystemEnumField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.SYSTEM_ENUM);
 		logStatus.setEnumName("WorkflowLogState");
@@ -126,9 +126,11 @@ public class WorkFlowLogModules extends SignUpData{
 		
 		fields.add((FacilioField) FieldFactory.getDefaultField("exception", "Exception", "EXCEPTION", FieldType.STRING));
 		
-		fields.add((FacilioField) FieldFactory.getDefaultField("logValue", "Log_Value", "LOG_VALUE", FieldType.STRING));
+		fields.add((FacilioField) FieldFactory.getDefaultField("logValue", "Log Value", "LOG_VALUE", FieldType.STRING));
 
-		fields.add((FacilioField) FieldFactory.getDefaultField("createdTime", "Created_Time", "CREATED_TIME", FieldType.NUMBER));
+		fields.add((FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME));
+
+		fields.add(FieldFactory.getDefaultField("recordModuleId","Record ModuleId","RECORD_MODULE_ID",FieldType.NUMBER));
 
 		module.setFields(fields);
 		return module;

@@ -3080,6 +3080,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_LOG_PARENT_TYPE = "workflowLogRecordType";
 		public static final String WORKFLOW_LOG_RECORD_ID = "workflowLogRecordId";
 
+		public static final String WORKFLOW_LOG_RECORD_MODULE_ID = "recordModuleId";
 	}
 
 	public static class WorkOrder {

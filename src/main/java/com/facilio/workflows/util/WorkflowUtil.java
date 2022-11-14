@@ -2615,6 +2615,7 @@ public class WorkflowUtil {
         	workflowlogcontext.setParentId(workflowContext.getParentId());
         	workflowlogcontext.setWorkflowId(workflowContext.getId());
         	workflowlogcontext.setException(exception);
+			workflowlogcontext.setRecordModuleId(workflowContext.getRecordModuleId());
         	workflowlogcontext.setLogType(workflowContext.getLogType());
         	workflowlogcontext.setLogValue(logs);
         	workflowlogcontext.setStatus(statusId.getStatusId());

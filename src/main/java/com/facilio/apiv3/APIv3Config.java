@@ -2086,6 +2086,8 @@ public class APIv3Config {
     @Module(FacilioConstants.Workflow.WORKFLOW_LOG)
     public static Supplier<V3Config> getWorkflowLog() {
         return () -> new V3Config(WorkflowLogContext.class, null)
+                .list()
+                .afterFetch(new LoadWorkflowLogFieldNamesCommandV3())
                 .build();
     }
     

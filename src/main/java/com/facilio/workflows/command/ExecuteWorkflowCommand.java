@@ -64,5 +64,9 @@ public class ExecuteWorkflowCommand extends FacilioCommand {
 		if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE) != null) {
 			workflowContext.setLogType((WorkflowLogType)context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE));
 		}
+
+		if (context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_MODULE_ID) != null) {
+			workflowContext.setRecordModuleId((long)context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_MODULE_ID));
+		}
 	}
 }

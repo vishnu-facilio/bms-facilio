@@ -1239,12 +1239,18 @@ public enum ActionType {
 								
 				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 
-				if(currentRule!=null && currentRule.getId()>0) {
-					context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID, currentRule.getId());
-				}
+				if (currentRule != null) {
+					if (currentRule.getId() > 0) {
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID, currentRule.getId());
+					}
 
-				if(currentRule!=null && currentRule.getRuleTypeEnum()!=null) {
-					context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE, WorkflowLogType.ruleTypeMap.get(currentRule.getRuleTypeEnum()));
+					if (currentRule.getRuleTypeEnum() != null) {
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE, WorkflowLogType.ruleTypeMap.get(currentRule.getRuleTypeEnum()));
+					}
+
+					if (currentRule.getModuleId() > 0L) {
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_MODULE_ID, currentRule.getModuleId());
+					}
 				}
 				
 				chain.execute(context);

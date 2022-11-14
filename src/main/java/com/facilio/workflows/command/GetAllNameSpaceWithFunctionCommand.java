@@ -31,8 +31,7 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getWorkflowNamespaceFields())
 				.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
 				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getWorkflowNamespaceModule()))
