@@ -17,6 +17,7 @@ import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
@@ -247,9 +248,11 @@ public class LookupSpecialTypeUtil {
 			}
 		}
 		else if(ContextNames.AGENT.equals(specialType)) {
+			FacilioModule module = ModuleFactory.getNewAgentModule();
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getNewAgentFields())
-					.table(ModuleFactory.getNewAgentModule().getTableName());
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(module), "NULL", CommonOperators.IS_EMPTY));
 
 			String search = (String) paramsMap.get("search");
 			if(StringUtils.isNotEmpty(search)){
