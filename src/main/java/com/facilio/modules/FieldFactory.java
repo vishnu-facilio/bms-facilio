@@ -10573,6 +10573,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("accountId","ACCOUNT_ID",module,FieldType.NUMBER));
         list.add(getField("transactionType","TRANSACTION_TYPE",module,FieldType.NUMBER));
         list.add(getField("transactionAmountFieldId","TRANSACTION_AMOUNT_FIELD_ID",module,FieldType.NUMBER));
+        list.add(getField("resourceFieldId","RESOURCE_FIELDID",module,FieldType.NUMBER));
         return list;
     }
 

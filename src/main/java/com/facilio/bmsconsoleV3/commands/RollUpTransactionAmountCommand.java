@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -23,6 +24,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RollUpTransactionAmountCommand extends FacilioCommand {
     @Override
@@ -56,9 +58,23 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName())
                 ;
 
+        Set<Long> resource_ids = (Set<Long>) Constants.getBodyParams(context).get("Resource_ids");
+        Criteria criteria = new Criteria();
+        if (resource_ids.contains(-1l)) {
+            criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), CommonOperators.IS_EMPTY));
+        }
+        Set<Long> filteredResource_id = resource_ids.stream().filter( id -> !(id.equals(-1l))).collect(Collectors.toSet());
+        if (!filteredResource_id.isEmpty()) {
+            criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), filteredResource_id, PickListOperators.IS));
+        }
+        if (!criteria.isEmpty()) {
+            builder.andCriteria(criteria);
+        }
+
         builder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
         List<Map<String, Object>> mapList = builder.getAsProps();
 
+        Set<Long> availableResourceIds = new HashSet<>();
         if(CollectionUtils.isNotEmpty(mapList)) {
             for(Map<String, Object> map : mapList){
                 Double creditAmount = (Double) map.get("creditAmount");
@@ -71,7 +87,13 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 }
                 Double amount = creditAmount - debitAmount;
 
-                Map<String, Object> resourceMap = (Map<String, Object>)map.get("transactionResource");
+                Map<String, Object> resourceMap = (Map<String, Object>) map.get("transactionResource");
+                if (resourceMap == null) {
+                    availableResourceIds.add(-1l);
+                } else {
+                    availableResourceIds.add((Long) resourceMap.get("id"));
+                }
+
                 String rollUpModName = FacilioConstants.TransactionRule.TransactionRollUpModuleName;
                 Long minMonthStartDate = (Long)map.get("transactionDate");
                 String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
@@ -84,22 +106,27 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
             }
 
         }
-        else{
-            if(record!=null) {
 
-                    final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+        if (!availableResourceIds.containsAll(resource_ids)) {
+            resource_ids.removeAll(availableResourceIds);
+            for (long resourceId : resource_ids) {
+                final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
 
-                    Long minMonthStartDate = record.getTransactionDate();
-                    Long monthStartDate = DateTimeUtil.getMonthStartTimeOf(minMonthStartDate, false);
+                Long minMonthStartDate = record.getTransactionDate();
+                Long monthStartDate = DateTimeUtil.getMonthStartTimeOf(minMonthStartDate, false);
 
-                    Map<String, Object> accountMap = new HashMap<>();
-                    accountMap.put("id", record.getAccount().getId());
+                Map<String, Object> accountMap = new HashMap<>();
+                accountMap.put("id", record.getAccount().getId());
 
-                    String rollUpModName = FacilioConstants.TransactionRule.TransactionRollUpModuleName;
-                    String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
+                Map<String, Object> resourceMap = new HashMap<>();
+                if (record.getTransactionResource() != null) {
+                    resourceMap.put("id", resourceId);
+                }
 
-                    rollUpData(Double.valueOf(df.format(0)), accountMap, null, rollUpModName, rollUpFieldName, monthStartDate);
+                String rollUpModName = FacilioConstants.TransactionRule.TransactionRollUpModuleName;
+                String rollUpFieldName = FacilioConstants.TransactionRule.TransactionRollUpFieldName;
 
+                rollUpData(Double.valueOf(df.format(0)), accountMap, resourceMap, rollUpModName, rollUpFieldName, monthStartDate);
             }
         }
         return false;

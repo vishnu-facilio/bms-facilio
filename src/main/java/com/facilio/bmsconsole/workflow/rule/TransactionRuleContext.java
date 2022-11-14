@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
@@ -11,6 +12,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -25,10 +28,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter @Setter
 public class TransactionRuleContext extends WorkflowRuleContext{
@@ -38,13 +38,15 @@ public class TransactionRuleContext extends WorkflowRuleContext{
     private Long transactionType;
     private Long transactionAmountFieldId;
 
+    private Long resourceFieldId;
+
     private JSONObject transactionConfigJson;
 
     public JSONObject getTransactionConfigJson() throws Exception{
         if(transactionConfigJson==null){
+            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             transactionConfigJson=new JSONObject();
             if(this.transactionDateFieldId !=null && this.transactionAmountFieldId !=null) {
-                ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioField transactionDateField = moduleBean.getField(this.transactionDateFieldId, getModuleName());
                 FacilioField transactionAmountField = moduleBean.getField(this.transactionAmountFieldId, getModuleName());
                 transactionConfigJson.put("transactionDate", transactionDateField.getName());
@@ -52,6 +54,10 @@ public class TransactionRuleContext extends WorkflowRuleContext{
             }
             transactionConfigJson.put("account",String.valueOf(this.accountId));
             transactionConfigJson.put("transactionType",String.valueOf(this.transactionType));
+
+            if (this.resourceFieldId != null){
+                transactionConfigJson.put("transactionResource",this.resourceFieldId);
+            }
         }
         return transactionConfigJson;
     }
@@ -81,6 +87,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         if(transactionDateFieldValue == null || transactionAmountFieldValue == null ){
             return false;
         }
+
         return super.evaluateMisc(moduleName, record, placeHolders, context);
     }
     
@@ -105,32 +112,79 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         accountMap.put("id", accountId);
         data.put("account", accountMap);
 
+        Set<Long> resourceIds = new HashSet<>();
+
+        if (this.resourceFieldId != null) {
+          Object resourceValue =  FieldUtil.getValue(record, modBean.getField(this.resourceFieldId));
+          resourceValue = FacilioUtil.isEmptyOrNull(resourceValue) ? null : resourceValue;
+          data.put("transactionResource", resourceValue);
+          if (resourceValue == null) {
+              resourceIds.add(-1l);
+          } else {
+              if (resourceValue instanceof Map) {
+                  Map<String, Object> resourceValueMap = (Map<String, Object>) resourceValue;
+                  resourceIds.add((Long) resourceValueMap.get("id"));
+              }
+          }
+        } else {
+            resourceIds.add(-1l);
+        }
+
+        JSONObject bodyParam = new JSONObject();
+        bodyParam.put("Resource_ids", resourceIds);
+
         data.put("transactionSourceRecordId",record.getId());
         data.put("transactionSourceModuleId",getModuleId());
         data.put("ruleId",this.getId());
 
+
         FacilioModule module = ChainUtil.getModule(creationModuleName);
         List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
         V3TransactionContext transactionRecord = V3RecordAPI.getTransactionRecord(creationModuleName, sourceModId, record.getId(),this.getId());
+        if (transactionRecord != null) {
+            ResourceContext oldResource = transactionRecord.getTransactionResource();
+            if (oldResource == null) {
+                resourceIds.add(-1l);
+            } else {
+                resourceIds.add(oldResource.getId());
+            }
+        }
 
-        if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.DELETE)) {
-            if (transactionRecord!=null) {
-                Map<String,Object>recordId=new HashMap<>();
-                ArrayList id=new ArrayList<>();
-                id.add(transactionRecord.getId());
-                recordId.put(creationModuleName,id);
-                V3Util.deleteRecords(creationModuleName,recordId,null,null,false);
-            }
-        } else {
-            if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.CREATE)) {//create;
-                V3Util.createRecord(module, data, null, null);
-            }
-            else {//update
-                if (transactionRecord!=null) {
-                    V3Util.processAndUpdateSingleRecord(creationModuleName,transactionRecord.getId(), data,null,null,null,null,null,null);
+        boolean shouldContinue = true;
+
+        if (this.resourceFieldId != null ){
+            Object resourceValue =  FieldUtil.getValue(record, modBean.getField(this.resourceFieldId));
+            resourceValue = FacilioUtil.isEmptyOrNull(resourceValue) ? null : resourceValue;
+            if (resourceValue == null) {
+                shouldContinue = false;
+                if (transactionRecord != null) {
+                    Map<String, Object> recordId = new HashMap<>();
+                    ArrayList id = new ArrayList<>();
+                    id.add(transactionRecord.getId());
+                    recordId.put(creationModuleName, id);
+                    V3Util.deleteRecords(creationModuleName, recordId, bodyParam, null, false);
                 }
             }
+        }
 
+        if (shouldContinue) {
+            if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.DELETE)) {
+                if (transactionRecord != null) {
+                    Map<String, Object> recordId = new HashMap<>();
+                    ArrayList id = new ArrayList<>();
+                    id.add(transactionRecord.getId());
+                    recordId.put(creationModuleName, id);
+                    V3Util.deleteRecords(creationModuleName, recordId, bodyParam, null, false);
+                }
+            } else {
+                if (CollectionUtils.isNotEmpty(eventTypes) && eventTypes.contains(EventType.CREATE)) {//create;
+                    V3Util.createRecord(module, data, bodyParam, null);
+                } else {//update
+                    if (transactionRecord != null) {
+                        V3Util.processAndUpdateSingleRecord(creationModuleName, transactionRecord.getId(), data, bodyParam, null, null, null, null, null);
+                    }
+                }
+            }
         }
 
         super.executeTrueActions(currentRecord, context, placeHolders);
@@ -171,6 +225,16 @@ public class TransactionRuleContext extends WorkflowRuleContext{
             }
             if(transactionConfigJson.containsKey("transactionAmount")){
                 this.setTransactionAmountFieldId(transactionAmountField.getFieldId());
+            }
+            if ((transactionConfigJson.containsKey("transactionResource")) && (transactionConfigJson.get("transactionResource") != null)){
+                Long resourceFieldId = Long.parseLong(String.valueOf(transactionConfigJson.get("transactionResource")));
+                FacilioField resourceField = modBean.getField(resourceFieldId);
+                Long resourceModuleId = modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getModuleId();
+                if ((!(resourceField.getName().equals("siteId")) && !(resourceField.getName().equals("site")) &&
+                   !((resourceField instanceof LookupField) && ((LookupField) resourceField).getLookupModule().getExtendedModuleIds().contains(resourceModuleId)))){
+                    throw new IllegalArgumentException("This resource field doesn't belong to the current module");
+                }
+                this.setResourceFieldId(resourceFieldId);
             }
         }
     }
