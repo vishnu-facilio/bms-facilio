@@ -5,6 +5,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.*;
+import com.facilio.qa.context.client.answers.handler.NumberAnswerHandler;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -46,6 +47,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
                 QuestionContext question = questions.get(questionId);
                 V3Util.throwRestException(question == null || (!onlyValidate && question.getParent().getId() != response.getParent().getId()), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers");
                 AnswerHandler handler = question.getQuestionType().getAnswerHandler();
+                handler.validateAnswer(prop);
                 ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
                 V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
 

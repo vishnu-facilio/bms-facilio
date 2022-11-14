@@ -14,6 +14,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.qa.signup.AddQAndAModules;
+import com.facilio.util.FacilioUtil;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -82,6 +84,34 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         /* Stage 6 - Adding RollUp Fields */
         addRollUpField(modBean, pmPlannerModule, pmResourcePlannerModule,"resourceCount", "planner",
                 "Resource Count of Planner");
+        
+        addWorkOrderFieldsForPM(modBean, orgId);
+    }
+    
+    private void addWorkOrderFieldsForPM(ModuleBean modBean,  long orgId) throws Exception {
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        if(module != null) {
+        	
+            NumberField pmPlannerField = SignupUtil.getNumberField(module, "pmPlanner", "PM Planner",
+                    "PM_PLANNER_ID", FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+            modBean.addField(pmPlannerField);
+            
+            NumberField pmV2Field = SignupUtil.getNumberField(module, "pmV2", "Planned Maintenance V2",
+                    "PM_V2_ID", FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+            modBean.addField(pmV2Field);
+            
+            NumberField pmResourcePlannerField = SignupUtil.getNumberField(module, "pmResourcePlanner", "PM Resource Planner",
+                    "PM_RP_ID", FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+            modBean.addField(pmResourcePlannerField);
+            
+            NumberField pmTriggerV2Field = SignupUtil.getNumberField(module, "pmTriggerV2", "PM Trigger V2",
+                    "PM_V2_TRIGGER_ID", FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+            modBean.addField(pmTriggerV2Field);
+            
+        }
+        else {
+            FacilioUtil.throwIllegalArgumentException(true, "WorkOrder module cannot be null while adding fields for PlannedMaintenance module.");
+        }
     }
 
     /**

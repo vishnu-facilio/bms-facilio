@@ -65,7 +65,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN));
             modules.add(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.MOVES));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST));
@@ -76,9 +75,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_ITEMS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_TOOLS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_SERVICES));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_ITEMS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TOOLS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SERVICES));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_RESERVATION));
 
 

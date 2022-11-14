@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @Getter
@@ -23,6 +24,7 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
 
 	}
 
+    public void validateAnswer (Map<String, Object> answer) throws Exception {};
     public abstract A serialize (AnswerContext answer) throws Exception;
     public abstract AnswerContext deSerialize(A answer, QuestionContext question) throws Exception; // Validation can be done in this method itself
     public abstract boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception;

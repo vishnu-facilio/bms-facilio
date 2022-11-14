@@ -1,6 +1,5 @@
 package com.facilio.qa.context.client.answers.handler;
 
-import com.facilio.modules.FieldType;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
@@ -8,8 +7,10 @@ import com.facilio.qa.context.client.answers.NumberAnswerContext;
 import com.facilio.qa.context.questions.NumberQuestionContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Map;
 
 public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
 
@@ -33,6 +34,12 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
         AnswerContext answerContext = new AnswerContext();
         answerContext.setNumberAnswer(answer.getAnswer());
         return answerContext;
+    }
+
+    @Override
+    public void validateAnswer(Map<String, Object> props) throws Exception {
+        String answer = (String) props.get("answer");
+        V3Util.throwRestException(!StringUtils.isNumeric(answer), ErrorCode.VALIDATION_ERROR, "Not a valid number format");
     }
 
     @Override
