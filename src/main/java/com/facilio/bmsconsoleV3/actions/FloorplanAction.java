@@ -1,23 +1,17 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsole.context.IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanGeoJsonContext;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Action;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
-
-
-
-import lombok.Getter;
-import lombok.Setter;
 
 public class FloorplanAction extends V3Action {
 
@@ -129,6 +123,29 @@ public class FloorplanAction extends V3Action {
 	}
 
 	private Long objectId;
+
+
+	public FloorplanFilterContext getFloorplanFilters() {
+		return floorplanFilters;
+	}
+
+	public void setFloorplanFilters(FloorplanFilterContext floorplanFilters) {
+		this.floorplanFilters = floorplanFilters;
+	}
+
+
+	public static class FloorplanFilterContext {
+		public List<Long> getAmenities() {
+			return amenities;
+		}
+
+		public void setAmenities(List<Long> amenities) {
+			this.amenities = amenities;
+		}
+
+		private List<Long> amenities;
+	}
+	private FloorplanFilterContext floorplanFilters;
 	
 	
 	public String getFacilityDetails() throws Exception {
@@ -222,6 +239,14 @@ public class FloorplanAction extends V3Action {
 			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
 			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
 			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+
+			List<Long> amenities = new ArrayList<>();
+
+			if(floorplanFilters !=null) {
+				amenities = floorplanFilters.getAmenities();
+			}
+			context.put(FacilioConstants.ContextNames.FacilityBooking.AMENITY, amenities);
+
 			context.put("IS_NEW_BOOKING", getNewBooking());
 			chain.execute();
 

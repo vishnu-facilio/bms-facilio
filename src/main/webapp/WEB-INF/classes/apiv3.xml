@@ -1014,6 +1014,13 @@
                 method="deleteReadingImportData"/>
     </package>
 
+
+    <package name="autocadfileimport" namespace="/api/v3/autocadfile" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.autocadfileimport.AutoCadFileImportAction"
+                method="createautocad"/>
+    </package>
+
     <package name="weather" namespace="/api/v3/weather" extends="v3Api">
         <action name="stationcode"
                 class="com.facilio.weather.actions.WeatherAction"
@@ -1025,6 +1032,8 @@
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAssociatedStationId"/>
     </package>
+
+
 
     <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
         <action name="history"
@@ -1166,14 +1175,11 @@
 
 <!--    this is temp we will remove it soon -->
     <package name="spaceCategoryformRelation" namespace="/api/v3/formrelation" extends="v3Api">
-        <action name="create"
-                class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
-                method="addformRelation"/>
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
                 method="getList"/>
-        <action name="update"
+        <action name="addOrUpdate"
                 class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
-                method="updateFormRelation"/>
+                method="addOrUpdateFormRelation"/>
     </package>
 </struts>

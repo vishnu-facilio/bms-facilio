@@ -60,7 +60,6 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 		List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = new ArrayList<>();
 		List<V3IndoorFloorPlanGeoJsonContext> geoZones = new ArrayList<>();
-
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (!role.isPrevileged()) {
 			context.put("bookingMarkerObject", (JSONObject) V3FloorPlanAPI.getBookingMarkerProperties());
@@ -179,6 +178,10 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		V3EmployeeContext bookingemployeemarker = null;
 		V3DepartmentContext bookingdeskdepartment = null;
 
+		List<Long> filteredSpaceId = (List<Long>) context.get("filteredSpaceIds");
+		Boolean isNewBooking = (Boolean) context.get("IS_NEW_BOOKING");
+		String viewMode = (String) context.get(FacilioConstants.ContextNames.Floorplan.VIEW_MODE);
+
 		if (record != null && markerModuleId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(markerModuleId);
@@ -291,6 +294,13 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 				}
 
+				//Filter marker change
+				if(isNewBooking!=null && isNewBooking && filteredSpaceId!=null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+					if (!filteredSpaceId.contains(properties.getRecordId())) {
+						properties.setActive(false);
+						iconName = "desk_AssignedDesk";
+					}
+				}
 				// set icon state class
 
 				iconName = iconName.replaceAll("\\s", ""); //  itw ill remove the space names

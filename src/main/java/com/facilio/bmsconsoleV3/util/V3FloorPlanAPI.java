@@ -536,6 +536,7 @@ public class V3FloorPlanAPI {
 		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 		Map<Long, List<V3SpaceBookingContext>> spaceBookingMap = (Map<Long, List<V3SpaceBookingContext>>) context.get(FacilioConstants.ContextNames.Floorplan.SPACE_BOOKING_MAP);
 		Boolean isNewBooking = (Boolean) context.get("IS_NEW_BOOKING");
+		List<Long> filteredSpaceId = (List<Long>) context.get("filteredSpaceIds");
 
 		V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
 		V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
@@ -675,6 +676,16 @@ public class V3FloorPlanAPI {
 		else {
 			properties.setLabel(zone.getLabel());
 
+		}
+
+		if(isNewBooking!=null && isNewBooking && filteredSpaceId!=null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+			if (!filteredSpaceId.contains(properties.getRecordId())) {
+				properties.setZoneBackgroundColor(nonReservableColor);
+				properties.setActive(false);
+			}
+			else {
+				properties.setActive(true);
+			}
 		}
 
 		return applyUserPermissionForZone(properties, record, markerModuleId, zone, viewMode, context);

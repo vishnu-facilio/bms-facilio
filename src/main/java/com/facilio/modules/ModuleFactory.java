@@ -5168,6 +5168,22 @@ public class ModuleFactory {
 	}
 	//Bundle Related Modules ends
 
+    public static FacilioModule getAutoCAD_Import(){
+		FacilioModule autoCADModule = new FacilioModule();
+		autoCADModule.setName("autocadimport");
+		autoCADModule.setDisplayName("AutoCAD File Import");
+		autoCADModule.setTableName("AutoCAD_Import");
+		return autoCADModule;
+	}
+
+	public static FacilioModule getAutoCAD_Import_Layers(){
+		FacilioModule autoCADLayerModule = new FacilioModule();
+		autoCADLayerModule.setName("autoCadImportLayer");
+		autoCADLayerModule.setDisplayName("AutoCAD Import Layer");
+		autoCADLayerModule.setTableName("AutoCAD_Import_Layers");
+		return autoCADLayerModule;
+	}
+
 
 	public static FacilioModule getReadingImportAPPModule() {
 		FacilioModule readingImportModule = new FacilioModule();

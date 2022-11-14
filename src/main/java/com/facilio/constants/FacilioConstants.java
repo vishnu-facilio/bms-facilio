@@ -911,6 +911,7 @@ public class FacilioConstants {
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
 		public static final String SPACE_ID = "spaceId";
+		public static final String SPACE_AMENITY = "spaceAmenity";
 		public static final String FETCH_DELETED_RECORDS = "FetchDeletedRecords";
 		public static final String SPACE_TYPE = "spaceType";
 		public static final String SPACE_TYPE_ENUM = "spaceTypeEnum";
@@ -2364,9 +2365,15 @@ public class FacilioConstants {
 			public static final String AMENITY = "amenity";
 			public static final String SPACE_ID = "space";
 			public static final String PARENT_MODULE_ID = "parentModuleId";
+			public static final String PARENT_MODULE = "parentModule";
+			public static final String PARENT_MODULE_NAME = "parentModuleName";
 			public static final String BUILDING_ID = "buildingId";
 			public static final String OPERATING_HOUR = "operatingHour";
 			public static final String CURRENT_TIME = "currentTime";
+			public static final String SPACE_BOOKING_POLICY = "spaceBookingPolicy";
+			public static final String CRITERIAID = "criteriaId";
+			public static final String POLICY_JSON = "policyJson";
+			public static final String CRITERIA ="criteria";
 
 			public static final String SPACE_BOOKING_LIST = "spacebookinglist";
 
@@ -2375,6 +2382,8 @@ public class FacilioConstants {
 
 		public static class SpaceCategoryFormRelation{
 			public static final String SPACE_CATEGORY_FORM_RELATION = "spaceCategoryFormRelation";
+			public static final String MODULE_FORM_ID = "moduleFormId";
+
 		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";

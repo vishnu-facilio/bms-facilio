@@ -26,6 +26,8 @@ import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModule
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
+import com.facilio.bmsconsoleV3.commands.autocadfileimport.AddAutoCadFileImportCommand;
+import com.facilio.bmsconsoleV3.commands.autocadfileimport.AddAutoCadLayerCommand;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidationForScopeCommandV3;
@@ -48,6 +50,7 @@ import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplemen
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.formrelation.AddFormRelationCommand;
+import com.facilio.bmsconsoleV3.commands.formrelation.AddOrUpdateFormRelationCommand;
 import com.facilio.bmsconsoleV3.commands.formrelation.UpdateFormRelationCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
@@ -108,9 +111,7 @@ import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotal
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
-import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingAvailability;
-import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingCommand;
-import com.facilio.bmsconsoleV3.context.spacebooking.setSpaceBookingVariableCommand;
+import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
@@ -1942,6 +1943,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new DeleteReadingImportDataCommand());
         return c;
     }
+    public static FacilioChain getAutocadImportAppChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddAutoCadFileImportCommand());
+        c.addCommand(new AddAutoCadLayerCommand());
+        return c;
+
+    }
 
     public static FacilioChain getCreateJobPlanAfterSaveChain() {
         FacilioChain c = getDefaultChain();
@@ -2284,6 +2292,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new setSpaceBookingVariableCommand());
         c.addCommand(new V3ValidateSpaceBookingAvailability());
         c.addCommand(new V3ValidateSpaceBookingCommand());
+        c.addCommand(new FetchPolicyCommand());
+        c.addCommand(new ValidatePolicyCommand());
         return c;
     }
 
@@ -2357,21 +2367,21 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain createFormRelationChain(){
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new AddFormRelationCommand());
-        return c;
-    }
-
     public static FacilioChain getTagAssetASRotatingChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddRotatingItemToolCommandV3());
         return c;
     }
 
-    public static FacilioChain updateFormRelationChain(){
+    public static FacilioChain getAddPolicyChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateFormRelationCommand());
+        c.addCommand(new AddPolicyCriteriaCommand());
         return c;
     }
+    public static FacilioChain addOrUpdateFormRelationChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateFormRelationCommand());
+        return c;
+    }
+
 }

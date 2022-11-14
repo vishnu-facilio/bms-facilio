@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingFormRelationContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -93,6 +94,23 @@ public class V3SpaceBookingApi {
             formId = formrelation.getModuleFormId();
         }
         return formId;
+    }
+
+    public static Long generatePolicyCriteriaId(Criteria criteria, String moduleName)throws Exception
+    {
+        if(criteria != null) {
+            criteria.validatePattern();
+            if (moduleName != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                for (String key : criteria.getConditions().keySet()) {
+                    Condition condition = criteria.getConditions().get(key);
+                    FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+                    condition.setField(field);
+                }
+            }
+            return CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
+        }
+        return -1l;
     }
     
 }

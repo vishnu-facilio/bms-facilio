@@ -112,7 +112,7 @@ public class HomepageWidgteApi {
 
 
         if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
-            widget.setPrimaryText("You desk is " + space.getName());
+            widget.setPrimaryText("Your desk is " + space.getName());
             widget.setSpace(space);
             widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(spaceBooking.getBookingStartTime()));
             String time = "";
@@ -463,13 +463,16 @@ public class HomepageWidgteApi {
 
              if(deskModule.getModuleId() == booking.getParentModuleId()) {
 
-                widget.setPrimaryText(booking.getName());
+                widget.setPrimaryText("Your desk is " + space.getName());
+                 widget.setParentModuleName(deskModule.getName());
             }
             else if(parkingModule.getModuleId() == booking.getParentModuleId()) {
                 widget.setPrimaryText("Slot No " + space.getName());
+                widget.setParentModuleName(parkingModule.getName());
             }
             else {
-                widget.setPrimaryText("You space is " + space.getName());
+                widget.setPrimaryText(booking.getName());
+                widget.setParentModuleName(SpaceBookingModule.getName());
             }
 
                 return widget;
@@ -554,12 +557,16 @@ public class HomepageWidgteApi {
         spaceBookingList.forEach(spaceBooking -> {
             spaceIds.add(spaceBooking.getSpace().getId());
         });
+        List<V3SpaceContext> spaceList = new ArrayList<>();
+
+        if(CollectionUtils.isNotEmpty(spaceIds)){
+
+            spaceList = V3RecordAPI.getRecordsListWithSupplements(module.getName(), spaceIds, V3SpaceContext.class, null, supplementRecords);
 
 
+        }
+        widgetData.put("reservedSpaces", spaceList);
 
-        List<V3SpaceContext> spaceList =  V3RecordAPI.getRecordsListWithSupplements(module.getName(), spaceIds, V3SpaceContext.class, null, supplementRecords);
-
-        widgetData.put("reservedSpaces",spaceList);
         return widgetData;
     }
 

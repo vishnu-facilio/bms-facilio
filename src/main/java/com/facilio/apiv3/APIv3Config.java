@@ -144,6 +144,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContext;
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
@@ -162,10 +163,9 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
+import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
-import com.facilio.bmsconsoleV3.context.spacebooking.SpaceBookingSupplementsCommand;
-import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
@@ -2765,6 +2765,18 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new ValidateAssetDepreciationRelCommand(),new DeleteAssetDepreciationCalCommand())
                 .afterSave(new SaveDepreciationLastCalCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING_POLICY)
+    public static Supplier<V3Config> getSpaceBookingPolicy() {
+        return () -> new V3Config(V3SpaceBookingPolicyContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getAddPolicyChain())
+                .list()
+                .summary()
+                .afterFetch(new FetchCriteriaObjectCommand())
+                .delete()
                 .build();
     }
 }

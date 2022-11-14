@@ -17,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -82,10 +83,15 @@ public class getIndoorFloorPlanPropertiesCommand extends FacilioCommand {
               		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
                		lookUpfields.add((LookupField) fieldMap.get("employee"));
                		lookUpfields.add((LookupField) fieldMap.get("department"));
-               		
-               		
-               		List<V3DeskContext> desklist = V3RecordAPI.getRecordsListWithSupplements(module.getName(), Collections.singletonList(marker.getRecordId()), beanClassName, lookUpfields);
-                      
+					lookUpfields.add((LookupField) fieldMap.get("building"));
+					lookUpfields.add((LookupField) fieldMap.get("floor"));
+
+
+					lookUpfields.add((MultiLookupField) fieldMap.get("amenities"));
+
+
+					List<V3DeskContext> desklist = V3RecordAPI.getRecordsListWithSupplements(module.getName(), Collections.singletonList(marker.getRecordId()), beanClassName, lookUpfields);
+
                		if (desklist != null) {
                			V3DeskContext deskData = (V3DeskContext)desklist.get(0);
                			propertiesResult.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
@@ -125,8 +131,8 @@ public class getIndoorFloorPlanPropertiesCommand extends FacilioCommand {
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule objectModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES);
       		List<FacilioField> objectFields = modBean.getAllFields(objectModule.getName());
-        	
-      		if (zone.isIsReservable()) {
+
+			if (zone.isIsReservable()) {
           		bookingSpaceIds.add(zone.getSpace().getId());
       		}
             

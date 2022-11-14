@@ -10948,6 +10948,36 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+
+
+    public static List<FacilioField> getAutocadImportFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAutoCAD_Import();
+        fields.add(getIdField(module));
+        fields.add(getField("filename", "NAME", module, FieldType.STRING));
+        fields.add(getField("comment", "COMMENT", module, FieldType.STRING));
+        fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("sourceType", "SOURCE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("importedTime", "IMPORTED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("importedBy", "IMPORTED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.LOOKUP));
+        return fields;
+    }
+
+    public static List<FacilioField> getAutocadImportLayerFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAutoCAD_Import_Layers();
+        fields.add(getIdField(module));
+        fields.add(getField("importId", "IMPORT_ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "LAYER_NAME", module, FieldType.STRING));
+        fields.add(getField("geojsonString", "LAYER_GEO_JSON", module, FieldType.STRING));
+        fields.add(getCreatedTime(module));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
+        return fields;
+    }
+
+
     public static List<FacilioField> getMailMapperFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMailMapperModule();

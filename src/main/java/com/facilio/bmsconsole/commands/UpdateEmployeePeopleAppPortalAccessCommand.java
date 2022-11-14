@@ -30,6 +30,9 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand {
 				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.EMPLOYEE)) || MapUtils.isNotEmpty(emp.getRolesMap())) {
 					PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 				}
+				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "employeePortalAccess", FacilioConstants.ContextNames.EMPLOYEE)) || MapUtils.isNotEmpty(emp.getRolesMap())) {
+					PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+				}
 			}
 		}
 		return false;

@@ -912,6 +912,20 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/autocadfile/create">
+        <requestbody type="object">
+            <property name="autocadfiledata" type="object">
+                <property name="name" type="string"/>
+                <property name="fileId" type="number"/>
+                <property name="sourceType" type="number"/>
+                <items type="object">
+                    <property name="layerName" type="string" />
+                    <property name="layerGeoJson" type="string" />
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
 
 <!--    <request path="/api/v2/application/relatedApps/fetchList">-->
 <!--        <urlparams>-->
@@ -1115,7 +1129,7 @@
     </request>
 
 
-    <request path="/api/v3/formrelation/create">
+    <request path="/api/v3/formrelation/addOrUpdate">
         <requestbody type="object">
             <property name="formRelationData" type="object">
                 <property name="id" type="number"/>

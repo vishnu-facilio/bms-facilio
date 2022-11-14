@@ -22,6 +22,7 @@ public class HomepageWidgetData {
     String primaryText;
     String secondaryText;
     String moduleName;
+    String parentModuleName;
     Long RecordId;
     String secondaryText2;
     String date;

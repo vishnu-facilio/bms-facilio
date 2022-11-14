@@ -68,7 +68,7 @@ public class FacilioCorsFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         String originValues = FacilioProperties.getConfig("cors.allowed.origins");
         if(originValues == null) {
-            originValues = "https://facilio.com,https://facilioportal.com,https://faciliovendors.com,https://faciliotenants.com,https://facilioemployees.com";
+            originValues = "https://facilio.com,https://facilioportal.com,https://faciliovendors.com,https://faciliotenants.com,https://facilioworkplace.com";
         }
         initialize(ORIGINS, originValues);
         initialize(METHODS, filterConfig.getInitParameter("cors.allowed.methods"));

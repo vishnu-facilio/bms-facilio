@@ -26,6 +26,7 @@ public class V3SpaceBookingFormRelationContext {
     private Long parentModuleId;
     private Long categoryId;
     private Long moduleFormId;
+    private String parentModuleName;
 }
 
 

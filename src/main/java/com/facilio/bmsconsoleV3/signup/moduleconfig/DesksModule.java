@@ -69,7 +69,7 @@ public class DesksModule extends BaseModuleConfig{
         desksForm.setName("default_desks_web");
         desksForm.setModule(deskModule);
         desksForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        desksForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        desksForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> desksFormFields = new ArrayList<>();
         desksFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

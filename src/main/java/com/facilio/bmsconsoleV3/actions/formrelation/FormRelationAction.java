@@ -49,9 +49,9 @@ public class FormRelationAction extends V3Action {
         return V3Action.SUCCESS;
     }
 
-    public String addformRelation() throws Exception {
+    public String addOrUpdateFormRelation() throws Exception {
 
-        FacilioChain chain = TransactionChainFactoryV3.createFormRelationChain();
+        FacilioChain chain = TransactionChainFactoryV3.addOrUpdateFormRelationChain();
         FacilioContext context = chain.getContext();
 
         context.put("FORM_RELATION_CONTEXT", getFormRelationData());
@@ -62,20 +62,4 @@ public class FormRelationAction extends V3Action {
 
         return V3Action.SUCCESS;
     }
-
-    public String updateFormRelation() throws Exception {
-
-        FacilioChain chain = TransactionChainFactoryV3.updateFormRelationChain();
-        FacilioContext context = chain.getContext();
-
-        context.put("FORM_RELATION_CONTEXT", getFormRelationData());
-        chain.execute();
-
-        setData("getFormRelationData", context.get("FORM_RELATION_CONTEXT"));
-
-
-        return V3Action.SUCCESS;
-    }
-
-
 }

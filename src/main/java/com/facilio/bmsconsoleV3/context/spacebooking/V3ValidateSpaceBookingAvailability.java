@@ -37,7 +37,6 @@ public class V3ValidateSpaceBookingAvailability extends FacilioCommand {
 
 
     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-    context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
     Long startTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
     Long endTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
     Long buildingId = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BUILDING_ID);
