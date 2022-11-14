@@ -663,6 +663,16 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+ <!--<request path="/api/v3/modules/:moduleName/view/:viewName/count" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="type" type="string" mandatory="true"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>-->
     <request path="/api/v3/modules/:moduleName" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

@@ -186,9 +186,14 @@ public class ListCommand extends FacilioCommand {
         }
 
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+        String orderType= context.containsKey(FacilioConstants.ContextNames.ORDER_TYPE) ? (String)context.get(FacilioConstants.ContextNames.ORDER_TYPE) : "desc";
         if (orderBy != null && !orderBy.isEmpty()) {
-            selectRecordsBuilder.orderBy(orderBy);
+            orderBy += "," + FieldFactory.getIdField(module).getCompleteColumnName() + " " + orderType;
         }
+        else {
+            orderBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + orderType;
+        }
+        selectRecordsBuilder.orderBy(orderBy);
 
         return selectRecordsBuilder;
     }

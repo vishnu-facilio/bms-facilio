@@ -4,6 +4,8 @@ import com.amazonaws.http.HttpMethodName;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -48,7 +50,11 @@ public class RestAPIHandlerV3 extends RESTAPIHandler {
             case GET:
                 if (getId() > 0) {
                     return summary();
-                } else {
+                }
+                else if(getViewName()!=null && (getType()!=null && getType().equals("count"))){
+                    return count();
+                }
+                else{
                     return list();
                 }
             case PATCH:
@@ -71,6 +77,8 @@ public class RestAPIHandlerV3 extends RESTAPIHandler {
                 return throwValidationException("Unsuported HTTP Method : " + httpMethod.name());
         }
     }
+    @Getter @Setter
+    private String type;
 }
 
 

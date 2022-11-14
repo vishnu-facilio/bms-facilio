@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -102,6 +101,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
             boolean excludeParentFilter = this.getExcludeParentFilter();
             context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+        }
+
+        String search=this.getSearch();
+        if (search != null) {
+            context.put(FacilioConstants.ContextNames.SEARCH, search);
         }
 
         context.put(Constants.QUERY_PARAMS, getQueryParameters());

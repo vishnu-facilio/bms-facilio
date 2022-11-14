@@ -114,7 +114,10 @@ public class LoadViewCommand extends FacilioCommand {
 					for (SortField sortField : view.getSortFields()) {
 						orderBy.append(prefix);
 						prefix = ",";
-						orderBy.append(getOrderClauseForLookupTable(sortField, moduleName));	
+						orderBy.append(getOrderClauseForLookupTable(sortField, moduleName));
+						if(!context.containsKey(ContextNames.ORDER_TYPE)) {
+							context.put(ContextNames.ORDER_TYPE, (sortField.getSortField() != null && sortField.getIsAscending()) ? "asc" : "desc");
+						}
 					}
 					if(orderBy.length() != 0) {
 						context.put(FacilioConstants.ContextNames.SORTING_QUERY, orderBy.toString());

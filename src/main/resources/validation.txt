@@ -2732,4 +2732,5 @@
 /api/v2/publicFile/addPublicFile
 /api/v2/publicFile/addPublicUrlForFile
 /api/v2/publicFile/deletePublicFile
+/api/v3/modules/:moduleName/view/:viewName/count
 /api/v2/template/email/testMail

@@ -187,6 +187,7 @@ public class FacilioConstants {
 		public static final String CURRENCIES_LIST = "currencies";
 		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
 		public static final String READING_IMPORT_APP = "readingimport";
+		public static final String ORDER_TYPE="orderType";
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
