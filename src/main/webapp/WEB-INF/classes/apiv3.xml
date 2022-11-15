@@ -897,11 +897,9 @@
         <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames"/>
         <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames"/>
     </package>
-
-    <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/runHistorical" extends="v3Api">
-        <action name="*" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical">
-            <param name="id">{1}</param>
-        </action>
+    
+    <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
+        <action name="run" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical"/>
     </package>
 
     <package name="licensinginfo" namespace="/api/v3/licensinginfo" extends="v3Api">

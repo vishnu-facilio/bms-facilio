@@ -70,6 +70,7 @@ import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingR
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
+import com.facilio.storm.command.StormInstructionPublishCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -223,6 +224,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain initiateStormInstructionExecChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new StormInstructionPublishCommand());
+			return c;
+		}
 		public static FacilioChain runThroughSensorRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new RunThroughSensorRuleCommand());

@@ -39,8 +39,8 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -56,7 +56,6 @@ public class ReadingKpiAPI {
     }
 
     /**
-     *
      * @return return List of independent Kpis, dependent Kpis and DirectedGraph(s) of the dependent kpis
      */
     public static Map<String, Object> getActiveScheduledKpisOfFrequencyType(List<Integer> scheduleTypes) throws Exception {
@@ -108,8 +107,8 @@ public class ReadingKpiAPI {
     }
 
     /**
-     * @implNote A dependent kpi is identified by checking for its reading field id in the namespace fields of other given kpis
      * @return returns a map of kpi ID vs dependent kpi IDs
+     * @implNote A dependent kpi is identified by checking for its reading field id in the namespace fields of other given kpis
      */
     private static Map<Long, List<Long>> segregateDependentKpis(@NonNull List<ReadingKPIContext> kpis) { //returns dependent kpis map
 
@@ -133,7 +132,6 @@ public class ReadingKpiAPI {
     }
 
     /**
-     *
      * @return returns the readingFieldIds of kpis alone from ns fields of given kpi (filters out normal readings, like active power b for example)
      */
     private static List<Long> getParentKpiIds(List<Long> nsFieldIds, Map<Long, Long> readingFieldIdKpiIdMap) {
@@ -248,6 +246,11 @@ public class ReadingKpiAPI {
         ScheduleInfo schedule;
         List<Integer> values;
         switch (frequency) {
+            case ONE_DAY:
+                schedule = new ScheduleInfo();
+                schedule.addTime("00:00");
+                schedule.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+                return schedule;
             case WEEKLY:
                 schedule = new ScheduleInfo();
                 schedule.addTime("00:00");
@@ -295,8 +298,24 @@ public class ReadingKpiAPI {
                 values.add(1);
                 schedule.setValues(values);
                 return schedule;
+            default:
+                schedule = new ScheduleInfo();
+                if(frequency.getIndex() >= NamespaceFrequency.ONE_HOUR.getIndex()) {
+                    for (int i = 0; i < 24; i+=frequency.getDivisor()) {
+                        LocalTime time = LocalTime.of(i, 00);
+                        schedule.addTime(time);
+                    }
+                } else {
+                    for (int i = 0; i < 24; i++) {
+                        for(int j=0; j<60;j+=frequency.getDivisor()) {
+                            LocalTime time = LocalTime.of(i, j);
+                            schedule.addTime(time);
+                        }
+                    }
+                }
+                schedule.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+                return schedule;
         }
-        return null;
     }
 
     public static List<ReadingContext> calculateReadingKpi(long resourceId, ReadingKPIContext kpi, List<DateRange> intervals, Boolean isHistorical) throws Exception {

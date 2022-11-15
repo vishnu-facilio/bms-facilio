@@ -75,9 +75,9 @@ public class ReadingAlarm extends BaseAlarmContext {
         this.faultType = FaultType.valueOf(faultType);
     }
 
-    private double energyImpact;
+    private Double energyImpact;
 
-    private double costImpact;
+    private Double costImpact;
 
     private AssetCategoryContext readingAlarmAssetCategory;
 

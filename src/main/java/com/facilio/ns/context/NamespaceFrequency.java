@@ -10,32 +10,34 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum NamespaceFrequency implements FacilioIntEnum {
-    ONE_MIN(60000l),  //1
-    TWO_MINS(120000l),  //2
-    THREE_MINS(180000l),  //3
-    FOUR_MINS(240000l),  //4
-    FIVE_MINS(300000l),  //5
-    TEN_MINS(600000l),  //6
-    FIFTEEN_MINS(900000l),  //7
-    TWENTY_MINS(1200000l),  //8
-    THIRTY_MINS(1800000l),  //9
-    ONE_HOUR(3600000l),  //10
-    TWO_HOUR(7200000l),  //11
-    THREE_HOUR(10800000l),  //12
-    FOUR_HOUR(14400000l),  //13
-    EIGHT_HOUR(28800000l),  //14
-    TWELVE_HOUR(43200000l),  //15
-    ONE_DAY(86400000l),  //16
-    WEEKLY(604800000l),  //17
-    MONTHLY(2630000000l),  //18
-    QUARTERTLY(7889400000l), // 19
-    HALF_YEARLY(15778800000l), //20
-    ANNUALLY(31560000000l);  //21
+    ONE_MIN(60000l, 1),  //1
+    TWO_MINS(120000l, 2),  //2
+    THREE_MINS(180000l,3),  //3
+    FOUR_MINS(240000l,4),  //4
+    FIVE_MINS(300000l,5),  //5
+    TEN_MINS(600000l,10),  //6
+    FIFTEEN_MINS(900000l,15),  //7
+    TWENTY_MINS(1200000l,20),  //8
+    THIRTY_MINS(1800000l,30),  //9
+    ONE_HOUR(3600000l,1),  //10
+    TWO_HOUR(7200000l,2),  //11
+    THREE_HOUR(10800000l,3),  //12
+    FOUR_HOUR(14400000l,4),  //13
+    EIGHT_HOUR(28800000l,8),  //14
+    TWELVE_HOUR(43200000l,12),  //15
+    ONE_DAY(86400000l,0),  //16
+    WEEKLY(604800000l,0),  //17
+    MONTHLY(2630000000l,0),  //18
+    QUARTERTLY(7889400000l,0), // 19
+    HALF_YEARLY(15778800000l,0), //20
+    ANNUALLY(31560000000l,0);  //21
 
-    private long ms;
+    private Long ms;
+    private Integer divisor;
 
-    NamespaceFrequency(Long ms) {
+    NamespaceFrequency(Long ms, Integer divisor) {
         this.ms = ms;
+        this.divisor=divisor;
     }
 
     public static NamespaceFrequency getEnumFromMs(long ms) {
@@ -51,4 +53,6 @@ public enum NamespaceFrequency implements FacilioIntEnum {
         }
         return null;
     }
+
+
 }

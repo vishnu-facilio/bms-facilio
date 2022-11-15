@@ -46,7 +46,7 @@ public class NameSpaceField implements Cloneable {
     int aggregationTypeI;
 
     public void setAggregationTypeI(int aggregationTypeI) {
-        if(aggregationType != null) {
+        if (aggregationType != null) {
             this.aggregationTypeI = aggregationType.getIndex();
         } else {
             this.aggregationTypeI = aggregationTypeI;
@@ -62,7 +62,7 @@ public class NameSpaceField implements Cloneable {
     }
 
     public AggregationType getAggregation() {
-        return (aggregationType != null) ? aggregationType :  AggregationType.valueOf(aggregationTypeI);
+        return (aggregationType != null) ? aggregationType : AggregationType.valueOf(aggregationTypeI);
     }
 
     boolean isEnabledCompaction;
@@ -78,7 +78,7 @@ public class NameSpaceField implements Cloneable {
 
     @JsonIgnore
     private String baseKey() {
-        return "NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
+        return "O" + orgId + "_NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
     }
 
     Boolean primary;

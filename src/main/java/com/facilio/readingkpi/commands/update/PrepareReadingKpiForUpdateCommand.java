@@ -26,6 +26,9 @@ public class PrepareReadingKpiForUpdateCommand extends FacilioCommand {
         workflow.setId(nameSpaceContext.getWorkflowId());
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT,workflow );
         readingKPIContext.getNs().setStatus(readingKPIContext.getStatus());
+
+        Long execInterval = readingKPIContext.getFrequencyEnum().getMs();
+        readingKPIContext.getNs().setExecInterval(execInterval);
         ReadingKPIContext existingReadingKpi = ReadingKpiAPI.getReadingKpi(readingKPIContext.getId());
         context.put("oldReadingKpi", existingReadingKpi);
         readingKPIContext.getNs().setId(existingReadingKpi.getNs().getId());
