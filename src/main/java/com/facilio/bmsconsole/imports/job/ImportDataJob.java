@@ -33,6 +33,7 @@ public class ImportDataJob extends FacilioJob {
             importChain.execute();
         } catch (Exception ex) {
             LOGGER.severe("Error Occured in ImportData Job -- " + ex);
+            throw ex;
         }
     }
 }

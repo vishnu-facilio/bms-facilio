@@ -38,6 +38,12 @@ public class FilterImportDataCommand extends FacilioCommand {
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
 
         if (setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
+            JSONObject meta = importProcessContext.getImportJobMetaJson();
+            Integer totalSize = rawInputs.size();
+
+            meta.put("Inserted", totalSize + "");
+            importProcessContext.setImportJobMeta(meta.toJSONString());
+
             context.put(ImportAPI.ImportProcessConstants.INSERT_RECORDS, rawInputs);
         }
         else if (setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
@@ -54,6 +60,11 @@ public class FilterImportDataCommand extends FacilioCommand {
                     newRawInputs.add(datum);
                 }
             }
+
+            Integer skippedEntries=rawInputs.size()- newRawInputs.size();
+            meta.put("Inserted", newRawInputs.size()+"");
+            meta.put("Skipped", skippedEntries+"");
+            importProcessContext.setImportJobMeta(meta.toJSONString());
 
             context.put(ImportAPI.ImportProcessConstants.INSERT_RECORDS, newRawInputs);
         }
@@ -83,6 +94,9 @@ public class FilterImportDataCommand extends FacilioCommand {
                     CollectionUtils.filter(datum.values(), PredicateUtils.notNullPredicate());
                 }
             }
+
+            meta.put("Updated",newRawInputs.size());
+            importProcessContext.setImportJobMeta(meta.toJSONString());
 
             context.put(ImportAPI.ImportProcessConstants.UPDATE_RECORDS, newRawInputs);
             context.put(ImportAPI.ImportProcessConstants.OLD_RECORDS, oldRecords);
@@ -116,6 +130,12 @@ public class FilterImportDataCommand extends FacilioCommand {
                     CollectionUtils.filter(datum.values(), PredicateUtils.notNullPredicate());
                 }
             }
+
+            Integer skippedEntries= rawInputs.size()-newCreateInputs.size()- newUpdateInputs.size();
+            meta.put("Inserted", newCreateInputs.size()+"");
+            meta.put("Skipped", skippedEntries+"");
+            meta.put("Updated", newUpdateInputs.size());
+            importProcessContext.setImportJobMeta(meta.toJSONString());
 
             context.put(ImportAPI.ImportProcessConstants.INSERT_RECORDS, newCreateInputs);
             context.put(ImportAPI.ImportProcessConstants.UPDATE_RECORDS, newUpdateInputs);

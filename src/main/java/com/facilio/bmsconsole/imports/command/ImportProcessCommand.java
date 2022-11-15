@@ -94,6 +94,7 @@ public class ImportProcessCommand extends FacilioCommand implements PostTransact
                 meta = new JSONObject();
             }
             meta.put("importError", exceptionMessage);
+            meta.put("errorMessage", exceptionMessage);
             importProcessContext.setImportJobMeta(meta.toJSONString());
             ImportAPI.updateImportProcess(importProcessContext);
         }
