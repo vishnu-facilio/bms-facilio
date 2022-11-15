@@ -1655,11 +1655,13 @@ public class FacilioConstants {
 		public static final String WO_LABOUR = "workorderLabour";
 
 		public static final String PURCHASE_REQUEST = "purchaserequest";
+		public static final String PURCHASE_REQUEST_NOTES = "purchaserequestnotes";
 		public static final String PURCHASE_REQUESTS = "purchaserequests";
 		public static final String PURCHASE_REQUEST_LINE_ITEMS = "purchaserequestlineitems";
 		public static final String STATUS = "status";
 
 		public static final String PURCHASE_ORDER = "purchaseorder";
+		public static final String PURCHASE_ORDER_NOTES = "purchaseordernotes";
 		public static final String PURCHASE_ORDERS = "purchaseorders";
 
 		public static final String PURCHASE_ORDER_ACTIVITY = "poactivity";
