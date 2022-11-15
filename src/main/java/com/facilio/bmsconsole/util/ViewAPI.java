@@ -30,6 +30,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
+import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.weekends.WeekendUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -450,6 +451,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			
 			view.setAppId(app.getId());
 		}
+
+		//compute linkname
+		if (!view.getIsDefault()) {
+			computeLinkName(view);
+		}
+
 		try {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {
@@ -1078,5 +1085,42 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		view.setDefault(true);
 
 		return view;
+	}
+
+	public static void computeLinkName(FacilioView view) throws Exception {
+		FacilioModule module = ModuleFactory.getViewsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getStringField("name", "NAME", module));
+
+		String viewLinkName = view.getName();
+		if (StringUtils.isEmpty(viewLinkName)) {
+			viewLinkName = view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+		}
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(view.getModuleId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(view.getAppId()), NumberOperators.EQUALS))
+				;
+
+		Criteria nameCriteria = new Criteria();
+		nameCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", viewLinkName, StringOperators.IS));
+		nameCriteria.addOrCondition(CriteriaAPI.getCondition("NAME", "name", viewLinkName, StringOperators.STARTS_WITH));
+		builder.andCriteria(nameCriteria);
+
+		List<Map<String, Object>> props = builder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			List<String> viewNames = props.stream().map(prop -> (String) prop.get("name")).collect(Collectors.toList());
+			int count = 1;
+			while (viewNames.contains(viewLinkName)) {
+				if (viewLinkName.contains("_")) {
+					viewLinkName = viewLinkName.split("_")[0];
+				}
+				viewLinkName = viewLinkName + "_" + (count++);
+			}
+		}
+		view.setName(viewLinkName);
 	}
 }

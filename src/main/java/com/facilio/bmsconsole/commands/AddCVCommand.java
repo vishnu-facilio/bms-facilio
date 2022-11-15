@@ -97,17 +97,7 @@ public class AddCVCommand extends FacilioCommand {
 				view.setModuleId(moduleObj.getModuleId());
 				
 				EventType activityType =  (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-				if (( activityType == null ) || ( activityType == EventType.CREATE )) {
-					if(view.getName() == null)
-					{
-						view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-					}
-					view.setDefault(false);
-				}
-				
-				else {
-					view.setDefault(true);          
-				}
+				view.setDefault((activityType != null) && (activityType != EventType.CREATE));
 				
 				viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());
 			}
