@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.WeatherAPI;
+import com.facilio.weather.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -25,10 +25,10 @@ public class WeatherStationCreateValidationCommand extends FacilioCommand {
         }
 
         V3WeatherStationContext weatherStationContext = weatherStationContexts.get(0);
-        V3WeatherStationContext existingStationContext =  WeatherAPI.getWeatherStationByCode(weatherStationContext.getStationCode());
+        V3WeatherStationContext existingStationContext =  WeatherAPI.getExistingWeatherStation(weatherStationContext.getStationCode(), weatherStationContext.getServiceId());
 
         if(existingStationContext!=null) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather station code already exists");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather station code already exists for given service");
         }
         return false;
     }

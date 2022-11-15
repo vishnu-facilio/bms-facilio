@@ -1,5 +1,6 @@
-package com.facilio.bmsconsole.util;
+package com.facilio.weather.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -21,12 +22,13 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.ServiceHttpUtils;
 import com.facilio.v3.context.Constants;
+import com.facilio.weather.service.WeatherService;
+import com.facilio.weather.service.WeatherServiceType;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -36,21 +38,19 @@ import java.util.Map;
 
 @Log4j
 public class WeatherAPI {
-
-	private static String weatherURL = FacilioProperties.getConfig("weather.url");
 	private static String jobName = "FacilioWeatherJob";
 
-	public static void deleteWeatherJob(V3WeatherServiceContext weatherServiceContext) throws Exception {
+	public static void deleteWeatherServiceJob(V3WeatherServiceContext weatherServiceContext) throws Exception {
 		long jobId = weatherServiceContext.getId();
 		FacilioTimer.deleteJob(jobId, jobName);
 	}
 
-	public static void addWeatherJob(V3WeatherServiceContext weatherServiceContext) {
+	public static void addWeatherServiceJob(V3WeatherServiceContext weatherServiceContext) {
 		long jobId = weatherServiceContext.getId();
 		try {
 			JobContext jobContext = FacilioTimer.getJob(jobId, jobName);
 			if(jobContext!=null) {
-				deleteWeatherJob(weatherServiceContext);
+				deleteWeatherServiceJob(weatherServiceContext);
 			}
 			long interval = weatherServiceContext.getDataInterval();
 			LocalTime time = LocalTime.of(0, 0);
@@ -73,9 +73,6 @@ public class WeatherAPI {
 		}
 	}
 
-	public static List<V3WeatherStationContext> getAllStations() throws Exception {
-		return getAllStations(0);
-	}
 	public static List<V3WeatherStationContext> getAllStations(long serviceId) throws Exception {
 		ModuleBean modBean = Constants.getModBean();
 		FacilioModule module = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
@@ -86,44 +83,10 @@ public class WeatherAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(V3WeatherStationContext.class);
-		if(serviceId!=0) {
+		if(serviceId!=-1) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceId"), String.valueOf(serviceId), NumberOperators.EQUALS));
 		}
 		return selectBuilder.get();
-	}
-
-	public static String getStationURL(double lat, double lng) {
-		StringBuilder url = new StringBuilder(weatherURL);
-		url.append("/stationcode?lat=");
-		url.append(lat);
-		url.append("&lng=");
-		url.append(lng);
-		LOGGER.log(Level.INFO, "Weather station url is : " + url);
-		return  url.toString();
-	}
-
-	public static String getWeatherURL(long stationCode, Long time) {
-		StringBuilder url = new StringBuilder(weatherURL);
-		url.append("/data?stationCode=");
-		url.append(stationCode);
-		if (time != null) {
-			url.append("&ttime=" + time);
-		}
-		LOGGER.log(Level.INFO, "Weather url is : " + url);
-		return url.toString();
-	}
-
-	public static String getWeatherURL(double lat, double longitude, Long time) {
-		StringBuilder url = new StringBuilder(weatherURL);
-		url.append("/data?lat=");
-		url.append(lat);
-		url.append("&lng=");
-		url.append(longitude);
-		if (time != null) {
-			url.append("&ttime=" + time);
-		}
-		LOGGER.log(Level.INFO, "Weather url is : " + url);
-		return url.toString();
 	}
 
 	public static JSONObject getStationCode(LocationContext location, String siteName) throws Exception {
@@ -136,38 +99,20 @@ public class WeatherAPI {
 			return null;
 		}
 		LOGGER.log(Level.INFO, " site: " + siteName + " lat: " + lat + " long: " + lng);
-		return WeatherAPI.getStationCode(lat, lng);
+		return getStationCode(lat, lng);
 	}
 
 	public static JSONObject getStationCode(double lat, double lng) throws Exception {
-		String weatherURL = WeatherAPI.getStationURL(lat, lng);
-		return hitExternalWeatherService(weatherURL);
+		WeatherService weatherService = WeatherServiceType.getCurrentService();
+		return weatherService.getStationCode(lat, lng);
 	}
 
-	private static JSONObject hitExternalWeatherService(String url) throws Exception {
-		String response = WeatherAPI.doGet(url);
-		if (StringUtils.isEmpty(response)) {
-			LOGGER.log(Level.INFO, "The response is null from the weather server");
+	public static Map<String, Object> getWeatherData(WeatherService service, V3WeatherStationContext weatherStation, Long time) throws Exception {
+		String stationCode = weatherStation.getStationCode();
+		if (StringUtils.isEmpty(stationCode)) {
 			return null;
 		}
-		JSONObject weatherData = null;
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsonResponse = (JSONObject) parser.parse(response);
-			weatherData = (JSONObject) jsonResponse.get("data");
-		} catch (Exception e) {
-			throw new Exception(response, e);
-		}
-		return weatherData;
-	}
-
-	public static Map<String, Object> getWeatherData(V3WeatherStationContext weatherStation, Long time) throws Exception {
-		long stationCode = weatherStation.getStationCode();
-		if (stationCode == 0) {
-			return null;
-		}
-		String weatherURL = WeatherAPI.getWeatherURL(stationCode, time);
-		return hitExternalWeatherService(weatherURL);
+		return service.getWeatherData(weatherStation, time, true);
 	}
 
 	public static String doGet(String url) throws Exception {
@@ -196,7 +141,7 @@ public class WeatherAPI {
 		return result.get(0);
 	}
 
-	public static V3WeatherStationContext getWeatherStationByCode(long stationCode) throws Exception {
+	public static V3WeatherStationContext getExistingWeatherStation(String stationCode, Long serviceId) throws Exception {
 		ModuleBean modBean = Constants.getModBean();
 		FacilioModule module = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ModuleNames.WEATHER_STATION);
@@ -205,7 +150,8 @@ public class WeatherAPI {
 		SelectRecordsBuilder<V3WeatherStationContext> selectBuilder = new SelectRecordsBuilder<V3WeatherStationContext>()
 				.select(fields)
 				.module(module)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("stationCode"), String.valueOf(stationCode), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceId"), String.valueOf(serviceId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("stationCode"), stationCode, StringOperators.IS))
 				.beanClass(V3WeatherStationContext.class);
 		List<V3WeatherStationContext> result = selectBuilder.get();
 		if(CollectionUtils.isEmpty(result)) {
@@ -242,4 +188,21 @@ public class WeatherAPI {
 		}
 		return 0;
 	}
+
+	public static boolean allow() throws Exception {
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)) {
+			String env = FacilioProperties.getEnvironment();
+			if (FacilioProperties.isProduction() || FacilioProperties.isDevelopment() || env.equals("stage2")) {
+				return true;
+			}
+			List<Long> allowedStageOrgs = new ArrayList() {{
+				add(905L);
+				add(907L);
+			}};
+			return FacilioProperties.getEnvironment().equals("stage")
+					&& allowedStageOrgs.contains(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		return false;
+	}
+
 }

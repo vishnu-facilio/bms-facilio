@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.weather.util.WeatherAPI;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -34,7 +34,7 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 		
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
+			if (!WeatherAPI.allow())
 			{
 				return;
 			}

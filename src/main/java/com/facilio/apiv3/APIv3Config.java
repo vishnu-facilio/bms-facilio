@@ -1987,8 +1987,7 @@ public class APIv3Config {
                 .beforeSave(new AddOrUpdateSiteLocationCommand(), new SetSiteRelatedContextCommand())
                 .afterSave(new CreateSiteAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
-                        new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY),
-                        new AddWeatherStationCommand())
+                        new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
                 .update()
                 .beforeSave(new AddOrUpdateSiteLocationCommand())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
