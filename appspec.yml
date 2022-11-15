@@ -87,8 +87,6 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-ff-kafka.properties
     destination: /home/facilio/deployment-files/
-  - source: /log4j-ae-kafka.properties
-    destination: /home/facilio/deployment-files/
   - source: /log4j-uk-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-scheduler.properties
