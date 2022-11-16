@@ -557,29 +557,6 @@ public class BmsPointsTaggingUtil {
             throw new Exception("failed during Python - create Db");
         }
     }
-    public void updateInternalApi() throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule("mlBmsPointsTagging");
-        List<FacilioField> fields = modBean.getAllFields(module.getName());
-        HashMap<String,Object> row= new HashMap<>();
-        row.put("updated",0);
-
-        GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
-                .table(module.getTableName())
-                .fields(fields)
-                .andCondition(CriteriaAPI.getCondition("IS_COMMISSIONED", "updated", "0", NumberOperators.GREATER_THAN));
-        builder1.update(row);
-
-    }
-    public void deleteInternalApi() throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule("mlBmsPointsTagging");
-
-        GenericDeleteRecordBuilder builder1 = new GenericDeleteRecordBuilder()
-                .table(module.getTableName())
-                .andCondition(CriteriaAPI.getCondition("IS_COMMISSIONED", "updated", "0", NumberOperators.GREATER_THAN_EQUAL));
-        builder1.delete();
-    }
 }
 
 
