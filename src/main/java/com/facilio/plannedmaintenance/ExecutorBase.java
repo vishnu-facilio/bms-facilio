@@ -54,6 +54,7 @@ public abstract class ExecutorBase implements Executor {
                 workOrderCopy.setJobStatus(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
                 workOrderCopy.setSourceType(V3TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal());
                 workOrderCopy.setStatus(status);
+                workOrderCopy.setModuleState(status);
 
                 // Set Duration, DueDate, Estimated End
                 workOrderCopy.setDuration(plannedMaintenance.getDueDuration());

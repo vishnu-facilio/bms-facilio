@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -93,7 +94,9 @@ public class V3ModuleAPI {
         BMS_ALARMS(FacilioConstants.ContextNames.BMS_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SPACE_BOOKING(FacilioConstants.ContextNames.SPACE_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         ROOMS(FacilioConstants.ContextNames.ROOMS,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
-        CLIENT(FacilioConstants.ContextNames.CLIENT,Arrays.asList());
+        CLIENT(FacilioConstants.ContextNames.CLIENT,Arrays.asList()),
+        JOB_PLAN(FacilioConstants.ContextNames.JOB_PLAN,Arrays.asList()),
+        PLANNEDMAINTENANCE(ContextNames.PLANNEDMAINTENANCE,Arrays.asList());
 
         private String moduleName;
         private List<String> applicationLinkNames;

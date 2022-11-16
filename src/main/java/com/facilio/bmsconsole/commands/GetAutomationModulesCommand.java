@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -103,6 +104,12 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMUNITY)){
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
         }
+        
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PM_PLANNER)) {
+        	 modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN));
+        	 modules.add(modBean.getModule(ContextNames.PLANNEDMAINTENANCE));
+        }
+        
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
