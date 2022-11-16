@@ -71,10 +71,7 @@ import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskIn
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
-import com.facilio.bmsconsoleV3.commands.people.PeopleValidationCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
-import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
@@ -2437,6 +2434,8 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .afterFetch(new FetchLabourAndUserContextForPeople())
+                .delete()
+                .beforeDelete(new DeletePeopleAssociatedRecordsCommand())
                 .build();
     }
 

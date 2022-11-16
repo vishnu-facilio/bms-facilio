@@ -1,20 +1,20 @@
 package com.facilio.bmsconsoleV3.commands.peoplegroup;
 
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupMemberContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +31,22 @@ public class PeopleGroupUtils {
             Map<Long, List<V3PeopleGroupMemberContext>> groupMemberMap = fetchGroupMembers(groupIds);
 
             for (V3PeopleGroupContext record : records) {
-
-                record.setMembers(groupMemberMap.get(record.getId()));
+                if (!groupMemberMap.isEmpty()) {
+                    record.setMembers(groupMemberMap.get(record.getId()));
+                }
             }
         }
+    }
+
+    public static void markAsDeletePeopleGroupMember(List<Long> peopleIds) throws Exception {
+
+        FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+
+        DeleteRecordBuilder<V3PeopleGroupMemberContext> builder = new DeleteRecordBuilder<V3PeopleGroupMemberContext>()
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "people", StringUtils.join(peopleIds, ","), NumberOperators.EQUALS));
+
+        builder.markAsDelete();
     }
 
     private static Map<Long, List<V3PeopleGroupMemberContext>> fetchGroupMembers(List<Long> groupIds) throws Exception {

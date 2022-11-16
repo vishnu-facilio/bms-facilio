@@ -1,12 +1,10 @@
 package com.facilio.qa.rules.pojo;
 
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.client.answers.MatrixAnswerContext;
-import com.facilio.qa.context.questions.MatrixQuestionColumn;
 import com.facilio.qa.context.questions.MatrixQuestionContext;
 import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.util.FacilioUtil;
@@ -16,10 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,25 +23,7 @@ public enum MatrixRuleHandler implements RuleHandler{
 
 	@Override
 	public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception{
-
-		MatrixQuestionContext mq = (MatrixQuestionContext) question;
-		List<Map<String, Object>> props = new ArrayList<>();
-		emptyCondition(mq,props);
-		return props;
-	}
-
-	private void emptyCondition(MatrixQuestionContext mq, List<Map<String, Object>> props){
-
-		for(MatrixQuestionRow matrixQuestionRow : mq.getRows()){
-			addRowColumns(mq.getColumns(), props,matrixQuestionRow);
-		}
-	}
-
-	private void addRowColumns(List<MatrixQuestionColumn> matrixColumns, List<Map<String, Object>> props, MatrixQuestionRow matrixQuestionRow){
-		Map<String,Object> prop = new HashMap<>();
-		prop.put("rows", matrixQuestionRow);
-		prop.put("columns", matrixColumns);
-		props.add(prop);
+		return Collections.EMPTY_LIST;
 	}
 
 	@Override
@@ -55,17 +32,11 @@ public enum MatrixRuleHandler implements RuleHandler{
 		MatrixQuestionContext mq = (MatrixQuestionContext) question;
 		Map<Long, List<RuleCondition>> conditionMap = conditions.stream().collect(Collectors.groupingBy(RuleCondition::getRowId));
 		List<Map<String, Object>> props = new ArrayList<>();
-		Map<Long, FacilioField> columnIdVsFieldMap = mq.getColumnVsFieldMap();
 		for (MatrixQuestionRow matrixQuestionRow :mq.getRows()) {
 			List<RuleCondition> ruleConditions = conditionMap.get(matrixQuestionRow.getId()); //ID cannot be null
 			for(RuleCondition condition:ruleConditions){
-				if (condition == null) {
-					addRowColumns(mq.getColumns(),props,matrixQuestionRow );
-				}
-				else {
+				if (condition != null) {
 					Map<String, Object> prop = FieldUtil.getAsProperties(condition);
-					FacilioField field = columnIdVsFieldMap.get(prop.get("columnId"));
-					prop.put("displayTypeInt",field.getDisplayTypeInt());
 					props.add(prop);
 				}
 			}
