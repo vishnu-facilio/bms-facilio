@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.weather.util.WeatherAPI;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
@@ -32,7 +32,7 @@ public class PsychrometricsCalculatorJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 		
-			if(!WeatherAPI.allow())
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
 			{
 				return;
 			}

@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.weather.util.WeatherAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.FacilioJob;
@@ -23,7 +23,7 @@ public class DailyWeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 		
-			if (!WeatherAPI.allow())
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
 			{
 				return;
 			}

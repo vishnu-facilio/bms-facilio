@@ -84,7 +84,7 @@ public class AddWeatherModules extends SignUpData {
         FacilioModule module = new FacilioModule("weatherstation", "Weather Station", "Weather_Station", FacilioModule.ModuleType.BASE_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("stationCode", "Station Code", "STATION_CODE", FieldType.STRING, true));
+        fields.add(FieldFactory.getDefaultField("stationCode", "Station Code", "STATION_CODE", FieldType.NUMBER, true));
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("lat", "Latitude", "LAT", FieldType.DECIMAL));

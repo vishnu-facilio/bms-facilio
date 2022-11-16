@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.weather.util.WeatherAPI;
+import com.facilio.bmsconsole.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -23,7 +23,7 @@ public class AddWeatherServiceJobCommand extends FacilioCommand {
         }
 
         V3WeatherServiceContext weatherServiceContext = weatherServiceContexts.get(0);
-        WeatherAPI.addWeatherServiceJob(weatherServiceContext);
+        WeatherAPI.addWeatherJob(weatherServiceContext);
         return false;
     }
 }

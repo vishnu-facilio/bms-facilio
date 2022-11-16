@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
@@ -9,16 +9,19 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.relation.util.RelationshipDataUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
-import com.facilio.weather.util.WeatherAPI;
 import lombok.extern.log4j.Log4j;
 import lombok.var;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,21 +44,20 @@ public class AddWeatherStationCommand extends FacilioCommand implements Serializ
                 if (stationData == null) {
                     continue;
                 }
-                String stationCode = (String) stationData.get("stationCode");
-                V3WeatherServiceContext defaultWeatherService = WeatherAPI.getWeatherServiceByName(FacilioProperties.getConfig("weather.service"));
-                V3WeatherStationContext weatherStationByCode = WeatherAPI.getExistingWeatherStation(stationCode, defaultWeatherService.getId());
+                long stationCode = (long) stationData.get("stationCode");
+                V3WeatherStationContext weatherStationByCode = WeatherAPI.getWeatherStationByCode(stationCode);
                 if (weatherStationByCode != null) {
                     WeatherAPI.associateSiteWithWeatherStation(site.getId(), weatherStationByCode.getId());
                     continue;
                 }
-
+                V3WeatherServiceContext facilioWeatherService = WeatherAPI.getWeatherServiceByName("facilioweather");
                 String locationName = site.getLocation().getName();
                 if(locationName!=null) {
                     locationName = locationName.split("_")[0];
                 }
                 stationData.put("name", locationName);
-                stationData.put("serviceId", defaultWeatherService.getId());
-                stationData.put("service", defaultWeatherService);
+                stationData.put("serviceId", facilioWeatherService.getId());
+                stationData.put("service", facilioWeatherService);
                 FacilioContext ctx = V3Util.createRecord(module, stationData);
                 long stationId = (long) ((List) ctx.get("recordIds")).get(0);
                 WeatherAPI.associateSiteWithWeatherStation(site.getId(), stationId);

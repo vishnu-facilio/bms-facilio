@@ -2,7 +2,7 @@ package com.facilio.weather.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.weather.util.WeatherAPI;
+import com.facilio.bmsconsole.util.WeatherAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -48,7 +48,7 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
         return false;
     }
 
-    private List<ReadingContext> getTodayWeatherRecords(Long stationId) throws Exception {
+    private List<ReadingContext> getTodayWeatherRecords(Long stationCode) throws Exception {
         long startTime = DateTimeUtil.getDayStartTime();
         long currTime = DateTimeUtil.getCurrenTime();
 
@@ -62,7 +62,7 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
 
         Condition startTimeCond = CriteriaAPI.getCondition(ttime, startTime+"", NumberOperators.GREATER_THAN_EQUAL);
         Condition endTimeCond = CriteriaAPI.getCondition(ttime, currTime+"", NumberOperators.LESS_THAN_EQUAL);
-        Condition stationCond = CriteriaAPI.getCondition(fieldMap.get("parentId"), stationId+"", NumberOperators.EQUALS);
+        Condition stationCond = CriteriaAPI.getCondition(fieldMap.get("parentId"), stationCode+"", NumberOperators.EQUALS);
 
         SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
                 .beanClass(ReadingContext.class)

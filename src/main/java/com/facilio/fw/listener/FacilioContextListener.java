@@ -38,7 +38,6 @@ import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.translation.TranslationConf;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.ChainUtil;
-import com.facilio.weather.service.WeatherServiceType;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -146,7 +145,6 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
-			WeatherServiceType.init();
 
 			/*HashMap customDomains = getCustomDomains();
 			if(customDomains!=null) {

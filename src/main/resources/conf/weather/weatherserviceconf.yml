@@ -1,6 +1,0 @@
-weatherservices:
-  - name: facilioweather
-    class: com.facilio.weather.service.FacilioWeatherService
-
-  - name: openweather
-    class: com.facilio.weather.service.OpenWeatherService
