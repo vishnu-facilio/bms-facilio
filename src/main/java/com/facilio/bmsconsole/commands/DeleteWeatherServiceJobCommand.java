@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.WeatherAPI;
+import com.facilio.weather.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -21,7 +21,7 @@ public class DeleteWeatherServiceJobCommand extends FacilioCommand {
             List<V3WeatherServiceContext> serviceList = V3RecordAPI.getRecordsList(moduleName,serviceIds,V3WeatherServiceContext.class);
             if (CollectionUtils.isNotEmpty(serviceList)) {
                 for(V3WeatherServiceContext service : serviceList) {
-                    WeatherAPI.deleteWeatherJob(service);
+                    WeatherAPI.deleteWeatherServiceJob(service);
                 }
             }
         }

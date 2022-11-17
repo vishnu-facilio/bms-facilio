@@ -202,7 +202,7 @@ public class OutgoingMailAPI {
             List<FacilioField> fields = FieldFactory.getMailResponsesFields();
             OutgoingMailAPI.insert(module, fields, row);
         } catch (Exception e) {
-            LOGGER.error("OG_MAIL_ERROR :: Not able log the mail responses. Exception ::", e);
+            LOGGER.error("OG_MAIL_WARN :: Not able log the mail responses. Exception ::", e);
         }
     }
 

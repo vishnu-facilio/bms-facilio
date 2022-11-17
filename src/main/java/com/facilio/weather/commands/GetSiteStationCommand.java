@@ -1,6 +1,6 @@
 package com.facilio.weather.commands;
 
-import com.facilio.bmsconsole.util.WeatherAPI;
+import com.facilio.weather.util.WeatherAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;

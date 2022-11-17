@@ -25,6 +25,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.weather.context.WeatherStationContext;
+import com.facilio.weather.service.WeatherService;
+import com.facilio.weather.service.WeatherServiceType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,14 +50,11 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-;
-
 public class WeatherUtil {
 	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
-	private static String weatherURL = FacilioProperties.getConfig("weather.url");
-	private static String weatherParams = "?units=si&exclude=flags,alerts";
+	private static final String weatherParams = "?units=si&exclude=flags,alerts";
 
-	private static String[] apiKeys = FacilioProperties.getConfig("weather.key").trim().split(",");
+	private static final String[] apiKeys = FacilioProperties.getConfig("weather.key").trim().split(",");
 	private static int currentKey = 0;
 	private static int apiCallCount = 0;
 
@@ -142,6 +141,7 @@ public class WeatherUtil {
 
 	public static String getDarkSkyForecastURL(double lat, double longitude, Long time) {
 
+		String weatherURL = FacilioProperties.getConfig("weather.url");
 		StringBuilder url = new StringBuilder(weatherURL);
 		url.append(getAPIKey());
 		url.append("/");
@@ -183,26 +183,12 @@ public class WeatherUtil {
 	}
 
 	public static Map<String, Object> getWeatherData(double lat, double lng, Long time) throws Exception {
-		if(weatherURL.contains("darksky")) {   // temp fix for darkSky
+		if(FacilioProperties.getConfig("weather.url").contains("darksky")) {   // temp fix for darkSky
 			String url = getDarkSkyForecastURL(lat, lng, time);
 			return getDarkSkyWeatherData(url);
 		}
-		String url = WeatherAPI.getWeatherURL(lat, lng, time);
-		String response = WeatherAPI.doGet(url);
-		if (StringUtils.isEmpty(response)) {
-			LOGGER.log(Level.INFO, "The response is null from the weather server");
-			return null;
-		}
-		JSONObject weatherData;
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject jsonResponse = (JSONObject) parser.parse(response);
-			weatherData = (JSONObject) jsonResponse.get("data");
-		} catch (Exception e) {
-			LOGGER.error("Parsing failed in WeatherDataJob ::"+response, e);
-			throw new Exception(response, e);
-		}
-		return weatherData;
+		WeatherService service = WeatherServiceType.getCurrentService();
+		return service.getWeatherData(lat, lng, time);
 	}
 
 	public static Map<String, Object> getDarkSkyWeatherData(String weatherURL) throws Exception {
@@ -834,5 +820,14 @@ public class WeatherUtil {
 			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
 		}
 		return selectBuilder.get();
+	}
+
+	public static void addDewPoint(long parentId, Map<Long, List<ReadingContext>> readingsMap) {
+		List<ReadingContext> readingsList = readingsMap.get(parentId);
+		for(ReadingContext reading : readingsList) {
+			if(reading.getReading("dewPoint")==null) {
+				reading.addReading("dewPoint", PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(reading.getReadings()));
+			}
+		}
 	}
 }

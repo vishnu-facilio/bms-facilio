@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.weather.util.WeatherAPI;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -25,8 +25,7 @@ public class WeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
-			{
+			if (!WeatherAPI.allow()) {
 				return;
 			}
 			List<SiteContext> sites = WeatherUtil.getAllSites(true);

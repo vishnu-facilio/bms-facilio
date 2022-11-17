@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.WeatherAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
+import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.v3.util.V3Util;
+import com.facilio.weather.service.WeatherService;
+import com.facilio.weather.service.WeatherServiceType;
+import com.facilio.weather.util.WeatherAPI;
 import lombok.extern.log4j.Log4j;
 
 import java.util.ArrayList;
@@ -23,7 +26,7 @@ public class FacilioWeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)) {
+			if (!WeatherAPI.allow()) {
 				return;
 			}
 
@@ -31,8 +34,12 @@ public class FacilioWeatherDataJob extends FacilioJob {
 			List<ReadingContext> psychrometricReadings= new ArrayList<>();
 			Map<Long,List<ReadingContext>> stationCurrentReadings = new HashMap<>();
 
+			V3WeatherServiceContext weatherServiceContext =
+					(V3WeatherServiceContext) V3Util.getRecord(FacilioConstants.ModuleNames.WEATHER_SERVICE, jc.getJobId(), null);
+			WeatherService weatherService = WeatherServiceType.getWeatherService(weatherServiceContext.getName());
+
 			for(V3WeatherStationContext station : stations) {
-				Map<String,Object> weatherData = WeatherAPI.getWeatherData(station, null);
+				Map<String,Object> weatherData = WeatherAPI.getWeatherData(weatherService, station, null);
 				LOGGER.debug("The weather data: "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
@@ -54,6 +61,7 @@ public class FacilioWeatherDataJob extends FacilioJob {
 					WeatherUtil.populateMap(parentId , hourlyForecast, stationCurrentReadings);
 
 				}
+				WeatherUtil.addDewPoint(parentId, stationCurrentReadings);
 			}
 			WeatherUtil.addReading(FacilioConstants.ContextNames.NEW_PSYCHROMETRIC_READING ,psychrometricReadings);
 

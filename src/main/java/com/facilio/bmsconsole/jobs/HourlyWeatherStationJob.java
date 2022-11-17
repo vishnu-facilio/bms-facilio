@@ -3,11 +3,11 @@ package com.facilio.bmsconsole.jobs;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.weather.util.WeatherAPI;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WeatherUtil;
@@ -21,7 +21,7 @@ public class HourlyWeatherStationJob extends FacilioJob{
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
+			if (!WeatherAPI.allow())
 			{
 				return;
 			}
