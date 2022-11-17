@@ -537,8 +537,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FillContextAfterWorkorderUpdateCommandV3());
         c.addCommand(new VerifyQrCommand());
         c.addCommand(new SendNotificationCommandV3());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
