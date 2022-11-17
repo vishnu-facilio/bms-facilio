@@ -163,11 +163,10 @@ public class V3ServiceRequestContext extends V3Context{
 	
 	public static enum SourceType {
 		
-		WEB_REQUEST(1, "Web Request"),
+		APP(1, "App"),
 		EMAIL_REQUEST(2, "E Mail Request"),
 		SMS_REQUEST(3, "SMS Request"),
 		KIOSK(4,"Kiosk"),
-		PORTAL(5,"Portal")		
 		;
 		
 		private int intVal;
