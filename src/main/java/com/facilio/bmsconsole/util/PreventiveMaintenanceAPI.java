@@ -579,6 +579,14 @@ public class PreventiveMaintenanceAPI {
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
 		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
 
+		if(!minTrigger.isPresent()){
+			LOGGER.log(Level.ERROR, "getEndTime(): minTrigger not present.");
+		}else {
+			StringBuilder builder = new StringBuilder("getEndTime(): minTrigger is present. ");
+			builder.append("Trigger ID: ").append(minTrigger.get().getId());
+			LOGGER.log(Level.ERROR, builder.toString());
+		}
+
 		int maxSchedulingDays = minTrigger.get().getFrequencyEnum().getMaxSchedulingDays();
 		if (startTime == -1) {
 			return DateTimeUtil.getDayStartTime(maxSchedulingDays, true) - 1;
@@ -2693,7 +2701,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void updateWorkOrderCreationStatus(Connection conn, List<Long> ids, int status) throws Exception {
-		LOGGER.log(Level.ERROR, "updateWorkOrderCreationStatus(): ids = " + ids);
+		LOGGER.log(Level.ERROR, "updateWorkOrderCreationStatus(): Status = " + status + ", " + " ids = " + ids);
 		if (ids == null || ids.isEmpty()) {
 			LOGGER.log(Level.ERROR, "updateWorkOrderCreationStatus(): IDs are empty.");
 			return;

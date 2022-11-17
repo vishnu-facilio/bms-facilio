@@ -385,6 +385,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             if (bulkWorkOrderContext.getWorkOrderContexts() != null && !bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {
                 wos.addAll(bulkWorkOrderContext.getWorkOrderContexts());
             }
+        }else{
+            LOGGER.log(Level.ERROR,"bulkWorkOrderContexts is empty.");
         }
 
         List<WorkOrderContext> ws = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WO_CONTEXTS);
@@ -446,7 +448,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             }
         } else {
             LOGGER.log(Level.ERROR, "Empty PM trigger.");
-            PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
         }
+        // At end of the job, we reset the lock. Updating the WorkOrder Creation Status to 0, whether PM WOs are there, or not.
+        PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
     }
 }
