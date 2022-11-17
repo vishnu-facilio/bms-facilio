@@ -1,9 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.storeroom;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -24,7 +21,6 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
         }
@@ -35,10 +31,8 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
         LookupField siteField = (LookupField) fieldsAsMap.get("site");
 
         MultiLookupMeta servingsites = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("servingsites"));
-
-        FacilioField nameField = FieldFactory.getField("name", "NAME", resourceModule, FieldType.STRING);
-        servingsites.setSelectFields(Collections.singletonList(nameField));
-
+//        LookupField right = (LookupField) modBean.getField("right","servingsitesstoreroom");
+//        servingsites.setChildLookupSupplements(Collections.singletonList(right));
         additionaLookups.add(locationField);
         additionaLookups.add(ownerField);
         additionaLookups.add(siteField);

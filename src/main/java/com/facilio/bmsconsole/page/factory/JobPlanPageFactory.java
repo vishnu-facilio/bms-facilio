@@ -52,10 +52,11 @@ public class JobPlanPageFactory extends PageFactory {
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
         //Plans Tab
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
-                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
-            addPlansTab(page);
-        }
+        // temporarily hiding plans tab
+//        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
+//                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
+//            addPlansTab(page);
+//        }
         
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();

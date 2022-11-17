@@ -653,6 +653,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("currentQuantity", "Current Quantity"));
+		columns.add(new ViewField("quantity", "Available Quantity"));
 		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
@@ -762,14 +763,13 @@ public class ColumnFactory {
 	private static List<ViewField> getAllWorkOrderPlannedItemsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("itemType", "Items"));
+		columns.add(new ViewField("itemType", "Item"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("unitPrice", "Unit Price"));
 		columns.add(new ViewField("totalCost", "Total Amount"));
 		columns.add(new ViewField("reservationType", "Reservation Type"));
-
 		return columns;
 	}
 

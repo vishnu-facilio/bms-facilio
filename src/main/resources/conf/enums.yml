@@ -275,16 +275,19 @@ enums:
 
   - name: InventoryReservationStatus
     enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$InventoryReservationStatus
-  
+
   - name: PMScopeAssigmentType
     enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
 
+  - name: TransactionType
+    enumClassName: com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext$TransactionType
+
   - name: AgentType
     enumClassName: com.facilio.agent.AgentType
-    
+
   - name: PlannedMaintenanceStatus
     enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMStatus
-  
+
   - name: JobPlanStatus
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPStatus
 
@@ -308,3 +311,6 @@ enums:
 
   - name: ControlActionExecuteMode
     enumClassName: com.facilio.controlaction.context.ControlActionCommandContext$Control_Action_Execute_Mode
+
+  - name: InventoryRequestReservationStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext$InventoryRequestReservationStatus

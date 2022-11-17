@@ -180,7 +180,7 @@ public class WorkOrderPlannedServicesModule extends BaseModuleConfig {
         plannedServicesFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED,"service", 1, 1));
         plannedServicesFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedServicesFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.NUMBER, "Unit Price", FormField.Required.OPTIONAL, 3, 1));
-        plannedServicesFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER, "Duration", FormField.Required.OPTIONAL, 4, 1));
+        plannedServicesFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 4, 1));
 //        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.OPTIONAL, 5, 3);
 //        totalCost.setIsDisabled(true);
 //        plannedServicesFormFields.add(totalCost);

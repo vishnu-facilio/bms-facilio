@@ -13,14 +13,14 @@ import java.util.List;
 public class WorkOrderServiceActionV3 extends V3Action {
     private static final long serialVersionUID = 1L;
     private Long workOrderId;
-    private List<Long> serviceIds;
+    private Long serviceId;
 
-    public List<Long> getServiceIds() {
-        return serviceIds;
+    public Long getServiceId() {
+        return serviceId;
     }
 
-    public void setServiceIds(List<Long> serviceIds) {
-        this.serviceIds = serviceIds;
+    public void setServiceId(Long serviceId) {
+        this.serviceId = serviceId;
     }
 
     public Long getWorkOrderId() {
@@ -31,13 +31,13 @@ public class WorkOrderServiceActionV3 extends V3Action {
         this.workOrderId = workOrderId;
     }
 
-    public String list() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getUnsavedWorkOrderServiceListChainV3();
+    public String getWorkorderService() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getWorkOrderServiceChainV3();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
-        context.put(FacilioConstants.ContextNames.SERVICE,serviceIds);
+        context.put(FacilioConstants.ContextNames.SERVICE,serviceId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.WO_SERVICE, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WO_SERVICE), V3WorkOrderServiceContext.class));
+        setData(FacilioConstants.ContextNames.WO_SERVICE, FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WO_SERVICE)));
         return V3Action.SUCCESS;
     }
 }

@@ -43,7 +43,7 @@ public class UnReserveItemsCommandV3 extends FacilioCommand {
                 }
                 Long itemId = item.getId();
                 if(item.getReservedQuantity()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot Unreserve Item, Reserved Quantity is null");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot Unreserve Item, Reserved Quantity is Empty");
                 }
                 else{
                     Double itemReservedQuantity = item.getReservedQuantity();

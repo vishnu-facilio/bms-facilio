@@ -103,7 +103,7 @@ public class JobPlanToolsModule extends BaseModuleConfig {
         jobPlanToolFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "toolType", ++seqNum,1));
         jobPlanToolFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum, 1));
         jobPlanToolFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.OPTIONAL, ++seqNum, 1));
-        jobPlanToolFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER, "Duration", FormField.Required.OPTIONAL, ++seqNum, 1));
+        jobPlanToolFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seqNum, 1));
 
         FormSection section = new FormSection("Default", 1, jobPlanToolFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

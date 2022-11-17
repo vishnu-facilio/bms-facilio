@@ -157,7 +157,12 @@ public class InventoryReservationContext extends V3Context {
     }
 
     public enum ReservationSource implements FacilioIntEnum {
-        WO_PLANS, INVENTORY_REQUEST;
+        WO_PLANS("Work Order Plans"), INVENTORY_REQUEST("Inventory Request");
+
+        private final String value;
+        ReservationSource(String value) {
+            this.value = value;
+        }
 
         @Override
         public Integer getIndex() {
@@ -166,7 +171,7 @@ public class InventoryReservationContext extends V3Context {
 
         @Override
         public String getValue() {
-            return name();
+            return value;
         }
 
         public static ReservationSource valueOf(int value) {
@@ -177,7 +182,13 @@ public class InventoryReservationContext extends V3Context {
         }
     }
     public enum InventoryReservationStatus implements FacilioIntEnum {
-        NOT_ISSUED, PARTIALLY_ISSUED, ISSUED;
+        NOT_ISSUED("Not Issued"), PARTIALLY_ISSUED("Partially Issued"), ISSUED("Issued");
+
+        private final String value;
+
+        InventoryReservationStatus(String value) {
+            this.value = value;
+        }
 
         @Override
         public Integer getIndex() {
@@ -186,7 +197,7 @@ public class InventoryReservationContext extends V3Context {
 
         @Override
         public String getValue() {
-            return name();
+            return value;
         }
 
         public static InventoryReservationStatus valueOf(int value) {

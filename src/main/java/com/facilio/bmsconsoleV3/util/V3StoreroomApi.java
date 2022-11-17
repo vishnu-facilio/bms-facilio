@@ -76,7 +76,7 @@ public class V3StoreroomApi {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
         SelectRecordsBuilder<V3StoreRoomContext> builder = new SelectRecordsBuilder<V3StoreRoomContext>().module(module)
-                .beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName())).select(fields);
+                .beanClass(V3StoreRoomContext.class).select(fields);
         List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 
         if(includeServingSite) {
@@ -111,7 +111,7 @@ public class V3StoreroomApi {
 
     public static Set<Long> getStoreRoomList(Long siteId, boolean includeServingSite) throws Exception {
         SelectRecordsBuilder<V3StoreRoomContext> builder = getStoreRoomListBuilder(siteId, includeServingSite);
-        List<V3StoreRoomContext> storeRooms = builder.get();
+        List<V3StoreRoomContext> storeRooms =  builder.get();
         Set<Long> storeIds = new HashSet<Long>();
         if(CollectionUtils.isNotEmpty(storeRooms)) {
             for(V3StoreRoomContext storeRoom : storeRooms) {

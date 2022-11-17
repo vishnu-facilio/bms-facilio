@@ -1720,6 +1720,7 @@ public class FacilioConstants {
 		public static final String ITEM_ACTIVITY = "itemtypeactivity";
 
 		public static final String WORKORDER_ITEMS = "workorderItem";
+		public static final String WORKORDER_ITEM_RECORD = "workorderItemRecord";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
 		public static final String ITEM_TRANSACTIONS_PARAMS = "itemTransactionsParams";
 

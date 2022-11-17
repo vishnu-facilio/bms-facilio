@@ -22,49 +22,45 @@ public class InventoryRequestPageFactory extends PageFactory {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Page page = new Page();
 
-		Page.Tab tab1 = page.new Tab("summary");
+		Page.Tab tab1 = page.new Tab("Summary");
 		page.addTab(tab1);
 
 		Page.Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 
-
 		addSecondaryDetailsWidget(tab1Sec1);
-		
-		
-        PageWidget card1= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD1);
-        card1.addToLayoutParams(tab1Sec1, 8, 6);
-        tab1Sec1.addWidget(card1);
-        
-        PageWidget card2= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD2);
-        card2.addToLayoutParams(tab1Sec1, 8, 6);
-        tab1Sec1.addWidget(card2);
-        
-        PageWidget card3= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD3);
-        card3.addToLayoutParams(tab1Sec1, 8, 6);
-        tab1Sec1.addWidget(card3);
-
-		Page.Section tab1Sec2 = page.new Section();
-		tab1.addSection(tab1Sec2);
 		addLineItemsWidget(tab1Sec1);
 
-		Page.Section tab1Sec3 = page.new Section();
-		tab1.addSection(tab1Sec3);
-
-		addCommonSubModuleWidget(tab1Sec3, module, inventoryRequest);
+		Page.Tab tab2 = page.new Tab("Notes And Attachments");
+		page.addTab(tab2);
+		Page.Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		addCommonSubModuleWidget(tab2Sec1, module, inventoryRequest);
+		
+//        PageWidget card1= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD1);
+//        card1.addToLayoutParams(tab1Sec1, 8, 6);
+//        tab1Sec1.addWidget(card1);
+//
+//        PageWidget card2= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD2);
+//        card2.addToLayoutParams(tab1Sec1, 8, 6);
+//        tab1Sec1.addWidget(card2);
+//
+//        PageWidget card3= new PageWidget(PageWidget.WidgetType.INVENTORY_REQUEST_CARD3);
+//        card3.addToLayoutParams(tab1Sec1, 8, 6);
+//        tab1Sec1.addWidget(card3);
 
 		return page;
 	}
 
 	private static void addSecondaryDetailsWidget(Page.Section section) {
 		PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 7);
+		detailsWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(detailsWidget);
 	}
 	private static PageWidget addLineItemsWidget(Page.Section section) {
 
 		PageWidget purchasedItemsWidget = new PageWidget();
-		purchasedItemsWidget.addToLayoutParams(section, 24, 7);
+		purchasedItemsWidget.addToLayoutParams(section, 24, 10);
 		purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.INVENTORY_REQUEST_LINE_ITEMS);
 		section.addWidget(purchasedItemsWidget);
 

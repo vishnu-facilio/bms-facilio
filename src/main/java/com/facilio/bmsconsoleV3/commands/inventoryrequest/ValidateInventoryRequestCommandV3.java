@@ -28,6 +28,8 @@ public class ValidateInventoryRequestCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3InventoryRequestContext> inventoryRequestContext = recordMap.get(moduleName);
+        Map<String, Object> bodyParams = Constants.getBodyParams(context);
+        boolean isUpdateIRReservationStatus = MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("updateIRReservationStatus");
         if (CollectionUtils.isNotEmpty(inventoryRequestContext)) {
             for (V3InventoryRequestContext inventoryRequestContexts : inventoryRequestContext) {
                 if (inventoryRequestContexts.getInventoryrequestlineitems() == null) {
@@ -38,6 +40,9 @@ public class ValidateInventoryRequestCommandV3 extends FacilioCommand {
                 }
                 if (inventoryRequestContexts.getRequestedTime() == null) {
                     inventoryRequestContexts.setRequestedTime(System.currentTimeMillis());
+                }
+                if(!isUpdateIRReservationStatus && !inventoryRequestContexts.getInventoryRequestReservationStatus().equals(V3InventoryRequestContext.InventoryRequestReservationStatus.PENDING.getIndex())){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot update Inventory Request after Reservation");
                 }
             }
         }

@@ -1,24 +1,33 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CustomPageWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.SummaryWidgetUtil;
+import org.apache.commons.chain.Context;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WorkOrderItemsModule extends BaseModuleConfig{
     public WorkOrderItemsModule() throws Exception{
@@ -154,6 +163,8 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
         }
+
+
     }
 
     @Override
@@ -181,6 +192,46 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         workOrderItemForm.setIsSystemForm(true);
         workOrderItemForm.setType(FacilioForm.Type.FORM);
 
+        FormRuleContext singleRule = addItemFilterRule();
+        workOrderItemForm.setDefaultFormRules(Arrays.asList(singleRule));
+
         return Collections.singletonList(workOrderItemForm);
+    }
+
+    private FormRuleContext addItemFilterRule() {
+        // TODO Auto-generated method stub
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Set Item Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Storeroom");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Item");
+
+        Criteria criteria = new Criteria();
+
+        criteria.addAndCondition(CriteriaAPI.getCondition("Item.STORE_ROOM_ID","storeRoom", "${workorderItem.storeRoom.id}", StringOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
     }
 }

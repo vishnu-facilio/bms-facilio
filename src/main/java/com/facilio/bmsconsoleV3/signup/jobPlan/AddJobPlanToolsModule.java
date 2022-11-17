@@ -64,7 +64,7 @@ public class AddJobPlanToolsModule extends BaseModuleConfig {
 	        
 	        fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
 	        fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL,FieldDisplayType.DECIMAL));
-	        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.DECIMAL));
+	        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER, FieldDisplayType.DURATION));
 	        fields.add(FieldFactory.getDefaultField("totalCost","Total Cost","TOTAL_COST",FieldType.DECIMAL,FieldDisplayType.DECIMAL));
 	        
 	        LookupField storeRoom = FieldFactory.getDefaultField("storeRoom","Storeroom","STOREROOM",FieldType.LOOKUP);

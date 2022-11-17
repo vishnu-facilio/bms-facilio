@@ -11,6 +11,10 @@ import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
+import com.facilio.bmsconsoleV3.commands.item.FilterItemTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.IncludeServingSiteFilterCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.LoadItemToolTransactionsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
@@ -24,10 +28,14 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtr
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.shift.*;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsAndConditionsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingStatusCommand;
@@ -138,7 +146,6 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.ToolTransactionRemaini
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedItemIssuedQuantityCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedToolIssuedQuantityCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestUpdateCommandV3;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -169,10 +176,8 @@ import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHaz
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.shift.AddShiftAbsenceDetectionJobCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ListShiftPlannerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.MarkAsNonDefaultShiftCommand;
-import com.facilio.bmsconsoleV3.commands.shift.RemoveShiftAbsenceDetectionJobCommand;
 import com.facilio.bmsconsoleV3.commands.shift.UpdateShiftPlannerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ValidateBreakCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ValidateShiftsCommand;
@@ -191,10 +196,6 @@ import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
-import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.SetLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceAfterTransferCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceCommandV3;
@@ -232,10 +233,10 @@ import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetDeleteWorkorderTo
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservationRecordCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservedQuantityCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotalCostCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.WorkOrderItemUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.WorkOrderReservedItemsUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.WorkOrderServiceUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.WorkOrderToolsUnsavedListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.GetWorkOrderItemCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.GetWorkOrderItemFromReservationCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.GetWorkOrderServiceCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.GetWorkOrderToolCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.CreateReservationCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.CreateWorkOrderPlannedInventoryCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlannedItemsUnSavedListCommandV3;
@@ -244,7 +245,6 @@ import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlannedToolsU
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlansCostCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReservationSummaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReservationValidationCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReserveItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetIsReservedCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ValidateWorkOrderPlannedItemsCommandV3;
@@ -1454,9 +1454,24 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getIRBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
-        c.addCommand(new ValidateInventoryRequestUpdateCommandV3());
+        c.addCommand(new SetInventoryRequestBeforeSaveCommandV3());
         c.addCommand(new ValidateInventoryRequestCommandV3());
         return c;
+    }
+
+    public static FacilioChain getIRBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadIRLookupCommandV3());
+        chain.addCommand(new LoadInventoryRequestExtraFieldsCommandV3());
+        return chain;
+    }
+
+
+    public static FacilioChain getInventoryRequestLineItemsAfterUpdateChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new UpdateInventoryRequestLineItemsForReservation());
+        chain.addCommand(new UpdateInventoryRequestReservationStatusOnLineItemUpdateCommandV3());
+        return chain;
     }
 
     public static FacilioChain getUpdateItemQuantityRollupChain() {
@@ -1545,6 +1560,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getBeforeUpdateInventoryRequestLineItemsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ValidateInventoryRequestLineItemForReservation());
+        chain.addCommand(new SetReservedForInventoryRequestLineItems());
+        chain.addCommand(new SetInventoryRequestLineItemsReservationTypeCommandV3());
+        return chain;
+    }
+    public static FacilioChain getAfterFetchInventoryRequestLineItemsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetReservedInventoryRequestLineItems());
+        return chain;
+    }
     public static FacilioChain getIssueInventoryRequestChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateInventoryRequestCommandV3());
@@ -2043,6 +2070,27 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getBeforeFetchItemListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new IncludeServingSiteFilterCommandV3());
+        chain.addCommand(new LoadItemLookUpCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getBeforeFetchItemTransactionsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FilterItemTransactionsCommandV3());
+        chain.addCommand(new LoadItemToolTransactionsLookupCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getBeforeFetchToolListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new IncludeServingSiteFilterCommandV3());
+        chain.addCommand(new LoadToolLookupCommandV3());
+        return chain;
+    }
+
     public static FacilioChain getAddPurchasedItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAddPurchasedItemCommandV3());
@@ -2503,7 +2551,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getReserveItemsChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ReserveItemsCommandV3());
         c.addCommand(new CreateReservationCommandV3());
         return c;
     }
@@ -2564,31 +2611,27 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getUnsavedWorkOrderItemsListChainV3() {
+    public static FacilioChain getWorkOrderItemChainV3() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new WorkOrderItemUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        chain.addCommand(new GetWorkOrderItemCommandV3());
+        return chain;
+    }
+    
+    public static FacilioChain getWorkorderItemFromReservationChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetWorkOrderItemFromReservationCommandV3());
         return chain;
     }
 
-    public static FacilioChain getUnsavedReservedWorkOrderItemsListChainV3() {
+    public static FacilioChain getWorkOrderToolChainV3() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new WorkOrderReservedItemsUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        chain.addCommand(new GetWorkOrderToolCommandV3());
         return chain;
     }
 
-    public static FacilioChain getUnsavedWorkOrderToolsListChainV3() {
+    public static FacilioChain getWorkOrderServiceChainV3() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new WorkOrderToolsUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return chain;
-    }
-
-    public static FacilioChain getUnsavedWorkOrderServiceListChainV3() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new WorkOrderServiceUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        chain.addCommand(new GetWorkOrderServiceCommandV3());
         return chain;
     }
 
@@ -2640,7 +2683,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTransactionEventTypeCommand());
         c.addCommand(getInventoryReservationChainV3());
-        c.addCommand(new LoadWorkorderItemLookUpCommand());
+        //c.addCommand(new LoadWorkorderItemLookUpCommand());
         c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
         c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
@@ -2658,11 +2701,10 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getInventoryReservationChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateReservedQuantityCommandV3());
         c.addCommand(new UpdateReservationRecordCommandV3());
+        c.addCommand(new UpdateReservedQuantityCommandV3());
         return c;
     }
-
     public static FacilioChain getAddOrUdpateWorkorderToolsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTransactionEventTypeCommand());
@@ -3091,6 +3133,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetAttendanceSettingsUpdateCommand());
         return c;
     }
+
     public static FacilioChain getAttendanceSettingsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAttendanceSettingsCommand());
@@ -3125,6 +3168,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchVersionHistoryCommand());
         return c;
     }
+
     public static FacilioChain getJobPlanCloneChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchJobPlanDetails());
@@ -3150,6 +3194,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain updatePermissionsForPermissionSetChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePermissionsForPermissionSetCommand());
+        return c;
+    }
+    
+    public static FacilioChain getStoreroomBeforeSaveChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocationObjectFromSiteV3());
+        c.addCommand(new UpdateServingSitesinStoreRoomCommandV3());
         return c;
     }
 }

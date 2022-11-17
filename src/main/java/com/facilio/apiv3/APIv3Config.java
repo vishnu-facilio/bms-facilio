@@ -58,9 +58,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.IssueInvRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
@@ -81,12 +79,10 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
@@ -101,8 +97,6 @@ import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.space.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
-import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
@@ -111,7 +105,6 @@ import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.CheckForTenantBeforeDeletionCommand;
 import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
-import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.LoadToolLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.SetManualToolTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.StockOrUpdateToolsCommandV3;
@@ -130,8 +123,6 @@ import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRec
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
-import com.facilio.bmsconsoleV3.commands.workorder.AddorUpdateWoActualsCostforLabourCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
@@ -217,7 +208,6 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.commands.delete.DeleteKpiLoggersCommand;
-import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForKpiLogger;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
@@ -237,7 +227,6 @@ import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
@@ -668,15 +657,12 @@ public class APIv3Config {
     public static Supplier<V3Config> getStoreRoom() {
         return () -> new V3Config(V3StoreRoomContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetLocationObjectFromSiteV3())
-                .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getStoreroomBeforeSaveChainV3())
                 .update()
-                .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .list()
                 .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .summary()
                 .beforeFetch(new LoadStoreRoomLookUpCommandV3())
-                .afterFetch(new AddStoreRoomDetailsCommandV3())
                 .build();
     }
 
@@ -911,7 +897,7 @@ public class APIv3Config {
                 .update()
                 .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .list()
-                .beforeFetch(new LoadItemLookUpCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemListChain())
                 .summary()
                 .beforeFetch(new LoadItemLookUpCommandV3())
                 .build();
@@ -925,7 +911,7 @@ public class APIv3Config {
                 .afterSave(new UpdateItemTransactionsCommandV3())
                 .update()
                 .list()
-                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemTransactionsChain())
                 .summary()
                 .build();
     }
@@ -963,7 +949,7 @@ public class APIv3Config {
                 .update()
                 .afterSave(new StockOrUpdateToolsCommandV3())
                 .list()
-                .beforeFetch(new LoadToolLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchToolListChain())
                 .summary()
                 .beforeFetch(new LoadToolLookupCommandV3())
                 .build();
@@ -1708,6 +1694,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
                 .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
+                .beforeFetch(new LoadPlannedItemsExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "itemType")
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "storeRoom")
                 .summary()
@@ -1715,6 +1702,7 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "storeRoom")
                 .afterFetch(TransactionChainFactoryV3.getReserveValidationChainV3())
                 .delete()
+                .beforeDelete(new ValidatePlannedItemsBeforeDeleteCommandV3())
                 .build();
     }
 
@@ -1726,6 +1714,7 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
                 .list()
+                .beforeFetch(new LoadPlannedToolsExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
                 .summary()
@@ -1743,6 +1732,7 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
                 .list()
+                .beforeFetch(new LoadPlannedServicesExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
@@ -1759,6 +1749,7 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"workOrder")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"itemType")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION, "inventoryRequest")
                 .summary()
                 .delete()
                 .build();
@@ -1776,9 +1767,12 @@ public class APIv3Config {
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
+                .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderItemsChainV3())
                 .build();
@@ -1796,9 +1790,12 @@ public class APIv3Config {
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderToolsChainV3())
                 .build();
@@ -1814,6 +1811,7 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderServicesCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
                 .list()
+                .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_SERVICE,"service")
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WO_SERVICE,"service")
@@ -2178,17 +2176,39 @@ public class APIv3Config {
         return () -> new V3Config(V3InventoryRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
+                .afterSave(new SetStoreRoomAndReservationTypeForInventoryRequestLineItems())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.INVENTORY_REQUEST_ACTIVITY))
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
                 .afterSave(new IssueInvRequestCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.INVENTORY_REQUEST_ACTIVITY))
                 .list()
-                .beforeFetch(new LoadIRLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getIRBeforeFetchChain())
                 .summary()
                 .beforeFetch(new LoadIRLookupCommandV3())
                 .afterFetch(new FetchInventoryRequestDetailsCommandV3())
                 .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS)
+    public static Supplier<V3Config> getInventoryRequestLineItems() {
+        return () -> new V3Config(V3InventoryRequestLineItemContext.class, null)
+                .create()
+                .beforeSave(new SetInventoryRequestLineItemsReservationTypeCommandV3())
+                .afterSave(new UpdateInventoryRequestReservationStatusCommandV3())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getBeforeUpdateInventoryRequestLineItemsChain())
+                .afterSave(TransactionChainFactoryV3.getInventoryRequestLineItemsAfterUpdateChain())
+                .delete()
+                .beforeDelete(new ValidateInventoryRequestLineItemBeforeDeleteCommandV3())
+                .afterDelete(new InventoryRequestLineItemAfterDeleteCommandV3())
+                .list()
+                .beforeFetch(new LoadInventoryRequestLineItemsExtraFieldsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getAfterFetchInventoryRequestLineItemsChain())
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "storeRoom")
+                .summary()
                 .build();
     }
 

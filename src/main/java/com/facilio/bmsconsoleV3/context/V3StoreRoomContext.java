@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ServingSitesContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3StoreRoomContext extends V3Context {
@@ -22,8 +23,8 @@ public class V3StoreRoomContext extends V3Context {
 	private Boolean isApprovalNeeded;
 	private Long lastPurchasedDate;
 	private Boolean isGatePassRequired;
-	private SiteContext site;
-	private List<SiteContext> servingsites;
+	private V3SiteContext site;
+	private List<V3ServingSitesContext> servingsites;
 	
 	public Long getTtime() {
 		return ttime;
@@ -117,18 +118,18 @@ public class V3StoreRoomContext extends V3Context {
 		}
 		return false;
 	}
-	public SiteContext getSite() {
+	public V3SiteContext getSite() {
 		return site;
 	}
-	public void setSite(SiteContext site) {
+	public void setSite(V3SiteContext site) {
 		this.site = site;
 	}
 
-	public List<SiteContext> getServingsites() {
+	public List<V3ServingSitesContext> getServingsites() {
 		return servingsites;
 	}
 
-	public void setServingsites(List<SiteContext> servingsites) {
+	public void setServingsites(List<V3ServingSitesContext> servingsites) {
 		this.servingsites = servingsites;
 	}
 }

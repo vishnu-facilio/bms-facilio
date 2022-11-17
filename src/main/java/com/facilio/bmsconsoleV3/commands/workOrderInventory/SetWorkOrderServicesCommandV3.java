@@ -21,6 +21,8 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,6 +56,9 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
                     long vendorId = -1;
                     if (woService.getVendor() != null) {
                         vendorId = woService.getVendor();
+                    }
+                    if(woService.getQuantity() <= 0) {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be null");
                     }
                     woService.setCost(getCostForService(vendorId, woService.getService().getId()));
                     woService.setParent(workorder);

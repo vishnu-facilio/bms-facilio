@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -95,10 +99,26 @@ public class StoreRoomPageFactory extends PageFactory{
         
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId());
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.INVENTORY_REQUEST, module.getModuleId());
-        
         addRelatedListWidgets(tab3Sec1, module.getModuleId());
+        if (PageFactory.hasStoreRoomPermission(module)) {
+            Page.Tab tab4 = page.new Tab("Issuance");
+            page.addTab(tab4);
+            Page.Section tab4Sec1 = page.new Section();
+            tab4.addSection(tab4Sec1);
+            addIssuesAndReturnsWidget(tab4Sec1);
+        }
 
         return page;
+    }
+
+    private static PageWidget addIssuesAndReturnsWidget(Page.Section section) {
+
+        PageWidget purchasedItemsWidget = new PageWidget();
+        purchasedItemsWidget.addToLayoutParams(section, 24, 12);
+        purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.ISSUES_RETURNS);
+        section.addWidget(purchasedItemsWidget);
+
+        return purchasedItemsWidget;
     }
 
     private static void addSecondaryDetailsWidget(Page.Section section) {

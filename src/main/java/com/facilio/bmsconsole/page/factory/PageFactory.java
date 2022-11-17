@@ -28,6 +28,7 @@ import com.facilio.permission.context.PermissionFieldEnum;
 import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.context.module.RelatedListPermissionSet;
 import com.facilio.permission.util.PermissionSetUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1069,6 +1070,25 @@ public class PageFactory {
 			return null;
 		}
 		
+	}
+
+	public static boolean hasStoreRoomPermission(FacilioModule module) throws Exception {
+		if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().isPrevileged()) {
+			return true;
+		}
+		if(AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null) {
+				boolean  hasCreatePermission = PermissionUtil.currentUserHasPermission("inventory", "CREATE", AccountUtil.getCurrentUser().getRole());
+				boolean  hasUpdatePermission = PermissionUtil.currentUserHasPermission("inventory", "UPDATE,UPDATE_OWN", AccountUtil.getCurrentUser().getRole());
+				return hasCreatePermission && hasUpdatePermission;
+			}
+		}else{
+			WebTabContext tab = AccountUtil.getCurrentTab();
+			boolean hasCreatePermission = V3PermissionUtil.currentUserHasPermission(tab,module.getName(),"CREATE",AccountUtil.getCurrentUser().getRole());
+			boolean hasUpdatePermission = V3PermissionUtil.currentUserHasPermission(tab,module.getName(),"UPDATE,UPDATE_OWN",AccountUtil.getCurrentUser().getRole());
+			return hasCreatePermission & hasUpdatePermission;
+		}
+		return false;
 	}
 
 	public static boolean altayerDisableRelatedList(FacilioModule module) throws Exception {

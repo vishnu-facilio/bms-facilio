@@ -25,6 +25,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -62,7 +64,9 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                 V3ToolContext tool = getStockedTools(workorderTool.getTool().getId());
                 toolTypesId = tool.getToolType().getId();
                 V3ToolTypesContext toolTypes = getToolType(toolTypesId);
-
+                if(workorderTool.getQuantity() <= 0) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
+                }
                 if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
                     if(!V3InventoryRequestAPI.checkQuantityForWoToolNeedingApprovalV3(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
                         throw new IllegalArgumentException("Please check the quantity approved/issued in the request");

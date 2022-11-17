@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.modules.FieldUtil;
@@ -257,5 +258,33 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         this.storeRoom = storeRoom;
     }
 
+    private ReservationType reservationType;
 
+    public Integer getReservationType() {
+        if (reservationType != null) {
+            return reservationType.getIndex();
+        }
+        return null;
+    }
+
+    public void setReservationType(Integer reservationType) {
+        if (reservationType != null) {
+            this.reservationType = ReservationType.valueOf(reservationType);
+        }
+    }
+    public ReservationType getReservationTypeEnum() {
+        return reservationType;
+    }
+    private Boolean isReserved;
+
+    public Boolean getIsReserved() {
+        if(isReserved != null){
+            return isReserved;
+        }
+        return false;
+    }
+
+    public void setIsReserved(Boolean reserved) {
+        isReserved = reserved;
+    }
 }

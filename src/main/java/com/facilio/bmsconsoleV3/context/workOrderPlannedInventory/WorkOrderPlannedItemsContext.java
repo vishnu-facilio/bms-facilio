@@ -74,7 +74,10 @@ public class WorkOrderPlannedItemsContext extends V3Context {
     }
 
     public Boolean getIsReserved() {
-        return isReserved;
+        if(isReserved!=null){
+            return isReserved;
+        }
+        return false;
     }
 
     public void setIsReserved(Boolean reserved) {

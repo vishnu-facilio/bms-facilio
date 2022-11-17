@@ -100,8 +100,8 @@ public class JobPlanServiceModule extends BaseModuleConfig {
         int seqNum = 0;
         List<FormField> jobPlanServiceFormFields = new ArrayList<>();
         jobPlanServiceFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "service", ++seqNum,1));
-        jobPlanServiceFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, ++seqNum, 1));
-        jobPlanServiceFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.TEXTBOX, "Duration", FormField.Required.OPTIONAL, ++seqNum, 1));
+        jobPlanServiceFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.OPTIONAL, ++seqNum, 1));
+        jobPlanServiceFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seqNum, 1));
 
         FormSection section = new FormSection("Default", 1, jobPlanServiceFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

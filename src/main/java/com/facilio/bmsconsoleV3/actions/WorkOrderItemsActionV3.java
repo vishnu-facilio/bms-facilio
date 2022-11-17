@@ -14,23 +14,23 @@ public class WorkOrderItemsActionV3 extends V3Action {
     private static final long serialVersionUID = 1L;
     private Long workOrderId;
 
-    private List<Long> reservationIds;
-    private List<Long> itemIds;
+    private Long reservationId;
+    private Long itemId;
 
-    public List<Long> getReservationIds() {
-        return reservationIds;
+    public Long getReservationId() {
+        return reservationId;
     }
 
-    public void setReservationIds(List<Long> reservationIds) {
-        this.reservationIds = reservationIds;
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
     }
 
-    public List<Long> getItemIds() {
-        return itemIds;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setItemIds(List<Long> itemIds) {
-        this.itemIds = itemIds;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public Long getWorkOrderId() {
@@ -41,23 +41,22 @@ public class WorkOrderItemsActionV3 extends V3Action {
         this.workOrderId = workOrderId;
     }
 
-    public String list() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getUnsavedWorkOrderItemsListChainV3();
+    public String getWorkorderItem() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getWorkOrderItemChainV3();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
-        context.put(FacilioConstants.ContextNames.ITEM,itemIds);
+        context.put(FacilioConstants.ContextNames.ITEM,itemId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.WORKORDER_ITEMS,FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS), V3WorkorderItemContext.class));
+        setData(FacilioConstants.ContextNames.WORKORDER_ITEMS,FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS)));
         return V3Action.SUCCESS;
     }
 
-    public String reservedItemList() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getUnsavedReservedWorkOrderItemsListChainV3();
+    public String getWorkorderItemFromReservation() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getWorkorderItemFromReservationChainV3();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
-        context.put(FacilioConstants.ContextNames.INVENTORY_RESERVATION,reservationIds);
+        context.put(FacilioConstants.ContextNames.INVENTORY_RESERVATION,reservationId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.WORKORDER_ITEMS, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS), V3WorkorderItemContext.class) );
+        setData(FacilioConstants.ContextNames.WORKORDER_ITEMS, FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS)));
         return V3Action.SUCCESS;
     }
 }

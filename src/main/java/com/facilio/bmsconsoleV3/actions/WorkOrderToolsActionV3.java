@@ -13,14 +13,14 @@ import java.util.List;
 public class WorkOrderToolsActionV3 extends V3Action {
     private static final long serialVersionUID = 1L;
     private Long workOrderId;
-    private List<Long> toolIds;
+    private Long toolId;
 
-    public List<Long> getToolIds() {
-        return toolIds;
+    public Long getToolId() {
+        return toolId;
     }
 
-    public void setToolIds(List<Long> toolIds) {
-        this.toolIds = toolIds;
+    public void setToolId(Long toolId) {
+        this.toolId = toolId;
     }
 
     public Long getWorkOrderId() {
@@ -31,13 +31,13 @@ public class WorkOrderToolsActionV3 extends V3Action {
         this.workOrderId = workOrderId;
     }
 
-    public String list() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getUnsavedWorkOrderToolsListChainV3();
+    public String getWorkorderTool() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getWorkOrderToolChainV3();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
-        context.put(FacilioConstants.ContextNames.TOOL,toolIds);
+        context.put(FacilioConstants.ContextNames.TOOL,toolId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.WORKORDER_TOOLS, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS), V3WorkorderToolsContext.class));
+        setData(FacilioConstants.ContextNames.WORKORDER_TOOLS, FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS)));
         return V3Action.SUCCESS;
     }
 }

@@ -89,8 +89,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						item = itemContext;
 						itemTypesId = itemContext.getItemType().getId();
 						item.setCurrentQuantity(quantity);
-						Double reservedQuantity =itemContext.getReservedQuantity()!=null && itemContext.getReservedQuantity()>=0 ? itemContext.getReservedQuantity() : 0;
-						item.setQuantity(quantity-reservedQuantity);
+						item.setQuantity(quantity);
 						item.setLastPurchasedDate(lastPurchasedDate);
 						item.setLastPurchasedPrice(lastPurchasedPrice);
 						if( item.getMinimumQuantity()!=null && item.getQuantity() <= item.getMinimumQuantity()) {

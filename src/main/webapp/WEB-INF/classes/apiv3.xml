@@ -1431,29 +1431,29 @@
 
     <package name="workorderItem" namespace="/api/v3/workOrderItem"
              extends="v3Api">
-        <action name="list"
+        <action name="getWorkorderItem"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
-                method="list">
+                method="getWorkorderItem">
         </action>
-        <action name="reservedItemList"
+        <action name="getWorkorderItemFromReservation"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
-                method="reservedItemList">
+                method="getWorkorderItemFromReservation">
         </action>
     </package>
 
     <package name="workorderTools" namespace="/api/v3/workorderTools"
              extends="v3Api">
-        <action name="list"
+        <action name="getWorkorderTool"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
-                method="list">
+                method="getWorkorderTool">
         </action>
     </package>
 
     <package name="workorderService" namespace="/api/v3/workorderService"
              extends="v3Api">
-        <action name="list"
+        <action name="getWorkorderService"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderServiceActionV3"
-                method="list">
+                method="getWorkorderService">
         </action>
     </package>
 

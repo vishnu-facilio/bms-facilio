@@ -180,7 +180,7 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
         plannedToolsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
         plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.NUMBER, "Rate", FormField.Required.OPTIONAL, 4, 1));
-        plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER, "Duration", FormField.Required.OPTIONAL, 5, 1));
+        plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 5, 1));
 //        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.OPTIONAL, 6, 3);
 //        totalCost.setIsDisabled(true);
 //        plannedToolsFormFields.add(totalCost);

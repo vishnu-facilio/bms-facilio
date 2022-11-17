@@ -5,6 +5,9 @@ import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.modules.FacilioIntEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,5 +193,92 @@ public class V3InventoryRequestContext extends BaseLineItemsParentModuleContext 
         }
         return false;
     }
+    private V3WorkOrderContext workorder;
+    public V3WorkOrderContext getWorkorder() {
+        return workorder;
+    }
+    public void setWorkorder(V3WorkOrderContext workorder) {
+        this.workorder = workorder;
+    }
+    private TransactionType transactionType;
+    public Integer getTransactionType() {
+        if (transactionType != null) {
+            return transactionType.getIndex();
+        }
+        return null;
+    }
+    public void setTransactionType(Integer transactionType) {
+        if (transactionType != null) {
+            this.transactionType = TransactionType.valueOf(transactionType);
+        }
+    }
+    public TransactionType getTransactionTypeEnum() {
+        return transactionType;
+    }
+    public enum TransactionType implements FacilioIntEnum {
+        ISSUE("Issue"), RETURN("Return");
+        private final String value;
+        TransactionType(String value) {
+            this.value = value;
+        }
 
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        public static TransactionType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    private InventoryRequestReservationStatus inventoryRequestReservationStatus;
+    public Integer getInventoryRequestReservationStatus() {
+        if (inventoryRequestReservationStatus != null) {
+            return inventoryRequestReservationStatus.getIndex();
+        }
+        return null;
+    }
+    public void setInventoryRequestReservationStatus(Integer inventoryRequestReservationStatus) {
+        if (inventoryRequestReservationStatus != null) {
+            this.inventoryRequestReservationStatus = InventoryRequestReservationStatus.valueOf(inventoryRequestReservationStatus);
+        }
+    }
+    public InventoryRequestReservationStatus getInventoryRequestReservationStatusEnum() {
+        return inventoryRequestReservationStatus;
+    }
+    public enum InventoryRequestReservationStatus implements FacilioIntEnum {
+        PENDING("Pending"), PARTIALLY_RESERVED("Partially Reserved"), FULLY_RESERVED("Fully Reserved");
+
+        private final String value;
+
+        InventoryRequestReservationStatus(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        public static InventoryRequestReservationStatus valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
 }

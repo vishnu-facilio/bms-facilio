@@ -1,4 +1,3 @@
-
 version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
@@ -40,79 +39,78 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddDefaultSystemFields
 
   #Adding default scoping config
-#  - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.NewsAndInformationScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.LabourScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.TenantScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.AgentMetricsScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.PreEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.AlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.NewReadingAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.QuotationScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.TicketScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.AssetScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ResourceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.OperationAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SpaceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.FloorScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.OperationEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReservationInternalAttendeesScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.PeopleScopingCofig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SiteScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ContactDirectoryScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.VendorScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ServiceRequestScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.controlGroupTenantSharingScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.TenantContactScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReadingEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.BaseAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.MVprojectScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ClientContactScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.OperationOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.AdminDocumentsScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.BaseEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.AlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.WorkorderScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ReservationExternalAttendeesScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.TenantUnitSpaceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.TaskScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.BuildingScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.NeighbourhoodScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.InsuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ZoneScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.BaseEmailMessageScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.DeskScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.FacilityBookingScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.FacilityScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.InductionResponseScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.InspectionResponseScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.LockerScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ParkingStallScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmRollUpAlarmOccuranceScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpAlarmScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpEventScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.StoreroomScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ItemScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.ToolScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
-#  - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
-
+  #  - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.NewsAndInformationScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.LabourScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.TenantScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.AgentMetricsScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.PreEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.AlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.NewReadingAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.QuotationScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.TicketScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.AssetScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ResourceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.OperationAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SpaceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.FloorScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.OperationEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReservationInternalAttendeesScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.PeopleScopingCofig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SiteScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ContactDirectoryScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.VendorScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ServiceRequestScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.controlGroupTenantSharingScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.TenantContactScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReadingEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.BaseAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.MVprojectScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ClientContactScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.OperationOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.AdminDocumentsScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.BaseEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.AlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.WorkorderScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ReservationExternalAttendeesScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.TenantUnitSpaceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.TaskScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.BuildingScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.NeighbourhoodScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.InsuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ZoneScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.BaseEmailMessageScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.DeskScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.FacilityBookingScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.FacilityScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.InductionResponseScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.InspectionResponseScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.LockerScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ParkingStallScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmRollUpAlarmOccuranceScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpAlarmScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpEventScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.StoreroomScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ItemScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.ToolScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.BaseVisitsScopingConfig
+  #  - com.facilio.bmsconsoleV3.signup.scoping.QuoteScopingConfig
 
   - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
   - com.facilio.bmsconsoleV3.signup.serviceRequest.AddServiceRequestForm
@@ -129,9 +127,9 @@ classes:
 
   #Adding Weather service modules
   - com.facilio.weather.signup.AddWeatherModules
-  
+
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule
-  
+
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModulePostAction
 
   #Adding Modules and Fields for V2 Planned Maintenance
@@ -158,7 +156,6 @@ classes:
   # WorkOrder Modules
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderModules
 
-
   #Add People Group and Group Members
   - com.facilio.bmsconsoleV3.signup.group.AddGroupAndGroupMemberModules
 
@@ -175,7 +172,6 @@ classes:
   #Add System Value Generators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
-
 
   # Shift & Shift Related Modules
   - com.facilio.bmsconsoleV3.signup.shift.ShiftModules
@@ -365,19 +361,18 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TicketModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ZoneModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WeatherStationModule
-#    Customkiosk Modules
+  #    Customkiosk Modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomKioskModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomKioskButtonModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomDeviceButtonMappingModule
-
 
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
 
   #Adding ReadingRule Modules
-  - com.facilio.readingrule.signup.AddFaultImpactModules                     #Fault Impact
+  - com.facilio.readingrule.signup.AddFaultImpactModules #Fault Impact
   - com.facilio.readingrule.signup.AddReadingRuleModules
-  - com.facilio.readingrule.signup.AddRCAModules                   #RCA
+  - com.facilio.readingrule.signup.AddRCAModules #RCA
 
   - com.facilio.bmsconsoleV3.signup.asset.AddAssetDepreciationRelModule
 
@@ -390,4 +385,5 @@ classes:
   # controlActionCommand Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddControlActionCommandModule
 
-
+    #Adding Inventory Request Stateflow
+  - com.facilio.bmsconsoleV3.signup.inventory.InventoryRequestDefaultStateFlow

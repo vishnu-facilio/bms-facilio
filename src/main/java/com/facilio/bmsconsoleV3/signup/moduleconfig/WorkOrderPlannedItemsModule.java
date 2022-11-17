@@ -191,7 +191,7 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         plannedItemsFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item type", FormField.Required.REQUIRED,"itemTypes", 1, 1));
         plannedItemsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedItemsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
-        plannedItemsFormFields.add(new FormField("reservationType", FacilioField.FieldDisplayType.SELECTBOX, "Reservation Type", FormField.Required.OPTIONAL, 4, 1));
+       // plannedItemsFormFields.add( new FormField("reservationType", FacilioField.FieldDisplayType.SELECTBOX, "Reservation Type", FormField.Required.OPTIONAL, 4, 1));
         plannedItemsFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.NUMBER, "Unit Price", FormField.Required.OPTIONAL, 5, 1));
 //        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.OPTIONAL, 6, 3);
 //        totalCost.setIsDisabled(true);

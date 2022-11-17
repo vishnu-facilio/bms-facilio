@@ -60,10 +60,11 @@ public class InventoryReservationModule extends BaseModuleConfig{
         List<ViewField> columns = new ArrayList<ViewField>();
         columns.add(new ViewField("itemType","Item"));
         columns.add(new ViewField("storeRoom","Storeroom"));
-        columns.add(new ViewField("reservationType","Reservation Type"));
+//        columns.add(new ViewField("reservationType","Reservation Type"));
         columns.add(new ViewField("reservedQuantity","Reserved Quantity"));
         columns.add(new ViewField("balanceReservedQuantity","Balance Reserved Quantity"));
-        columns.add(new ViewField("inventoryRequest","inventoryRequest"));
+        columns.add(new ViewField("inventoryRequest","Inventory Request"));
+        columns.add(new ViewField("workOrder", "Work Order"));
         columns.add(new ViewField("issuedQuantity","Issued Quantity"));
         columns.add(new ViewField("reservationSource","Reservation Source"));
         columns.add(new ViewField("reservationStatus","Reservation Status"));

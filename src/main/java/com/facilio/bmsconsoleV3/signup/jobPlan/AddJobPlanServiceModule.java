@@ -63,7 +63,7 @@ public class AddJobPlanServiceModule extends BaseModuleConfig {
 	        
 	        fields.add(FieldFactory.getDefaultField("unitPrice","Unit Price","UNIT_PRICE",FieldType.DECIMAL,FieldDisplayType.DECIMAL));
 	        fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL,FieldDisplayType.DECIMAL));
-	        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.DECIMAL));
+	        fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER, FieldDisplayType.DURATION));
 	        fields.add(FieldFactory.getDefaultField("totalCost","Total Cost","TOTAL_COST",FieldType.DECIMAL,FieldDisplayType.DECIMAL));
 	        
 	        module.setFields(fields);

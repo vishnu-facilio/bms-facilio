@@ -293,7 +293,7 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += 7;
     }
 
-    private static void addActualsTab(Page page) {
+    private static void addActualsTab(Page page) throws Exception {
         Page.Tab actualsTab = page.new Tab("Actuals");
         page.addTab(actualsTab);
 
@@ -302,7 +302,7 @@ public class WorkorderPageFactory extends PageFactory {
 
 
         PageWidget actualsPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
-        actualsPageWidgetGroup.addToLayoutParams(actualsSection,24,12);
+        actualsPageWidgetGroup.addToLayoutParams(actualsSection,18,10);
         actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         actualsSection.addWidget(actualsPageWidgetGroup);
 
@@ -334,14 +334,20 @@ public class WorkorderPageFactory extends PageFactory {
         toolsRelatedList.put("summaryWidgetName","workorderToolsWidget");
         toolsWidget.setRelatedList(toolsRelatedList);
 
-        PageWidget serviceWidget = new PageWidget();
-        serviceWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_SERVICE);
-        actualsPageWidgetGroup.addToWidget(serviceWidget);
-        serviceWidget.setName("Service");
-        serviceWidget.setTitle("Service");
-        JSONObject servicesRelatedList = new JSONObject();
-        servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
-        serviceWidget.setRelatedList(servicesRelatedList);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
+            PageWidget serviceWidget = new PageWidget();
+            serviceWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_SERVICE);
+            actualsPageWidgetGroup.addToWidget(serviceWidget);
+            serviceWidget.setName("Service");
+            serviceWidget.setTitle("Service");
+            JSONObject servicesRelatedList = new JSONObject();
+            servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
+            serviceWidget.setRelatedList(servicesRelatedList);
+        }
+
+        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
+        actualsCostWidget.addToLayoutParams(actualsSection,6,8);
+        actualsSection.addWidget(actualsCostWidget);
     }
 
     private static void addFailureReportTab(Page page){

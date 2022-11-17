@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -29,6 +30,7 @@ public class SetWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         if(CollectionUtils.isNotEmpty(workOrderPlannedItems)){
             for(WorkOrderPlannedItemsContext workOrderPlannedItem : workOrderPlannedItems){
+                workOrderPlannedItem.setReservationType(ReservationType.SOFT.getIndex());
                 if(workOrderPlannedItem.getDescription()==null){
                     V3ItemTypesContext itemType = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM_TYPES,workOrderPlannedItem.getItemType().getId(),V3ItemTypesContext.class);
                     if(itemType.getDescription()!=null){
@@ -46,7 +48,15 @@ public class SetWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
                         workOrderPlannedItem.setUnitPrice(purchasedItems.get(0).getUnitcost());
                     }
                 }
+                //number fields validation
+                if(workOrderPlannedItem.getQuantity()!=null && workOrderPlannedItem.getQuantity()<0){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Enter a valid quantity");
+                }
+                if(workOrderPlannedItem.getUnitPrice()!=null && workOrderPlannedItem.getUnitPrice()<0){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Enter a valid unit price");
+                }
                 if(workOrderPlannedItem.getUnitPrice()!=null && workOrderPlannedItem.getQuantity()!=null){
+                    //total cost computation
                     Double totalCost = workOrderPlannedItem.getUnitPrice() * workOrderPlannedItem.getQuantity();
                     workOrderPlannedItem.setTotalCost(totalCost);
                 }
