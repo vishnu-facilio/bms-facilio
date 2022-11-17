@@ -29,7 +29,7 @@ public class UpdateReservedQuantityCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(workOrderItems)){
             for(V3WorkorderItemContext workOrderItem : workOrderItems){
-                if(workOrderItem.getWorkOrderPlannedItem()!=null && workOrderItem.getWorkOrderPlannedItem().getId()>0){
+                if(workOrderItem.getInventoryReservation()!=null && workOrderItem.getInventoryReservation().getId()>0){
                     Double woQuantity = workOrderItem.getQuantity();
                     V3ItemContext item = V3ItemsApi.getItems(workOrderItem.getItem().getId());
                     Double reservedQuantity = item.getReservedQuantity();

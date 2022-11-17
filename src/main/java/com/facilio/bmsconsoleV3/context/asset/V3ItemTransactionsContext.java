@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemCont
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.v3.context.V3Context;
 
@@ -269,14 +270,13 @@ public class V3ItemTransactionsContext extends V3Context {
         this.storeRoom = storeRoom;
     }
 
-    private WorkOrderPlannedItemsContext workOrderPlannedItem;
+    public InventoryReservationContext inventoryReservation;
 
-    public WorkOrderPlannedItemsContext getWorkOrderPlannedItem() {
-        return workOrderPlannedItem;
+    public InventoryReservationContext getInventoryReservation() {
+        return inventoryReservation;
     }
 
-    public void setWorkOrderPlannedItem(WorkOrderPlannedItemsContext workOrderPlannedItem) {
-        this.workOrderPlannedItem = workOrderPlannedItem;
+    public void setInventoryReservation(InventoryReservationContext inventoryReservation) {
+        this.inventoryReservation = inventoryReservation;
     }
-
 }

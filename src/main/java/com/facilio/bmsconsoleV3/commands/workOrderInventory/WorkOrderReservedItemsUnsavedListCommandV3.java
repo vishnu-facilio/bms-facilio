@@ -30,7 +30,10 @@ public class WorkOrderReservedItemsUnsavedListCommandV3 extends FacilioCommand {
                 V3WorkorderItemContext workorderItem = new V3WorkorderItemContext();
                 V3ItemContext item = V3ItemsApi.getItem(inventoryReservation.getItemType(), inventoryReservation.getStoreRoom());
                 workorderItem.setWorkorder(inventoryReservation.getWorkOrder());
-                workorderItem.setWorkOrderPlannedItem(inventoryReservation.getWorkOrderPlannedItem());
+                //workorderItem.setWorkOrderPlannedItem(inventoryReservation.getWorkOrderPlannedItem());
+                InventoryReservationContext reservation = new InventoryReservationContext();
+                reservation.setId(inventoryReservation.getId());
+                workorderItem.setInventoryReservation(reservation);
                 workorderItem.setItem(item);
                 workorderItem.setStoreRoom(item.getStoreRoom());
                 workorderItem.setQuantity(inventoryReservation.getBalanceReservedQuantity());
