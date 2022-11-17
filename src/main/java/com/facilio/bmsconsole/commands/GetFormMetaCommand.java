@@ -86,17 +86,17 @@ public class GetFormMetaCommand extends FacilioCommand {
 						newFormSection.add(formSection);
 					} else {
 						List<FormField> formSectionFields = formSection.getFields();
-						if(formSectionFields==null){
-							continue;
-						}
+
 						Map<String, FormField> formFieldMap = new HashMap<>();
-						for (FormField formField : formSectionFields) {
-							if (!formFieldMap.containsKey(formField.getName())) {
-								formFieldMap.put(formField.getName(), formField);
-							} else {
-								LOGGER.info("formField " + formField.getName() + " duplicate for form id : " + formId);
-								if (formField.getFieldId() != -1) {
+						if (formSectionFields != null){
+							for (FormField formField : formSectionFields) {
+								if (!formFieldMap.containsKey(formField.getName())) {
 									formFieldMap.put(formField.getName(), formField);
+								} else {
+									LOGGER.info("formField " + formField.getName() + " duplicate for form id : " + formId);
+									if (formField.getFieldId() != -1) {
+										formFieldMap.put(formField.getName(), formField);
+									}
 								}
 							}
 						}
