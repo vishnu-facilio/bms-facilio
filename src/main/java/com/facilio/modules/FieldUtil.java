@@ -432,7 +432,7 @@ public class FieldUtil {
                     //FacilioConstants.ContextNames.EMPLOYEE,
                     FacilioConstants.ContextNames.QUOTE,
 					FacilioConstants.ContextNames.BASE_MAIL_MESSAGE,
-					FacilioConstants.ContextNames.USER_NOTIFICATION,
+					//FacilioConstants.ContextNames.USER_NOTIFICATION,
 				/*	FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT,
 					FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION,
 					FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS,
