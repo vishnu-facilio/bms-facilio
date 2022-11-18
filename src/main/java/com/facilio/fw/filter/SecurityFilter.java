@@ -36,6 +36,7 @@ public class SecurityFilter implements Filter {
         urls.add("/api/integ/loadWebView");
         urls.add("/websocket/");
         urls.add("/sso/");
+        urls.add("/portalsso/");
         urls.add("/api/v2/module/data/customUpload");
         urls.add("/api/v2/agent/agentDownload");
         urls.add("/api/v2/agent/certificate");
