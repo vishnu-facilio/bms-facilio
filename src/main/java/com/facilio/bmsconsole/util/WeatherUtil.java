@@ -823,11 +823,15 @@ public class WeatherUtil {
 	}
 
 	public static void addDewPoint(long parentId, Map<Long, List<ReadingContext>> readingsMap) {
-		List<ReadingContext> readingsList = readingsMap.get(parentId);
-		for(ReadingContext reading : readingsList) {
-			if(reading.getReading("dewPoint")==null) {
-				reading.addReading("dewPoint", PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(reading.getReadings()));
+		try {
+			List<ReadingContext> readingsList = readingsMap.get(parentId);
+			for (ReadingContext reading : readingsList) {
+				if (reading.getReading("dewPoint") == null) {
+					reading.addReading("dewPoint", PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(reading.getReadings()));
+				}
 			}
+		}catch (Exception e) {
+			LOGGER.error("Unable to add dewPoint.");
 		}
 	}
 }
