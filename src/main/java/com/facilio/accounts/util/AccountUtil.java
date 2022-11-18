@@ -1,25 +1,15 @@
 package com.facilio.accounts.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.facilio.accounts.bean.*;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
-import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
-import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -34,8 +24,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
-
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 @Log4j
 public class AccountUtil {
 
@@ -520,7 +513,8 @@ public class AccountUtil {
 		WO_STATE_TRANSITION_V3(91,134217728,LicenseMapping.GROUP2LICENSE), //2^27
 		REPORT_SHARE(92,268435456,LicenseMapping.GROUP2LICENSE),//2^28
 		NEW_LOOKUP_WIZARD(93,536870912,LicenseMapping.GROUP2LICENSE),//2^29
-		WORKFLOW_LOG(94,1073741824,LicenseMapping.GROUP2LICENSE); // 2^30
+		WORKFLOW_LOG(94,1073741824,LicenseMapping.GROUP2LICENSE), // 2^30
+		NEW_V3API(95,2147483648L,LicenseMapping.GROUP2LICENSE); //2^31
 		
 		public int featureId;
 		private long license;
