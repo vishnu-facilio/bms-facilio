@@ -1843,10 +1843,28 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception {
-		
+		addSubModule(parentModuleId, childModuleId, -1);
+	}
+
+	/**
+	 * @param deleteType values:
+	 * 	- RESTRICT = 0
+	 * 	- SET_NULL = 1
+	 * 	- CASCADE  = 2
+	 * @param parentModuleId
+	 * @param childModuleId
+	 * @param deleteType
+	 * @throws Exception
+	 */
+	@Override
+	public void addSubModule(long parentModuleId, long childModuleId, int deleteType) throws Exception {
+
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("parentModuleId",parentModuleId);
 		prop.put("childModuleId", childModuleId);
+		if(deleteType >= 0) {
+			prop.put("deleteType", deleteType);
+		}
 
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table("SubModulesRel")

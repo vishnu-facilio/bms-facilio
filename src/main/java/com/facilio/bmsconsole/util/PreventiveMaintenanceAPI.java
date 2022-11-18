@@ -1048,11 +1048,11 @@ public class PreventiveMaintenanceAPI {
 		builder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(endTime), NumberOperators.LESS_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(endTime), NumberOperators.LESS_THAN))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
 				.andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
-				.orderBy("scheduledStart")
+				.orderBy("createdTime")
 				.skipModuleCriteria();
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
@@ -1063,7 +1063,7 @@ public class PreventiveMaintenanceAPI {
 			for (WorkOrderContext wo : workorders) {
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("id", wo.getId());
-				prop.put("nextExecutionTime", wo.getScheduledStart());
+				prop.put("nextExecutionTime", wo.getCreatedTime());
 				prop.put("orgId", wo.getOrgId());
 				prop.put("pmId", wo.getPm().getId());
 				if (wo.getResource() != null && wo.getResource().getId() > 0) {
