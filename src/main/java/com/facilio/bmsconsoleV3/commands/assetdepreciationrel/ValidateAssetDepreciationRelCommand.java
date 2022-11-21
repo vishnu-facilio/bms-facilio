@@ -53,7 +53,7 @@ public class ValidateAssetDepreciationRelCommand extends FacilioCommand {
 
             FacilioUtil.throwIllegalArgumentException(assetInfo.getUnitPrice() <= 0 , "Unit Price is empty");
 
-            long startDateField = depreciation.getStartDateFieldId();
+            long startDateField = assetDepreciationContext.getStartDateFieldId();
 
             FacilioField field = Constants.getModBean().getField(startDateField,Constants.getModBean().getModule(FacilioConstants.ContextNames.ASSET).getName());
             Long fieldValue = (Long) FieldUtil.getAsProperties(assetInfo).get(field.getName());
