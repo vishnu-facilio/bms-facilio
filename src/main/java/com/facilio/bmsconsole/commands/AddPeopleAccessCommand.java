@@ -30,10 +30,15 @@ public class AddPeopleAccessCommand extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty(people) && MapUtils.isNotEmpty(changeSet)) {
 			for (PeopleContext ppl : people) {
 				List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
-				if ((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "employeePortalAccess", FacilioConstants.ContextNames.PEOPLE)) || MapUtils.isNotEmpty(ppl.getRolesMap())) {
-					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
-				} else if ((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) || MapUtils.isNotEmpty(ppl.getRolesMap())) {
-					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+				if (ppl.getPeopleType() == PeopleContext.PeopleType.EMPLOYEE.getIndex()){
+					if ((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "employeePortalAccess", FacilioConstants.ContextNames.PEOPLE)) || MapUtils.isNotEmpty(ppl.getRolesMap())) {
+						PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+					}
+				}
+				else if (ppl.getPeopleType() == PeopleContext.PeopleType.OCCUPANT.getIndex()){
+					if ((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) || MapUtils.isNotEmpty(ppl.getRolesMap())) {
+						PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+					}
 				}
 			}
 		}
