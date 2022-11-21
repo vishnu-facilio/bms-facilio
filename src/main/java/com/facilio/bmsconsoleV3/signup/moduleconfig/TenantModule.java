@@ -154,35 +154,9 @@ public class TenantModule extends BaseModuleConfig{
         tenantForm.setIsSystemForm(true);
         tenantForm.setType(FacilioForm.Type.FORM);
 
-        FacilioForm tenantWebForm = new FacilioForm();
-        tenantWebForm.setDisplayName("TENANT");
-        tenantWebForm.setName("web_default");
-        tenantWebForm.setModule(tenantModule);
-        tenantWebForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        tenantWebForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
-
-        List<FormField> tenantWebFormFields = new ArrayList<>();
-        tenantWebFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Tenant Logo", FormField.Required.OPTIONAL,1,1));
-        tenantWebFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
-        tenantWebFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
-        tenantWebFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 1));
-        tenantWebFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Name", FormField.Required.REQUIRED, 6, 1));
-        tenantWebFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact E-mail", FormField.Required.OPTIONAL, 7, 1));
-        tenantWebFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Phone", FormField.Required.REQUIRED, 8, 1));
-        tenantWebFormFields.add(new FormField("tenantType", FacilioField.FieldDisplayType.SELECTBOX, "Tenant Type", FormField.Required.OPTIONAL, 9, 1));
-        tenantWebFormFields.add(new FormField("inTime", FacilioField.FieldDisplayType.DATE, "Lease Start Date", FormField.Required.OPTIONAL, 10, 1));
-        tenantWebFormFields.add(new FormField("outTime", FacilioField.FieldDisplayType.DATE, "Lease End Date", FormField.Required.OPTIONAL, 11, 1));
-        tenantWebFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 12, 1));
-
-        FormSection tenantWebFormSection = new FormSection("Default", 1, tenantWebFormFields, false);
-        tenantWebFormSection.setSectionType(FormSection.SectionType.FIELDS);
-        tenantWebForm.setSections(Collections.singletonList(tenantWebFormSection));
-        tenantWebForm.setIsSystemForm(true);
-        tenantWebForm.setType(FacilioForm.Type.FORM);
 
         List<FacilioForm> tenantModuleForms = new ArrayList<>();
         tenantModuleForms.add(tenantForm);
-        tenantModuleForms.add(tenantWebForm);
 
         return tenantModuleForms;
     }

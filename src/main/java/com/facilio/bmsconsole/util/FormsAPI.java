@@ -1,18 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1111,7 +1099,9 @@ public class FormsAPI {
 	private static void addUnusedCustomModuleSystemFields(FacilioForm form, List<FormField> fields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField photoField = modBean.getField("photo", form.getModule().getName());
-		fields.add(getFormFieldFromFacilioField(photoField, 1));
+		if(photoField != null) {
+			fields.add(getFormFieldFromFacilioField(photoField, 1));
+		}
 		FacilioField nameField = modBean.getField("name", form.getModule().getName());
 		fields.add(getFormFieldFromFacilioField(nameField, 1));
 		FacilioField failureClassField = modBean.getField("failureclass", form.getModule().getName());
@@ -1198,6 +1188,9 @@ public class FormsAPI {
 		}
 		for (FormField f: fields) {
 			if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
+				if(f.getName() == null && (f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER || f.getDisplayTypeEnum() == FieldDisplayType.TEAMSTAFFASSIGNMENT)){
+					f.setName(f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER ? ContextNames.RESOURCE:ContextNames.ASSIGNMENT);
+				}
 				FormField formField = FieldUtil.cloneBean(f, FormField.class);
 				formField.setId(-1);
 				formField.setFormId(-1);
@@ -1257,6 +1250,9 @@ public class FormsAPI {
 	public static void setFieldDetails(ModuleBean modBean, List<FormField> fields, String moduleName) throws Exception {
 		for (int i = 0; i < fields.size(); i++) {
 			FormField f = fields.get(i);
+			if(f.getName() == null && (f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER || f.getDisplayTypeEnum() == FieldDisplayType.TEAMSTAFFASSIGNMENT)){
+				f.setName(f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER ? ContextNames.RESOURCE:ContextNames.ASSIGNMENT);
+			}
 			FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
 			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
 			if (field != null) {

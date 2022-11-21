@@ -941,6 +941,7 @@ public class FacilioConstants {
 		public static final String SKILL_LIST = "skills";
 
 		public static final String RESOURCE = "resource";
+		public static final String ASSIGNMENT = "assignment";
 		public static final String RESOURCE_LIST = "resourceList";
 		public static final String FETCH_RESOURCE_DETAIL = "fetchresourcedetail";
 
