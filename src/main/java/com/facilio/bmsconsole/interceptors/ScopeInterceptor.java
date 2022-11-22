@@ -39,6 +39,7 @@ import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -48,6 +49,8 @@ import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -512,7 +515,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
             if (tab != null) {
                 ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
                 List<String> modulesList = ApplicationApi.getModulesForTab(tabId);
-                String commonString = " Role Name - " + roleName + " - Action " + action;
+                String commonString = " Role Name - " + roleName + " - Action " + action + " - referrer - " + getReferrerUri();
                 if (app == null) {
                     LOGGER.info("scope interceptor tab permission Case 1 : Application is empty - tab name" + tab.getName() + commonString);
                 }
@@ -535,9 +538,19 @@ public class ScopeInterceptor extends AbstractInterceptor {
     private void permissionLogsForModule(String moduleName,String roleName,String action) {
         try {
             //Handled in client - need to check after logs
-            LOGGER.info("scope interceptor module permission : Module Name - " + moduleName + " - Role Name - " + roleName + " - Action - " + action);
+            LOGGER.info("scope interceptor module permission : Module Name - " + moduleName + " - Role Name - " + roleName + " - Action - " + action + " - referrer - " + getReferrerUri());
         } catch (Exception e) {
             LOGGER.info("Exception in module permission logs - " + e);
         }
+    }
+
+    private String getReferrerUri() throws Exception {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String referrer = request.getHeader(HttpHeaders.REFERER);
+        if (referrer != null && !"".equals(referrer.trim())) {
+            URL url = new URL(referrer);
+            return url.getPath();
+        }
+        return "";
     }
 }
