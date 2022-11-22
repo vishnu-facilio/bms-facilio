@@ -295,8 +295,13 @@ function showLicense() {
  						<%  } %>
 					</table>
 				</div>
-
-				<input type="submit" name="addLicense" value="Update" />
+				<%
+					String currentUserEmail = AccountUtil.getCurrentUser().getEmail();
+					List<String> allowedUserToUpdateLicence = Arrays.asList("vandhana@facilio.com","shivaraj@facilio.com","yoge@facilio.com");
+					if(!FacilioProperties.isProduction() || (allowedUserToUpdateLicence.contains(currentUserEmail))) {
+  				%>
+						<input type="submit" name="addLicense" value="Update" />
+				<%  } %>
 			</form>
 
 		<% } %>

@@ -16,9 +16,11 @@ public class UpdateResponseStateToPartialAnswered extends FacilioCommand {
         List<ResponseContext> responses = (List<ResponseContext>) context.get(FacilioConstants.QAndA.Command.RESPONSE_LIST);
         if (CollectionUtils.isNotEmpty(responses)) {
             for (ResponseContext response : responses) {
-                ResponseContext updatedResponse = FieldUtil.cloneBean(response, ResponseContext.class);
-                updatedResponse.setResStatus(ResponseContext.ResponseStatus.PARTIALLY_ANSWERED);
-                int rowsUpdated = QAndAUtil.updateRecordViaV3Chain(response.getQAndAType().getResponseModule(), updatedResponse, response);
+            	if(response.getResStatus() != ResponseContext.ResponseStatus.PARTIALLY_ANSWERED) {
+            		ResponseContext updatedResponse = FieldUtil.cloneBean(response, ResponseContext.class);
+                    updatedResponse.setResStatus(ResponseContext.ResponseStatus.PARTIALLY_ANSWERED);
+                    int rowsUpdated = QAndAUtil.updateRecordViaV3Chain(response.getQAndAType().getResponseModule(), updatedResponse, response);
+            	}
             }
         }
         return false;
