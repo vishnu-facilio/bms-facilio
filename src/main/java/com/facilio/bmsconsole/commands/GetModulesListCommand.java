@@ -59,7 +59,9 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.REQUEST_FOR_QUOTATION,
 			ContextNames.PLANNEDMAINTENANCE,
 			ContextNames.ANNOUNCEMENT,
-			ContextNames.JOB_PLAN);
+			ContextNames.JOB_PLAN,
+			FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

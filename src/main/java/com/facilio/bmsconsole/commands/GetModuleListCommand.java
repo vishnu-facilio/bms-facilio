@@ -67,7 +67,10 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.DELIVERIES,
 			ContextNames.LOCKERS,
 			ContextNames.PARKING_STALL,
-			ContextNames.SPACE_BOOKING
+			ContextNames.SPACE_BOOKING,
+			ContextNames.FAILURE_CLASS,
+			FacilioConstants.PeopleGroup.PEOPLE_GROUP
+
 	});
 
 	@Override

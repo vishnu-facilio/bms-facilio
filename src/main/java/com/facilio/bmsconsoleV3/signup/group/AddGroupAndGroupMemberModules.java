@@ -42,7 +42,7 @@ public class AddGroupAndGroupMemberModules extends SignUpData {
 
         FacilioModule module = new FacilioModule(
                 FacilioConstants.PeopleGroup.PEOPLE_GROUP,
-                "People Group",
+                "Teams",
                 "FacilioGroups",
                 FacilioModule.ModuleType.BASE_ENTITY,
                 true);

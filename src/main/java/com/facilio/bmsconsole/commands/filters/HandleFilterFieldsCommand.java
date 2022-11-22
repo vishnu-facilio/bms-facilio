@@ -208,6 +208,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.OUTGOING_MAIL_LOGGER_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case ContextNames.AGENT_ALARM:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.AGENT_ALARM_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case FacilioConstants.Workflow.WORKFLOW_LOG:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.WORKFLOW_LOG_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

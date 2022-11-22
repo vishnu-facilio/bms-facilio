@@ -502,6 +502,12 @@ public class FieldFactory extends BaseFieldFactory {
                 "mailStatus"
         }));
 
+        public static final List<String> WORKFLOW_LOG_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
+                "createdTime",
+                "status",
+                "logType"
+        }).collect(Collectors.toList()));
+
     }
         
     public static List<FacilioField> getFormFields() {
