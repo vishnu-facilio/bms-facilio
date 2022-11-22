@@ -148,6 +148,7 @@ public class V3TicketAPI {
 
         boolean isWorkOrder = ticket instanceof V3WorkOrderContext;
         if (ticket.getResource() != null && ticket.getResource().getId() != -1) {
+            LOGGER.error("validateSiteSpecificData(): ID = " + ticket.getResource().getId());
             ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
             long resourceSiteId = -1;
             if (resource.getResourceTypeEnum() == ResourceContext.ResourceType.SPACE) {
