@@ -2816,7 +2816,7 @@ public class FacilioAuthAction extends FacilioAction {
 		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 		AppDomainLink domainLink = null;
 		if (appDomain != null) {
-			domainLink = IAMOrgUtil.getDomainLink(appDomain.getDomain(), AppDomainLink.LinkType.PRIVACY_POLICY);
+			domainLink = IAMOrgUtil.getDomainLink(appDomain, AppDomainLink.LinkType.PRIVACY_POLICY);
 		}
 		setResult("privacyPolicy", domainLink);
 		return SUCCESS;
@@ -2827,9 +2827,37 @@ public class FacilioAuthAction extends FacilioAction {
 		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 		AppDomainLink domainLink = null;
 		if (appDomain != null) {
-			domainLink = IAMOrgUtil.getDomainLink(appDomain.getDomain(), AppDomainLink.LinkType.TERMS_OF_USE);
+			domainLink = IAMOrgUtil.getDomainLink(appDomain, AppDomainLink.LinkType.TERMS_OF_USE);
 		}
 		setResult("termsOfService", domainLink);
+		return SUCCESS;
+	}
+
+	private String linkType;
+	public void setLinkType(String linkType) {
+		this.linkType = linkType;
+	}
+	public String getLinkType() {
+		return this.linkType;
+	}
+	public String fetchDomainLink() throws Exception {
+		AppDomainLink.LinkType domainLinkType = null;
+		if (getLinkType() != null) {
+			domainLinkType = AppDomainLink.LinkType.valueOf(getLinkType());
+		}
+		if (domainLinkType == null) {
+			setResponseCode(1);
+			setResult("message", "linkType param missing.");
+			return SUCCESS;
+		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+		AppDomainLink domainLink = null;
+		if (appDomain != null) {
+			domainLink = IAMOrgUtil.getDomainLink(appDomain, domainLinkType);
+		}
+		setResult("domainlink", domainLink);
 		return SUCCESS;
 	}
 }

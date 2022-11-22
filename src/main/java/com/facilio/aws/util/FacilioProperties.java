@@ -196,6 +196,24 @@ public class FacilioProperties {
     @Getter
     private static boolean isOrderByCleaningEnabled;
 
+    @Getter
+    private static String facilioIosURL;
+    @Getter
+    private static String facilioAndroidURL;
+    @Getter
+    private static String servicePortalIosURL;
+    @Getter
+    private static String servicePortalAndroidURL;
+    @Getter
+    private static String tenantPortalIosURL;
+    @Getter
+    private static String tenantPortalAndroidURL;
+    @Getter
+    private static String vendorPortalIosURL;
+    @Getter
+    private static String vendorPortalAndroidURL;
+
+
     static {
         loadProperties();
     }
@@ -364,6 +382,16 @@ public class FacilioProperties {
 
             privacyPolicyURL = (String) PROPERTIES.getOrDefault("privacyPolicyURL", "https://facilio.com/privacy-policy");
             termsOfServiceURL = (String) PROPERTIES.getOrDefault("termsOfServiceURL", "https://facilio.com/terms-of-service");
+
+            facilioIosURL = (String) PROPERTIES.getOrDefault("facilio.ios.url", "https://apps.apple.com/us/developer/facilio-inc/id1438082478");
+            facilioAndroidURL = (String) PROPERTIES.getOrDefault("facilio.android.url", "https://play.google.com/store/apps/developer?id=Facilio");
+            servicePortalIosURL = (String) PROPERTIES.getOrDefault("serviceportal.ios.url", "https://apps.apple.com/us/app/facilio-occupants/id1455824987");
+            servicePortalAndroidURL = (String) PROPERTIES.getOrDefault("serviceportal.android.url", "https://play.google.com/store/apps/details?id=com.facilio.mobile.facilioportal");
+            tenantPortalIosURL = (String) PROPERTIES.getOrDefault("tenantportal.ios.url", "https://apps.apple.com/us/app/facilio-tenants/id1499641546");
+            tenantPortalAndroidURL = (String) PROPERTIES.getOrDefault("tenantportal.android.url", "https://play.google.com/store/apps/details?id=com.facilio.mobile.facilioportal.tenant");
+            vendorPortalIosURL = (String) PROPERTIES.getOrDefault("vendorportal.ios.url", "https://apps.apple.com/us/app/facilio-vendors/id1499642197");
+            vendorPortalAndroidURL = (String) PROPERTIES.getOrDefault("vendorportal.android.url", "https://play.google.com/store/apps/details?id=com.facilio.mobile.facilioportal.vendor");
+
             appProtocol = (String) PROPERTIES.getOrDefault("app.protocol", "https");
 
             if (PROPERTIES.containsKey("iot.endpoint.port")) {
@@ -408,6 +436,7 @@ public class FacilioProperties {
         } catch (IOException e) {
             LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
         }
+
     }
 
     public static String getIamregion() { return iamregion; }

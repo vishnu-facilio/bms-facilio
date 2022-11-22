@@ -101,7 +101,7 @@
                             </a>
                         </span>
                         <span>
-                            <a href="https://play.google.com/store/apps/developer?id=Facilio+Inc" target="_blank"
+                            <a href="https://play.google.com/store/apps/developer?id=Facilio" target="_blank"
                                 style="color: #271556;">
                                 <img src="https://static.facilio.com/guide/emailImg/google-logo.png"
                                     style="width: 110px; height: auto;" />

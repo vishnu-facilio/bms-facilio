@@ -314,6 +314,18 @@
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
 	</action>
+
+		<action name="domainlink" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchDomainLink">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="authApi" namespace="/auth/api" extends="integration">

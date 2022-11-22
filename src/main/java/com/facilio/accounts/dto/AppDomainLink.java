@@ -128,6 +128,8 @@ public class AppDomainLink implements Serializable {
     public static enum LinkType implements FacilioIntEnum {
         PRIVACY_POLICY,
         TERMS_OF_USE,
+        IOS_APP,
+        ANDROID_APP,
         HELP,
         FAQ,
         OTHER;

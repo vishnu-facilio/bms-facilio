@@ -132,8 +132,8 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().addOrUpdateDomainLink(domainLink));
 	}
 
-	public static AppDomainLink getDomainLink(String domain, AppDomainLink.LinkType linkType) throws Exception {
-		AppDomainLink domainLink = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getDomainLink(domain, linkType));
+	public static AppDomainLink getDomainLink(AppDomain appDomain, AppDomainLink.LinkType linkType) throws Exception {
+		AppDomainLink domainLink = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getDomainLink(appDomain.getDomain(), linkType));
 		if (domainLink == null) {
 			if (linkType == AppDomainLink.LinkType.PRIVACY_POLICY) {
 				domainLink = new AppDomainLink();
@@ -147,6 +147,64 @@ public class IAMOrgUtil {
 				domainLink.setLinkType(linkType);
 				domainLink.setIsExternalURL(true);
 				domainLink.setExternalURL(FacilioProperties.getTermsOfServiceURL());
+			} else if (linkType == AppDomainLink.LinkType.IOS_APP) {
+				if (appDomain.getAppDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio iOS Apps");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getFacilioIosURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Occupants");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getServicePortalIosURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Tenants");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getTenantPortalIosURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Vendors");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getVendorPortalIosURL());
+				}
+			} else if (linkType == AppDomainLink.LinkType.ANDROID_APP) {
+				if (appDomain.getAppDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio Android Apps");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getFacilioAndroidURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Occupants");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getServicePortalAndroidURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Tenants");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getTenantPortalAndroidURL());
+				}
+				else if (appDomain.getAppDomainType() == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
+					domainLink = new AppDomainLink();
+					domainLink.setName("Facilio - Vendors");
+					domainLink.setLinkType(linkType);
+					domainLink.setIsExternalURL(true);
+					domainLink.setExternalURL(FacilioProperties.getVendorPortalAndroidURL());
+				}
 			}
 		}
 		return domainLink;
