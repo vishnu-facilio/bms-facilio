@@ -1,18 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -27,6 +16,15 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CustomModulePageFactory extends PageFactory {
 	
@@ -137,7 +135,7 @@ public class CustomModulePageFactory extends PageFactory {
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false);
 		}
 
-		if(AccountUtil.getCurrentUser().getOrgId()==173L){
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
 			Page.Tab tab3 = page.new Tab("Specification");
 			page.addTab(tab3);
 			Page.Section tab3Sec1 = page.new Section();
