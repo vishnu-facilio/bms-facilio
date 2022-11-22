@@ -514,8 +514,10 @@ public class AccountUtil {
 		REPORT_SHARE(92,268435456,LicenseMapping.GROUP2LICENSE),//2^28
 		NEW_LOOKUP_WIZARD(93,536870912,LicenseMapping.GROUP2LICENSE),//2^29
 		WORKFLOW_LOG(94,1073741824,LicenseMapping.GROUP2LICENSE), // 2^30
-		NEW_V3API(95,2147483648L,LicenseMapping.GROUP2LICENSE); //2^31
-		
+		NEW_V3API(95,2147483648L,LicenseMapping.GROUP2LICENSE), //2^31
+		CLASSIFICATION(96,4294967296L,LicenseMapping.GROUP2LICENSE),//2^32
+		RERUN_WORKFLOW(97,8589934592L, LicenseMapping.GROUP2LICENSE);//2^33
+
 		public int featureId;
 		private long license;
 		private String[] modules;
