@@ -3,14 +3,18 @@ package com.facilio.bmsconsoleV3.commands.workpermit;
 import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class ValidationForDateCommandV3 extends FacilioCommand {
     @Override
@@ -21,10 +25,15 @@ public class ValidationForDateCommandV3 extends FacilioCommand {
         List<V3WorkPermitContext> workPermitContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(workPermitContexts)) {
             for (V3WorkPermitContext wp : workPermitContexts) {
-                if (wp.getExpectedStartTime() != null && wp.getExpectedEndTime()!= null && wp.getExpectedStartTime() > wp.getExpectedEndTime()) {
+
+                if(wp.getExpectedStartTime() != null && wp.getExpectedEndTime()!= null && wp.getExpectedStartTime() < System.currentTimeMillis()) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected Valid From should be greater than or equal to current date and time");
+                }
+                      if ( wp.getExpectedStartTime() > wp.getExpectedEndTime()) {
                     {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter proper validity Dates.");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Valid From should be less than Valid To.");
                     }
+
                 }
             }
         }
