@@ -278,7 +278,7 @@ public class GetViewListCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void sortGroupViews(List<Map<String, Object>> groupViews, Map<String, FacilioView> viewMap, List<ViewGroups> viewGroups, String moduleName) {
+	private void sortGroupViews(List<Map<String, Object>> groupViews, Map<String, FacilioView> viewMap, List<ViewGroups> viewGroups, String moduleName) throws Exception {
 		if (groupViews != null) {
 			for(Map<String, Object> group : groupViews) {
 				List<ViewGroups> sysAndCusViewGroup = viewGroups.stream().filter(viewGroup -> viewGroup.getName().equals(group.get("name"))).collect(Collectors.toList());
@@ -294,7 +294,11 @@ public class GetViewListCommand extends FacilioCommand {
 						for(String viewName: ((List<String>)group.get("views"))) {
 							FacilioView view = viewMap.get(viewName);
 							if (view != null ) {
-								LOGGER.info(String.format("ViewFactoryTracking - GetViewListCommand.sortGroupViews() - ModuleName - %s GroupName - %s ViewName - %s", moduleName, group.get("name"), viewName));
+								ApplicationContext applicationContext = AccountUtil.getCurrentApp();
+								if (applicationContext == null) {
+									applicationContext = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+								}
+								LOGGER.info(String.format("ViewFactoryTracking - GetViewListCommand.sortGroupViews() - ModuleName - %s GroupName - %s ViewName - %s AppId - %d AppName - %s", moduleName, group.get("name"), viewName, applicationContext.getId(), applicationContext.getLinkName()));
 								viewsList.add(view);
 							}
 						}

@@ -1039,4 +1039,44 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			throw e;
 		}
 	}
+
+	public static FacilioView getAllView(ModuleBean modBean, FacilioModule module, String viewName) throws Exception {
+		FacilioView view = null;
+
+		view = new FacilioView();
+		view.setName(viewName);
+		view.setDisplayName("All");
+		view.setModuleName(module.getName());
+
+		if (modBean == null) {
+			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		}
+		List<ViewField> columns = new ArrayList<>();
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		for (FacilioField field : allFields) {
+			ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+			viewField.setFieldName(viewField.getName());
+			viewField.setFieldId(field.getFieldId());
+			viewField.setField(field);
+			columns.add(viewField);
+		}
+
+		if (columns != null && module.isCustom()) {
+			List<ViewField> fieldsToRemove = new ArrayList<>();
+			for(ViewField column : columns) {
+				if (column.getName().equals("stateFlowId")) {
+					fieldsToRemove.add(column);
+				}
+				if (module.getStateFlowEnabled() != null && !module.getStateFlowEnabled() && column.getName().equals("moduleState")) {
+					fieldsToRemove.add(column);
+				}
+			}
+			columns.removeAll(fieldsToRemove);
+		}
+
+		view.setFields(columns);
+		view.setDefault(true);
+
+		return view;
+	}
 }
