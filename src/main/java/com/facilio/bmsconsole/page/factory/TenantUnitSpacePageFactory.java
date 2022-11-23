@@ -86,8 +86,6 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
-        addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
-        addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
 
         List<String> excludedModules = new ArrayList<>();
         excludedModules.add(FacilioConstants.ContextNames.WORK_ORDER);
@@ -100,6 +98,20 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         excludedModules.add("custom_retailoperationassignment");
         excludedModules.add("custom_incidentmanagement_1");
         }
+
+        if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+            excludedModules.add(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+            if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
+                excludedModules.add(FacilioConstants.ContextNames.ASSET);
+            }
+            else {
+                addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+            }
+        }
+        else {
+            addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+        }
+        addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
         addRelatedListWidgets(tab3Sec1, module.getModuleId(), excludedModules, false);
 
         return page;
