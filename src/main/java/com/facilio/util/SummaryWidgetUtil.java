@@ -50,35 +50,37 @@ public class SummaryWidgetUtil {
         }
 
         CustomPageWidget pageWidget = CustomPageAPI.getCustomPageWidget(appId, widgetId, widgetName, moduleId);
-        if (pageWidget != null) {
-            long currWidgetId = pageWidget.getId();
-            List<SummaryWidgetGroup> widgetGroups = CustomPageAPI.getCustomWidgetGroups(currWidgetId);
-            List<SummaryWidgetGroupFields> allWidgetGroupFields = CustomPageAPI.getCustomWidgetGroupFields(currWidgetId);
-
-            if (CollectionUtils.isNotEmpty(allWidgetGroupFields)) {
-                getAllFieldDetails(allWidgetGroupFields);
-            }
-
-            Map<Long, List<SummaryWidgetGroupFields>> groupVsFieldsMap = new HashMap<>();
-            for (SummaryWidgetGroupFields field : allWidgetGroupFields) {
-                long groupId = field.getWidgetGroupId();
-                if (groupVsFieldsMap.containsKey(groupId)) {
-                    groupVsFieldsMap.get(groupId).add(field);
-                } else {
-                    List<SummaryWidgetGroupFields> currGroupFields = new ArrayList<>();
-                    currGroupFields.add(field);
-                    groupVsFieldsMap.put(groupId, currGroupFields);
-                }
-            }
-
-            for (SummaryWidgetGroup widgetGroup : widgetGroups) {
-                long groupId = widgetGroup.getId();
-                if (groupVsFieldsMap.containsKey(groupId)) {
-                    widgetGroup.setFields(groupVsFieldsMap.get(groupId));
-                }
-            }
-            pageWidget.setGroups(widgetGroups);
+        if (pageWidget == null){
+            throw new IllegalArgumentException("No PageWidget found");
         }
+        
+        long currWidgetId = pageWidget.getId();
+        List<SummaryWidgetGroup> widgetGroups = CustomPageAPI.getCustomWidgetGroups(currWidgetId);
+        List<SummaryWidgetGroupFields> allWidgetGroupFields = CustomPageAPI.getCustomWidgetGroupFields(currWidgetId);
+
+        if (CollectionUtils.isNotEmpty(allWidgetGroupFields)) {
+            getAllFieldDetails(allWidgetGroupFields);
+        }
+
+        Map<Long, List<SummaryWidgetGroupFields>> groupVsFieldsMap = new HashMap<>();
+        for (SummaryWidgetGroupFields field : allWidgetGroupFields) {
+            long groupId = field.getWidgetGroupId();
+            if (groupVsFieldsMap.containsKey(groupId)){
+                groupVsFieldsMap.get(groupId).add(field);
+            } else {
+                List<SummaryWidgetGroupFields> currGroupFields = new ArrayList<>();
+                currGroupFields.add(field);
+                groupVsFieldsMap.put(groupId, currGroupFields);
+            }
+        }
+
+        for (SummaryWidgetGroup widgetGroup : widgetGroups) {
+            long groupId = widgetGroup.getId();
+            if (groupVsFieldsMap.containsKey(groupId)) {
+                widgetGroup.setFields(groupVsFieldsMap.get(groupId));
+            }
+        }
+        pageWidget.setGroups(widgetGroups);
 
         return pageWidget;
     }
@@ -232,36 +234,5 @@ public class SummaryWidgetUtil {
                 throw new IllegalArgumentException("Span of fields should be less than Group span");
             }
         }
-    }
-
-    public static CustomPageWidget generateCustomWidget(List<FacilioField> fields) {
-        if (CollectionUtils.isNotEmpty(fields)) {
-            CustomPageWidget pageWidget = new CustomPageWidget();
-            List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
-            List<SummaryWidgetGroupFields> widgetGroupFields = new ArrayList<>();
-
-            for (FacilioField field : fields) {
-                SummaryWidgetGroupFields groupField = new SummaryWidgetGroupFields();
-                groupField.setField(field);
-                groupField.setName(field.getName());
-                groupField.setFieldId(field.getFieldId());
-                groupField.setDisplayName(field.getDisplayName());
-
-                widgetGroupFields.add(groupField);
-            }
-
-            SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
-            widgetGroup.setFields(widgetGroupFields);
-            widgetGroup.setDisplayName("");
-            widgetGroup.setName("");
-            widgetGroupList.add(widgetGroup);
-
-            pageWidget.setGroups(widgetGroupList);
-            pageWidget.setName("mainsummarywidget");
-            pageWidget.setDisplayName("Summary Fields Widget");
-
-            return pageWidget;
-        }
-        return null;
     }
 }

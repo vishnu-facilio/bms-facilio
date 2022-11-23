@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 public class LoadViewCommand extends FacilioCommand {
 
 	public static final List<String> HIDDEN_VIEW_NAMES = Arrays.asList("hidden-all", "pendingapproval");
-	public static final List<String> ALL_VIEW_NAMES = Arrays.asList("all", "hidden-all");
 
 	private static final Logger LOGGER = LogManager.getLogger(LoadViewCommand.class.getName());
 	@Override
@@ -61,25 +60,21 @@ public class LoadViewCommand extends FacilioCommand {
 			}
 			
 			if(view == null) {
-				if (ALL_VIEW_NAMES.contains(viewName)) {
-					view = ViewAPI.getAllView(modBean, module, viewName);
-				}
-
+				
 				boolean isHiddenView = false;
-				if (view == null) {
-					if (HIDDEN_VIEW_NAMES.contains(viewName)) {
-						viewName = "all";
-						isHiddenView = true;
-					}
-
-					view = ViewFactory.getView(module, viewName, modBean);
-					if (view == null && parentViewName != null) {
-						view = ViewFactory.getView(module, parentViewName, modBean);
-					} else if (view == null) {
-						String extendedModName = module.getExtendModule() == null ? StringUtils.EMPTY : module.getExtendModule().getName();
-						if (extendedModName.contains("asset")) {
-							view = ViewFactory.getModuleView(module, extendedModName);
-						}
+				if (HIDDEN_VIEW_NAMES.contains(viewName)) {
+					viewName = "all";
+					isHiddenView = true;
+				}
+				
+				view = ViewFactory.getView(module, viewName, modBean);
+				if (view == null && parentViewName != null) {
+					view = ViewFactory.getView(module, parentViewName, modBean);
+				}
+				else if (view == null) {
+					String extendedModName = module.getExtendModule() == null ? StringUtils.EMPTY : module.getExtendModule().getName();
+					if (extendedModName.contains("asset")) {
+						view = ViewFactory.getModuleView(module, extendedModName);
 					}
 				}
 				

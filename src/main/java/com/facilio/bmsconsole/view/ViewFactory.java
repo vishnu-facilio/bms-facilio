@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -10,7 +9,6 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
@@ -59,8 +57,7 @@ public class ViewFactory {
 	}
 	
 	public static FacilioView getView(String moduleName, FacilioModule module, String viewName, ModuleBean modBean) throws Exception {
-		ApplicationContext applicationContext = getApplicationContext();
-		LOGGER.info(String.format("ViewFactoryTracking - getView() - ModuleName - %s ViewName - %s AppId - %d AppName - %s", moduleName, viewName, applicationContext.getId(), applicationContext.getLinkName()));
+		LOGGER.info(String.format("ViewFactoryTracking - getView() - ModuleName - %s ViewName - %s", moduleName, viewName));
 		FacilioView view = null;
 		if (viewName != null) {
 			
@@ -4015,9 +4012,8 @@ public class ViewFactory {
 		return subViewsMap;
 	}
 
-	public static List<Map<String, Object>> getSubViewsCriteria(String moduleName, String viewName) throws Exception {
-		ApplicationContext applicationContext = getApplicationContext();
-		LOGGER.info(String.format("ViewFactoryTracking - getSubViewsCriteria() - ModuleName - %s ViewName - %s AppId - %d AppName - %s", moduleName, viewName, applicationContext.getId(), applicationContext.getLinkName()));
+	public static List<Map<String, Object>> getSubViewsCriteria(String moduleName, String viewName) {
+		LOGGER.info(String.format("ViewFactoryTracking - getSubViewsCriteria() - ModuleName - %s ViewName - %s", moduleName, viewName));
 		String name = moduleName + "-" + viewName;
 		if (!subViews.containsKey(name)) {
 			return null;
@@ -5055,7 +5051,7 @@ public class ViewFactory {
 		return fields;
 	}
 	
-	public static FacilioView getModuleView(FacilioModule childModule, String parentModuleName) throws Exception {
+	public static FacilioView getModuleView(FacilioModule childModule, String parentModuleName) {
 		FacilioView moduleView = new FacilioView();
 		moduleView.setName(childModule.getName());
 		moduleView.setDisplayName("All " + childModule.getDisplayName() + "s");
@@ -5067,18 +5063,9 @@ public class ViewFactory {
 		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
 		moduleView.setSortFields(getSortFields(parentModuleName));
 
-		ApplicationContext applicationContext = getApplicationContext();
-		LOGGER.info(String.format("ViewFactoryTracking - getModuleView() - ChildModuleName - %s ParentModuleName - %s AppId - %d AppName - %s", childModule.getName(), parentModuleName, applicationContext.getId(), applicationContext.getLinkName()));
+		LOGGER.info(String.format("ViewFactoryTracking - getModuleView() - ChildModuleName - %s ParentModuleName - ", childModule.getName(), parentModuleName));
 
 		return moduleView;
-	}
-
-	public static ApplicationContext getApplicationContext() throws Exception {
-		ApplicationContext applicationContext = AccountUtil.getCurrentApp();
-		if (applicationContext == null) {
-			applicationContext = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		}
-		return applicationContext;
 	}
 	
 	public static Criteria getItemApprovalStateCriteria(ApprovalState status) {
