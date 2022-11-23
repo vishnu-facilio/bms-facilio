@@ -582,8 +582,7 @@ public class PageFactory {
 		}
 		else {
 			boolean isNewSummaryWidget = false;
-			Organization organization = AccountUtil.getCurrentOrg();
-			if((organization != null) && (organization.getId() == 173l)){
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SUMMARY_WIDGET)) {
 				CustomPageWidget pageWidget = CustomPageAPI.getMainSummaryWidget(module.getModuleId());
 				if(pageWidget != null){
 					isNewSummaryWidget = true;
