@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +88,16 @@ public enum AccountEmailTemplate {
 		if(StringUtils.isNotEmpty(inviteUrl)) {
 			mailJson.put(MailConstants.Params.SOURCE_TYPE, MailSourceType.INVITE_MAIL.name());
 			mailJson.put(MailConstants.Params.MASK_URL, inviteUrl);
+		}
+		if (this.val == 6) { // portal invite user
+			try {
+				Organization currentOrg = AccountUtil.getCurrentOrg();
+				if (currentOrg != null && currentOrg.getOrgId() == 418) {
+					mailJson.put("sender", currentOrg.getName() + " <portal@altayer-realestate.com>");
+				}
+			} catch (Exception e) {
+				log.error("Exception occurred ", e);
+			}
 		}
 		FacilioFactory.getEmailClient().sendEmail(mailJson);
 	}
