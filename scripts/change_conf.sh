@@ -244,3 +244,15 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "uk-production-kafka" ]; then
     cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "oci-production-user" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-oci-user.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "oci-production-scheduler" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-oci-scheduler.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi

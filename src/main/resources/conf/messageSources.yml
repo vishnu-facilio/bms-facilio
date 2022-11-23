@@ -83,3 +83,10 @@ sources:
     configs:
       broker: b-2.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-1.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096
       auth: true
+
+  - name: msk-oci #ae region
+    type: kafka
+    configs:
+      broker: hfuihb6rx2oq.streaming.uk-london-1.oci.oraclecloud.com:9092 
+      auth: true
+      mechanism: PLAIN
