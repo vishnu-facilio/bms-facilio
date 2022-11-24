@@ -140,7 +140,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         defaultPlannedMaintenanceForm.setModule(plannedMaintenance);
         defaultPlannedMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultPlannedMaintenanceForm.setShowInWeb(true);
-        defaultPlannedMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        defaultPlannedMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> defaultPlannedMaintenanceFormFields = new ArrayList<>();
         defaultPlannedMaintenanceFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.REQUIRED, "tickettype", 1, 1));

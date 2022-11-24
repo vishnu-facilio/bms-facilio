@@ -447,10 +447,14 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getWorkOrderAfterSavePostCreateChain() {
         FacilioChain c = getDefaultChain();
+        
+        c.addCommand(new FetchWorkorderRecordAndValidateForPostCreate());
         c.addCommand(new FillContextAfterAddingWorkOrderPostCreateChainCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
-        c.addCommand(new AddTicketActivityCommandV3());
         c.addCommand(new AddPrerequisiteApproversCommandV3());
+        c.addCommand(new UpdateJobStatusForWorkOrderCommand());
+        c.addCommand(new AddActivityForWoPostCreateCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
         return c;
     }
 
@@ -2381,6 +2385,14 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addOrUpdateFormRelationChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateFormRelationCommand());
+        return c;
+    }
+    
+    
+    public static FacilioChain moveWoInQueueForPreOpenToOpenChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPMV2WorkordersToMoveInQueueForPreOpenToOpen());
+        c.addCommand(new ScheduleWorkordersToMoveInQueueForPreOpenToOpen());
         return c;
     }
 

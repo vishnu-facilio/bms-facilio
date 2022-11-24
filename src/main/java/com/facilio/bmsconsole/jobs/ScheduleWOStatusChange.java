@@ -8,11 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
@@ -50,11 +56,21 @@ public class ScheduleWOStatusChange extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
+			
+			long maxTime = jc.getNextExecutionTime()*1000; //Using next execution time because this can be independent of the period of the job
+			
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.PM_PLANNER)) {
+				FacilioChain chain = TransactionChainFactoryV3.moveWoInQueueForPreOpenToOpenChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.END_TIME, maxTime);
+			
+				chain.execute();
+			}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-			long maxTime = jc.getNextExecutionTime()*1000; //Using next execution time because this can be independent of the period of the job
 
 			SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
 			selectRecordsBuilder.select(fields)
@@ -63,8 +79,9 @@ public class ScheduleWOStatusChange extends FacilioJob {
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
-					.andCustomWhere("WorkOrders.PM_ID IS NOT NULL OR WorkOrders.PM_V2_ID IS NOT NULL")
+					.andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
 					.skipModuleCriteria();
+			
 			List<Map<String, Object>> workOrderProps = selectRecordsBuilder.getAsProps();
 
 			List<Long> workOrderIds = workOrderProps.stream()
@@ -73,42 +90,16 @@ public class ScheduleWOStatusChange extends FacilioJob {
 			LOGGER.info("execute() -> workOrderProps size: " + workOrderIds.size() + ". WorkOrder IDs = " + workOrderIds);
 
 			List<WorkOrderContext> workOrderContexts = new ArrayList<>();
-			List<V3WorkOrderContext> v3WorkOrderContexts = new ArrayList<>();
 
 			for (Map<String, Object> workOrderProp: workOrderProps) {
-				Object pmV2 = workOrderProp.get("pmV2");
-				if (pmV2 != null) {
-					v3WorkOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, V3WorkOrderContext.class));
-				} else {
-					workOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, WorkOrderContext.class));
-				}
+				workOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, WorkOrderContext.class));
 			}
 
 			handlePMV1Scheduling(workOrderContexts); // This is PM V1 version
-			handlePMV2Scheduling(v3WorkOrderContexts); // TODO(3) This is PM V2 (revamped PM) version: flow should happen into this
 		} catch (Exception e) {
 			CommonCommandUtil.emailException("ScheduleWOStatusChange", ""+jc.getJobId(), e);
 			LOGGER.error("PM Execution failed: ", e);
 			throw e;
-		}
-	}
-
-	private void handlePMV2Scheduling(List<V3WorkOrderContext> v3WorkOrderContexts) throws Exception {
-		LOGGER.info("handlePMV2Scheduling():");
-		// TODO(3a): ensure "N" WorkOrders get into next job queue
-		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
-			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
-				try {
-					// TODO(3b):WOs for next 30 mins is set to Job here.
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				} catch (Exception e) { //Delete job entry if any and try again
-					CommonCommandUtil.emailException("ScheduleWOStatusChange", "handlePMV2Scheduling() | workOrder= " + v3WorkOrderContext, e);
-					LOGGER.error("PM Execution failed in handlePMV2Scheduling():", e);
-					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduleWOV2");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				}
-			}
-			updateV3JobStatus(v3WorkOrderContexts);
 		}
 	}
 
@@ -248,25 +239,6 @@ public class ScheduleWOStatusChange extends FacilioJob {
     	}
     	return uniqueIdVsParentIdMap;
     }
-
-	private void updateV3JobStatus(List<V3WorkOrderContext> wos) throws Exception {
-		LOGGER.info("updateV3JobStatus():");
-		if (wos == null || wos.isEmpty()) {
-			return;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<Long> woIds = wos.stream().map(V3WorkOrderContext::getId).collect(Collectors.toList());
-		V3WorkOrderContext wo = new V3WorkOrderContext();
-		wo.setJobStatus(V3WorkOrderContext.JobsStatus.SCHEDULED.getValue());
-		UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-		updateRecordBuilder.fields(Arrays.asList(fieldMap.get("jobStatus")))
-				.module(module)
-				.andCondition(CriteriaAPI.getIdCondition(woIds, module))
-				.update(wo);
-	}
 
 	private void updateJobStatus(List<WorkOrderContext> wos) throws Exception {
 		LOGGER.info("updateJobStatus():");

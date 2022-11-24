@@ -18,6 +18,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PMPlannerOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -44,7 +45,7 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
-        ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        ApplicationContext app = AccountUtil.getCurrentApp();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -77,6 +78,10 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
             resourceTimelineView.setGroupByFieldId(fieldsMap.get("resource").getFieldId());
             resourceTimelineView.setStartDateFieldId(fieldsMap.get("scheduledStart").getFieldId());
             resourceTimelineView.setEndDateFieldId(fieldsMap.get("estimatedEnd").getFieldId());
+            
+            Criteria resourceCriteria = new Criteria();
+            resourceCriteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", pmPlanner.getId()+"", PMPlannerOperator.PLANNER_RESOURCE_IS));
+            resourceTimelineView.setGroupCriteria(resourceCriteria);
 
             //addRecordCustomizationWithTicketPriority(fieldsMap, resourceTimelineView);
             setPreOpenWorOrderCriteriaForTimelineView(module, fieldsMap, pmPlanner, resourceTimelineView);
@@ -97,6 +102,10 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
             assignedToTimelineView.setGroupByFieldId(fieldsMap.get("assignedTo").getFieldId());
             assignedToTimelineView.setStartDateFieldId(fieldsMap.get("scheduledStart").getFieldId());
             assignedToTimelineView.setEndDateFieldId(fieldsMap.get("estimatedEnd").getFieldId());
+            
+            Criteria assignedToCriteria = new Criteria();
+            assignedToCriteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", pmPlanner.getId()+"", PMPlannerOperator.PLANNER_ASSIGNED_IS));
+            assignedToTimelineView.setGroupCriteria(assignedToCriteria);
 
             //addRecordCustomizationWithTicketPriority(fieldsMap, assignedToTimelineView);
             setPreOpenWorOrderCriteriaForTimelineView(module, fieldsMap, pmPlanner, assignedToTimelineView);

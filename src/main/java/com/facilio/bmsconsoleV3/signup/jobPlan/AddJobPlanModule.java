@@ -465,7 +465,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         jobPlanModuleForm.setName("default_jobplan_web");
         jobPlanModuleForm.setModule(jobPlanModule);
         jobPlanModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        jobPlanModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        jobPlanModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> jobPlanModuleFormDefaultFields = new ArrayList<>();
         jobPlanModuleFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

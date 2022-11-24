@@ -32,9 +32,11 @@ public class V3WorkOderAPI {
             if (workOrder.getResource() == null || workOrder.getResource().getId() == -1) {
                 List<BaseSpaceContext> tenantSpaces = V3TenantsAPI.fetchTenantSpaces(workOrder.getTenant().getId());
                 if (CollectionUtils.isNotEmpty(tenantSpaces) && tenantSpaces.size() == 1) {
-                    ResourceContext resource = new ResourceContext();
-                    resource.setId(tenantSpaces.get(0).getId());
-                    workOrder.setResource(resource);
+
+                    ResourceContext resource = ResourceAPI.getResource(tenantSpaces.get(0).getId());
+                    if(resource != null) {
+                    	workOrder.setResource(resource);
+                    }
                 }
                 V3TenantContext tenant = V3TenantsAPI.getTenant(workOrder.getTenant().getId());
                 if (workOrder.getSiteId() == -1) {

@@ -3191,6 +3191,7 @@ public class FacilioConstants {
 		public static final String KIOSK_APP = "visitor_kiosk";
 
 		public static final String EMPLOYEE_PORTAL_APP = "employee";
+		public static final String SERVICE_APP = "service";
 		public static final String IWMS_APP = "iwms";
 
 	}

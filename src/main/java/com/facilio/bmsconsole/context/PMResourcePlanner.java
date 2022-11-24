@@ -14,4 +14,18 @@ public class PMResourcePlanner extends V3Context {
     private PMTriggerV2 trigger;
     private User assignedTo;
     private PMPlanner planner;
+    
+    public Long getResourceId() {
+    	if(resource != null) {
+    		return resource.getId();
+    	}
+    	return -1l;
+    }
+    
+    public Long getAssignedToId() {
+    	if(assignedTo != null) {
+    		return assignedTo.getOuid();
+    	}
+    	return -1l;
+    }
 }

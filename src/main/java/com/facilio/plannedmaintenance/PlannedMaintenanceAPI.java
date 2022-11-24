@@ -3,6 +3,7 @@ package com.facilio.plannedmaintenance;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMPlanner;
+import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -61,6 +62,25 @@ public class PlannedMaintenanceAPI {
     public static List<Long> getPlannerIds(List<Long> pmIds) throws Exception {
         List<PMPlanner> pmPlanners = getPmPlanners(pmIds);
         return pmPlanners.stream().map(PMPlanner::getId).collect(Collectors.toList());
+    }
+    
+    public static List<PMResourcePlanner> getResourcePlanners(Long plannerId) throws Exception {
+        
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+        FacilioModule pmPlannerModule = modBean.getModule("pmResourcePlanner");
+        List<FacilioField> pmPlannerFields = modBean.getAllFields("pmResourcePlanner");
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
+        
+        FacilioField plannerField = fieldMap.get("planner");
+
+        SelectRecordsBuilder<PMResourcePlanner> records = new SelectRecordsBuilder<PMResourcePlanner>();
+        records.select(pmPlannerFields)
+                .module(pmPlannerModule)
+                .beanClass(PMResourcePlanner.class)
+                .andCondition(CriteriaAPI.getCondition(plannerField, plannerId+"", NumberOperators.EQUALS));
+        return records.get();
+    	
     }
 
     public static List<PMPlanner> getPmPlanners(List<Long> pmIds) throws Exception {
