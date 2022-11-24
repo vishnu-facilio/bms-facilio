@@ -427,6 +427,29 @@ public class ApplicationApi {
         return ids;
     }
 
+    public static List<Long> getTabForModules(long appId,long moduleId) throws Exception {
+        List<Long> ids = new ArrayList<Long>();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+                .select(FieldFactory.getTabIdAppIdMappingFields())
+                .innerJoin("WebTab")
+                .on("TABID_MODULEID_APPID_MAPPING.TAB_ID = WebTab.ID")
+                .andCondition(CriteriaAPI.getCondition("WebTab.TYPE", "tabType",
+                        WebTabContext.Type.MODULE.getIndex().toString(), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.MODULE_ID", "moduleId",
+                        String.valueOf(moduleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.APP_ID", "appId",
+                        String.valueOf(appId), NumberOperators.EQUALS));
+        List<TabIdAppIdMappingContext> tabidMappings = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                TabIdAppIdMappingContext.class);
+        if (tabidMappings != null && !tabidMappings.isEmpty()) {
+            for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabidMappings) {
+                ids.add(tabIdAppIdMappingContext.getTabId());
+            }
+        }
+        return ids;
+    }
+
     public static void addUserInApp(User user, boolean shouldThrowError) throws Exception {
         addUserInApp(user, shouldThrowError, true);
     }
