@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.aws.util.FacilioProperties;
-import lombok.extern.log4j.Log4j;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -19,31 +22,36 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 
-@Log4j
-public class DataSourceInterceptor extends BaseInterceptor {
-    private static final long serialVersionUID = 1L;
+public class DataSourceInterceptor extends AbstractInterceptor {
+	private static final long serialVersionUID = 1L;
+	private static HashMap customdomains = null; 
+	 
+	private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(DataSourceInterceptor.class);
 
-    @Override
-	public String getInterceptorName() {
-		return DataSourceInterceptor.class.getSimpleName();
+
+	@Override
+	public void init() {
+		super.init();
 	}
 
-    @Override
-    public String run(ActionInvocation invocation) throws Exception {
-        long time = System.currentTimeMillis();
-        HttpServletRequest request = ServletActionContext.getRequest();
-        Object authMethod = request.getAttribute("authMethod");
-        if (authMethod != null) {
-            return invocation.invoke();
-        }
+	@Override
+	@WithSpan
+	public String intercept(ActionInvocation invocation) throws Exception {
+		long time = System.currentTimeMillis();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		Object authMethod =  request.getAttribute("authMethod");
+		if (authMethod != null) {
+			return invocation.invoke();
+		}
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
 		//remote screen handling
-		if (request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
+		if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
 			RemoteScreenContext remoteScreen = (RemoteScreenContext) request.getAttribute("remoteScreen");
 			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
-			if (org != null) {
+			if(org != null) {
 				IAMAccount account = new IAMAccount(org, null);
 				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in remoteScreen => {0}", account.getOrg() == null ? -1 : account.getOrg().getId()), request);
 				request.setAttribute("iamAccount", account);
@@ -97,6 +105,7 @@ public class DataSourceInterceptor extends BaseInterceptor {
 		}
 
 		if (iamAccount != null && iamAccount.getOrg() != null && iamAccount.getUser() != null) {
+			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
 			if (sessionExpired) {
 				LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
@@ -112,4 +121,6 @@ public class DataSourceInterceptor extends BaseInterceptor {
 		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "DateSource interceptor done", request);
 		return invocation.invoke();
 	}
+	
+	
 }

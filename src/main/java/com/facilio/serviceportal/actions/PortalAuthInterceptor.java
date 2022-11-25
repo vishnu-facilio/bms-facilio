@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.bmsconsole.interceptors.BaseInterceptor;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.var;
@@ -19,49 +18,49 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
-
-public class PortalAuthInterceptor extends BaseInterceptor {
-
-    private static final long serialVersionUID = 1L;
-    private static Logger LOGGER = Logger.getLogger(PortalAuthInterceptor.class.getName());
-    private static org.apache.log4j.Logger log = LogManager.getLogger(PortalAuthInterceptor.class.getName());
-    private static HashMap customdomains = null;
-
-    @Override
-    public String getInterceptorName() {
-        return PortalAuthInterceptor.class.getSimpleName();
-    }
-
-    @Override
-    public void init() {
-        super.init();
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor; 
+ 
+ 
+public class PortalAuthInterceptor extends AbstractInterceptor { 
+    /** 
+     *  
+     */ 
+    private static final long serialVersionUID = 1L; 
+    private static Logger logger = Logger.getLogger(PortalAuthInterceptor.class.getName()); 
+    private static org.apache.log4j.Logger log = LogManager.getLogger(PortalAuthInterceptor.class.getName()); 
+    private static HashMap customdomains = null; 
+	   
+    @Override 
+    public void init() { 
+        super.init(); 
         initHost();
-    }
-
-    @Override
-    public String run(ActionInvocation arg0) throws Exception {
-        try {
+        
+    } 
+     
+    @Override 
+    public String intercept(ActionInvocation arg0) throws Exception { 
+        try { 
             intercept0();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "error in portal auth interceptor", e);
-            return Action.LOGIN;
+            logger.log(Level.SEVERE, "error in portal auth interceptor", e); 
+            return Action.LOGIN; 
         }
         return arg0.invoke();
     }
-
-    private void intercept0() throws Exception {
-        HttpServletRequest request = ServletActionContext.getRequest();
-        IAMAccount currentAccount = null;
+ 
+    private void intercept0() throws Exception{
+        HttpServletRequest request = ServletActionContext.getRequest(); 
+        IAMAccount currentAccount = null; 
         String domainName = request.getServerName();
         String portalDomain = null;
-        if (customdomains != null) {
-            String orgdomain = (String) customdomains.get(domainName);
-            if (orgdomain != null) {
-                domainName = orgdomain + "." + portalDomain;
+        if(customdomains != null) {
+            String orgdomain = (String)customdomains.get(domainName);
+            if(orgdomain != null) {
+                domainName = orgdomain+"."+ portalDomain;
             }
-            log.info("Found a valid domain for custom domain for " + domainName);
+            log.info("Found a valid domain for custom domain for "+ domainName);
         }
-        if (domainName != null) {
+        if(domainName != null) {
             String[] domainArray = domainName.split("\\.");
             if (domainArray.length > 2) {
                 portalDomain = domainArray[0];

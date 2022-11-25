@@ -5,7 +5,10 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.requestvalidator.Executor;
 import com.facilio.security.requestvalidator.NodeError;
 import com.facilio.util.FacilioUtil;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONObject;
@@ -19,15 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Log4j
-public class ValidationInterceptor extends BaseInterceptor {
-
+public class ValidationInterceptor extends AbstractInterceptor {
     @Override
-    public String getInterceptorName() {
-        return ValidationInterceptor.class.getSimpleName();
-    }
-
-    @Override
-    public String run(ActionInvocation invocation) throws Exception {
+    @WithSpan
+    public String intercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         Executor executor = (Executor) request.getAttribute("executor");
         if (executor == null) {

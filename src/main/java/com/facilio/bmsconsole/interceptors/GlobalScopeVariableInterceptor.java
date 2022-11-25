@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.interceptors;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
@@ -10,6 +11,8 @@ import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ValueGenerator;
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -26,17 +29,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
-public class GlobalScopeVariableInterceptor extends BaseInterceptor {
+public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
 
     @Override
-    public String getInterceptorName() {
-        return GlobalScopeVariableInterceptor.class.getSimpleName();
-    }
-
-    @Override
-    public String run(ActionInvocation invocation) throws Exception {
+    @WithSpan
+    public String intercept(ActionInvocation invocation) throws Exception {
         try {
-            if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
                 return computeScopeVariable(invocation);
             }
         } catch (Exception e) {
@@ -44,7 +43,6 @@ public class GlobalScopeVariableInterceptor extends BaseInterceptor {
         }
         return invocation.invoke();
     }
-
 
     public static String computeScopeVariable(ActionInvocation invocation) throws Exception {
         Long appId = null;
