@@ -2202,6 +2202,9 @@ public class WorkflowUtil {
 				case COMMENTS:
 					facilioWorkflowFunction = FacilioCommentsFunction.getFacilioCommentsFunctions(functionName);
 					break;
+				case AUTOMATION:
+					facilioWorkflowFunction = FacilioAutomationFunctions.getFacilioAutomationFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2338,6 +2341,9 @@ public class WorkflowUtil {
 					break;
 				case COMMENTS:
 					facilioWorkflowFunction = new ArrayList<>(FacilioCommentsFunction.getAllFunctions().values());
+					break;
+				case AUTOMATION:
+					facilioWorkflowFunction = new ArrayList<>(FacilioAutomationFunctions.getAllFunctions().values());
 					break;
 			}
 		}

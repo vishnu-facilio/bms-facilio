@@ -976,6 +976,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getExecuteWorkflowByTypeChain(RuleType ruleType) {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExecuteAllWorkflowsCommand(ruleType));
+			return c;
+		}
+
+		public static FacilioChain getExecuteSLARulesChain(Boolean isAdd) {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
+			chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(isAdd));
+			return chain;
+		}
+
 		public static FacilioChain getUpdateAssetChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -10,6 +11,7 @@ import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -32,6 +34,8 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1436,5 +1440,26 @@ public class WorkflowRuleAPI {
 		long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
 
 		return count;
+	}
+
+	public static void rerunWorkflow(String moduleName, Long id, RuleType ruleType) throws Exception {
+		Object record = V3Util.getRecord(moduleName, id, null);
+		FacilioChain workflowChain = TransactionChainFactory.getExecuteWorkflowByTypeChain(ruleType);
+		FacilioContext context = workflowChain.getContext();
+		Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+		recordMap.put(moduleName, Collections.singletonList((ModuleBaseWithCustomFields) record));
+		Constants.setRecordMap(context, recordMap);
+		workflowChain.execute();
+	}
+
+	public static void reExecuteSLA(String moduleName, Long id) throws Exception {
+		Object record = V3Util.getRecord(moduleName, id, null);
+		FacilioChain slaChain = TransactionChainFactory.getExecuteSLARulesChain(false);
+		FacilioContext context = slaChain.getContext();
+		Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+		recordMap.put(moduleName, Collections.singletonList((ModuleBaseWithCustomFields) record));
+		Constants.setRecordMap(context, recordMap);
+		CommonCommandUtil.addEventType(EventType.SLA, context);
+		slaChain.execute();
 	}
 }

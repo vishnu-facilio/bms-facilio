@@ -463,8 +463,7 @@ public class PageFactory {
 				if (CollectionUtils.isNotEmpty(fields)) {
 					for (FacilioField field : fields) {
 
-						Organization organization = AccountUtil.getCurrentOrg();
-						if(organization != null && organization.getId() == 173l) {
+						if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_RELATED_LIST)) {
 							PageWidget relatedListWidget = new PageWidget(WidgetType.NEW_RELATED_LIST);
 							JSONObject relatedList = new JSONObject();
 							relatedList.put("module", subModule);
