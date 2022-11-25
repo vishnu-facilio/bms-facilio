@@ -1,31 +1,28 @@
 package com.facilio.bmsconsole.interceptors;
 
 import javax.servlet.http.HttpServletRequest;
-
-import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.struts2.ServletActionContext;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.filters.MultiReadServletRequest;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
-public class CacheInterceptor extends AbstractInterceptor {
+public class CacheInterceptor extends BaseInterceptor {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	@WithSpan
-	public String intercept(ActionInvocation arg0) throws Exception {
+	public String getInterceptorName() {
+		return CacheInterceptor.class.getSimpleName();
+	}
+
+	@Override
+	public String run(ActionInvocation arg0) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
-		
+
 		MultiReadServletRequest multiReadServletRequest;
-		if(AccountUtil.getCurrentOrg() != null
+		if (AccountUtil.getCurrentOrg() != null
 				&& AccountUtil.getCurrentOrg().getOrgId() == 10
 				&& request.getRequestURI().endsWith("/api/v2/workorders/add")) {
 			// Temp: Added this for Mercatus account - will be removed later.
@@ -117,8 +114,5 @@ public class CacheInterceptor extends AbstractInterceptor {
 //		    
 //		 }
 //			return result;
-
-		
 	}
-
 }

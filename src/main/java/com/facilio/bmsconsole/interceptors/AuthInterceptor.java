@@ -7,33 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.facilio.accounts.dto.Organization;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.util.RequestUtil;
-import io.opentelemetry.api.baggage.Baggage;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.extension.annotations.WithSpan;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.sso.AccountSSO;
-import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -42,24 +29,14 @@ import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
-public class AuthInterceptor extends AbstractInterceptor {
+@Log4j
+public class AuthInterceptor extends BaseInterceptor {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(AuthInterceptor.class.getName());
 
 	@Override
-	public void init() {
-		super.init();
-	}
-
-	@Override
-	@WithSpan
-	public String intercept(ActionInvocation arg0) throws Exception {
+	public String run(ActionInvocation arg0) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String authorization = request.getHeader("Authorization");
@@ -74,15 +51,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 			return arg0.invoke();
 		}
 		try {
-
 			if (getPermalinkToken(request) != null) {
 				String token = getPermalinkToken(request);
-				
+
 				List<String> urlsToValidate = new ArrayList<>();
-				
+
 				String reqURL = request.getRequestURI();
 				urlsToValidate.add(reqURL);
-				
+
 				String referrer = request.getHeader(HttpHeaders.REFERER);
 				if (referrer != null && !"".equals(referrer.trim())) {
 					URL url = new URL(referrer);
@@ -95,7 +71,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.ERROR;
 				} else {
                     request.setAttribute("iamAccount", iamAccount);
-					Span.current().setAttribute("enduser.id", String.valueOf(iamAccount.getUser().getId()));
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
@@ -136,7 +111,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 					if (iamAccount != null) {
 						checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account user => {0}", iamAccount.getUser() == null ? -1 : iamAccount.getUser().getId()), request);
 						request.setAttribute("iamAccount", iamAccount);
-						Span.current().setAttribute("enduser.id", String.valueOf(iamAccount.getUser().getId()));
 					}
 					else {
 						return handleLogin("account object missing", null);
@@ -163,6 +137,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Auth interceptor done", request);
 		return arg0.invoke();
 	}
+
+	@Override
+	public String getInterceptorName() {
+		return AuthInterceptor.class.getSimpleName();
+	}
+
 
 	public static final void logTimeTaken(String className, long timeTaken, HttpServletRequest request) {
 		if (timeTaken > 50 &&

@@ -2,9 +2,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.dto.*;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.audit.AuditData;
 import com.facilio.audit.DBAudit;
@@ -18,34 +16,22 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
-import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FacilioModule;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
-import com.facilio.service.FacilioService;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.baggage.Baggage;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.extension.annotations.WithSpan;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,13 +40,15 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 
-public class ScopeInterceptor extends AbstractInterceptor {
+@Log4j
+public class ScopeInterceptor extends BaseInterceptor {
 
-    /**
-     *
-     */
+    @Override
+    public String getInterceptorName() {
+        return ScopeInterceptor.class.getSimpleName();
+    }
+
     private static final long serialVersionUID = 1L;
-    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ScopeInterceptor.class);
     private static HashSet<Long> orgIdList = new HashSet<>();
 
     @Override
@@ -70,8 +58,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
     }
 
     @Override
-    @WithSpan
-    public String intercept(ActionInvocation arg0) throws Exception {
+    public String run(ActionInvocation arg0) throws Exception {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = ServletActionContext.getRequest();
 

@@ -3680,13 +3680,19 @@ public class FacilioConstants {
 	public static class ReadingRules{
 		public static final String NEW_READING_RULE= "newreadingrules";
 
-		public static final String NEW_READING_RULE_LIST="newreadingrulelist";
+		public static final String NEW_READING_RULE_LIST = "newreadingrulelist";
 
 	}
 
-	public static class TransactionRule{
-		public static final String CreationModuleName="transaction";
-		public static final String TransactionRollUpModuleName="budgetmonthlyamount";
-		public static final String TransactionRollUpFieldName="actualMonthlyAmount";
+	public static class TransactionRule {
+		public static final String CreationModuleName = "transaction";
+		public static final String TransactionRollUpModuleName = "budgetmonthlyamount";
+		public static final String TransactionRollUpFieldName = "actualMonthlyAmount";
+	}
+
+	public static class Telemetry {
+		public static final String ORG_ID = "orgID";
+		public static final String USER_ID = "userID";
+		public static final String REGION = "region";
 	}
 }
