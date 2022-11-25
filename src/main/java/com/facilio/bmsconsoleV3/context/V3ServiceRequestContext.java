@@ -111,55 +111,9 @@ public class V3ServiceRequestContext extends V3Context{
 		this.urgency = priority;
 	}
 	
-	private Classification classificationType;
-	public int getClassificationType() {
-		if(classificationType != null) {
-			return classificationType.getIntVal();
-		}
-		else {
-			return -1;
-		}
-	}
+	private Integer classificationType;
 	
-	public String getClassificationVal() {
-		if(classificationType != null) {
-			return classificationType.getStringVal();
-		}
-		return null;
-	}
-	
-	public void setClassificationType(int type) {
-		this.classificationType = Classification.classificationType.get(type);
-	}
-
-	
-	public Classification getClassificationEnum() {
-		return classificationType;
-	}
-	
-	private ServiceRequestType requestType;
-	public int getRequestType() {
-		if(requestType!=null) {
-			return requestType.getIntVal();
-		} else {
-			return -1;
-		}
-	}
-	
-	public String getRequestTypeVal() {
-		if(requestType != null) {
-			return requestType.getStringVal();
-		}
-		return null;
-	}
-	
-	public void setRequestType(int type) {
-		this.requestType =ServiceRequestType.serviceRequestTypeMap.get(type);
-	}
-	
-	public ServiceRequestType getRequestTypeEnum() {
-		return requestType;
-	}
+	private Integer requestType;
 	
 	public static enum SourceType {
 		
@@ -199,85 +153,6 @@ public class V3ServiceRequestContext extends V3Context{
 		}
 		public Map<Integer, SourceType> getAllTypes() {
 			return typeMap;
-		}
-	}
-	
-	public static enum Classification {
-		
-		QUESTION(1, "Question"),
-		PROBLEM(2, "Problem"),
-		FEATURE(3, "Feature"),		
-		;
-		
-		private int intVal;
-		private String strVal;
-		
-		private Classification(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
-		public String getStringVal() {
-			return strVal;
-		}
-		
-		public static Classification getClassification(int val) {
-			return classificationType.get(val);
-		}
-		
-		private static final Map<Integer, Classification> classificationType = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, Classification> initTypeMap() {
-			Map<Integer, Classification> classificationType = new HashMap<>();
-			
-			for(Classification type : values()) {
-				classificationType.put(type.getIntVal(), type);
-			}
-			return classificationType;
-		}
-		public Map<Integer, Classification> getAllClassification() {
-			return classificationType;
-		}
-	}
-	
-	public static enum ServiceRequestType {
-		
-		FEEDBACK(1, "Feedback"),
-		RATING(2, "Rating"),
-		;
-		
-		private int intVal;
-		private String strVal;
-		
-		private ServiceRequestType(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
-		public String getStringVal() {
-			return strVal;
-		}
-		
-		public static ServiceRequestType getServiceRequestTyp(int val) {
-			return serviceRequestTypeMap.get(val);
-		}
-		
-		private static final Map<Integer, ServiceRequestType> serviceRequestTypeMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, ServiceRequestType> initTypeMap() {
-			Map<Integer, ServiceRequestType> serviceRequestType = new HashMap<>();
-			
-			for(ServiceRequestType type : values()) {
-				serviceRequestType.put(type.getIntVal(), type);
-			}
-			return serviceRequestType;
-		}
-		public Map<Integer, ServiceRequestType> getAllServiceRequestType() {
-			return serviceRequestTypeMap;
 		}
 	}
 	
