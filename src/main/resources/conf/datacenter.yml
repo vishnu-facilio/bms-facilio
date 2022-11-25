@@ -32,3 +32,11 @@ datacenters:
 
   8:
     mainapp: stage2.facilio.in
+    
+  9:
+    mainapp: sabb.faciliopilot.com
+    occupantportal: ociportal.faciliopilot.com
+    tenantportal: ocitenants.faciliopilot.com
+    clientportal: ociclients.faciliopilot.com
+    vendorportal: ocivendors.faciliopilot.com
+    employeeportal: ociworkplace.faciliopilot.com
