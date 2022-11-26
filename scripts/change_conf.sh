@@ -256,3 +256,13 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "oci-production-scheduler" ]; then
     cp $FACILIO_HOME/deployment-files/awsprops-oci-scheduler.properties $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/azureprops-user.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    echo "copied service file is =======" >> /home/facilio/deployment.log
+    echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
+    echo "===============================" >> /home/facilio/deployment.log
+fi

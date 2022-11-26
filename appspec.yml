@@ -128,7 +128,9 @@ files:
   - source: /awsprops-oci-user.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-oci-scheduler.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/ 
+  - source: /azureprops-user.properties
+    destination: /home/facilio/deployment-files/   
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/
   - source: /executors-org-au.xml
