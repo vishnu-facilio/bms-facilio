@@ -55,6 +55,18 @@ public class CurrencyAction extends FacilioAction {
         listChain.execute();
 
         setResult(FacilioConstants.ContextNames.CURRENCIES_LIST, context.get(FacilioConstants.ContextNames.CURRENCIES_LIST));
+        setResult(FacilioConstants.ContextNames.SUPPLEMENTS, context.get(FacilioConstants.ContextNames.SUPPLEMENTS));
+        return SUCCESS;
+    }
+
+    public String getCurrenciesCount() throws Exception {
+        FacilioChain listCountChain = TransactionChainFactory.getCurrenciesCountChain();
+
+        FacilioContext context = listCountChain.getContext();
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        listCountChain.execute();
+
+        setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
         return SUCCESS;
     }
 }

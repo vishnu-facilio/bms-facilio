@@ -62,7 +62,6 @@ import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
 import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
-import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
@@ -76,7 +75,6 @@ import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 
-import javax.xml.stream.events.Namespace;
 import java.util.Collections;
 
 public class TransactionChainFactory {
@@ -6682,6 +6680,13 @@ public class TransactionChainFactory {
 	public static FacilioChain getAllCurrenciesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetAllCurrenciesCommand());
+		c.addCommand(new GetCurrencySupplementsCommand());
+		return c;
+	}
+
+	public static FacilioChain getCurrenciesCountChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCurrenciesCountCommand());
 		return c;
 	}
 }

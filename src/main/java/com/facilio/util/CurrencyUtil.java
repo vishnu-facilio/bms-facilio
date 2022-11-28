@@ -15,6 +15,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -115,6 +116,27 @@ public class CurrencyUtil {
 			return FieldUtil.getAsBeanListFromMapList(props, CurrencyContext.class);
 		}
 		return null;
+	}
+
+	public static long getCurrenciesCount(String searchString) throws Exception {
+		List<FacilioField> fields = FieldFactory.getCurrencyFields();
+		Map<String, FacilioField> currencyFields = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getCurrencyModule().getTableName())
+				.select(FieldFactory.getCountField());
+
+		if (StringUtils.isNotEmpty(searchString)) {
+			Criteria searchCriteria = new Criteria();
+			searchCriteria.addAndCondition(CriteriaAPI.getCondition(currencyFields.get("displayName"), searchString, StringOperators.CONTAINS));
+			searchCriteria.addOrCondition(CriteriaAPI.getCondition(currencyFields.get("currencyCode"), searchString, StringOperators.CONTAINS));
+			selectBuilder.andCriteria(searchCriteria);
+		}
+
+		Map<String, Object> modulesMap = selectBuilder.fetchFirst();
+		long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
+
+		return count;
 	}
 
 	public static double getExchangeRateOfBaseCurrency(long currencyId) throws Exception {
