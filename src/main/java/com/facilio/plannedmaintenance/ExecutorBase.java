@@ -4,8 +4,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.util.V3Util;
+
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -21,7 +25,13 @@ public abstract class ExecutorBase implements Executor {
 
         PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
 
-        for (long nextExecutionTime: nextExecutionTimes) {
+        for (long nextExecutionTime: nextExecutionTimes) {	// in seconds
+        	
+        	Long computedCreatedTime = getComputedNextExecutionTime(nextExecutionTime, plannedMaintenance);
+        	if(computedCreatedTime <= (DateTimeUtil.getCurrenTime() - 5 * 60 * 60)) {	// adding 5 minutes buffer time
+        		continue;
+        	}
+        	
             for (PMResourcePlanner pmResourcePlanner: pmPlanner.getResourcePlanners()) {
                 //Cloning workorder
                 Map<String, Object> asProperties = FieldUtil.getAsProperties(plannedMaintenance);
@@ -49,7 +59,7 @@ public abstract class ExecutorBase implements Executor {
                 workOrderCopy.setJobPlan(pmResourcePlanner.getJobPlan());
                 workOrderCopy.setAdhocJobPlan(pmPlanner.getAdhocJobPlan());
                 workOrderCopy.setPrerequisiteJobPlan(pmPlanner.getPreReqJobPlan());
-                workOrderCopy.setCreatedTime(nextExecutionTime * 1000);
+                workOrderCopy.setCreatedTime(computedCreatedTime);
 
                 workOrderCopy.setJobStatus(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
                 workOrderCopy.setSourceType(V3TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal());
@@ -60,7 +70,7 @@ public abstract class ExecutorBase implements Executor {
                 // Set Duration, DueDate, Estimated End
                 workOrderCopy.setDuration(plannedMaintenance.getDueDuration());
                 if(workOrderCopy.getDuration() != null) {
-                    workOrderCopy.setDueDate(workOrderCopy.getCreatedTime()+(workOrderCopy.getDuration()*1000));
+                    workOrderCopy.setDueDate(workOrderCopy.getScheduledStart()+(workOrderCopy.getDuration()*1000));
                 }
                 workOrderCopy.setEstimatedEnd(workOrderCopy.getDueDate());
 
@@ -77,4 +87,6 @@ public abstract class ExecutorBase implements Executor {
     protected abstract FacilioStatus getStatus(Context context) throws Exception;
 
     protected abstract List<Long> getNextExecutionTimes(Context context) throws Exception;
+    
+    protected abstract Long getComputedNextExecutionTime(Long nextExecutionTime, PlannedMaintenance plannedMaintenance) throws Exception;
 }

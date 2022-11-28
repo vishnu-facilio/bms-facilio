@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStatus;
@@ -505,4 +506,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setServiceRequest(V3ServiceRequestContext serviceRequest) {
 		this.serviceRequest = serviceRequest;
 	}
+
+	public V3FailureClassContext getFailureClass() {
+		return failureClass;
+	}
+
+	public void setFailureClass(V3FailureClassContext failureClass) {
+		this.failureClass = failureClass;
+	}
+
+	private V3FailureClassContext failureClass;
 }

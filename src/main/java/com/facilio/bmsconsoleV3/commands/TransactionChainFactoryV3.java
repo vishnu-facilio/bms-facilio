@@ -2049,6 +2049,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }
+    
+    public static FacilioChain getTriggerFrequencyListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAvailableTriggerFrequencyForPM());
+        return c;
+    }
 
     public static FacilioChain addVisitsAndInvitesForms() {
         FacilioChain chain = getDefaultChain();

@@ -1,6 +1,7 @@
 package com.facilio.plannedmaintenance;
 
 import com.facilio.bmsconsole.context.PMTriggerV2;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
@@ -127,4 +128,13 @@ public class ScheduleExecutor extends ExecutorBase {
         }
         return zonedEnd.toEpochSecond();
     }
+
+	@Override
+	protected Long getComputedNextExecutionTime(Long nextExecutionTime, PlannedMaintenance plannedMaintenance) throws Exception {
+		// TODO Auto-generated method stub
+		
+		Long computedCreatedTime = (nextExecutionTime - plannedMaintenance.getLeadTime()) * 1000;
+		
+		return computedCreatedTime;
+	}
 }

@@ -1079,6 +1079,8 @@
         </action>
         <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkUnPublishPM">
         </action>
+        <action name="getTriggerFrequencyList" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="getTriggerFrequencyList">
+        </action>
     </package>
     <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
         <action name="update"

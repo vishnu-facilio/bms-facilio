@@ -293,7 +293,10 @@ public class V3TicketAPI {
                 .andCustomWhere("ORGID = ? AND PRIORITY = ?", orgId, priority)
                 .orderBy("ID");
         List<TicketPriorityContext> categories = builder.get();
-        return categories.get(0);
+        if(CollectionUtils.isNotEmpty(categories)) {
+        	return categories.get(0);
+        }
+        return null;
     }
 
     public static FacilioStatus getStatus(long stateId) throws Exception {

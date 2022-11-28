@@ -167,6 +167,10 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         NumberField estimatedDurationField = SignupUtil.getNumberField(module, "estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(estimatedDurationField);
+        
+        
+        NumberField leadTime = SignupUtil.getNumberField(module, "leadTime", "Lead Time", "LEAD_TIME",FacilioField.FieldDisplayType.DURATION, false, false, true, orgId);
+        fields.add(leadTime);
 
         /* isActive Field */
         BooleanField isActiveField = SignupUtil.getBooleanField(module, "isActive", "Is Active", "IS_ACTIVE",

@@ -13,14 +13,15 @@ import lombok.Setter;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 public class PlannedMaintenance extends V3WorkOrderContext {
     private V3AssetCategoryContext assetCategory;
     private V3SpaceCategoryContext spaceCategory;
     private V3BaseSpaceContext baseSpace;
     private PMScopeAssigmentType assignmentType;
+    private Long leadTime = 0l;
 
-    @Getter
-    @Setter
     private boolean isActive;
 
     public boolean isActive() {

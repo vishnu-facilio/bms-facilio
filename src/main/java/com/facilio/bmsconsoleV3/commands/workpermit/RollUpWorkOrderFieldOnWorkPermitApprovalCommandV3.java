@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.workpermit;
 
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -7,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -28,7 +32,10 @@ public class RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3 extends FacilioCo
 
             for(V3WorkPermitContext wp: workPermits) {
                 if(wp.getTicket() != null && wp.getTicket().getId() > 0 && wp.getModuleState() != null && wp.getModuleState().getStatus().trim().equals("Active")) {
-                    wos.add(wp.getTicket().getId());
+                    V3WorkOrderContext workOrderContext = (V3WorkOrderContext) V3Util.getRecord("workorder",wp.getTicket().getId(),null);
+                    if(workOrderContext!= null) {
+                        wos.add(wp.getTicket().getId());
+                    }
                 }
             }
 

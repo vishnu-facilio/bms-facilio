@@ -50,6 +50,9 @@ public class AddCriteriaForJobPlanTaskBeforeFetchCommand extends FacilioCommand 
 
             context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, criteria);
         }
+        
+        context.put(FacilioConstants.ContextNames.SORTING_QUERY,"SEQUENCE");
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,"asc");
         return false;
     }
 }

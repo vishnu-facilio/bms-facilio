@@ -121,6 +121,12 @@ public class FacilioConstants {
 		public static final String URL_RECORD = "urlRecord";
 		public static final String CURRENCY_RECORD = "currencyRecord";
 	}
+	
+	public static class PM_V2 {
+		public static final String PM_V2_MODULE_NAME = "plannedmaintenance";
+		public static final String PM_V2_TRIGGER = "pmTriggerV2";
+		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
+	}
 
 	public static class TicketActivity {
 		public static final String TICKET_ACTIVITIES = "ticketActivities";

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.actions;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
@@ -90,6 +91,15 @@ public class PlannedMaintenanceAction extends V3Action {
         FacilioContext context = unPublishPMChain.getContext();
         context.put("pmIds", pmIds);
         unPublishPMChain.execute();
+        return SUCCESS;
+    }
+    
+    public String getTriggerFrequencyList() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getTriggerFrequencyListChain();
+        FacilioContext context = chain.getContext();
+        context.put("pmId", pmId);
+        chain.execute();
+        setData(FacilioConstants.PM_V2.AVAILABLE_TRIGGER_FREQUENCIES, context.get(FacilioConstants.PM_V2.AVAILABLE_TRIGGER_FREQUENCIES));
         return SUCCESS;
     }
 

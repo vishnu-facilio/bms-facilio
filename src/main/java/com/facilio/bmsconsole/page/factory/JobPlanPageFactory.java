@@ -6,9 +6,17 @@ import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class JobPlanPageFactory extends PageFactory {
     private static final Logger LOGGER = LogManager.getLogger(com.facilio.bmsconsole.page.factory.JobPlanPageFactory.class.getName());
@@ -41,11 +49,25 @@ public class JobPlanPageFactory extends PageFactory {
             addInventoryTab(page);
         }
 
-        Page.Tab tab2 = page.new Tab("Notes & Attachments");
+        Page.Tab tab2 = page.new Tab("Notes & Information");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-
+        
+        JSONArray customFieldList = getJobPlanCustomFieldList(module);
+        
+        if(!customFieldList.isEmpty()) {
+        	
+        	JSONObject widgetParam = new JSONObject();
+            
+            widgetParam.put("fields", customFieldList);
+            
+            PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
+            secondaryDetailsWidget.addToLayoutParams(tab2Sec1, 24, 8);
+            secondaryDetailsWidget.setWidgetParams(widgetParam);
+            tab2Sec1.addWidget(secondaryDetailsWidget);
+        }
+        
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
         notesWidget.setTitle("Notes");
@@ -67,7 +89,23 @@ public class JobPlanPageFactory extends PageFactory {
 
         return  page;
     }
-    private static void addInventoryTab(Page page) throws Exception {
+    
+    private static JSONArray getJobPlanCustomFieldList(FacilioModule module) throws Exception {
+		// TODO Auto-generated method stub
+    	
+		JSONArray fieldList = new JSONArray();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> customFields = modBean.getAllCustomFields(module.getName());
+		if(customFields != null) {
+			fieldList.addAll(customFields.stream().filter(f -> !f.getName().equals("formId")).map(FacilioField::getName).collect(Collectors.toList()));
+		}
+		
+		return fieldList;
+	}
+    
+	private static void addInventoryTab(Page page) throws Exception {
         Page.Tab itemsAndLaborTab = page.new Tab("Items & Tools");
         page.addTab(itemsAndLaborTab);
 

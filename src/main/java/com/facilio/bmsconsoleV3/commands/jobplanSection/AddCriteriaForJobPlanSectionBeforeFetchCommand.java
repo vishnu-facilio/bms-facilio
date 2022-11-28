@@ -39,6 +39,8 @@ public class AddCriteriaForJobPlanSectionBeforeFetchCommand extends FacilioComma
             criteria.addAndCondition(CriteriaAPI.getCondition(jobPlanIdField, jobPlanId, NumberOperators.EQUALS));
             context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, criteria);
         }
+        context.put(FacilioConstants.ContextNames.SORTING_QUERY,"SEQUENCE_NUMBER");
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,"asc");
         return false;
     }
 }

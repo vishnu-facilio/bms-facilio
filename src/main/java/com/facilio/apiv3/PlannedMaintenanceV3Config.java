@@ -7,6 +7,8 @@ import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -17,7 +19,7 @@ import java.util.function.Supplier;
 public class PlannedMaintenanceV3Config {
     @Module("plannedmaintenance")
     public static Supplier<V3Config> getPlannedMaintenance() {
-        return () -> new V3Config(PlannedMaintenance.class, null)
+        return () -> new V3Config(PlannedMaintenance.class, new ModuleCustomFieldCount50())
                 .update()
                 .beforeSave(new PMBeforeCreateCommand(), new AddPMDetailsBeforeUpdateCommand())
                 .afterSave(new PMAfterPatchCommand())
