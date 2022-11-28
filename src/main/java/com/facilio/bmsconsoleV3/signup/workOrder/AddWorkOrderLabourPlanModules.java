@@ -45,6 +45,7 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,parentModule.getName());
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.DELETE_TYPE , 2);
         addModuleChain.execute();
     }
 

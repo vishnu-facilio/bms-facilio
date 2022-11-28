@@ -40,7 +40,13 @@ public class AddModulesCommand extends FacilioCommand {
 				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 				if(parentModuleName != null && !parentModuleName.isEmpty()) {
 					FacilioModule parentModule = modBean.getModule(parentModuleName);
-					modBean.addSubModule(parentModule.getModuleId(), moduleId);
+					int deletetype = (int) context.getOrDefault(FacilioConstants.ContextNames.DELETE_TYPE,-1);
+					if(deletetype!= -1){
+						modBean.addSubModule(parentModule.getModuleId(), moduleId ,deletetype);
+					}
+					else {
+						modBean.addSubModule(parentModule.getModuleId(), moduleId);
+					}
 				}
 			}
 		}

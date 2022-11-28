@@ -2862,6 +2862,8 @@ public class FacilioConstants {
 		public static Collection<Class> getAllClasses() {
 			return classMap.values();
 		}
+
+		public static final String DELETE_TYPE = "deleteType";
 	}
 
 	public static class Inspection {
