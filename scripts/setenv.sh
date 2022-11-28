@@ -19,9 +19,3 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
    export OTEL_EXPORTER_OTLP_ENDPOINT=http://172.31.72.166:4317
    export OTEL_RESOURCE_ATTRIBUTES=service.name=production_app
 fi
-if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
-   export CATALINA_OPTS="$CATALINA_OPTS -javaagent:/home/facilio/opentelemetry-javaagent.jar"
-   export OTEL_METRICS_EXPORTER=none
-   export OTEL_EXPORTER_OTLP_ENDPOINT=http://172.31.72.166:4317
-   export OTEL_RESOURCE_ATTRIBUTES=service.name=production_scheduler
-fi
