@@ -231,6 +231,18 @@ if (buildinfo == null) {
                 </td>
             </tr>
             <tr>
+                <td>
+                    Commit Id:
+                </td>
+                <td>
+                <a href="https://bitbucket.org/facilio/bmsconsole/commits/<%=buildinfo.get("build.commitid")%>"target="_blank">
+                   <%=buildinfo.get("build.commitid")%>
+
+
+
+                </td>
+            </tr>
+            <tr>
 	            <td>
 	                Build Date:
 	            </td>

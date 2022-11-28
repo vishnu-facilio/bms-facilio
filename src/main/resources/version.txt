@@ -2,3 +2,4 @@ version=${pom.version}
 build.date=${timestamp}
 build.number=${build.number}
 build.branch=${build.branch}
+build.commitid=${build.commitid}
