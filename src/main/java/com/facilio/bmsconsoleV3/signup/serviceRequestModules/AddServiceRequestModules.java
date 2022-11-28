@@ -1,5 +1,15 @@
 package com.facilio.bmsconsoleV3.signup.serviceRequestModules;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.sso.SSOUtil;
@@ -22,26 +32,33 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.security.requestvalidator.config.Config;
 import com.facilio.time.DateTimeUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AddServiceRequestModules extends SignUpData{
+
 
 	@Override
 	public void addData() throws Exception {
-		long activityType=EventType.CUSTOM_BUTTON.getValue();
-		CustomButtonAction customButton=new CustomButtonAction();
+
+		addhideCreateWOSystemButtonInSR();
+
+		long activityType = EventType.CUSTOM_BUTTON.getValue();
+		CustomButtonAction customButton = new CustomButtonAction();
 		customButton.setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
-		CustomButtonRuleContext buttonRule=new CustomButtonRuleContext();
+		CustomButtonRuleContext buttonRule = new CustomButtonRuleContext();
 		buttonRule.setName("CONVERT TO WORKORDER");
 		buttonRule.setPositionType(PositionType.SUMMARY.getIndex());
 		buttonRule.setActivityType(EventType.CUSTOM_BUTTON);
 		buttonRule.setButtonType(CustomButtonRuleContext.ButtonType.SHOW_WIDGET.getIndex());
-		JSONObject config=new JSONObject();
+		JSONObject config = new JSONObject();
 		config.put("actionType", "Redirect URL");
-		config.put("url",SSOUtil.getCurrentAppURL()+"/app/wo/create?serviceRequest=${serviceRequest.id:-}&subject=${serviceRequest.subject:-}&siteId=${serviceRequest.siteId:-}&description=${serviceRequest.description:-}");
+		config.put("url", SSOUtil.getCurrentAppURL() + "/app/wo/create?serviceRequest=${serviceRequest.id:-}&subject=${serviceRequest.subject:-}&siteId=${serviceRequest.siteId:-}&description=${serviceRequest.description:-}");
 		buttonRule.setConfig(config);
 		buttonRule.setCreatedTime(DateTimeUtil.getCurrenTime());
-		WorkflowEventContext workFlowEvent=new WorkflowEventContext();
+		WorkflowEventContext workFlowEvent = new WorkflowEventContext();
 		workFlowEvent.setActivityType(EventType.CUSTOM_BUTTON);
-		FacilioModule module=new FacilioModule();
+		FacilioModule module = new FacilioModule();
 		module.setCreatedTime(DateTimeUtil.getCurrenTime());
 		module.setCustom(false);
 		module.setDataInterval(-1);
@@ -54,7 +71,7 @@ public class AddServiceRequestModules extends SignUpData{
 		module.setTableName(ModuleFactory.getServiceRequestModule().getTableName());
 		module.setTrashEnabled(true);
 		module.setType(ModuleType.BASE_ENTITY.getValue());
-		module.setType(ModuleType.BASE_ENTITY);		
+		module.setType(ModuleType.BASE_ENTITY);
 		workFlowEvent.setModule(module);
 		workFlowEvent.setModuleName(ModuleFactory.getServiceRequestModule().getName());
 		buttonRule.setEvent(workFlowEvent);
@@ -71,16 +88,29 @@ public class AddServiceRequestModules extends SignUpData{
 		buttonRule.setShouldFormInterfaceApply(false);
 		buttonRule.setStatus(true);
 		customButton.setRule(buttonRule);
-		
+
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateCustomButtonChain();
-        FacilioContext context = chain.getContext();
+		FacilioContext context = chain.getContext();
 
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, customButton.getModuleName());
-        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, buttonRule);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, customButton.getModuleName());
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, buttonRule);
 
-        chain.execute();   
-		
+		chain.execute();
+
 	}
-	
+	private void addhideCreateWOSystemButtonInSR() throws Exception {
+
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getOrgInfoModule().getTableName())
+				.fields(AccountConstants.getOrgInfoFields());
+		Map<String, Object> addDefault = new HashMap<>();
+		addDefault.put("name", "hideCreateWOSystemButtonInSR");
+		addDefault.put("orgId", AccountUtil.getCurrentOrg().getId());
+		addDefault.put("value", "true");
+
+		insertRecordBuilder.addRecord(addDefault);
+		insertRecordBuilder.save();
+
+	}
 
 }
