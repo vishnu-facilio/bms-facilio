@@ -8,6 +8,14 @@ public class FormRuleActionFieldsContext {
 	long orgId;
 	long formRuleActionId = -1;
 	long formFieldId = -1;
+	public String getFormFieldName() {
+		return formFieldName;
+	}
+	public void setFormFieldName(String formFieldName) {
+		this.formFieldName = formFieldName;
+	}
+
+	String formFieldName;
 	long formSectionId = -1;
 	public long getFormSectionId() {
 		return formSectionId;

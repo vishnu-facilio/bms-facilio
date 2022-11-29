@@ -1,8 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.forms.FormActionType;
@@ -19,7 +25,17 @@ public class DeleteFormRuleActionCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
-		
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.select(FieldFactory.getFormRuleFields())
+				.andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(formRule.getId()), NumberOperators.EQUALS));
+
+
+		FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(selectRecordBuilder.fetchFirst(),FormRuleContext.class);
+		if(formRuleContext.getIsDefault()){
+			throw new IllegalArgumentException("Default form rule cannot be deleted");
+		}
 		List<FormRuleActionContext> oldactions = FormRuleAPI.getFormRuleActionContext(formRule.getId());
 		
 		for(FormRuleActionContext action :oldactions) {

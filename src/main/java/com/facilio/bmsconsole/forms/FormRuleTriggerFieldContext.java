@@ -7,7 +7,17 @@ public class FormRuleTriggerFieldContext {
 	long fieldId = -1;
 	long ruleId = -1;
 	int executionOrder = -1;
-	
+
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	String fieldName;
+
 	public long getId() {
 		return id;
 	}

@@ -18,6 +18,7 @@ public class LoadWorkorderRelatedModulesCommandV3 extends FacilioCommand {
         List<V3WorkOrderContext> wos = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(wos)) {
             V3TicketAPI.loadRelatedModules(wos.get(0));
+            V3TicketAPI.loadPmV1IntoWorkOrderObject(wos);
         }
 
         return false;

@@ -899,14 +899,12 @@ public class ExportUtil {
 				List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
 				if (!(notes.isEmpty())) {
 					for (int j = 0; j < notes.size(); j++) {
-						if (!(notes.get(j).getCreatedBy().getEmail().contains("system+"))) {
-							if (map.containsKey(notes.get(j).getParentId())) {
-								map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
-							} else {
-								List<String> temp = new ArrayList<>();
-								temp.add(notes.get(j).getBody());
-								map.put(notes.get(j).getParentId(), temp);
-							}
+						if (map.containsKey(notes.get(j).getParentId())) {
+							map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
+						} else {
+							List<String> temp = new ArrayList<>();
+							temp.add(notes.get(j).getBody());
+							map.put(notes.get(j).getParentId(), temp);
 						}
 					}
 					for (int i = 0; i < records.size(); i++) {

@@ -750,6 +750,15 @@ public class V3TicketAPI {
         }
     }
 
+    public static void loadPmV1IntoWorkOrderObject(List<V3WorkOrderContext> workOrderContexts) throws Exception {
+        for(V3WorkOrderContext wo: workOrderContexts){
+            if(wo.getPm() != null && wo.getPm().getId() > 0){
+                PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(wo.getPm().getId(), false);
+                wo.setPm(pm);
+            }
+        }
+    }
+
     public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception
     {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
