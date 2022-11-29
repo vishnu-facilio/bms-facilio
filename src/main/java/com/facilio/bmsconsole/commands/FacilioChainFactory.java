@@ -1853,6 +1853,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new SetPriorityNameCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		return c;
 	}

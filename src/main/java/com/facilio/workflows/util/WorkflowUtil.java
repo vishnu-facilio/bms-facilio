@@ -2456,7 +2456,11 @@ public class WorkflowUtil {
 				String var = "${"+key+"}";
 				String varRegex = "\\$\\{"+key+"\\}";
 				if(expressionString.contains(var)) {
-					expressionString = expressionString.replaceAll(varRegex, StringEscapeUtils.escapeXml10(val));
+					String value = val;
+					if(value.contains("$")) {
+						value = value.replaceAll(Pattern.quote("$"),  Matcher.quoteReplacement("\\$"));
+					}
+					expressionString = expressionString.replaceAll(varRegex, StringEscapeUtils.escapeXml10(value));
 				}
 			}
 		}

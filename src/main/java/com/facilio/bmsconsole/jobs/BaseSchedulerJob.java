@@ -65,7 +65,6 @@ public class BaseSchedulerJob extends FacilioJob {
 		}
 		catch(Exception e) {
 			LOGGER.severe("Error occurred in BaseSchedulerJob for jobId: "+jobId+ " Exception: " +e);
-			throw e;		
 		}
 	}
 	
