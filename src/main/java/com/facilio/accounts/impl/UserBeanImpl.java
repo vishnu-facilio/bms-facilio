@@ -563,16 +563,35 @@ public class UserBeanImpl implements UserBean {
 		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, null, AccountUtil.getCurrentOrg().getOrgId(), Collections.singletonList(ouId));
 
 		List<Map<String, Object>> props = selectRecordBuilder.get();
+		List<User> users=populateProps(props);
+
+		return CollectionUtils.isNotEmpty(users)?users.get(0):null;
+	}
+	@Override
+	public List<User> getUsers(long appId, Set<Long> ouids) throws Exception {
+
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, null, AccountUtil.getCurrentOrg().getOrgId(),ouids);
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		List<User> users=populateProps(props);
+
+		return CollectionUtils.isNotEmpty(users)?users:null;
+
+	}
+	private List<User> populateProps(List<Map<String, Object>> props) throws Exception{
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			if(CollectionUtils.isNotEmpty(props)) {
-				User user = createUserFromProps(props.get(0), true, false, null);
-				return user;
+				List<User> users=new ArrayList<>();
+				for(Map<String,Object> prop:props){
+					User user = createUserFromProps(prop, true, false, null);
+					users.add(user);
+				}
+				return users;
 			}
 		}
 		return null;
 	}
-	
 	
 	@Override
 	public boolean disableUser(long orgId, long userId) throws Exception {

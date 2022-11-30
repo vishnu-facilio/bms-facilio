@@ -75,39 +75,35 @@ public class DelegationUtil {
         builder.andCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
 
         List<DelegationContext> delegationContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
-        List<User> users = new ArrayList<>();
+        List<User> users = null;
         if (CollectionUtils.isNotEmpty(delegationContexts)) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
             long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
-            for (DelegationContext delegationContext : delegationContexts) {
-                User user = userBean.getUser(appId, delegationContext.getUserId());
-                if (user != null) {
-                    users.add(user);
-                }
-            }
+            Set<Long> ouids=delegationContexts.stream().map(DelegationContext::getUserId).collect(Collectors.toSet());
+            users = userBean.getUsers(appId, ouids);
+
         }
 
-        return users;
+        return CollectionUtils.isNotEmpty(users)?users:Collections.EMPTY_LIST;
     }
 
-    public static User getDelegatedUser(User user, long timestamp, DelegationType delegationType) throws Exception {
+    public static List<User> getDelegatedUsers(User user, long timestamp, DelegationType delegationType) throws Exception {
         if (user == null) {
             throw new NullPointerException("user cannot be empty");
         }
         GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
 
         builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(user.getId()), NumberOperators.EQUALS));
-        DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
-
-        if (delegationContext != null) {
+        List<DelegationContext> delegationContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
+        List<User> delegatedUsers=null;
+        if (CollectionUtils.isNotEmpty(delegationContexts)) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
             long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
-            User delegatedUser = userBean.getUser(appId, delegationContext.getDelegateUserId());
-            if (delegatedUser != null) {
-                return delegatedUser;
-            }
+            Set<Long> delegatedUsersOuids=delegationContexts.stream().map(DelegationContext::getDelegateUserId).collect(Collectors.toSet());
+            delegatedUsers = userBean.getUsers(appId, delegatedUsersOuids);
         }
-        return user;
+
+        return CollectionUtils.isNotEmpty(delegatedUsers)?delegatedUsers:null;
     }
 
     public static DelegationContext getDelegationContext(long id) throws Exception {

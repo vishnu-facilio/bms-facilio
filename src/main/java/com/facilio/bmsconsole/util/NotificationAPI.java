@@ -76,11 +76,20 @@ public class NotificationAPI {
 				User user = userBean.getUser(userId, false);
 				if(user != null) {
 					
-					User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
-					
-					if(!updatedUserIds.contains(delegatedUser.getOuid())) {
-						updatedUserIds.add(delegatedUser.getOuid());
+					List<User> delegatedUsers = DelegationUtil.getDelegatedUsers(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
+					if(CollectionUtils.isNotEmpty(delegatedUsers)){
+						for(User delegatedUser: delegatedUsers){
+							if(!updatedUserIds.contains(delegatedUser.getOuid())) {
+								updatedUserIds.add(delegatedUser.getOuid());
+							}
+						}
 					}
+					else{
+						if(!updatedUserIds.contains(user.getOuid())){
+							updatedUserIds.add(user.getOuid());
+						}
+					}
+
 				}
 			}
 			

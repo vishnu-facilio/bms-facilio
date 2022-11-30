@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+
+<struts>
+    <package name="setupApi" strict-method-invocation="false"
+             extends="struts-default,json-default">
+        <result-types>
+            <result-type name="json"
+                         class="com.facilio.bmsconsole.interceptors.CacheResult" />
+        </result-types>
+
+        <global-results>
+            <result name="login" type="httpheader">
+                <param name="status">401</param>
+            </result>
+            <result name="unauthorized" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="invalid" type="httpheader">
+                <param name="status">400</param>
+            </result>
+            <result name="usernotinapp" type="httpheader">
+                <param name="status">409</param>
+            </result>
+            <result name="exception" type="chain">
+                <param name="actionName">handleException</param>
+                <param name="namespace">/v3/exception</param>
+            </result>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+            </result>
+            <result name="error" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^message.*,^code.*,^data.*,^stackTrace.*</param>
+            </result>
+            <result name="sessionexpired" type="httpheader">
+                <param name="status">440</param>
+            </result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception"
+                               result="exception" />
+        </global-exception-mappings>
+    </package>
+
+    <package name="moduleSetupApi" namespace="/api/v1/setup/modules" extends="v2Api">
+        <action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
+                method="v2AddModule"/>
+        <action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
+                method="v2UpdateModule"/>
+        <action name="lists/system" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getSystemModulesList"/>
+        <action name="lists/custom" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getCustomModulesList"/>
+        <action name="forms" class="com.facilio.bmsconsole.actions.FormAction"
+                method="formList"/>
+        <action name="relation" class="com.facilio.relation.action.RelationAction"
+                method="list" />
+        <action name="customButton" class="com.facilio.bmsconsole.actions.CustomButtonAction"
+                method="getAllCustomButtons" />
+        <action name="fields" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getModuleFields"/>
+        <action name="getFieldForms" class="com.facilio.bmsconsole.actions.ModuleAction"
+                method="v2getFieldUsageInForms" />
+        <action name="related" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getRelatedModules"/>
+        <action name="extended" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getExtendedModules"/>
+        <action name="summary" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getSummary"/>
+        <action name="setting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getSetting"/>
+        <action name="updateSetting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="updateSetting"/>
+
+        <action name="lists/system/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getSystemModulesCount"/>
+        <action name="lists/custom/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getCustomModulesCount"/>
+        <action name="fields/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getModuleFieldsCount"/>
+        <action name="related/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getRelatedModulesCount"/>
+        <action name="extended/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getExtendedModulesCount"/>
+        <action name="relation/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getRelationsCount" />
+        <action name="customButton/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getCustomButtonsCount" />
+    </package>
+
+</struts>
