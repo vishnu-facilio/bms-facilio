@@ -375,6 +375,21 @@ public class FieldFactory extends BaseFieldFactory {
                 "subscribeStatus",
                 "writable"
         }));
+        public static final List<String> AGENT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                AgentConstants.CONNECTED,
+                AgentConstants.DISPLAY_NAME,
+                AgentConstants.DATA_INTERVAL,
+                AgentConstants.LAST_MODIFIED_TIME,
+                AgentConstants.CREATED_TIME,
+                AgentConstants.LAST_DATA_RECEIVED_TIME,
+                AgentConstants.SITE_ID,
+                AgentKeys.WRITABLE,
+                AgentConstants.DELETED_TIME,
+                "agentType",
+                AgentKeys.NAME
+
+
+        }));
 
         public static final List<String> AGENT_ALARM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
                 "agent",
@@ -752,34 +767,42 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewAgentModule();
         fields.add(getIdField(module));
-        fields.add(getField(AgentConstants.DEVICE_DETAILS, "DEVICE_DETAILS", module, FieldType.STRING));
-        fields.add(getAgentConnectedField(module));
-        fields.add(getAgentNameField(module));
-        fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getAgentDataIntervalField(module));
-        fields.add(getNewAgentTypeField(module));
-        fields.add(getField(AgentConstants.VERSION, "VERSION", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
-        fields.add(getCreatedTime(module));
-        fields.add(getAgentLastDataReveivedField(module));
-        fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
-        fields.add(getWritableField(module));
-        fields.add(getField(AgentConstants.PROCESSOR_VERSION, "PROCESSOR_VERSION", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
-        fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID, "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
-        fields.add(getField(AgentKeys.COMMAND_WORKFLOW_ID, "COMMAND_WORKFLOW_ID", module, FieldType.NUMBER));
-        fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
-        fields.add(getField("lastActionModified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
-        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
-        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
-        fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
-        fields.add(getNumberField(AgentConstants.INBOUND_CONNECTION_ID,"INBOUND_CONNECTION_ID",module));
-        fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_LOST_WORKFLOW_ID,"CONNECTION_LOST_WORKFLOW_ID",module));
-        fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"CONNECTION_REGAIN_WORKFLOW_ID",module));
-        fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
-        fields.add(getField(AgentConstants.DISCOVER_CONTROLLERS_TIMEOUT,"DISCOVER_CONTROLLERS_TIMEOUT",module,FieldType.NUMBER));
-        fields.add(getField(AgentConstants.DISCOVER_POINTS_TIMEOUT,"DISCOVER_POINTS_TIMEOUT",module,FieldType.NUMBER));
-        fields.add(getField("commandMaxRetryCount","COMMAND_MAX_RETRY_COUNT",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DEVICE_DETAILS,"Device Details", "DEVICE_DETAILS", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.CONNECTED,"Connected", "CONNECTED", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentKeys.NAME,"Link Name", "NAME", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DATA_INTERVAL,"Data Interval", "DATA_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.AGENT_TYPE, "Type","TYPE", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.VERSION, "Version","VERSION", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.LAST_MODIFIED_TIME,"Last Modified Time", "LAST_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.CREATED_TIME,"Created Time", "CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.LAST_DATA_RECEIVED_TIME,"Last Data Received Time", "LAST_DATA_RECEIVED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.SITE_ID,"Site Id", "SITE_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentKeys.WRITABLE, "Writable","WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentConstants.PROCESSOR_VERSION,"Process Version","PROCESSOR_VERSION", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DELETED_TIME,"Deleted Time", "DELETED_TIME", FieldType.NUMBER));
+        fields.add(getDefaultField(AgentKeys.TRANSFORM_WORKFLOW_ID,"Transform workfloe Id", "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentKeys.COMMAND_WORKFLOW_ID,"Command Workflow Id", "COMMAND_WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("isDisable","Is Disable", "IS_DISABLE", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField("lastActionModified","Last Action Modified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
+        fields.add(getDefaultField("recordId","Record id", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("workflowId", "Workflow Id","WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.INBOUND_CONNECTION_ID,"Inbound Connection Id","INBOUND_CONNECTION_ID",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.AGENT_CONNECTION_LOST_WORKFLOW_ID,"Agent Connection Lost WorkFlow Id","CONNECTION_LOST_WORKFLOW_ID",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"Agent Connection Regain Workflow Id","CONNECTION_REGAIN_WORKFLOW_ID",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.MESSAGE_SOURCE,"Message Source", "MESSAGE_SOURCE", module,FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DISCOVER_CONTROLLERS_TIMEOUT,"Discovers Controllers Timeout","DISCOVER_CONTROLLERS_TIMEOUT",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DISCOVER_POINTS_TIMEOUT,"Discover Points Timeout","DISCOVER_POINTS_TIMEOUT",module,FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.COMMAND_MAX_RETRY_COUNT,"Command Max Retry Count","COMMAND_MAX_RETRY_COUNT",module,FieldType.NUMBER));
+
+        SystemEnumField agentType = (SystemEnumField) getDefaultField("agentType","Agent type","AGENT_TYPE", module, FieldType.SYSTEM_ENUM);
+        agentType.setEnumName("AgentType");
+        agentType.setValues(FacilioEnum.getEnumValues(agentType.getEnumName()));
+        fields.add(agentType);
+
+        StringField name = (StringField) getDefaultField(AgentConstants.DISPLAY_NAME,"Name", "DISPLAY_NAME", module, FieldType.STRING);
+        name.setMainField(true);
+        fields.add(name);
+
         return fields;
     }
 

@@ -307,5 +307,6 @@ public class AgentConstants
     public static final String MESSAGE_PARTITION = "messagePartition";
     
     public static final String EVENT_VERSION = "eventVersion";
+    public static final String COMMAND_MAX_RETRY_COUNT = "commandMaxRetryCount";
 
 }

@@ -302,7 +302,7 @@ public class AgentBeanImpl implements AgentBean {
         return new JSONObject();
     }
 
-    public long getAgentCount(String querySearch) {
+    public long getAgentCount(String querySearch,Criteria filterCriteria) {
         Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         try {
@@ -313,6 +313,9 @@ public class AgentBeanImpl implements AgentBean {
                     .andCondition(getDeletedTimeNullCondition(agentDataModule));
             if (querySearch != null){
                 builder.andCondition(CriteriaAPI.getCondition(fieldsmap.get("displayName"),querySearch, StringOperators.CONTAINS));
+            }
+            if (filterCriteria != null){
+                builder.andCriteria(filterCriteria);
             }
             List<Map<String, Object>> result = builder.get();
             return (long) result.get(0).get(AgentConstants.ID);
@@ -337,7 +340,7 @@ public class AgentBeanImpl implements AgentBean {
     }
 
     @Override
-    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination,List<Long>defaultIds) throws Exception {
+    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination,List<Long>defaultIds,Criteria filterCriteria) throws Exception {
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
@@ -360,6 +363,9 @@ public class AgentBeanImpl implements AgentBean {
                 .groupBy(agentDataModule.getTableName() + ".ID");
         if (querySearch != null){
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),querySearch, StringOperators.CONTAINS));
+        }
+        if (filterCriteria != null){
+            genericSelectRecordBuilder.andCriteria(filterCriteria);
         }
        String orderBy = "";
         if(fieldMap.containsKey(AgentConstants.CONNECTED)){

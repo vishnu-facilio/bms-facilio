@@ -2,6 +2,7 @@ package com.facilio.agent;
 
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioIntEnum;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

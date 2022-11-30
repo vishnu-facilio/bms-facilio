@@ -275,3 +275,6 @@ enums:
   
   - name: PMScopeAssigmentType
     enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
+
+  - name: AgentType
+    enumClassName: com.facilio.agent.AgentType

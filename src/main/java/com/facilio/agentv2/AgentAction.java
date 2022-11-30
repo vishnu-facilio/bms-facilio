@@ -21,6 +21,7 @@ import java.util.Set;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -104,10 +105,14 @@ public class AgentAction extends AgentActionV2 {
 
 	public String listAgents() {
         try {
-            FacilioContext context = new FacilioContext();
+            FacilioChain chain = ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+            FacilioContext context = chain.getContext();
             constructListContext(context);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.AGENT);
+            chain.execute();
+            Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
             AgentBean agentBean = getAgentBean();
-            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false,querySearch,getPagination(),defaultIds);
+            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false,querySearch,getPagination(),defaultIds,filterCriteria);
             // agentBean.listFacilioAgents(context);
             int offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
@@ -136,8 +141,14 @@ public class AgentAction extends AgentActionV2 {
 
     public String getAgentCount() {
         try {
+            FacilioChain chain = ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+            FacilioContext context = chain.getContext();
+            constructListContext(context);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.AGENT);
+            chain.execute();
+            Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
             AgentBean agentBean = getAgentBean();
-            setResult(AgentConstants.DATA, agentBean.getAgentCount(querySearch));
+            setResult(AgentConstants.DATA, agentBean.getAgentCount(querySearch,filterCriteria));
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agentCount->", e);
@@ -200,6 +211,16 @@ public class AgentAction extends AgentActionV2 {
     private List<Long> defaultIds;
     public List<Long> getDefaultIds(){return  defaultIds; }
     public void setDefaultIds(List<Long> defaultIds){this.defaultIds = defaultIds;}
+
+    public String getFilters() {
+        return filters;
+    }
+
+    public void setFilters(String filters) {
+        this.filters = filters;
+    }
+
+    private String filters;
 
     public String listPoints() {
         JSONArray pointData = new JSONArray();

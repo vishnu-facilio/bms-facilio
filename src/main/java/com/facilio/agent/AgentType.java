@@ -1,10 +1,12 @@
 package com.facilio.agent;
 
+import com.facilio.modules.FacilioIntEnum;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum AgentType {
+public enum AgentType implements FacilioIntEnum {
     CUSTOM(0, "custom", true, false, true),
     FACILIO(1, "facilio", false, false, true),
     NIAGARA(2, "niagara", false, false, true),
@@ -75,5 +77,14 @@ public enum AgentType {
 
     public boolean allowAutoAddition() {
         return allowAutoAddition;
+    }
+
+    @Override
+    public Integer getIndex() {
+        return key;
+    }
+    @Override
+    public String getValue(){
+        return this.label;
     }
 }
