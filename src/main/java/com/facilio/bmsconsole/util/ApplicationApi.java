@@ -2668,6 +2668,7 @@ public class ApplicationApi {
 
             long appId = layout.getApplicationId();
 
+
             List<WebTabGroupContext> webTabGroups = new ArrayList<>();
             Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
             List<WebTabContext> webTabs = new ArrayList<>();
@@ -2675,59 +2676,59 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("General", "general", layout.getId(), 200, groupOrder++));
             webTabs = new ArrayList<>();
-            //configJSON = new JSONObject();
-            //configJSON.put("type", "portalOverview");
             webTabs.add(new WebTabContext("Company Profile", "companyprofile", WebTabContext.Type.COMPANY_PROFILE, null, appId, null));
             webTabs.add(new WebTabContext("Portals", "portal", WebTabContext.Type.PORTALS, null, appId, null));
             webTabs.add(new WebTabContext("Visitor Settings", "visitorsettings", WebTabContext.Type.VISITOR_SETTINGS, null, appId, null));
-            webTabs.add(new WebTabContext("Feedback & Complaints", "feedbacksettings", WebTabContext.Type.FEEDBACK_COMPLAINTS, null, appId, null));
-            webTabs.add(new WebTabContext("Smart Controls", "smartcontrolsettings", WebTabContext.Type.SMART_CONTROLS, null, appId, null));
             webTabs.add(new WebTabContext("Service Catalogs", "catalogs", WebTabContext.Type.SERVICE_CATALOGS, null, appId, null));
             webTabs.add(new WebTabContext("Tax", "tax", WebTabContext.Type.TAX, null, appId, null));
 
             groupNameVsWebTabsMap.put("general", webTabs);
 
 
-            webTabGroups.add(new WebTabGroupContext("Users Management", "resource", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Resorurces", "resources", layout.getId(), 201, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Users", "users", WebTabContext.Type.USERS, null, appId, null));
+            webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
             webTabs.add(new WebTabContext("Teams", "teams", WebTabContext.Type.TEAMS, null, appId, null));
-            webTabs.add(new WebTabContext("Roles", "roles", WebTabContext.Type.ROLES, null, appId, null));
             webTabs.add(new WebTabContext("Labor", "labor", WebTabContext.Type.LABOUR, null, appId, null));
             webTabs.add(new WebTabContext("Crafts", "crafts", WebTabContext.Type.CRAFTS, null, appId, null));
-            webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
-            webTabs.add(new WebTabContext("Scoping", "scoping", WebTabContext.Type.SCOPING, null, appId, null));
+            groupNameVsWebTabsMap.put("resources", webTabs);
 
-            groupNameVsWebTabsMap.put("resource", webTabs);
-
-
-            webTabGroups.add(new WebTabGroupContext("Security Settings", "security", layout.getId(), 202, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Users and access", "usersandaccess", layout.getId(), 202, groupOrder++));
             webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Users", "users", WebTabContext.Type.USERS, null, appId, null));
+            webTabs.add(new WebTabContext("Roles", "roles", WebTabContext.Type.ROLES, null, appId, null));
             webTabs.add(new WebTabContext("Single Sign-On", "sso", WebTabContext.Type.SINGLE_SIGN_ON, null, appId, null));
             webTabs.add(new WebTabContext("Security Policy", "securitypolicy", WebTabContext.Type.SECURITY_POLICY, null, appId, null));
+            webTabs.add(new WebTabContext("Scope", "scope", WebTabContext.Type.SCOPE, null, appId, null));
 
-            groupNameVsWebTabsMap.put("security", webTabs);
+            groupNameVsWebTabsMap.put("usersandaccess", webTabs);
+
+
 
             webTabGroups.add(new WebTabGroupContext("Work Order Settings", "workordersettings", layout.getId(), 203, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Settings", "emailsettings", WebTabContext.Type.EMAIL_SETTINGS, null, appId, null));
-            webTabs.add(new WebTabContext("Customization", "category", WebTabContext.Type.WORKORDER_CUSTOMIZATION, null, appId, null));
+            webTabs.add(new WebTabContext("Category", "category", WebTabContext.Type.CATEGORY, null, appId, null));
             webTabs.add(new WebTabContext("Priority", "priority", WebTabContext.Type.PRIORITY, null, appId, null));
             webTabs.add(new WebTabContext("Types", "types", WebTabContext.Type.TYPES, null, appId, null));
             webTabs.add(new WebTabContext("Survey", "survey", WebTabContext.Type.SURVEY, null, appId, null));
 
             groupNameVsWebTabsMap.put("workordersettings", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Space and Asset Settings", "assetsettings", layout.getId(), 204, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Portfolio Settings", "portfoliosettings", layout.getId(), 204, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Readings", "readings", WebTabContext.Type.READINGS, null, appId, null));
             webTabs.add(new WebTabContext("Asset Depreciation", "depreciation", WebTabContext.Type.ASSET_DEPRECIATION, null, appId, null));
             webTabs.add(new WebTabContext("Space categories", "spacecategory", WebTabContext.Type.SPACE_CATEGORIES, null, appId, null));
             webTabs.add(new WebTabContext("Operating Hours", "operatinghours", WebTabContext.Type.OPERATING_HOURS, null, appId, null));
+            webTabs.add(new WebTabContext("Department", "department", WebTabContext.Type.DEPARTMENT, null, appId, null));
+            webTabs.add(new WebTabContext("Type", "type", WebTabContext.Type.TYPE, null, appId, null));
+            webTabs.add(new WebTabContext("Weather station", "weatherstation", WebTabContext.Type.WEATHER_STATION, null, appId, null));
 
-            groupNameVsWebTabsMap.put("assetsettings", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Automation", "automations", layout.getId(), 205, groupOrder++));
+            groupNameVsWebTabsMap.put("portfoliosettings", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Automation", "automation", layout.getId(), 205, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Workflows", "workflows", WebTabContext.Type.WORKFLOWS, null, appId, null));
             webTabs.add(new WebTabContext("Notifications", "notifications", WebTabContext.Type.NOTIFICATIONS, null, appId, null));
@@ -2736,14 +2737,13 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
 
-            groupNameVsWebTabsMap.put("automations", webTabs);
+            groupNameVsWebTabsMap.put("automation", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Automation Plus", "automationplus", layout.getId(), 206, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("SLA Policies", "slapolicies", WebTabContext.Type.SLA_POLICIES, null, appId, null));
             webTabs.add(new WebTabContext("Assignment Rules", "assignmentrules", WebTabContext.Type.ASSIGNMENT_RULES, null, appId, null));
             webTabs.add(new WebTabContext("BMS Event Filtering", "eventfilter", WebTabContext.Type.BMS_EVENT_FILTERING, null, appId, null));
-            webTabs.add(new WebTabContext("Scoring Rules", "scoringrules", WebTabContext.Type.SCORING_RULES, null, appId, null));
             webTabs.add(new WebTabContext("Transaction Rules", "transactionrules", WebTabContext.Type.TRANSACTION_RULES, null, appId, null));
 
             groupNameVsWebTabsMap.put("automationplus", webTabs);
@@ -2758,37 +2758,19 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Customization", "customization", layout.getId(), 1, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Modules", "modules", WebTabContext.Type.MODULES, null, appId, null));
-            webTabs.add(new WebTabContext("Tabs and Layouts", "webtabs/:appId?", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
             webTabs.add(new WebTabContext("Connected Apps", "connectedapps", WebTabContext.Type.CONNECTED_APPS, null, appId, null));
             webTabs.add(new WebTabContext("Connectors", "connections", WebTabContext.Type.CONNECTORS, null, appId, null));
             webTabs.add(new WebTabContext("Functions", "functions", WebTabContext.Type.FUNCTIONS, null, appId, null));
             webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
             webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null));
-            webTabs.add(new WebTabContext("User Scopes", "userscopes", WebTabContext.Type.USER_SCOPES, null, appId, null));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
-
-            webTabGroups.add(new WebTabGroupContext("Energy Analytics", "energyanalytics", layout.getId(), 2, groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Energy Meters", "energymeters", WebTabContext.Type.ENERGY_METERS, null, appId, null));
-            webTabs.add(new WebTabContext("Baseline", "baseline", WebTabContext.Type.BASELINE, null, appId, null));
-            webTabs.add(new WebTabContext("EnPI", "enpi", WebTabContext.Type.ENPI, null, appId, null));
-            webTabs.add(new WebTabContext("Fault Impact Template", "impacttemplates", WebTabContext.Type.FAULT_IMPACT_TEMPLATE, null, appId, null));
-
-            groupNameVsWebTabsMap.put("energyanalytics", webTabs);
-
+            
             webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null));
 
             groupNameVsWebTabsMap.put("developerspace", webTabs);
-
-            webTabGroups.add(new WebTabGroupContext("Developer", "developer", layout.getId(), 6, groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Bundle", "bundle", WebTabContext.Type.BUNDLE, null, appId, null));
-            webTabs.add(new WebTabContext("Install Bundle", "installBundle", WebTabContext.Type.INSTALL_BUNDLE, null, appId, null));
-
-            groupNameVsWebTabsMap.put("developer", webTabs);
 
             webTabGroups.add(new WebTabGroupContext( "Logs","logs", layout.getId(),207, groupOrder++));
             webTabs = new ArrayList<>();

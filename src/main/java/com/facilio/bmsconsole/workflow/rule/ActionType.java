@@ -440,12 +440,6 @@ public enum ActionType {
 
 				String ids = (String) obj.get("id");
 				List<Long> idLongList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList());
-
-				List<Long> delegatedUserList = NotificationAPI.checkUserDelegation(idLongList);
-				if (CollectionUtils.isNotEmpty(delegatedUserList)){
-					idLongList = delegatedUserList;
-				}
-
 				Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
 				if (CollectionUtils.isNotEmpty(idLongList) && parentModuleId > 0) {
 					LOGGER.info("Notification Modules entry : " + idLongList);

@@ -56,8 +56,9 @@ public class BaseSchedulerJob extends FacilioJob {
 							}
 						}
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Exception while base scheduling job " +jobName+ " ,jobId: "+jobId+ " baseScheduleContext: "+baseScheduleContext,e);
+						LOGGER.log(Level.SEVERE, "Exception while base scheduling job " +jobName+ " ,jobId: "+jobId+ " baseScheduleContext: "+baseScheduleContext);
 						CommonCommandUtil.emailException("Exception while base scheduling job " +jobName, "JobId: "+jobId+ " baseScheduleContext: "+baseScheduleContext,e);
+						throw e;
 					}
 				}		
 			}

@@ -102,6 +102,18 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("Delegation for this date range is assigned to the user in %s", delegatedUsersDelegations.get(0).getName()));
         }
 
+        // check whether user has delegated to other user for same delegate type
+        criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(delegationContext.getUserId()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("DELEGATION_TYPE & " + delegationContext.getDelegationType(), "checkDelegation", String.valueOf(0), NumberOperators.GREATER_THAN));
+        List<DelegationContext> otherDelegations = getDelegationContext(delegationContext.getFromTime(), delegationContext.getToTime(), delegationContext.getId(), criteria);
+        if (CollectionUtils.isNotEmpty(otherDelegations)) {
+            for (DelegationContext otherDelegation : otherDelegations) {
+                if (otherDelegation.getDelegateUserId() != delegationContext.getDelegateUserId()) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("One or few Delegation types is already granted in %s", otherDelegation.getName()));
+                }
+            }
+        }
     }
 
     private List<DelegationContext> getDelegationContext(long fromTime, long toTime, long ignoreId, Criteria otherCriteria) throws Exception {

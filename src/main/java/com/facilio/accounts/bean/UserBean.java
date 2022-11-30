@@ -45,8 +45,6 @@ public interface UserBean {
 
 	public User getUser(long appId, long ouId) throws Exception;
 
-	public List<User> getUsers(long appId, Set<Long> ouids) throws Exception;
-
 	public User getUserInternal(long ouid) throws Exception;
 	
 	public User getUserFromPhone(String phone, String identifier, long orgId) throws Exception;

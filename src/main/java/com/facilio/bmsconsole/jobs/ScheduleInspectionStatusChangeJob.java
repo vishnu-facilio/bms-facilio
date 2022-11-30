@@ -70,6 +70,7 @@ public class ScheduleInspectionStatusChangeJob extends FacilioJob {
         } catch (Exception e) {
             CommonCommandUtil.emailException("ScheduleInspectionStatusChangeJob", ""+jc.getJobId(), e);
             LOGGER.error("ScheduleInspectionStatusChangeJob failed: ", e);
+            throw e;
         }
 	}
 

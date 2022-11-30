@@ -41,7 +41,10 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.text.MessageFormat;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class EmailClient extends BaseEmailClient {
@@ -167,33 +170,29 @@ public abstract class EmailClient extends BaseEmailClient {
         if(!CollectionUtils.isEmpty(modifiedToBCCEmailList)) {
             mailJson.put(BCC, combineEmailsAgain(modifiedToBCCEmailList));
         }
-
-        OutgoingMailAPI.resetMailJson(mailJson);
-        preserveOriginalEmailAddress(mailJson);
     }
 
     private Set<String> changeEmailToDelegatedUserEmail(Set<String> toEmails) throws Exception {
 
         if(!CollectionUtils.isEmpty(toEmails)) {
 
-            Set<String> toEmailsList =new HashSet<>();
+            List<String> toEmailsList = toEmails.stream().collect(Collectors.toList());
+
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 
-            for(String email : toEmails){
+            for(int i=0;i<toEmailsList.size();i++) {
+
+                String email = toEmailsList.get(i);
+
                 User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
                 if(user != null) {
-                    List<User> delegatedUsers = DelegationUtil.getDelegatedUsers(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
-                    if(CollectionUtils.isNotEmpty(delegatedUsers)){
-                        Set<String> delegatedUsersEmails=delegatedUsers.stream().map(User::getEmail).collect(Collectors.toSet());
-                        toEmailsList.addAll(delegatedUsersEmails);
-                    }
-                    else{
-                        toEmailsList.add(email);
-                    }
+                    User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
+
+                    toEmailsList.set(i, delegatedUser.getEmail());
                 }
             }
 
-            return toEmailsList;
+            return toEmailsList.stream().collect(Collectors.toSet());
         }
         return null;
     }

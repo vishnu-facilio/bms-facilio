@@ -122,6 +122,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
 
+		LOGGER.info("Facilio status - update state" + facilioStatus);
+
 		if (facilioStatus == null) {
 			LOGGER.error("Status cannot be empty");
 			if (record != null) {
@@ -184,13 +186,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (includeStateFlowChange) {
 			fields.add(modBean.getField("stateFlowId", module.getName()));
 		}
+
+		LOGGER.info("IncludeStateFlow" + includeStateFlowChange + "Fields" + fields);
+
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
 		updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 		updateBuilder.updateViaMap(prop);
+		LOGGER.info("update state builder" + updateBuilder + prop);
 		Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
+		LOGGER.info("update state changeSet" + changeSet);
 		CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
 
 		if (oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {

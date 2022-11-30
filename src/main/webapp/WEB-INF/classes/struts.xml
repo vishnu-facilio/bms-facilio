@@ -38,7 +38,6 @@
 	<include file="agentv3.xml"/>
 	<include file="internalv3.xml"/>
 	<include file="apiv4.xml"/>
-	<include file="setupwebtab.xml"></include>
 	<!-- Add packages here -->
 
 </struts>
