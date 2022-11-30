@@ -1,6 +1,7 @@
 package com.facilio.accounts.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -835,6 +836,42 @@ public class PermissionUtil {
 		}
 
 		return hasAccess;
+	}
+
+	public static List<String> permCheckSysModules() {
+		List<String> checkPermissions = Arrays.asList(
+				"site",
+				"building",
+				"floor",
+				"space",
+				"vendors",
+				"serviceRequest",
+				"tenantunit",
+				"visitorlog",
+				"invitevisitor",
+				"visitor",
+				"tenant",
+				"contactdirectory",
+				"admindocuments",
+				"audience",
+				"announcement",
+				"neighbourhood",
+				"dealsandoffers",
+				"newsandinformation",
+				"facilitybooking",
+				"tenantcontact",
+				"vendorcontact",
+				"insurance",
+				"watchlist",
+				"budget",
+				"chartofaccount",
+				"accounttype",
+				"facility",
+				"booking",
+				"workorder",
+				"asset"
+		);
+		return checkPermissions;
 	}
 
 }

@@ -166,13 +166,13 @@
     <package name="newV3Api" extends="v3Api" namespace="/api/v3/modules">
         <action name="*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
-            <param name="permission">POST:CREATE,UPDATE;GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
             <param name="checkPermission">true</param>
         </action>
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
-            <param name="permission">POST:CREATE,UPDATE;GET:READ,READ_TEAM,READ_OWN;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN;DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
             <param name="checkPermission">true</param>
         </action>
         <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
@@ -187,6 +187,13 @@
             <param name="type">count</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
             <param name="checkPermission">true</param>
+        </action>
+        <action name="wo/site/summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">site</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="id">{1}</param>
+            <param name="checkPermission">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 

@@ -351,7 +351,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private List<Long> fetchIds() throws Exception {
 		if (CollectionUtils.isEmpty(recordIds) && !isIdsFetched) {
 			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
-			this.selectBuilder.select(fields).skipPermission();
+			this.selectBuilder.select(fields).skipPermission().skipModuleCriteria().skipScopeCriteria();
 			List<Map<String, Object>> oldProps = selectBuilder.getAsProps();
 			recordIds = oldProps.stream()
 					.map(p -> (Long) p.get("id"))
@@ -402,7 +402,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		Map<String, Object> modProps = sanitizeFields(allFields,moduleProps);
 		if (oldValues == null) {
 			this.selectBuilder.select(allFields);
-			selectBuilder.skipPermission().skipModuleCriteria();
+			selectBuilder.skipPermission().skipModuleCriteria().skipScopeCriteria();
 			oldValues = selectBuilder.get();
 			if (AccountUtil.getCurrentOrg().getOrgId() == 1l) {
 				LOGGER.info("Adding Log for Select Query "+selectBuilder);

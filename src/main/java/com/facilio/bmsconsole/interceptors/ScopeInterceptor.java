@@ -12,6 +12,7 @@ import com.facilio.audit.FacilioAudit;
 import com.facilio.audit.FacilioAuditOrgList;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.filters.MultiReadServletRequest;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -290,13 +292,19 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");
                         Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
                         Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
+                        Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
                         }
+                        if(parentModuleName != null && parentModuleName.getValue() != null) {
+                            moduleName = parentModuleName;
+                        }
 
                         String method = request.getMethod();
-                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null){
+                        boolean isV3Permission = false;
+                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null) {
+                            isV3Permission = true;
                             Parameter v3PermissionActions = action;
                             action = null;
                             String actions = v3PermissionActions.toString();
@@ -327,8 +335,10 @@ public class ScopeInterceptor extends AbstractInterceptor {
 //                        }
 
                         boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm)) {
-                            return logAndReturn("unauthorized", null, startTime, request);
+                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm, isV3Permission)) {
+                            if(isV3Permission) {
+                                return logAndReturn("unauthorized", null, startTime, request);
+                            }
                         }
 
                         String lang = currentAccount.getUser().getLanguage();
@@ -445,7 +455,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission) throws Exception {
+    private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission, boolean isV3Permission) throws Exception {
 
         if (action == null || "".equals(action.trim())) {
             return true;
@@ -483,9 +493,36 @@ public class ScopeInterceptor extends AbstractInterceptor {
             if (isNewPermission) {
                 return true;
             }
+
+            //portfolio is handled for space module - check for facilio main app
+            if(moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor")) {
+                moduleName = "space";
+            }
             boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
+
+            //Need to remove once changed in client
+            if(moduleName.equals("vendorcontact")) {
+                hasPerm = PermissionUtil.currentUserHasPermission("vendorContact", action, role) || PermissionUtil.currentUserHasPermission(moduleName, action, role);
+            }
+            if(moduleName.equals("tenantcontact")) {
+                hasPerm = PermissionUtil.currentUserHasPermission("tenantContact", action, role) || PermissionUtil.currentUserHasPermission(moduleName, action, role);
+            }
+
             if(!hasPerm) {
                 permissionLogsForModule(moduleName,role.getName(),action);
+            }
+            if(isV3Permission) {
+                if (PermissionUtil.permCheckSysModules().contains(moduleName)) {
+                    return hasPerm;
+                } else {
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    FacilioModule module = modBean.getModule(moduleName);
+                    if (module != null) {
+                        if (module.isCustom()) {
+                            return hasPerm;
+                        }
+                    }
+                }
             }
             return true;
         }
