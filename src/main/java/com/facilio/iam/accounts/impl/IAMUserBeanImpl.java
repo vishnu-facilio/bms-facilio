@@ -154,6 +154,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (((long) Long.parseLong(userObj[0])) == 17) {
 				expiryDay = creationInstant.plus(45, ChronoUnit.DAYS); // temp code for investa
 			}
+			else if (((long) Long.parseLong(userObj[0])) == 418) {
+				expiryDay = creationInstant.plus(45, ChronoUnit.DAYS); // temp code for altayer
+			}
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
 			if (currentTime.isAfter(expiryDay)) {
 				LOGGER.error("user token expired " + userToken);
