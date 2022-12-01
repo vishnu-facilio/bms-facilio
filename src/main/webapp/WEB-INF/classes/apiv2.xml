@@ -158,6 +158,8 @@
 
 		<action name="getAllSecurityPolicies" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="getAllSecurityPolicy">
+			<param name="permission">ALL</param>
+			<param name="setupTab">SECURITY_POLICY</param>
 		</action>
 
 		<action name="deleteSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
@@ -6264,7 +6266,9 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab" />
 		<action name="listForApp"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication">
-<!--			<param name="translationImpl">WebTabTranslation</param>-->
+			<param name="setupTab">USERS</param>
+			<param name="permission">ALL</param>
+			<!--			<param name="translationImpl">WebTabTranslation</param>-->
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTab" />

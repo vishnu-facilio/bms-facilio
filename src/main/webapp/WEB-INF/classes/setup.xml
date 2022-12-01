@@ -185,8 +185,9 @@
 		</action>
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 		<param name="moduleName">setup</param>
-		<param name="permission">USER_MANAGEMENT,ROLES</param>
-		<param name="cache">org</param>
+		<param name="permission">ALL,USER_MANAGEMENT,ROLES</param>
+			<param name="setupTab">EMAIL_LOGS</param>
+			<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>

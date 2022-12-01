@@ -7,10 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 public class NewPermissionUtil {
@@ -33,7 +47,7 @@ public class NewPermissionUtil {
 
     private static Map<String, Integer> serviceCatalogTabType = Collections.unmodifiableMap(initServiceCatalogMap());
 
-
+    private static Map<String, Integer> setupPermissionMap = Collections.unmodifiableMap(initSetupPermissionMap());
 
 
     private static Map<String, Integer> initModuleMap() {
@@ -212,6 +226,12 @@ public class NewPermissionUtil {
 
 
     static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
+
+    private static Map<String, Integer> initSetupPermissionMap() {
+        setupPermissionMap = new HashMap<>();
+        setupPermissionMap.put("ALL", 1);
+        return setupPermissionMap;
+    }
 
     static {
         Map<String, List<Permission>> permissionMap = new HashMap<>();
@@ -477,6 +497,16 @@ public class NewPermissionUtil {
         permissions.add(new Permission("DELETE", "Assign", serviceCatalogTabType.get("DELETE"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.SERVICE_CATALOG.getIndex(), permissionMap);
+
+        for(Type type : Type.values()) {
+            if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
+                permissions = new ArrayList<>();
+                permissionMap = new HashMap<>();
+                permissions.add(new Permission("ALL", "Allow", setupPermissionMap.get("ALL"), null));
+                permissionMap.put("*", permissions);
+                permissionList.put(type.getIndex(), permissionMap);
+            }
+        }
     }
 
     public static List<Permission> getPermissions(int tabType, String moduleName){
@@ -528,6 +558,10 @@ public class NewPermissionUtil {
     }
 
     public static long getPermissionValue(int tabType, String action) {
+        WebTabContext.Type webTabType = WebTabContext.Type.valueOf(tabType);
+        if(webTabType != null && webTabType.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
+            return setupPermissionMap.getOrDefault(action,-1);
+        }
         switch (tabType) {
             case 1:
                 return moduleTabType.getOrDefault(action, -1);
@@ -561,5 +595,46 @@ public class NewPermissionUtil {
             default:
                 return -1;
         }
+    }
+
+    public static boolean hasSetupPermission() throws Exception {
+        boolean hasSetupPermission = false;
+        List<Integer> setupTypes = new ArrayList<>();
+        for (WebTabContext.Type type : WebTabContext.Type.values()) {
+            if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
+                setupTypes.add(type.getIndex());
+            }
+        }
+        Map<String, FacilioField> webTabFieldsMap = FieldFactory.getAsMap(FieldFactory.getWebTabFields());
+        Map<String, FacilioField> newPermissionFieldsMap = FieldFactory.getAsMap(FieldFactory.getNewPermissionFields());
+
+        ApplicationContext currentApplication = AccountUtil.getCurrentApp();
+        Role currentUserRole = null;
+        if(AccountUtil.getCurrentUser() != null) {
+            currentUserRole = AccountUtil.getCurrentUser().getRole();
+            if(currentUserRole.isPrevileged()) {
+                return true;
+            }
+        }
+
+        if(currentApplication != null && currentUserRole != null) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getNewPermissionModule().getTableName())
+                    .innerJoin(ModuleFactory.getWebTabModule().getTableName())
+                    .on(ModuleFactory.getWebTabModule().getTableName() + ".ID = " + ModuleFactory.getNewPermissionModule().getTableName() + ".TAB_ID")
+                    .select(FieldFactory.getCountField())
+                    .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("applicationId"), String.valueOf(currentApplication.getId()),NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(newPermissionFieldsMap.get("roleId"), String.valueOf(currentUserRole.getId()),NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("type"), StringUtils.join(setupTypes,","),NumberOperators.EQUALS));
+
+            List<Map<String, Object>> result = selectRecordBuilder.get();
+            if(CollectionUtils.isNotEmpty(result)) {
+                long count = ((Number) result.get(0).get("count")).longValue();
+                if(count > 0) {
+                    hasSetupPermission = true;
+                }
+            }
+        }
+        return hasSetupPermission;
     }
 }

@@ -34,7 +34,9 @@ public class AddValueGenerators extends SignUpData {
                 "com.facilio.modules.VendorValueGenerator",
                 "com.facilio.modules.CurrentUserValueGenerator",
                 "com.facilio.modules.OrgUserValueGenerator",
-                "com.facilio.modules.TenantBasedOnTenantUnit"
+                "com.facilio.modules.TenantBasedOnTenantUnit",
+                "com.facilio.modules.TenantsValueGenerator",
+                "com.facilio.modules.VendorsValueGenerator"
         );
         Reflections reflections = new Reflections("com.facilio.modules");
         Set<Class<? extends ValueGenerator>> valueGeneratorClasses = reflections.getSubTypesOf(ValueGenerator.class);

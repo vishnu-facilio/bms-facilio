@@ -665,7 +665,7 @@ public class PermissionUtil {
 		return false;
 	}
 
-	public static boolean currentUserHasPermission(long tabId, String moduleName, String action, Role role) {
+	public static boolean currentUserHasPermission(long tabId, String moduleName, String action, Role role, String tabType) {
 
 		try {
 			if (moduleName.equalsIgnoreCase("planned"))
@@ -683,9 +683,18 @@ public class PermissionUtil {
 				long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
 				List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
 				if (!moduleNames.isEmpty()) {
-					if (moduleNames.contains(moduleName) || moduleName.equalsIgnoreCase("setup")) {
+					if (moduleNames.contains(moduleName) ){
 						boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
 						return hasPerm;
+					}
+				}
+				else if(moduleName.equalsIgnoreCase("setup")) {
+					WebTabContext tab = ApplicationApi.getWebTab(tabId);
+					if(tab != null) {
+						if (tabType != null && tab.getTypeEnum().name().equals(tabType)) {
+							boolean hasPerm = hasPermission(rolePermissionVal, action, tabId);
+							return hasPerm;
+						}
 					}
 				}
 			}

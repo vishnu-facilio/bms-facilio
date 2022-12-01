@@ -848,7 +848,7 @@ public class PageFactory {
 					if(CollectionUtils.isNotEmpty(tabIds)) {
 						boolean hasPerm = false;
 						if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null) {
-							hasPerm = PermissionUtil.currentUserHasPermission(tabIds.get(0), module.getName(), FacilioConstants.ContextNames.READ_PERMISSION, AccountUtil.getCurrentUser().getRole());
+							hasPerm = PermissionUtil.currentUserHasPermission(tabIds.get(0), module.getName(), FacilioConstants.ContextNames.READ_PERMISSION, AccountUtil.getCurrentUser().getRole(),null);
 							if(AccountUtil.getCurrentUser().getRole().isPrevileged()) {
 								hasPerm = true;
 							}

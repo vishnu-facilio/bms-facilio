@@ -236,7 +236,8 @@
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
 			method="userPickList">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">ALL,USER_MANAGEMENT</param>
+			<param name="setupTab">USERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
 			</result>

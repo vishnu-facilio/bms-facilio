@@ -1,0 +1,4 @@
+/api/setup/roles
+/api/v2/getAllSecurityPolicies
+/api/users
+/api/v2/tab/listForApp

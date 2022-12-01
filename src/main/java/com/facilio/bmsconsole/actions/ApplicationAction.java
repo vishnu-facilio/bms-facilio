@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -319,6 +320,8 @@ public class ApplicationAction extends FacilioAction {
 		}
 		boolean isWebTabEnabled = AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB);
 		setResult("isWebTabEnabled", isWebTabEnabled);
+		setResult("hasSetupPermission", NewPermissionUtil.hasSetupPermission());
+
 		return SUCCESS;
 	}
 

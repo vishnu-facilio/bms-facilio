@@ -26,6 +26,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
         boolean filterSetUpTab=(boolean)context.get((FacilioConstants.ContextNames.FILTER_SET_UP_TAP));
+        boolean fetchSetupTabs=(boolean)context.get((FacilioConstants.ContextNames.FETCH_SETUP_TABS));
 
         ApplicationContext application = null;
         if (appId <= 0) {
@@ -37,8 +38,10 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
             List<WebTabContext> webTabs = ApplicationApi.getWebTabsForApplication(appId);
             if (webTabs != null && !webTabs.isEmpty()) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                webTabs = webTabs.stream().filter(webtab -> webtab.getTypeEnum().getTabType().equals(filterSetUpTab?WebTabContext.TabType.SETUP:WebTabContext.TabType.NORMAL))
-                        .collect(Collectors.toList());
+                if(!fetchSetupTabs) {
+                    webTabs = webTabs.stream().filter(webtab -> webtab.getTypeEnum().getTabType().equals(filterSetUpTab ? WebTabContext.TabType.SETUP : WebTabContext.TabType.NORMAL))
+                            .collect(Collectors.toList());
+                }
                 for (WebTabContext webtab : webTabs) {
                     webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
                     List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());

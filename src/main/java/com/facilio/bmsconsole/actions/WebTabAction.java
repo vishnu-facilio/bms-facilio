@@ -63,6 +63,10 @@ public class WebTabAction extends FacilioAction {
         this.layout = layout;
     }
 
+    @Getter
+    @Setter
+    private boolean fetchSetupTabs=false;
+
     public String addOrUpdateTabGroup() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
         FacilioContext context = chain.getContext();
@@ -184,6 +188,8 @@ public class WebTabAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.APPLICATION_ID, getAppId());
         context.put(FacilioConstants.ContextNames.FILTER_SET_UP_TAP,isFilterSetUpTab());
+        context.put(FacilioConstants.ContextNames.FETCH_SETUP_TABS,isFetchSetupTabs());
+
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WEB_TABS, context.get(FacilioConstants.ContextNames.WEB_TABS));

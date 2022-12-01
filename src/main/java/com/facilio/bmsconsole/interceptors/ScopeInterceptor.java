@@ -28,6 +28,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
+import com.facilio.util.ValidatePermissionUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -293,6 +294,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
                         Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
                         Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
+                        Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
@@ -300,7 +302,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         if(parentModuleName != null && parentModuleName.getValue() != null) {
                             moduleName = parentModuleName;
                         }
-
+                        boolean isSetupPermission = false;
+                        if(setupTab != null && setupTab.getValue() != null) {
+                            moduleName = getModuleNameParam("setup");
+                            isSetupPermission = true;
+                        }
                         String method = request.getMethod();
                         boolean isV3Permission = false;
                         if(checkPermission != null && checkPermission && action != null && action.getValue() != null) {
@@ -318,26 +324,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             }
                         }
 
-//                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
-//                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
-//                            ServletActionContext.setRequest(servletRequest);
-//                            if(servletRequest != null && servletRequest.isCachedRequest()) {
-//                                if (servletRequest.getReader() != null) {
-//                                    String requestBody = IOUtils.toString(servletRequest.getReader());
-//                                    if (!StringUtils.isEmpty(requestBody)) {
-//                                        JSONObject json = (JSONObject) new JSONParser().parse(requestBody);
-//                                        if (json != null && json.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
-//                                            moduleName = getModuleNameParam(json.get(FacilioConstants.ContextNames.MODULE_NAME).toString());
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-
                         boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm, isV3Permission)) {
-                            if(isV3Permission) {
-                                return logAndReturn("unauthorized", null, startTime, request);
+                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm, isV3Permission,setupTab.getValue(),isSetupPermission)) {
+                            if(isSetupPermission || isV3Permission) {
+                                if(!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
+                                    return logAndReturn("unauthorized", null, startTime, request);
+                                }
                             }
                         }
 
@@ -455,7 +447,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission, boolean isV3Permission) throws Exception {
+    private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission, boolean isV3Permission,String tabType,boolean isSetupPermission) throws Exception {
 
         if (action == null || "".equals(action.trim())) {
             return true;
@@ -481,11 +473,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
             String currentTab = request.getHeader("X-Tab-Id");
             if (currentTab != null && !currentTab.isEmpty()) {
                 long tabId = Long.parseLong(currentTab);
-                boolean hasPerm = PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role);
+                boolean hasPerm = PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role, tabType);
                 if (!hasPerm) {
                     permissionLogsForTabs(tabId,moduleName,role.getName(),action);
                     //temp handling - need to be removed
                     //LOGGER.log(Level.DEBUG, "Permission denied for role - " + role.getName() + " for action - " + action + " in tab - " + tabId);
+                }
+                if(isSetupPermission) {
+                    return hasPerm;
                 }
                 return true;
             }
