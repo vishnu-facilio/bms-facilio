@@ -1877,7 +1877,9 @@ public class FacilioAuthAction extends FacilioAction {
 						isWebView = true;
 						if ("mobile-facilio".equals(relayState)) {
 							setPortalWebViewCookies("facilio");
-						} else if ("mobile-serviceportal".equals(relayState)) {
+						}else if("mobile-workQ".equals(relayState)){
+							setPortalWebViewCookies("workQ");
+						}else if ("mobile-serviceportal".equals(relayState)) {
 							setPortalWebViewCookies("service");
 						} else if ("mobile-tenantportal".equals(relayState)) {
 							setPortalWebViewCookies("tenant");
