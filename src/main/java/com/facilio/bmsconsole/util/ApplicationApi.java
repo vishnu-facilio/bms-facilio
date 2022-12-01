@@ -545,7 +545,7 @@ public class ApplicationApi {
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App",
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
-        maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true}"));
+        maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
         ApplicationContext dataLoaderApplication = new ApplicationContext(orgId, "Data Loader", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP,
