@@ -37,13 +37,26 @@ public class PageAction extends FacilioAction {
 	}
 
 	public String fetchRelatedTabMeta() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getRelatedTabMetaChain();
-		FacilioContext context = chain.getContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		FacilioChain chain;
+		FacilioContext context;
+		if (id <= 0) {
+			chain = ReadOnlyChainFactory.getRelatedTabMetaChain();
 
+			context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		} else {
+			chain = ReadOnlyChainFactory.getRelatedTabMetaFromPageChain();
+
+			context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.ID, id);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
+			context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, true);
+		}
 		chain.execute();
 		setResult(ContextNames.RELATED_LIST_META, context.get(ContextNames.RELATED_LIST_META));
 		setResult(ContextNames.RELATIONSHIP_META, context.get(ContextNames.RELATIONSHIP_META));
+
 		return SUCCESS;
 	}
 
