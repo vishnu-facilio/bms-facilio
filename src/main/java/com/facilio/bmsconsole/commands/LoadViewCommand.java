@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
@@ -95,6 +98,16 @@ public class LoadViewCommand extends FacilioCommand {
 			}
 			
 			if(view != null) {
+				// View - Editable access
+				if (view.getId() == -1) {
+					view.setEditable(true);
+				} else {
+					try {
+						checkViewEditAccess(view, orgId, appId);
+					} catch (Exception e) {
+						LOGGER.info("ViewEditAccess - LoadViewCommand -- Error occurred in ", e);
+					}
+				}
 				view.setDefaultModuleFields(moduleName, parentViewName);
 				Boolean overrideSorting = (Boolean) context.get(ContextNames.OVERRIDE_SORTING);
 				if (overrideSorting != null && overrideSorting) {
@@ -189,6 +202,32 @@ public class LoadViewCommand extends FacilioCommand {
 		long timeTaken = System.currentTimeMillis() - startTime;
 		LOGGER.debug("Time taken to execute LoadViewCommand : "+timeTaken);
 		return false;
+	}
+
+	public static long getMainApplicationId() throws Exception {
+		return ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+	}
+
+	public void checkViewEditAccess(FacilioView view, long orgId, long currAppId) throws Exception {
+		User currentUser = AccountUtil.getCurrentUser();
+		currAppId = currAppId != -1 ? currAppId : getMainApplicationId();
+		long currUserAppId = currentUser.getApplicationId() != -1 ? currentUser.getApplicationId() : getMainApplicationId();
+
+		Long currentUserId = currentUser.getId();
+		Long currentUserRoleId = currentUser.getRoleId();
+		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
+		Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+		Long adminRoleId = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR).getId();
+
+		// Role Check
+		boolean isSuperAdmin = currentUser.isSuperAdmin();
+		boolean isAdmin = adminRoleId.equals(currentUserRoleId);
+		boolean isPrivileged = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
+		// Owner Check
+		boolean isOwner = ownerId.equals(currentUserId);
+		boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
+
+		view.setEditable(isSuperAdmin || isPrivileged || !isLocked || (isLocked && (isOwner || isAdmin)));
 	}
 	
 	private String getOrderClauseForLookupTable(SortField field, String moduleName) throws Exception {
