@@ -112,13 +112,16 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 					insertTrigResourceRel.save();
 				}
 				
-				if(resourcePlanner.getPmResourcePlannerReminderContexts() != null) {
-					for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {
-						if(pmResourcePlannerReminderContext.getReminderName() != null) {
-							PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
-							pmResourcePlannerReminderContext.setReminderId(reminder.getId());
+				if(pm.getReminders() != null) {
+					for(PMReminder pmReminder : pm.getReminders()) {
+						if(pmReminder.getName() != null) {
+							//PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
+							PMResourcePlannerReminderContext pmResourcePlannerReminderContext = new PMResourcePlannerReminderContext();
+							pmResourcePlannerReminderContext.setReminderName(pmReminder.getName());
+							pmResourcePlannerReminderContext.setReminderId(pmReminder.getId());
 							pmResourcePlannerReminderContext.setPmId(pm.getId());
 							pmResourcePlannerReminderContext.setResourcePlannerId(resourcePlanner.getId());
+
 							Map<String, Object> prop1 = FieldUtil.getAsProperties(pmResourcePlannerReminderContext);
 							
 							GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder();

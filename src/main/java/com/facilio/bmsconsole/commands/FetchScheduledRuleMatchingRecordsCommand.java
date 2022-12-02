@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.command.FacilioCommand;
@@ -87,9 +88,18 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 			selectBuilder.andCriteria(rule.getCriteria());
 		}
 
+		addSkipModuleCriteriaForModules(rule, module, selectBuilder);
 		
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
 		// LOGGER.info(selectBuilder.toString());
 		return records;
+	}
+
+	private void addSkipModuleCriteriaForModules(WorkflowRuleContext rule, FacilioModule module, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+		if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)
+				&& rule.getRuleTypeEnum() == WorkflowRuleContext.RuleType.PM_NOTIFICATION_RULE
+				&& rule.getScheduleTypeEnum() == WorkflowRuleContext.ScheduledRuleType.BEFORE) {
+			selectBuilder.skipModuleCriteria();
+		}
 	}
 }
