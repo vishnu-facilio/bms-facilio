@@ -190,6 +190,8 @@ public abstract class EmailClient extends BaseEmailClient {
                     else{
                         toEmailsList.add(email);
                     }
+                }else{
+                    toEmailsList.add(email);
                 }
             }
 
