@@ -145,9 +145,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		String nextExecFmt = DateTimeUtil.getFormattedTime(nextExec, "MMM dd, h:mm a");
 
 		if (inputTime < createdTime || inputTime >= nextExec) {
-			if (!AccountUtil.getCurrentAccount().isFromIos()) { //temporary
-				throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
-			}
+			throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
 		}
 	}
 
