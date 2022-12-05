@@ -195,6 +195,13 @@
             <param name="checkPermission">true</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
+        <action name="sr/site/summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">site</param>
+            <param name="parentModuleName">serviceRequest</param>
+            <param name="id">{1}</param>
+            <param name="checkPermission">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
     </package>
 
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
