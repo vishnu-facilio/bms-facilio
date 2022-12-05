@@ -509,6 +509,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
         // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
+        c.addCommand(new UpdateAttachmentCountCommand());
         c.addCommand(new AddActivitiesCommandV3());
         //planned inventory
         c.addCommand(getPlannedInventoryChainV3());
@@ -560,6 +561,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand());
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3());
+        c.addCommand(new UpdateAttachmentCountCommand());
         return c;
     }
 
