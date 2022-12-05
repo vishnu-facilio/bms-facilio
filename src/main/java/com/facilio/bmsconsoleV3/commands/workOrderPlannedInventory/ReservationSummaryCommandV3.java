@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -23,19 +24,8 @@ public class ReservationSummaryCommandV3 extends FacilioCommand {
         queryParams.put("reserveValidation", Collections.singletonList(true));
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
-        List<String> recordIdsList = recordIds.stream()
-                .map(String::valueOf)
-                .collect(Collectors.toList());
-        JSONObject filter = new JSONObject();
-        filter.put("operatorId",9);
-        filter.put("value",recordIdsList);
-        JSONObject filterObj = new JSONObject();
-        filterObj.put("id",filter);
-        String listFilters = filterObj.toString();
-        queryParams.put("filters", Collections.singletonList(listFilters));
-        FacilioContext listContext = V3Util.fetchList(moduleName, true, null, listFilters, false, null, null,
-                null, null, 1, 50, false, queryParams, null);
-        context.put(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, listContext.get("recordMap"));
+        FacilioContext workOrderPlannedItemsContext = V3Util.getSummary(moduleName,recordIds,queryParams,false);
+        context.put(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, ((Map<String, List>) workOrderPlannedItemsContext.get("recordMap")).get("workOrderPlannedItems"));
         return false;
     }
 }

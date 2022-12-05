@@ -1698,10 +1698,12 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getWoPlannedItemsBeforeUpdateChain())
                 .afterSave(new UpdateWorkOrderPlannedItemsCommandV3())
                 .list()
-                .beforeFetch(new LoadPlannedItemsCommandV3())
-                .afterFetch(TransactionChainFactoryV3.getReserveValidationChainV3())
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "storeRoom")
                 .summary()
-                .beforeFetch(new LoadPlannedItemsCommandV3())
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, "storeRoom")
+                .afterFetch(TransactionChainFactoryV3.getReserveValidationChainV3())
                 .delete()
                 .build();
     }
@@ -1714,7 +1716,11 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
                 .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
                 .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
                 .delete()
                 .build();
     }
@@ -1727,7 +1733,9 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new SetWorkOrderPlannedServicesCommandV3())
                 .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
                 .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
                 .delete()
                 .build();
     }

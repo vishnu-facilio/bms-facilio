@@ -1,9 +1,12 @@
 package com.facilio.bmsconsoleV3.actions;
 
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Action;
 
 import java.util.List;
@@ -28,12 +31,23 @@ public class WorkOrderPlannedItemsAction extends V3Action {
     public void setWorkOrderId(Long workOrderId) {
         this.workOrderId = workOrderId;
     }
+
+    private String itemTypeIds;
+
+    public String getItemTypeIds() {
+        return itemTypeIds;
+    }
+
+    public void setItemTypeIds(String itemTypeIds) {
+        this.itemTypeIds = itemTypeIds;
+    }
+
     public String reserve() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getReserveChainV3();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
         chain.execute();
-        setData(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, context.get(FacilioConstants.ContextNames.WO_PLANNED_ITEMS));
+        setData(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WO_PLANNED_ITEMS),WorkOrderPlannedItemsContext.class));
         return V3Action.SUCCESS;
     }
     public String cost() throws Exception {
@@ -43,6 +57,15 @@ public class WorkOrderPlannedItemsAction extends V3Action {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
         chain.execute();
         setData(FacilioConstants.ContextNames.COST, context.get(FacilioConstants.ContextNames.COST));
+        return V3Action.SUCCESS;
+    }
+    public String list() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getPlannedItemsUnSavedListChainV3();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderId);
+        context.put(FacilioConstants.ContextNames.ITEM_TYPES, itemTypeIds);
+        chain.execute();
+        setData(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WO_PLANNED_ITEMS), WorkOrderPlannedItemsContext.class));
         return V3Action.SUCCESS;
     }
 }

@@ -483,11 +483,14 @@ public class WorkorderPageFactory extends PageFactory {
         plans.addSection(planSection);
 
         PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.PLANS);
-        plansWidget.addToLayoutParams(planSection, 20, 15);
+        plansWidget.addToLayoutParams(planSection, 18, 12);
+        JSONObject lineitemJson = new JSONObject();
+        lineitemJson.put("summaryWidgetName", "plansWidget");
+        plansWidget.setWidgetParams(lineitemJson);
         planSection.addWidget(plansWidget);
 
         PageWidget plansCostWidget = new PageWidget(PageWidget.WidgetType.PLANS_COST);
-        plansCostWidget.addToLayoutParams(planSection, 4, 8);
+        plansCostWidget.addToLayoutParams(planSection, 6, 8);
         planSection.addWidget(plansCostWidget);
     }
 

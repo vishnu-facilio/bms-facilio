@@ -1220,6 +1220,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultServiceColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("duration", "Duration"));
 		columns.add(new ViewField("status", "Status"));

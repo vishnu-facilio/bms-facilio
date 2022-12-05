@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.ReportSharePermission;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
@@ -2205,6 +2206,24 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCostChainV3(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlansCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getPlannedItemsUnSavedListChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlannedItemsUnSavedListCommandV3());
+        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return c;
+    }
+    public static FacilioChain getPlannedToolsUnSavedListChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlannedToolsUnSavedListCommandV3());
+        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return c;
+    }
+    public static FacilioChain getPlannedServicesUnSavedListChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlannedServicesUnSavedListCommandV3());
+        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
     //    public static FacilioChain getUnReserveItemsChainV3(){

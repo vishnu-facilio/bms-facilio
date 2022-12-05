@@ -19,6 +19,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public class ReservationValidationCommandV3 extends FacilioCommand {
         List<WorkOrderPlannedItemsContext> workOrderPlannedItems = recordMap.get(moduleName);
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if (CollectionUtils.isNotEmpty(workOrderPlannedItems) && MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("reserveValidation")) {
+            Map<Long,Double> itemMap = new HashMap<>();
             for (WorkOrderPlannedItemsContext workOrderPlannedItem : workOrderPlannedItems) {
                 // Item validation
 
@@ -46,13 +48,19 @@ public class ReservationValidationCommandV3 extends FacilioCommand {
                             .select(fields)
                             .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
                             .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
-                    List<V3ItemContext> items = selectRecordsBuilder.get();
-                    if (items.size() < 1) {
+
+                    V3ItemContext item = selectRecordsBuilder.fetchFirst();
+
+                    if (item == null) {
                         workOrderPlannedItem.setDatum("errorType", "Error Note");
                         workOrderPlannedItem.setDatum("errorMessage", "Item not present in storeroom");
                         workOrderPlannedItem.setDatum("availableQuantity", null);
                     } else {
-                        Double availableQuantity = items.get(0).getQuantity() != null ? items.get(0).getQuantity() : null;
+                        Long itemId = item.getId();
+                        Double availableQuantity = item.getQuantity() != null ? item.getQuantity() : 0.0;
+                        if(itemMap.containsKey(itemId)){
+                            availableQuantity = itemMap.get(itemId);
+                        }
                         workOrderPlannedItem.setDatum("availableQuantity", availableQuantity);
                         // Quantity Validation
                         if (workOrderPlannedItem.getQuantity() == null || workOrderPlannedItem.getQuantity() == 0) {
@@ -60,10 +68,11 @@ public class ReservationValidationCommandV3 extends FacilioCommand {
                             workOrderPlannedItem.setDatum("errorMessage", "Reserve Quantity is null");
                         }
                         else{
-                            if (items.get(0).getQuantity() < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
+                            itemMap.put(itemId,availableQuantity - workOrderPlannedItem.getQuantity());
+                            if (availableQuantity < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
                                 workOrderPlannedItem.setDatum("errorType", "Error Note");
                                 workOrderPlannedItem.setDatum("errorMessage", "Hard Reserve quantity is more than available quantity");
-                            } else if (items.get(0).getQuantity() < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.SOFT)) {
+                            } else if (availableQuantity < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.SOFT)) {
                                 workOrderPlannedItem.setDatum("errorType", "Warning Note");
                                 workOrderPlannedItem.setDatum("errorMessage", "Soft Reserve quantity is more than available quantity");
                             }
