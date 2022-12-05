@@ -557,6 +557,14 @@
         </action>
     </package>
 
+    <package name="baseSchedulerJob" namespace="/api/v3/baseSchedulerJob"
+             extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.command.BaseSchedulerSingleInstanceJobAction"
+                method="runScheduler">
+        </action>
+    </package>
+
     <package name="floorplan" namespace="/api/v3/floorplan" extends="v3Api">
         <action name="getFacilityDetails"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"

@@ -120,6 +120,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.ns.command.SetParentIdForNamespaceCommand;
+import com.facilio.qa.command.BaseSchedulerSingleInstanceCommand;
 import com.facilio.readingkpi.commands.create.PrepareReadingKpiCreationCommand;
 import com.facilio.readingkpi.commands.create.SetFieldAndModuleIdCommand;
 import com.facilio.readingkpi.commands.list.AddNamespaceInKpiListCommand;
@@ -2437,5 +2438,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new BeforeSavePMPlannerCommand());
         return c;
     }
-
+    public static FacilioChain BaseSchedulerSingleInstanceJobChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new BaseSchedulerSingleInstanceCommand());
+        return c;
+    }
 }
