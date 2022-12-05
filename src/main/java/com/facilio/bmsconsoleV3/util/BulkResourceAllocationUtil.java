@@ -78,7 +78,7 @@ public class BulkResourceAllocationUtil {
 					selectedResourceContexts.addAll(spaces);
 					break;
 				case ASSET_CATEGORY:
-					List<AssetContext> assets = AssetsAPI.getAssetListOfCategoryInParticularSpace(assetCategoryID, resourceId);
+					List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryID, resourceId);
 
 					selectedResourceContexts.addAll(assets);
 					break;

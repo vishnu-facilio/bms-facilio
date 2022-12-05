@@ -204,6 +204,15 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new UpdateModuleDataCommand());
 		return c;
 	}
+	
+	public static FacilioChain getBulkActionCreateChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new FetchResourcesListForBulkActionCreateCommand());
+		c.addCommand(new ConstuctDataForBulkCreateCommand());
+		c.addCommand(new CreateBulkActionRecordsCommand());
+		return c;
+	}
 
 	public static FacilioChain getBulkActionDeleteChain(){
 		FacilioChain c = getDefaultChain();

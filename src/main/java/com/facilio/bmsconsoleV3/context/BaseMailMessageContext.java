@@ -94,10 +94,15 @@ public class BaseMailMessageContext extends V3Context {
             
             String textContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.TEXT_CONTENT_TYPE);
             
+            if((textContentString == null || textContentString.isEmpty()) && (htmlContentString != null && !htmlContentString.isEmpty())) {
+            	textContentString = htmlContentString;
+            }
+            
+            mailContext.setTextContent(textContentString);
+            
             if(textContentString != null) {
             	try {
             		String actualReply = EmailMessageParser.read(textContentString).getReply();
-                	mailContext.setTextContent(textContentString);
                 	mailContext.setContent(actualReply);
             	}
             	catch(Exception e) {

@@ -2403,5 +2403,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ScheduleWorkordersToMoveInQueueForPreOpenToOpen());
         return c;
     }
+    
+    public static FacilioChain getPMPlannerBeforeUpdateCommand(){
+        FacilioChain c = getDefaultChain();
+        //c.addCommand(new ValidateTriggerTypeForPMPlannerCommand());
+        c.addCommand(new BeforeSavePMPlannerCommand());
+        return c;
+    }
 
 }

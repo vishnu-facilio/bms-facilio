@@ -7,6 +7,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -37,6 +40,8 @@ import org.json.simple.JSONObject;
  *          Endpoint: /api/v3/bulkActionDelete/{$MODULE_NAME}
  */
 @Data
+@Getter
+@Setter
 public class BulkActions extends V3Action {
 
     /**
@@ -54,6 +59,34 @@ public class BulkActions extends V3Action {
      * @return
      * @throws Exception
      */
+	
+	public String dataModuleName;
+	
+	
+	public String bulkActionCreate() throws Exception {
+
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.DATA_MODULE_NAME, getDataModuleName());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.DATA, getData());
+
+        if (StringUtils.isNotEmpty(getFilters())) {
+            JSONObject json = FacilioUtil.parseJson(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, json);
+        }
+
+        FacilioChain facilioChain = ReadOnlyChainFactory.getBulkActionCreateChain();
+        FacilioContext chainFacilioContext = facilioChain.getContext();
+        chainFacilioContext.putAll(context);
+        facilioChain.execute();
+
+        setData(null);
+        setData("moduleName", getModuleName());
+        setData("rowsAdded", chainFacilioContext.get(FacilioConstants.ContextNames.ROWS_ADDED));
+
+        return SUCCESS;
+    }
+	
     public String bulkActionPatch() throws Exception {
 
         FacilioContext context = new FacilioContext();

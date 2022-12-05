@@ -125,6 +125,9 @@ public class FacilioConstants {
 	public static class PM_V2 {
 		public static final String PM_V2_MODULE_NAME = "plannedmaintenance";
 		public static final String PM_V2_TRIGGER = "pmTriggerV2";
+		
+		public static final String PM_V2_RESOURCE_PLANNER = "pmResourcePlanner";
+		public static final String PM_V2_PLANNER = "pmPlanner";
 		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
 	}
 
@@ -405,6 +408,7 @@ public class FacilioConstants {
 		public static final String FETCH_AS_MAP = "fetchAsMap";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
+		public static final String ROWS_ADDED = "rowsAdded";
 		public static final String EVENT_TYPE = "eventType";
 		public static final String EVENT_TYPE_LIST = "eventTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
@@ -677,6 +681,7 @@ public class FacilioConstants {
 		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
 
 		public static final String MODULE_NAME = "moduleName";
+		public static final String DATA_MODULE_NAME = "dataModuleName";
 		public static final String MODULE_SETTING = "setting";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";

@@ -386,6 +386,13 @@
             <param name="moduleName">{1}</param>
         </action>
     </package>
+    
+    <package name="bulkActionCreate" namespace="/api/v3/bulkAction" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionCreate">
+        </action>
+    </package>
 
     <package name="timelineGroupPicklist" namespace="/api/v3/timelineGroupData"
              extends="v3Api">

@@ -15,6 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -257,7 +258,7 @@ public class ImportFieldFactory {
 		
 		fields.add(FieldFactory.getField("resourceName","Resource Name",null, ModuleFactory.getWorkOrderTemplateModule(), FieldType.STRING));
 		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
-		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
+		fields.addAll(removeSiteIdField(FieldFactory.getWorkOrderTemplateFields()));
 		fields.addAll(FieldFactory.getPMTriggerFields());
 		fields.addAll(getPMTriggerExtraFields());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -270,6 +271,13 @@ public class ImportFieldFactory {
 		return fields;
 	}
 	
+	private static List<FacilioField> removeSiteIdField(List<FacilioField> fieldList) {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = fieldList.stream().filter((f) -> !f.getName().equals("siteId")).collect(Collectors.toList());
+		
+		return fields;
+	}
+
 	public static boolean isFieldsFromFieldFactoryModule(String moduleName) throws Exception {
 		if(getImportFieldsAsList(moduleName) != null && !getImportFieldsAsList(moduleName).isEmpty()) {
 			return true;

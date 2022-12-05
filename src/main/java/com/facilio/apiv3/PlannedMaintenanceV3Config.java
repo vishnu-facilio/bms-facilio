@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -62,11 +63,11 @@ public class PlannedMaintenanceV3Config {
 //                .build();
 //    }
 
-    @Module("pmPlanner")
+    @Module(FacilioConstants.PM_V2.PM_V2_PLANNER)
     public static Supplier<V3Config> getPMPlanner() {
         return () -> new V3Config(PMPlanner.class, null)
                 .update()
-                    .beforeSave(new BeforeSavePMPlannerCommand())
+                    .beforeSave(TransactionChainFactoryV3.getPMPlannerBeforeUpdateCommand())
                     .afterSave(new UpdateTimelineViewCalenderTypeCommand())
                 .create()
                 .afterSave(new AddTimelineViewForPMPlannerCommand())
