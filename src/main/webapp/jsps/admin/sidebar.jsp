@@ -236,7 +236,7 @@ if (buildinfo == null) {
                 </td>
                 <td>
                 <a href="https://bitbucket.org/facilio/bmsconsole/commits/<%=buildinfo.get("build.commitid")%>"target="_blank">
-                   <%=buildinfo.get("build.commitid")%>
+                   <%="<u>Click here</u>"%>
 
 
 
