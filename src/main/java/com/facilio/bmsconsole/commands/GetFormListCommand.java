@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.*;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -130,11 +131,23 @@ public class GetFormListCommand extends FacilioCommand {
 			}
 		}
 		if (dbForms != null) {
+
+			Map<Long,FacilioModule> moduleIdVsModuleMap = new HashMap<>();
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
 				FacilioForm dbForm = entry.getValue();
 				if (dbForm.getModuleId() > 0) {
-					FacilioModule formModule = modBean.getModule(dbForm.getModuleId());
-					dbForm.setModule(formModule);
+					FacilioModule formModule;
+					if(moduleIdVsModuleMap.containsKey(dbForm.getModuleId())){
+						formModule = moduleIdVsModuleMap.get(dbForm.getModuleId());
+						dbForm.setModule(formModule);
+					}else {
+						formModule = modBean.getModule(dbForm.getModuleId());
+						FacilioModule newFormModule = FieldUtil.cloneBean(formModule,FacilioModule.class);
+						newFormModule.setFields(null);
+						moduleIdVsModuleMap.put(dbForm.getModuleId(), newFormModule);
+						dbForm.setModule(newFormModule);
+					}
+
 					if (formModule.getName().equals(moduleName)) {
 						forms.put(entry.getKey(), entry.getValue());
 					}
