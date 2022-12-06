@@ -51,8 +51,6 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
             for (String moduleName : lineItems.keySet()) {
                 List<SubFormContext> subFormContextList = lineItems.get(moduleName);
                 List<ModuleBaseWithCustomFields> beanList = insert(context, mainModuleName, moduleName, subFormContextList, record.getId());
-                recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
-                recordMap.get(moduleName).addAll(beanList);
             }
         }
         return false;
