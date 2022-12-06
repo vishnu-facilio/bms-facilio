@@ -2614,7 +2614,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                .beforeFetch(new ExcludeAvailableWorkOrderHazardPrecautions())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchPrecautionChain())
                 .summary()
                 .delete()
                 .afterDelete(new DeleteHazardPrecautionCommand())
@@ -2675,7 +2675,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getSafetyPlanHazard() {
         return () -> new V3Config(V3SafetyPlanHazardContext.class, null)
                 .create()
+                .beforeSave(new SkipAvailableHazards())
                 .list()
+                .beforeFetch(new FetchSafetyPlanHazardSupplements())
                 .delete()
                 .build();
     }

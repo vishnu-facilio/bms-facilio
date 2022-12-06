@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.commands.safetyplan.V3AssetHazardContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
+import com.facilio.bmsconsoleV3.context.safetyplans.*;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -35,6 +40,66 @@ public class HazardsAPI {
 			                 
 	}
 
+	public static List<Long> fetchAssociatedSafetyPlanHazardIds(String safetyPlanId) throws Exception {
+		List<Long> hazardIds = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("SAFETY_PLAN_ID", "safetyPlan",safetyPlanId, NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		Map<Long, V3SafetyPlanHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD, null, V3SafetyPlanHazardContext.class, criteria, null);
+		if(props != null){
+			for (V3SafetyPlanHazardContext safetyPlanHazard : props.values()){
+				V3HazardContext hazard = safetyPlanHazard.getHazard();
+				hazardIds.add(hazard.getId());
+			}
+		}
+		return hazardIds;
+	}
+
+	public static List<Long> fetchAssociatedAssetHazardIds(String assetId) throws Exception {
+		List<Long> hazardIds = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("ASSET_ID", "asset",assetId, NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		Map<Long, V3AssetHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.ASSET_HAZARD, null, V3AssetHazardContext.class, criteria, null);
+		if(props != null){
+			for (V3AssetHazardContext assetHazard : props.values()){
+				V3HazardContext hazard = assetHazard.getHazard();
+				hazardIds.add(hazard.getId());
+			}
+		}
+		return hazardIds;
+	}
+
+	public static List<Long> fetchAssociatedSpaceHazardIds(String spaceId) throws Exception {
+		List<Long> hazardIds = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("BASESPACE_ID", "space",spaceId, NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		Map<Long, V3BaseSpaceHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BASESPACE_HAZARD, null, V3BaseSpaceHazardContext.class, criteria, null);
+		if(props != null){
+			for (V3BaseSpaceHazardContext spaceHazard : props.values()){
+				V3HazardContext hazard = spaceHazard.getHazard();
+				hazardIds.add(hazard.getId());
+			}
+		}
+		return hazardIds;
+	}
+
+	public static List<Long> fetchAssociatedWorkOrderHazardIds(String workorderId) throws Exception {
+		List<Long> hazardIds = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("WORKORDER_ID", "workorder",workorderId, NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		Map<Long, V3WorkorderHazardContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD, null, V3WorkorderHazardContext.class, criteria, null);
+		if(props != null){
+			for (V3WorkorderHazardContext workorderHazard : props.values()){
+				V3HazardContext hazard = workorderHazard.getHazard();
+				hazardIds.add(hazard.getId());
+			}
+		}
+		return hazardIds;
+	}
+
 	public static List<SafetyPlanHazardContext> fetchAssociatedHazardsV2(Long safetyPlanId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD);
@@ -48,6 +113,22 @@ public class HazardsAPI {
 
 		List<SafetyPlanHazardContext> list = builder.get();
 		return list;
+
+	}
+
+	public static List<Long> fetchAssociatedHazardPrecautions(String hazardId) throws Exception {
+		List<Long> precautionIds = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("HAZARD_ID", "hazard",hazardId, NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		Map<Long, V3HazardPrecautionContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.HAZARD_PRECAUTION, null, V3HazardPrecautionContext.class, criteria, null);
+		if(props != null){
+			for (V3HazardPrecautionContext hazardPrecaution : props.values()){
+				V3PrecautionContext precaution = hazardPrecaution.getPrecaution();
+				precautionIds.add(precaution.getId());
+			}
+		}
+		return precautionIds;
 
 	}
 

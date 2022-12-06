@@ -265,13 +265,13 @@ public class SpaceManagementPageFactory extends PageFactory {
 		safetyPlanTab.addSection(safetyPlanSection);
 
 		// hazards widget
-		PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
-		hazards.addToLayoutParams(0, 0, 24, 8);
+		PageWidget hazards = new PageWidget(WidgetType.SAFETYPLAY_HAZARD);
+		hazards.addToLayoutParams(0, 0, 24, 9);
 		safetyPlanSection.addWidget(hazards);
 
 		// precautions widget
 		PageWidget widget = new PageWidget(WidgetType.LIST, "safetyPlanPrecautions");
-		widget.addToLayoutParams(safetyPlanSection, 24, 10);
+		widget.addToLayoutParams(safetyPlanSection, 24, 9);
 		safetyPlanSection.addWidget(widget);
 
 		return safetyPlanSection;

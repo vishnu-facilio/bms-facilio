@@ -31,17 +31,17 @@ public class SafetyPlanPageFactory extends PageFactory{
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
 
-        Section tab1Sec2 = page.new Section();
-        tab1.addSection(tab1Sec2);
         PageWidget workAsset = new PageWidget(WidgetType.WORK_ASSET);
-        workAsset.addToLayoutParams(tab1Sec2, 24, 6);
+        workAsset.addToLayoutParams(tab1Sec1, 24, 9);
         workAsset.addToWidgetParams("card", "workAssetWidget");
-        tab1Sec2.addWidget(workAsset);
+        tab1Sec1.addWidget(workAsset);
 
-        Section tab1Sec3 = page.new Section();
-        tab1.addSection(tab1Sec3);
-        addRelatedListWidget(tab1Sec3, "safetyPlanHazard", safetyPlan.getModuleId(), "Hazards");
-        addSafetyPlanHazardsWidget(tab1Sec3);
+        PageWidget safetyPlanHazard = new PageWidget(WidgetType.SAFETYPLAY_HAZARD);
+        safetyPlanHazard.addToLayoutParams(tab1Sec1, 24, 9);
+        safetyPlanHazard.addToWidgetParams("card", "safetyPlanHazardWidget");
+        tab1Sec1.addWidget(safetyPlanHazard);
+
+        addSafetyPlanHazardsWidget(tab1Sec1);
 
         Tab tab2 = page.new Tab("Notes And Documents");
         page.addTab(tab2);
@@ -63,11 +63,11 @@ public class SafetyPlanPageFactory extends PageFactory{
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
 
+        addHazardsPrecautionWidget(tab1Sec1);
+
         Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        addHazardsPrecautionWidget(tab1Sec2);
-
-        addCommonSubModuleWidget(tab1Sec1, module, hazard);
+        addCommonSubModuleWidget(tab1Sec2, module, hazard);
         return page;
     }
     public static Page getPrecautionPage(PrecautionContext precaution, FacilioModule module) throws Exception {
@@ -80,11 +80,11 @@ public class SafetyPlanPageFactory extends PageFactory{
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
 
+        addPrecautionHazardsWidget(tab1Sec1);
+
         Section tab2Sec1 = page.new Section();
         tab1.addSection(tab2Sec1);
-        addPrecautionHazardsWidget(tab2Sec1);
-//        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId(), "Associated Hazards");
-        addCommonSubModuleWidget(tab1Sec1, module, precaution);
+        addCommonSubModuleWidget(tab2Sec1, module, precaution);
 
         return page;
     }
@@ -117,19 +117,19 @@ public class SafetyPlanPageFactory extends PageFactory{
     }
     private static void addSafetyPlanHazardsWidget(Section section) {
         PageWidget widget = new PageWidget(WidgetType.LIST, "safetyPlanPrecautions");
-        widget.addToLayoutParams(section, 24, 10);
+        widget.addToLayoutParams(section, 24, 9);
         section.addWidget(widget);
     }
 
     private static void addPrecautionHazardsWidget(Section section) {
         PageWidget widget = new PageWidget(WidgetType.LIST, "precautionHazardsList");
-        widget.addToLayoutParams(section, 24, 10);
+        widget.addToLayoutParams(section, 24, 9);
         section.addWidget(widget);
     }
 
     private static void addHazardsPrecautionWidget(Section section) {
         PageWidget widget = new PageWidget(WidgetType.LIST, "hazardPrecautionsList");
-        widget.addToLayoutParams(section, 24, 10);
+        widget.addToLayoutParams(section, 24, 9);
         section.addWidget(widget);
     }
 

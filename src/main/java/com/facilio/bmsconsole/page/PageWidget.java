@@ -443,6 +443,7 @@ public class PageWidget {
 		FAILURE_CLASS_DETAILS("failureclassdetails"),
 		FAILURE_REPORT("failurereports"),
 		WORK_ASSET("workAsset"),
+		SAFETYPLAY_HAZARD("safetyPlanHazards"),
 		FAILURE_CLASS_ASSOCIATED_PROBELMS("failureclassassociatedproblems"),
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),

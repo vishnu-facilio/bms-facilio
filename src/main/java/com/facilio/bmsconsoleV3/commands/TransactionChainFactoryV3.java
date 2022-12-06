@@ -77,7 +77,8 @@ import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.safetyplan.AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3;
-import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableHazards;
+import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAssociatedHazardPrecautions;
+import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHazardPrecautions;
 import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHazards;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
@@ -2192,8 +2193,15 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getBeforeFetchSafetyPlanChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ExcludeAvailableHazards());
-        c.addCommand(new ExcludeAvailableWorkOrderHazards());
+        c.addCommand(new ExcludeAssociatedHazardPrecautions());
+//        c.addCommand(new ExcludeAvailableWorkOrderHazards());
+        return c;
+    }
+
+    public static FacilioChain getBeforeFetchPrecautionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExcludeAvailableWorkOrderHazardPrecautions());
+        c.addCommand(new ExcludeAssociatedHazardPrecautions());
         return c;
     }
 

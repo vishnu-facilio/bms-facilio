@@ -439,13 +439,13 @@ public class WorkorderPageFactory extends PageFactory {
 
         if(workorder.getSafetyPlan() != null) {
             // hazards widget
-            PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
-            hazards.addToLayoutParams(0, 0, 17, 8);
+            PageWidget hazards = new PageWidget(PageWidget.WidgetType.SAFETYPLAY_HAZARD);
+            hazards.addToLayoutParams(0, 0, 17, 9);
             safetyPlanSection.addWidget(hazards);
 
             // precautions widget
-            PageWidget precautions = new PageWidget(PageWidget.WidgetType.PRECAUTIONS);
-            precautions.addToLayoutParams(0, 8, 17, 8);
+            PageWidget precautions = new PageWidget(PageWidget.WidgetType.LIST, "safetyPlanPrecautions");
+            precautions.addToLayoutParams(0, 8, 17, 9);
             safetyPlanSection.addWidget(precautions);
         }
 
