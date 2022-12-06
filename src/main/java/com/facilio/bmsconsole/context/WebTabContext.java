@@ -234,8 +234,7 @@ public class WebTabContext implements Serializable {
         AUDIT_LOGS("Audit Logs",false,TabType.SETUP),
         BOOKING_POLICY("Booking Policy",false,TabType.SETUP),
         PIVOT("Pivot",false,TabType.NORMAL),
-        SCOPING("Scoping",false,TabType.SETUP),
-        WEATHER_STATION("Weather Station",false,TabType.SETUP);
+        SCOPING("Scoping",false,TabType.SETUP);
 
 
 
