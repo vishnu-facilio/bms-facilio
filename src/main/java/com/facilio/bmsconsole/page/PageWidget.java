@@ -482,7 +482,10 @@ public class PageWidget {
 		NEW_RELATED_LIST("newRelatedList"),
 		MULTIRESOURCE("multiResource"),
 		JOBPLAN_PLANNER("jobPlanPlanner"),
-		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails");
+		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails"),
+		NEW_RELATED_COUNT("newRelatedCount"),
+		WEATHER_CHART("weatherChart"),
+		WEATHER_TABLE("weatherTable");
 
 		private String name;
 
@@ -573,6 +576,8 @@ public class PageWidget {
 		SPACE("space"),
 		OCCUPANCY("occupancy"),
 		ASSET_READING_WIDGET("assetReadingWidget"),
+		NEW_OPERATING_HOURS("newOperatingHours"),
+		CURRENT_WEATHER("currentWeather"),
 		;
 		private String name;
 

@@ -2724,6 +2724,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Department", "department", WebTabContext.Type.DEPARTMENT, null, appId, null));
             webTabs.add(new WebTabContext("Type", "type", WebTabContext.Type.TYPE, null, appId, null));
             webTabs.add(new WebTabContext("Weather station", "weatherstation", WebTabContext.Type.WEATHER_STATION, null, appId, null));
+            webTabs.add(new WebTabContext("Weather Station","weatherstation",WebTabContext.Type.WEATHER_STATION,null,appId,null));
 
 
             groupNameVsWebTabsMap.put("portfoliosettings", webTabs);
@@ -2765,7 +2766,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
-            
+
             webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null));

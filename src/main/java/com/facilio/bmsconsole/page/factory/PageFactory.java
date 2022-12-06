@@ -173,6 +173,9 @@ public class PageFactory {
 			case ContextNames.PRECAUTION:
 				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record, module);
 			case ContextNames.SITE:
+				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SITE_SUMMARY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)){
+				return NewSpaceManagementPageFactory.getSitePage((SiteContext) record, module);
+				}
 				return SpaceManagementPageFactory.getSitePage((SiteContext) record, module);
 			case ContextNames.CLIENT:
 				return ClientPageFactory.getclientPage((ClientContext) record, module);
@@ -550,6 +553,12 @@ public class PageFactory {
 	protected static void addRelatedCountWidget(Section section, int yPos, List<String> modules) {
 		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
 		cardWidget.addToLayoutParams(0, yPos, 16, 4);
+		section.addWidget(cardWidget);
+	}
+
+	protected static void addNewRelatedCountWidget(Section section, List<String> modules) {
+		PageWidget cardWidget = new PageWidget(WidgetType.NEW_RELATED_COUNT);
+		cardWidget.addToLayoutParams(section, 14, 5);
 		section.addWidget(cardWidget);
 	}
 	

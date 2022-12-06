@@ -34,19 +34,19 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        Section tab1Sec1 = page.new Section();
 		        tab1.addSection(tab1Sec1);
 
-				
+
 				PageWidget cards= new PageWidget(PageWidget.WidgetType.BILL_SITE_DETAILS);
 				cards.addToLayoutParams(tab1Sec1, 24, 4);
 				tab1Sec1.addWidget(cards);
-				
+
 				PageWidget electriycity= new PageWidget(PageWidget.WidgetType.UTILITY_CONNECTIONS, "utilityConnections");
 				electriycity.addToLayoutParams(tab1Sec1, 24, 10);
 				tab1Sec1.addWidget(electriycity);
-				
+
 		        int energyCardHeight = 4;
 		        int yPos = tab1Sec1.getLatestY() + energyCardHeight;
 		        addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
-		        
+
 		        Section tab1Sec2 = page.new Section();
 		        addBuildingsWidget(site.getId(), tab1Sec2,modBean);
 		        tab1.addSection(tab1Sec2);
@@ -57,7 +57,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        tab1.addSection(tab1Sec4);
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
-				
+
 				Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
 			    Page.Section tab2Sec1 = page.new Section();
@@ -289,7 +289,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		cardWidget.addCardType(CardType.WEATHER);
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addEnergyWidget(Section section, int height) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 8, height);

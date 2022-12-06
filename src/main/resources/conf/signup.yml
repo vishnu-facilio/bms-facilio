@@ -354,6 +354,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SensorRollUpEvent
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TicketModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ZoneModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WeatherStationModule
 
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
