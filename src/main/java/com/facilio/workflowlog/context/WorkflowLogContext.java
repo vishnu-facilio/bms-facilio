@@ -42,6 +42,16 @@ public class WorkflowLogContext extends V3Context {
 	// for client purpose
 	private String recordModuleName;
 	private String workflowRuleName;
+	private boolean logAvailable;
+	private boolean exceptionAvailable;
+
+	public void setLogAvailable(boolean value){
+		logAvailable = value;
+	}
+
+	public void setExceptionAvailable(boolean value){
+		exceptionAvailable = value;
+	}
 
 	public int getStatus() {
 	    return status == null ? -1 :status.getStatusId();

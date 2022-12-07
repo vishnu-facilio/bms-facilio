@@ -44,7 +44,22 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
             }
 
             if (workflowLog.getParentId() > 0 && (workflowRulesAsMap != null && !workflowRulesAsMap.isEmpty())) {
-                workflowLog.setWorkflowRuleName(workflowRulesAsMap.get(workflowLog.getParentId()).getName());
+                WorkflowRuleContext ruleContext =  workflowRulesAsMap.get(workflowLog.getParentId());
+                if (ruleContext != null) {
+                    workflowLog.setWorkflowRuleName(ruleContext.getName());
+                }
+            }
+
+            // due to response size issues , so we set null for log and exception value.
+
+            if (workflowLog.getLogValue() != null){
+                workflowLog.setLogValue(null);
+                workflowLog.setLogAvailable(true);
+            }
+
+            if (workflowLog.getException() != null){
+                workflowLog.setException(null);
+                workflowLog.setExceptionAvailable(true);
             }
         }
         return false;
