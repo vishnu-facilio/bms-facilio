@@ -2434,7 +2434,7 @@ public class TransactionChainFactoryV3 {
     
     public static FacilioChain getPMPlannerBeforeUpdateCommand(){
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new ValidateTriggerTypeForPMPlannerCommand());
+        c.addCommand(new ValidateTriggerTypeForPMPlannerCommand());
         c.addCommand(new BeforeSavePMPlannerCommand());
         return c;
     }

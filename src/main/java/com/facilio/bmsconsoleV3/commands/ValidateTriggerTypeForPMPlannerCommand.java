@@ -36,7 +36,8 @@ public class ValidateTriggerTypeForPMPlannerCommand extends FacilioCommand {
         					
             				if(planner.getId() != existingPlanner.getId() && existingPlanner.getTrigger() != null && existingPlanner.getTrigger().getFrequencyEnum() != null) {
             					if(existingPlanner.getTrigger().getFrequencyEnum() == planner.getTrigger().getFrequencyEnum()) {
-            						V3Util.throwRestException(Boolean.TRUE, ErrorCode.VALIDATION_ERROR, "Planner "+existingPlanner.getName()+" with same trigger frequency already exist.");
+            						
+            						V3Util.throwRestException(Boolean.TRUE, ErrorCode.VALIDATION_ERROR, existingPlanner.getName()+" with same trigger frequency already exist, Please select another trigger frequency to continue");
             					}
             				}
             			}
