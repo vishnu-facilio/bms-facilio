@@ -1284,4 +1284,10 @@
         <action name="customButton/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="getCustomButtonsCount" />
     </package>
+
+    <package name="spaceBooking" namespace="/api/v3/spacebooking" extends="v3Api">
+        <action name="action"
+                class="com.facilio.bmsconsoleV3.actions.SpaceBookingAction"
+                method="updateBookingAction"/>
+    </package>
 </struts>

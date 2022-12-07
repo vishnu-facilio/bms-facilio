@@ -226,7 +226,12 @@ public class KPIUtil {
 				kpi.setMetric(metricField);
 				
 				if (fetchCurrentValue) {
-					kpi.setCurrentValue(getKPIValue(kpi));
+					try {
+						kpi.setCurrentValue(getKPIValue(kpi));
+					}
+					catch(Exception exception){
+                       LOGGER.error("Error Occurred on KPI: "+kpi.getId(),exception);
+					}
 				}
 			}
 			

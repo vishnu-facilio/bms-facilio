@@ -1505,6 +1505,7 @@ public class FacilioConstants {
 		public static final String READING_FIELD_ID = "readingFieldId";
 		public static final String ACTIONS_LIST = "actionsList";
 		public static final String ACTION = "action";
+
 		public static final String ONLY_PERMITTED_ACTIONS = "onlyPermittedActions";
 
 		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
@@ -2398,6 +2399,11 @@ public class FacilioConstants {
 			public static final String CRITERIA ="criteria";
 
 			public static final String SPACE_BOOKING_LIST = "spacebookinglist";
+			public static final String EXTEND_TIME = "extendTime";
+
+			public static final String CANCEL = "cancel";
+
+			public static final String EXTEND="extend";
 
 
 		}

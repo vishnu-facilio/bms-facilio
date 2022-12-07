@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.GetCustomPageWidgetCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.FetchSpaceBookingCommand;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -6687,6 +6688,13 @@ public class TransactionChainFactory {
 	public static FacilioChain getCurrenciesCountChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetCurrenciesCountCommand());
+		return c;
+	}
+	public static FacilioChain getSpaceBookingActionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchSpaceBookingWithIdCommand());
+		c.addCommand(new SpaceBookingCancelCommand());
+		c.addCommand(new ExtendSpaceBookingCommand());
 		return c;
 	}
 }

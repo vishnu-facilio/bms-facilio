@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context.spacebooking;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -13,6 +14,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
@@ -42,24 +44,40 @@ public class V3ValidateSpaceBookingCommand extends FacilioCommand {
         Long endTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
         Long currentTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.CURRENT_TIME);
         long spaceId = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID);
+        FacilioStatus status = TicketAPI.getStatus(spaceBookingModule, "cancelled");
+        long cancelledStateId = status.getId();
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(spaceBookingModule.getTableName())
                 .select(selectFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID), String.valueOf(spaceId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(spaceBookingModule.getTableName() + ".MODULE_STATE", "moduleState", String.valueOf(cancelledStateId), NumberOperators.NOT_EQUALS));
 
 
-                List<Map<String, Object>> props = selectBuilder.get();
+        List<Map<String, Object>> props = selectBuilder.get();
                 if (props != null) {
                     for (Map<String, Object> prop : props) {
                         Long bookingEndTime = (Long) prop.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
                         Long bookingStartTime = (Long) prop.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
                         // Check selected slot not overlaps the existing booked slots
-                        if (((startTime < bookingStartTime && endTime <= bookingStartTime) || (startTime >= bookingEndTime && endTime > bookingEndTime) || ((startTime > bookingStartTime && startTime > bookingEndTime) && (endTime > bookingStartTime && endTime > bookingEndTime)) || ((startTime < bookingStartTime && startTime < bookingEndTime) && (endTime < bookingStartTime && endTime < bookingEndTime))) && (endTime > startTime) && (startTime>=currentTime)) {
-                            // Selected Booking Range
-                        } else {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this space  ");
+                        if(startTime>=currentTime) {
+
+                            if (((startTime < bookingStartTime && endTime <= bookingStartTime) || (startTime >= bookingEndTime && endTime > bookingEndTime) || ((startTime > bookingStartTime && startTime > bookingEndTime) && (endTime > bookingStartTime && endTime > bookingEndTime)) || ((startTime < bookingStartTime && startTime < bookingEndTime) && (endTime < bookingStartTime && endTime < bookingEndTime))) ) {
+                                if(endTime > startTime){
+                                    // Selected Booking Range
+                                }
+                                else{
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please select valid time range");
+
+                                }
+                            } else {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this space");
+                            }
+                        }
+                        else{
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please select valid upcoming time range");
+
                         }
                     }
                 }

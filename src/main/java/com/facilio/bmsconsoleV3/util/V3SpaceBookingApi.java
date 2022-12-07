@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingFormRelationContext;
@@ -25,6 +27,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,5 +115,32 @@ public class V3SpaceBookingApi {
         }
         return -1l;
     }
+
+    public static void updateSpaceBookingCancelState(List<V3SpaceBookingContext> bookings,String status) throws Exception {
+        List<Long> ids= new ArrayList<>();
+        for (V3SpaceBookingContext booking: bookings) {
+            if(booking.getId() > 0) {
+                ids.add(booking.getId());
+            }
+        }
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+                List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+                FacilioStatus Status = TicketAPI.getStatus(module, status);
+                Map<String, Object> updateMap = new HashMap<>();
+                FacilioField statusField = modBean.getField("moduleState", module.getName());
+                FacilioField isCancelled =modBean.getField("isCancelled", module.getName());
+                updateMap.put("moduleState", FieldUtil.getAsProperties(Status));
+                updateMap.put("isCancelled", true);
+                updatedfields.add(statusField);
+                updatedfields.add(isCancelled);
+                UpdateRecordBuilder<V3SpaceBookingContext> updateBuilder = new UpdateRecordBuilder<V3SpaceBookingContext>()
+                        .module(module)
+                        .fields(updatedfields)
+                        .andCondition(CriteriaAPI.getIdCondition(ids, module));
+                updateBuilder.ignoreSplNullHandling();
+                updateBuilder.updateViaMap(updateMap);
+        }
+
     
 }

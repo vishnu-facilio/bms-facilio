@@ -476,7 +476,7 @@ public class PageWidget {
 
 		SPACE_BOOKING_FULL_SUMMARY("spaceBookingFullSummary"),
 		SPACE_BOOKING_CARD_DETAILS("spaceBookingCardDetails"),
-		SPACE_BOOKING_NOTES("spaceBookingNotes"),
+		SPACE_BOOKING_SECONDARY_DETAILS("spaceBookingSecondaryDetails"),
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
 		CLASSIFICATION("classification"),
 		NEW_RELATED_LIST("newRelatedList"),

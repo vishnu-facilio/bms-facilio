@@ -32,6 +32,8 @@ public class V3SpaceBookingContext extends V3Context {
     private Long bookingEndTime;
     private List<V3SpaceBookingInternalAttendeeContext> internalAttendees;
     private List<V3SpaceBookingExternalAttendeeContext> externalAttendees;
+    private Boolean isCancelled;
+    private Boolean showCancel=false;
 
 }
 

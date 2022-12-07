@@ -33,6 +33,8 @@ public class HomepageWidgetData {
     JSONObject params;
     Long startTime;
     Long endTime;
+    String buildingName;
+    String floorName;
 
 
 }

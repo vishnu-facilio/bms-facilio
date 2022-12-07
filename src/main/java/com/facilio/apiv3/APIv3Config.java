@@ -2668,7 +2668,10 @@ public class APIv3Config {
                 .delete()
                 .list()
                 .beforeFetch(new SpaceBookingSupplementsCommand())
+                .afterFetch(new ValidateBookingCancelCommand())
                 .summary()
+                .beforeFetch(new SpaceBookingSupplementsCommand())
+                .afterFetch(new ValidateBookingCancelCommand())
                 .build();
     }
     @Module(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD)

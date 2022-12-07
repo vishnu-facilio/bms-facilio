@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.constants.FacilioConstants;
@@ -29,18 +30,18 @@ public class SpaceBookingPageFactory extends PageFactory{
 
         PageWidget bookingFullSmmary = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_FULL_SUMMARY);
         bookingFullSmmary.addToLayoutParams(tab1Sec1,0,0, 16, 10);
-        PageWidget bookingComment = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_NOTES);
-        bookingComment.addToLayoutParams(tab1Sec1,0,10,16,8);
-        PageWidget bookingAttachment = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-        bookingAttachment.addToLayoutParams(tab1Sec1,0,18,16,6);
+
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_SECONDARY_DETAILS);
+        detailsWidget.addToLayoutParams(tab1Sec1, 0,0,16, 5);
+
         PageWidget bookingCardDetails = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_CARD_DETAILS);
         bookingCardDetails.addToLayoutParams(tab1Sec1,16,0,8,23);
 
 
         tab1Sec1.addWidget(bookingFullSmmary);
-        tab1Sec1.addWidget(bookingComment);
-        tab1Sec1.addWidget(bookingAttachment);
+        tab1Sec1.addWidget(detailsWidget);
         tab1Sec1.addWidget(bookingCardDetails);
+        addNotesAttachmentsModule(tab1Sec1);
 
 
         // Activities Tab
@@ -71,6 +72,23 @@ public class SpaceBookingPageFactory extends PageFactory{
 //        tab1.addSection(tab2Sec1);
 
         return page;
+    }
+    private static PageWidget addNotesAttachmentsModule(Page.Section section) {
+
+        PageWidget subModuleGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        subModuleGroup.addToLayoutParams(section, 16, 8);
+        subModuleGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        section.addWidget(subModuleGroup);
+
+        PageWidget notesWidget = new PageWidget();
+        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+        subModuleGroup.addToWidget(notesWidget);
+
+        PageWidget attachmentWidget = new PageWidget();
+        attachmentWidget.setWidgetType(PageWidget.WidgetType.ATTACHMENT);
+        subModuleGroup.addToWidget(attachmentWidget);
+
+        return subModuleGroup;
     }
 
 }
