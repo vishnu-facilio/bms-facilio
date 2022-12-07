@@ -1534,6 +1534,7 @@ public class FacilioConstants {
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
 		public static final String APP_LINKNAME = "appLinkName";
+		public static final String HIDE_IN_LIST = "hideInList";
 		public static final String FORM_SECTION = "formSection";
 		public static final String FORM_SOURCE = "formSource";
 
@@ -3088,6 +3089,7 @@ public class FacilioConstants {
 		public static final String ORDER_BY_TYPE = "orderByType";
 		public static final String PAGE = "page";
 		public static final String PER_PAGE = "perPage";
+
 	}
 
 	public static class ApprovalRule {

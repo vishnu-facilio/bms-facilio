@@ -843,6 +843,9 @@ public class FormsAPI {
 				String orderByType = (String) selectParams.get(Builder.ORDER_BY_TYPE);
 				formListBuilder.orderBy(fieldMap.get(orderBy).getCompleteColumnName() + (orderByType != null ? " " + orderByType : " asc"));
 			}
+			if(selectParams.containsKey(ContextNames.HIDE_IN_LIST)){
+				formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("hideInList"), String.valueOf(selectParams.get(ContextNames.HIDE_IN_LIST)), BooleanOperators.IS));
+			}
 			if (selectParams.containsKey(Builder.LIMIT)) {
 				formListBuilder.limit((int) selectParams.get(Builder.LIMIT));
 			}
@@ -1269,10 +1272,17 @@ public class FormsAPI {
 		Map<String, Object> params = new HashMap<>();
 		params.put(Builder.ORDER_BY, "id");
 		params.put(Builder.LIMIT, 1);
+		params.put(ContextNames.HIDE_IN_LIST,false);
 		ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
 		List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId());
 		if (CollectionUtils.isNotEmpty(forms)) {
 			return forms.get(0);
+		}else if(!appLinkName.equals(ApplicationLinkNames.FACILIO_MAIN_APP)){
+			ApplicationContext applicationContext = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			List<FacilioForm> mainAppForms = getDBFormList(moduleName, null, params, true, false, false,applicationContext.getId());
+			if(CollectionUtils.isNotEmpty(mainAppForms)){
+				return mainAppForms.get(0);
+			}
 		}
 
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName,appLinkName,onlyFields);
