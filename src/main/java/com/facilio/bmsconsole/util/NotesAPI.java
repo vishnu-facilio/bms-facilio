@@ -109,7 +109,7 @@ public class NotesAPI {
 		if (AccountUtil.getCurrentUser().isPortalUser() && currentApp != null && !currentApp.getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			notifyRequesterCriteria = new Criteria();
 			notifyRequesterCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
-			if (!moduleName.equalsIgnoreCase("insurancenotes")) {
+			if (!moduleName.equalsIgnoreCase("insurancenotes") && fieldMap.get("notifyRequester") != null) {
 				notifyRequesterCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
 			}
 		}
