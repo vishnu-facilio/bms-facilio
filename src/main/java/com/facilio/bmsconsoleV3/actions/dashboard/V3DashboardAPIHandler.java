@@ -876,10 +876,10 @@ public class V3DashboardAPIHandler {
             for(int i =0 ;i <len ;i++ )
             {
                 DashboardRuleContext dashboardRule = FieldUtil.getAsBeanFromMap(props.get(0), DashboardRuleContext.class);
-                if(dashboardTabId != null && dashboardRule != null && dashboardRule.getDashboardTabId() == dashboardTabId){
+                if(dashboardTabId != null && dashboardRule != null && dashboardRule.getDashboardTabId() != null && dashboardRule.getDashboardTabId().equals(dashboardTabId)){
                     return true;
                 }
-                if(dashboardRule != null && dashboardRule.getDashboardId() == dashboardId){
+                if(dashboardRule != null && dashboardRule.getDashboardId() != null && dashboardRule.getDashboardId().equals(dashboardId)){
                     return true;
                 }
             }
