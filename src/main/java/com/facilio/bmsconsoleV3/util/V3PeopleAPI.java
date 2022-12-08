@@ -28,12 +28,14 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +43,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 public class V3PeopleAPI {
 
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(V3PeopleAPI.class);
@@ -924,6 +925,49 @@ public class V3PeopleAPI {
             return users;
         }
         return null;
+    }
+
+
+    public static boolean checkForEmailMisMatch(String email,Long peopleId) throws Exception {
+        try{
+            FacilioField peopleEmail = new FacilioField();
+            peopleEmail.setName("peopleEmail");
+            peopleEmail.setDataType(FieldType.STRING);
+            peopleEmail.setColumnName("EMAIL");
+            peopleEmail.setModule(ModuleFactory.getPeopleModule());
+
+            List<FacilioField> fields = new ArrayList<>();
+            fields.add(peopleEmail);
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .table("People")
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(peopleId),NumberOperators.EQUALS));
+
+            List<Map<String, Object>> props = selectBuilder.get();
+            if (props!=null && !props.isEmpty()) {
+                String existingEmail = String.valueOf(props.get(0).get("peopleEmail"));
+                if ((existingEmail == null) || (existingEmail.equals(email))) {
+                    return false;
+                } else {
+                    GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                            .table("ORG_Users")
+                            .innerJoin(ModuleFactory.getPeopleModule().getTableName())
+                            .on("People.ID=ORG_Users.PEOPLE_ID")
+                            .select(AccountConstants.getAppOrgUserFields())
+                            .andCondition(CriteriaAPI.getCondition("People.ID", "id", String.valueOf(peopleId), NumberOperators.EQUALS));
+                    List<Map<String, Object>> mapList = selectRecordBuilder.get();
+                    if (CollectionUtils.isEmpty(mapList)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            LOGGER.info("Exception occurred ", e);
+        }
+        return false;
     }
 
 }

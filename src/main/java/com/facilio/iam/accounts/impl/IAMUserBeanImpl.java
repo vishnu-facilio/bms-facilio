@@ -257,6 +257,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		int numChars = 0;
 		int splChars = 0;
 		int upperCase = 0;
+		int lowerCase =0;
 		for (int i = 0; i < password.length(); i++) {
 			if (StringUtils.isNumeric(password.charAt(i) + "")) {
 				numChars++;
@@ -269,6 +270,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (StringUtils.isAllUpperCase(password.charAt(i) + "")) {
 				upperCase++;
 			}
+			if (StringUtils.isAllLowerCase(password.charAt(i) + "")){
+				lowerCase++;
+			}
 		}
 
 		if (pwdMinNumDigits != null && (numChars < pwdMinNumDigits)) {
@@ -279,8 +283,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_SPL_CHARS_VIOLATION, "Password should have atleast " + pwdMinSplChars + " special characters.");
 		}
 
-		if (userSecurityPolicy.getPwdIsMixed() != null && userSecurityPolicy.getPwdIsMixed() && upperCase < 1) {
-			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character.");
+		if (userSecurityPolicy.getPwdIsMixed() != null && userSecurityPolicy.getPwdIsMixed() && (upperCase < 1 || lowerCase < 1)) {
+			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character and 1 lower case character.");
 		}
 
 		if (userSecurityPolicy.getPwdPrevPassRefusal() != null && isOneOfPreviousPasswords(uid, userSecurityPolicy.getPwdPrevPassRefusal(), password)) {
