@@ -4,15 +4,9 @@ pipelines:
       - step:
           script:
             - echo "started"
-            - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-            - previousdaycommit=`git rev-list -1 --before="24 hour ago" master`
-            - git fetch --all
-            - git branch
-            - echo $previousdaycommit  
             - git checkout production
-            - git merge $previousdaycommit
-            - git push -v --tags origin production
-            - echo "success"
-            - git checkout master       
-            - /bin/bash bitbucket-script.sh
+            - echo $commitid
+            - git reset --hard $commitid
+            - git remote set-url origin ${BITBUCKET_GIT_SSH_ORIGIN}
+            - git push --force
             - echo "Finished"
