@@ -25,15 +25,19 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import lombok.extern.log4j.Log4j;
 
+@Log4j
 public class InspectionScheduler implements ScheduleTypeInterface {
 
-	public static int INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS = 90;
+	public static int INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS = 30;
 	
 	@Override
 	public List<? extends ModuleBaseWithCustomFields> createRecords(BaseScheduleContext baseScheduleContext,boolean isUpdate, List<Map<String, Object>> parentRecordProps, boolean isManualOrScheduleTrigger) throws Exception {
 		
 		Long inspectionId = (Long)parentRecordProps.get(0).get("id");
+
+		LOGGER.info("Creating Inspection Response for Template ID : "+inspectionId);
 		FacilioContext context = V3Util.getSummary(FacilioConstants.Inspection.INSPECTION_TEMPLATE, Collections.singletonList(inspectionId));
 		
 		InspectionTemplateContext template = (InspectionTemplateContext) Constants.getRecordList((FacilioContext) context).get(0);
@@ -45,11 +49,15 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		long generatedUpto = baseScheduleContext.getGeneratedUptoTime() != null ? baseScheduleContext.getGeneratedUptoTime() : DateTimeUtil.getCurrenTime();
 		
 		long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));
-		
+
+		LOGGER.info("Inspection Generated Upto Time : "+generatedUpto+" and End Date : "+endDate);
+
 		if(generatedUpto < endDate) {
 			
 			List<DateRange> times = baseScheduleContext.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);
-			
+
+			LOGGER.info("Times for which Inspection Response to be generated : "+times);
+
 			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			
 			List<ResourceContext> resources = new ArrayList<ResourceContext>();
@@ -88,7 +96,9 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			baseScheduleContext.setGeneratedUptoTime(endDate);
 			
 			V3VisitorManagementAPI.updateBaseScheduleContext(baseScheduleContext);
-			
+
+			LOGGER.info("Count of Inspection Responses to be Created : "+ responses.size());
+
 			return responses;
 		}
 		
