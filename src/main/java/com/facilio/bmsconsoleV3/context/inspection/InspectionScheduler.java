@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.BaseScheduleContext;
@@ -25,10 +26,10 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
-import lombok.extern.log4j.Log4j;
 
-@Log4j
 public class InspectionScheduler implements ScheduleTypeInterface {
+
+	private static final Logger LOGGER = Logger.getLogger(InspectionScheduler.class.getName());
 
 	public static int INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS = 30;
 	
@@ -56,8 +57,11 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			List<DateRange> times = baseScheduleContext.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);
 
-			LOGGER.info("Times for which Inspection Response to be generated : "+times);
+			if(times!=null && !times.isEmpty()) {
+				LOGGER.info("Count of Times for which Inspection Response to be generated : " + times.size());
 
+				LOGGER.fine("Times for which Inspection Response to be Generated : " + times);
+			}
 			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			
 			List<ResourceContext> resources = new ArrayList<ResourceContext>();
