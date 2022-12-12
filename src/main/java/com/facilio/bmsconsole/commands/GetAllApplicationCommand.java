@@ -34,27 +34,7 @@ public class GetAllApplicationCommand extends FacilioCommand {
 		else {
 			applications = ApplicationApi.getAllApplications();
 		}
-		if(CollectionUtils.isNotEmpty(applications)){
-			Map<Integer, AppDomain> appDomainForTypeMap = new HashMap<>();
-			for(ApplicationContext app : applications) {
-				if(!appDomainForTypeMap.containsKey(app.getDomainType())) {
-					List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
-					if(CollectionUtils.isNotEmpty(appDomainList)) {
-						for (AppDomain domain : appDomainList) {
-							//giving priority for custom domain
-							if (domain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
-								appDomainForTypeMap.put(app.getDomainType(), domain);
-								break;
-							}
-						}
-						if(!appDomainForTypeMap.containsKey(app.getDomainType())) {
-							appDomainForTypeMap.put(app.getDomainType(), appDomainList.get(0));
-						}
-					}
-				}
-				app.setAppDomain(appDomainForTypeMap.get(app.getDomainType()));
-			}
-		}
+		ApplicationApi.setApplicationDomain(applications);
 		context.put(FacilioConstants.ContextNames.APPLICATION, applications);
 		return false;
 	}

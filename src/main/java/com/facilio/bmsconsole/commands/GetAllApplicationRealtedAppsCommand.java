@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -32,6 +33,8 @@ public class GetAllApplicationRealtedAppsCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS));
         relatedApplication=FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), ApplicationContext.class);
 
+
+        ApplicationApi.setApplicationDomain(relatedApplication);
 
         context.put(FacilioConstants.ContextNames.RELATED_APPLICATIONS, relatedApplication);
         return false;

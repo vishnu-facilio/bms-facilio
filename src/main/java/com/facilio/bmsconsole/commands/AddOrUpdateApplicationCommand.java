@@ -35,6 +35,7 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 			application.setIsDefault(false);
 			if (application.getId() > 0) {
 				update(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields(), application.getId());
+				context.put(FacilioConstants.ContextNames.APPLICATION_ID,application.getId());
 			} else {
 				add(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields());
 				ApplicationContext app = ApplicationApi.getApplicationForLinkName(application.getLinkName());
@@ -44,9 +45,11 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				}
 				addAdminRoleForApp(app);
 				ApplicationApi.addDefaultScoping(app.getId());
+				context.put(FacilioConstants.ContextNames.APPLICATION_ID,app.getId());
 			}
 
 		}
+
 		return false;
 	}
 

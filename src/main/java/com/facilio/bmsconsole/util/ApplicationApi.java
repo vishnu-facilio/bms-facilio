@@ -3118,4 +3118,27 @@ public class ApplicationApi {
         return null;
 
     }
+
+    public static void setApplicationDomain(List<ApplicationContext> relatedApplication) throws Exception {
+        if(CollectionUtils.isNotEmpty(relatedApplication)){
+            Map<Integer, AppDomain> appDomainForTypeMap = new HashMap<>();
+            for(ApplicationContext app : relatedApplication) {
+                if(!appDomainForTypeMap.containsKey(app.getDomainType())) {
+                    List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
+                    if(CollectionUtils.isNotEmpty(appDomainList)) {
+                        for (AppDomain domain : appDomainList) {
+                            if (domain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
+                                appDomainForTypeMap.put(app.getDomainType(), domain);
+                                break;
+                            }
+                        }
+                        if(!appDomainForTypeMap.containsKey(app.getDomainType())) {
+                            appDomainForTypeMap.put(app.getDomainType(), appDomainList.get(0));
+                        }
+                    }
+                }
+                app.setAppDomain(appDomainForTypeMap.get(app.getDomainType()));
+            }
+        }
+    }
 }

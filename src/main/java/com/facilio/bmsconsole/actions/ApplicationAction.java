@@ -214,6 +214,8 @@ public class ApplicationAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ADD_APPLICATION_LAYOUT, getAddLayout());
 
 		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.APPLICATION_ID,context.get(FacilioConstants.ContextNames.APPLICATION_ID));
 		return SUCCESS;
 	}
 
