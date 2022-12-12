@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -12,6 +13,10 @@ public class VerifyQrCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DONT_VERIFY_QR))
+		{
+			return false;
+		}
 		Long resourceId = (Long) context.get(FacilioConstants.ContextNames.RESOURCE_ID);
 		Boolean bool = (Boolean) context.get(FacilioConstants.ContextNames.SHOULD_VERIFY_QR);
 		String qrVal = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
