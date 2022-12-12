@@ -37,7 +37,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		
 		Long inspectionId = (Long)parentRecordProps.get(0).get("id");
 
-		LOGGER.info("Creating Inspection Response for Template ID : "+inspectionId);
+		LOGGER.info("Generating Inspection Response for Template ID : "+inspectionId);
 		FacilioContext context = V3Util.getSummary(FacilioConstants.Inspection.INSPECTION_TEMPLATE, Collections.singletonList(inspectionId));
 		
 		InspectionTemplateContext template = (InspectionTemplateContext) Constants.getRecordList((FacilioContext) context).get(0);
@@ -50,7 +50,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		
 		long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));
 
-		LOGGER.info("Inspection Generated Upto Time : "+generatedUpto+" and End Date : "+endDate);
+		LOGGER.info("Inspection Response, Generated Upto Time : "+generatedUpto+" and End Date : "+endDate);
 
 		if(generatedUpto < endDate) {
 			
@@ -97,7 +97,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			V3VisitorManagementAPI.updateBaseScheduleContext(baseScheduleContext);
 
-			LOGGER.info("Count of Inspection Responses to be Created : "+ responses.size());
+			LOGGER.info("Count of Inspection Responses generated : "+ responses.size());
 
 			return responses;
 		}
