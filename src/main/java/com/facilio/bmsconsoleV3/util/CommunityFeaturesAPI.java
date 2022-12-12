@@ -168,6 +168,11 @@ public class CommunityFeaturesAPI {
 
         return builder.get();
     }
+    public static Long getParentAnnouncementId(long peopleAnnouncementId) throws Exception {
+        PeopleAnnouncementContext peopleAnnouncement=(PeopleAnnouncementContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS,peopleAnnouncementId,PeopleAnnouncementContext.class);
+        Long parentAnnouncementId = peopleAnnouncement.getParentId();
+        return parentAnnouncementId;
+    }
 
     public static void cancelChildAnnouncements(AnnouncementContext parentAnnouncement) throws Exception {
         List<PeopleAnnouncementContext> childAnnouncements = getChildAnnouncementList(parentAnnouncement.getId());

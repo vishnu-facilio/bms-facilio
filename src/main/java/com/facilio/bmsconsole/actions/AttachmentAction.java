@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -167,7 +168,6 @@ public class AttachmentAction  extends FacilioAction {
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleAttachment);
 			}
 		}
-
 		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		
@@ -219,13 +219,21 @@ public class AttachmentAction  extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+
+
 		if (this.module.equals("cmdattachments")) {
 			String customModuleAttachment = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.ATTACHMENTS);
 			if (customModuleAttachment != null) {
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleAttachment);
 			}
 		}
-
+		// special handling for peopleAnnouncement
+		if (this.module.equals(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ATTACHMENTS)){
+			if(parentModuleName != null && parentModuleName.equals(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS)) {
+				Long parentAnnouncementId = CommunityFeaturesAPI.getParentAnnouncementId(recordId);
+				setRecordId(parentAnnouncementId);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
 		FacilioChain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
 		getAttachmentsChain.execute(context);

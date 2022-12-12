@@ -2319,6 +2319,12 @@ public class FacilioConstants {
 
 			public static final String AUDIENCE = "audience";
 			public static final String AUDIENCE_SHARING = "audienceSharing";
+			public static final String ANNOUNCEMENT_AUDIENCE = "Announcement_Audience";
+			public static final String NEIGHBOURHOOD_AUDIENCE = "Neighbourhood_Audience";
+			public static final String DEALSANDOFFERS_AUDIENCE= "Dealsandoffers_Audience";
+			public static final String NEWSANDINFORMATION_AUDIENCE= "Newsandinformation_Audience";
+			public static final String ADMINDOCUMENTS_AUDIENCE = "Admindocuments_Audience";
+			public static final String CONTACTDIRECTORY_AUDIENCE= "Contactdirectory_Audience";
 
 		}
 

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.Audience.CheckForAudienceAssociationCommandV3;
 import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDepreciationExistingCommand;
@@ -1346,6 +1347,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadAudienceLookupCommandV3())
                 .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
+                .beforeDelete(new CheckForAudienceAssociationCommandV3())
                 .build();
     }
 
