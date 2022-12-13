@@ -37,9 +37,10 @@ public class UnReserveItemsCommandV3 extends FacilioCommand {
                 Long itemTypeId = workOrderPlannedItem.getItemType().getId();
                 Long storeRoomId = workOrderPlannedItem.getStoreRoom().getId();
 
-                List<V3ItemContext> items = V3ItemsApi.getItem(itemTypeId,storeRoomId);
-
-                V3ItemContext item = items.get(0);
+                V3ItemContext item = V3ItemsApi.getItem(itemTypeId,storeRoomId);
+                if (item == null) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
+                }
                 Long itemId = item.getId();
                 if(item.getReservedQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot Unreserve Item, Reserved Quantity is null");
@@ -64,7 +65,7 @@ public class UnReserveItemsCommandV3 extends FacilioCommand {
 
                     if(workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)){
                         // to update available quantity in item module
-                        Double availableQuantity = items.get(0).getQuantity()==null ? 0 : items.get(0).getQuantity();
+                        Double availableQuantity = item.getQuantity()==null ? 0 : item.getQuantity();
                         Double newAvailableQuantity = availableQuantity + plannedItemQuantity;
 
                         updatedFields.add(fieldsMap.get("quantity"));

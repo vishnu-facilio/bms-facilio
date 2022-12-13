@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -72,19 +73,9 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                     } else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
                             && !itemType.isRotating()) {
                         if (itemTransaction.getQuantity() <= item.getQuantity()) {
-                            List<V3PurchasedItemContext> purchasedItem = new ArrayList<>();
-
-                            if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                                    || item.getCostType().equals(V3ItemContext.CostType.FIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                        purchasedItemFields);
-                            } else if (item.getCostType().equals(V3ItemContext.CostType.LIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                        purchasedItemFields);
-                            }
-
-                            if (purchasedItem != null && !purchasedItem.isEmpty()) {
-                                V3PurchasedItemContext pItem = purchasedItem.get(0);
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                            if (purchasedItems != null && !purchasedItems.isEmpty()) {
+                                V3PurchasedItemContext pItem = purchasedItems.get(0);
                                 double requiredQuantity = -(itemTransaction.getQuantity());
                                 if (requiredQuantity + pItem.getCurrentQuantity() >= 0) {
                                     V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
@@ -92,7 +83,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                                             itemTransaction, itemType);
                                     itemTransactionsToBeAdded.add(woItem);
                                 } else {
-                                    for (V3PurchasedItemContext purchaseitem : purchasedItem) {
+                                    for (V3PurchasedItemContext purchaseitem : purchasedItems) {
                                         V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
                                         double quantityUsedForTheCost = 0;
                                         if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {

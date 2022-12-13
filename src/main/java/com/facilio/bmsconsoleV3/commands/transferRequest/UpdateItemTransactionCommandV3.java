@@ -5,6 +5,7 @@ import java.util.*;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3StoreroomApi;
 import com.facilio.command.FacilioCommand;
@@ -48,21 +49,12 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                 double quantityTransferred = itemTypeLineItem.getQuantity();
                 long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
                 V3StoreRoomContext storeRoom = V3StoreroomApi.getStoreRoom(storeroomId);
-                    V3ItemContext item = V3ItemsApi.getItem(itemType,storeRoom);
+                V3ItemContext item = V3ItemsApi.getItem(itemType,storeRoom);
 
-                    List<V3PurchasedItemContext> purchasedItem = new ArrayList<>();
+                List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
 
-                    if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                            || item.getCostTypeEnum() == V3ItemContext.CostType.FIFO) {
-                        purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                purchasedItemFields);
-                    } else if (item.getCostTypeEnum() == V3ItemContext.CostType.LIFO) {
-                        purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                purchasedItemFields);
-                    }
-
-                    if (purchasedItem != null && !purchasedItem.isEmpty()) {
-                        V3PurchasedItemContext pItem = purchasedItem.get(0);
+                if (purchasedItems != null && !purchasedItems.isEmpty()) {
+                        V3PurchasedItemContext pItem = purchasedItems.get(0);
                         double requiredQuantity = -(quantityTransferred);
                         if (pItem.getCurrentQuantity() >= quantityTransferred) {
                             double newQuantity =pItem.getCurrentQuantity()-quantityTransferred;
@@ -71,7 +63,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                             itemTransactiosnToBeAdded.add(woItem);
                             transferRequestPurchasedItems.add(transferRequestPurchasedItem);
                         } else {
-                            for (V3PurchasedItemContext purchaseitem : purchasedItem) {
+                            for (V3PurchasedItemContext purchaseitem : purchasedItems) {
                                 V3ItemTransactionsContext woItem;
                                 double quantityUsedForTheCost = 0;
                                 if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {

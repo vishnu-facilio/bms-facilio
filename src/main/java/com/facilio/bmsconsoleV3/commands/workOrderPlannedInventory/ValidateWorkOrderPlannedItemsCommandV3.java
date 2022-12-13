@@ -37,10 +37,6 @@ public class ValidateWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
                 if (workOrderPlannedItem.getQuantity()==null || workOrderPlannedItem.getQuantity()==0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
-                // Unit price Validation
-                if(workOrderPlannedItem.getUnitPrice()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unit Price cannot be null");
-                }
                 //reservation type validation
                 if(workOrderPlannedItem.getReservationType()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Reservation type cannot be null");
@@ -61,7 +57,7 @@ public class ValidateWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
                             .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
                     List<V3ItemContext> items = selectRecordsBuilder.get();
                     if (items.size() < 1) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not Present in the given storeroom");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
                     } else {
                         if (items.get(0).getQuantity() < workOrderPlannedItem.getQuantity() && workOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Available quantity in store is less than the requested quantity");

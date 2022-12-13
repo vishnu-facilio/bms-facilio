@@ -1,13 +1,20 @@
 package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +26,7 @@ public class SetWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<WorkOrderPlannedItemsContext> workOrderPlannedItems = recordMap.get(moduleName);
+        Map<String, Object> bodyParams = Constants.getBodyParams(context);
         if(CollectionUtils.isNotEmpty(workOrderPlannedItems)){
             for(WorkOrderPlannedItemsContext workOrderPlannedItem : workOrderPlannedItems){
                 if(workOrderPlannedItem.getDescription()==null){
@@ -26,6 +34,16 @@ public class SetWorkOrderPlannedItemsCommandV3 extends FacilioCommand {
                     if(itemType.getDescription()!=null){
                         String description = itemType.getDescription();
                         workOrderPlannedItem.setDescription(description);
+                    }
+                }
+                if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && workOrderPlannedItem.getUnitPrice()==null){
+                    V3ItemContext item = V3ItemsApi.getItem(workOrderPlannedItem.getItemType().getId(),workOrderPlannedItem.getStoreRoom().getId());
+                    if (item == null) {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
+                    }
+                    List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                    if (CollectionUtils.isNotEmpty(purchasedItems)){
+                        workOrderPlannedItem.setUnitPrice(purchasedItems.get(0).getUnitcost());
                     }
                 }
                 if(workOrderPlannedItem.getUnitPrice()!=null && workOrderPlannedItem.getQuantity()!=null){

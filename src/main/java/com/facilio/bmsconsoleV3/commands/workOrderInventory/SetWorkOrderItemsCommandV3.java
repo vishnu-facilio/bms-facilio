@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
@@ -134,19 +135,10 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-                            List<V3PurchasedItemContext> purchasedItem = new ArrayList<>();
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
 
-                            if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                                    || item.getCostType().equals(V3ItemContext.CostType.FIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                        purchasedItemFields);
-                            } else if (item.getCostType().equals(V3ItemContext.CostType.LIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                        purchasedItemFields);
-                            }
-
-                            if (purchasedItem != null && !purchasedItem.isEmpty()) {
-                                V3PurchasedItemContext pItem = purchasedItem.get(0);
+                            if (purchasedItems != null && !purchasedItems.isEmpty()) {
+                                V3PurchasedItemContext pItem = purchasedItems.get(0);
                                 if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
                                     V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                     woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
@@ -155,7 +147,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     itemToBeAdded.add(woItem);
                                 } else {
                                     double requiredQuantity = workorderitem.getQuantity();
-                                    for (V3PurchasedItemContext purchaseitem : purchasedItem) {
+                                    for (V3PurchasedItemContext purchaseitem : purchasedItems) {
                                         V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                         double quantityUsedForTheCost = 0;
                                         if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
@@ -320,27 +312,6 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
 
         System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 
-    }
-
-    public static List<V3PurchasedItemContext> getPurchasedItemList(long id, String orderByType, FacilioModule module,
-                                                                  List<FacilioField> fields) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
-                .select(fields).table(module.getTableName()).moduleName(module.getName())
-                .beanClass(V3PurchasedItemContext.class)
-                .andCondition(
-                        CriteriaAPI.getCondition(fieldMap.get("item"), String.valueOf(id), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0),
-                        NumberOperators.GREATER_THAN))
-                .orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
-
-        List<V3PurchasedItemContext> purchasedItemlist = selectBuilder.get();
-
-        if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
-            return purchasedItemlist;
-        }
-        return null;
     }
 
     public static List<V3AssetContext> getAssetsFromId(List<Long> id, FacilioModule module, List<FacilioField> fields)

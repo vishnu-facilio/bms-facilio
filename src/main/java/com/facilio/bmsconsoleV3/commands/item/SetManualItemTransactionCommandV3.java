@@ -15,6 +15,7 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -94,19 +95,11 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
                                 }
                             }
                         } else {
-                            List<V3PurchasedItemContext> purchasedItem = new ArrayList<>();
 
-                            if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                                    || item.getCostType().equals(V3ItemContext.CostType.FIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                        purchasedItemFields,bodyParams);
-                            } else if (item.getCostType().equals(V3ItemContext.CostType.LIFO.getIndex())) {
-                                purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                        purchasedItemFields,bodyParams);
-                            }
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
 
-                            if (purchasedItem != null && !purchasedItem.isEmpty()) {
-                                V3PurchasedItemContext pItem = purchasedItem.get(0);
+                            if (purchasedItems != null && !purchasedItems.isEmpty()) {
+                                V3PurchasedItemContext pItem = purchasedItems.get(0);
                                 if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
                                     V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
                                     woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
@@ -115,7 +108,7 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
                                     itemTransactionsToBeAdded.add(woItem);
                                 } else {
                                     double requiredQuantity = itemTransaction.getQuantity();
-                                    for (V3PurchasedItemContext purchaseitem : purchasedItem) {
+                                    for (V3PurchasedItemContext purchaseitem : purchasedItems) {
                                         V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
                                         double quantityUsedForTheCost = 0;
                                         if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {

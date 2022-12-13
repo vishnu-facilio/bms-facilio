@@ -79,13 +79,6 @@ public class ReservationValidationCommandV3 extends FacilioCommand {
                         }
 
                     }
-
-
-                    // Unit price Validation
-                    if(workOrderPlannedItem.getUnitPrice()==null){
-                        workOrderPlannedItem.setDatum("errorType", "Error Note");
-                        workOrderPlannedItem.setDatum("errorMessage", "Unit Price is null");
-                    }
                     //reservation type validation
                     if(workOrderPlannedItem.getReservationTypeEnum()==null || workOrderPlannedItem.getReservationType()<=0){
                         workOrderPlannedItem.setDatum("errorType", "Error Note");

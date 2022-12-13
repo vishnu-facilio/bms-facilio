@@ -15,6 +15,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -34,8 +36,10 @@ public class ReserveItemsCommandV3 extends FacilioCommand {
                     Long itemTypeId = workOrderPlannedItem.getItemType().getId();
                     Long storeRoomId = workOrderPlannedItem.getStoreRoom().getId();
 
-                    List<V3ItemContext> items = V3ItemsApi.getItem(itemTypeId, storeRoomId);
-                    V3ItemContext item = items.get(0);
+                    V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
+                     if (item == null) {
+                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
+                     }
                     Long itemId = item.getId();
                     Double reservedQuantity = item.getReservedQuantity() == null ? 0 : item.getReservedQuantity();
 
