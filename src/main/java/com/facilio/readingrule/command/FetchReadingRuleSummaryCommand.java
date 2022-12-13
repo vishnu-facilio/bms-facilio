@@ -1,7 +1,6 @@
 package com.facilio.readingrule.command;
 
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,13 +12,10 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 

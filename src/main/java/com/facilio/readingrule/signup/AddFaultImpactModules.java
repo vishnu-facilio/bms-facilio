@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.signup.inspection;
+package com.facilio.readingrule.signup;
 
 import java.util.ArrayList;
 import java.util.Collections;

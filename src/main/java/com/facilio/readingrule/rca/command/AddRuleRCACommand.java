@@ -1,19 +1,16 @@
-package com.facilio.readingrule.command;
+package com.facilio.readingrule.rca.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
-import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.readingrule.rca.util.ReadingRuleRcaAPI;
 import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class GetNSetRCARuleIdsCommand extends FacilioCommand {
+public class AddRuleRCACommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        List<Long> alarmRCARules = NewReadingRuleAPI.getRCARulesForReadingRule(rule.getId());
-        rule.setAlarmRCARules(alarmRCARules);
+        ReadingRuleRcaAPI.createRCA(rule);
         return false;
     }
 }

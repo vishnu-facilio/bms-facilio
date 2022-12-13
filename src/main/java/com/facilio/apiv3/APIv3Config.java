@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.Audience.CheckForAudienceAssociationCommandV3;
 import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDepreciationExistingCommand;
@@ -25,8 +24,8 @@ import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
 import com.facilio.bmsconsoleV3.commands.building.SetBuildingRelatedContextCommand;
-import com.facilio.bmsconsoleV3.commands.client.*;
 import com.facilio.bmsconsoleV3.commands.client.DisassociateClientFromSiteCommand;
+import com.facilio.bmsconsoleV3.commands.client.*;
 import com.facilio.bmsconsoleV3.commands.clientcontact.DeleteClientContactPeopleUsersCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
@@ -44,7 +43,6 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDe
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
-
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -57,6 +55,9 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.IssueInvRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
@@ -65,15 +66,17 @@ import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCom
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
-import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand;
-import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -81,7 +84,8 @@ import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
-import com.facilio.bmsconsoleV3.commands.safetyplan.V3LoadHazardPrecautionLookUpsCommand;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
@@ -129,11 +133,9 @@ import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServices
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
 import com.facilio.bmsconsoleV3.context.asset.*;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
@@ -146,9 +148,10 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContex
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
-import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceiptContext;
@@ -171,15 +174,15 @@ import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
-import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourContext;
+import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.bmsconsoleV3.interfaces.customfields.*;
+import com.facilio.classification.chain.ClassificationChain;
+import com.facilio.classification.command.BeforeSaveClassificationCommand;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
@@ -189,14 +192,16 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.faults.UpdateOccurrenceCommand;
 import com.facilio.faults.alarmoccurrence.LoadSupplementsForAlarmOccurrenceCommand;
 import com.facilio.faults.baseevent.LoadSupplementsForBaseEventCommand;
 import com.facilio.faults.bmsalarm.LoadSupplementsForBMSAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
-import com.facilio.faults.UpdateOccurrenceCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.commands.*;
+import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
+import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.commands.UpdateMailRecordsModuleNameCommand;
 import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
@@ -204,7 +209,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
 import com.facilio.readingkpi.context.ReadingKPIContext;
-import com.facilio.readingrule.command.DeleteNamespaceReadingRuleCommand;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
@@ -220,22 +224,6 @@ import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import org.apache.commons.chain.Context;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.IssueInvRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
-
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
-
-import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.*;
-import com.facilio.classification.chain.ClassificationChain;
-import com.facilio.classification.command.BeforeSaveClassificationCommand;
-import com.facilio.classification.context.ClassificationContext;
 
 import java.util.function.Supplier;
 
@@ -1347,7 +1335,6 @@ public class APIv3Config {
                 .beforeFetch(new LoadAudienceLookupCommandV3())
                 .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
-                .beforeDelete(new CheckForAudienceAssociationCommandV3())
                 .build();
     }
 
@@ -2511,10 +2498,9 @@ public class APIv3Config {
                 .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
                 .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
                 .delete()
-                .afterDelete(new DeleteNamespaceReadingRuleCommand())
+                .afterDelete(TransactionChainFactoryV3.afterDeleteReadingRuleRcaChain())
                 .build();
     }
-
 
     @Module(FacilioConstants.PeopleGroup.PEOPLE_GROUP)
     public static Supplier<V3Config> getPeopleGroups() {

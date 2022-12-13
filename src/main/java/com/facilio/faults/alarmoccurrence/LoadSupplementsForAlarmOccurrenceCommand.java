@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 import java.util.Arrays;
 import java.util.List;
 
-public class    LoadSupplementsForAlarmOccurrenceCommand extends FacilioCommand {
+public class LoadSupplementsForAlarmOccurrenceCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(

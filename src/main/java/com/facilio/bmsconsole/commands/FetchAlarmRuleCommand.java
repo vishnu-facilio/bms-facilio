@@ -7,17 +7,12 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.ns.NamespaceAPI;
-import com.facilio.ns.context.NSType;
-import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class FetchAlarmRuleCommand extends FacilioCommand {
 

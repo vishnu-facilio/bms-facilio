@@ -398,8 +398,8 @@ public class FacilioConstants {
 		public static final String RECORD_ID = "recordId";
 		public static final String MODULE_ID = "moduleId";
 		public static final String RECORD_ID_LIST = "recordIds";
-		public static final String RELATED_APPLICATIONS="relatedApplications";
-		public static final String APPLICATION_RELATED_APPS_LIST= "applicationRelatedAppsList";
+		public static final String RELATED_APPLICATIONS = "relatedApplications";
+		public static final String APPLICATION_RELATED_APPS_LIST = "applicationRelatedAppsList";
 		public static final String IS_FROM_SUMMARY = "isFromSummary";
 		public static final String IS_FROM_VIEW = "isFromView";
 		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";
@@ -2193,6 +2193,7 @@ public class FacilioConstants {
 
 		public static final String SPACE_BOOKING = "spacebooking";
 		public static final String ROOMS = "rooms";
+
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
 		}
@@ -2416,11 +2417,12 @@ public class FacilioConstants {
 
 		}
 
-		public static class SpaceCategoryFormRelation{
+		public static class SpaceCategoryFormRelation {
 			public static final String SPACE_CATEGORY_FORM_RELATION = "spaceCategoryFormRelation";
 			public static final String MODULE_FORM_ID = "moduleFormId";
 
 		}
+
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
 		public static final String BILL_INVOICE = "custom_invoices";
@@ -2511,7 +2513,7 @@ public class FacilioConstants {
 			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			classMap.put(LON_WORKS_CONTROLLER_MODULE_NAME, LonWorksControllerContext.class);
 			classMap.put(RDM_CONTROLLER_MODULE_NAME, RdmControllerContext.class);
-			classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
+			classMap.put(REST_CONTROLLER_MODULE_NAME, MiscControllerContext.class);
 			classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, MiscControllerContext.class);
 
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
@@ -2919,13 +2921,13 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_SURVEY_TEMPLATE = "workOrderSurveyTemplate";
 		public static final String WORK_ORDER_SURVEY_RESPONSE = "workOrderSurveyResponse";
 	}
-	
+
 	public static class Routes {
 		public static final String DISPLAY_NAME = "Routes";
 		public static final String NAME = "routes";
 		public static final String TABLE_NAME = "Routes";
 	}
-	
+
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";
@@ -3134,7 +3136,7 @@ public class FacilioConstants {
 	public static class WorkOrder {
 		public static final String TABLE_NAME = "Workorders";
 	}
-	
+
 	public static class MultiResource {
 		public static final String DISPLAY_NAME = "Multi Resource";
 		public static final String NAME = "multiResource";
@@ -3376,6 +3378,7 @@ public class FacilioConstants {
 		public static final int CUSTOM_WITH_WEEK = 18;
 		public static final int CUSTOM_WITH_MONTH = 19;
 		public static final Map<String, Integer> DateFilter = new HashMap<>();
+
 		static {
 			DateFilter.put("THIS_HOUR", THIS_HOUR);
 			DateFilter.put("LAST_HOUR", LAST_HOUR);
@@ -3406,9 +3409,7 @@ public class FacilioConstants {
 			DateFilter.put("CUSTOM_WITH_MONTH", CUSTOM_WITH_MONTH);
 		}
 
-		public static class Energy
-
-		{
+		public static class Energy {
 			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA = 1;
 			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA_SUM = 2;
 			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA_COST = 3;
@@ -3691,14 +3692,14 @@ public class FacilioConstants {
 		public static final String BREAK = "break";
 	}
 
-    public static class ReadingKpi {
-        public static final String READING_KPI = "readingkpi";
-        public static final String READING_KPI_READINGS_TABLE = "KPIReadings";
-        public static final String READING_KPI_RESULT = "kpiResult";
+	public static class ReadingKpi {
+		public static final String READING_KPI = "readingkpi";
+		public static final String READING_KPI_READINGS_TABLE = "KPIReadings";
+		public static final String READING_KPI_RESULT = "kpiResult";
 		public static final String IS_HISTORICAL = "isHistorical";
 		public static final String INDEPENDENT_KPIS = "independentKpis";
 		public static final String DEPENDENT_KPIS = "dependentKpis";
-		public static final String DEPENDENCY_GRAPH_LIST="dependencyGraphList";
+		public static final String DEPENDENCY_GRAPH_LIST = "dependencyGraphList";
 		public static final String SCHEDULE_TYPE = "scheduleType";
 		public static final String NEXT_SCHEDULE_TYPE = "nextScheduleType";
 		public static final String READING_KPI_JOB_NAME = "ExecuteScheduledReadingKpi";
@@ -3707,16 +3708,24 @@ public class FacilioConstants {
 	}
 
 
-	public static class ReadingRules{
-		public static final String NEW_READING_RULE= "newreadingrules";
+	public static class ReadingRules {
+		public static final String NEW_READING_RULE = "newreadingrules";
 
-		public static final String NEW_READING_RULE_LIST="newreadingrulelist";
+		public static final String NEW_READING_RULE_LIST = "newreadingrulelist";
 
+		public static class RCA {
+			public static final String RCA_MODULE = "readingrulerca";
+			public static final String RCA_GROUP_MODULE = "readingrulerca_group";
+			public static final String RCA_SCORE_CONDITION_MODULE = "readingrulerca_score_condition";
+			public static final String RCA_SCORE_READINGS_MODULE = "readingrulerca_score_readings";
+			public static final String RCA_GROUP = "rcagroups";
+			public static final String RCA_SCORE_READINGS = "rcaScoreReadings";
+		}
 	}
 
-	public static class TransactionRule{
-		public static final String CreationModuleName="transaction";
-		public static final String TransactionRollUpModuleName="budgetmonthlyamount";
-		public static final String TransactionRollUpFieldName="actualMonthlyAmount";
+	public static class TransactionRule {
+		public static final String CreationModuleName = "transaction";
+		public static final String TransactionRollUpModuleName = "budgetmonthlyamount";
+		public static final String TransactionRollUpFieldName = "actualMonthlyAmount";
 	}
 }

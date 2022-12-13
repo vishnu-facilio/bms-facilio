@@ -17,6 +17,7 @@ import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +45,17 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         return false;
     }
 
-    private void constructRuleDetails(Context ctx, NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) {
+    private void constructRuleDetails(Context ctx, NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) throws Exception {
         if (newCtx.getAssetCategory() != null) {
             oldRule.setAssetCategory(newCtx.getAssetCategory());
         }
         if (newCtx.getAppliedTo() != null) {
             oldRule.setAppliedTo(newCtx.getAppliedTo());
         }
-        if (newCtx.getAssets() != null) {
+        if (CollectionUtils.isNotEmpty(newCtx.getAssets())) {
             oldRule.setAssets(newCtx.getAssets());
+        } else {
+            removeIncludedAssets(oldRule, newCtx);
         }
         if (newCtx.getAlarmDetails() != null) {
             oldRule.setAlarmDetails(newCtx.getAlarmDetails());
@@ -103,5 +106,9 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         }
     }
 
+    private void removeIncludedAssets(NewReadingRuleContext oldRule, NewReadingRuleContext newRule) {
+        oldRule.setAssets(new ArrayList<>());
+        newRule.getNs().setIncludedAssetIds(new ArrayList<>());
+    }
 
 }

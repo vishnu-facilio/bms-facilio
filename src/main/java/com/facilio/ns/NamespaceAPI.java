@@ -135,9 +135,9 @@ public class NamespaceAPI {
         updateBuilder.update(namespaceMap);
     }
 
-    private static List getNsIndexFromList(List<NSType> nsList){
-        List<Long> list=new ArrayList<>();
-        for(NSType nsType:nsList){
+    private static List getNsIndexFromList(List<NSType> nsList) {
+        List<Long> list = new ArrayList<>();
+        for (NSType nsType : nsList) {
             list.add(Long.valueOf(nsType.getIndex()));
         }
         return list;
@@ -151,14 +151,13 @@ public class NamespaceAPI {
             return inclusions;
         }
         if (fddContext != null) {
-            List<AssetContext> assets = new ArrayList<>();
+            Long assetCategoryId;
             if (fddContext instanceof ReadingKPIContext) {
-                Long assetCategoryId = ((ReadingKPIContext) fddContext).getAssetCategory().getId();
-                assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, fddContext.getSiteId());
+                assetCategoryId = ((ReadingKPIContext) fddContext).getAssetCategory().getId();
             } else {
-                Long assetCategoryId = ((NewReadingRuleContext) fddContext).getAssetCategory().getId();
-                assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, fddContext.getSiteId());
+                assetCategoryId = ((NewReadingRuleContext) fddContext).getAssetCategory().getId();
             }
+            List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, fddContext.getSiteId());
             resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
 
         }

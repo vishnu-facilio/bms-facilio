@@ -889,8 +889,8 @@
         <action name="fetchRules" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaRuleList">
             <param name="permission">READ,READ_TEAM,READ_OWN</param>
         </action>
-
-	</package>
+        <action name="fetchRcaReadings" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaReadingsFetch"/>
+    </package>
 
     <package name="readingRuleActions" namespace="/api/v3/readingrule/actions" extends="v3Api">
 

@@ -1,7 +1,7 @@
 package com.facilio.readingrule.util;
 
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.chain.FacilioContext;
@@ -9,10 +9,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
+import org.apache.commons.chain.Context;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -27,8 +26,6 @@ import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
-import com.facilio.readingrule.faultimpact.FaultImpactAPI;
-import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.v3.context.Constants;
@@ -37,14 +34,14 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
 public class NewReadingRuleAPI {
 
+    // TODO refactor the entire api for NewReadingRules module
     public static class RuleReadingsConstant {
         public static String RULE_READING_RESULT = "ruleResult";
         public static String RULE_READING_INFO = "info";
@@ -70,9 +67,10 @@ public class NewReadingRuleAPI {
     }
 
     public static List<NewReadingRuleContext> getRules(@NonNull Condition[] conditions) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-        select.select(FieldFactory.getNewReadingRuleFields())
-                .table(ModuleFactory.getNewReadingRuleModule().getTableName());
+        select.select(modBean.getModuleFields(FacilioConstants.ReadingRules.NEW_READING_RULE))
+                .table(modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE).getTableName());
         if (conditions.length > 0) {
             Arrays.stream(conditions).forEach(c -> select.andCondition(c));
         }
@@ -108,7 +106,7 @@ public class NewReadingRuleAPI {
             if (fetchChildren) {
                 fetchAndUpdateAlarmDetails(readingRule);
                 updateNamespaceAndFields(readingRule);
-               // updateWorkflow(readingRule);
+                // updateWorkflow(readingRule);
 //                updateFaultImpact(readingRule);
             }
             rules.add(readingRule);
@@ -118,7 +116,7 @@ public class NewReadingRuleAPI {
 
     private static void updateNamespaceAndFields(NewReadingRuleContext readingRule) throws Exception {
         NameSpaceContext nsCtx = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
-        readingRule.setAssets(NamespaceAPI.getMatchedResources(nsCtx,readingRule));
+        readingRule.setAssets(NamespaceAPI.getMatchedResources(nsCtx, readingRule));
         readingRule.setNs(nsCtx);
     }
 
@@ -135,36 +133,17 @@ public class NewReadingRuleAPI {
         }
     }
 
-    public static NewReadingRuleContext getRuleForBuilderId(Long builderId) throws Exception {
-        List<NewReadingRuleContext> rulesForBuilderId = getRulesByBuilderId(builderId);
-        return CollectionUtils.isNotEmpty(rulesForBuilderId) ? rulesForBuilderId.get(0) : null;
-    }
-
-    public static List<NewReadingRuleContext> getRulesByBuilderId(Long builderId) throws Exception {
-        FacilioModule builderConfigModule = ModuleFactory.getRuleBuilderConfigModule();
-        FacilioModule ruleModule = ModuleFactory.getNewReadingRuleModule();
-        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getNewReadingRuleFields())
-                .table(ruleModule.getTableName())
-                .innerJoin(ModuleFactory.getRuleBuilderConfigModule().getTableName())
-                .on(builderConfigModule.getTableName() + ".RULE_ID=" + ruleModule.getTableName() + ".ID")
-                .andCondition(CriteriaAPI.getCondition(builderConfigModule.getTableName() + ".ID", "builderId", builderId.toString(), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS));
-
-        List<Map<String, Object>> maps = select.get();
-        return (maps != null) ? getReadingRulesFromMap(maps) : null;
-    }
-
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getIdCondition(ruleId, ModuleFactory.getNewReadingRuleModule())});
+                CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
         return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
 
     public static List<NewReadingRuleContext> getAllRules() throws Exception {
         String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
-        FacilioContext fetch=V3Util.fetchList(moduleName,true,null,null,false,null,null,null,null,0,50,false,null,null);
-        Map<String,Object> newReadingRuleContexts= (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, null, null, null, 0, 50, false, null, null);
+        Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
         return rules;
@@ -175,12 +154,6 @@ public class NewReadingRuleAPI {
         FacilioContext summary = V3Util.getSummary(moduleName, recordId);
         List<NewReadingRuleContext> readingRules = Constants.getRecordListFromContext(summary, moduleName);
         return readingRules;
-    }
-
-    public static NewReadingRuleContext getRuleByNSId(Long nsId) throws Exception {
-        List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS)});
-        return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
 
     public static Map<String, Object> getMatchedResourcesWithCount(NewReadingRuleContext readingRule) throws Exception {
@@ -200,8 +173,18 @@ public class NewReadingRuleAPI {
         List<Map<String, Object>> resList = builder.get();
         resList = resList == null ? new ArrayList<>() : resList;
 
-        List<Long> rcaRuleIds = resList.stream().map(el -> (Long) el.get("rcaRule")).collect(Collectors.toList());
+        List<Long> rcaRuleIds = resList.stream().map(el -> (Long) el.get("rcaRuleId")).collect(Collectors.toList());
         return rcaRuleIds;
+    }
+
+    public static List<NewReadingRuleContext> destructureRuleFromRecordMap(Context context) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List<NewReadingRuleContext> readingRules = (List<NewReadingRuleContext>) recordMap.get(moduleName);
+        if (CollectionUtils.isNotEmpty(readingRules)) {
+            return readingRules;
+        }
+        return new ArrayList<>();
     }
 
     public static void addNamespaceFields(Long nsId, Map<Long, ResourceContext> assetsMap, List<NameSpaceField> fields) throws Exception {
@@ -211,14 +194,14 @@ public class NewReadingRuleAPI {
         for (NameSpaceField fld : fields) {
             Long resourceID = (fld.getResourceId() != null && fld.getResourceId() != -1) ? fld.getResourceId() : -1;
             if (resourceID == -1) {
-                    if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
-                        getRelationMappingFields(fld);
-                        prepareNSField(fld, nsId, resourceID, false);
-                        assetList.add(FieldUtil.getAsProperties(fld));
-                    } else {
-                        prepareNSField(fld, nsId, resourceID, true);
-                        assetList.add(FieldUtil.getAsProperties(fld));
-                    }
+                if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
+                    getRelationMappingFields(fld);
+                    prepareNSField(fld, nsId, resourceID, false);
+                    assetList.add(FieldUtil.getAsProperties(fld));
+                } else {
+                    prepareNSField(fld, nsId, resourceID, true);
+                    assetList.add(FieldUtil.getAsProperties(fld));
+                }
 
             } else {
                 prepareNSField(fld, nsId, resourceID, false);
@@ -233,11 +216,13 @@ public class NewReadingRuleAPI {
 
         insertBuilder.save();
     }
-    private static  void getRelationMappingFields(NameSpaceField nsField) throws Exception{
+
+    private static void getRelationMappingFields(NameSpaceField nsField) throws Exception {
         RelationMappingContext mapping = RelationUtil.getRelationMapping(nsField.getRelMapContext().getMappingLinkName());
         nsField.setRelMapId(mapping.getId());
         nsField.setRelMapContext(mapping);
     }
+
     private static void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
         GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
@@ -267,7 +252,7 @@ public class NewReadingRuleAPI {
         List<NewReadingRuleContext> resList = getReadingRules(ruleIds);
         if (resList != null) {
             for (NewReadingRuleContext props : resList) {
-                nameMap.put(props.getId(),  props.getName());
+                nameMap.put(props.getId(), props.getName());
             }
         }
         return nameMap;

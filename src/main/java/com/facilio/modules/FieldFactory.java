@@ -177,15 +177,6 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getRuleBuilderConfigFields() {
-        FacilioModule module = ModuleFactory.getRuleBuilderConfigModule();
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdField(module));
-        fields.add(getNumberField("ruleId", "RULE_ID", module));
-        fields.add(getStringField("script", "SCRIPT", module));
-        return fields;
-    }
-
     public static List<FacilioField> getRuleAlarmDetailsFields() {
         FacilioModule module = ModuleFactory.getRuleAlarmDetailsModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -2040,8 +2031,9 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getReadingRuleRCAMapping() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getReadingRuleRCAMapping();
-        fields.add(getField("rule", "RULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("rcaRule", "RCA_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("rcaRuleId", "RCA_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("rcaId", "RCA_ID", module, FieldType.NUMBER));
         return fields;
     }
 

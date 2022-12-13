@@ -114,6 +114,7 @@ public class RelationUtil {
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
         return getAllRelations(module, false, null, null);
     }
+
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString) throws Exception {
 
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
@@ -162,6 +163,25 @@ public class RelationUtil {
         return relationRequests;
     }
 
+    public static List<RelationRequestContext> getAllRelations(FacilioModule fromModule, FacilioModule toModule) throws Exception {
+
+        Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
+        Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getRelationModule().getTableName())
+                .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
+                .on(relationFields.get("id").getCompleteColumnName() + " = " + mappingFields.get("relationId").getCompleteColumnName())
+                .select(FieldFactory.getRelationFields())
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), String.valueOf(fromModule.getModuleId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("toModuleId"), String.valueOf(toModule.getModuleId()), NumberOperators.EQUALS));
+
+        List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
+        RelationUtil.fillRelation(relationList);
+        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, fromModule.getModuleId());
+        return relationRequests;
+    }
+
     /**
      * Method will fetch all the relationships and filtered with parent id which is associated with any relationships.
      *
@@ -191,7 +211,6 @@ public class RelationUtil {
         }
         return relReqResMap;
     }
-
 
     public static RelationContext getRelation(FacilioModule relationModule, boolean fetchRelations) throws Exception {
         FacilioModule module = ModuleFactory.getRelationModule();

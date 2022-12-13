@@ -116,7 +116,6 @@ classes:
 
   - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
   - com.facilio.bmsconsoleV3.signup.serviceRequest.AddServiceRequestForm
-  - com.facilio.bmsconsoleV3.signup.inspection.AddFaultImpactModules
 
   # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams
@@ -360,7 +359,11 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
 
   #Adding ReadingRule Modules
-  - com.facilio.bmsconsoleV3.signup.readingRulemodule.AddReadingRuleModules
+  - com.facilio.readingrule.signup.AddFaultImpactModules                     #Fault Impact
+  - com.facilio.readingrule.signup.AddReadingRuleModules
+  - com.facilio.readingrule.signup.AddRCAModules                   #RCA
 
   - com.facilio.bmsconsoleV3.signup.asset.AddAssetDepreciationRelModule
+
+
   

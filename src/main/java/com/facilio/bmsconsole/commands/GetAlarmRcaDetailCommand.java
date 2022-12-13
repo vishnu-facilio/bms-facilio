@@ -18,10 +18,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -134,13 +136,28 @@ public class GetAlarmRcaDetailCommand extends FacilioCommand {
                     }
                     criteria.groupOrConditions(conditions);
                     builder.andCriteria(criteria);
-
                 }
+                if((int)context.get(FacilioConstants.ContextNames.PAGE)!=0) {
+                    int page = (int) context.get(FacilioConstants.ContextNames.PAGE);
+                    int perPage = (int) context.get(FacilioConstants.ContextNames.PER_PAGE);
 
+                    if (perPage != -1) {
+                        int offset = ((page - 1) * perPage);
+                        if (offset < 0) {
+                            offset = 0;
+                        }
+
+                        builder.offset(offset);
+                        builder.limit(perPage);
+
+                    }
+                }
 
                 List<Map<String, Object>> list = builder.getAsProps();
                 for (Map<String, Object> prop : list) {
                     Object alarmObject = prop.get("alarm");
+                    Object ruleObject = prop.get("rule");
+                    prop.put("rule", NewReadingRuleAPI.getReadingRules(Collections.singletonList((Long) ((Map) ruleObject).get("id"))).get(0));
                     prop.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, NewAlarmAPI.getLatestAlarmOccurance((Long) ((Map) alarmObject).get("id")));
                 }
                 context.put(FacilioConstants.ContextNames.RCA_ALARMS, list);
@@ -150,4 +167,6 @@ public class GetAlarmRcaDetailCommand extends FacilioCommand {
         }
         return false;
     }
+
 }
+

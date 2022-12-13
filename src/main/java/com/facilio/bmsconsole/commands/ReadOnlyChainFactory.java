@@ -40,8 +40,8 @@ import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiReadingsCommand;
-import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
-import com.facilio.readingrule.command.GetNewReadingRulesCommand;
+import com.facilio.readingrule.rca.command.FetchRcaReadingsCommand;
+import com.facilio.readingrule.rca.command.RcaReadingFaultCountAndDurationCommand;
 import com.facilio.relation.command.GetAllRelationForSetupPageCommand;
 import com.facilio.relation.command.ViewRelationCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
@@ -439,12 +439,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
 		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
-		return c;
-	}
-
-	public static FacilioChain fetchReadingRuleSummaryChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new FetchReadingRuleSummaryCommand());
 		return c;
 	}
 
@@ -3236,5 +3230,13 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new FetchAssetNamesCommand());
 		return chain;
+	}
+
+	public static FacilioChain fetchRcaReadingsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new FetchRcaReadingsCommand());
+		c.addCommand(new RcaReadingFaultCountAndDurationCommand());
+		return c;
 	}
 }

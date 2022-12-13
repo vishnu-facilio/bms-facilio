@@ -48,7 +48,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 					SessionManager.getInstance().sendMessage(msg);
 				} catch (Exception e) {
 					LOGGER.log(Level.WARN, "Exception while send wms message for live reading update. readingKey: "+readingKey, e);
-				} catch (NoClassDefFoundError err) {
+				} catch (Error err) {
 					LOGGER.log(Level.WARN, "NoClassDefFoundError while send wms message for live reading update. readingKey: " + readingKey, err);
 				}
 			}

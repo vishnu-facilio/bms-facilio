@@ -109,9 +109,10 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
                 publishChain.setContext((FacilioContext) context);
                 publishChain.execute();
             }
-        }
-        catch (Exception e) {
-            LOGGER.error("Error occurred during publish reading change message. \n", e);
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred during publish reading change message. \n", e);
+        } catch (NoClassDefFoundError err) {
+            LOGGER.error("Error occurred during publish reading change message. \n", err);
         }
     }
 }

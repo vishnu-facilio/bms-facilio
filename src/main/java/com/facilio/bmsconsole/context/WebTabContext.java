@@ -292,7 +292,7 @@ public class WebTabContext implements Serializable {
             isGroupedType = groupedType;
         }
     }
-    
+
     private List<NewPermission> permissions;
     public List<NewPermission> getPermissions() {
 		return permissions;
@@ -300,7 +300,7 @@ public class WebTabContext implements Serializable {
     public void setPermissions(List<NewPermission> permissions) {
 		this.permissions = permissions;
 	}
-    
+
     private List<Long> moduleIds;
     public List<Long> getModuleIds() {
 		return moduleIds;
@@ -349,16 +349,16 @@ public class WebTabContext implements Serializable {
 //    public void setFeatureLicense(long featureLicense) {
 //        this.featureLicense = featureLicense;
 //    }
-    
+
     private int featureLicense;
-    
+
     public int getFeatureLicense() {
 		return featureLicense;
 	}
 	public void setFeatureLicense(int featureLicense) {
 		this.featureLicense = featureLicense;
 	}
-    
+
 
     public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config) {
         this.name = name;

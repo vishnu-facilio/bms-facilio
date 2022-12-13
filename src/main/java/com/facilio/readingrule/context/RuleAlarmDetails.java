@@ -8,12 +8,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-public class RuleAlarmDetails {
+public class RuleAlarmDetails implements Serializable {
 
     Long id;
 

@@ -6,8 +6,6 @@ import com.facilio.modules.fields.FacilioField;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.facilio.modules.ModuleFactory.getRuleBuilderConfigModule;
-
 public class NamespaceModuleAndFieldFactory extends FieldFactory {
 
     public static FacilioModule getNamespaceModule() {

@@ -5109,14 +5109,6 @@ public class ModuleFactory {
         return module;
     }
 
-    public static FacilioModule getRuleBuilderConfigModule() {
-		FacilioModule module = new FacilioModule();
-        module.setName("ruleBuilderConfig");
-        module.setDisplayName("Rule Builder Configuration");
-		module.setTableName("Rule_Builder_Config");
-        return module;
-    }
-
 	public static FacilioModule getRuleAlarmDetailsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("alarm_details");

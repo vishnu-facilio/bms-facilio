@@ -67,6 +67,7 @@ import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
+import com.facilio.readingrule.rca.command.FetchRuleRCACommand;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
@@ -818,25 +819,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static FacilioChain addReadingRuleChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ReadingRuleDependenciesCommand());
-			c.addCommand(getAddCategoryReadingChain());
-			c.addCommand(new AddNewReadingRuleCommand());
-			c.addCommand(addNamespaceAndFieldsChain());
-			c.addCommand(new AddRCARulesCommand());
-			c.addCommand(new AddFaultImpactRelationCommand());
-			return c;
-		}
-
-		public static FacilioChain addNamespaceAndFieldsChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddWorkflowCommand());
-			c.addCommand(new AddNamespaceCommand());
-			c.addCommand(new AddNamespaceFieldsCommand());
-			return c;
-		}
-
 		public static FacilioChain deleteReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteReadingRuleCommand());
@@ -846,20 +828,10 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static FacilioChain updateReadingRuleChain() {
+		public static FacilioChain fetchRcaRules() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new PrepareReadingRuleForUpdateCommand());
-			c.addCommand(addOrDeleteFaultImpactChain());
-			c.addCommand(new UpdateReadingRuleCommand());
-			c.addCommand(new UpdateWorkflowCommand());
-			c.addCommand(new AddRCARulesCommand());
+			c.addCommand(new GetRulesForRootCauseCommand());
 			return c;
-		}
-
-		public static FacilioChain fetchRcaRules(){
-		FacilioChain c= getDefaultChain();
-		c.addCommand(new GetRulesForRootCauseCommand());
-		return c;
 		}
 		public static FacilioChain addReadingAlarmRuleChain() {
 			FacilioChain c = getDefaultChain();

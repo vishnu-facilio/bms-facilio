@@ -81,10 +81,9 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
             NamespaceAPI.updateNsStatus(rule.getId(), rule.getStatus(), nsTypeList);
     }
     private void updateNamespaceInclusions() throws Exception {
-        List<Long> oldIncludedAssetIds = rule.getNs().getIncludedAssetIds();
+        List<Long> includedAssetIds = rule.getNs().getIncludedAssetIds();
         NameSpaceContext ns = this.rule.getNs();
-        List<Long> includedAssetIds = ns.getIncludedAssetIds();
-        if(CollectionUtils.isEmpty(includedAssetIds) && CollectionUtils.isNotEmpty(oldIncludedAssetIds)) {
+        if(CollectionUtils.isEmpty(includedAssetIds) ) {
             NamespaceAPI.deleteExistingInclusionRecords(ns);
         }
         NamespaceAPI.addInclusions(ns);

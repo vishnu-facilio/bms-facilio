@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 @Getter
 @Setter
-public class NameSpaceField implements Cloneable {
+public class NameSpaceField implements Cloneable, Serializable {
 
     Long id;
 

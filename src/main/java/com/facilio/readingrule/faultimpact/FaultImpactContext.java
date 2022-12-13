@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.constants.FacilioConstants.ContextNames.SpaceCategory;
 import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.rule.AbstractRuleInterface;
 import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -14,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class FaultImpactContext extends V3Context implements AbstractRuleInterface {
+public class FaultImpactContext extends V3Context {
 
 	/**
 	 * 
