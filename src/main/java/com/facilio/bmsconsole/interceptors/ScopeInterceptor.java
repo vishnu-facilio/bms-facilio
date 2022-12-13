@@ -496,9 +496,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
             boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
 
             //Need to remove once changed in client
-            if(moduleName.equals("vendorcontact")) {
-                hasPerm = PermissionUtil.currentUserHasPermission("vendorContact", action, role) || PermissionUtil.currentUserHasPermission(moduleName, action, role);
-            }
             if(moduleName.equals("tenantcontact")) {
                 hasPerm = PermissionUtil.currentUserHasPermission("tenantContact", action, role) || PermissionUtil.currentUserHasPermission(moduleName, action, role);
             }
