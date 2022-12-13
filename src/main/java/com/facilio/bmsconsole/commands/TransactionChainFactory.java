@@ -478,11 +478,13 @@ public class TransactionChainFactory {
 		c.addCommand(new VerifyQrCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new SendNotificationCommand());
+		c.addCommand(new UpdateTransactionEventTypeCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 		c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
 		c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());

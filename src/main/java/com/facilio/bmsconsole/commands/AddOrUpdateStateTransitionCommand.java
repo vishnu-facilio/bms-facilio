@@ -24,7 +24,7 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(stateTransition.getQrFieldId() > 0){
 				FacilioField qrField = modBean.getField(stateTransition.getQrFieldId());
-				validateQrField(modBean,stateTransition.getModuleName(),qrField);
+				validateQrField(modBean,stateTransition.getModuleName(),qrField,stateTransition);
 				stateTransition.setQrField(qrField);
 			}
 
@@ -39,24 +39,25 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 		return false;
 	}
 
-	public void validateQrField(ModuleBean modBean,String stateTransitionModuleName,FacilioField qrField) throws  Exception{
-		if(modBean.getModule(stateTransitionModuleName).getExtendedModuleIds().contains(qrField.getModuleId())) {
-			if (qrField.getDataTypeEnum() != FieldType.STRING) {
+	public void validateQrField(ModuleBean modBean,String stateTransitionModuleName,FacilioField qrField,StateflowTransitionContext stateTransition) throws  Exception{
+		if(!(qrField instanceof LookupField) && modBean.getModule(stateTransitionModuleName).getExtendedModuleIds().contains(qrField.getModuleId())) {
+			if ( qrField.getDataTypeEnum() != FieldType.STRING ) {
 				throw new IllegalArgumentException("Invalid field type");
 			}
 		}else{
+			FacilioField qrLookupField = modBean.getField(stateTransition.getQrLookupFieldId(),((LookupField) qrField).getLookupModuleId());
 			boolean checkLookupQr = false;
 			List<FacilioField> fields = modBean.getAllFields(stateTransitionModuleName);
 			for(FacilioField field:fields){
 				if (field.getDataTypeEnum() == FieldType.LOOKUP){
-					if(((LookupField) field).getLookupModule().getExtendedModuleIds().contains(qrField.getModuleId())) {
+					if(((LookupField) field).getLookupModule().getExtendedModuleIds().contains((qrLookupField).getModuleId())){
 						checkLookupQr = true;
 						break;
 					}
 				}
 			}
 			if (checkLookupQr) {
-				if (qrField.getDataTypeEnum() != FieldType.STRING) {
+				if (qrLookupField.getDataTypeEnum() != FieldType.STRING) {
 					throw new IllegalArgumentException("Invalid field type");
 				}
 			}else{

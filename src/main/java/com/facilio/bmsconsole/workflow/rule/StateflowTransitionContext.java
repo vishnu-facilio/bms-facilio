@@ -34,6 +34,16 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 		return qrField;
 	}
 
+	public Long qrLookupFieldId;
+
+	public void setQrLookupFieldId(Long qrLookupFieldId) {
+		this.qrLookupFieldId = qrLookupFieldId;
+	}
+
+	public Long getQrLookupFieldId() {
+		return qrLookupFieldId;
+	}
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 								FacilioContext context) throws Exception {

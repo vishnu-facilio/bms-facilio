@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -28,60 +29,68 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String qrCode = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
+		boolean isfromV2 = context.containsKey(FacilioConstants.ContextNames.IS_FROM_V2) ? (boolean) context.get(FacilioConstants.ContextNames.IS_FROM_V2) : false;
 		ModuleBean moduleBean = Constants.getModBean();
-		List<? extends ModuleBaseWithCustomFields> wos = null;
+		List<? extends ModuleBaseWithCustomFields> records = null;
 		if (MapUtils.isNotEmpty(recordMap)) {
-			wos = recordMap.get(moduleName);
+			records = recordMap.get(moduleName);
 		}
 		// there is no transition info
 		if (currentTransitionId == null || currentTransitionId == -1) {
 			return false;
 		}
 
-		if (CollectionUtils.isNotEmpty(wos)) {
+		if (CollectionUtils.isNotEmpty(records)) {
 			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
 			if (stateflowTransition == null) {
 				return false;
 			}
-			for (ModuleBaseWithCustomFields wo : wos) {
-				if (wo.getApprovalFlowId() > -1 && wo.getApprovalFlowId() > 0) {
+			for (ModuleBaseWithCustomFields record : records) {
+				if (record.getApprovalFlowId() > -1 && record.getApprovalFlowId() > 0) {
 					throw new IllegalArgumentException("Cannot change state as it is in approval");
 				}
 
-				wo.setSubForm(null); // temp fix
-				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
+				record.setSubForm(null); // temp fix
+				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
 				/*if (wo.getModuleState().getId() != stateflowTransition.getFromStateId()) {
 					throw new IllegalArgumentException("Invalid transition");
 				}*/
-				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, wo, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, wo.getId()), recordPlaceHolders, (FacilioContext) context, false);
+				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, record, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
 					FacilioStatus newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-					stateflowTransition.executeTrueActions(wo, context, recordPlaceHolders);
+					stateflowTransition.executeTrueActions(record, context, recordPlaceHolders);
 				}
 
 				if(stateflowTransition.getQrFieldId() > 0){
 					String qrValue = null;
 					FacilioField qrField = moduleBean.getField(stateflowTransition.getQrFieldId());
-					if(!(stateflowTransition.getModule().getExtendedModuleIds().contains(qrField.getModuleId()))) {
-						Map<String,Object> lookupFieldValue = null;
-						List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-						for(FacilioField field:fields){
-							if(field.getDataTypeEnum() == FieldType.LOOKUP){
-								if(((LookupField) field).getLookupModule().getExtendedModuleIds().contains(qrField.getModuleId())) {
-									lookupFieldValue = FieldUtil.getAsProperties(FieldUtil.getValue(wo, field));
-									break;
-								}
-							}
-						}
 
-						if(lookupFieldValue!=null && lookupFieldValue.containsKey(qrField.getName())){
-							qrValue = (String) lookupFieldValue.get(qrField.getName());
+					Object value = FieldUtil.getValue(record, qrField);
+					if (value != null) {
+						if (qrField instanceof LookupField) {
+							FacilioField qrLookupField = moduleBean.getField(stateflowTransition.getQrLookupFieldId());
+							if (value instanceof ModuleBaseWithCustomFields) {
+								if (qrLookupField != null) {
+									Map<String,Object> qrLookupFieldValue;
+									if ( isfromV2 && ((ModuleBaseWithCustomFields) value).getId() > 0){
+										FacilioModule qrModule = moduleBean.getModule(qrLookupField.getModuleId());
+										qrLookupFieldValue =  FieldUtil.getAsProperties(RecordAPI.getRecord(qrModule.getName(),((ModuleBaseWithCustomFields) value).getId()));
+										if (qrLookupFieldValue != null){
+											qrValue = (String) qrLookupFieldValue.get(qrLookupField.getName());
+										}
+									}else {
+										qrValue = (String) FieldUtil.getValue((ModuleBaseWithCustomFields) value, qrLookupField);
+									}
+								}
+							} else if (value instanceof Map) {
+								qrValue = (String) ((Map) value).get(qrLookupField.getName());
+							}
+						} else {
+							qrValue = (String) value;
 						}
-					}else{
-						qrValue = qrField != null ? (String) FieldUtil.getValue(wo, qrField) : null;
 					}
 
 					if((qrValue!=null) && (qrCode==null)){

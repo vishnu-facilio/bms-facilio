@@ -9031,6 +9031,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInOccupantPortal", "SHOW_IN_OCCUPANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getNumberField("qrFieldId","QRFIELD_ID",stageRuleModule));
+        list.add(getNumberField("qrLookupFieldId","QRLOOKUPFIELD_ID",stageRuleModule));
         return list;
     }
 

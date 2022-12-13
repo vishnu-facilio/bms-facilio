@@ -1700,6 +1700,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+		context.put(FacilioConstants.ContextNames.IS_FROM_V2,true);
 
 		if (closingWorkOrder(stateTransitionId)) {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
