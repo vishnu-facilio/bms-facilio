@@ -200,6 +200,8 @@ public class GroupBeanImpl implements GroupBean {
 				.table("ORG_Users")
 				.innerJoin("FacilioGroupMembers")
 				.on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
 				.andCustomWhere("FacilioGroupMembers.GROUPID = ?", groupId)
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(AccountConstants.getGroupMemberModule()),CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
