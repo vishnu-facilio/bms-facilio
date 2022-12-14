@@ -2196,6 +2196,7 @@ public class FacilioConstants {
 
 		public static final String SPACE_BOOKING = "spacebooking";
 		public static final String ROOMS = "rooms";
+		public static final String CLOSE_ALL_FROM_BULK_ACTION ="closeAllFromBulkAction";
 
 		public static class Maintenance {
 			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
