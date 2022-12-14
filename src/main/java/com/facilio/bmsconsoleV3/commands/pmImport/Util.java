@@ -217,6 +217,17 @@ public class Util {
                 throw new Exception("Unknown Trigger Type");
         }
 
+        Long startTime = (Long) pm.get("trStartTime");
+        if (startTime != null){
+            trigger.setStartTime(startTime);
+        }
+
+        Long endTime = (Long) pm.get("trEndTime");
+        if (endTime != null){
+            trigger.setEndTime(endTime);
+            schedule.setEndDate(endTime);
+        }
+
         trigger.setType(PMTriggerV2.PMTriggerType.SCHEDULE.getIndex());
         trigger.setSchedule(FieldUtil.getAsJSON(schedule).toJSONString());
         return trigger;

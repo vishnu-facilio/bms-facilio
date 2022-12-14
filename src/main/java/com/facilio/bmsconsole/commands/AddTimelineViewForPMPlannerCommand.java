@@ -41,11 +41,20 @@ import java.util.*;
  */
 public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
 
+    private ApplicationContext getAppContext() throws Exception {
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        if (app != null){
+            return app;
+        }
+        return ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+    }
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
-        ApplicationContext app = AccountUtil.getCurrentApp();
+        ApplicationContext app = getAppContext();
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

@@ -274,12 +274,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         fields.add(typeField);
 
         /* startTime Field */
-        NumberField startTimeField = SignupUtil.getNumberField(module, "startTime", "Start Time", "TRIGGER_START_TIME",
+        DateField startTimeField = SignupUtil.getDateField(module, "startTime", "Start Time", "TRIGGER_START_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId); // check for display name
         fields.add(startTimeField);
 
         /* endTime Field */
-        NumberField endTimeField = SignupUtil.getNumberField(module, "endTime", "End Time", "TRIGGER_END_TIME",
+        DateField endTimeField = SignupUtil.getDateField(module, "endTime", "End Time", "TRIGGER_END_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(endTimeField);
 
@@ -609,6 +609,24 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(sectionNameField);
 
+        /* category Field */
+        SystemEnumField sectionScopeField = SignupUtil.getSystemEnumField(module, "sectionScope", "Section Scope",
+                "SECTION_SCOPE", "MultiResourceAssignmentType", FacilioField.FieldDisplayType.TEXTBOX,
+                false, false, true, orgId);
+        fields.add(sectionScopeField);
+
+        /* assetCategory Field */
+        LookupField sectionAssetCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
+                "sectionAssetCategory", "Section Asset Category", "SECTION_ASSET_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(sectionAssetCategoryField);
+
+        /* spaceCategory Field */
+        LookupField sectionSpaceCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY),
+                "sectionSpaceCategory", "Section Space Category", "SECTION_SPACE_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(sectionSpaceCategoryField);
+
         /* task Field */
         StringField taskField = SignupUtil.getStringField(module, "task", "Task", "TASK",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
@@ -618,6 +636,24 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         StringField taskDescriptionField = SignupUtil.getStringField(module, "taskDescription", "Task Description", "TASK_DESCRIPTION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(taskDescriptionField);
+
+        /* task scope Field */
+        SystemEnumField taskScopeField = SignupUtil.getSystemEnumField(module, "taskScope", "Task Scope",
+                "TASK_SCOPE", "MultiResourceAssignmentType", FacilioField.FieldDisplayType.TEXTBOX,
+                false, false, true, orgId);
+        fields.add(taskScopeField);
+
+        /* task assetCategory Field */
+        LookupField taskAssetCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
+                "taskAssetCategory", "Task Asset Category", "TASK_ASSET_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(taskAssetCategoryField);
+
+        /* task spaceCategory Field */
+        LookupField taskSpaceCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY),
+                "taskSpaceCategory", "Task Space Category", "TASK_SPACE_CATEGORY", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        fields.add(taskSpaceCategoryField);
 
         /* input type Field */
         StringField inputTypeField = SignupUtil.getStringField(module, "inputType", "Input Type", "INPUT_TYPE",

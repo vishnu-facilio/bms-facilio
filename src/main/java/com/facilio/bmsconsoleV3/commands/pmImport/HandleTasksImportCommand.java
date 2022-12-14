@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.pmImport;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
@@ -71,7 +72,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
         jobPlan.setIsDisabled(false);
         jobPlan.setName(jpName);
 
-        // setting category
+        // setting section scope
         Object categoryObj = firstRecord.get("category");
         if (categoryObj == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Category is mandatory for Job Plan");
@@ -118,17 +119,46 @@ public class HandleTasksImportCommand extends FacilioCommand {
             String sectionName = entry.getKey();
             List<Map<String, Object>> recList = entry.getValue();
 
-            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName, ++seqNumber);
+            Map<String, Object> firstRecord = recList.get(0);
+
+            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName, ++seqNumber, firstRecord);
             createTasks(jobPlan, section, recList);
         }
     }
 
-    private JobPlanTaskSectionContext createSection(JobPlanContext jobPlan, String sectionName, int seqNumber) throws Exception {
+    private JobPlanTaskSectionContext createSection(JobPlanContext jobPlan, String sectionName, int seqNumber, Map<String, Object> firstRecord) throws Exception {
         JobPlanTaskSectionContext jpSection = new JobPlanTaskSectionContext();
         jpSection.setName(sectionName);
         jpSection.setJobPlan(jobPlan);
         jpSection.setInputType(TaskContext.InputType.NONE);
         jpSection.setSequenceNumber(seqNumber);
+
+        Integer sectionScope = (Integer) firstRecord.get("sectionScope");
+        jpSection.setJobPlanSectionCategory(sectionScope);
+        if (sectionScope != null &&
+                sectionScope.equals(PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal())) {
+
+            // Section's scope is Asset Category
+            Map<String, Object> sectionAssetCategory =
+                    (Map<String, Object>) firstRecord.get("sectionAssetCategory");
+            if (sectionAssetCategory != null) {
+                V3AssetCategoryContext cat = new V3AssetCategoryContext();
+                cat.setId(FacilioUtil.parseLong(sectionAssetCategory.get("id")));
+                jpSection.setAssetCategory(cat);
+            }
+        }
+
+        if (sectionScope != null &&
+                sectionScope.equals(PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal())) {
+            // Section's scope is Space Category
+            Map<String, Object> sectionSpaceCategory =
+                    (Map<String, Object>) firstRecord.get("sectionSpaceCategory");
+            if (sectionSpaceCategory != null) {
+                V3SpaceCategoryContext cat = new V3SpaceCategoryContext();
+                cat.setId(FacilioUtil.parseLong(sectionSpaceCategory.get("id")));
+                jpSection.setSpaceCategory(cat);
+            }
+        }
 
         final String jpSectionModuleName = "jobplansection";
         return (JobPlanTaskSectionContext) Util.persistModuleRecord(jpSectionModuleName, jpSection);
@@ -142,6 +172,35 @@ public class HandleTasksImportCommand extends FacilioCommand {
 
         for (Map<String, Object> rec : recList) {
             JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec, ++seq);
+
+
+            // setting task scope
+            Integer taskScope = (Integer) rec.get("taskScope");
+            jpTask.setJobPlanTaskCategory(taskScope);
+
+            if (taskScope != null &&
+                    taskScope.equals(PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal())) {
+                // task scope is Asset Category
+                Map<String, Object> taskAssetCategory =
+                        (Map<String, Object>) rec.get("taskAssetCategory");
+                if (taskAssetCategory != null) {
+                    V3AssetCategoryContext cat = new V3AssetCategoryContext();
+                    cat.setId(FacilioUtil.parseLong(taskAssetCategory.get("id")));
+                    jpTask.setAssetCategory(cat);
+                }
+            }
+
+            if (taskScope != null &&
+                    taskScope.equals(PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal())) {
+                // Section's scope is Space Category
+                Map<String, Object> taskSpaceCategory =
+                        (Map<String, Object>) rec.get("taskSpaceCategory");
+                if (taskSpaceCategory != null) {
+                    V3SpaceCategoryContext cat = new V3SpaceCategoryContext();
+                    cat.setId(FacilioUtil.parseLong(taskSpaceCategory.get("id")));
+                    jpTask.setSpaceCategory(cat);
+                }
+            }
 
             if (jpTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
                 List<TaskInputOptionsContext> taskInputOptions = createJpTaskInputOptions(rec);
@@ -198,7 +257,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
     }
 
     private Map<String, List<Map<String, Object>>> classifyBySectionName(List<Map<String, Object>> records) {
-        return classifyByKey("section", records);
+        return classifyByKey("sectionName", records);
     }
 
     private Map<String, List<Map<String, Object>>> classifyByKey(String key, List<Map<String, Object>> records) {

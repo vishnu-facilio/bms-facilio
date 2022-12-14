@@ -96,6 +96,21 @@ public class SignupUtil {
         }
 
         /**
+         * Helper method to get {@link DateField}
+         */
+        public static DateField getDateField(FacilioModule module, String name, String displayName, String columnName,
+                                                 FacilioField.FieldDisplayType displayType, Boolean required, Boolean disabled,
+                                                 Boolean isDefault, Long orgId) {
+                DateField dateField = FieldFactory.getField(name, displayName, columnName, module, FieldType.DATE);
+                dateField.setDisplayType(displayType);
+                dateField.setRequired(required);
+                dateField.setDisabled(disabled);
+                dateField.setDefault(isDefault);
+                dateField.setOrgId(orgId);
+                return dateField;
+        }
+
+        /**
          * Helper method to get {@link BooleanField}
          */
         public static BooleanField getBooleanField(FacilioModule module, String name, String displayName, String columnName,
