@@ -1695,12 +1695,21 @@ public class WorkOrderAction extends FacilioAction {
 				toState.getType().equals(FacilioStatus.StatusType.CLOSED);
 	}
 
+	private String qrValue;
+	public void setQrValue(String qrValue) {
+		this.qrValue = qrValue;
+	}
+	public String getQrValue() {
+		return qrValue;
+	}
+
 	private String updateWorkOrder(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.IS_FROM_V2,true);
+		context.put(ContextNames.QR_VALUE,qrValue);
 
 		if (closingWorkOrder(stateTransitionId)) {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
