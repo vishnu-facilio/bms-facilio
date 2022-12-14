@@ -2650,7 +2650,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.createSpaceBookingChain())
                 .afterSave(new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
-                .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .update().beforeSave(TransactionChainFactoryV3.createSpaceBookingChain())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .delete()

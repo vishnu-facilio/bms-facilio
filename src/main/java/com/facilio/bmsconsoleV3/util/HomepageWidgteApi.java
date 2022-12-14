@@ -117,7 +117,7 @@ public class HomepageWidgteApi {
 
 
         if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
-            widget.setPrimaryText("Your desk is " + space.getName());
+            widget.setPrimaryText("Your desk");
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
                 List<BuildingContext>buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
@@ -144,7 +144,7 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
         else if(parkingModule.getModuleId() == spaceBooking.getParentModuleId()) {
-            widget.setPrimaryText("Slot No " + space.getName());
+            widget.setPrimaryText("Your Parking Slot");
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
                 List<BuildingContext>buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
@@ -170,7 +170,8 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
         else {
-            widget.setPrimaryText(spaceBooking.getName());
+            widget.setPrimaryText("Booking");
+            widget.setSecondaryText(spaceBooking.getName());
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
                 List<BuildingContext>buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
@@ -955,7 +956,7 @@ public class HomepageWidgteApi {
             assignedWidget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(currentTime));
             assignedWidget.setIcon(1);
             assignedWidget.setTitle(module.getDisplayName());
-            assignedWidget.setPrimaryText("Your desk is " + getMyAssignedDesk().getSecondaryText());
+            assignedWidget.setPrimaryText("Your desk");
             assignedWidget.setStartTime(daystartTime);
             assignedWidget.setEndTime(dayEndTime);
             assignedWidget.setModuleName(module.getName());

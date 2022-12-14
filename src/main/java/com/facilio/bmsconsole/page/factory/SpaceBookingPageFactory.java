@@ -29,13 +29,13 @@ public class SpaceBookingPageFactory extends PageFactory{
 //        tab1.setCustomFullPage(true);
 
         PageWidget bookingFullSmmary = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_FULL_SUMMARY);
-        bookingFullSmmary.addToLayoutParams(tab1Sec1,0,0, 16, 10);
+        bookingFullSmmary.addToLayoutParams(tab1Sec1,0,0, 16, 5);
 
         PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_SECONDARY_DETAILS);
         detailsWidget.addToLayoutParams(tab1Sec1, 0,0,16, 5);
 
         PageWidget bookingCardDetails = new PageWidget(PageWidget.WidgetType.SPACE_BOOKING_CARD_DETAILS);
-        bookingCardDetails.addToLayoutParams(tab1Sec1,16,0,8,23);
+        bookingCardDetails.addToLayoutParams(tab1Sec1,16,0,8,18);
 
 
         tab1Sec1.addWidget(bookingFullSmmary);

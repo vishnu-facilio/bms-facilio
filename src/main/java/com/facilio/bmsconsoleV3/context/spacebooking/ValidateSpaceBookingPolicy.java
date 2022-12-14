@@ -92,7 +92,16 @@ public class ValidateSpaceBookingPolicy {
                 boolean flag = true;
                 if(policy.getMaximumAttendees().isEnable()) {
                     flag = false;
-                    long attendeeCount = booking.getNoOfAttendees();
+                    long attendeeCount = 1;
+                    if(booking.getInternalAttendees()!=null)
+                    {
+                        attendeeCount += booking.getInternalAttendees().size();
+                    }
+                    if(booking.getExternalAttendees()!=null){
+                        attendeeCount += booking.getExternalAttendees().size();
+                    }
+
+
                     long maxCount = policy.getMaximumAttendees().getValue();
 
                     try {

@@ -38,7 +38,7 @@ public class V3ValidateSpaceBookingCommand extends FacilioCommand {
         FacilioModule spaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
         List<FacilioField> fields = modBean.getAllFields(spaceBookingModule.getName());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        List<FacilioField> selectFields = Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME), fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME),fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID));
+        List<FacilioField> selectFields = Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME), fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME),fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID),FieldFactory.getIdField(spaceBookingModule));
 
         Long startTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_START_TIME);
         Long endTime = (Long) context.get(FacilioConstants.ContextNames.SpaceBooking.BOOKING_END_TIME);
@@ -53,7 +53,10 @@ public class V3ValidateSpaceBookingCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.SpaceBooking.SPACE_ID), String.valueOf(spaceId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(spaceBookingModule.getTableName() + ".MODULE_STATE", "moduleState", String.valueOf(cancelledStateId), NumberOperators.NOT_EQUALS));
-
+        if(context.get("recordId")!=null){
+            long recordId = (Long) context.get("recordId");
+            selectBuilder.andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(recordId),NumberOperators.NOT_EQUALS));
+        }
 
         List<Map<String, Object>> props = selectBuilder.get();
                 if (props != null) {
@@ -80,7 +83,7 @@ public class V3ValidateSpaceBookingCommand extends FacilioCommand {
 
                         }
                     }
-                }
+                    }
 
 
         return false;
