@@ -2724,7 +2724,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Department", "department", WebTabContext.Type.DEPARTMENT, null, appId, null));
             webTabs.add(new WebTabContext("Type", "type", WebTabContext.Type.TYPE, null, appId, null));
             webTabs.add(new WebTabContext("Weather station", "weatherstation", WebTabContext.Type.WEATHER_STATION, null, appId, null));
-            webTabs.add(new WebTabContext("Weather Station","weatherstation",WebTabContext.Type.WEATHER_STATION,null,appId,null));
 
 
             groupNameVsWebTabsMap.put("portfoliosettings", webTabs);
