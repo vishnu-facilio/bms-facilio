@@ -49,6 +49,7 @@ public class Permission {
 	long value;
 	FeatureLicense featureLicense;
 	AppModulePermissionUtil.PermissionMapping permissionMapping;
+	boolean enabled;
 
 	public Permission(String actionName, String displayName, long value, FeatureLicense featureLicense) {
 		this.actionName = actionName;
@@ -68,6 +69,14 @@ public class Permission {
 		this.actionName = actionName;
 		this.value = value;
 		this.permissionMapping = permissionMapping;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Permission() {

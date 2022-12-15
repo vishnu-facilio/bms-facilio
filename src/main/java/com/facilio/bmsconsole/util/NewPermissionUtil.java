@@ -583,6 +583,8 @@ public class NewPermissionUtil {
                 return appTabType.getOrDefault(action, -1);
             case 10:
                 return settingsTabType.containsKey(action) ? settingsTabType.getOrDefault(action,  -1L) : -1;
+            case 11:
+                return customTabType.getOrDefault(action, -1);
             case 12:
                 return portalOverviewType.getOrDefault(action, -1);
             case 14:
@@ -636,5 +638,139 @@ public class NewPermissionUtil {
             }
         }
         return hasSetupPermission;
+    }
+    public static Map<String, Long> getPermissions(int tabType) {
+        WebTabContext.Type webTabType = WebTabContext.Type.valueOf(tabType);
+        if(webTabType != null && webTabType.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
+            Map<String, Long> maps = new HashMap<>();
+            for (String key : setupPermissionMap.keySet()) {
+                maps.put(key, Long.valueOf(setupPermissionMap.get(key).toString()));
+            }
+            return maps;
+        }
+        switch (tabType) {
+            case 1: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : moduleTabType.keySet()) {
+                    maps.put(key, Long.valueOf(moduleTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 2: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : approvalTabType.keySet()) {
+                    maps.put(key, Long.valueOf(approvalTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 3: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : calendarTabType.keySet()) {
+                    maps.put(key, Long.valueOf(calendarTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 4: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : reportTabType.keySet()) {
+                    maps.put(key, Long.valueOf(reportTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 5: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : analyticsTabType.keySet()) {
+                    maps.put(key, Long.valueOf(analyticsTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 6: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : kpiTabType.keySet()) {
+                    maps.put(key, Long.valueOf(kpiTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 7: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : dashboardTabType.keySet()) {
+                    maps.put(key, Long.valueOf(dashboardTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 8: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : customTabType.keySet()) {
+                    maps.put(key, Long.valueOf(customTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 9: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : appTabType.keySet()) {
+                    maps.put(key, Long.valueOf(appTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 10: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : settingsTabType.keySet()) {
+                    maps.put(key, settingsTabType.get(key));
+                }
+                return maps;
+            }
+            case 12: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : portalOverviewType.keySet()) {
+                    maps.put(key, Long.valueOf(portalOverviewType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 13: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : notificationType.keySet()) {
+                    maps.put(key, Long.valueOf(notificationType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 14: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : indoorFloorplanTabType.keySet()) {
+                    maps.put(key, Long.valueOf(indoorFloorplanTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 15: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : homepageTabType.keySet()) {
+                    maps.put(key, Long.valueOf(homepageTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 16: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : serviceCatalogTabType.keySet()) {
+                    maps.put(key, Long.valueOf(serviceCatalogTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            default:
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : customTabType.keySet()) {
+                    maps.put(key, Long.valueOf(customTabType.get(key).toString()));
+                }
+                return maps;
+        }
+    }
+
+    public static List<String> getActionsForPermissionValue(int tabType,long value){
+        List<String> actionList = new ArrayList<>();
+        Map<String, Long> permissionActionMap = getPermissions(tabType);
+        for(Map.Entry<String,Long> entry : permissionActionMap.entrySet()){
+            if((entry.getValue() & value) == entry.getValue()){
+                actionList.add(entry.getKey());
+            }
+        }
+        return actionList;
     }
 }

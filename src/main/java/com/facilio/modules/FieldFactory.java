@@ -3912,26 +3912,19 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getModuleAppPermissionModule();
         List<FacilioField> fields = new ArrayList<>();
 
-        FacilioField applicationId = new FacilioField();
-        applicationId.setName("applicationId");
-        applicationId.setDataType(FieldType.NUMBER);
-        applicationId.setColumnName("APP_ID");
-        applicationId.setModule(module);
-        fields.add(applicationId);
+        FacilioField tabId = new FacilioField();
+        tabId.setName("tabId");
+        tabId.setDataType(FieldType.NUMBER);
+        tabId.setColumnName("TAB_ID");
+        tabId.setModule(module);
+        fields.add(tabId);
 
-        FacilioField moduleId = new FacilioField();
-        moduleId.setName("moduleId");
-        moduleId.setDataType(FieldType.NUMBER);
-        moduleId.setColumnName("MODULE_ID");
-        moduleId.setModule(module);
-        fields.add(moduleId);
-
-        FacilioField specialLinkName = new FacilioField();
-        specialLinkName.setName("specialLinkName");
-        specialLinkName.setDataType(FieldType.STRING);
-        specialLinkName.setColumnName("SPECIAL_LINK_NAME");
-        specialLinkName.setModule(module);
-        fields.add(specialLinkName);
+        FacilioField appId = new FacilioField();
+        appId.setName("appId");
+        appId.setDataType(FieldType.NUMBER);
+        appId.setColumnName("APP_ID");
+        appId.setModule(module);
+        fields.add(appId);
 
         FacilioField permission1 = new FacilioField();
         permission1.setName("permission1");
@@ -9745,8 +9738,13 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static List<FacilioField> getNewPermissionFields() throws Exception {
-        if(V3PermissionUtil.isFeatureEnabled()){
-            return getNewTabPermissionFields();
+        return getNewPermissionFields(false);
+    }
+    public static List<FacilioField> getNewPermissionFields(boolean skipLicense) throws Exception {
+        if(!skipLicense) {
+            if (V3PermissionUtil.isFeatureEnabled()) {
+                return getNewTabPermissionFields();
+            }
         }
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewPermissionModule();

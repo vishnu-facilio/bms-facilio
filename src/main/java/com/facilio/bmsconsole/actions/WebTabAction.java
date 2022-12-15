@@ -45,6 +45,15 @@ public class WebTabAction extends FacilioAction {
         this.layoutId = layoutId;
     }
 
+    private Long roleId;
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
     private WebTabGroupContext tabGroup;
     public WebTabGroupContext getTabGroup() {
         return tabGroup;
@@ -190,6 +199,7 @@ public class WebTabAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.FILTER_SET_UP_TAP,isFilterSetUpTab());
         context.put(FacilioConstants.ContextNames.FETCH_SETUP_TABS,isFetchSetupTabs());
 
+        context.put(FacilioConstants.ContextNames.ROLE_ID,roleId);
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WEB_TABS, context.get(FacilioConstants.ContextNames.WEB_TABS));

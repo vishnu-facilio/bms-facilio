@@ -9,6 +9,7 @@ import java.util.function.Function;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -44,6 +45,15 @@ public class RoleAction extends ActionSupport {
     private List<RoleApp> roleApp;
     private Map<Long, List<RoleApp>> roleAppList;
     private long appId;
+    private List<WebTabContext> webTabs;
+
+    public List<WebTabContext> getWebTabs() {
+        return webTabs;
+    }
+
+    public void setWebTabs(List<WebTabContext> webTabs) {
+        this.webTabs = webTabs;
+    }
 
     public long getAppId() {
         return appId;
@@ -263,6 +273,7 @@ public class RoleAction extends ActionSupport {
         context.put(FacilioConstants.ContextNames.ROLE, getRole());
         context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
         context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
+        context.put(FacilioConstants.ContextNames.WEB_TABS, getWebTabs());
 
 
         Command addRole = FacilioChainFactory.getAddWebTabRoleCommmand();
@@ -278,6 +289,7 @@ public class RoleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ROLE, getRole());
 		context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
         context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
+        context.put(FacilioConstants.ContextNames.WEB_TABS, getWebTabs());
 
 		Command updateRole = FacilioChainFactory.getUpdateWebTabRoleCommand();
 		updateRole.execute(context);

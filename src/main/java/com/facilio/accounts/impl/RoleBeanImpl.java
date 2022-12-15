@@ -9,6 +9,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -369,8 +370,19 @@ public class RoleBeanImpl implements RoleBean {
 				.table(ModuleFactory.getNewPermissionModule().getTableName())
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		builder.delete();
+		deleteV3Permissions(roleId);
 	}
 
+	private void deleteV3Permissions(long roleId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder();
+		if(V3PermissionUtil.isFeatureEnabled()) {
+			builder.table(ModuleFactory.getNewPermissionModule(true).getTableName());
+		} else {
+			builder.table(ModuleFactory.getNewTabPermissionModule().getTableName());
+		}
+		builder.andCondition(CriteriaAPI.getCondition("ROLE_ID","roleId",String.valueOf(roleId),NumberOperators.EQUALS));
+		builder.delete();
+	}
 
 	@Override
 	public boolean addNewPermission(long roleId, NewPermission permissions) throws Exception {
@@ -378,6 +390,7 @@ public class RoleBeanImpl implements RoleBean {
 				.table(ModuleFactory.getNewPermissionModule().getTableName())
 				.fields(FieldFactory.getNewPermissionFields());
 		builder.insert(FieldUtil.getAsProperties(permissions));
+		V3PermissionUtil.addPermissionV3(roleId,permissions);
 		return false;
 	}
 

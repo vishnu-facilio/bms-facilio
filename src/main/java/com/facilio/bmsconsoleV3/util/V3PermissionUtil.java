@@ -1,26 +1,41 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 public class V3PermissionUtil {
 
     public static boolean isFeatureEnabled() throws Exception {
-        return AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_TAB_PERMISSIONS);
+        return AccountUtil.isFeatureEnabled(
+                AccountUtil.FeatureLicense.NEW_TAB_PERMISSIONS
+        );
     }
 
-    public static List<PermissionGroup> getPermissionGroups(WebTabContext webTab, String moduleName) throws Exception {
-        List<Permission> permissions = AppModulePermissionUtil.getPermissionValue(webTab, moduleName);
-        List<PermissionGroup> permissionGroups = new ArrayList<>();
+    public static List < PermissionGroup > getPermissionGroups(WebTabContext webTab) throws Exception {
+        List < Permission > permissions = AppModulePermissionUtil.getPermissionValue(webTab);
+        List < PermissionGroup > permissionGroups = new ArrayList < > ();
         if (permissions != null) {
-            for (Permission p : permissions) {
+            for (Permission p: permissions) {
                 if (p instanceof PermissionGroup) {
                     permissionGroups.add((PermissionGroup) p);
                 }
@@ -29,63 +44,113 @@ public class V3PermissionUtil {
         }
         return null;
     }
-    public static PermissionGroup getPermissionGroup(WebTabContext webTab, String moduleName, String actionName) throws Exception {
-        List<Permission> permissions = AppModulePermissionUtil.getPermissionValue(webTab, moduleName);
-        if (permissions != null) {
-            for (Permission p : permissions) {
-                if (p instanceof PermissionGroup) {
-                    if(p != null) {
-                        List<Permission> subPermissions = ((PermissionGroup) p).getPermissions();
-                        if(CollectionUtils.isNotEmpty(subPermissions)) {
-                            for(Permission subPermission : subPermissions) {
-                                if (subPermission.getActionName().equalsIgnoreCase(actionName)) {
-                                    return (PermissionGroup) p;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     public static long getPermissionValueForActionAndTab(WebTabContext webTab, String action) throws Exception {
-        String moduleName = "*";
-        if (webTab.getTypeEnum().getIndex() == WebTabContext.Type.MODULE.getIndex()) {
-            List<String> moduleNames = ApplicationApi.getModulesForTab(webTab.getId());
-            if (CollectionUtils.isNotEmpty(moduleNames)) {
-                moduleName = moduleNames.get(0);
-            }
-        }
-        List<Permission> permissions = AppModulePermissionUtil.getPermissionValue(webTab, moduleName);
-        for (Permission permission : permissions) {
+        List < Permission > permissions = AppModulePermissionUtil.getPermissionValue(webTab);
+        for (Permission permission: permissions) {
             if (permission instanceof PermissionGroup) {
-                List<Permission> childPermissions = ((PermissionGroup) permission).getPermissions();
+                List < Permission > childPermissions = ((PermissionGroup) permission).getPermissions();
                 if (CollectionUtils.isNotEmpty(childPermissions)) {
-                    for (Permission childPermission : childPermissions) {
+                    for (Permission childPermission: childPermissions) {
                         if (childPermission.getActionName().equals(action)) {
                             return childPermission.getValue();
                         }
                     }
                 }
-            }
-            else if (permission.getActionName().equals(action)) {
+            } else if (permission.getActionName().equals(action)) {
                 return permission.getValue();
             }
         }
         return -1;
     }
 
-    public static List<Permission> getPermissionValue(WebTabContext webtab) throws Exception {
-        return getPermissionValue(webtab, null);
-    }
-
-    public static List<Permission> getPermissionValue(WebTabContext webtab, String moduleName) throws Exception {
-        List<Permission> permissions =  AppModulePermissionUtil.getPermissionValue(webtab, moduleName);
-        if(CollectionUtils.isNotEmpty(permissions)){
+    public static List < Permission > getPermissionValue(WebTabContext webtab, Long roleId) throws Exception {
+        List < Permission > permissions = AppModulePermissionUtil.getPermissionValue(webtab, roleId);
+        if (CollectionUtils.isNotEmpty(permissions)) {
             return permissions;
         }
         return null;
+    }
+
+    //Backward compatability for write - read handled by feature license
+    public static void addPermissionV3(long roleId, NewPermission newPermissions) throws Exception {
+        WebTabContext tab = ApplicationApi.getWebTab(newPermissions.getTabId());
+        FacilioModule module;
+        NewPermission perm;
+        List < FacilioField > fields;
+        if (isFeatureEnabled()) {
+            List < String > actionList = AppModulePermissionUtil.getPermissionsForValues(newPermissions.getPermission(), newPermissions.getPermission2());
+            long permValue = 0;
+            for (String actionName: actionList) {
+                long permVal = NewPermissionUtil.getPermissionValue(tab.getType(), actionName);
+                if (permVal > 0) {
+                    permValue = permValue + permVal;
+                }
+            }
+            NewPermission permissionToInsert = new NewPermission(tab.getId(), permValue, 0);
+            permissionToInsert.setRoleId(newPermissions.getRoleId());
+            perm = permissionToInsert;
+            module = ModuleFactory.getNewPermissionModule(true);
+            fields = FieldFactory.getNewPermissionFields(true);
+        } else {
+            List < String > actionList = NewPermissionUtil.getActionsForPermissionValue(tab.getType(), newPermissions.getPermission());
+            long permValue1 = 0;
+            long permValue2 = 0;
+            Map < String, Permission > permissionsMap = AppModulePermissionUtil.getPermissionsMap();
+            for (String actionName: actionList) {
+                if (permissionsMap.containsKey(actionName)) {
+                    if (permissionsMap.get(actionName).getPermissionMapping().getGroupId() == AppModulePermissionUtil.PermissionMapping.GROUP1PERMISSION.getGroupId()) {
+                        permValue1 = permValue1 + permissionsMap.get(actionName).getValue();
+                    } else if (permissionsMap.get(actionName).getPermissionMapping().getGroupId() == AppModulePermissionUtil.PermissionMapping.GROUP2PERMISSION.getGroupId()) {
+                        permValue2 = permValue2 + permissionsMap.get(actionName).getValue();
+                    }
+                }
+            }
+
+            NewPermission permissionToInsert = new NewPermission(tab.getId(), permValue1, permValue2);
+            permissionToInsert.setRoleId(newPermissions.getRoleId());
+            perm = permissionToInsert;
+            module = ModuleFactory.getNewTabPermissionModule();
+            fields = FieldFactory.getNewTabPermissionFields();
+        }
+
+        if (perm != null) {
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(fields);
+            builder.insert(FieldUtil.getAsProperties(perm));
+        }
+    }
+
+    public static NewPermission getPermissionValueForTab(WebTabContext webtab) {
+        if (webtab != null) {
+            long permission1 = 0, permission2 = 0;
+            List < Permission > permissions = webtab.getPermission();
+            if (CollectionUtils.isNotEmpty(permissions)) {
+                for (Permission permission: permissions) {
+                    if (permission.isEnabled()) {
+                        long value = getValueForActionName(permission.getActionName());
+                        if (permission.getPermissionMapping().getGroupId() == AppModulePermissionUtil.PermissionMapping.GROUP1PERMISSION.getGroupId()) {
+                            permission1 = permission1 + value;
+                        } else if (permission.getPermissionMapping().getGroupId() == AppModulePermissionUtil.PermissionMapping.GROUP2PERMISSION.getGroupId()) {
+                            permission2 = permission2 + value;
+                        }
+                    }
+                }
+            }
+            NewPermission newPermission = new NewPermission(webtab.getId(), permission1, permission2);
+            return newPermission;
+        }
+        return null;
+    }
+
+    private static long getValueForActionName(String actionName) {
+        if (actionName != null) {
+            Map < String, Permission > permissionMap = AppModulePermissionUtil.getPermissionsMap();
+            if (permissionMap.containsKey(actionName)) {
+                return permissionMap.get(actionName).getValue();
+            }
+        }
+        return 0;
     }
 }

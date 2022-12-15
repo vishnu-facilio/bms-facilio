@@ -10,8 +10,16 @@ import java.util.List;
 public class ApplicationPermissionAction extends V3Action {
 
     private Long applicationId;
-    private Long moduleId;
-    private String specialLinkName;
+    private Long tabId;
+
+    public Long getTabId() {
+        return tabId;
+    }
+
+    public void setTabId(Long tabId) {
+        this.tabId = tabId;
+    }
+
     private List<Long> ids;
 
     public List<Long> getIds() {
@@ -22,9 +30,6 @@ public class ApplicationPermissionAction extends V3Action {
         this.ids = ids;
     }
 
-    public Long getModuleId() {
-        return moduleId;
-    }
 
     public Long getApplicationId() {
         return applicationId;
@@ -32,18 +37,6 @@ public class ApplicationPermissionAction extends V3Action {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
-    }
-
-    public void setModuleId(Long moduleId) {
-        this.moduleId = moduleId;
-    }
-
-    public String getSpecialLinkName() {
-        return specialLinkName;
-    }
-
-    public void setSpecialLinkName(String specialLinkName) {
-        this.specialLinkName = specialLinkName;
     }
 
     public List<ModuleAppPermission> getModuleAppPermission() {
@@ -64,7 +57,7 @@ public class ApplicationPermissionAction extends V3Action {
 
     public String list() throws Exception {
 
-        setData(FacilioConstants.ContextNames.NewTabPermission.MODULE_APP_PERMISSION, AppModulePermissionUtil.listAppPermissions(applicationId,moduleId,specialLinkName));
+        setData(FacilioConstants.ContextNames.NewTabPermission.MODULE_APP_PERMISSION, AppModulePermissionUtil.listAppPermissions(applicationId,tabId));
 
         return SUCCESS;
     }

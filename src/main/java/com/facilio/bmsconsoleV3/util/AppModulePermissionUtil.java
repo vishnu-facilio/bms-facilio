@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.NewPermission;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
@@ -106,7 +109,7 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(50), "ENERGY_METERS", "Energy Meters", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(51), "BASELINE", "Baseline", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(52), "AGENTS", "Agents", PermissionMapping.GROUP1PERMISSION),
-            new Permission(getExponentValue(53), "CONTROLLERS", "Controllers", PermissionMapping.GROUP1PERMISSION),
+            new Permission(getExponentValue(53), "CONTROLLERS", "Controllers", PermissionMapping.GROUP1PERMISSION), //MAX_SAFE_INTEGER
             new Permission(getExponentValue(54), "LOGS", "Logs", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(55), "CONFIGURATION", "Configuration", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(56), "COMMISSIONING", "Commissioning", PermissionMapping.GROUP1PERMISSION),
@@ -116,7 +119,7 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(60), "BOOKING", "Booking", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(61), "VIEW_ASSIGNMENT", "View Assignment", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(62), "VIEW_ASSIGNMENT_DEPARTMENT", "View Assignment Department", PermissionMapping.GROUP1PERMISSION),
-            new Permission(getExponentValue(63), "ENABLE", "Enable", PermissionMapping.GROUP1PERMISSION),
+            new Permission(getExponentValue(63), "ALL", "Allow", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(1), "VIEW_ASSIGNMENT_OWN", "View Assignment Own", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(2), "VIEW_BOOKING", "View Booking", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(3), "VIEW_BOOKING_DEPARTMENT", "View Booking Department", PermissionMapping.GROUP2PERMISSION),
@@ -137,7 +140,7 @@ public class AppModulePermissionUtil {
 
         //All Module Type
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("IMPORT"), permissionMap.get("EXPORT"));
-        modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.ALL_PERMISSIONS), new ModuleAppPermission(FacilioConstants.ContextNames.ALL_PERMISSIONS, null, permissionTypes));
+        modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.ALL_PERMISSIONS), new ModuleAppPermission(permissionTypes));
 
         //Workorder
         Permission readPerm = FieldUtil.cloneBean(permissionMap.get("READ"), Permission.class);
@@ -159,6 +162,7 @@ public class AppModulePermissionUtil {
         Permission deleteTeamPerm = FieldUtil.cloneBean(permissionMap.get("DELETE_TEAM"), Permission.class);
         deleteTeamPerm.setDisplayName("Team");
 
+
         permissionTypes = Arrays.asList(
                 permissionMap.get("CREATE"),
                 permissionMap.get("IMPORT"),
@@ -170,110 +174,120 @@ public class AppModulePermissionUtil {
                 new PermissionGroup("Delete", Arrays.asList(deletePerm, deleteOwnPerm, deleteTeamPerm)),
                 permissionMap.get("EXPORT")
         );
-        modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.WORK_ORDER), new ModuleAppPermission(FacilioConstants.ContextNames.WORK_ORDER, null, permissionTypes));
-
-        permissionTypes = Arrays.asList(
-                permissionMap.get("CREATE"),
-                permissionMap.get("IMPORT"),
-                readPerm,
-                updatePerm,
-                permissionMap.get("UPDATE_CHANGE_OWNERSHIP"),
-                permissionMap.get("UPDATE_CLOSE_WORKORDER"),
-                permissionMap.get("UPDATE_TASK"),
-                deletePerm,
-                permissionMap.get("EXPORT")
-        );
+        modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.WORK_ORDER), new ModuleAppPermission(permissionTypes));
 
         //Preventive Maintenance
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("IMPORT"), permissionMap.get("EXPORT"));
-        modulePermissionGroupMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, new ModuleAppPermission(null, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, permissionTypes));
+        modulePermissionGroupMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, new ModuleAppPermission(permissionTypes));
 
         //Approval
         permissionTypes = Arrays.asList(permissionMap.get("CAN_APPROVE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.APPROVAL.name(), new ModuleAppPermission(null, WebTabContext.Type.APPROVAL.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.APPROVAL.name(), new ModuleAppPermission(permissionTypes));
 
         //Calender
         permissionTypes = Arrays.asList(permissionMap.get("CALENDAR"), permissionMap.get("PLANNER"));
-        modulePermissionGroupMap.put(WebTabContext.Type.CALENDAR.name(), new ModuleAppPermission(null, WebTabContext.Type.CALENDAR.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.CALENDAR.name(), new ModuleAppPermission(permissionTypes));
 
         //Report
         permissionTypes = Arrays.asList(permissionMap.get("VIEW"), permissionMap.get("CREATE_EDIT"), permissionMap.get("EXPORT"));
-        modulePermissionGroupMap.put(WebTabContext.Type.REPORT.name(), new ModuleAppPermission(null, WebTabContext.Type.REPORT.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.REPORT.name(), new ModuleAppPermission( permissionTypes));
 
         //Analytics
         permissionTypes = Arrays.asList(permissionMap.get("SAVE_AS_REPORT"), permissionMap.get("VIEW"));
-        modulePermissionGroupMap.put(WebTabContext.Type.ANALYTICS.name(), new ModuleAppPermission(null, WebTabContext.Type.ANALYTICS.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.ANALYTICS.name(), new ModuleAppPermission(permissionTypes));
 
         //KPI
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.KPI.name(), new ModuleAppPermission(null, WebTabContext.Type.KPI.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.KPI.name(), new ModuleAppPermission(permissionTypes));
 
         //Dashboard
-        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"), permissionMap.get("SHARE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.DASHBOARD.name(), new ModuleAppPermission(null, WebTabContext.Type.DASHBOARD.name(), permissionTypes));
+        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("EDIT"), permissionMap.get("VIEW"), permissionMap.get("DELETE"), permissionMap.get("SHARE"));
+        modulePermissionGroupMap.put(WebTabContext.Type.DASHBOARD.name(), new ModuleAppPermission(permissionTypes));
 
         //Custom
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.CUSTOM.name(), new ModuleAppPermission(null, WebTabContext.Type.CUSTOM.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.CUSTOM.name(), new ModuleAppPermission(permissionTypes));
 
         //Timeline
         permissionTypes = Arrays.asList(permissionMap.get("READ"), permissionMap.get("UPDATE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.TIMELINE.name(), new ModuleAppPermission(null, WebTabContext.Type.TIMELINE.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.TIMELINE.name(), new ModuleAppPermission(permissionTypes));
 
         //Apps
         permissionTypes = Arrays.asList(permissionMap.get("VIEW"), permissionMap.get("UPDATE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.APPS.name(), new ModuleAppPermission(null, WebTabContext.Type.APPS.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.APPS.name(), new ModuleAppPermission(permissionTypes));
 
         //Setup
         for (WebTabContext.Type type : WebTabContext.Type.values()) {
             if (type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
-                permissionTypes = Arrays.asList(permissionMap.get("ENABLE"));
-                modulePermissionGroupMap.put(type.name(), new ModuleAppPermission(null, type.name(), permissionTypes));
+                permissionTypes = Arrays.asList(permissionMap.get("ALL"));
+                modulePermissionGroupMap.put(type.name(), new ModuleAppPermission(permissionTypes));
             }
         }
 
         //Portal Overview
         permissionTypes = Arrays.asList(permissionMap.get("READ"));
-        modulePermissionGroupMap.put(WebTabContext.Type.PORTAL_OVERVIEW.name(), new ModuleAppPermission(null, WebTabContext.Type.PORTAL_OVERVIEW.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.PORTAL_OVERVIEW.name(), new ModuleAppPermission(permissionTypes));
 
         //Notification
         permissionTypes = Arrays.asList(permissionMap.get("READ"));
-        modulePermissionGroupMap.put(WebTabContext.Type.NOTIFICATION.name(), new ModuleAppPermission(null, WebTabContext.Type.NOTIFICATION.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.NOTIFICATION.name(), new ModuleAppPermission(permissionTypes));
 
         //Homepage
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.HOMEPAGE.name(), new ModuleAppPermission(null, WebTabContext.Type.HOMEPAGE.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.HOMEPAGE.name(), new ModuleAppPermission(permissionTypes));
 
         //Service catalog
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
-        modulePermissionGroupMap.put(WebTabContext.Type.SERVICE_CATALOG.name(), new ModuleAppPermission(null, WebTabContext.Type.SERVICE_CATALOG.name(), permissionTypes));
+        modulePermissionGroupMap.put(WebTabContext.Type.SERVICE_CATALOG.name(), new ModuleAppPermission(permissionTypes));
+
+
+        Permission allAssign = FieldUtil.cloneBean(permissionMap.get("VIEW_ASSIGNMENT"), Permission.class);
+        allAssign.setDisplayName("All");
+        Permission ownAssign = FieldUtil.cloneBean(permissionMap.get("VIEW_ASSIGNMENT_OWN"), Permission.class);
+        ownAssign.setDisplayName("Own");
+        Permission departmentAssign = FieldUtil.cloneBean(permissionMap.get("VIEW_ASSIGNMENT_DEPARTMENT"), Permission.class);
+        departmentAssign.setDisplayName("Department");
+        Permission allBooking = FieldUtil.cloneBean(permissionMap.get("VIEW_BOOKING"), Permission.class);
+        allBooking.setDisplayName("All");
+        Permission ownBooking = FieldUtil.cloneBean(permissionMap.get("VIEW_BOOKING_OWN"), Permission.class);
+        ownBooking.setDisplayName("Own");
+        Permission departmentBooking = FieldUtil.cloneBean(permissionMap.get("VIEW_BOOKING_DEPARTMENT"), Permission.class);
+        departmentBooking.setDisplayName("Department");
+        List<Permission> floorPlanPermissions = Arrays.asList(
+                permissionMap.get("CREATE"),
+                permissionMap.get("EDIT"),
+                permissionMap.get("VIEW"),
+                permissionMap.get("ASSIGN"),
+                permissionMap.get("BOOKING"),
+                new PermissionGroup("View Assignments", Arrays.asList(allAssign, ownAssign, departmentAssign)),
+                new PermissionGroup("View Bookings", Arrays.asList(allBooking, ownBooking, departmentBooking))
+        );
 
         //Indoor floorplan
-        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("EDIT"), permissionMap.get("VIEW"), permissionMap.get("ASSIGN"), permissionMap.get("BOOKING"), permissionMap.get("VIEW_ASSIGNMENT"), permissionMap.get("VIEW_ASSIGNMENT_OWN"), permissionMap.get("VIEW_ASSIGNMENT_DEPARTMENT"), permissionMap.get("VIEW_BOOKING"), permissionMap.get("VIEW_BOOKING_DEPARTMENT"), permissionMap.get("VIEW_BOOKING_OWN"));
-        modulePermissionGroupMap.put("indoorfloorplan", new ModuleAppPermission(null, WebTabContext.Type.INDOOR_FLOORPLAN.name(), permissionTypes));
-
+        modulePermissionGroupMap.put(WebTabContext.Type.INDOOR_FLOORPLAN.name(), new ModuleAppPermission(floorPlanPermissions));
         return modulePermissionGroupMap;
     }
 
-    private static String getMapKey(String tabOrModName){
+    private static String getMapKey(String tabOrModName) {
         return tabOrModName;
     }
-    private static String getMapKey(String tabOrModName , String appLinkName){
+
+    private static String getMapKey(String tabOrModName, String appLinkName) {
         StringBuilder builder = new StringBuilder();
         return builder.append(tabOrModName).append("_").append(appLinkName).toString();
     }
 
-    public static Map < String, Permission > getPermissionsMap() {
-        Map < String, Permission > permissionMap = new HashMap < > ();
-        for (Permission permission: permissions) {
+    public static Map<String, Permission> getPermissionsMap() {
+        Map<String, Permission> permissionMap = new HashMap<>();
+        for (Permission permission : permissions) {
             permissionMap.put(permission.getActionName(), permission);
         }
         return permissionMap;
     }
 
-    public static String getPermissionActionName(long value,PermissionMapping permissionMapping) {
-        for (Permission permission: permissions) {
-            if(permission.getValue() == value && permissionMapping.getGroupId() == permission.getPermissionMapping().getGroupId()){
+    public static String getPermissionActionName(long value, PermissionMapping permissionMapping) {
+        for (Permission permission : permissions) {
+            if (permission.getValue() == value && permissionMapping.getGroupId() == permission.getPermissionMapping().getGroupId()) {
                 return permission.getActionName();
             }
         }
@@ -281,69 +295,58 @@ public class AppModulePermissionUtil {
     }
 
     public static void addModuleAppPermission(WebTabContext webTab) throws Exception {
-        Map<String,ModuleAppPermission> moduleAppPermissionMap = getPermissionMapGroup();
+        Map<String, ModuleAppPermission> moduleAppPermissionMap = getPermissionMapGroup();
         ApplicationContext app = ApplicationApi.getApplicationForId(webTab.getApplicationId());
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        ModuleAppPermission moduleAppPermission = new ModuleAppPermission();
+        ModuleAppPermission moduleAppPermission;
         String tabOrModName = Strings.EMPTY;
-        Long moduleId = null;
-        String specialLinkName = null;
         if (webTab.getTypeEnum().getIndex() == WebTabContext.Type.MODULE.getIndex()) {
-            List < String > moduleNames = ApplicationApi.getModulesForTab(webTab.getId());
+            List<String> moduleNames = ApplicationApi.getModulesForTab(webTab.getId());
             if (CollectionUtils.isNotEmpty(webTab.getSpecialTypeModules())) {
                 moduleNames.addAll(webTab.getSpecialTypeModules());
             }
             if (CollectionUtils.isNotEmpty(moduleNames)) {
                 tabOrModName = moduleNames.get(0);
             }
-            FacilioModule module = modBean.getModule(tabOrModName);
-            if(module != null && module.getModuleId() > 0){
-                moduleId = module.getModuleId();
-            } else {
-                specialLinkName = tabOrModName;
-            }
         } else {
             tabOrModName = webTab.getTypeEnum().name();
-            specialLinkName = tabOrModName;
         }
-        if(moduleAppPermissionMap.containsKey(getMapKey(tabOrModName,app.getLinkName()))){
-            moduleAppPermission = moduleAppPermissionMap.get(getMapKey(tabOrModName,app.getLinkName()));
-        } else if(moduleAppPermissionMap.containsKey(getMapKey(tabOrModName))){
+        if (moduleAppPermissionMap.containsKey(getMapKey(tabOrModName, app.getLinkName()))) {
+            moduleAppPermission = moduleAppPermissionMap.get(getMapKey(tabOrModName, app.getLinkName()));
+        } else if (moduleAppPermissionMap.containsKey(getMapKey(tabOrModName))) {
             moduleAppPermission = moduleAppPermissionMap.get(getMapKey(tabOrModName));
-        } else if(moduleAppPermissionMap.containsKey(getMapKey(webTab.getTypeEnum().name()))){
+        } else if (moduleAppPermissionMap.containsKey(getMapKey(webTab.getTypeEnum().name()))) {
             moduleAppPermission = moduleAppPermissionMap.get(getMapKey(webTab.getTypeEnum().name()));
         } else {
             moduleAppPermission = moduleAppPermissionMap.get(getMapKey(FacilioConstants.ContextNames.ALL_PERMISSIONS));
         }
-        moduleAppPermission.setApplicationId(app.getId());
-        moduleAppPermission.setModuleId(moduleId);
-        moduleAppPermission.setSpecialLinkName(specialLinkName);
         List<Permission> permissionList = moduleAppPermission.getPermissionList();
-        if(CollectionUtils.isNotEmpty(permissionList)) {
-            for (Permission permission: permissionList) {
-                ModuleAppPermission moduleAppPermissionForPermission = getModuleAppPermissionForPermission(moduleAppPermission,permission);
+        if (CollectionUtils.isNotEmpty(permissionList)) {
+            for (Permission permission : permissionList) {
+                ModuleAppPermission moduleAppPermissionForPermission = getModuleAppPermissionForPermission(permission);
+                moduleAppPermissionForPermission.setTabId(webTab.getId());
+                moduleAppPermissionForPermission.setAppId(webTab.getApplicationId());
                 if (permission instanceof PermissionGroup) {
                     Long parentId = addParentModuleAppPermission(moduleAppPermissionForPermission);
-                    List < Permission > childPermissions = ((PermissionGroup) permission).getPermissions();
+                    List<Permission> childPermissions = ((PermissionGroup) permission).getPermissions();
                     if (CollectionUtils.isNotEmpty(childPermissions)) {
-                        for(Permission childPermission : childPermissions){
-                            ModuleAppPermissionChild moduleAppPermissionChild = getModuleAppPermissionChildForPermission(childPermission,parentId);
+                        for (Permission childPermission : childPermissions) {
+                            ModuleAppPermissionChild moduleAppPermissionChild = getModuleAppPermissionChildForPermission(childPermission, parentId);
                             addModuleAppPermissionChild(moduleAppPermissionChild);
                         }
                     }
-                }
-                else if(permission instanceof Permission){
+                } else if (permission instanceof Permission) {
                     addParentModuleAppPermission(moduleAppPermissionForPermission);
                 }
             }
         }
     }
+
     private static ModuleAppPermissionChild getModuleAppPermissionChildForPermission(Permission permission, Long parentId) {
         ModuleAppPermissionChild moduleAppPermissionChild = new ModuleAppPermissionChild();
-        if(permission != null) {
-            if(permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP1PERMISSION.getIndex()){
+        if (permission != null) {
+            if (permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP1PERMISSION.getIndex()) {
                 moduleAppPermissionChild.setChildPermission1(permission.getValue());
-            } else if(permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP2PERMISSION.getIndex()){
+            } else if (permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP2PERMISSION.getIndex()) {
                 moduleAppPermissionChild.setChildPermission2(permission.getValue());
             }
             moduleAppPermissionChild.setDisplayName(permission.getDisplayName());
@@ -353,10 +356,10 @@ public class AppModulePermissionUtil {
         return null;
     }
 
-    private static ModuleAppPermission getModuleAppPermissionForPermission(ModuleAppPermission parentPermission , Permission permission) throws Exception {
+    private static ModuleAppPermission getModuleAppPermissionForPermission(Permission permission) {
         ModuleAppPermission moduleAppPermission = new ModuleAppPermission();
-        if(permission != null) {
-            if(permission.getPermissionMapping() != null) {
+        if (permission != null) {
+            if (permission.getPermissionMapping() != null) {
                 if (permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP1PERMISSION.getIndex()) {
                     moduleAppPermission.setPermission1(permission.getValue());
                 } else if (permission.getPermissionMapping().getIndex() == AppModulePermissionUtil.PermissionMapping.GROUP2PERMISSION.getIndex()) {
@@ -364,29 +367,25 @@ public class AppModulePermissionUtil {
                 }
             }
             moduleAppPermission.setDisplayName(permission.getDisplayName());
-            moduleAppPermission.setModuleId(parentPermission.getModuleId());
-            moduleAppPermission.setModuleName(parentPermission.getModuleName());
-            moduleAppPermission.setSpecialLinkName(parentPermission.getSpecialLinkName());
-            moduleAppPermission.setApplicationId(parentPermission.getApplicationId());
             return moduleAppPermission;
         }
         return null;
     }
 
     public static List<ModuleAppPermission> addOrUpdateModuleAppPermissions(List<ModuleAppPermission> moduleAppPermissionList) throws Exception {
-        if(CollectionUtils.isNotEmpty(moduleAppPermissionList)) {
+        if (CollectionUtils.isNotEmpty(moduleAppPermissionList)) {
             for (ModuleAppPermission moduleAppPermission : moduleAppPermissionList) {
-                Long parentId = null;
-                if(moduleAppPermission.getId() > 0){
+                Long parentId;
+                if (moduleAppPermission.getId() > 0) {
                     parentId = updateParentModuleAppPermission(moduleAppPermission);
-                } else{
+                } else {
                     parentId = addParentModuleAppPermission(moduleAppPermission);
                 }
                 List<ModuleAppPermissionChild> moduleAppPermissionChildren = moduleAppPermission.getModuleAppPermissionChildren();
-                if(CollectionUtils.isNotEmpty(moduleAppPermissionChildren)){
-                    for(ModuleAppPermissionChild modulePermisssionChild : moduleAppPermissionChildren){
+                if (CollectionUtils.isNotEmpty(moduleAppPermissionChildren)) {
+                    for (ModuleAppPermissionChild modulePermisssionChild : moduleAppPermissionChildren) {
                         modulePermisssionChild.setParentId(parentId);
-                        if(modulePermisssionChild.getId() > 0){
+                        if (modulePermisssionChild.getId() > 0) {
                             updateModuleAppPermissionChild(modulePermisssionChild);
                         } else {
                             addModuleAppPermissionChild(modulePermisssionChild);
@@ -399,13 +398,13 @@ public class AppModulePermissionUtil {
     }
 
 
-    public static List<ModuleAppPermission> listAppPermissions(Long appId,Long moduleId,String specialLinkName) throws Exception {
+    public static List<ModuleAppPermission> listAppPermissions(Long appId, Long tabId) throws Exception {
 
-        List<ModuleAppPermission> moduleAppPermissionList = getModuleAppPermission( appId, moduleId, specialLinkName);
-        if(CollectionUtils.isNotEmpty(moduleAppPermissionList)) {
+        List<ModuleAppPermission> moduleAppPermissionList = getModuleAppPermission(appId, tabId);
+        if (CollectionUtils.isNotEmpty(moduleAppPermissionList)) {
             for (ModuleAppPermission moduleAppPermission : moduleAppPermissionList) {
                 List<ModuleAppPermissionChild> moduleAppPermissionChildren = getModuleAppPermissionChildren(moduleAppPermission.getId());
-                if(CollectionUtils.isNotEmpty(moduleAppPermissionChildren)){
+                if (CollectionUtils.isNotEmpty(moduleAppPermissionChildren)) {
                     moduleAppPermission.setModuleAppPermissionChildren(moduleAppPermissionChildren);
                 }
             }
@@ -415,46 +414,32 @@ public class AppModulePermissionUtil {
     }
 
     public static void deleteAppPermissions(List<Long> ids) throws Exception {
-        if(CollectionUtils.isNotEmpty(ids)) {
+        if (CollectionUtils.isNotEmpty(ids)) {
             GenericDeleteRecordBuilder deleteParentRecordBuilder = new GenericDeleteRecordBuilder()
                     .table(ModuleFactory.getModuleAppPermissionModule().getTableName())
-                    .andCondition(CriteriaAPI.getIdCondition(ids,ModuleFactory.getModuleAppPermissionModule()));
+                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getModuleAppPermissionModule()));
             deleteParentRecordBuilder.delete();
         }
     }
+
     public static void deleteAppChildPermissions(List<Long> ids) throws Exception {
-        if(CollectionUtils.isNotEmpty(ids)) {
+        if (CollectionUtils.isNotEmpty(ids)) {
             GenericDeleteRecordBuilder deleteChildRecordBuilder = new GenericDeleteRecordBuilder()
                     .table(ModuleFactory.getModuleAppPermissionChildModule().getTableName())
-                    .andCondition(CriteriaAPI.getIdCondition(ids,ModuleFactory.getModuleAppPermissionChildModule()));
+                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getModuleAppPermissionChildModule()));
             deleteChildRecordBuilder.delete();
         }
     }
 
-    private static ModuleAppPermission getModuleAppPermissionForModulePermission(ModuleAppPermission modulePermission, long applicationId) throws Exception {
-        if(modulePermission != null) {
-            ModuleAppPermission moduleAppPermission = new ModuleAppPermission();
-            moduleAppPermission.setPermission1(modulePermission.getPermission1());
-            moduleAppPermission.setPermission2(modulePermission.getPermission2());
-            moduleAppPermission.setModuleId(modulePermission.getModuleId());
-            moduleAppPermission.setDisplayName(modulePermission.getDisplayName());
-            moduleAppPermission.setSpecialLinkName(modulePermission.getSpecialLinkName());
-            moduleAppPermission.setApplicationId(applicationId);
-            moduleAppPermission.setModulePermissionParentId(modulePermission.getId());
-            return moduleAppPermission;
-        }
-        return null;
-    }
-
     private static Long addParentModuleAppPermission(ModuleAppPermission moduleAppPermission) throws Exception {
-        Map < String, Object > prop = FieldUtil.getAsProperties(moduleAppPermission);
+        Map<String, Object> prop = FieldUtil.getAsProperties(moduleAppPermission);
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getModuleAppPermissionModule().getTableName())
                 .fields(FieldFactory.moduleAppPermissionFields())
                 .addRecord(prop);
         insertBuilder.save();
-        if(prop != null){
-            if(prop.containsKey("id")){
+        if (prop != null) {
+            if (prop.containsKey("id")) {
                 return (Long) prop.get("id");
             }
         }
@@ -462,7 +447,7 @@ public class AppModulePermissionUtil {
     }
 
     public static void addModuleAppPermissionChild(ModuleAppPermissionChild moduleAppPermissionChild) throws Exception {
-        Map < String, Object > prop = FieldUtil.getAsProperties(moduleAppPermissionChild);
+        Map<String, Object> prop = FieldUtil.getAsProperties(moduleAppPermissionChild);
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getModuleAppPermissionChildModule().getTableName())
                 .fields(FieldFactory.moduleAppPermissionChildFields())
@@ -471,14 +456,14 @@ public class AppModulePermissionUtil {
     }
 
     private static Long updateParentModuleAppPermission(ModuleAppPermission moduleAppPermission) throws Exception {
-        Map < String, Object > prop = FieldUtil.getAsProperties(moduleAppPermission);
+        Map<String, Object> prop = FieldUtil.getAsProperties(moduleAppPermission);
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getModuleAppPermissionModule().getTableName())
                 .fields(FieldFactory.moduleAppPermissionFields())
-                .andCondition(CriteriaAPI.getIdCondition(moduleAppPermission.getId(),ModuleFactory.getModuleAppPermissionModule()));
+                .andCondition(CriteriaAPI.getIdCondition(moduleAppPermission.getId(), ModuleFactory.getModuleAppPermissionModule()));
         updateRecordBuilder.update(prop);
-        if(prop != null){
-            if(prop.containsKey("id")){
+        if (prop != null) {
+            if (prop.containsKey("id")) {
                 return (Long) prop.get("id");
             }
         }
@@ -486,21 +471,75 @@ public class AppModulePermissionUtil {
     }
 
     public static void updateModuleAppPermissionChild(ModuleAppPermissionChild moduleAppPermissionChild) throws Exception {
-        Map < String, Object > prop = FieldUtil.getAsProperties(moduleAppPermissionChild);
+        Map<String, Object> prop = FieldUtil.getAsProperties(moduleAppPermissionChild);
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getModuleAppPermissionChildModule().getTableName())
                 .fields(FieldFactory.moduleAppPermissionChildFields())
-                .andCondition(CriteriaAPI.getIdCondition(moduleAppPermissionChild.getId(),ModuleFactory.getModuleAppPermissionChildModule()));
+                .andCondition(CriteriaAPI.getIdCondition(moduleAppPermissionChild.getId(), ModuleFactory.getModuleAppPermissionChildModule()));
         updateRecordBuilder.update(prop);
     }
 
-    public static List < Permission > getPermissionValue(WebTabContext webtab) throws Exception {
-        return getPermissionValue(webtab, null);
+    public static List < Permission > getPermissionValue(WebTabContext webtab,Long roleId) throws Exception {
+        List<Permission> permissionList = getPermissionValue(webtab);
+        List<Permission> permissions = new ArrayList<>();
+        Role role = null;
+        if(roleId != null) {
+            role = AccountUtil.getRoleBean().getRole(roleId);
+        } else {
+            if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null) {
+                role = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentUser().getRole().getRoleId());
+                roleId = role.getRoleId();
+            }
+        }
+        NewPermission permissionValue = ApplicationApi.getPermissionsForWebTabRole(webtab.getId(),roleId);
+        boolean enabled;
+        if(CollectionUtils.isNotEmpty(permissionList)) {
+            for (Permission permission : permissionList) {
+                if (permissionValue != null) {
+                    if (permission instanceof PermissionGroup) {
+                        List<Permission> childPermissions = ((PermissionGroup) permission).getPermissions();
+                        if (CollectionUtils.isNotEmpty(childPermissions)) {
+                            for (Permission childPermission : childPermissions) {
+                                enabled = checkIfPermissionEnabled(childPermission, permissionValue);
+                                if (role != null && role.isPrevileged()) {
+                                    childPermission.setEnabled(true);
+                                } else {
+                                    childPermission.setEnabled(enabled);
+                                }
+                                permissions.add(childPermission);
+                            }
+                        }
+                    } else if (permission instanceof Permission) {
+                        enabled = checkIfPermissionEnabled(permission, permissionValue);
+                        if (role != null && role.isPrevileged()) {
+                            permission.setEnabled(true);
+                        } else {
+                            permission.setEnabled(enabled);
+                        }
+                        permissions.add(permission);
+                    }
+                }
+            }
+        }
+        return permissionList;
     }
 
-    public static List < Permission > getPermissionValue(WebTabContext webtab, String moduleName) throws Exception {
+    private static boolean checkIfPermissionEnabled(Permission permission, NewPermission permissionValue ) {
+        if (permission.getPermissionMapping().getGroupId() == PermissionMapping.GROUP1PERMISSION.getGroupId()) {
+            if((permissionValue.getPermission() & permission.getValue()) == permission.getValue()){
+                return true;
+            }
+        } else if (permission.getPermissionMapping().getGroupId() == PermissionMapping.GROUP2PERMISSION.getGroupId()) {
+            if((permissionValue.getPermission2() & permission.getValue()) == permission.getValue()){
+                return true;
+            }
+        }
+        return false;
+    }
 
-        GenericSelectRecordBuilder builder = getCriteriaForWebTabPermissions(webtab, moduleName);
+    public static List < Permission > getPermissionValue(WebTabContext webtab) throws Exception {
+
+        GenericSelectRecordBuilder builder = getCriteriaForWebTabPermissions(webtab);
 
         List < Map < String, Object >> props = builder.get();
         List < Permission > permissions = new ArrayList <>();
@@ -566,41 +605,12 @@ public class AppModulePermissionUtil {
         return null;
     }
 
-    private static GenericSelectRecordBuilder getCriteriaForWebTabPermissions(WebTabContext webtab, String moduleName) throws Exception {
-        long appId = webtab.getApplicationId();
+    private static GenericSelectRecordBuilder getCriteriaForWebTabPermissions(WebTabContext webtab) throws Exception {
         Map < String, FacilioField > fieldsMap = FieldFactory.getAsMap(FieldFactory.moduleAppPermissionFields());
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(ModuleFactory.getModuleAppPermissionModule().getTableName()).select(FieldFactory.moduleAppPermissionFields()).andCondition(CriteriaAPI.getCondition(fieldsMap.get("applicationId"), Collections.singletonList(appId), NumberOperators.EQUALS));
-
-        if (webtab.getTypeEnum().getIndex() == WebTabContext.Type.MODULE.getIndex()) {
-            List < String > modulesNames = ApplicationApi.getModulesForTab(webtab.getId());
-            if (CollectionUtils.isEmpty(modulesNames)) {
-                modulesNames = new ArrayList < > ();
-            }
-            List < Long > modIds = new ArrayList < > ();
-            if (moduleName != null && !moduleName.equals(FacilioConstants.ContextNames.ALL_PERMISSIONS)) {
-                modulesNames.add(moduleName);
-            }
-            if (CollectionUtils.isNotEmpty(modulesNames)) {
-                for (String modName: modulesNames) {
-                    FacilioModule module = modBean.getModule(modName);
-                    if (module != null && module.getModuleId() > 0) {
-                        modIds.add(module.getModuleId());
-                    }
-                }
-            }
-            if (CollectionUtils.isNotEmpty(modIds)) {
-                builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), StringUtils.join(modIds, ","), NumberOperators.EQUALS));
-            } else if (moduleName != null && !moduleName.equals(FacilioConstants.ContextNames.ALL_PERMISSIONS)) {
-                builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("specialLinkName"), moduleName, StringOperators.IS));
-            }
-            if (CollectionUtils.isNotEmpty(webtab.getSpecialTypeModules())) {
-                builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("specialLinkName"), StringUtils.join(webtab.getSpecialTypeModules(), ","), StringOperators.IS));
-            }
-        } else {
-            builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("specialLinkName"), StringUtils.join(webtab.getTypeEnum().name(), ","), StringOperators.IS));
-        }
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getModuleAppPermissionModule().getTableName())
+                .select(FieldFactory.moduleAppPermissionFields())
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("tabId"), Collections.singletonList(webtab.getId()), NumberOperators.EQUALS));
         return builder;
     }
 
@@ -615,7 +625,7 @@ public class AppModulePermissionUtil {
         return null;
     }
 
-    public static List < ModuleAppPermission > getModuleAppPermission(Long appId,Long moduleId,String specialLinkName) throws Exception {
+    public static List < ModuleAppPermission > getModuleAppPermission(Long appId,Long tabId) throws Exception {
         if(appId == null){
             throw new IllegalArgumentException("App cannot be null");
         }
@@ -623,17 +633,12 @@ public class AppModulePermissionUtil {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getModuleAppPermissionModule().getTableName())
                 .select(FieldFactory.moduleAppPermissionFields())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("applicationId"), Collections.singletonList(appId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), Collections.singletonList(appId), NumberOperators.EQUALS));
 
-        if(moduleId != null){
+        if(tabId != null){
             builder
-                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), Collections.singletonList(moduleId), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("tabId"), Collections.singletonList(tabId), NumberOperators.EQUALS));
         }
-        if(specialLinkName != null){
-            builder
-                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("specialLinkName"), specialLinkName, StringOperators.IS));
-        }
-
         List < Map < String, Object >> props = builder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List < ModuleAppPermission > moduleAppPermission = FieldUtil.getAsBeanListFromMapList(props, ModuleAppPermission.class);
@@ -642,18 +647,16 @@ public class AppModulePermissionUtil {
         return null;
     }
 
-    public static PermissionGroup getPermissionGroup(WebTabContext webTab, String moduleName, String actionName) throws Exception {
-        List < Permission > permissions = getPermissionValue(webTab, moduleName);
-        if (permissions != null) {
-            for (Permission p: permissions) {
-                if (p instanceof PermissionGroup) {
-                    if (((PermissionGroup) p).getDisplayName().equalsIgnoreCase(actionName)) {
-                        return (PermissionGroup) p;
-                    }
-                }
+
+    public static List<String> getPermissionsForValues(long permission1,long permission2){
+        List<String> permissionList = new ArrayList<>();
+        for (Permission permission: permissions) {
+            if((permission.getValue() & permission1) == permission.getValue() && PermissionMapping.GROUP1PERMISSION.getGroupId() == permission.getPermissionMapping().getGroupId()){
+                permissionList.add(permission.getActionName());
+            } else if((permission.getValue() & permission2) == permission.getValue() && PermissionMapping.GROUP2PERMISSION.getGroupId() == permission.getPermissionMapping().getGroupId()){
+                permissionList.add(permission.getActionName());
             }
         }
-        return null;
+        return permissionList;
     }
-
 }

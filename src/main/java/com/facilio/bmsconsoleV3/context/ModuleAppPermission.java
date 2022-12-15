@@ -9,12 +9,21 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class ModuleAppPermission{
+public class ModuleAppPermission {
     private long id = -1L;
 
     private Long moduleId;
-    private String moduleName;
-    private String specialLinkName;
+    private Long tabId;
+    private Long appId;
+
+    public Long getAppId() {
+        return appId;
+    }
+
+    public void setAppId(Long appId) {
+        this.appId = appId;
+    }
+
     private long permission1;
     private long permission2;
     private AccountUtil.FeatureLicense featureLicense;
@@ -45,20 +54,8 @@ public class ModuleAppPermission{
         this.featureLicense = featureLicense;
     }
 
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
-    }
-    private long applicationId;
     private List<String> applicationLinkNames;
     private List<ModuleAppPermissionChild> moduleAppPermissionChildren;
-
-    public long getModulePermissionParentId() {
-        return modulePermissionParentId;
-    }
 
     public List<ModuleAppPermissionChild> getModuleAppPermissionChildren() {
         return moduleAppPermissionChildren;
@@ -68,18 +65,6 @@ public class ModuleAppPermission{
         this.moduleAppPermissionChildren = moduleAppPermissionChildren;
     }
 
-    public void setModulePermissionParentId(long modulePermissionParentId) {
-        this.modulePermissionParentId = modulePermissionParentId;
-    }
-
-    private long modulePermissionParentId;
-    public long getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(long applicationId) {
-        this.applicationId = applicationId;
-    }
     public List<String> getApplications() {
         return applicationLinkNames;
     }
@@ -106,12 +91,12 @@ public class ModuleAppPermission{
         this.moduleId = moduleId;
     }
 
-    public String getSpecialLinkName() {
-        return specialLinkName;
+    public Long getTabId() {
+        return tabId;
     }
 
-    public void setSpecialLinkName(String specialLinkName) {
-        this.specialLinkName = specialLinkName;
+    public void setTabId(Long tabId) {
+        this.tabId = tabId;
     }
 
     public long getPermission1() {
@@ -130,23 +115,21 @@ public class ModuleAppPermission{
         this.permission2 = permission2;
     }
 
-    public ModuleAppPermission(){}
+    public ModuleAppPermission() {
+    }
 
-    public ModuleAppPermission(String moduleName, String specialLinkName, List<Permission> permissionList,List<String> applicationLinkNames) throws Exception {
-        new ModuleAppPermission(moduleName,specialLinkName,permissionList);
+    public ModuleAppPermission(List<Permission> permissionList) {
+        this.permissionList = permissionList;
+    }
+
+    public ModuleAppPermission(Long tabId, List<Permission> permissionList, List<String> applicationLinkNames) throws Exception {
+        new ModuleAppPermission(tabId, permissionList);
         this.applicationLinkNames = applicationLinkNames;
     }
 
-    public ModuleAppPermission(String moduleName, String specialLinkName, List<Permission> permissionList) throws Exception {
-        this.moduleName = moduleName;
-        this.specialLinkName = specialLinkName;
-        if (StringUtils.isNotEmpty(moduleName)) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(moduleName);
-            if (module != null) {
-                this.moduleId = modBean.getModule(moduleName).getModuleId();
-            }
-        }
+    public ModuleAppPermission(Long tabId, List<Permission> permissionList) throws Exception {
+
+        this.tabId = tabId;
         this.permissionList = permissionList;
     }
 }

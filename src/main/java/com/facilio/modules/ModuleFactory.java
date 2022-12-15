@@ -4253,8 +4253,13 @@ public class ModuleFactory {
 	}
 
 	public static FacilioModule getNewPermissionModule() throws Exception {
-		if(V3PermissionUtil.isFeatureEnabled()){
-			return getNewTabPermissionModule();
+		return getNewPermissionModule(false);
+	}
+	public static FacilioModule getNewPermissionModule(boolean skipLicence) throws Exception {
+		if(!skipLicence) {
+			if (V3PermissionUtil.isFeatureEnabled()) {
+				return getNewTabPermissionModule();
+			}
 		}
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);

@@ -68,6 +68,16 @@ public class ApplicationAction extends FacilioAction {
 
 	private Boolean userStatus;
 
+	private Long roleId;
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
 	public Boolean getUserStatus() {
 		return userStatus;	}
 
@@ -293,6 +303,7 @@ public class ApplicationAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.LAYOUT_APP_TYPE, appName);
 		context.put(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS, fetchAllLayouts);
 		context.put(FacilioConstants.ContextNames.CONSIDER_ROLE, considerRole);
+		context.put(FacilioConstants.ContextNames.ROLE_ID, roleId);
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		if(request.getAttribute("facilio.app.name") != null) {

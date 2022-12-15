@@ -360,17 +360,12 @@ public class PermissionUtil {
 					webTabContext = ApplicationApi.getWebTab(tabId);
 					if (webTabContext != null) {
 						boolean hasAccess = false;
-						if(V3PermissionUtil.isFeatureEnabled()){
-							long userPermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getId());
-						}
 
 						NewPermission newPermission = ApplicationApi.getRolesPermissionForTab(tabId, role.getId());
-						int tabType = webTabContext.getType();
-						String moduleNameToFetch = moduleName;
 //						if (moduleNameToFetch.equals("planned")) {
 //							moduleNameToFetch = "workorder";
 //						}
-						List<PermissionGroup> permissionGroups = V3PermissionUtil.getPermissionGroups(webTabContext, moduleNameToFetch);
+						List<PermissionGroup> permissionGroups = V3PermissionUtil.getPermissionGroups(webTabContext);
 						if(CollectionUtils.isNotEmpty(permissionGroups)) {
 							for(PermissionGroup permissionGroup : permissionGroups) {
 								if (permissionGroup != null) {

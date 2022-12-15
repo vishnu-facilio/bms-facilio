@@ -27,6 +27,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
         long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
         boolean filterSetUpTab=(boolean)context.get((FacilioConstants.ContextNames.FILTER_SET_UP_TAP));
         boolean fetchSetupTabs=(boolean)context.get((FacilioConstants.ContextNames.FETCH_SETUP_TABS));
+        Long roleId=(Long) context.get((FacilioConstants.ContextNames.ROLE_ID));
 
         ApplicationContext application = null;
         if (appId <= 0) {
@@ -68,7 +69,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
                         }
                     }
                     if(V3PermissionUtil.isFeatureEnabled()){
-                        webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,moduleName));
+                        webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
                     } else{
                         webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
                     }
@@ -76,7 +77,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
 
                     if (webtab.getTypeEnum() == WebTabContext.Type.SETTINGS) {
                         if(V3PermissionUtil.isFeatureEnabled()){
-                            webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab));
+                            webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
                         } else {
                             webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
                         }

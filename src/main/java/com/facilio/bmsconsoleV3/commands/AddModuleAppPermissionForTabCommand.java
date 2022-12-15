@@ -14,17 +14,18 @@ import java.util.List;
 public class AddModuleAppPermissionForTabCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        WebTabContext webtab = (WebTabContext) context.get(FacilioConstants.ContextNames.WEB_TAB);
-        long tabId = (long) context.get(FacilioConstants.ContextNames.WEB_TAB_ID);
-        if(webtab == null){
-            webtab = ApplicationApi.getWebTab(tabId,true);
-        }
-        if(webtab != null) {
-            List<Permission> permissions = AppModulePermissionUtil.getPermissionValue(webtab);
-            if (CollectionUtils.isEmpty(permissions)) {
-                AppModulePermissionUtil.addModuleAppPermission(webtab);
-            }
-        }
+        //Until table migration is done -- for backward compatability
+//        WebTabContext webtab = (WebTabContext) context.get(FacilioConstants.ContextNames.WEB_TAB);
+//        long tabId = (long) context.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+//        if(webtab == null){
+//            webtab = ApplicationApi.getWebTab(tabId,true);
+//        }
+//        if(webtab != null) {
+//            List<Permission> permissions = AppModulePermissionUtil.getPermissionValue(webtab);
+//            if (CollectionUtils.isEmpty(permissions)) {
+//                AppModulePermissionUtil.addModuleAppPermission(webtab);
+//            }
+//        }
         return false;
     }
 }

@@ -38,7 +38,8 @@ public class GetApplicationDetails extends FacilioCommand {
 		long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		String  appName  = (String)context.get(FacilioConstants.ContextNames.LAYOUT_APP_TYPE);
 		Boolean fetchAllLayouts  = (Boolean)context.get(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS);
-		Boolean considerRole  = (Boolean)context.get(FacilioConstants.ContextNames.CONSIDER_ROLE);
+		Boolean considerRole  = (Boolean) context.get(FacilioConstants.ContextNames.CONSIDER_ROLE);
+		Long roleId  = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
 
 		ApplicationContext application = null;
 		if (appId <= 0) {
@@ -97,13 +98,13 @@ public class GetApplicationDetails extends FacilioCommand {
 										}
 									}
 									if(V3PermissionUtil.isFeatureEnabled()){
-										webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,moduleName));
+										webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
 									}else{
 										webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
 									}
 									if (webtab.getTypeEnum() == Type.SETTINGS) {
 										if(V3PermissionUtil.isFeatureEnabled()){
-											webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,moduleName));
+											webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
 										}else{
 											webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
 										}
