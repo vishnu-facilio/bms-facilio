@@ -1165,7 +1165,15 @@ public class V3DashboardAPIHandler {
             if (widget_meta != null && widget_meta.containsKey("moduleName")) {
                 String moduleName = (String) widget_meta.get("moduleName");
                 if (recordId != null) {
-                    Map<String, Object> value_placeholders_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
+                    Map<String, Object> value_placeholders_map = null;
+                    try{
+                       Long newRecordId= Long.parseLong(recordId);
+                       value_placeholders_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, newRecordId);
+                    }catch(Exception e){
+                        value_placeholders_map = new HashMap<>();
+                    }
+                    value_placeholders_map = value_placeholders_map != null ? value_placeholders_map : new HashMap<>();
+//                    Map<String, Object> value_placeholders_map = V3DashboardAPIHandler.fetchTriggerWidgetSuppliments(moduleName, Long.parseLong(recordId));
                     if (value_arr != null && value_arr.size() > 1) {
                         StringBuilder sb = new StringBuilder();
                         for (Object val : value_arr) {

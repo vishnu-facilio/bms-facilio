@@ -10417,11 +10417,13 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("dashboardId","DASHBOARD_ID", module,FieldType.NUMBER));
         fields.add(getField("dashboardTabId","DASHBOARD_TAB_ID", module,FieldType.NUMBER));
         fields.add(getField("name","NAME", module,FieldType.STRING));
-        fields.add(getField("desc","DESCRIPTION", module,FieldType.STRING));
+        fields.add(getField("desc","RULE_DESCRIPTION", module,FieldType.STRING));
         fields.add(getField("status","STATUS", module,FieldType.BOOLEAN));
         fields.add(getField("trigger_type","TRIGGER_TYPE", module,FieldType.NUMBER));
         fields.add(getField("created_by","CREATED_BY", module,FieldType.NUMBER));
         fields.add(getField("created_time","CREATED_TIME", module,FieldType.NUMBER));
+        fields.add(getField("modified_by","MODIFIED_BY", module,FieldType.NUMBER));
+        fields.add(getField("modified_time","MODIFIED_TIME", module,FieldType.NUMBER));
         return fields;
     }
 

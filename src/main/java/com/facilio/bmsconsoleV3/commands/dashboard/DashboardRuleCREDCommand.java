@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardRuleContext;
 import com.facilio.command.FacilioCommand;
@@ -17,6 +18,8 @@ public class DashboardRuleCREDCommand extends FacilioCommand {
         Boolean isGet = (Boolean) context.get("isGet");
         if(isCreate != null && isCreate && dashboard_rule != null)
         {
+            dashboard_rule.setCreated_by(AccountUtil.getCurrentUser().getId());
+            dashboard_rule.setCreated_time(System.currentTimeMillis());
             V3DashboardAPIHandler.createDashboardRule(dashboard_rule);
             V3DashboardAPIHandler.addTriggerWidgetMapping(dashboard_rule.getId(), dashboard_rule.getTrigger_widgets());
             V3DashboardAPIHandler.addDashboardRuleActions(dashboard_rule.getId(), dashboard_rule.getActions());
@@ -27,6 +30,8 @@ public class DashboardRuleCREDCommand extends FacilioCommand {
             if(old_dashboard_rule != null)
             {
                 V3DashboardAPIHandler.deleteOldDashboardRuleData(old_dashboard_rule);
+                dashboard_rule.setModified_by(AccountUtil.getCurrentUser().getId());
+                dashboard_rule.setModified_time(System.currentTimeMillis());
                 V3DashboardAPIHandler.updateDashboardRule(dashboard_rule);
                 V3DashboardAPIHandler.addTriggerWidgetMapping(dashboard_rule.getId(), dashboard_rule.getTrigger_widgets());
                 V3DashboardAPIHandler.addDashboardRuleActions(dashboard_rule.getId(), dashboard_rule.getActions());
