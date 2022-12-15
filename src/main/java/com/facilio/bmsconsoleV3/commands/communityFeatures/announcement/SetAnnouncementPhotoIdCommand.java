@@ -19,8 +19,12 @@ public class SetAnnouncementPhotoIdCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<AnnouncementContext> announcements = recordMap.get(moduleName);
+
         if(CollectionUtils.isNotEmpty(announcements)) {
             for(AnnouncementContext announcement : announcements){
+                if(announcement.getPhotoId() != null){
+                    continue;
+                }
                 if(context.containsKey("rawInput")){
                     Map<String,Object> rawInput = (Map<String,Object>)context.get("rawInput");
                     if(rawInput.containsKey("announcementattachments")){

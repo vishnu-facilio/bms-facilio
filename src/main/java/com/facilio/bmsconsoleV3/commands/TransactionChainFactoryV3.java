@@ -990,6 +990,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidatePublishAnnouncementActionCommandV3());
         c.addCommand(new ValidateCancelAnnouncementActionCommandV3());
+        c.addCommand(new SetAnnouncementPhotoIdCommand());
         c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
         return c;
 
