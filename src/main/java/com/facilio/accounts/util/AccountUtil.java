@@ -24,6 +24,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -386,7 +387,8 @@ public class AccountUtil {
     }
 
 	private static Map<String, FeatureLicense> moduleVsLicense;
-	
+
+	@Getter
 	public enum LicenseMapping
 	{
 		GROUP1LICENSE(1,FacilioConstants.LicenseKeys.LICENSE1),
@@ -395,25 +397,9 @@ public class AccountUtil {
 		private int groupId;
 		private String licenseKey;
 
-		public String getLicenseKey() {
-			return licenseKey;
-		}
-
-		public void setLicenseKey(String licenseKey) {
-			this.licenseKey = licenseKey;
-		}
-
 		LicenseMapping(int groupId, String licenseKey) {
 			this.groupId = groupId;
 			this.licenseKey = licenseKey;
-		}
-
-//		LicenseMapping(int i) {
-//			this.groupId=i;
-//		}
-
-		public int getGroupId() {
-			return groupId;
 		}
 	}
 	
