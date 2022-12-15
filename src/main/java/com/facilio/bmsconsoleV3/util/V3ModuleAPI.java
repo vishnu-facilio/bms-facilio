@@ -96,7 +96,8 @@ public class V3ModuleAPI {
         ROOMS(FacilioConstants.ContextNames.ROOMS,Arrays.asList(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         CLIENT(FacilioConstants.ContextNames.CLIENT,Arrays.asList()),
         JOB_PLAN(FacilioConstants.ContextNames.JOB_PLAN,Arrays.asList()),
-        PLANNEDMAINTENANCE(ContextNames.PLANNEDMAINTENANCE,Arrays.asList());
+        PLANNEDMAINTENANCE(ContextNames.PLANNEDMAINTENANCE,Arrays.asList()),
+        RULES(FacilioConstants.ReadingRules.NEW_READING_RULE, Arrays.asList());
 
         private String moduleName;
         private List<String> applicationLinkNames;

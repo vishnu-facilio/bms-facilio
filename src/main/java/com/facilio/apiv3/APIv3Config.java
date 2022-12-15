@@ -2273,7 +2273,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<V3Config> getNewReadingAlarm() {
-        return () -> new V3Config(ReadingAlarm.class, null)
+        return () -> new V3Config(ReadingAlarm.class, new ModuleCustomFieldCount15())
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
@@ -2283,6 +2283,18 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.READING_EVENT)
+    public static Supplier<V3Config> getReadingEvent() {
+        return () -> new V3Config(ReadingEventContext.class, new ModuleCustomFieldCount15())
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE)
+    public static Supplier<V3Config> getReadingAlarmOccurrence() {
+        return () -> new V3Config(ReadingAlarmOccurrenceContext.class, new ModuleCustomFieldCount15())
                 .build();
     }
 
