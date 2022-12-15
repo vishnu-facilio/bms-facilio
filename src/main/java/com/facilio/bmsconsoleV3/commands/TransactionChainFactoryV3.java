@@ -999,6 +999,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CloneAnnouncementCommandV3());
         c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new SetAnnouncementPhotoIdCommand());
         // c.addCommand(new CheckForSharingInfoCommandV3());
         c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
         return c;

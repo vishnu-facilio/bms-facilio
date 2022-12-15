@@ -12,6 +12,7 @@ public class AnnouncementContext extends V3Context {
     private String description;
     private String longDescription;
     private Long expiryDate;
+    private Long photoId;
     private Integer category;
     private Boolean isPublished;
     private Boolean isCancelled;
@@ -95,6 +96,14 @@ public class AnnouncementContext extends V3Context {
 
     public void setReadCount(Long readCount) {
         this.readCount = readCount;
+    }
+
+    public Long getPhotoId() {
+        return photoId;
+    }
+
+    public void setPhotoId(Long photoId) {
+        this.photoId = photoId;
     }
 
     private List<AudienceContext> audience;
