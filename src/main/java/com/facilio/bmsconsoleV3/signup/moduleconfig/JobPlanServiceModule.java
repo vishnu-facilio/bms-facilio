@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CustomPageWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -20,47 +21,51 @@ import com.facilio.util.SummaryWidgetUtil;
 
 import java.util.*;
 
-public class WorkOrderItemsModule extends BaseModuleConfig{
-    public WorkOrderItemsModule() throws Exception{
-        setModuleName(FacilioConstants.ContextNames.WORKORDER_ITEMS);
+public class JobPlanServiceModule extends BaseModuleConfig {
+
+    public JobPlanServiceModule() {
+        setModuleName(FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
     }
 
-
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
         int order = 1;
-        ArrayList<FacilioView> workOrderItems = new ArrayList<FacilioView>();
-        workOrderItems.add(getAllWorkOrderItems().setOrder(order++));
-        workOrderItems.add(getAllWorkOrderItemsDetailsView().setOrder(order++));
+        ArrayList<FacilioView> JobPlanServicesViews = new ArrayList<FacilioView>();
+        JobPlanServicesViews.add(getAllJobPlanServicesViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", getModuleName());
-        groupDetails.put("views", workOrderItems);
+        groupDetails.put("views", JobPlanServicesViews);
         groupVsViews.add(groupDetails);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        groupDetails.put("appLinkNames", appLinkNames);
 
         return groupVsViews;
     }
 
-    private static FacilioView getAllWorkOrderItems() {
-
+    private static FacilioView getAllJobPlanServicesViews() {
         FacilioField createdTime = new FacilioField();
         createdTime.setName("sysCreatedTime");
         createdTime.setDataType(FieldType.NUMBER);
         createdTime.setColumnName("SYS_CREATED_TIME");
-        createdTime.setModule(ModuleFactory.getWorkOrderItemsModule());
+        createdTime.setModule(ModuleFactory.getJobPlanServiceModule());
         SortField sortField = new SortField(createdTime, false);
 
-        FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Work Order Items");
-        allView.setModuleName(workOrderItemsModule.getName());
+        allView.setDisplayName("All Job Plan Services");
+        FacilioModule jobPlanServiceModule = ModuleFactory.getJobPlanServiceModule();
+        allView.setModuleName(jobPlanServiceModule.getName());
         allView.setSortFields(Collections.singletonList(sortField));
+        allView.setFields(getAllViewColumns());
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
@@ -69,15 +74,42 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
 
         return allView;
     }
-    private static FacilioView getAllWorkOrderItemsDetailsView() {
-        FacilioModule workOrderItemsModule = ModuleFactory.getWorkOrderItemsModule();
 
-        FacilioView detailsView = new FacilioView();
-        detailsView.setName("details");
-        detailsView.setDisplayName("Work Order Items Details");
-        detailsView.setModuleName(workOrderItemsModule.getName());
+    private static List<ViewField> getAllViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("service","Service"));
+        columns.add(new ViewField("description","Description","service"));
+        columns.add(new ViewField("quantity","Quantity"));
+        columns.add(new ViewField("duration","Duration"));
+        return columns;
+    }
 
-        return detailsView;
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule jobPlanServiceModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+
+        FacilioForm jobPlanServiceForm = new FacilioForm();
+        jobPlanServiceForm.setDisplayName("New Job Plan Service");
+        jobPlanServiceForm.setName("default_jobPlanService_web");
+        jobPlanServiceForm.setModule(jobPlanServiceModule);
+        jobPlanServiceForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        jobPlanServiceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+
+        int seqNum = 0;
+        List<FormField> jobPlanServiceFormFields = new ArrayList<>();
+        jobPlanServiceFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "service", ++seqNum,1));
+        jobPlanServiceFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, ++seqNum, 1));
+        jobPlanServiceFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.TEXTBOX, "Duration", FormField.Required.OPTIONAL, ++seqNum, 1));
+
+        FormSection section = new FormSection("Default", 1, jobPlanServiceFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        jobPlanServiceForm.setSections(Collections.singletonList(section));
+        jobPlanServiceForm.setIsSystemForm(true);
+        jobPlanServiceForm.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(jobPlanServiceForm);
     }
 
     @Override
@@ -89,11 +121,11 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
 
         for(String appLinkName: appLinkNamesForSummaryWidget) {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule workOrderItemModule = moduleBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-            FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WORKORDER_ITEMS);
-            FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WORKORDER_ITEMS);
-            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WORKORDER_ITEMS);
-            FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WORKORDER_ITEMS);
+            FacilioModule jobPlanServicesModule = moduleBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+            FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+            FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+            FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
 
             CustomPageWidget pageWidget1 = new CustomPageWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
@@ -146,41 +178,13 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
             List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
             widgetGroupList.add(widgetGroup1);
 
-            pageWidget1.setName("workorderItemsWidget");
-            pageWidget1.setDisplayName("Work Order Items Widget");
-            pageWidget1.setModuleId(workOrderItemModule.getModuleId());
+            pageWidget1.setName("jobPlanServicesWidget");
+            pageWidget1.setDisplayName("Job Plan Tools Widget");
+            pageWidget1.setModuleId(jobPlanServicesModule.getModuleId());
             pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(appLinkName));
             pageWidget1.setGroups(widgetGroupList);
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
         }
-    }
-
-    @Override
-    public List<FacilioForm> getModuleForms() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule workOrderItemsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-
-        FacilioForm workOrderItemForm = new FacilioForm();
-        workOrderItemForm.setDisplayName("New Work Order Item");
-        workOrderItemForm.setName("default_workorderItem_web");
-        workOrderItemForm.setModule(workOrderItemsModule);
-        workOrderItemForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        workOrderItemForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-
-        int seqNum = 0;
-        List<FormField> workOrderItemFormFields = new ArrayList<>();
-        workOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum, 1));
-        workOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1));
-        workOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
-        workOrderItemFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.OPTIONAL, "ticket", ++seqNum, 1));
-
-        FormSection section = new FormSection("Default", 1, workOrderItemFormFields, false);
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        workOrderItemForm.setSections(Collections.singletonList(section));
-        workOrderItemForm.setIsSystemForm(true);
-        workOrderItemForm.setType(FacilioForm.Type.FORM);
-
-        return Collections.singletonList(workOrderItemForm);
     }
 }

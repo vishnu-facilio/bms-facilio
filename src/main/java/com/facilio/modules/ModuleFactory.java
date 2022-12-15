@@ -153,6 +153,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.WO_PLANNED_SERVICES, getWorkOrderPlannedServicesModule());
 		moduleMap.put(ContextNames.WORKORDER_ITEMS,getWorkOrderItemsModule());
 		moduleMap.put(ContextNames.WORKORDER_TOOLS,getWorkOrderToolsModule());
+		moduleMap.put(ContextNames.INVENTORY_RESERVATION,getInventoryReservationModule());
 		moduleMap.put(ContextNames.WO_SERVICE,getWorkOrderServiceModule());
 		moduleMap.put("customPageWidget", getCustomPageWidgetModule());
 		moduleMap.put("customWidgetGroup", getSummaryWidgetGroupModule());
@@ -3083,6 +3084,34 @@ public class ModuleFactory {
 		workOrderServiceModule.setDisplayName("Work Order Service");
 		workOrderServiceModule.setTableName("Workorder_service");
 		return workOrderServiceModule;
+	}
+	public static FacilioModule getInventoryReservationModule() {
+		FacilioModule inventoryReservationModule = new FacilioModule();
+		inventoryReservationModule.setName(ContextNames.INVENTORY_RESERVATION);
+		inventoryReservationModule.setDisplayName("Inventory Reservation");
+		inventoryReservationModule.setTableName("Inventory_Reservation");
+		return inventoryReservationModule;
+	}
+	public static FacilioModule getJobPlanItemsModule() {
+		FacilioModule jobPlanItemsModule = new FacilioModule();
+		jobPlanItemsModule.setName(ContextNames.JOB_PLAN_ITEMS);
+		jobPlanItemsModule.setDisplayName("Job Plan Items");
+		jobPlanItemsModule.setTableName("Job_Plan_Items");
+		return jobPlanItemsModule;
+	}
+	public static FacilioModule getJobPlanToolsModule() {
+		FacilioModule jobPlanToolsModule = new FacilioModule();
+		jobPlanToolsModule.setName(ContextNames.JOB_PLAN_TOOLS);
+		jobPlanToolsModule.setDisplayName("Job Plan Tools");
+		jobPlanToolsModule.setTableName("Job_Plan_Tools");
+		return jobPlanToolsModule;
+	}
+	public static FacilioModule getJobPlanServiceModule() {
+		FacilioModule jobPlanServiceModule = new FacilioModule();
+		jobPlanServiceModule.setName(ContextNames.JOB_PLAN_SERVICES);
+		jobPlanServiceModule.setDisplayName("Job Plan Services");
+		jobPlanServiceModule.setTableName("Job_Plan_Services");
+		return jobPlanServiceModule;
 	}
 	public static FacilioModule getVendorsModule() {
 		FacilioModule inventoryModule = new FacilioModule();

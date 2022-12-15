@@ -36,8 +36,11 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
                     Long workOrderPlannedItemId = workOrderItem.getWorkOrderPlannedItem().getId();
                     Double woQuantity = workOrderItem.getQuantity();
                     InventoryReservationContext reservation = getReservationRecord(workOrderPlannedItemId);
-                    if(woQuantity > reservation.getReservedQuantity()){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity is greater than reserved quantity");
+                    if(reservation.getReservationStatusEnum().equals(InventoryReservationContext.InventoryReservationStatus.ISSUED)){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected reserved item is fully issued");
+                    }
+                    if(woQuantity > reservation.getBalanceReservedQuantity()){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity is greater than balance reserved quantity");
                     }
                     else{
                         Double balanceReservedQuantity = reservation.getBalanceReservedQuantity();

@@ -14,13 +14,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class V3ItemsApi {
     public static Map<Long, V3ItemTypesContext> getItemTypesMap(long id) throws Exception {
@@ -226,10 +224,18 @@ public class V3ItemsApi {
         FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
         List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
         Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
+
+        Collection<SupplementRecord> supplementFields = new ArrayList<>();
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        supplementFields.add((LookupField) fieldsMap.get("itemType"));
+        supplementFields.add((LookupField) fieldsMap.get("storeRoom"));
+
         SelectRecordsBuilder<V3ItemContext> itemselectBuilder = new SelectRecordsBuilder<V3ItemContext>().select(itemFields)
                 .table(itemModule.getTableName()).moduleName(itemModule.getName()).beanClass(V3ItemContext.class)
                 .andCondition(CriteriaAPI.getCondition(itemFieldMap.get("storeRoom"), String.valueOf(storeroom.getId()),
-                        NumberOperators.EQUALS));
+                        NumberOperators.EQUALS))
+                .fetchSupplements(supplementFields);
 
         List<V3ItemContext> items = itemselectBuilder.get();
         if (items != null && !items.isEmpty()) {

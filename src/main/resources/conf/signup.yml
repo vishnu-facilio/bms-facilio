@@ -173,6 +173,10 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
 
   #Adding System Views and Forms
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.InventoryReservationModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.JobPlanItemsModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.JobPlanToolsModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.JobPlanServiceModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LocationModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BaseSpaceModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceCategoryModule

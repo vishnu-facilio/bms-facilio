@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
@@ -302,20 +303,49 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += 7;
     }
 
-    private static void addActualsTab(Page page){
+    private static void addActualsTab(Page page) {
         Page.Tab actualsTab = page.new Tab("Actuals");
         page.addTab(actualsTab);
 
         Page.Section actualsSection = page.new Section();
         actualsTab.addSection(actualsSection);
 
-        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
-        actualsCostWidget.addToLayoutParams(actualsSection,4,8);
-        actualsSection.addWidget(actualsCostWidget);
 
-        PageWidget actualsWidget = new PageWidget(PageWidget.WidgetType.ACTUALS);
-        actualsWidget.addToLayoutParams(actualsSection,20,15);
-        actualsSection.addWidget(actualsWidget);
+        PageWidget actualsPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        actualsPageWidgetGroup.addToLayoutParams(actualsSection,18,12);
+        actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        actualsSection.addWidget(actualsPageWidgetGroup);
+
+        PageWidget itemsWidget = new PageWidget();
+        itemsWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_ITEMS);
+        actualsPageWidgetGroup.addToWidget(itemsWidget);
+        itemsWidget.setName("Items");
+        itemsWidget.setTitle("Item");
+        JSONObject itemsRelatedList = new JSONObject();
+        itemsRelatedList.put("summaryWidgetName","workorderItemsWidget");
+        itemsWidget.setRelatedList(itemsRelatedList);
+
+        PageWidget toolsWidget = new PageWidget();
+        toolsWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_TOOLS);
+        actualsPageWidgetGroup.addToWidget(toolsWidget);
+        toolsWidget.setName("Tools");
+        toolsWidget.setTitle("Tool");
+        JSONObject toolsRelatedList = new JSONObject();
+        toolsRelatedList.put("summaryWidgetName","workorderToolsWidget");
+        toolsWidget.setRelatedList(toolsRelatedList);
+
+        PageWidget serviceWidget = new PageWidget();
+        serviceWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_SERVICE);
+        actualsPageWidgetGroup.addToWidget(serviceWidget);
+        serviceWidget.setName("Service");
+        serviceWidget.setTitle("Service");
+        JSONObject servicesRelatedList = new JSONObject();
+        servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
+        serviceWidget.setRelatedList(servicesRelatedList);
+
+        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
+        actualsCostWidget.addToLayoutParams(actualsSection,6,8);
+        actualsSection.addWidget(actualsCostWidget);
     }
 
     private static void addFailureReportTab(Page page){

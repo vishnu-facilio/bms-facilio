@@ -104,10 +104,7 @@ import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCo
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.AddOrUpdateWorkorderCostCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservationRecordCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateReservedQuantityCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotalCostCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -2261,11 +2258,54 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
-    public static FacilioChain getPlannedServicesUnSavedListChainV3(){
+
+    public static FacilioChain getPlannedServicesUnSavedListChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlannedServicesUnSavedListCommandV3());
         c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
+    }
+    public static FacilioChain getUnsavedWorkOrderItemsListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new WorkOrderItemUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedReservedWorkOrderItemsListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new WorkOrderReservedItemsUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedWorkOrderToolsListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new WorkOrderToolsUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedWorkOrderServiceListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new WorkOrderServiceUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedJobPlanItemsListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JobPlanItemsUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedJobPlanToolsListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JobPlanToolsUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedJobPlanServicesListChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JobPlanServicesUnsavedListCommandV3());
+        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
     }
     //    public static FacilioChain getUnReserveItemsChainV3(){
 //        FacilioChain c = getDefaultChain();
@@ -2322,6 +2362,34 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getAfterDeleteWorkorderItemsChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SetDeleteWorkorderItemCommandV3());
+        chain.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
+        chain.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
+        chain.addCommand(getUpdateItemQuantityRollupChain());
+        chain.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getAfterDeleteWorkorderToolsChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SetDeleteWorkorderToolCommandV3());
+        chain.addCommand(new ToolTransactionRemainingQuantityRollupCommandV3());
+        chain.addCommand(getUpdatetoolQuantityRollupChain());
+        chain.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getAfterDeleteWorkorderServicesChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SetDeleteWorkorderServiceCommandV3());
+        chain.addCommand(new AddOrUpdateWorkorderCostCommandV3());
+        chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return chain;
+    }
     public static FacilioChain getReserveValidationChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReservationValidationCommandV3());

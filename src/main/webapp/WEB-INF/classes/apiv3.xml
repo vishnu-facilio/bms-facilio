@@ -1187,6 +1187,58 @@
         </action>
     </package>
 
+    <package name="workorderItem" namespace="/api/v3/workOrderItem"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="list">
+        </action>
+        <action name="reservedItemList"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="reservedItemList">
+        </action>
+    </package>
+
+    <package name="workorderTools" namespace="/api/v3/workorderTools"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="list">
+        </action>
+    </package>
+
+    <package name="workorderService" namespace="/api/v3/workorderService"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderServiceActionV3"
+                method="list">
+        </action>
+    </package>
+
+    <package name="jobPlanItems" namespace="/api/v3/jobPlanItems"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.JobPlanItemsAction"
+                method="list">
+        </action>
+    </package>
+
+    <package name="jobPlanTools" namespace="/api/v3/jobPlanTools"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.JobPlanToolsAction"
+                method="list">
+        </action>
+    </package>
+
+    <package name="jobPlanServices" namespace="/api/v3/jobPlanServices"
+             extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.JobPlanServicesAction"
+                method="list">
+        </action>
+    </package>
+
     <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
              extends="v3Api">
         <action name="reserve"

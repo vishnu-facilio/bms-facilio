@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -50,6 +51,12 @@ public class JobPlanPageFactory extends PageFactory {
         }
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
+        //Plans Tab
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
+                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
+            addPlansTab(page);
+        }
+        
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
@@ -109,16 +116,6 @@ public class JobPlanPageFactory extends PageFactory {
         Page.Tab itemsAndLaborTab = page.new Tab("Items & Tools");
         page.addTab(itemsAndLaborTab);
 
-        Page.Tab plans = page.new Tab("plans");
-        page.addTab(plans);
-
-        Page.Section planSection = page.new Section();
-        plans.addSection(planSection);
-
-        PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.JOBPLAN_PLANNER);
-        plansWidget.addToLayoutParams(planSection, 24, 14);
-        planSection.addWidget(plansWidget);
-
         Page.Section itemsAndLaborSection = page.new Section();
         itemsAndLaborTab.addSection(itemsAndLaborSection);
 
@@ -145,6 +142,49 @@ public class JobPlanPageFactory extends PageFactory {
             services.addToLayoutParams(5, yOffset, 19, 7);
             itemsAndLaborSection.addWidget(services);
         }
+    }
+    private static void addPlansTab(Page page) throws Exception{
+        Page.Tab plansTab = page.new Tab("Plans");
+        page.addTab(plansTab);
+
+        Page.Section plansSection = page.new Section();
+        plansTab.addSection(plansSection);
+
+
+        PageWidget plansPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        plansPageWidgetGroup.addToLayoutParams(plansSection, 24, 12);
+        plansPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        plansSection.addWidget(plansPageWidgetGroup);
+
+        PageWidget labourWidget = new PageWidget();
+
+
+        PageWidget itemsWidget = new PageWidget();
+        itemsWidget.setWidgetType(PageWidget.WidgetType.JOB_PLAN_ITEMS);
+        plansPageWidgetGroup.addToWidget(itemsWidget);
+        itemsWidget.setName("Items");
+        itemsWidget.setTitle("Item");
+        JSONObject itemsRelatedList = new JSONObject();
+        itemsRelatedList.put("summaryWidgetName","jobPlanItemsWidget");
+        itemsWidget.setRelatedList(itemsRelatedList);
+
+        PageWidget toolsWidget = new PageWidget();
+        toolsWidget.setWidgetType(PageWidget.WidgetType.JOB_PLAN_TOOLS);
+        plansPageWidgetGroup.addToWidget(toolsWidget);
+        toolsWidget.setName("Tools");
+        toolsWidget.setTitle("Tool");
+        JSONObject toolsRelatedList = new JSONObject();
+        toolsRelatedList.put("summaryWidgetName","jobPlanToolsWidget");
+        toolsWidget.setRelatedList(toolsRelatedList);
+
+        PageWidget serviceWidget = new PageWidget();
+        serviceWidget.setWidgetType(PageWidget.WidgetType.JOB_PLAN_SERVICE);
+        plansPageWidgetGroup.addToWidget(serviceWidget);
+        serviceWidget.setName("Service");
+        serviceWidget.setTitle("Service");
+        JSONObject servicesRelatedList = new JSONObject();
+        servicesRelatedList.put("summaryWidgetName","jobPlanServicesWidget");
+        serviceWidget.setRelatedList(servicesRelatedList);
     }
 }
 

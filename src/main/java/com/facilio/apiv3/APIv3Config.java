@@ -127,10 +127,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLo
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkOrderServiceLookupCommand;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderServicesCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
@@ -716,11 +713,9 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getAddPurchaseRequestBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain(), new ConstructAddCustomActivityCommandV3())
-                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.PURCHASE_REQUEST_ACTIVITY))
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getAddPurchaseRequestBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain(), new ConstructUpdateCustomActivityCommandV3())
-                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.PURCHASE_REQUEST_ACTIVITY))
                 .list()
                 .beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary()
@@ -1735,6 +1730,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"workOrder")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"storeRoom")
                 .summary()
                 .delete()
                 .build();
@@ -1750,8 +1748,13 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderItemsCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderItemsChainV3())
                 .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
                 .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
                 .delete()
+                .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderItemsChainV3())
                 .build();
     }
 
@@ -1765,8 +1768,13 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderToolsCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderToolsChainV3())
                 .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
                 .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
                 .delete()
+                .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderToolsChainV3())
                 .build();
     }
 
@@ -1780,9 +1788,11 @@ public class APIv3Config {
                 .beforeSave(new SetWorkOrderServicesCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderServiceChainV3())
                 .list()
-                .beforeFetch(new LoadWorkOrderServiceLookupCommand())
+                .fetchSupplement(FacilioConstants.ContextNames.WO_SERVICE,"service")
                 .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WO_SERVICE,"service")
                 .delete()
+                .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderServicesChainV3())
                 .build();
     }
 

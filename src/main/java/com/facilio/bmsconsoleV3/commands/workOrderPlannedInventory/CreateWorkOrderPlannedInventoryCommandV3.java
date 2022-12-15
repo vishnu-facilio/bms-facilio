@@ -13,6 +13,7 @@ import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlann
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.command.FacilioCommand;
 
 import com.facilio.constants.FacilioConstants;
@@ -124,8 +125,7 @@ public class CreateWorkOrderPlannedInventoryCommandV3 extends FacilioCommand {
             Double unitPrice = jobPlanService.getService().getBuyingPrice()!=null ? jobPlanService.getService().getBuyingPrice() : null;
             Double quantity = jobPlanService.getQuantity();
             Double duration = jobPlanService.getDuration();
-            Double totalCost = jobPlanService.getService().getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.FIXED)? unitPrice * quantity : unitPrice * quantity * duration;
-
+            Double totalCost = V3InventoryUtil.getServiceCost(jobPlanService.getService(), duration, quantity);
             workOrderPlannedService.setWorkOrder(workOrder);
             workOrderPlannedService.setService(jobPlanService.getService());
             if(jobPlanService.getService().getDescription()!=null){

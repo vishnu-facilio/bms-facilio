@@ -701,7 +701,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("storeRoom","StoreRoom"));
 		columns.add(new ViewField("issueTime","Issue Time"));
 		columns.add(new ViewField("returnTime","Return Time"));
-		columns.add(new ViewField("duration","duration"));
+		columns.add(new ViewField("duration","Duration"));
 		columns.add(new ViewField("quantity","Quantity"));
 		columns.add(new ViewField("rate","Rate"));
 		columns.add(new ViewField("cost","Cost"));
@@ -726,7 +726,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("service","Service"));
 		columns.add(new ViewField("startTime","Start Time"));
 		columns.add(new ViewField("endTime","End Time"));
-		columns.add(new ViewField("duration","duration"));
+		columns.add(new ViewField("duration","Duration"));
 		columns.add(new ViewField("quantity","Quantity"));
 		columns.add(new ViewField("unitPrice","Unit Price"));
 		columns.add(new ViewField("cost","Cost"));

@@ -1,19 +1,26 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidgetGroup;
+import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.SummaryWidgetUtil;
 
 import java.util.*;
 
-public class WorkOrderServiceModule extends BaseModuleConfig{
+public class WorkOrderServiceModule extends BaseModuleConfig {
     public WorkOrderServiceModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.WO_SERVICE);
     }
@@ -40,12 +47,26 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
     }
 
     private static FacilioView getAllWorkOrderService() {
+
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("SYS_CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getWorkOrderServiceModule());
+        SortField sortField = new SortField(createdTime, false);
+
         FacilioModule workOrderServiceModule = ModuleFactory.getWorkOrderServiceModule();
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Work Order Service");
         allView.setModuleName(workOrderServiceModule.getName());
+        allView.setSortFields(Collections.singletonList(sortField));
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
 
         return allView;
     }
@@ -61,6 +82,82 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         return detailsView;
     }
 
+    @Override
+    public void addData() throws Exception {
+        super.addData();
+        List<String> appLinkNamesForSummaryWidget = new ArrayList<>();
+        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+
+        for(String appLinkName: appLinkNamesForSummaryWidget) {
+            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule workOrderServiceModule = moduleBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
+            FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WO_SERVICE);
+            FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WO_SERVICE);
+            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_SERVICE);
+            FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_SERVICE);
+
+            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
+
+            SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
+
+            groupField11.setName(sysCreatedByField.getName());
+            groupField11.setDisplayName(sysCreatedByField.getDisplayName());
+            groupField11.setFieldId(sysCreatedByField.getId());
+            groupField11.setRowIndex(1);
+            groupField11.setColIndex(1);
+            groupField11.setColSpan(2);
+
+            groupField12.setName(sysCreatedTimeField.getName());
+            groupField12.setDisplayName(sysCreatedTimeField.getDisplayName());
+            groupField12.setFieldId(sysCreatedTimeField.getId());
+            groupField12.setRowIndex(1);
+            groupField12.setColIndex(3);
+            groupField12.setColSpan(2);
+
+            groupField13.setName(sysModifiedByField.getName());
+            groupField13.setDisplayName(sysModifiedByField.getDisplayName());
+            groupField13.setFieldId(sysModifiedByField.getId());
+            groupField13.setRowIndex(2);
+            groupField13.setColIndex(1);
+            groupField13.setColSpan(2);
+
+            groupField14.setName(sysModifiedTimeField.getName());
+            groupField14.setDisplayName(sysModifiedTimeField.getDisplayName());
+            groupField14.setFieldId(sysModifiedTimeField.getId());
+            groupField14.setRowIndex(2);
+            groupField14.setColIndex(3);
+            groupField14.setColSpan(2);
+
+            List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
+            groupOneFields.add(groupField11);
+            groupOneFields.add(groupField12);
+            groupOneFields.add(groupField13);
+            groupOneFields.add(groupField14);
+
+
+            widgetGroup1.setName("moreDetails");
+            widgetGroup1.setDisplayName("More Details");
+            widgetGroup1.setColumns(4);
+            widgetGroup1.setFields(groupOneFields);
+
+            List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+            widgetGroupList.add(widgetGroup1);
+
+            pageWidget1.setName("workorderServicesWidget");
+            pageWidget1.setDisplayName("Work Order Services Widget");
+            pageWidget1.setModuleId(workOrderServiceModule.getModuleId());
+            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(appLinkName));
+            pageWidget1.setGroups(widgetGroupList);
+
+            SummaryWidgetUtil.addPageWidget(pageWidget1);
+        }
+
+    }
 
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
@@ -72,15 +169,16 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         workOrderServiceModuleForm.setDisplayName("New Work Order Service");
         workOrderServiceModuleForm.setName("default_workorderService_web");
         workOrderServiceModuleForm.setModule(workOrderServiceModule);
-        workOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        workOrderServiceModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        workOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        workOrderServiceModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
+        int seqNum = 0;
         List<FormField> workOrderServiceModuleFormFields = new ArrayList<>();
-        workOrderServiceModuleFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "Service", 1, 2,true));
-        workOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL,2,2));
-        workOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL,2,3));
-        workOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.TEXTBOX,"Duration", FormField.Required.OPTIONAL,3,2));
-        workOrderServiceModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.TEXTBOX, "Quantity", FormField.Required.OPTIONAL, 4, 2));
+        workOrderServiceModuleFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "Service", ++seqNum, 1));
+        workOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL, ++seqNum,1));
+        workOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL, ++seqNum,1));
+        workOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER,"Duration", FormField.Required.OPTIONAL, ++seqNum,1));
+        workOrderServiceModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
 
         FormSection workOrderServiceModuleFormSection = new FormSection("Default", 1, workOrderServiceModuleFormFields, false);
         workOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);

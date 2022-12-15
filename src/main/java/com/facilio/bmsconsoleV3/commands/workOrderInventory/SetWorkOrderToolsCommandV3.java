@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.chain.FacilioContext;
@@ -186,30 +187,12 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
             woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
 
         }
-        double duration = 0;
+        Double duration = 1.0;
         if (woTool.getDuration()==null || woTool.getDuration() <= 0) {
-//			if (woTool.getIssueTime() <= 0) {
-//				woTool.setIssueTime(workorder.getScheduledStart());
-//			}
-//			if (woTool.getReturnTime() <= 0) {
-//				woTool.setReturnTime(workorder.getEstimatedEnd());
-//			}
-            if (woTool.getIssueTime()!=null && woTool.getReturnTime()!=null && woTool.getIssueTime() >= 0 && woTool.getReturnTime() >= 0) {
-                duration = getEstimatedWorkDuration(woTool.getIssueTime(), woTool.getReturnTime());
-            } else {
-                if(workorder.getActualWorkDuration()!=null && workorder.getActualWorkDuration() > 0) {
-                    double hours = (((double)workorder.getActualWorkDuration()) / (60 * 60));
-                    duration = Math.round(hours*100.0)/100.0;
-                }
-                else{
-                    duration = workorderTools.getId() > 0 ? 0 : 1;
-                }
-            }
+            duration = V3InventoryUtil.getWorkorderActualsDuration(woTool.getIssueTime(), woTool.getReturnTime(), workorder);
         } else {
-            duration = woTool.getDuration();
-            if (woTool.getIssueTime()!=null && woTool.getIssueTime() >= 0) {
-                woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * (60*60*1000))));
-            }
+            Long returnTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(woTool.getDuration(), woTool.getIssueTime());
+            woTool.setReturnTime(returnTime);
         }
         woTool.setTransactionType(TransactionType.WORKORDER);
         woTool.setIsReturnable(false);
@@ -230,11 +213,11 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         Double rate = null;
         rate = tool.getRate();
         woTool.setRate(rate);
-        double costOccured = 0;
+        double costOccurred = 0;
         if (tool.getRate()!=null && tool.getRate() > 0) {
-            costOccured = tool.getRate() * duration * woTool.getQuantity();
+            costOccurred = tool.getRate() * duration * woTool.getQuantity();
         }
-        woTool.setCost(costOccured);
+        woTool.setCost(costOccurred);
         if(workorder!=null) {
             woTool.setWorkorder(workorder);
             if(workorder.getAssignedTo()!=null) {
@@ -268,9 +251,6 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                         (FacilioContext) context);
             }
         }
-
-        woTool.setDuration(duration*3600);
-
         return woTool;
     }
 

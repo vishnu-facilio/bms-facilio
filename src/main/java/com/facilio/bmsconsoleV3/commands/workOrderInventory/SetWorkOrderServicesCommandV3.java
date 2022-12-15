@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.context.V3ServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderServiceContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -19,10 +20,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
 
@@ -36,7 +39,6 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         FacilioModule workorderServiceModule = modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
         List<FacilioField> workorderServiceFields = modBean.getAllFields(FacilioConstants.ContextNames.WO_SERVICE);
         Map<String, FacilioField> serviceFieldsMap = FieldFactory.getAsMap(workorderServiceFields);
-//        List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 
         Collection<SupplementRecord> lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) serviceFieldsMap.get("service"));
@@ -44,37 +46,27 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         List<V3WorkOrderServiceContext> woServiceToBeAdded = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(workOrderServices)) {
-            long parentId = workOrderServices.get(0).getParentId();
-            V3WorkOrderContext workorder =getWorkorder(parentId);
-
-            for (V3WorkOrderServiceContext woService : workOrderServices) {
-                long vendorId= -1;
-                if(woService.getVendor()!=null){
-                    vendorId = woService.getVendor();
+            List<Long> parentIds = workOrderServices.stream().map(V3WorkOrderServiceContext::getParentId).collect(Collectors.toList());
+                for (V3WorkOrderServiceContext woService : workOrderServices) {
+                    long parentId = woService.getParentId();
+                    V3WorkOrderContext workorder =getWorkorder(parentId);
+                    long vendorId = -1;
+                    if (woService.getVendor() != null) {
+                        vendorId = woService.getVendor();
+                    }
+                    woService.setCost(getCostForService(vendorId, woService.getService().getId()));
+                    woService.setParent(workorder);
+                    if (woService.getId() > 0) {
+                        List<V3WorkOrderServiceContext> woServiceContext = V3RecordAPI.getRecordsListWithSupplements(workorderServiceModule.getName(), Collections.singletonList(woService.getId()), V3WorkOrderServiceContext.class, lookUpfields);
+                        woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), workorder.getId(), workorder, woService);
+                        workorderServicelist.add(woService);
+                        woServiceToBeAdded.add(woService);
+                    } else {
+                        woService = setWorkorderServiceObj(woService.getService(), workorder.getId(), workorder, woService);
+                        woServiceToBeAdded.add(woService);
+                        workorderServicelist.add(woService);
+                    }
                 }
-                woService.setCost(getCostForService(vendorId, woService.getService().getId()));
-                woService.setParent(workorder);
-                if (woService.getId() > 0) {
-                    List<V3WorkOrderServiceContext> woServiceContext = V3RecordAPI.getRecordsListWithSupplements(workorderServiceModule.getName(),Collections.singletonList(woService.getId()),V3WorkOrderServiceContext.class,lookUpfields);
-
-                    woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), parentId, workorder, woService);
-                    workorderServicelist.add(woService);
-                    woServiceToBeAdded.add(woService);
-
-//                    if (!eventTypes.contains(EventType.EDIT)) {
-//                        eventTypes.add(EventType.EDIT);
-//                    }
-                }
-                else
-                {
-                    woService = setWorkorderServiceObj(woService.getService(), parentId, workorder, woService);
-                    woServiceToBeAdded.add(woService);
-                    workorderServicelist.add(woService);
-//                    if (!eventTypes.contains(EventType.CREATE)) {
-//                        eventTypes.add(EventType.CREATE);
-//                    }
-                }
-            }
 
             if (CollectionUtils.isNotEmpty(woServiceToBeAdded)) {
                 Map<String,Object> data = workOrderServices.get(0).getData();
@@ -90,7 +82,7 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WO_SERVICE);
             }
             context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderServices.get(0).getParentId());
-            context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workOrderServices.get(0).getParentId()));
+            context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
             context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServicelist);
             context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 4);
             context.put(FacilioConstants.ContextNames.WO_SERVICE_LIST, workOrderServices);
@@ -99,59 +91,32 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         return false;
     }
 
-    private V3WorkOrderServiceContext setWorkorderServiceObj(V3ServiceContext service, long parentId, V3WorkOrderContext workorder, V3WorkOrderServiceContext workorderService) {
+    private V3WorkOrderServiceContext setWorkorderServiceObj(V3ServiceContext service, long parentId, V3WorkOrderContext workorder, V3WorkOrderServiceContext workorderService) throws Exception {
         V3WorkOrderServiceContext woService = new V3WorkOrderServiceContext();
         woService.setStartTime(workorderService.getStartTime());
         woService.setEndTime(workorderService.getEndTime());
         woService.setDuration(workorderService.getDuration());
         woService.setId(workorderService.getId());
         woService.setParent(workorderService.getParent());
-        double duration = 0;
+        Double duration = workorderService.getDuration();
         if (woService.getDuration()==null || woService.getDuration() <= 0) {
-//			if (woService.getStartTime() <= 0) {
-//				woService.setStartTime(workorder.getScheduledStart());
-//			}
-//			if (woService.getEndTime() <= 0) {
-//				woService.setEndTime(workorder.getEstimatedEnd());
-//			}
-            if (woService.getStartTime()!=null && woService.getEndTime()!=null && woService.getStartTime() >= 0 && woService.getEndTime() >= 0) {
-                duration = getEstimatedWorkDuration(woService.getStartTime(), woService.getEndTime());
-            } else {
-                if(workorder.getActualWorkDuration()!=null && workorder.getActualWorkDuration() > 0) {
-                    double hours = (((double)workorder.getActualWorkDuration()) / (60 * 60));
-                    duration = Math.round(hours*100.0)/100.0;
-                }
-                else{
-                    duration = workorderService.getId() > 0 ? 0 : 1;
-                }
-            }
+            duration = V3InventoryUtil.getWorkorderActualsDuration(woService.getStartTime(), woService.getEndTime(), workorder);
         } else {
-            duration = woService.getDuration();
-            if (woService.getStartTime()!=null && woService.getStartTime() > 0) {
-                long durationVal = (long) (woService.getDuration() * 60 * 60 * 1000);
-                woService.setEndTime(woService.getStartTime() + durationVal);
-            }
+            Long endTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(woService.getDuration(), woService.getStartTime());
+            woService.setEndTime(endTime);
         }
-
-        Double unitPrice = service.getBuyingPrice();
+        V3ServiceContext serviceUtil = (V3ServiceContext) V3Util.getRecord(FacilioConstants.ContextNames.SERVICE,service.getId(),null);
+        Double unitPrice = serviceUtil.getBuyingPrice();
         woService.setUnitPrice(unitPrice);
         woService.setParentId(parentId);
         woService.setQuantity(workorderService.getQuantity());
         if(workorderService.getQuantity()==null || workorderService.getQuantity() <= 0) {
             woService.setQuantity(1.0);
         }
-        double costOccured = 0;
-        if(service.getBuyingPrice()!=null && service.getBuyingPrice() > 0) {
-            if (service.getPaymentTypeEnum() == V3ServiceContext.PaymentType.FIXED) {
-                costOccured = service.getBuyingPrice() * woService.getQuantity();
-            }
-            else {
-                costOccured = service.getBuyingPrice() * duration * woService.getQuantity();
-            }
-        }
-        woService.setCost(costOccured);
-        woService.setService(service);
-        woService.setDuration(duration * 3600);
+        Double costOccurred = V3InventoryUtil.getServiceCost(serviceUtil, duration, woService.getQuantity());
+        woService.setCost(costOccurred);
+        woService.setService(serviceUtil);
+        woService.setDuration(duration);
         return woService;
     }
 
@@ -185,16 +150,6 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
 
         }
         return 0;
-    }
-
-    public static double getEstimatedWorkDuration(long issueTime, long returnTime) {
-        double duration = -1;
-        if (issueTime != -1 && returnTime != -1) {
-            duration = returnTime - issueTime;
-        }
-
-        double hours = ((duration / (1000 * 60 * 60)));
-        return Math.round(hours*100.0)/100.0;
     }
 
     public static V3WorkOrderContext getWorkorder(long id) throws Exception {
