@@ -61,6 +61,7 @@ import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.collections.CollectionUtils;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -6481,7 +6482,7 @@ public class DashboardAction extends FacilioAction {
 		chain.execute(context);
 		return SUCCESS;
 	}
-	
+
 	public String deleteDashboardFolder() throws Exception {
 		
 		if(dashboardFolderContext != null) {
@@ -6721,15 +6722,25 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	public String deleteDashboard() throws Exception {
-		
+
 		if(dashboardId != null) {
-			
+
+			List<DashboardTabContext>  tabs = DashboardUtil.getDashboardTabs(dashboardId);
+			if (!CollectionUtils.isEmpty(tabs)) {
+                  for (DashboardTabContext tab : tabs){
+					  Long tabId = tab.getId();
+					  if(tabId>0) {
+						  DashboardUtil.deleteDashboardTab(tabId);
+					  }
+				  }
+			}
+
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
-			
+
 			FacilioChain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardChain();
 			deleteDashboardChain.execute(context);
-			
+
 			if(context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE) != null) {
 				errorString = (String) context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE);
 				return ERROR;
@@ -6741,13 +6752,7 @@ public class DashboardAction extends FacilioAction {
 	public String deleteDashboardTab() throws Exception {
 		
 		if(dashboardTabId > 0 ) {
-			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID, dashboardTabId);
-			
-			FacilioChain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardTabChain();
-			deleteDashboardChain.execute(context);
-			
+			DashboardUtil.deleteDashboardTab(dashboardTabId);
 		}
 		return SUCCESS;
 	}

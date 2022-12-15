@@ -181,11 +181,21 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public Boolean mobileEnabled;
 	
 	public Boolean tabEnabled;
+
+	public Boolean isTabPresent;
+
+	public Boolean getIsTabPresent() {
+		return isTabPresent;
+	}
+
+	public void setIsTabPresent(Boolean tabPresent) {
+		isTabPresent = tabPresent;
+	}
 	
 	public Boolean getTabEnabled() {
 		return tabEnabled;
 	}
-	
+
 	public boolean isTabEnabled() {
 		if(tabEnabled == null) {
 			return false;

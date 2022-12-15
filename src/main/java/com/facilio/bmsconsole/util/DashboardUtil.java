@@ -6,6 +6,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.DashboardPublishContext.PublishingType;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
@@ -45,6 +46,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -216,7 +218,15 @@ public class DashboardUtil {
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
-	
+
+	public static void deleteDashboardTab(Long dashboardTabId) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID, dashboardTabId);
+
+		FacilioChain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardTabChain();
+		deleteDashboardChain.execute(context);
+	}
+
 	public static boolean deleteDashboard(Long dashboardId) throws Exception {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -1231,6 +1241,8 @@ public class DashboardUtil {
 //					dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
 //					dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 //				}
+				dashboard.setIsTabPresent(!CollectionUtils.isEmpty(getDashboardTabs(dashboard.getId())));
+
 				if(dashboard.getModuleId() > 0) {
 					dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				}
