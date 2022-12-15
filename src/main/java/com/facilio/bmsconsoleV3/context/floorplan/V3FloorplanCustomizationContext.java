@@ -9,6 +9,11 @@ import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class V3FloorplanCustomizationContext {
     private static final Logger LOGGER = LogManager.getLogger(V3FloorplanCustomizationContext.class.getName());
 
@@ -23,6 +28,71 @@ public class V3FloorplanCustomizationContext {
     private String defaultSpaceColor;
     private BookingStateColor spaceBookingState;
 
+    private DeskLabel deskToolTipPrimaryLabel;
+
+    public DeskLabel getDeskToolTipPrimaryLabel() {
+        if(deskToolTipPrimaryLabel == null)
+        {
+            return new DeskLabel().setLabelType(DeskLabelType.DESK_NAME);
+        }
+        return deskToolTipPrimaryLabel;
+    }
+
+    public void setDeskToolTipPrimaryLabel(DeskLabel deskToolTipPrimaryLabel) {
+        this.deskToolTipPrimaryLabel = deskToolTipPrimaryLabel;
+    }
+
+    public List<DeskLabel> getDeskToolTipSecondaryLabel() {
+        if(deskToolTipSecondaryLabel.isEmpty())
+        {
+            deskToolTipSecondaryLabel.add(new DeskLabel().setLabelType(DeskLabelType.DESK_NAME));
+        }
+        return deskToolTipSecondaryLabel;
+    }
+
+    public void setDeskToolTipSecondaryLabel(List<DeskLabel> deskToolTipSecondaryLabel) {
+        this.deskToolTipSecondaryLabel = deskToolTipSecondaryLabel;
+    }
+
+    public SpaceLabel getSpaceToolTipPrimaryLabel() {
+        if(spaceToolTipPrimaryLabel == null)
+        {
+            return new SpaceLabel().setLabelType(SpaceLabelType.DEFAULT);
+        }
+        return spaceToolTipPrimaryLabel;
+    }
+
+    public void setSpaceToolTipPrimaryLabel(SpaceLabel spaceToolTipPrimaryLabel) {
+        this.spaceToolTipPrimaryLabel = spaceToolTipPrimaryLabel;
+    }
+
+    public List<SpaceLabel> getSpaceToolTipSecondaryLabel() {
+        if(spaceToolTipSecondaryLabel.isEmpty())
+        {
+            spaceToolTipSecondaryLabel.add(new SpaceLabel().setLabelType(SpaceLabelType.CUSTOM));
+        }
+        return spaceToolTipSecondaryLabel;
+    }
+
+    public void setSpaceToolTipSecondaryLabel(List<SpaceLabel> spaceToolTipSecondaryLabel) {
+        this.spaceToolTipSecondaryLabel = spaceToolTipSecondaryLabel;
+    }
+
+    private List<DeskLabel> deskToolTipSecondaryLabel=new ArrayList<>();
+
+    private SpaceLabel spaceToolTipPrimaryLabel;
+    private List<SpaceLabel> spaceToolTipSecondaryLabel=new ArrayList<>();
+
+
+    public Map<String, FloorPlanToolTipContext> getModules() {
+        return modules;
+    }
+
+    public void setModules(Map<String, FloorPlanToolTipContext> modules) {
+        this.modules = modules;
+    }
+
+    private Map<String,FloorPlanToolTipContext> modules = new HashMap<>();
 
     private boolean compactView=false;
     private  boolean textHalo = true;
@@ -175,7 +245,7 @@ public class V3FloorplanCustomizationContext {
         this.spaceBookingState = spaceBookingState;
     }
 
-  public class AssignmentStateColor {
+  public static class AssignmentStateColor {
 
        @Getter @Setter
        private String unAssignedColor = "rgba(0, 0, 0,0.3)";
@@ -191,7 +261,7 @@ public class V3FloorplanCustomizationContext {
 
     }
 
-    public class BookingStateColor {
+    public static class BookingStateColor {
         private String nonReservableColor = "rgba(0, 0, 0,0.3)"; // non reservable
         private String availableColor="rgba(34, 174, 92, 0.3)"; // available to book
         private String partiallyAvailableColor="rgba(13, 91, 225, 0.3)"; // partially available for booking
@@ -241,7 +311,7 @@ public class V3FloorplanCustomizationContext {
 
     }
 
-    public class DeskLabel {
+    public static class DeskLabel {
 
         private DeskLabelType labelType;
         private String customText=" ";
@@ -285,7 +355,7 @@ public class V3FloorplanCustomizationContext {
         }
     }
 
-    public class SpaceLabel {
+    public static class SpaceLabel {
 
         public SpaceLabelType getLabelType() {
             return labelType;

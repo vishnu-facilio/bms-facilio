@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context.floorplan;
 
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 
@@ -44,15 +45,15 @@ public class V3MarkerContext extends V3IndoorFloorPlanObjectContext {
 		this.desk = desk;
 	}
 	
-	public ModuleBaseWithCustomFields getModuleData() {
+	public V3ResourceContext getModuleData() {
 		return moduleData;
 	}
 
-	public void setModuleData(ModuleBaseWithCustomFields moduleData) {
+	public void setModuleData(V3ResourceContext moduleData) {
 		this.moduleData = moduleData;
 	}
 
-	private ModuleBaseWithCustomFields moduleData;
+	private V3ResourceContext moduleData;
 
 	private V3DeskContext desk;
 

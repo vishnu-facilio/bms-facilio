@@ -41,7 +41,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		Criteria criteria = null;
 
 
-		Map<Long,  Map<Long, ModuleBaseWithCustomFields>> markervsRecordObjectMap = (Map<Long, Map<Long, ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.Floorplan.MARKER_RECORD_OBJECTMAP);
+		Map<Long,  Map<Long, V3ResourceContext>> markervsRecordObjectMap = (Map<Long, Map<Long, V3ResourceContext>>) context.get(FacilioConstants.ContextNames.Floorplan.MARKER_RECORD_OBJECTMAP);
 
 		Map<Long,  Map<Long, ModuleBaseWithCustomFields>> zonevsRecordObjectMap= (Map<Long, Map<Long, ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.Floorplan.ZONE_RECORD_OBJECTMAP);
 
@@ -142,7 +142,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 
 				if (recordId != null && markerModuleId != null ) {
-					feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode, markerModuleId));
+					feature.setProperties(V3FloorPlanAPI.getZoneProperties((V3ResourceContext) zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode, markerModuleId));
 					feature.setTooltipData(getZoneTooltipData(zone, context));
 				}
 				else {
@@ -169,7 +169,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		return false;
 	}
 
-	public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker, Long markerModuleId, Context context) throws Exception {
+	public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(V3ResourceContext recordData, V3MarkerContext marker, Long markerModuleId, Context context) throws Exception {
 
 
 		Map<Long, List<V3SpaceBookingContext>> spaceBookingMap = (Map<Long, List<V3SpaceBookingContext>>) context.get(FacilioConstants.ContextNames.Floorplan.SPACE_BOOKING_MAP);
@@ -182,10 +182,10 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		Boolean isNewBooking = (Boolean) context.get("IS_NEW_BOOKING");
 		String viewMode = (String) context.get(FacilioConstants.ContextNames.Floorplan.VIEW_MODE);
 
-		if (record != null && markerModuleId != null) {
+		if (recordData != null && markerModuleId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(markerModuleId);
-			V3ResourceContext recordData = (V3ResourceContext) record;
+		//	V3ResourceContext recordData = (V3ResourceContext) record;
 			properties.setLabel(recordData.getName());
 			properties.setObjectId(marker.getId());
 			properties.setRecordId(marker.getRecordId());
@@ -204,7 +204,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 				// to handle desk details here
 
-				V3DeskContext desk = (V3DeskContext) record;
+				V3DeskContext desk = (V3DeskContext) recordData;
 				properties.setDeskType(desk.getDeskType());
 				properties.setSpaceCategoryId(desk.getSpaceCategoryId());
 
@@ -342,10 +342,10 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 
 		}
-		return checkUserBookingPermission(properties, bookingemployeemarker, bookingdeskdepartment,context,record);
+		return checkUserBookingPermission(properties, bookingemployeemarker, bookingdeskdepartment,context,recordData);
 
 	}
-	public static V3IndoorFloorPlanPropertiesContext checkUserBookingPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment,Context context,ModuleBaseWithCustomFields record) throws Exception {
+	public static V3IndoorFloorPlanPropertiesContext checkUserBookingPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment,Context context,V3ResourceContext record) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return properties;
@@ -410,7 +410,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 
 	@SuppressWarnings("unchecked")
-	public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, Context context, V3IndoorFloorPlanPropertiesContext properties) throws Exception {
+	public static JSONObject getMarkerTooltip(V3ResourceContext record, V3MarkerContext marker,Long markerModuleId, Context context, V3IndoorFloorPlanPropertiesContext properties) throws Exception {
 
 		JSONObject tooltip = new JSONObject();
 		JSONObject tooltipCoreData = new JSONObject();
@@ -485,7 +485,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 
 		return checkBookingPermission(tooltip,record, context);
 	}
-	public static JSONObject checkBookingPermission(JSONObject tooltip,ModuleBaseWithCustomFields record, Context context) throws Exception {
+	public static JSONObject checkBookingPermission(JSONObject tooltip,V3ResourceContext record, Context context) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return tooltip;

@@ -185,12 +185,14 @@ public class ReadOnlyChainFactoryV3 {
     }
     public static FacilioChain getfloorplanViewerObjectChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new GetFloorPlanCustomizationCommand());
         c.addCommand(new getIndoorFloorPlanViewerCommand());
         c.addCommand(new getFloorplanLayerCommand());
         return c;
     }
     public static FacilioChain getfloorplanBookingObjectChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new GetFloorPlanCustomizationCommand());
         c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
         c.addCommand(new FetchFloorplanFacilitiesCommmand());
         c.addCommand(new getIndoorFloorPlanBookingResultCommands());
@@ -199,6 +201,7 @@ public class ReadOnlyChainFactoryV3 {
     }
     public static FacilioChain getfloorplanNewBookingObjectChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new GetFloorPlanCustomizationCommand());
         c.addCommand(new SetDefaultFloorplanBookingVariableCommand());
         c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
         c.addCommand(new FetchSpaceBookingCommand());

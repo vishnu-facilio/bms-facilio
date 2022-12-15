@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,7 +29,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -46,9 +46,9 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		Criteria criteria = null;
 
         
-        Map<Long,  Map<Long, ModuleBaseWithCustomFields>> markervsRecordObjectMap = (Map<Long, Map<Long, ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.Floorplan.MARKER_RECORD_OBJECTMAP);
+        Map<Long,  Map<Long, V3ResourceContext>> markervsRecordObjectMap = (Map<Long, Map<Long, V3ResourceContext>>) context.get(FacilioConstants.ContextNames.Floorplan.MARKER_RECORD_OBJECTMAP);
 
-        Map<Long,  Map<Long, ModuleBaseWithCustomFields>> zonevsRecordObjectMap= (Map<Long, Map<Long, ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.Floorplan.ZONE_RECORD_OBJECTMAP);
+        Map<Long,  Map<Long, V3ResourceContext>> zonevsRecordObjectMap= (Map<Long, Map<Long, V3ResourceContext>>) context.get(FacilioConstants.ContextNames.Floorplan.ZONE_RECORD_OBJECTMAP);
         
       
         List<V3MarkerContext> markers = (List<V3MarkerContext>) context.get(FacilioConstants.ContextNames.Floorplan.MARKER_LIST);
@@ -183,7 +183,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		return false;
 	}
 	
-	public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, Context context) throws Exception {
+	public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(V3ResourceContext recordData, V3MarkerContext marker,Long markerModuleId, Context context) throws Exception {
 		Map<String, FacilioForm> forms = (Map<String, FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
 
 		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
@@ -194,10 +194,10 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		V3EmployeeContext bookingemployeemarker = null;
 		V3DepartmentContext bookingdeskdepartment = null;
 	   
-	   if (record != null && markerModuleId != null) {
+	   if (recordData != null && markerModuleId != null) {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(markerModuleId);
-		   V3ResourceContext recordData = (V3ResourceContext) record;
+		//   V3ResourceContext recordData = (V3ResourceContext) record;
 		   properties.setLabel(recordData.getName());
 		   properties.setObjectId(marker.getId());
 		   properties.setRecordId(marker.getRecordId());
@@ -216,7 +216,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			   
 			   // to handle desk details here
 			   
-			   V3DeskContext desk = (V3DeskContext) record;
+			   V3DeskContext desk = (V3DeskContext) recordData;
 			   properties.setDeskType(desk.getDeskType());
 			   
 			   String iconName = "desk";
@@ -343,10 +343,10 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			 
 
 	   }
-	   return checkUserBookingPermission(properties, bookingemployeemarker, bookingdeskdepartment,context,record);
+	   return checkUserBookingPermission(properties, bookingemployeemarker, bookingdeskdepartment,context,recordData);
 	   
   }
-	public static V3IndoorFloorPlanPropertiesContext checkUserBookingPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment,Context context,ModuleBaseWithCustomFields record) throws Exception {
+	public static V3IndoorFloorPlanPropertiesContext checkUserBookingPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment,Context context,V3ResourceContext record) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return properties;
@@ -414,11 +414,12 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 
 	
  @SuppressWarnings("unchecked")
-public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, Context context, V3IndoorFloorPlanPropertiesContext properties) throws Exception {
+public static JSONObject getMarkerTooltip(V3ResourceContext record, V3MarkerContext marker,Long markerModuleId, Context context, V3IndoorFloorPlanPropertiesContext properties) throws Exception {
 
 			 JSONObject tooltip = new JSONObject();
 		 JSONObject tooltipCoreData = new JSONObject();
-		 List <JSONObject> tooltipConent = new ArrayList<>(); 
+		 List <JSONObject> tooltipConent = new ArrayList<>();
+	     V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
 		 
 		 
 		   if (record != null) {
@@ -428,52 +429,108 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 			   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 				   
 				   V3DeskContext desk = (V3DeskContext) record;
-				   
-				   
-				   	// title record
-					 tooltipCoreData.put("icon", "office_desk");
-					 tooltipCoreData.put("label", desk.getName());
-					 tooltip.put("title", tooltipCoreData);
-					 
-					 tooltipCoreData = new JSONObject();
-					 tooltipCoreData.put("icon", "desk_type");
-					 tooltipCoreData.put("label", desk.getDeskTypeName());
-					 tooltipConent.add(tooltipCoreData);
+				   if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_FLOORPLAN)) {
+					   if (settings != null) {
+						   V3FloorplanCustomizationContext.DeskLabel primaryLabel = settings.getDeskToolTipPrimaryLabel();
+						   V3DeskContext moduleContext = (V3DeskContext) record;
+						   if(primaryLabel.getCustomText().trim().isEmpty()) {
+							   tooltipCoreData.put("icon", "office_desk");
+							   tooltipCoreData.put("label", desk.getName());
+						   }
+						   else {
+							   primaryLabel.getLabelType().setCustomText(primaryLabel.getCustomText());
+							   tooltipCoreData.put("icon", "office_desk");
+							   tooltipCoreData.put("label", primaryLabel.getLabelType().format(moduleContext));
+						   }
+						   tooltip.put("title", tooltipCoreData);
+						   tooltipCoreData = new JSONObject();
+						   tooltipConent = new ArrayList<>();
+						   List<V3FloorplanCustomizationContext.DeskLabel> secondaryLabels = settings.getDeskToolTipSecondaryLabel();
+						   for (V3FloorplanCustomizationContext.DeskLabel label : secondaryLabels) {
+							   label.getLabelType().setCustomText(label.getCustomText());
+							   tooltipCoreData = new JSONObject();
+							   tooltipCoreData.put("icon", "desk_type");
+							   tooltipCoreData.put("label", label.getLabelType().format(moduleContext));
+							   tooltipConent.add(tooltipCoreData);
+						   }
+						   tooltip.put("content", tooltipConent);
+					   }
 
-					 
-					 if (desk.getEmployee() != null) {
-						 
-						 tooltipCoreData = new JSONObject();
-						 tooltipCoreData.put("icon", "employee");
-						 tooltipCoreData.put("label", desk.getEmployee().getName());
-						 tooltipConent.add(tooltipCoreData);
+				   }else {
 
-					 }
-					 else {
-						 tooltipCoreData = new JSONObject();
+					   // title record
+					   tooltipCoreData.put("icon", "office_desk");
+					   tooltipCoreData.put("label", desk.getName());
+					   tooltip.put("title", tooltipCoreData);
 
-						 
-						 if (desk.getDeskType() == 1) {
-							 tooltipCoreData.put("icon", "employee");
-							 tooltipCoreData.put("label", "Unassigned");
-						 }
+					   tooltipCoreData = new JSONObject();
+					   tooltipCoreData.put("icon", "desk_type");
+					   tooltipCoreData.put("label", desk.getDeskTypeName());
+					   tooltipConent.add(tooltipCoreData);
 
-					
-		
-						 tooltipConent.add(tooltipCoreData);
-					 }
-					 
-					 if (desk.getDepartment() != null) {
-						 tooltipCoreData = new JSONObject();
-						 tooltipCoreData.put("icon", "department");
-						 tooltipCoreData.put("label",  desk.getDepartment().getName());
-						 tooltipConent.add(tooltipCoreData);
 
-					 }
-					 
-					 tooltip.put("content", tooltipConent);
+					   if (desk.getEmployee() != null) {
+
+						   tooltipCoreData = new JSONObject();
+						   tooltipCoreData.put("icon", "employee");
+						   tooltipCoreData.put("label", desk.getEmployee().getName());
+						   tooltipConent.add(tooltipCoreData);
+
+					   } else {
+						   tooltipCoreData = new JSONObject();
+
+
+						   if (desk.getDeskType() == 1) {
+							   tooltipCoreData.put("icon", "employee");
+							   tooltipCoreData.put("label", "Unassigned");
+						   }
+
+
+						   tooltipConent.add(tooltipCoreData);
+					   }
+
+					   if (desk.getDepartment() != null) {
+						   tooltipCoreData = new JSONObject();
+						   tooltipCoreData.put("icon", "department");
+						   tooltipCoreData.put("label", desk.getDepartment().getName());
+						   tooltipConent.add(tooltipCoreData);
+
+					   }
+
+					   tooltip.put("content", tooltipConent);
+				   }
 
 			   }
+			   else{
+				   if(settings != null) {
+					   Map<String, FloorPlanToolTipContext> moduleSettings = settings.getModules();
+					   if (moduleSettings.containsKey(module.getName())) {
+						   ModuleBaseWithCustomFields moduleContext = (ModuleBaseWithCustomFields) record;
+						   FloorPlanToolTipContext moduleSetting = moduleSettings.get(module.getName());
+						   FloorPlanToolTipContext.ToolTip toolTip = moduleSetting.getToolTip();
+						   toolTip.getPrimaryLabel().getLabelType().setModuleName(module.getName());
+						   toolTip.getPrimaryLabel().getLabelType().setCustomText(toolTip.getPrimaryLabel().getCustomText());
+						   tooltipCoreData.put("icon", "desk_type");
+
+						   tooltipCoreData.put("label", toolTip.getPrimaryLabel().getLabelType().format(moduleContext));
+						   tooltip.put("title", tooltipCoreData);
+						   tooltipCoreData = new JSONObject();
+						   tooltipConent = new ArrayList<>();
+						   List<FloorPlanToolTipContext.Label> secondaryLabels = toolTip.getSecondaryLabel();
+						   for(FloorPlanToolTipContext.Label label : secondaryLabels)
+						   {
+							   label.getLabelType().setModuleName(module.getName());
+							   label.getLabelType().setCustomText(label.getCustomText());
+							   tooltipCoreData = new JSONObject();
+							   tooltipCoreData.put("icon", "desk_type");
+							   tooltipCoreData.put("label", label.getLabelType().format(moduleContext));
+							   tooltipConent.add(tooltipCoreData);
+						   }
+						   tooltip.put("content", tooltipConent);
+					   }
+				   }
+			   }
+
 
 		   }
 		   else {
@@ -489,7 +546,7 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 		
          return checkBookingPermission(tooltip,record, context);
      }
-	public static JSONObject checkBookingPermission(JSONObject tooltip,ModuleBaseWithCustomFields record, Context context) throws Exception {
+	public static JSONObject checkBookingPermission(JSONObject tooltip,V3ResourceContext record, Context context) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return tooltip;
@@ -537,40 +594,61 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 
 		 JSONObject tooltip = new JSONObject();
 		 JSONObject tooltipCoreData = new JSONObject();
-		 List <JSONObject> tooltipConent = new ArrayList<>(); 
-		 
-		 
-		 
-		 tooltipCoreData = new JSONObject();
-		 tooltipCoreData.put("icon", "room");
-		 if (zone.getSpace() != null) {
-			 tooltipCoreData.put("label",  zone.getSpace().getName());
-			 
-		 }
-		 tooltip.put("title", tooltipCoreData);
-		 
-	
-		 
-		 tooltipCoreData = new JSONObject();
-		 tooltipCoreData.put("icon", "desk_type");
-		 if (zone.getSpace() != null && zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
-			 tooltipCoreData.put("label", zone.getSpace().getSpaceCategory().getName());
-			 
-		 }
-		 tooltipConent.add(tooltipCoreData);
-		 
-		 tooltip.put("content", tooltipConent);
-		 
-		 
-		 tooltipCoreData = new JSONObject();
-		 tooltipCoreData.put("icon", "calender");
-		 if (zone.getSpace() != null) {
-			String label = zone.isIsReservable() ? "Reservable" : "Non Reservable";
-			 tooltipCoreData.put("label", label);
-			 
-		 }
-		 tooltipConent.add(tooltipCoreData);
-		
+		 List <JSONObject> tooltipConent = new ArrayList<>();
+
+		V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_FLOORPLAN)) {
+			if (settings != null) {
+				V3FloorplanCustomizationContext.SpaceLabel primaryLabel = settings.getSpaceToolTipPrimaryLabel();
+				primaryLabel.getLabelType().setCustomText(primaryLabel.getCustomText());
+				tooltipCoreData.put("icon", "room");
+
+				tooltipCoreData.put("label", primaryLabel.getLabelType().format(zone.getSpace()));
+				tooltip.put("title", tooltipCoreData);
+				tooltipCoreData = new JSONObject();
+				tooltipConent = new ArrayList<>();
+				List<V3FloorplanCustomizationContext.SpaceLabel> secondaryLabels = settings.getSpaceToolTipSecondaryLabel();
+				for (V3FloorplanCustomizationContext.SpaceLabel label : secondaryLabels) {
+					label.getLabelType().setCustomText(label.getCustomText());
+					tooltipCoreData = new JSONObject();
+					tooltipCoreData.put("icon", "desk_type");
+					tooltipCoreData.put("label", label.getLabelType().format(zone.getSpace()));
+					tooltipConent.add(tooltipCoreData);
+				}
+				tooltip.put("content", tooltipConent);
+			}
+
+		}
+		else {
+			tooltipCoreData = new JSONObject();
+			tooltipCoreData.put("icon", "room");
+			if (zone.getSpace() != null) {
+				tooltipCoreData.put("label", zone.getSpace().getName());
+
+			}
+			tooltip.put("title", tooltipCoreData);
+
+
+			tooltipCoreData = new JSONObject();
+			tooltipCoreData.put("icon", "desk_type");
+			if (zone.getSpace() != null && zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
+				tooltipCoreData.put("label", zone.getSpace().getSpaceCategory().getName());
+
+			}
+			tooltipConent.add(tooltipCoreData);
+
+			tooltip.put("content", tooltipConent);
+
+
+			tooltipCoreData = new JSONObject();
+			tooltipCoreData.put("icon", "calender");
+			if (zone.getSpace() != null) {
+				String label = zone.isIsReservable() ? "Reservable" : "Non Reservable";
+				tooltipCoreData.put("label", label);
+
+			}
+			tooltipConent.add(tooltipCoreData);
+		}
         return tooltip;
     }
 	

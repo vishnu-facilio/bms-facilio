@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -13,7 +14,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -135,7 +135,7 @@ public class SerializeCommand extends FacilioCommand {
 					}
            		 }
            		 else {
-           			ModuleBaseWithCustomFields record =  V3RecordAPI.getRecord(recordModule.getName(), marker.getRecordId());
+						V3ResourceContext record =  V3RecordAPI.getRecord(recordModule.getName(), marker.getRecordId(), V3ResourceContext.class);
                     
                     marker.setModuleData(record);
            		 }

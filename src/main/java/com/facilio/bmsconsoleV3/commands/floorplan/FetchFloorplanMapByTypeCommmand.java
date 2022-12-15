@@ -45,10 +45,10 @@ public class FetchFloorplanMapByTypeCommmand extends FacilioCommand {
 		                .beanClass(V3IndoorFloorPlanContext.class)
 		                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("floor"), String.valueOf(floorId), NumberOperators.EQUALS))
 		                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("floorPlanType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
-	        	if(type == FloorPlanType.WORKSTATION) {
-	        		selectRecordsBuilder.innerJoin(floormodule.getTableName())
-	    			.on(module.getTableName()+".ID = Floor.INDOOR_FLOORPLAN_ID");
-	        	}
+//	        	if(type == FloorPlanType.WORKSTATION) {
+//	        		selectRecordsBuilder.innerJoin(floormodule.getTableName())
+//	    			.on(module.getTableName()+".ID = Floor.INDOOR_FLOORPLAN_ID");
+//	        	}
 				V3IndoorFloorPlanContext floorplans = selectRecordsBuilder.fetchFirst();
 				FloorPlanMap.put(type.getIndex(), floorplans);
 			}

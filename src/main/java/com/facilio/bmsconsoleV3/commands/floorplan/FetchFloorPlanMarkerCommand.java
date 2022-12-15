@@ -32,6 +32,9 @@ public class FetchFloorPlanMarkerCommand extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty(markers)) {
 
 			for (V3FloorplanMarkersContext marker : markers) {
+				if(marker.getFileId()==null){
+					continue;
+				}
 				marker.setAvatarUrl(marker.getAvatarUrl());
 			}
 
