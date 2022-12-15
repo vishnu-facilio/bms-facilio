@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -119,13 +120,18 @@ public class PeopleAPI {
 			pplId = people.getId();
 		}
 		else {
-			if (user.getInviteAcceptStatus()) {
-				peopleExisiting.setUser(true);
-			}
+
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsAppAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
 			pplId =emp.getId();
+			if (user.getInviteAcceptStatus()) {
+				FacilioModule people = Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE);
+				V3PeopleContext peopleContext = new V3PeopleContext();
+				peopleContext.setId(pplId);
+				peopleContext.setUser(true);
+				RecordAPI.updateRecord( FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleContext), V3PeopleContext.class), people, modBean.getAllFields(people.getName()));
+			}
 		}
 		updatePeopleIdInOrgUsers(pplId, user.getOuid());
 		if (user.getGroups() != null) {

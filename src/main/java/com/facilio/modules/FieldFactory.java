@@ -509,7 +509,6 @@ public class FieldFactory extends BaseFieldFactory {
         }));
 
         public static final List<String> WORKFLOW_LOG_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
-                "createdTime",
                 "status",
                 "logType"
         }).collect(Collectors.toList()));

@@ -2437,6 +2437,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getPeoples() {
         return () -> new V3Config(V3PeopleContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetPeopleTypeCommand())
                 .list()
                 .summary()
                 .afterFetch(new FetchLabourAndUserContextForPeople())

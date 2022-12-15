@@ -192,7 +192,7 @@ public class GroupBeanImpl implements GroupBean {
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		fields.add(AccountConstants.getRoleIdField());
 		// removed app scope check for Team/staff
-		// long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		 long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -205,7 +205,7 @@ public class GroupBeanImpl implements GroupBean {
 				.andCustomWhere("FacilioGroupMembers.GROUPID = ?", groupId)
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(AccountConstants.getGroupMemberModule()),CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-				//.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS))
 				
 				;
 		
