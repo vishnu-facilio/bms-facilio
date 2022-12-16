@@ -27,18 +27,23 @@ public class SetAnnouncementPhotoIdCommand extends FacilioCommand {
                 }
                 if(context.containsKey("rawInput")){
                     Map<String,Object> rawInput = (Map<String,Object>)context.get("rawInput");
-                    if(rawInput.containsKey("announcementattachments")){
-                        List<HashMap> announcementAttachments = (List<HashMap>) rawInput.get("announcementattachments");
-                        FileStore fs = FacilioFactory.getFileStore();
-                        for (HashMap attachment : announcementAttachments) {
-                            Long fileId =(Long) attachment.get("fileId");
-                            FileInfo fileinfo = fs.getFileInfo(fileId);
-                            if(fileinfo.getContentType().contains("image")){
-                                announcement.setPhotoId(fileId);
-                                break;
+                    if(!rawInput.isEmpty()){
+                        if(rawInput.containsKey("announcementattachments")){
+                            List<HashMap> announcementAttachments = (List<HashMap>) rawInput.get("announcementattachments");
+                            if(!announcementAttachments.isEmpty()){
+                                FileStore fs = FacilioFactory.getFileStore();
+                                for (HashMap attachment : announcementAttachments) {
+                                    Long fileId =(Long) attachment.get("fileId");
+                                    FileInfo fileinfo = fs.getFileInfo(fileId);
+                                    if (fileinfo != null && fileinfo.getContentType() != null && fileinfo.getContentType().contains("image")) {
+                                        announcement.setPhotoId(fileId);
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
+
                 }
             }
         }
