@@ -16,11 +16,11 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.CommandUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -75,8 +75,8 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
-        Map<String, List<LookupField>> allLookupFields = getAllLookupFields(modBean, module);
-        List<LookupField> lookupFieldList = allLookupFields.get(mainModuleName);
+        Map<String, List<LookupField>> allLookupFields = CommandUtil.getAllLookupFields(modBean, module);
+        List<LookupField> lookupFieldList = CommandUtil.getLookupFieldListFromModuleName(allLookupFields, mainModuleName);
 
         Map<Long, FacilioField> fieldMap = new HashMap<>();
         for (LookupField lookupField: lookupFieldList) {
@@ -140,27 +140,5 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
                         null, null, null, null, null,null,false);
             }
         }
-    }
-
-    private Map<String, List<LookupField>> getAllLookupFields(ModuleBean modBean, FacilioModule module) throws Exception {
-        List<LookupField> lookupFields = new ArrayList<>();
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
-        if (CollectionUtils.isNotEmpty(allFields)) {
-            for (FacilioField f : allFields) {
-                if (f instanceof LookupField) {
-                    lookupFields.add((LookupField) f);
-                }
-            }
-        }
-
-        Map<String, List<LookupField>> lookupFieldMap = new HashMap<>();
-        for (LookupField l : lookupFields) {
-            FacilioModule lookupModule = l.getLookupModule();
-            if (lookupModule != null) {
-                lookupFieldMap.computeIfAbsent(lookupModule.getName(), k -> new ArrayList<>());
-                lookupFieldMap.get(lookupModule.getName()).add(l);
-            }
-        }
-        return lookupFieldMap;
     }
 }

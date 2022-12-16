@@ -1342,4 +1342,12 @@
                 class="com.facilio.bmsconsoleV3.actions.SpaceBookingAction"
                 method="updateBookingAction"/>
     </package>
+
+    <package name="Action" namespace="/api/v3/action" extends="v3Api">
+        <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.Action">
+            <param name="moduleName">{1}</param>
+            <param name="id">{2}</param>
+            <param name="actionType">{3}</param>
+        </action>
+    </package>
 </struts>

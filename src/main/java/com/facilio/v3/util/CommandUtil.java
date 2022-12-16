@@ -1,15 +1,20 @@
 package com.facilio.v3.util;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,5 +52,44 @@ public class CommandUtil {
             return findLookupFieldInChildModule(extendModule, childLookupFields);
         }
         return lookupField;
+    }
+
+    public static Map<String, List<LookupField>> getAllLookupFields(ModuleBean modBean, FacilioModule module) throws Exception {
+        List<LookupField> lookupFields = new ArrayList<>();
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(allFields)) {
+            for (FacilioField f : allFields) {
+                if (f instanceof LookupField) {
+                    lookupFields.add((LookupField) f);
+                }
+            }
+        }
+
+        Map<String, List<LookupField>> lookupFieldMap = new HashMap<>();
+        for (LookupField l : lookupFields) {
+            FacilioModule lookupModule = l.getLookupModule();
+            if (lookupModule != null) {
+                lookupFieldMap.computeIfAbsent(lookupModule.getName(), k -> new ArrayList<>());
+                lookupFieldMap.get(lookupModule.getName()).add(l);
+            }
+        }
+        return lookupFieldMap;
+    }
+
+    public static  List<LookupField> getLookupFieldListFromModuleName (Map<String, List<LookupField>> allLookupFields, String moduleName) throws Exception {
+        List<LookupField> lookupFieldList = allLookupFields.get(moduleName);
+        if (lookupFieldList == null) {
+            ModuleBean modBean = Constants.getModBean();
+            FacilioModule module = modBean.getModule(moduleName);
+            FacilioModule currentModule = module.hideFromParents() ? null : module.getExtendModule(); // If a module is hidden from parent it's not considered as the same module. Just the structure is used. Because this won't work when fetching lookup
+            while (currentModule != null) {
+                lookupFieldList = allLookupFields.get(currentModule.getName());
+                if (lookupFieldList != null) {
+                    return lookupFieldList;
+                }
+                currentModule = currentModule.hideFromParents() ? null : currentModule.getExtendModule();
+            }
+        }
+        return lookupFieldList;
     }
 }

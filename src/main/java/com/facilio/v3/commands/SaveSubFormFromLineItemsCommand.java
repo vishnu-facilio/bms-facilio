@@ -14,6 +14,7 @@ import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.CommandUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -55,24 +56,6 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
         }
         return false;
     }
-
-    private List<LookupField> getLookupFieldListFromModuleName (Map<String, List<LookupField>> allLookupFields, String moduleName) throws Exception {
-        List<LookupField> lookupFieldList = allLookupFields.get(moduleName);
-        if (lookupFieldList == null) {
-            ModuleBean modBean = Constants.getModBean();
-            FacilioModule module = modBean.getModule(moduleName);
-            FacilioModule currentModule = module.hideFromParents() ? null : module.getExtendModule(); // If a module is hidden from parent it's not considered as the same module. Just the structure is used. Because this won't work when fetching lookup
-            while (currentModule != null) {
-                lookupFieldList = allLookupFields.get(currentModule.getName());
-                if (lookupFieldList != null) {
-                    return lookupFieldList;
-                }
-                currentModule = module.hideFromParents() ? null : module.getExtendModule();
-            }
-        }
-        return lookupFieldList;
-    }
-
     private List<ModuleBaseWithCustomFields> insert(Context context, String mainModuleName, String moduleName, List<SubFormContext> subFormContextList, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -88,8 +71,8 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
 
-        Map<String, List<LookupField>> allLookupFields = getAllLookupFields(modBean, module);
-        List<LookupField> lookupFieldList = getLookupFieldListFromModuleName(allLookupFields, mainModuleName);
+        Map<String, List<LookupField>> allLookupFields = CommandUtil.getAllLookupFields(modBean,module);
+        List<LookupField> lookupFieldList = CommandUtil.getLookupFieldListFromModuleName(allLookupFields, mainModuleName);
 
         Map<Long, FacilioField> fieldMap = new HashMap<>();
         for (LookupField lookupField: lookupFieldList) {
@@ -129,28 +112,4 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
         }
         return addedRecords;
     }
-
-    private Map<String, List<LookupField>> getAllLookupFields(ModuleBean modBean, FacilioModule module) throws Exception {
-        List<LookupField> lookupFields = new ArrayList<>();
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
-        if (CollectionUtils.isNotEmpty(allFields)) {
-            for (FacilioField f : allFields) {
-                if (f instanceof LookupField) {
-                    lookupFields.add((LookupField) f);
-                }
-            }
-        }
-
-        Map<String, List<LookupField>> lookupFieldMap = new HashMap<>();
-        for (LookupField l : lookupFields) {
-            FacilioModule lookupModule = l.getLookupModule();
-            if (lookupModule != null) {
-                lookupFieldMap.computeIfAbsent(lookupModule.getName(), k -> new ArrayList<>());
-                lookupFieldMap.get(lookupModule.getName()).add(l);
-            }
-        }
-        return lookupFieldMap;
-    }
-
-
 }

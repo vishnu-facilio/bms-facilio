@@ -3730,4 +3730,11 @@ public class FacilioConstants {
 		public static final String TransactionRollUpModuleName = "budgetmonthlyamount";
 		public static final String TransactionRollUpFieldName = "actualMonthlyAmount";
 	}
+
+	public static class Action{
+
+		public static final String TRANSITION="transition";
+		public static final String CUSTOM_BUTTON="customButton";
+		public static final String APPROVAL="approval";
+	}
 }

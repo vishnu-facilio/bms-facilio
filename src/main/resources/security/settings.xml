@@ -1193,4 +1193,13 @@
             </property>
         </requestbody>
     </request>
+
+    <request path="/api/v3/action/:moduleName/:id/:actionType" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="actionType" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
 </config>
