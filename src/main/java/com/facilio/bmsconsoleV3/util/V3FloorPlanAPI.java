@@ -351,7 +351,7 @@ public class V3FloorPlanAPI {
 		 List <JSONObject> tooltipConent = new ArrayList<>();
 
 
-			V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+			V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_FLOORPLAN)) {
 				if (settings != null) {
 					V3FloorplanCustomizationContext.SpaceLabel primaryLabel = settings.getSpaceToolTipPrimaryLabel();

@@ -29,8 +29,8 @@ public class SetBookingFormIDCommand extends FacilioCommand {
 
         geoMarkers.forEach(marker -> {
             V3IndoorFloorPlanPropertiesContext properties = marker.getProperties();
-
-            if(deskmodule.getModuleId() == properties.getMarkerModuleId()) {
+            marker.getProperties().setBookingFormId((long) -1);
+            if(properties.getMarkerModuleId()!=null && deskmodule.getModuleId() == properties.getMarkerModuleId()) {
                 try {
                     Long FormId = V3SpaceBookingApi.getSpaceCategoryRelationFormId(properties.getSpaceCategoryId(), spacebookingModule.getModuleId());
                     if(FormId != null) {

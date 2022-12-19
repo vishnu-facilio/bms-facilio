@@ -415,6 +415,7 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		JSONObject tooltip = new JSONObject();
 		JSONObject tooltipCoreData = new JSONObject();
 		List <JSONObject> tooltipConent = new ArrayList<>();
+		V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
 
 
 		if (record != null) {
@@ -424,25 +425,52 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 			if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 
 				V3DeskContext desk = (V3DeskContext) record;
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_FLOORPLAN)) {
+					if (settings != null) {
+						V3FloorplanCustomizationContext.DeskLabel primaryLabel = settings.getDeskToolTipPrimaryLabel();
+						V3DeskContext moduleContext = (V3DeskContext) record;
+						if(primaryLabel.getCustomText().trim().isEmpty()) {
+							tooltipCoreData.put("icon", "office_desk");
+							tooltipCoreData.put("label", desk.getName());
+						}
+						else {
+							primaryLabel.getLabelType().setCustomText(primaryLabel.getCustomText());
+							tooltipCoreData.put("icon", "office_desk");
+							tooltipCoreData.put("label", primaryLabel.getLabelType().format(moduleContext));
+						}
+						tooltip.put("title", tooltipCoreData);
+						tooltipCoreData = new JSONObject();
+						tooltipConent = new ArrayList<>();
+						List<V3FloorplanCustomizationContext.DeskLabel> secondaryLabels = settings.getDeskToolTipSecondaryLabel();
+						for (V3FloorplanCustomizationContext.DeskLabel label : secondaryLabels) {
+							label.getLabelType().setCustomText(label.getCustomText());
+							tooltipCoreData = new JSONObject();
+							tooltipCoreData.put("icon", "desk_type");
+							tooltipCoreData.put("label", label.getLabelType().format(moduleContext));
+							tooltipConent.add(tooltipCoreData);
+						}
+						tooltip.put("content", tooltipConent);
+					}
 
+				}else {
 
-				// title record
-				tooltipCoreData.put("icon", "office_desk");
-				tooltipCoreData.put("label", desk.getName());
-				tooltip.put("title", tooltipCoreData);
-
-				tooltipCoreData = new JSONObject();
-				tooltipCoreData.put("icon", "desk_type");
-				tooltipCoreData.put("label", desk.getDeskTypeName());
-				tooltipConent.add(tooltipCoreData);
-
-
-				if (desk.getEmployee() != null) {
+					// title record
+					tooltipCoreData.put("icon", "office_desk");
+					tooltipCoreData.put("label", desk.getName());
+					tooltip.put("title", tooltipCoreData);
 
 					tooltipCoreData = new JSONObject();
-					tooltipCoreData.put("icon", "employee");
-					tooltipCoreData.put("label", desk.getEmployee().getName());
+					tooltipCoreData.put("icon", "desk_type");
+					tooltipCoreData.put("label", desk.getDeskTypeName());
 					tooltipConent.add(tooltipCoreData);
+
+
+					if (desk.getEmployee() != null) {
+
+						tooltipCoreData = new JSONObject();
+						tooltipCoreData.put("icon", "employee");
+						tooltipCoreData.put("label", desk.getEmployee().getName());
+						tooltipConent.add(tooltipCoreData);
 
 				}
 				else {
@@ -459,17 +487,48 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 					tooltipConent.add(tooltipCoreData);
 				}
 
-				if (desk.getDepartment() != null) {
-					tooltipCoreData = new JSONObject();
-					tooltipCoreData.put("icon", "department");
-					tooltipCoreData.put("label",  desk.getDepartment().getName());
-					tooltipConent.add(tooltipCoreData);
+					if (desk.getDepartment() != null) {
+						tooltipCoreData = new JSONObject();
+						tooltipCoreData.put("icon", "department");
+						tooltipCoreData.put("label", desk.getDepartment().getName());
+						tooltipConent.add(tooltipCoreData);
 
+					}
+
+					tooltip.put("content", tooltipConent);
 				}
 
-				tooltip.put("content", tooltipConent);
-
 			}
+			else{
+				if(settings != null) {
+					Map<String, FloorPlanToolTipContext> moduleSettings = settings.getModules();
+					if (moduleSettings.containsKey(module.getName())) {
+						ModuleBaseWithCustomFields moduleContext = (ModuleBaseWithCustomFields) record;
+						FloorPlanToolTipContext moduleSetting = moduleSettings.get(module.getName());
+						FloorPlanToolTipContext.ToolTip toolTip = moduleSetting.getToolTip();
+						toolTip.getPrimaryLabel().getLabelType().setModuleName(module.getName());
+						toolTip.getPrimaryLabel().getLabelType().setCustomText(toolTip.getPrimaryLabel().getCustomText());
+						tooltipCoreData.put("icon", "desk_type");
+
+						tooltipCoreData.put("label", toolTip.getPrimaryLabel().getLabelType().format(moduleContext));
+						tooltip.put("title", tooltipCoreData);
+						tooltipCoreData = new JSONObject();
+						tooltipConent = new ArrayList<>();
+						List<FloorPlanToolTipContext.Label> secondaryLabels = toolTip.getSecondaryLabel();
+						for(FloorPlanToolTipContext.Label label : secondaryLabels)
+						{
+							label.getLabelType().setModuleName(module.getName());
+							label.getLabelType().setCustomText(label.getCustomText());
+							tooltipCoreData = new JSONObject();
+							tooltipCoreData.put("icon", "desk_type");
+							tooltipCoreData.put("label", label.getLabelType().format(moduleContext));
+							tooltipConent.add(tooltipCoreData);
+						}
+						tooltip.put("content", tooltipConent);
+					}
+				}
+			}
+
 
 		}
 		else {
@@ -535,15 +594,37 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 		JSONObject tooltipCoreData = new JSONObject();
 		List <JSONObject> tooltipConent = new ArrayList<>();
 
+		V3FloorplanCustomizationContext  settings=(V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_FLOORPLAN)) {
+			if (settings != null) {
+				V3FloorplanCustomizationContext.SpaceLabel primaryLabel = settings.getSpaceToolTipPrimaryLabel();
+				primaryLabel.getLabelType().setCustomText(primaryLabel.getCustomText());
+				tooltipCoreData.put("icon", "room");
 
-
-		tooltipCoreData = new JSONObject();
-		tooltipCoreData.put("icon", "room");
-		if (zone.getSpace() != null) {
-			tooltipCoreData.put("label",  zone.getSpace().getName());
+				tooltipCoreData.put("label", primaryLabel.getLabelType().format(zone.getSpace()));
+				tooltip.put("title", tooltipCoreData);
+				tooltipCoreData = new JSONObject();
+				tooltipConent = new ArrayList<>();
+				List<V3FloorplanCustomizationContext.SpaceLabel> secondaryLabels = settings.getSpaceToolTipSecondaryLabel();
+				for (V3FloorplanCustomizationContext.SpaceLabel label : secondaryLabels) {
+					label.getLabelType().setCustomText(label.getCustomText());
+					tooltipCoreData = new JSONObject();
+					tooltipCoreData.put("icon", "desk_type");
+					tooltipCoreData.put("label", label.getLabelType().format(zone.getSpace()));
+					tooltipConent.add(tooltipCoreData);
+				}
+				tooltip.put("content", tooltipConent);
+			}
 
 		}
-		tooltip.put("title", tooltipCoreData);
+		else {
+			tooltipCoreData = new JSONObject();
+			tooltipCoreData.put("icon", "room");
+			if (zone.getSpace() != null) {
+				tooltipCoreData.put("label", zone.getSpace().getName());
+
+			}
+			tooltip.put("title", tooltipCoreData);
 
 
 
@@ -564,9 +645,9 @@ public class getIndoorFloorPlanBookingNewResultCommands extends FacilioCommand {
 			String label = zone.isIsReservable() ? "Reservable" : "Non Reservable";
 			tooltipCoreData.put("label", label);
 
+			}
+			tooltipConent.add(tooltipCoreData);
 		}
-		tooltipConent.add(tooltipCoreData);
-
 		return tooltip;
 	}
 

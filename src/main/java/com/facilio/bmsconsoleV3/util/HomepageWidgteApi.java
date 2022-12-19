@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.homepage.homepagewidgetdata.HomepageWidgetData;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -117,7 +118,8 @@ public class HomepageWidgteApi {
 
 
         if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
-            widget.setPrimaryText("Your desk");
+            widget.setPrimaryText("Desk");
+            widget.setSecondaryText("Your desk is " + space.getName());
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
                 List<BuildingContext>buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
@@ -144,7 +146,8 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
         else if(parkingModule.getModuleId() == spaceBooking.getParentModuleId()) {
-            widget.setPrimaryText("Your Parking Slot");
+            widget.setPrimaryText("Parking");
+            widget.setSecondaryText("Slot No " + space.getName());
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
                 List<BuildingContext>buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
@@ -170,7 +173,7 @@ public class HomepageWidgteApi {
             widget.setTime(time);
         }
         else {
-            widget.setPrimaryText("Booking");
+            widget.setPrimaryText("Room");
             widget.setSecondaryText(spaceBooking.getName());
             widget.setSpace(space);
             if(space.getBuilding()!=null && space.getBuildingId()>0) {
@@ -459,6 +462,12 @@ public class HomepageWidgteApi {
             if(CollectionUtils.isNotEmpty(bookingList)) {
                 bookingList.forEach(booking -> {
                     try {
+                        String status= booking.getModuleState().getStatus();
+                        List<String> notShow= Arrays.asList("cancelled","checkedIn","checkedOut","expired","autocheckedOut");
+                        if(!notShow.contains(status) && (booking.getHost() != null && booking.getReservedBy() != null) && (AccountUtil.getCurrentUser().getId() == booking.getSysCreatedBy().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getHost().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getReservedBy().getId()))
+                        {
+                            booking.setShowCancel(true);
+                        }
                         HomepageWidgetData widget = getWidgetFromBookingData(booking, module);
                         if (widget != null) {
                             widgets.add(widget);
@@ -480,6 +489,12 @@ public class HomepageWidgteApi {
         if(CollectionUtils.isNotEmpty(bookingList)) {
             bookingList.forEach(booking -> {
                 try {
+                    String status= booking.getModuleState().getStatus();
+                    List<String> notShow= Arrays.asList("cancelled","checkedIn","checkedOut","expired","autocheckedOut");
+                    if(!notShow.contains(status) && (booking.getHost() != null && booking.getReservedBy() != null) && (AccountUtil.getCurrentUser().getId() == booking.getSysCreatedBy().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getHost().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getReservedBy().getId()))
+                    {
+                        booking.setShowCancel(true);
+                    }
                     HomepageWidgetData widget = getWidgetFromBookingData(booking, module);
                     if (widget != null) {
                         widgets.add(widget);
@@ -500,6 +515,13 @@ public class HomepageWidgteApi {
         if(CollectionUtils.isNotEmpty(bookingList)) {
             bookingList.forEach(booking -> {
                 try {
+
+                    String status= booking.getModuleState().getStatus();
+                    List<String> notShow= Arrays.asList("cancelled","checkedIn","checkedOut","expired","autocheckedOut");
+                    if(!notShow.contains(status) && (booking.getHost() != null && booking.getReservedBy() != null) && (AccountUtil.getCurrentUser().getId() == booking.getSysCreatedBy().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getHost().getId() || PeopleAPI.getPeople(AccountUtil.getCurrentUser().getEmail()).getId() == booking.getReservedBy().getId()))
+                    {
+                        booking.setShowCancel(true);
+                    }
                     HomepageWidgetData widget = getWidgetFromBookingData(booking, module);
                     if (widget != null) {
                         widgets.add(widget);
@@ -607,7 +629,7 @@ public class HomepageWidgteApi {
 
         if(peopleId != null ) {
 
-            FacilioStatus activeStatus = TicketAPI.getStatus(SpaceBookingModule, "Pending");
+            FacilioStatus activeStatus = TicketAPI.getStatus(SpaceBookingModule, "booked");
 
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getStateRuleTransitionFields());
 
@@ -649,54 +671,8 @@ public class HomepageWidgteApi {
 
             }
         }
-        List<V3SpaceBookingContext> attendeeBookingsList = getInternalAttendeeBookings(parentModule);
-        List<V3SpaceBookingContext> allBookingList = new ArrayList<>();
-        if(bookingList!=null && attendeeBookingsList!=null){
-            allBookingList = Stream.concat(bookingList.stream(), attendeeBookingsList.stream())
-                    .collect(Collectors.toList());
-        }
-        else if(bookingList==null && attendeeBookingsList!=null )
-        {
-            allBookingList = attendeeBookingsList;
-        }
-        else if(bookingList!=null && attendeeBookingsList==null)
-        {
-            allBookingList = bookingList;
-        }
-
-        return allBookingList;
+        return bookingList;
     }
-
-    public static List<V3SpaceBookingContext> getInternalAttendeeBookings(FacilioModule parentModule)throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule spaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
-        FacilioModule spaceBookingInternalAttendee = modBean.getModule(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING_INTERNAL_ATTENDEE);
-        List<FacilioField> fields = modBean.getAllFields(spaceBookingModule.getName());
-        Map<String, FacilioField> map = FieldFactory.getAsMap(fields);
-
-        Long daystartTime = DateTimeUtil.getDayStartTime();
-        Long dayEndTime = DateTimeUtil.getDayEndTimeOf(daystartTime);
-        Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
-        FacilioStatus activeStatus = TicketAPI.getStatus(spaceBookingModule, "Pending");
-
-        SelectRecordsBuilder<V3SpaceBookingContext> selectBuilder = new SelectRecordsBuilder<V3SpaceBookingContext>()
-                .moduleName(spaceBookingModule.getName())
-                .select(fields)
-                .beanClass(V3SpaceBookingContext.class)
-                .innerJoin(spaceBookingInternalAttendee.getTableName())
-                .on(spaceBookingInternalAttendee.getTableName()+".SPACE_BOOKING_ID = "+spaceBookingModule.getTableName()+".ID")
-                .andCondition(CriteriaAPI.getCondition(map.get("bookingStartTime"), String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL))
-                .andCondition(CriteriaAPI.getCondition(spaceBookingInternalAttendee.getTableName() + ".ATTENDEE", "right", String.valueOf(peopleId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("SpaceBooking.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("SpaceBooking.MODULE_STATE", "moduleState", String.valueOf(activeStatus.getId()), NumberOperators.EQUALS));
-
-        selectBuilder.fetchSupplement((LookupField) map.get("space"));
-
-        List<V3SpaceBookingContext> internalAttendeeSpaceBookingList = new ArrayList<>();
-        internalAttendeeSpaceBookingList = selectBuilder.get();
-        return internalAttendeeSpaceBookingList;
-    }
-
     public static JSONObject getRecentlyReservedSpace() throws Exception {
         JSONObject widgetData = new JSONObject();
 
@@ -819,22 +795,7 @@ public class HomepageWidgteApi {
             bookinglist = selectBuilder.get();
 
         }
-        List<V3SpaceBookingContext> attendeeBookingsList = getInternalAttendeeSpaceBookings();
-        List<V3SpaceBookingContext> allBookingList = new ArrayList<>();
-        if(bookinglist!=null && attendeeBookingsList!=null){
-            allBookingList = Stream.concat(bookinglist.stream(), attendeeBookingsList.stream())
-                    .collect(Collectors.toList());
-        }
-        else if(bookinglist==null && attendeeBookingsList!=null )
-        {
-            allBookingList = attendeeBookingsList;
-        }
-        else if(bookinglist!=null && attendeeBookingsList==null)
-        {
-            allBookingList = bookinglist;
-        }
-
-        return allBookingList;
+        return bookinglist;
     }
     public static  List<V3SpaceBookingContext>  getMyPreviousBookedSpaceList(FacilioModule module)throws Exception {
         List<V3SpaceBookingContext> spaceBookingList = new ArrayList<V3SpaceBookingContext>();
@@ -956,7 +917,7 @@ public class HomepageWidgteApi {
             assignedWidget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(currentTime));
             assignedWidget.setIcon(1);
             assignedWidget.setTitle(module.getDisplayName());
-            assignedWidget.setPrimaryText("Your desk");
+            assignedWidget.setPrimaryText("Desk");
             assignedWidget.setStartTime(daystartTime);
             assignedWidget.setEndTime(dayEndTime);
             assignedWidget.setModuleName(module.getName());
@@ -1041,7 +1002,7 @@ public class HomepageWidgteApi {
                         });
                     }
                 }
-                deskWidget.setSecondaryText(mydesk.getName());
+                deskWidget.setSecondaryText("Your desk is " + mydesk.getName());
                 deskWidget.setSecondaryText2("Permanent");
                 deskWidget.setModuleName(module.getName());
                 return deskWidget;
