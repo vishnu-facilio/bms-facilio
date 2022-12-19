@@ -1,8 +1,12 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.Constants;
@@ -19,6 +23,11 @@ public class SetAnnouncementPhotoIdCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<AnnouncementContext> announcements = recordMap.get(moduleName);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField photoID = modBean.getField("photoId",FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
+        if(photoID == null){
+            return false;
+        }
 
         if(CollectionUtils.isNotEmpty(announcements)) {
             for(AnnouncementContext announcement : announcements){
