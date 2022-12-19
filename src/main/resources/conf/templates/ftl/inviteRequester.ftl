@@ -42,6 +42,28 @@
 </tr>
             </table>
             </div>
+                    <table cellpadding="0" cellspacing="0" style="width:100%;max-width:100%;padding: 20px 26px 20px;">
+                        <tr>
+                            <td colspan="100%">
+                                <div style="text-align: center;padding-top: 20px;">
+                                    <span style="padding-right: 15px;">
+                                        <a href="${appLink}/auth/apps/ios" target="_blank"
+                                            style="color: #271556;text-decoration: none;">
+                                            <img src="https://static.facilio.com/guide/app-store.png"
+                                                style="width: 90px; height: auto;" />
+                                        </a>
+                                    </span>
+                                    <span>
+                                        <a href="${appLink}/auth/apps/android" target="_blank"
+                                            style="color: #271556;text-decoration: none;">
+                                            <img src="https://static.facilio.com/guide/play-store.png"
+                                                style="width: 90px; height: auto;" />
+                                        </a>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        </table>
             <div style="text-align: center;margin-top: 20px;">
             
             <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2022 <a href="${brandUrl}" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">${brandUrl}</a> | ALL RIGHTS RESERVED</div>
@@ -50,3 +72,6 @@
 </body>
 
 </html>
+
+
+

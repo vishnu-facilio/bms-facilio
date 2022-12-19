@@ -326,6 +326,7 @@ public class UserBeanImpl implements UserBean {
 			}
 			placeholders.put("invitelink", inviteLink);
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
+			placeholders.put("appLink",AccountUtil.getAppLink(appDomainObj));
 			
 			if(isInvitation) {
 				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders, true);

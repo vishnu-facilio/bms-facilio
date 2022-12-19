@@ -2,6 +2,7 @@ package com.facilio.accounts.util;
 
 import com.facilio.accounts.bean.*;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
@@ -15,6 +16,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -36,6 +38,7 @@ public class AccountUtil {
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<>();
 	private static ThreadLocal<AuthMethod> validationMethod = new ThreadLocal<>();
 	public static final String JWT_DELIMITER = "#";
+
 
 	public enum AuthMethod {
 		PERMALINK,
@@ -755,6 +758,25 @@ public class AccountUtil {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public static String  getAppLink(AppDomain appDomainObj) throws Exception {
+		String hostname = "";
+		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
+			long orgId = appDomainObj.getOrgId();
+			if (AccountUtil.getCurrentOrg() != null) {
+				orgId = AccountUtil.getCurrentOrg().getOrgId();
+			}
+			List<AppDomain> appDomains = IAMOrgUtil.getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), orgId);
+			for (AppDomain appDomain: appDomains) {
+				if (appDomain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
+					appDomainObj = appDomain;
+					break;
+				}
+			}
+			hostname = FacilioProperties.getAppProtocol()+ "://" + appDomainObj.getDomain();
+		}
+			return hostname;
 	}
 	
 }
