@@ -267,7 +267,7 @@ public class ReadingKpiAPI {
                 values.add(1);
                 schedule.setValues(values);
                 return schedule;
-            case QUARTERTLY:
+            case QUARTERLY:
                 schedule = new ScheduleInfo();
                 schedule.addTime("00:00");
                 schedule.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY);
@@ -438,14 +438,14 @@ public class ReadingKpiAPI {
                 types.add(NamespaceFrequency.MONTHLY.getIndex());
 
                 if (zdt.getMonth() == Month.JANUARY) {
-                    types.add(NamespaceFrequency.QUARTERTLY.getIndex());
+                    types.add(NamespaceFrequency.QUARTERLY.getIndex());
                     types.add(NamespaceFrequency.HALF_YEARLY.getIndex());
                     types.add(NamespaceFrequency.ANNUALLY.getIndex());
                 } else if (zdt.getMonth() == Month.JULY) {
-                    types.add(NamespaceFrequency.QUARTERTLY.getIndex());
+                    types.add(NamespaceFrequency.QUARTERLY.getIndex());
                     types.add(NamespaceFrequency.HALF_YEARLY.getIndex());
                 } else if (zdt.getMonth() == Month.APRIL || zdt.getMonth() == Month.OCTOBER) {
-                    types.add(NamespaceFrequency.QUARTERTLY.getIndex());
+                    types.add(NamespaceFrequency.QUARTERLY.getIndex());
                 }
             }
         }

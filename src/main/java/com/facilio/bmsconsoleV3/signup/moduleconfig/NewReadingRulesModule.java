@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -16,8 +17,8 @@ import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
-public class NewReadingRulesModule extends BaseModuleConfig{
-    public NewReadingRulesModule(){
+public class NewReadingRulesModule extends BaseModuleConfig {
+    public NewReadingRulesModule() {
         setModuleName(FacilioConstants.ReadingRules.NEW_READING_RULE);
     }
 
@@ -48,7 +49,7 @@ public class NewReadingRulesModule extends BaseModuleConfig{
         return groupVsViews;
     }
 
-    private static FacilioView getRulesByStatusForNewRule(String name, String displayName, boolean status,ModuleBean modBean) throws Exception {
+    private static FacilioView getRulesByStatusForNewRule(String name, String displayName, boolean status, ModuleBean modBean) throws Exception {
         List<FacilioField> rulesFields = modBean.getAllFields(FacilioConstants.ReadingRules.NEW_READING_RULE);
         FacilioField statusField = FieldFactory.getAsMap(rulesFields).get("status");
 
@@ -68,6 +69,7 @@ public class NewReadingRulesModule extends BaseModuleConfig{
         view.setDisplayName(displayName);
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+        view.setFields(getViewFields());
 
         return view;
     }
@@ -86,7 +88,16 @@ public class NewReadingRulesModule extends BaseModuleConfig{
 
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         allView.setSortFields(sortFields);
-
+        allView.setFields(getViewFields());
         return allView;
+        
+    }
+
+    private static List<ViewField> getViewFields() {
+        List<ViewField> columns = new ArrayList<>();
+        columns.add(new ViewField("name", "Name"));
+        columns.add(new ViewField("assetCategory", "Asset Category"));
+        columns.add(new ViewField("status", "Status"));
+        return columns;
     }
 }

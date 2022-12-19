@@ -21,6 +21,7 @@ import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -107,19 +108,21 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(rcaRuleIds)) {
             List<ReadingAlarm> rcaFaults = ReadingRuleRcaAPI.getRCAReadingAlarms(rcaRuleIds, parentAlarm.getResource().getId(), null);
-            for (int i = 0; i < rcaRuleIds.size(); i++) {
-                Long id = rcaRuleIds.get(i);
-                ReadingAlarm rcaFault = rcaFaults.get(i);
-                RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
-                NewReadingRuleContext rule = new NewReadingRuleContext();
-                rule.setId(id);
-                readingContext.setRcaRule(rule);
-                readingContext.setParentId(parentAlarm);
-                setAssetCategory(rcaFault);
-                readingContext.setRcaFault(rcaFault);
+            if (CollectionUtils.isNotEmpty(rcaFaults)) {
+                for (int i = 0; i < rcaRuleIds.size(); i++) {
+                    Long id = rcaRuleIds.get(i);
+                    ReadingAlarm rcaFault = rcaFaults.get(i);
+                    RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
+                    NewReadingRuleContext rule = new NewReadingRuleContext();
+                    rule.setId(id);
+                    readingContext.setRcaRule(rule);
+                    readingContext.setParentId(parentAlarm);
+                    setAssetCategory(rcaFault);
+                    readingContext.setRcaFault(rcaFault);
 
 
-                rcaScoreReadingContexts.add(readingContext);
+                    rcaScoreReadingContexts.add(readingContext);
+                }
             }
             return rcaScoreReadingContexts;
         }
