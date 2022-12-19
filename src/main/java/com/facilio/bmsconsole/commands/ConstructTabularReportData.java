@@ -208,6 +208,8 @@ public class ConstructTabularReportData extends FacilioCommand {
                 orderBy.add(xField.getCompleteColumnName());
                 dataPointContext.setOrderBy(orderBy);
                 dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+            }else if(sortBy.get("limit") != null){
+                dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
             }
         }
         if (firstRow.getModuleName() != null) {
@@ -255,6 +257,8 @@ public class ConstructTabularReportData extends FacilioCommand {
                     dataPointContext.setOrderBy(orderBy);
                     dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
                     dataPointContext.setDefaultSortPoint(true);
+                }else if(sortBy.get("limit") != null){
+                    dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
                 }
             }
             Criteria criteria = data.getCriteria();

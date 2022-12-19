@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,8 +12,10 @@ import java.util.StringJoiner;
 import java.util.TreeSet;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -24,15 +27,9 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -221,6 +218,13 @@ public class ConstructReportDataCommand extends FacilioCommand {
             switch (xAxis.getField().getDataTypeEnum()) {
                 case DATE:
                 case DATE_TIME:
+                    BaseLineContext.AdjustType adjustType = baseLine.getAdjustTypeEnum();
+                    if(adjustType != null && adjustType == BaseLineContext.AdjustType.FULL_MONTH_DATE)
+                    {
+                        ZonedDateTime xValZdt = DateTimeUtil.getDateTime((long)xVal);
+                        xValZdt = xValZdt.plusMonths(1);
+                        return DateTimeUtil.getMonthEndTime(xValZdt.getMonthValue(), xValZdt.getYear());
+                    }
                     return (long) xVal + baseLine.getDiff();
                 default:
                     break;

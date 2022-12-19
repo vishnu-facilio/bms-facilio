@@ -338,7 +338,8 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 					moduleIds.add(energyData.getModuleId());
 					moduleIds_list.add(energyData.getModuleId());
 				}
-				for(long moduleId : moduleIds)
+				List<Long> newList = moduleIds.stream().distinct().collect(Collectors.toList());
+				for(long moduleId : newList)
 				{
 					if(moduleIds_list != null && moduleIds_list.contains(moduleId)) {
 						reportFolders.addAll(ReportUtil.getReportFolders(moduleId, searchText, isMainApp, isPivot));

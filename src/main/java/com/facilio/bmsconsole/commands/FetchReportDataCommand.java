@@ -274,7 +274,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         } else {
             joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
         }
-        applyOrderByAndLimit(dp, selectBuilder, report.getxAggrEnum());
+        applyOrderByAndLimit(dp, selectBuilder, report.getxAggrEnum(), reportType);
         StringJoiner groupBy = new StringJoiner(",");
         FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
         if (report.getgroupByTimeAggr() > 0) {
@@ -1355,7 +1355,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
     }
 
-    private void applyOrderByAndLimit(ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr) {
+    private void applyOrderByAndLimit(ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr, ReportType reportType) {
         if (dataPoint.getOrderBy() != null && !dataPoint.getOrderBy().isEmpty()) {
 
             if (dataPoint.getOrderByFuncEnum() == null || dataPoint.getOrderByFuncEnum() == OrderByFunction.NONE) {
@@ -1380,6 +1380,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                 orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
             }
             selectBuilder.orderBy(orderBy);
+        }
+        else if(reportType != null && reportType == ReportType.PIVOT_REPORT && dataPoint.getLimit() != -1){
+            selectBuilder.limit(dataPoint.getLimit());
         }
     }
 
