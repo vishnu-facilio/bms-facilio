@@ -133,7 +133,11 @@ public class TranslationAction extends FacilioAction {
                         for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
                             if (CollectionUtils.isNotEmpty( webtabGroup.getWebTabs())) {
                                 for (WebTabContext webTab : webtabGroup.getWebTabs()) {
-                                    List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums = new ArrayList<>(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
+                                    List<TranslationTypeEnum.ClientColumnTypeEnum> typeEnums = TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum());
+                                    if (CollectionUtils.isEmpty(typeEnums)){
+                                        continue;
+                                    }
+                                    List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums = new ArrayList<>(typeEnums);
                                     if (CollectionUtils.isNotEmpty(webTab.getModules())){
                                         List<String> moduleNames = webTab.getModules().stream().map(p->p.getName()).collect(Collectors.toList());
                                         if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE)){
