@@ -81,9 +81,18 @@ public class UriFilter implements Filter {
                     }
                     else {
                         String[] strings = request.getServerName().split("\\."); // There could be a better way to do this.
-                        if (strings.length > 3) {
+                        if (strings.length > 4) {
                             String clientBuild = strings[0];
+                            String serverName = MessageFormat.format("{0}.{1}.{2}.{3}", strings[1], strings[2], strings[3], strings[4]);
+                            request.setAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION, clientBuild);
+                            return new FacilioHttpRequest(request, serverName);
+                        }
+                        if (strings.length > 3) {
                             String serverName = MessageFormat.format("{0}.{1}.{2}", strings[1], strings[2], strings[3]);
+                            if (serverName.equals(stageDomain)) {
+                                break;
+                            }
+                            String clientBuild = strings[0];
                             request.setAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION, clientBuild);
                             return new FacilioHttpRequest(request, serverName);
                         }
