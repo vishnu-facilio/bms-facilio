@@ -25,6 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FetchRcaReadingsCommand extends FacilioCommand {
     @Override
@@ -109,19 +110,19 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(rcaRuleIds)) {
             List<ReadingAlarm> rcaFaults = ReadingRuleRcaAPI.getRCAReadingAlarms(rcaRuleIds, parentAlarm.getResource().getId(), null);
             if (CollectionUtils.isNotEmpty(rcaFaults)) {
-                for (int i = 0; i < rcaRuleIds.size(); i++) {
-                    Long id = rcaRuleIds.get(i);
-                    ReadingAlarm rcaFault = rcaFaults.get(i);
-                    RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
-                    NewReadingRuleContext rule = new NewReadingRuleContext();
-                    rule.setId(id);
-                    readingContext.setRcaRule(rule);
-                    readingContext.setParentId(parentAlarm);
-                    setAssetCategory(rcaFault);
-                    readingContext.setRcaFault(rcaFault);
-
-
-                    rcaScoreReadingContexts.add(readingContext);
+                for(Long rcaRuleId: rcaRuleIds){
+                    List<ReadingAlarm> rcaFaultsFiltered = rcaFaults.stream().filter(fault->fault.getRule().getId()==rcaRuleId).collect(Collectors.toList());
+                    if(CollectionUtils.isNotEmpty(rcaFaultsFiltered)){
+                        ReadingAlarm rcaFault = rcaFaultsFiltered.get(0);
+                        RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
+                        NewReadingRuleContext rule = new NewReadingRuleContext();
+                        rule.setId(rcaRuleId);
+                        readingContext.setRcaRule(rule);
+                        readingContext.setParentId(parentAlarm);
+                        setAssetCategory(rcaFault);
+                        readingContext.setRcaFault(rcaFault);
+                        rcaScoreReadingContexts.add(readingContext);
+                    }
                 }
             }
             return rcaScoreReadingContexts;
