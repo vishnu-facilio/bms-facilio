@@ -9601,7 +9601,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("id", "ID", module, FieldType.NUMBER));
         fields.add(getField("printerId", "PRINTER_ID", module, FieldType.NUMBER));
         fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.NUMBER));
-
+        fields.add(getField("countryCode", "COUNTRY_CODE", module, FieldType.STRING));
         return fields;
     }
 

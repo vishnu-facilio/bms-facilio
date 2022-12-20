@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class VisitorKioskContext extends DeviceContext{
 	private static final long serialVersionUID = 1L;
 
@@ -9,6 +12,9 @@ public class VisitorKioskContext extends DeviceContext{
 	
 	private PrinterContext printer;
 	private BaseSpaceContext kioskForSpace;
+
+	@Getter@Setter
+	private String countryCode;
 	public long getId() {
 		return id;
 	}
