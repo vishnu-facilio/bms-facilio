@@ -43,8 +43,10 @@ public class BackwardCompatibleStateFlowUpdateCommand extends FacilioCommand {
 					}
 					workOrder.setStatus(status);
 				}
-				for (WorkOrderContext wo : oldWos) {
-					StateFlowRulesAPI.updateState(wo, module, status, false, context);
+				if(status != null) {
+					for (WorkOrderContext wo : oldWos) {
+						StateFlowRulesAPI.updateState(wo, module, status, false, context);
+					}
 				}
 			}
 		}
