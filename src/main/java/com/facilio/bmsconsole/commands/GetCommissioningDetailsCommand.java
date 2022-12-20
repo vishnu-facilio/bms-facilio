@@ -62,17 +62,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 						point.put("unit", null); // since unit is set as 0 by default in points table even if there is no data
 					}
 				}
-				if(point.get("controllerId") != null){
-					if(controllerIdVSNameMap.containsKey(point.get("controllerId"))){
-						point.put("controllerName",controllerIdVSNameMap.get(point.get("controllerId")));
-					}
-				}
 				if(isNiagra && StringUtils.isNotEmpty((String)point.get("displayName"))) { // Temp
 					point.put("name", point.get("displayName"));
 				}
 				// TODO fetch only those points from db instead of filtering
 				// Points fetched from db will have orgId. Filtering unwanted values here
-				finalPoints.add(getPointObj(point, headers));
+				finalPoints.add(getPointObj(point, headers,controllerIdVSNameMap));
 			}
 			
 			log.setPoints(finalPoints);
@@ -119,12 +114,17 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		}
 	}
 	
-	private Map<String, Object> getPointObj(Map<String, Object> point, List<String> headers) {
+	private Map<String, Object> getPointObj(Map<String, Object> point, List<String> headers,Map<Long,String>controllerIdVSNameMap) {
 		if (point.containsKey("orgId")) {
 			Map<String, Object> filteredPoint = new HashMap<>();
 			for(String header: headers) {
 				if (point.containsKey(header)) {
 					filteredPoint.put(header, point.get(header));
+				}
+			}
+			if(point.get("controllerId") != null){
+				if(controllerIdVSNameMap.containsKey(point.get("controllerId"))){
+					filteredPoint.put("controllerName",controllerIdVSNameMap.get(point.get("controllerId")));
 				}
 			}
 			filteredPoint.put("id", point.get("id"));

@@ -57,6 +57,7 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
             pointMap.put("agentName", agent.getName());
             pointMap.put("agentType", AgentType.valueOf(agent.getAgentType()).toString());
             pointMap.put("agentId",agent.getId());
+            pointMap.put("siteId",agent.getSiteId());
             finalMapList.add(pointMap);
         }
         BmsPointsTaggingUtil.tagPointListV1(finalMapList);

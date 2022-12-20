@@ -1,23 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CommissioningLogContext;
+import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.CommissioningLogContext;
-import com.facilio.bmsconsole.util.CommissioningApi;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AddCommissioningLogCommand extends FacilioCommand {
 
@@ -72,6 +71,7 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		if (log.getControllerTypeEnum() == null) {
 			throw new IllegalArgumentException("Please select controller type");
 		}
+		validatePointsCount(log);
 		List<Long> controllerIds = log.getControllerIds();
 		if (controllerIds.contains(0l)) {
 			if (controllerIds.size() > 1) {
@@ -85,7 +85,44 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Some controllers selected are already in draft mode");
 		}
 	}
-	
+
+	private void validatePointsCount(CommissioningLogContext log) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> controllerIds = log.getControllerIds();
+		FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
+		FacilioModule pointModule = ModuleFactory.getPointModule();
+		FacilioModule resourceModule = ModuleFactory.getResourceModule();
+
+		List<FacilioField> allFields = new ArrayList<>();
+//		allFields.addAll(modBean.getModuleFields(controllerModule.getName()));
+		allFields.add(FieldFactory.getIdField(controllerModule));
+//		allFields.add(FieldFactory.getPointsCount());
+		allFields.add(FieldFactory.getConfiguredPointCountConditionField());
+		allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(controllerModule.getTableName())
+				.leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "." + FieldFactory.getControllerIdField(pointModule).getColumnName())
+				.innerJoin(resourceModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID")
+				.andCondition(CriteriaAPI.getIdCondition(controllerIds, controllerModule))
+				.select(allFields)
+				.groupBy(controllerModule.getTableName()+".ID");
+
+
+		List<Map<String, Object>> result = selectRecordBuilder.get();
+		Map<String,Long>NameVsPointsCountMap = result.stream().collect(Collectors.toMap(prop->(String)prop.get("name"),prop->((BigDecimal) prop.get("configured")).longValue()));
+		for (String name : NameVsPointsCountMap.keySet()){
+			if (NameVsPointsCountMap.get(name)==0){
+				NameVsPointsCountMap.remove(name);
+				if(NameVsPointsCountMap.containsValue(0L)){
+					throw new IllegalArgumentException("No configured points available for "+name+" and some other controllers");
+				}
+				else{
+					throw new IllegalArgumentException("No configured points available for the controller '"+name+"'");
+				}
+			}
+		}
+	}
 	private void addControllers(CommissioningLogContext log) throws Exception {
 		long logId = log.getId();
 		List<Map<String, Object>> props = log.getControllerIds().stream().map(controllerId -> {

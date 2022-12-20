@@ -4,7 +4,10 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.DownloadCertFile;
-import com.facilio.agentv2.*;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.CloudAgentUtil;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -16,6 +19,8 @@ import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.messageQueue.MessageQueueTopic;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +63,11 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
                 AgentUtilV2.togglePointsDataMissingAlarmJob(agent);
             }
+            List<Long>agentIds = agentBean.getAgentIds();
+                List<JobContext>jobs =  FacilioTimer.getJobs(agentIds, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB);
+                if (jobs.isEmpty()){
+                    AgentUtilV2.scheduleMlBmsJob(agent);
+                }
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
             }

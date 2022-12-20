@@ -3172,6 +3172,8 @@ public class FacilioConstants {
 		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";
 		public static final String POINTS_DATA_MISSING_ALARM_JOB_NAME = "PointsDataMissingAlarmJob";
 
+		public static final String ML_BMS_POINTS_TAGGING_JOB = "MLBmsPointsTaggingJob";
+
 	}
 
 	public static class WidgetNames {

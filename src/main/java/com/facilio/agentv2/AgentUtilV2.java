@@ -32,6 +32,7 @@ import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
@@ -42,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.*;
 
 public class AgentUtilV2
@@ -475,5 +477,19 @@ public class AgentUtilV2
     public void makeControllersActiveAndInactive(FacilioAgent agent, List<Long> controllerIds) throws SQLException {
         makeControllersActive(agent);
         makeControllersInActive(agent, controllerIds);
+    }
+    public static void scheduleMlBmsJob(FacilioAgent agent) throws Exception{
+        long interval = 120;
+
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+
+        long totalMinutesInADay = 60 * 24;
+        LocalTime time = LocalTime.of(0, 0);
+        for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
+            time = time.plusMinutes(interval);
+            scheduleInfo.addTime(time);
+        }
+        FacilioTimer.scheduleCalendarJob(agent.getId(), FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 }
