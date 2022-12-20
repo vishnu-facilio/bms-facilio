@@ -6,6 +6,7 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 
 import java.util.Collections;
 
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -95,11 +96,6 @@ import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AddOrUpdateAnnouncementSharingInfoCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.CancelParentChildAnnouncementsCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.PublishAnnouncementCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.ValidateCancelAnnouncementActionCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.ValidatePublishAnnouncementActionCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
