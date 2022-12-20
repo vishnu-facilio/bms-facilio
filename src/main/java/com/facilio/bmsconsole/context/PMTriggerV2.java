@@ -74,9 +74,12 @@ public class PMTriggerV2 extends V3Context {
     
     public ScheduleInfo getScheduleInfo() throws Exception {
 		
-        JSONParser parser = new JSONParser();
-        ScheduleInfo schedule = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(this.getSchedule()), ScheduleInfo.class);
-        return schedule;
+    	if(this.getSchedule() != null) {
+    		JSONParser parser = new JSONParser();
+            ScheduleInfo schedule = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(this.getSchedule()), ScheduleInfo.class);
+            return schedule;
+    	}
+    	return null;
 	}
 
 
