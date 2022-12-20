@@ -148,12 +148,12 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
         List<Condition> conditions = new ArrayList<>();
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get("pmV2"), String.valueOf(pmPlanner.getPmId()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get("pmPlanner"), String.valueOf(pmPlanner.getId()), NumberOperators.EQUALS));
-        List<FacilioStatus> statusList = TicketAPI.getStatusOfStatusType(module, FacilioStatus.StatusType.PRE_OPEN);
-        for (FacilioStatus status: statusList){
-            if(status.getType() == FacilioStatus.StatusType.PRE_OPEN && status.getStatus().equals("preopen")) {
-                conditions.add(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
-            }
-        }
+//        List<FacilioStatus> statusList = TicketAPI.getStatusOfStatusType(module, FacilioStatus.StatusType.PRE_OPEN);
+//        for (FacilioStatus status: statusList){
+//            if(status.getType() == FacilioStatus.StatusType.PRE_OPEN && status.getStatus().equals("preopen")) {
+//                conditions.add(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
+//            }
+//        }
         criteria.addAndConditions(conditions);
         timelineView.setCriteria(criteria);
     }

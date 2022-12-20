@@ -128,6 +128,7 @@ public class FacilioConstants {
 		
 		public static final String PM_V2_RESOURCE_PLANNER = "pmResourcePlanner";
 		public static final String PM_V2_PLANNER = "pmPlanner";
+		public static final String PLANNER_LIST = "pmPlannerList";
 		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
 	}
 
@@ -2889,6 +2890,7 @@ public class FacilioConstants {
 		}
 
 		public static final String DELETE_TYPE = "deleteType";
+		public static final Object LAST_EXECUTION_TIME = "lastExecutionTime";
 	}
 
 	public static class Inspection {

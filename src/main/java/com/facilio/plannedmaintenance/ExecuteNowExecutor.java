@@ -2,6 +2,8 @@ package com.facilio.plannedmaintenance;
 
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.time.DateTimeUtil;
+
 import org.apache.commons.chain.Context;
 
 import java.util.Arrays;
@@ -22,5 +24,14 @@ public class ExecuteNowExecutor extends ExecutorBase {
 	protected Long getComputedNextExecutionTime(Long nextExecutionTime, PlannedMaintenance plannedMaintenance) throws Exception {
 		// TODO Auto-generated method stub
 		return nextExecutionTime;
+	}
+
+	@Override
+	protected Boolean canProceedWithCreatedTime(Long createdTime) throws Exception {
+		// TODO Auto-generated method stub
+		if(createdTime <= (DateTimeUtil.getCurrenTime() - 5 * 60 * 60)) {	// adding 5 minutes buffer time
+    		return false;
+    	}
+		return true;
 	}
 }

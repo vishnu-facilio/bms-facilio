@@ -7,9 +7,11 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
+import com.facilio.bmsconsole.context.PlannedMaintenance.PMStatus;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext.JPStatus;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
@@ -22,6 +24,11 @@ public class PMBeforeCreateCommand extends FacilioCommand {
 
         for (ModuleBaseWithCustomFields record: plannedmaintenanceList) {
             PlannedMaintenance pm = (PlannedMaintenance) record;
+            
+            if(pm.getPmStatusEnum() == null) {
+            	pm.setPmStatusEnum(PMStatus.IN_ACTIVE);
+        	}
+            
             pm.setSourceType(V3TicketContext.SourceType.PM_TEMPLATE.getIntVal());
             pm.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED.getValue());
 

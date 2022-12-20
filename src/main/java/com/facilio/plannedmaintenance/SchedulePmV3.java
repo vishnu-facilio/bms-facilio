@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -29,9 +30,11 @@ public class SchedulePmV3 extends FacilioCommand {
        // context.put("trigger", pmTrigger);
         context.put("cutOffTime", System.currentTimeMillis());
         context.put("maxCount", 15);
-
+        context.put(FacilioConstants.PM_V2.PM_V2_MODULE_NAME, plannedMaintenance);
+        context.put(FacilioConstants.PM_V2.PM_V2_PLANNER, planner);
+        
         ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
-        List<V3WorkOrderContext> workorders = scheduleExecutor.execute(context, plannedMaintenance, planner);
+        List<V3WorkOrderContext> workorders = scheduleExecutor.execute(context);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = workorders.stream().map(i -> (ModuleBaseWithCustomFields) i).collect(Collectors.toList());
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         V3Util.createRecord(modBean.getModule("workorder"), moduleBaseWithCustomFields);

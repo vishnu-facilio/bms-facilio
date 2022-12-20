@@ -22,7 +22,7 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPlannedMaintenance() {
         return () -> new V3Config(PlannedMaintenance.class, new ModuleCustomFieldCount50())
                 .update()
-                .beforeSave(new PMBeforeCreateCommand(), new AddPMDetailsBeforeUpdateCommand())
+                .beforeSave(TransactionChainFactoryV3.PMV2BeforeUpdateChain())
                 .afterSave(new PMAfterPatchCommand())
                 .create()
                 .beforeSave(new PMBeforeCreateCommand(), new AddPMDetailsBeforeCreateCommand())
@@ -80,7 +80,7 @@ public class PlannedMaintenanceV3Config {
                 .build();
     }
 
-    @Module("pmResourcePlanner")
+    @Module(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER)
     public static Supplier<V3Config> getPmResourcePlanner() {
         return () -> new V3Config(PMResourcePlanner.class, null)
                 .update()

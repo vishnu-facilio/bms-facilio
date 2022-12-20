@@ -6,14 +6,27 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormRuleActionContext;
+import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
+import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormRuleAPI;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
@@ -22,7 +35,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -38,6 +53,9 @@ import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.v3.context.Constants;
 
 public class AddJobPlanModule extends BaseModuleConfig{
+	
+	public static List<String> jobPlanSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+	
     public AddJobPlanModule(){
         setModuleName(FacilioConstants.ContextNames.JOB_PLAN);
     }
@@ -60,6 +78,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
     	addJobPlanSectionInputOptionsModule(Constants.getModBean(), jobPlanSectionModule);
     	
     	addJobPlanLookupToWoModule(jobPlanModule);
+    	
     }
     
     private void addJobPlanLookupToWoModule(FacilioModule jobPlanModule) throws Exception {
@@ -341,11 +360,16 @@ public class AddJobPlanModule extends BaseModuleConfig{
         spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
         fields.add(spaceCategory);
         
-        BooleanField isActive = (BooleanField) FieldFactory.getDefaultField("isActive", "Is Active", "IS_ACTIVE", FieldType.BOOLEAN);
-        fields.add(isActive);
+//        BooleanField isActive = (BooleanField) FieldFactory.getDefaultField("isActive", "Is Active", "IS_ACTIVE", FieldType.BOOLEAN);
+//        fields.add(isActive);
+//        
+//        BooleanField isDisabled = (BooleanField) FieldFactory.getDefaultField("isDisabled", "Is Disabled", "IS_DISABLED", FieldType.BOOLEAN);
+//        fields.add(isDisabled);
         
-        BooleanField isDisabled = (BooleanField) FieldFactory.getDefaultField("isDisabled", "Is Disabled", "IS_DISABLED", FieldType.BOOLEAN);
-        fields.add(isDisabled);
+        SystemEnumField jpStatus = (SystemEnumField) FieldFactory.getDefaultField("jpStatus", "Job Plan Status", "JP_STATUS", FieldType.SYSTEM_ENUM);
+        jpStatus.setEnumName("JobPlanStatus");
+        
+        fields.add(jpStatus);
         
         module.setFields(fields);
         
@@ -375,6 +399,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.ContextNames.JOB_PLAN);
         groupDetails.put("views", jobPlan);
+        groupDetails.put("appLinkNames", AddJobPlanModule.jobPlanSupportedApps);
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
@@ -391,6 +416,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         allView.setDisplayName("All Job Plans");
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
 
         List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
         appDomains.add(AppDomain.AppDomainType.FACILIO);
@@ -407,6 +433,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         allView.setName("active");
         allView.setDisplayName("Active");
         allView.setCriteria(criteria);
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
         return allView;
     }
 
@@ -419,6 +446,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         allView.setName("inactive");
         allView.setDisplayName("Inactive");
         allView.setCriteria(criteria);
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
         return allView;
     }
 
@@ -455,23 +483,30 @@ public class AddJobPlanModule extends BaseModuleConfig{
         return condition;
     }
 
+    
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule jobPlanModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
-
+        
         FacilioForm jobPlanModuleForm = new FacilioForm();
         jobPlanModuleForm.setDisplayName("Job Plan");
         jobPlanModuleForm.setName("default_jobplan_web");
         jobPlanModuleForm.setModule(jobPlanModule);
         jobPlanModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        jobPlanModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        jobPlanModuleForm.setAppLinkNamesForForm(jobPlanSupportedApps);
 
         List<FormField> jobPlanModuleFormDefaultFields = new ArrayList<>();
         jobPlanModuleFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         jobPlanModuleFormDefaultFields.add(new FormField("jobPlanCategory", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 2, 1));
-        jobPlanModuleFormDefaultFields.add(new FormField("assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, "assetcategory", 3, 1));
-        jobPlanModuleFormDefaultFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, "spacecategory", 4, 1));
+        FormField assetCat = new FormField("assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, "assetcategory", 3, 1);
+        assetCat.setHideField(Boolean.TRUE);
+        assetCat.setRequired(Boolean.TRUE);
+        jobPlanModuleFormDefaultFields.add(assetCat);
+        FormField spaceCat = new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, "spacecategory", 4, 1);
+        spaceCat.setHideField(Boolean.TRUE);
+        spaceCat.setRequired(Boolean.TRUE);
+        jobPlanModuleFormDefaultFields.add(spaceCat);
 
         List<FormField> taskFields = new ArrayList<>();
         taskFields.add(new FormField("jobplansection", FacilioField.FieldDisplayType.JP_TASK, "Tasks", FormField.Required.REQUIRED, 5, 1));
@@ -495,7 +530,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         jobPlanModuleForm.setSections(sections);
         jobPlanModuleForm.setIsSystemForm(true);
         jobPlanModuleForm.setType(FacilioForm.Type.FORM);
-
+        
         return Collections.singletonList(jobPlanModuleForm);
+
+        //FormsAPI.createForm(jobPlanModuleForm, jobPlanModule);
+        
+        //addFormRulesForJP(jobPlanModuleForm, jobPlanModule);
     }
 }

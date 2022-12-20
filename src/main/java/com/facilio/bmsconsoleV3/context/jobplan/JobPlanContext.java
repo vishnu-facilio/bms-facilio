@@ -2,9 +2,13 @@ package com.facilio.bmsconsoleV3.context.jobplan;
 
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PlannedMaintenance.PMStatus;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -70,17 +74,55 @@ public class JobPlanContext extends V3Context {
     }
 
 
-    /*
-        When JobPlan is published isActive is set to true, after that isActive cannot be made false.
-     */
-    @Getter
-    @Setter
-    private Boolean isActive;
+    private JPStatus jpStatus;
+    
+    public Integer getJpStatus() {
+        if (jpStatus == null) {
+            return null;
+        }
+        return jpStatus.getIndex();
+    }
 
-    /*
-        isDisabled is used to track if JobPlan could be used or not.
-     */
+    public void setJpStatus(Integer jpStatus) {
+        if (jpStatus != null) {
+            this.jpStatus = JPStatus.valueOf(jpStatus);
+        } else {
+            this.jpStatus = null;
+        }
+    }
+    public void setJpStatusEnum(JPStatus jpStatus) {
+        this.jpStatus = jpStatus;
+    }
+
+    public JPStatus getJpStatusEnum() {
+        return jpStatus;
+    }
+    
+    @AllArgsConstructor
     @Getter
-    @Setter
-    private Boolean isDisabled;
+    public static enum JPStatus implements FacilioIntEnum {
+		
+		IN_ACTIVE("In Active"), 
+		ACTIVE("Active"),
+		DISABLED("Disabled"),
+		;
+    	
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		private static final JPStatus[] CREATION_TYPES = JPStatus.values();
+		public static JPStatus valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
+    
 }

@@ -25,6 +25,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
+import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.workflows.conditions.context.WorkflowCondition;
 import com.facilio.workflows.context.WorkflowContext;
@@ -167,7 +168,7 @@ public interface ModuleCRUDBean {
 
 	ApplicationContext getApplicationForLinkName(String appName) throws Exception;
 
-	void schedulePM(long plannerId) throws Exception;
-
-	void extendPlanner(long plannerId, Duration duration) throws Exception;
+	void schedulePM(long plannerId,PlannedMaintenanceAPI.ScheduleOperation operation) throws Exception;
+	
+	//void extendPlanner(long plannerId, Duration duration) throws Exception;
 }

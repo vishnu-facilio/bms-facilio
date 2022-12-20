@@ -278,3 +278,9 @@ enums:
 
   - name: AgentType
     enumClassName: com.facilio.agent.AgentType
+    
+  - name: PlannedMaintenanceStatus
+    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMStatus
+  
+  - name: JobPlanStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPStatus

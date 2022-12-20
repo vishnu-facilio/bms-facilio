@@ -28,6 +28,9 @@ public class PMPlannerSupplementsCommand extends FacilioCommand {
         }
 
         supplementFields.add((SupplementRecord) fieldsAsMap.get("trigger"));
+        
+        context.put(FacilioConstants.ContextNames.SORTING_QUERY,"ID");
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,"asc");
         return false;
     }
 }

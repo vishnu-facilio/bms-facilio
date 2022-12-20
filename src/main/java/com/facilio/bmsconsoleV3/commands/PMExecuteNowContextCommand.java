@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -67,8 +68,11 @@ public class PMExecuteNowContextCommand extends FacilioCommand {
 
         ExecuteNowExecutor executeNowExecutor = new ExecuteNowExecutor();
         pmPlanner.setResourcePlanners(pmResourcePlanners);
+        
+        context.put(FacilioConstants.PM_V2.PM_V2_MODULE_NAME, plannedmaintenance);
+        context.put(FacilioConstants.PM_V2.PM_V2_PLANNER, pmPlanner);
 
-        List<V3WorkOrderContext> workOrderContexts = executeNowExecutor.execute(context, plannedmaintenance, pmPlanner);
+        List<V3WorkOrderContext> workOrderContexts = executeNowExecutor.execute(context);
         FacilioModule workorderModule = modBean.getModule("workorder");
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = workOrderContexts.stream().map(i -> (ModuleBaseWithCustomFields) i).collect(Collectors.toList());
         V3Util.createRecord(workorderModule, moduleBaseWithCustomFields);

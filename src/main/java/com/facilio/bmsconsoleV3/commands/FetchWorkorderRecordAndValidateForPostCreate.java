@@ -32,7 +32,7 @@ public class FetchWorkorderRecordAndValidateForPostCreate extends FacilioCommand
          
          PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", workorder.getPmV2(), null);
 
-         if (!plannedmaintenance.isActive()) {
+         if (plannedmaintenance.getPmStatusEnum() != PlannedMaintenance.PMStatus.ACTIVE) {
              return true;
          }
          

@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -39,6 +40,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        groupDetails.put("appLinkNames", AddJobPlanModule.jobPlanSupportedApps);
         groupDetails.put("views", plannedMaintenance);
         groupVsViews.add(groupDetails);
 
@@ -49,6 +51,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Planned Maintenance");
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
 
         FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
         FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
@@ -69,6 +72,8 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         allView.setName("inactive");
         allView.setDisplayName("Unpublished");
         allView.setCriteria(criteria);
+        
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
 
         FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
 
@@ -88,6 +93,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         allView.setName("active");
         allView.setDisplayName("Published");
         allView.setCriteria(criteria);
+        allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
 
         FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
 
@@ -140,7 +146,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         defaultPlannedMaintenanceForm.setModule(plannedMaintenance);
         defaultPlannedMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultPlannedMaintenanceForm.setShowInWeb(true);
-        defaultPlannedMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        defaultPlannedMaintenanceForm.setAppLinkNamesForForm(AddJobPlanModule.jobPlanSupportedApps);
 
         List<FormField> defaultPlannedMaintenanceFormFields = new ArrayList<>();
         defaultPlannedMaintenanceFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.REQUIRED, "tickettype", 1, 1));

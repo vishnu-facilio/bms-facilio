@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.jobplan;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext.JPStatus;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 
@@ -23,6 +24,10 @@ public class ValidationForJobPlanCategory extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(jobplans)) {
             for (JobPlanContext jobplan : jobplans) {
                 // case for import - ad hoc tasks
+            	
+            	if(jobplan.getJpStatusEnum() == null) {
+            		jobplan.setJpStatusEnum(JPStatus.IN_ACTIVE);
+            	}
                 if (jobplan.getJobPlanCategory() == null) {
                     continue;
                 }

@@ -12,10 +12,16 @@ import com.facilio.modules.FacilioStringEnum;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.qa.context.AnswerHandler;
+import com.facilio.qa.context.ClientAnswerContext;
+import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.RuleHandler;
+import com.facilio.qa.context.questions.NumberQuestionContext;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +32,22 @@ import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.ScheduleOpera
 
 public class PlannedMaintenanceAPI {
     public enum ScheduleOperation implements FacilioStringEnum {
-        EXTEND,
-        REINIT
+        EXTEND(ScheduleExecutor.class),
+        REINIT (ScheduleExecutor.class),
+        NIGHTLY (NightlyExecutor.class)
+        ;
+        
+        private Class<? extends ExecutorBase> executorClass;
+        
+        private <E extends ExecutorBase> ScheduleOperation (Class<E> executorClass) {
+            this.executorClass = executorClass;
+        }
+        
+        public ExecutorBase getExecutorClass() throws Exception {
+        	
+        	return executorClass.getConstructor().newInstance();
+        }
+        
     }
 
     public static void extendPlanner(long plannerId, Duration duration) {
@@ -37,6 +57,20 @@ public class PlannedMaintenanceAPI {
         message.put("plannerId", plannerId);
         message.put("operation", EXTEND.getValue());
         message.put("duration", duration.toString());
+
+        SessionManager.getInstance().sendMessage(new Message()
+                .setTopic("pm_planner/" + plannerId + "/execute")
+                .setOrgId(orgId)
+                .setContent(message)
+        );
+    }
+    
+    public static void runNightlyPlanner(long plannerId) {
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        JSONObject message = new JSONObject();
+        message.put("orgId", orgId);
+        message.put("plannerId", plannerId);
+        message.put("operation", ScheduleOperation.NIGHTLY.getValue());
 
         SessionManager.getInstance().sendMessage(new Message()
                 .setTopic("pm_planner/" + plannerId + "/execute")

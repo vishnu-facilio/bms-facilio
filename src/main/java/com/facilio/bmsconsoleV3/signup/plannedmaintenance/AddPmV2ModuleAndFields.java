@@ -14,6 +14,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.qa.signup.AddQAndAModules;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
 import org.apache.log4j.LogManager;
@@ -86,9 +90,20 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 "Resource Count of Planner");
         
         addWorkOrderFieldsForPM(modBean, orgId);
+        
+        addNightlyJob();
     }
     
-    private void addWorkOrderFieldsForPM(ModuleBean modBean,  long orgId) throws Exception {
+    public void addNightlyJob() throws Exception {
+    	
+    	ScheduleInfo si = new ScheduleInfo();
+    	si.setFrequencyType(FrequencyType.DAILY);
+    	si.setTimes(Collections.singletonList("00:01"));
+    	
+    	FacilioTimer.scheduleCalendarJob(AccountUtil.getCurrentOrg().getId(), "PMV2NightlyScheduler", DateTimeUtil.getCurrenTime(), si, "facilio");
+	}
+
+	private void addWorkOrderFieldsForPM(ModuleBean modBean,  long orgId) throws Exception {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         if(module != null) {
         	
@@ -173,9 +188,15 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         fields.add(leadTime);
 
         /* isActive Field */
-        BooleanField isActiveField = SignupUtil.getBooleanField(module, "isActive", "Is Active", "IS_ACTIVE",
-                FacilioField.FieldDisplayType.DECISION_BOX, 63L, false, false, true, orgId);
-        fields.add(isActiveField);
+//        BooleanField isActiveField = SignupUtil.getBooleanField(module, "isActive", "Is Active", "IS_ACTIVE",
+//                FacilioField.FieldDisplayType.DECISION_BOX, 63L, false, false, true, orgId);
+//        fields.add(isActiveField);
+        
+        
+        SystemEnumField pmStatus = (SystemEnumField) FieldFactory.getDefaultField("pmStatus", "PM Status", "PM_STATUS", FieldType.SYSTEM_ENUM);
+        pmStatus.setEnumName("PlannedMaintenanceStatus");
+        
+        fields.add(pmStatus);
 
         /* SystemModifiedByField */
         LookupField modifiedByField = (LookupField) FieldFactory.getSystemField("sysModifiedBy", module);

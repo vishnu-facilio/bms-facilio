@@ -1307,6 +1307,18 @@ public class AccountConstants {
 		}
 		return field;
 	}
+	
+	public static FacilioField getSiteIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("siteId");
+		field.setDisplayName("Site Id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("SITE_ID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
 
 	public static List<FacilioField> getRoleFields() {
 		FacilioModule module = getRoleModule();

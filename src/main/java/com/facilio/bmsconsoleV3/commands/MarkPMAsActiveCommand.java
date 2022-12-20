@@ -36,11 +36,11 @@ public class MarkPMAsActiveCommand extends FacilioCommand {
 
 
         Map<String, Object> valMap = new HashMap<>();
-        valMap.put("isActive", true);
+        valMap.put("pmStatus", PlannedMaintenance.PMStatus.ACTIVE.getVal());
 
         UpdateRecordBuilder<PlannedMaintenance> updateRecordBuilder = new UpdateRecordBuilder<>();
         updateRecordBuilder.module(pmPlannerModule)
-                .fields(Collections.singletonList(fieldMap.get("isActive")))
+                .fields(Collections.singletonList(fieldMap.get("pmStatus")))
                 .andCondition(CriteriaAPI.getIdCondition(pmIds, pmPlannerModule))
                 .updateViaMap(valMap);
 

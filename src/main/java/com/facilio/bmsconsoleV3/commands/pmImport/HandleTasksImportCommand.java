@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext.JPStatus;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -68,8 +69,7 @@ public class HandleTasksImportCommand extends FacilioCommand {
         Map<String, Object> firstRecord = records.get(0);
 
         JobPlanContext jobPlan = new JobPlanContext();
-        jobPlan.setIsActive(false);
-        jobPlan.setIsDisabled(false);
+        jobPlan.setJpStatusEnum(JPStatus.IN_ACTIVE);
         jobPlan.setName(jpName);
 
         // setting section scope

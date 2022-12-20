@@ -38,10 +38,13 @@ public class PMPlannerHandler extends BaseHandler {
             PlannedMaintenanceAPI.ScheduleOperation operation = getOperation(message);
             switch (operation) {
                 case REINIT:
-                    moduleCRUD.schedulePM(plannerId);
+                    moduleCRUD.schedulePM(plannerId,operation);
                     break;
                 case EXTEND:
-                    moduleCRUD.extendPlanner(plannerId, getDuration(message));
+                    // moduleCRUD.extendPlanner(plannerId, getDuration(message));
+                    break;
+                case NIGHTLY:
+                	moduleCRUD.schedulePM(plannerId,operation);
                     break;
             }
         } catch (Exception e) {

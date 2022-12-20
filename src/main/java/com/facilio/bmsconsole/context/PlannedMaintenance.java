@@ -5,7 +5,10 @@ import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext.CreationType;
 import com.facilio.modules.FacilioIntEnum;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,20 +23,8 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     private V3SpaceCategoryContext spaceCategory;
     private V3BaseSpaceContext baseSpace;
     private PMScopeAssigmentType assignmentType;
+    private PMStatus pmStatus; 
     private Long leadTime = 0l;
-
-    private boolean isActive;
-
-    public boolean isActive() {
-        return isActive;
-    }
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
 
     public Integer getAssignmentType() {
         if (assignmentType == null) {
@@ -56,10 +47,60 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     public PMScopeAssigmentType getAssignmentTypeEnum() {
         return assignmentType;
     }
+    
+    
+    public Integer getPmStatus() {
+        if (pmStatus == null) {
+            return null;
+        }
+        return pmStatus.getIndex();
+    }
+
+    public void setPmStatus(Integer pmStatus) {
+        if (pmStatus != null) {
+            this.pmStatus = PMStatus.valueOf(pmStatus);
+        } else {
+            this.pmStatus = null;
+        }
+    }
+    public void setPmStatusEnum(PMStatus pmStatus) {
+        this.pmStatus = pmStatus;
+    }
+
+    public PMStatus getPmStatusEnum() {
+        return pmStatus;
+    }
 
     private Long dueDuration;
     private Long estimatedDuration;
     private List<V3SiteContext> sites;
+    
+    
+    @AllArgsConstructor
+    @Getter
+    public static enum PMStatus implements FacilioIntEnum {
+		
+		IN_ACTIVE("In Active"), 
+		ACTIVE("Active"),
+		;
+    	
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		private static final PMStatus[] CREATION_TYPES = PMStatus.values();
+		public static PMStatus valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
     
     
     public enum PMScopeAssigmentType implements FacilioIntEnum {

@@ -27,7 +27,7 @@ public class DeleteJobPlanValidationCommand extends FacilioCommand {
                 JobPlanContext jobPlanContext = V3RecordAPI.getRecord(FacilioConstants.ContextNames.JOB_PLAN, recordId);
                 if(jobPlanContext == null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "No JobPlan with ID " + recordId);
-                } else if (jobPlanContext.getIsActive() || jobPlanContext.getIsDisabled()) {
+                } else if (jobPlanContext.getJpStatusEnum() == JobPlanContext.JPStatus.ACTIVE || jobPlanContext.getJpStatusEnum() == JobPlanContext.JPStatus.DISABLED) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Active or Disabled JobPlan(s) cannot be deleted.");
                 }
             }

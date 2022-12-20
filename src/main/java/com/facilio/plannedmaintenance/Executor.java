@@ -1,11 +1,11 @@
 package com.facilio.plannedmaintenance;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import org.apache.commons.chain.Context;
-
 import java.util.List;
 
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+
 public interface Executor {
-    List<V3WorkOrderContext> execute(Context context, PlannedMaintenance plannedMaintenance, PMPlanner pmPlanner) throws Exception;
+    List<V3WorkOrderContext> execute(Context context) throws Exception;
 }

@@ -1,6 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FieldUtil;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
 
@@ -63,6 +71,13 @@ public class PMTriggerV2 extends V3Context {
         }
         return null;
     }
+    
+    public ScheduleInfo getScheduleInfo() throws Exception {
+		
+        JSONParser parser = new JSONParser();
+        ScheduleInfo schedule = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(this.getSchedule()), ScheduleInfo.class);
+        return schedule;
+	}
 
 
 
