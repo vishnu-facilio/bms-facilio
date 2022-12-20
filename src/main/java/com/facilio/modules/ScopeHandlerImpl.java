@@ -180,19 +180,25 @@ public class ScopeHandlerImpl extends ScopeHandler {
     }
 
 	private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
+		if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isSuperAdmin()) {
+			return ScopeFieldsAndCriteria.of(new ArrayList<>(), null);
+		}
 		if(joinModules == null) {
 			joinModules = Collections.singletonList(primaryModule);
 		}
 		else {
-			joinModules.add(primaryModule);
+			List<FacilioModule> moduleList = (List<FacilioModule>) joinModules;
+			moduleList.add(0,primaryModule);
+			joinModules = moduleList;
 		}
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		Criteria criteria = null;
 
+		boolean globalScopeApplied = false;
 		for(FacilioModule module : joinModules) {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
 				Pair<List<FacilioField>, Criteria> fieldsAndCriteria = constructScopeVariableCriteria(module);
-				if (fieldsAndCriteria != null) {
+				if (fieldsAndCriteria != null && !globalScopeApplied) {
 					if(!isInsert) {
 						if (CollectionUtils.isNotEmpty(fieldsAndCriteria.getLeft())) {
 							fields.addAll(fieldsAndCriteria.getLeft());
@@ -202,6 +208,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 						}
 						criteria.andCriteria(fieldsAndCriteria.getRight());
 					}
+					globalScopeApplied = true;
 				}
 			}
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
