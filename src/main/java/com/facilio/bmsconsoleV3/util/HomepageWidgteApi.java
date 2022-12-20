@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.homepage.homepagewidgetdata.HomepageWidgetData;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -112,11 +113,12 @@ public class HomepageWidgteApi {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
         FacilioModule parkingModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.PARKING);
-        FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        FacilioModule spaceBookingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
 
         V3SpaceContext space = spaceBooking.getSpace();
 
-
+        widget.setModuleName(spaceBookingModule.getName());
+        widget.setRecordId(spaceBooking.getId());
         if(deskModule.getModuleId() == spaceBooking.getParentModuleId()) {
             widget.setPrimaryText("Desk");
             widget.setSecondaryText("Your desk is " + space.getName());
@@ -144,6 +146,8 @@ public class HomepageWidgteApi {
             time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
+            widget.setParentModuleName(deskModule.getName());
+
         }
         else if(parkingModule.getModuleId() == spaceBooking.getParentModuleId()) {
             widget.setPrimaryText("Parking");
@@ -171,6 +175,7 @@ public class HomepageWidgteApi {
             time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
+            widget.setParentModuleName(parkingModule.getName());
         }
         else {
             widget.setPrimaryText("Room");
@@ -198,6 +203,19 @@ public class HomepageWidgteApi {
             time += " to " + new SimpleDateFormat("hh:mm a").format(spaceBooking.getBookingStartTime());
             time = time.replace("am", "AM").replace("pm","PM");
             widget.setTime(time);
+            if(space.getSpaceCategory()!=null && space.getSpaceCategoryId()>0) {
+                List<Long> spaceCategoryIds = new ArrayList<>();
+                spaceCategoryIds.add(space.getSpaceCategory().getId());
+                List<SpaceCategoryContext>spaceCategories = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.SPACE_CATEGORY, spaceCategoryIds,null,null);
+
+                if(spaceCategories != null) {
+                    spaceCategories.forEach(spaceCategory -> {
+                        widget.setParentModuleName(spaceCategory.getName());
+                        widget.setPrimaryText(spaceCategory.getName());
+
+                    });
+                }
+            }
         }
 
         widget.setStartTime(spaceBooking.getBookingStartTime());
@@ -205,7 +223,7 @@ public class HomepageWidgteApi {
 
         return widget;
     }
-    public static List<V3SpaceBookingContext> getMySpaceBookings()throws Exception {
+        public static List<V3SpaceBookingContext> getMySpaceBookings()throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -322,17 +340,45 @@ public class HomepageWidgteApi {
                                    throw new RuntimeException(e);
                                }
 
-                    String primaryText = visitor.getVisitorName()+ " will arrive soon";
+                    String secondaryText = visitor.getVisitorName()+ " will arrive soon";
                     widget.setIcon(4);
                     widget.setTitle(visitor.getModuleState().getDisplayName());
                     widget.setTitle(module.getDisplayName());
-                    widget.setPrimaryText(primaryText);
-                    widget.setSecondaryText(visitedSpace);
+                    widget.setPrimaryText("Visitor");
+                    widget.setSecondaryText(secondaryText);
                     widget.setModuleName(module.getName());
                     widget.setSecondaryText2("Today");
                     params.put("record", visitor);
                     widget.setParams(params);
                     widget.setRecordId(visitor.getId());
+                    if(visitor.getVisitedSpace()!=null && visitor.getVisitedSpace().getBuilding()!=null && visitor.getVisitedSpace().getBuildingId()>0) {
+                        List<BuildingContext>buildings = new ArrayList<>();
+                        try {
+                            buildings = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.BUILDING,null,null,null,null);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        if(buildings != null) {
+                            buildings.forEach(building -> {
+                                widget.setBuildingName(building.getName());
+                            });
+                        }
+                    }
+                    if(visitor.getVisitedSpace()!=null && visitor.getVisitedSpace().getFloor()!=null && visitor.getVisitedSpace().getFloorId()>0){
+                        List<FloorContext>floors = new ArrayList<>();
+                        try {
+                            floors = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.FLOOR,null,null,null,null);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        if(floors != null) {
+                            floors.forEach(floor -> {
+                                widget.setFloorName(floor.getName());
+                            });
+                        }
+                    }
+
+
 
 
                     widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(visitor.getExpectedCheckInTime() ));
@@ -344,6 +390,9 @@ public class HomepageWidgteApi {
                   widget.setStartTime(visitor.getExpectedCheckInTime());
                   widget.setEndTime(visitor.getExpectedCheckOutTime());
                   widget.setTime(time);
+                    HashMap<String, Object> startTimeData = DateTimeUtil.getTimeData(visitor.getExpectedCheckInTime());
+                    int startDay = (int) startTimeData.get("day");
+                    widget.setDay(startDay);
                    widgets.add(widget);
 
 
@@ -444,6 +493,9 @@ public class HomepageWidgteApi {
 
                     widget.setDate(new SimpleDateFormat("dd/MMM/yyyy").format(deliveries.getReceivedTime() ));
                     widget.setStartTime(deliveries.getReceivedTime());
+                    HashMap<String, Object> startTimeData = DateTimeUtil.getTimeData(deliveries.getReceivedTime());
+                    int startDay = (int) startTimeData.get("day");
+                    widget.setDay(startDay);
 
                     widgets.add(widget);
                 });
@@ -629,7 +681,11 @@ public class HomepageWidgteApi {
 
         if(peopleId != null ) {
 
-            FacilioStatus activeStatus = TicketAPI.getStatus(SpaceBookingModule, "booked");
+            FacilioStatus bookedStatus = TicketAPI.getStatus(SpaceBookingModule, "booked");
+            FacilioStatus checkedInStatus = TicketAPI.getStatus(SpaceBookingModule, "checkedIn");
+            List<Long> activeStatus = new ArrayList<>();
+            activeStatus.add(bookedStatus.getId());
+            activeStatus.add(checkedInStatus.getId());
 
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getStateRuleTransitionFields());
 
@@ -637,9 +693,8 @@ public class HomepageWidgteApi {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(StateFlowModule.getTableName())
                     .select(Collections.singletonList(fieldMap.get("id")))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("fromStateId"), String.valueOf(activeStatus.getId()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getConditionFromList("StateFlowTransition.FROM_STATE_ID", "fromStateId",activeStatus, NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("buttonType"), String.valueOf(0), NumberOperators.GREATER_THAN));
-
 
             List<Map<String, Object>> props = builder.get();
             if (CollectionUtils.isNotEmpty(props)) {
@@ -660,7 +715,7 @@ public class HomepageWidgteApi {
                                 .andCondition(CriteriaAPI.getCondition("SpaceBooking.HOST", "host", String.valueOf(peopleId), NumberOperators.EQUALS))
                                 .andCondition(CriteriaAPI.getCondition("SpaceBooking.BOOKING_STARTTIME", "bookingStartTime", String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL))
                                 .andCondition(CriteriaAPI.getCondition("SpaceBooking.PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS))
-                                .andCondition(CriteriaAPI.getCondition("SpaceBooking.MODULE_STATE", "moduleState", String.valueOf(activeStatus.getId()), NumberOperators.EQUALS))
+                                .andCondition(CriteriaAPI.getConditionFromList("SpaceBooking.MODULE_STATE", "moduleState", activeStatus, NumberOperators.EQUALS))
                                 .fetchSupplement((LookupField) spaceBookingFieldMap.get("space"));
 
                         bookingList = selectBuilder.get();
