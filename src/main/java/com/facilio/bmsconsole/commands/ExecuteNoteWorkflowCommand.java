@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -19,11 +9,19 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class ExecuteNoteWorkflowCommand extends FacilioCommand implements Serializable {
 
@@ -54,8 +52,7 @@ public class ExecuteNoteWorkflowCommand extends FacilioCommand implements Serial
 				ModuleBaseWithCustomFields record = RecordAPI.getRecord(parentModule, note.getParentId());
 				if (record != null) {
 					for (WorkflowRuleContext workflowRule : workflowRules) {
-						Map<String, Object> placeHolders = new HashMap<>();
-						CommonCommandUtil.appendModuleNameInKey(parentModule, parentModule, FieldUtil.getAsProperties(record), placeHolders);
+						Map<String, Object> placeHolders = WorkflowRuleAPI.getRecordPlaceHolders(parentModule, record, null);
 						CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(null, "comment", FieldUtil.getAsProperties(note), placeHolders);
