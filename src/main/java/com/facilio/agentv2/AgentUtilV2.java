@@ -478,7 +478,7 @@ public class AgentUtilV2
         makeControllersActive(agent);
         makeControllersInActive(agent, controllerIds);
     }
-    public static void scheduleMlBmsJob(FacilioAgent agent) throws Exception{
+    public static void scheduleMlBmsJob(long orgId) throws Exception{
         long interval = 120;
 
         ScheduleInfo scheduleInfo = new ScheduleInfo();
@@ -490,6 +490,6 @@ public class AgentUtilV2
             time = time.plusMinutes(interval);
             scheduleInfo.addTime(time);
         }
-        FacilioTimer.scheduleCalendarJob(agent.getId(), FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
+        FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 }

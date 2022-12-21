@@ -338,19 +338,6 @@ public class AgentBeanImpl implements AgentBean {
             return false;
         }
     }
-
-    @Override
-    public List<Long> getAgentIds() throws Exception {
-        FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
-        FacilioField fieldMap = FieldFactory.getIdField(agentDataModule);
-        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(agentDataModule.getTableName())
-                .select(Collections.singletonList(fieldMap))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
-        List<Map<String, Object>> ids = genericSelectRecordBuilder.get();
-        return ids.stream().map(x->(Long)(x.get(AgentConstants.ID))).collect(Collectors.toList());
-    }
-
     @Override
     public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination,List<Long>defaultIds,Criteria filterCriteria) throws Exception {
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
