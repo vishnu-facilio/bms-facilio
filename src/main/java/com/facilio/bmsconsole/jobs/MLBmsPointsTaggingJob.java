@@ -54,14 +54,16 @@ public class MLBmsPointsTaggingJob extends FacilioJob {
             selectedFields.add(FieldFactory.getIdField(assetModule));
 
             for (FacilioField field : assetFields) {
-                if(field.getColumnName().contains("STRING_CF"))
-                selectedFields.add(field);
+                if((field.getColumnName() != null) && (field.getColumnName().contains("STRING_CF"))) {
+                    selectedFields.add(field);
+                }
             }
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .select(selectedFields)
                     .table("Assets")
                     .innerJoin("Resources")
                     .on("Assets.ID = Resources.ID")
+                    .andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("resourceType"),"2",NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule),CommonOperators.IS_EMPTY));
 
             List<Map<String, Object>> selectedRecords = selectBuilder.get();

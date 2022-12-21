@@ -42,24 +42,22 @@ public class BmsPointsTaggingUtil {
         return splitterMap;
     }
 
-    private static String getSplitter(HashMap<String, String> splitterMap, Map<String, Object> infoMap) {
+    private static String getSplitter(HashMap<String, String> splitterMap, Map<String, Object> infoMap){
         String agentNameKey = "splitter_" + (String) infoMap.get("agentName");
         String agentTypeKey = "splitter_" + (String) infoMap.get("agentType");
-        try {
             if (splitterMap.containsKey(agentNameKey)) {
                 return splitterMap.get(agentNameKey);
             }
             if (splitterMap.containsKey(agentTypeKey)) {
                 return splitterMap.get(agentTypeKey);
             }
-            return splitterMap.get("splitter_org");
-        } catch (Exception e) {
-            LOGGER.info("OrgInfo table not have a given key", e);
-            throw e;
-        }
+            if (splitterMap.containsKey("splitter_org")) {
+                return splitterMap.get("splitter_org");
+            }
+            throw new RuntimeException("OrgInfo table doesn't have a given key");
     }
 
-    public static JSONObject convertToList(List<HashMap<String, Object>> pointsMapList, HashMap<String, String> splitterMap) {
+    public static JSONObject convertToList(List<HashMap<String, Object>> pointsMapList, HashMap<String, String> splitterMap) throws Exception {
         List<String> newPointNameList = new ArrayList<>();
         Map<String,Long> siteIdMap = new HashMap<>();
         JSONObject jsonData = new JSONObject();
