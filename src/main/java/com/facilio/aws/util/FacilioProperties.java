@@ -389,10 +389,12 @@ public class FacilioProperties {
 
 
             malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled"));
-            malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine");
-            malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout"));
-            malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
-            malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
+            if (malwareScanningEnabled) {
+                malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine");
+                malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout"));
+                malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
+                malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
+            }
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
         } catch (IOException e) {
