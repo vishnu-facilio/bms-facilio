@@ -176,6 +176,21 @@ public class FacilioProperties {
     @Getter
     private static String appProtocol;
 
+    @Getter
+    private static boolean malwareScanningEnabled;
+
+    @Getter
+    private static String malwareScannerEngine;
+
+    @Getter
+    private static Long malwareScannerTimeout;
+
+    @Getter
+    private static String malwareScannerHost;
+
+    @Getter
+    private static Integer malwareScannerPort;
+
     static {
         loadProperties();
     }
@@ -371,11 +386,18 @@ public class FacilioProperties {
                     dbIdentifiers.add(identifier);
                 }
             }
+
+
+            malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled"));
+            malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine");
+            malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout"));
+            malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
+            malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
+
             LOGGER.info(getIotEndPoint() + "iot endpoint");
         } catch (IOException e) {
             LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
         }
-
     }
 
     public static String getIamregion() { return iamregion; }

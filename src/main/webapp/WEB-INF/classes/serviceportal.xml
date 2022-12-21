@@ -18,11 +18,13 @@
 						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor name="globalscopevariableinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">

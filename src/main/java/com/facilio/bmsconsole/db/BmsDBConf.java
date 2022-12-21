@@ -81,6 +81,41 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public boolean isMalwareScannerEnabled() {
+        return FacilioProperties.isMalwareScanningEnabled();
+    }
+
+    @Override
+    public boolean throwMalwareScanErrors() {
+        try {
+            return AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MALWARE_SCAN_ERRORS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public long getMalwareScannerTimeout() {
+        return FacilioProperties.getMalwareScannerTimeout();
+    }
+
+    @Override
+    public String getMalwareScannerHost() {
+        return FacilioProperties.getMalwareScannerHost();
+    }
+
+    @Override
+    public int getMalwareScannerPort() {
+        return FacilioProperties.getMalwareScannerPort();
+    }
+
+    @Override
+    public String getMalwareScannerEngine() {
+        return FacilioProperties.getMalwareScannerEngine();
+    }
+
+
+    @Override
     public String getTransactionId() {
         Account account = AccountUtil.getCurrentAccount();
         StringBuilder transactionId = new StringBuilder();

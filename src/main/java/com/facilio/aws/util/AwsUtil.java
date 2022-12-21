@@ -590,7 +590,7 @@ public class AwsUtil extends BaseAwsUtil{
 			KafkaMessageSource defaultSource = MessageSourceUtil.getDefaultSource();
 			Map<String, Object> configs = defaultSource.getConfigs();
 			if (configs != null ) {
-				if (defaultSource.isAuthEnabled() && defaultSource.getAuthMode().equals("sasl_ssl")) {
+				if (defaultSource.isAuthEnabled() && defaultSource.getSecurityProtocol() == KafkaMessageSource.SecProtocol.SASL_SSL) {
 					if (configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
 							&& configs.containsKey(IOT_RULE_SASL_MECHANISM)
 							&& configs.containsKey(IOT_RULE_SASL_SCRAM_USERNAME)
