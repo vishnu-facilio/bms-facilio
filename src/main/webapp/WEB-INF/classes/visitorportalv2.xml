@@ -46,6 +46,9 @@
 			<result name="sessionexpired" type="httpheader">
 				<param name="status">440</param>
 			</result>
+			<result name="resourcenotfound" type="httpheader">
+				<param name="status">404</param>
+			</result>
 		</global-results>
 		
 		<action name="addMe" class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor">

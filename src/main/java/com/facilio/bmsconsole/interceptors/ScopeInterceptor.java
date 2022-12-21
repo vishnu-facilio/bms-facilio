@@ -56,6 +56,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ScopeInterceptor extends AbstractInterceptor {
 
@@ -132,9 +133,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     }
                     if (StringUtils.isNotEmpty(appLinkName)) {
                     	
-                        ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
+                        ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName,true);
                         if (application != null) {
                             appId = application.getId();
+                        } else {
+                            return ErrorUtil.sendError(ErrorUtil.Error.PAGE_NOT_FOUND);
                         }
                     }
                 } catch (Exception e) {
@@ -142,7 +145,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 	if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
                 		LOGGER.log(Level.ERROR, e.getMessage(), e);
                 	}
-                	
+
                     throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid app linkName");
                 }
                 if (iamAccount.getUser() == null) {
@@ -172,6 +175,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         //setting the first permissible application(corresponding to this domain) if exists to this user
                         List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
                         if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
+                            if(!ApplicationApi.isAuthorisedApplication(permissibleAppsForThisDomain,appId)) {
+                                return ErrorUtil.sendError(ErrorUtil.Error.USER_NOT_IN_APP);
+                            }
                             ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain);
                             ApplicationApi.setThisAppForUser(user, appToBeAssigned, false);
                         } else {
@@ -424,7 +430,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         long timeTaken = System.currentTimeMillis() - startTime;
         AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
         AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Scope interceptor done with return {0}", invoke != null ? "(invoking will happen. no return)" : returnStr), request);
-        return invoke == null ? returnStr : invoke.invoke();
+        return invoke == null ? ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION) : invoke.invoke();
     }
 
     private AuditData getAuditData(ActionInvocation actionInvocation) {

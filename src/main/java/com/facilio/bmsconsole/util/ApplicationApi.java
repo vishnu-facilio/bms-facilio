@@ -82,6 +82,9 @@ public class ApplicationApi {
     }
 
     public static ApplicationContext getApplicationForLinkName(String appLinkName) throws Exception {
+        return getApplicationForLinkName(appLinkName,false);
+    }
+    public static ApplicationContext getApplicationForLinkName(String appLinkName,boolean skipCheck) throws Exception {
         // temp handling for newapp and newtenant linkname
         if (appLinkName.equals("app")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
@@ -97,6 +100,9 @@ public class ApplicationApi {
         else if (appLinkName.equals("iwms")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.IWMS_APP;
         }
+//        if(appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !skipCheck) {
+//            appLinkName = SignupUtil.getSignupApplicationLinkName();
+//        }
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
@@ -106,6 +112,9 @@ public class ApplicationApi {
 
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
+        }
+        if(skipCheck) {
+            return null;
         }
         throw new IllegalArgumentException("Invalid link name");
     }
@@ -2419,6 +2428,14 @@ public class ApplicationApi {
 
     }
 
+    public static boolean isAuthorisedApplication(List<ApplicationContext> permissibleAppsForThisDomain, Long appId) {
+        List<Long> permissibleApplicationIds = permissibleAppsForThisDomain.stream().map(ApplicationContext::getId).collect(Collectors.toList());
+        if(appId > 0 && !permissibleApplicationIds.contains(appId)) {
+            return false;
+        }
+        return true;
+    }
+
     public static List<ApplicationContext> getApplicationsForModule(String moduleName) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(FieldFactory.getApplicationFields());
@@ -2469,7 +2486,6 @@ public class ApplicationApi {
         }
         return applications.get(0);
     }
-
     public static ApplicationContext getUserDefaultApp(List<ApplicationContext> permissibleApplications) throws Exception {
         if(CollectionUtils.isNotEmpty(permissibleApplications)){
             List<Long> appIds = permissibleApplications.stream().map(ApplicationContext::getId).collect(Collectors.toList());
