@@ -7,6 +7,7 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 import java.util.Collections;
 
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.workorder.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -321,35 +322,6 @@ import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReserveItemsC
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetIsReservedCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ValidateWorkOrderPlannedItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddFailureClassFromResource;
-import com.facilio.bmsconsoleV3.commands.workorder.AddPortalRequestsDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddPrerequisiteApproversCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddRequesterCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddTicketActivityCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddTicketLookups;
-import com.facilio.bmsconsoleV3.commands.workorder.AddWorkOrderCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddWorkorderHazardsFromSafetyPlanCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.BackwardCompatibleStateFlowUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.ClearAlarmOnWOClosureCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.FetchOldWorkordersCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterAddingWorkOrderPostCreateChainCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderAddCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.LoadTicketLookupsCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.PMSettingsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.SetLocalModuleIdCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.SetWorkOrderSourceType;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForUpcomingViewCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.ToVerifyStateFlowtransitionForStartCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateAttachmentCountCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateEventListForStateFlowCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateTicketAttachmentsOldParentIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateWorkorderFieldsForUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.ValidateWOForUpdate;
-import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderFieldsPreCreateChainCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.WorkOrderPreAdditionHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
 import com.facilio.bmsconsoleV3.commands.workpermit.InsertWorkPermitActivitiesCommand;
