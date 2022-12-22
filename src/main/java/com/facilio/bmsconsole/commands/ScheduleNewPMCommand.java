@@ -169,7 +169,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                             for (Long resourceId: resourceIds) {
                                 PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
                                 if (pmResourcePlanner.get(resourceId) != null) {
-                                    triggers = new ArrayList<>();
+                                    if(triggers == null) {
+                                        triggers = new ArrayList<>();
+                                    }
                                     for (PMTriggerContext trig : currentResourcePlanner.getTriggerContexts()) {
                                         if (pm.getTriggerMap() != null && pm.getTriggerMap().get(trig.getName()) != null) {
                                             triggers.add(pm.getTriggerMap().get(trig.getName()));
@@ -182,7 +184,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                 triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
                             }
 
-                            endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
+                            if(CollectionUtils.isNotEmpty(triggers)) {
+                                endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
+                            }
                         }
 
                         for(Long resourceId :resourceIds) {
@@ -281,7 +285,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                 triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
                             }
 
-                            endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
+                            if(CollectionUtils.isNotEmpty(triggers)) {
+                                endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
+                            }
                         }
 
 
