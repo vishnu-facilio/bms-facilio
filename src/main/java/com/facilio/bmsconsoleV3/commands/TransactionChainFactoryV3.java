@@ -96,6 +96,8 @@ import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.ValidateContactDirectoryEmailCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
@@ -1083,6 +1085,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getCreateContactDirectoryBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateContactDirectoryEmailCommand());
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new AddOrUpdateContactDirectorySharingCommandV3());
         // c.addCommand(new AddPeopleIfNotExistsCommandV3());

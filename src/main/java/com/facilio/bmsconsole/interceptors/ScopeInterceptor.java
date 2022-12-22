@@ -500,11 +500,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 moduleName = "space";
             }
             boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
-
-            //Need to remove once changed in client
-            if(moduleName.equals("tenantcontact")) {
-                hasPerm = PermissionUtil.currentUserHasPermission("tenantContact", action, role) || PermissionUtil.currentUserHasPermission(moduleName, action, role);
-            }
+            
 
             if(!hasPerm) {
                 permissionLogsForModule(moduleName,role.getName(),action);
