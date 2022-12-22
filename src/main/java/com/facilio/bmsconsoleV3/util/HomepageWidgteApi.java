@@ -234,10 +234,24 @@ public class HomepageWidgteApi {
 
 
         Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
+        
+        FacilioStatus cancelledStatus = TicketAPI.getStatus(module, "cancelled");
+        FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "checkedOut");
+        FacilioStatus autocheckedOutStatus = TicketAPI.getStatus(module, "autocheckedOut");
+        FacilioStatus expiredStatus = TicketAPI.getStatus(module, "expired");
+        FacilioStatus rejectedStatus = TicketAPI.getStatus(module, "rejected");
+
+        List<Long>activeStatus = new ArrayList<>();
+        activeStatus.add(cancelledStatus.getId());
+        activeStatus.add(checkedOutStatus.getId());
+        activeStatus.add(autocheckedOutStatus.getId());
+        activeStatus.add(expiredStatus.getId());
+        activeStatus.add(rejectedStatus.getId());
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(map.get("host"), String.valueOf(peopleId), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingStartTime"), String.valueOf(daystartTime), NumberOperators.GREATER_THAN_EQUAL));
+        criteria.addAndCondition(CriteriaAPI.getConditionFromList("SpaceBooking.MODULE_STATE", "moduleState", activeStatus, NumberOperators.NOT_EQUALS));
 
         List<SupplementRecord> supplementRecords = new ArrayList<>();
         supplementRecords.add((SupplementRecord)map.get("host"));
