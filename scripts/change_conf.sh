@@ -25,7 +25,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     echo "===============================" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "testing-stage" ] || [ "$DEPLOYMENT_GROUP_NAME" = "cafm-stage" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "testing-stage" ] || [ "$DEPLOYMENT_GROUP_NAME" = "cafm-stage" ] || [ "$DEPLOYMENT_GROUP_NAME" = "platform-stage" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-team.properties $CONF_DIR/awsprops.properties
