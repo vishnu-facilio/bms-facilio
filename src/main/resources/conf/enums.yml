@@ -256,6 +256,9 @@ enums:
   - name: KPIType
     enumClassName: com.facilio.readingkpi.context.KPIType
 
+  - name: KpiExecutionStatus
+    enumClassName: com.facilio.readingkpi.context.KpiResourceLoggerContext$KpiLoggerStatus
+
   - name: NamespaceFrequency
     enumClassName: com.facilio.ns.context.NamespaceFrequency
 

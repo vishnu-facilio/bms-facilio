@@ -8,12 +8,10 @@ import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.storm.InstructionType;
 import com.facilio.v3.V3Action;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class ReadingKpiAction extends V3Action {
                 props.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
                 props.put(FacilioConstants.ReadingKpi.READING_KPI, getRecordId());
 
-                scheduleOneTimeJobWithProps(getRecordId(), "ScheduledKpiHistoricalCalculationJob", 1, "facilio", props);
+                scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
                 setData(SUCCESS, "Historical KPI Calculation is started and will be notified when done");
 
             } else {
@@ -55,7 +53,7 @@ public class ReadingKpiAction extends V3Action {
                 context.put("data", instructionData);
                 runStormHistorical.execute();
 
-                setData("success", "Instruction Processing has begun");
+                setData(SUCCESS, "Instruction Processing has begun");
             }
             return SUCCESS;
         } catch (Exception userException) {

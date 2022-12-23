@@ -1,33 +1,43 @@
 package com.facilio.readingkpi.commands;
 
-import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.ReadingKpiLoggerAPI;
+import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
+import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import static com.facilio.readingkpi.context.KpiResourceLoggerContext.KpiLoggerStatus.COMPLETED;
 
 @Log4j
 public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
@@ -38,25 +48,38 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
         List<Long> resourceList = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
         Boolean isHistorical = (Boolean) context.getOrDefault(FacilioConstants.ReadingKpi.IS_HISTORICAL, false);
         List<ReadingContext> readings = new ArrayList<>();
+
+        Long startTime = null;
+        long parentLoggerId;
+        if (isHistorical) {
+            startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
+            parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, resourceList.size());
+        } else {
+            parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), true, resourceList.size());
+        }
+
         for (Long resourceId : resourceList) {
-            Long startTime;
-            if (isHistorical==false) {
+            if (!isHistorical) {
                 ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, kpi.getReadingField());
                 startTime = getStartTime(meta.getTtime());
-                ReadingKpiAPI.insertLog(kpi.getId(), resourceId, startTime, endTime, false);
             } else {
-                startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
-                ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-                bean.deleteReadings(kpi.getOrgId(), kpi.getReadingFieldId(),resourceId,startTime,endTime,kpi.getAssetCategoryId(),kpi.getReadingModuleId());
+                deleteReadings(kpi.getReadingModuleId(), resourceId, startTime, endTime);
             }
+
             ScheduleInfo schedule = ReadingKpiAPI.getSchedule(kpi.getFrequencyEnum());
             List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
-            LOGGER.info("Going to execute scheduled kpi : " + kpi.getName() + "for intervals: " + intervals);
-            List<ReadingContext> currentReadings = ReadingKpiAPI.calculateReadingKpi(resourceId, kpi, intervals, isHistorical);
-            if (CollectionUtils.isNotEmpty(currentReadings)) {
-                readings.addAll(currentReadings);
+
+            if (CollectionUtils.isNotEmpty(intervals)) {
+                LOGGER.info("Going to execute scheduled kpi : " + kpi.getId() + "-" + kpi.getName() + " for resource: " + resourceId + " for intervals: " + intervals);
+                ReadingKpiLoggerAPI.insertResourceLog(kpi.getId(), parentLoggerId, resourceId, startTime, endTime, isHistorical);
+                List<ReadingContext> currentReadings = ReadingKpiAPI.calculateReadingKpi(resourceId, kpi, intervals, startTime);
+                if (CollectionUtils.isNotEmpty(currentReadings)) {
+                    readings.addAll(currentReadings);
+                }
             }
         }
+        ReadingKpiLoggerAPI.updateLog(kpi.getId(), COMPLETED.getIndex(), System.currentTimeMillis(), ReadingKpiLoggerAPI.getSuccessCount(parentLoggerId));
+
         if (!readings.isEmpty()) {
             Unit inputUnit = kpi.getUnit();
             FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
@@ -71,9 +94,21 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
         return false;
     }
 
-
     private long getStartTime(long lastReadingTime) {
         ZonedDateTime zdt = DateTimeUtil.getDateTime(lastReadingTime).plusDays(1).truncatedTo(ChronoUnit.DAYS);
         return DateTimeUtil.getMillis(zdt, true);
+    }
+
+    private void deleteReadings(Long readingModuleId, Long resourceId, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule readingModule = modBean.getModule(readingModuleId);
+        List<FacilioField> readingsFields = modBean.getAllFields(readingModule.getName());
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(readingsFields);
+
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(readingModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), Collections.singletonList(resourceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("ttime"), startTime + "," + endTime, DateOperators.BETWEEN));
+        deleteRecordBuilder.delete();
     }
 }

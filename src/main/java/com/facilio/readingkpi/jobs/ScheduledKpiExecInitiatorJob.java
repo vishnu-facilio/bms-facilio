@@ -3,8 +3,8 @@ package com.facilio.readingkpi.jobs;
 import java.util.*;
 
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.ReadingKpiLoggerAPI;
 import lombok.extern.log4j.Log4j;
 
 import com.facilio.constants.FacilioConstants;
@@ -25,7 +25,7 @@ public class ScheduledKpiExecInitiatorJob extends FacilioJob {
                 LOGGER.info("Frequencies to be fetched for Scheduled Kpi Calculation : " + types);
                 JSONObject props = new JSONObject();
                 props.put(FacilioConstants.ReadingKpi.SCHEDULE_TYPE, types.get(0));
-                BmsJobUtil.scheduleOneTimeJobWithProps(ReadingKpiAPI.getNextJobIdForCategoryEval(), FacilioConstants.ReadingKpi.READING_KPI_JOB_NAME, 1, "facilio", props);
+                BmsJobUtil.scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_JOB_NAME, 1, "facilio", props);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);

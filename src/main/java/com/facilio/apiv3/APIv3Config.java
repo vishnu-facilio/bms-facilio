@@ -203,8 +203,11 @@ import com.facilio.mailtracking.context.V3OutgoingMailAttachmentContext;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
+import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
+import com.facilio.readingkpi.commands.list.LoadSupplementsForKpiLogger;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
+import com.facilio.readingkpi.context.KpiLoggerContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
@@ -2504,6 +2507,15 @@ public class APIv3Config {
                 .afterDelete(new DeleteNamespaceReadingKpiCommand())
                 .build();
 
+    }
+
+    @Module(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE)
+    public static Supplier<V3Config> getKpiLogger() {
+        return () -> new V3Config(KpiLoggerContext.class, null)
+                .list()
+                .beforeFetch(new LoadSupplementsForKpiLogger())
+                .afterFetch(new FetchResourceNamesForKpiLogger())
+                .build();
     }
 
     @Module(FacilioConstants.ReadingRules.NEW_READING_RULE)

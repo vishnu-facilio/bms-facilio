@@ -9,11 +9,12 @@ import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
-import com.facilio.tasker.FacilioTimer;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j
@@ -35,17 +36,15 @@ public class ScheduledKpiHistoricalCalculationJob extends FacilioJob {
             context.put(FacilioConstants.ContextNames.END_TIME, props.get(FacilioConstants.ContextNames.END_TIME));
             context.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, props.get(FacilioConstants.ReadingKpi.IS_HISTORICAL));
 
-            ReadingKpiAPI.setNamespaceAndMatchedResources(Arrays.asList(kpi));
-            context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds == null ? kpi.getMatchedResourcesIds() : historicalLoggerAssetIds);
+            ReadingKpiAPI.setNamespaceAndMatchedResources(Collections.singletonList(kpi));
+            context.put(FacilioConstants.ContextNames.RESOURCE_LIST, CollectionUtils.isEmpty(historicalLoggerAssetIds) ? kpi.getMatchedResourcesIds() : historicalLoggerAssetIds);
             execKpiChain.execute();
 
-            LOGGER.info("Time taken for ScheduledKpiHistoricalCalculation job : "+(System.currentTimeMillis() - jobStartTime));
+            LOGGER.info("Time taken for ScheduledKpiHistoricalCalculation job : " + (System.currentTimeMillis() - jobStartTime));
 
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
             throw e;
-        } finally{
-            BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
         }
     }
 }

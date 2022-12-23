@@ -111,7 +111,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
             List<ReadingAlarm> rcaFaults = ReadingRuleRcaAPI.getRCAReadingAlarms(rcaRuleIds, parentAlarm.getResource().getId(), null);
             if (CollectionUtils.isNotEmpty(rcaFaults)) {
                 for(Long rcaRuleId: rcaRuleIds){
-                    List<ReadingAlarm> rcaFaultsFiltered = rcaFaults.stream().filter(fault->fault.getRule().getId()==rcaRuleId).collect(Collectors.toList());
+                    List<ReadingAlarm> rcaFaultsFiltered = rcaFaults.stream().filter(fault -> fault.getRule() != null && fault.getRule().getId() == rcaRuleId).collect(Collectors.toList());
                     if(CollectionUtils.isNotEmpty(rcaFaultsFiltered)){
                         ReadingAlarm rcaFault = rcaFaultsFiltered.get(0);
                         RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
