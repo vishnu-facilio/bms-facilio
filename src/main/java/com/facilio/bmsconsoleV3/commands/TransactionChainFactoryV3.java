@@ -811,7 +811,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3());
         c.addCommand(new UpdateAttachmentCountCommand());
-        c.addCommand(new UpdateCloseAllFromBulkActionCommandV3());
         return c;
     }
 

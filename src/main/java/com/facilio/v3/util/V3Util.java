@@ -180,23 +180,18 @@ public class V3Util {
         }
         return createRecord(module, recordList, true, bodyParams, queryParams,false);
     }
-
     public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,boolean restrictredAction) throws Exception {
 
-        return updateBulkRecords(moduleName,rawRecord,ids,null,null,restrictredAction);
-    }
-    public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,Map<String, Object>bodyParams,Map<String, List<Object>> queryParams,boolean restrictredAction) throws Exception {
-
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+    	FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
         List<Map<String, Object>> values = new ArrayList<>();
         JSONObject jsonObject;
-        for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
+		for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
 
-            jsonObject =  FieldUtil.getAsJSON(record);
+			jsonObject =  FieldUtil.getAsJSON(record);
 
-            Set<String> keys = rawRecord.keySet();
+			Set<String> keys = rawRecord.keySet();
             for (String key : keys) {
                 jsonObject.put(key, rawRecord.get(key));
             }
@@ -207,11 +202,12 @@ public class V3Util {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
-                ids, bodyParams, queryParams, null,
+                ids, null, null, null,
                 null, null,null,restrictredAction);
 
         return context;
     }
+
 
     public static FacilioContext updateBulkRecords(FacilioModule module, V3Config v3Config,
                                                    List<ModuleBaseWithCustomFields> oldRecords,
