@@ -13,8 +13,9 @@ import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.bmsconsoleV3.context.CustomModuleDataFailureClassRelationship;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.classification.command.AddOrUpdateClassificationDataCommand;
+import com.facilio.classification.command.AddClassificationDataCommand;
 import com.facilio.classification.command.SummaryClassificationDataCommand;
+import com.facilio.classification.command.UpdateClassificationDataCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -219,7 +220,7 @@ public class ChainUtil {
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
-        transactionChain.addCommand(new AddOrUpdateClassificationDataCommand(true));
+        transactionChain.addCommand(new AddClassificationDataCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveCommand", moduleName));
         addIfNotNull(transactionChain, activityCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "activityCommand", moduleName));
@@ -453,7 +454,7 @@ public class ChainUtil {
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
-        transactionChain.addCommand(new AddOrUpdateClassificationDataCommand());
+        transactionChain.addCommand(new UpdateClassificationDataCommand());
         transactionChain.addCommand(activityCommand);
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());
         transactionChain.addCommand(new DeleteSubFormLineItems());

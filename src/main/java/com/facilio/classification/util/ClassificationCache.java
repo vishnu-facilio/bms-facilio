@@ -10,6 +10,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
+/**
+ * This cache is used per request level, where we would need to get same classification again and
+ * again. This helps in minimal sql queries.
+ */
 public class ClassificationCache {
 
     private Map<Long, ClassificationContext> classificationCache = new HashMap<>();

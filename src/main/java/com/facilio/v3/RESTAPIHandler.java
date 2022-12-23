@@ -143,7 +143,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         for (Map<String, Object> record: rawRecords) {
             ids.add((long) record.get("id"));
         }
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids,null,true);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
         FacilioModule module = ChainUtil.getModule(moduleName);
