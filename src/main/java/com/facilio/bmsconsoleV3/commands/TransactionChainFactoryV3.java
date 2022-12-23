@@ -160,6 +160,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.JobPlanServicesUnsavedListComma
 import com.facilio.bmsconsoleV3.commands.jobplan.JobPlanToolsUnsavedListCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.SortJobPlanTaskSectionCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.jobplan.DeleteJobPlanSubModuleRecord;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -1337,6 +1338,7 @@ public class TransactionChainFactoryV3 {
         // chain.addCommand(new AddJobPlanPMsInContextCommand());
         chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
         chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
+        chain.addCommand(new DeleteJobPlanSubModuleRecord());
 
         return chain;
     }
