@@ -119,7 +119,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		try {
 
-			functions = WorkflowUtil.getFacilioFunctions(FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue).getName());
+			//functions = WorkflowUtil.getFacilioFunctions(FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue).getName());
 			
 			return SUCCESS;
 		}
