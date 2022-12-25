@@ -80,7 +80,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 					long newTaskId = recordIds.get(0);
 					TaskContext oldTask = taskMap.get(newTaskId);
 					if(StringUtils.isNotEmpty(oldTask.getFailureValue())) {
-						if (oldTask.getInputTypeEnum() == InputType.NUMBER) {
+						if (oldTask.getInputTypeEnum() == InputType.NUMBER && oldTask.getDeviationOperator() != null) {
 							FacilioModulePredicate predicate = oldTask.getDeviationOperator().getPredicate("inputValue", oldTask.getFailureValue());
             	   				task.setFailed(predicate.evaluate(task));
 	            	   		}
