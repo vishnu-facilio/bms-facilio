@@ -966,6 +966,9 @@ public class ExportUtil {
 			viewFields.add(tasksComplete);
 
 		}
+		if(CollectionUtils.isNotEmpty(viewFields)){
+			viewFields.removeIf(viewField -> viewField.getField()!=null &&!viewField.getField().isExportable());
+		}
 	}
 	
 	public static File getTempFolder(String rootFolderName) {

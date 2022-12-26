@@ -445,8 +445,10 @@ public class FormsAPI {
 				long sequenceNumber = (long) prop.get("sequenceNumber");
 				FormSection section = sectionMap.get(sequenceNumber);
 				section.setId(id);
-				section.getFields().forEach(field -> field.setSectionId(id));
-				fields.addAll(section.getFields());
+				if(section.getSectionTypeEnum() != FormSection.SectionType.SUB_FORM){
+					section.getFields().forEach(field -> field.setSectionId(id));
+					fields.addAll(section.getFields());
+				}
 			}
 		}
 	}
@@ -634,6 +636,26 @@ public class FormsAPI {
 	public static FacilioForm getFormFromDB(long id) throws Exception {
 		List<FacilioForm> forms = getFormsFromDB(Arrays.asList(id));
 		if (forms != null && !forms.isEmpty()) {
+			for(FacilioForm facilioForm : forms){
+				List<FormField> formFields = getFormFieldsFromSections(facilioForm.getSections());
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				Map<String, FacilioField> facilioFieldMap = FieldFactory.getAsMap(modBean.getAllFields(facilioForm.getModule().getName()));
+				FacilioModule module = modBean.getModule(facilioForm.getModule().getName());
+				for(FormField formField:formFields){
+					if(formField.getField()==null){
+						FacilioField field = facilioFieldMap.get(formField.getName());
+						if(field!=null ) {
+							formField.setField(field);
+							formField.setFieldId(field.getFieldId());
+						} else if (Objects.equals(formField.getName(), "siteId")) {
+							field = FieldFactory.getSiteIdField(module);
+							formField.setField(field);
+							formField.setFieldId(field.getFieldId());
+						}
+					}
+				}
+
+			}
 			return forms.get(0);
 		}
 		return null;
@@ -1144,6 +1166,10 @@ public class FormsAPI {
 				default:
 					List<FacilioField> allFields = modBean.getAllFields(form.getModule().getName());
 					allFields = allFields.stream().filter(f -> f.isDefault() && !FieldUtil.isSystemUpdatedField(f.getName())).collect(Collectors.toList());
+					List<FacilioModule> subModules = modBean.getSubModules(form.getModule().getName(), ModuleType.ATTACHMENTS);
+					if(CollectionUtils.isNotEmpty(subModules)){
+					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
+					}
 					fields.addAll(getFormFieldsFromFacilioFields(allFields, 1));
 			}
 		}
