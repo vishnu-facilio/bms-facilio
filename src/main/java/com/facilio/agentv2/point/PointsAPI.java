@@ -1,6 +1,5 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.module.AgentFieldFactory;
@@ -23,7 +22,6 @@ import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.agentv2.rdm.RdmPointContext;
 import com.facilio.agentv2.system.SystemPointContext;
 import com.facilio.bacnet.BACNetUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -38,6 +36,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -47,7 +46,6 @@ import org.json.simple.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
@@ -199,29 +197,36 @@ public class PointsAPI {
     }
 
 
-    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
+    public static void configurePointsAndMakeController(List<Long> controllerIds, List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
-            List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
-            if (points != null && (!points.isEmpty())) {
-                Long controllerId = points.get(0).getControllerId();
-                if(controllerId < 0){
-                    throw new Exception("Point's Controller Id Id can't be less than 1");
-                }
-                FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
-                FacilioContext context = chain.getContext();
-                context.put(AgentConstants.CONTROLLER_ID, controllerId);
-                context.put(AgentConstants.POINTS, points);
-                context.put(AgentConstants.RECORD_IDS, pointIds);
+            if(controllerIds != null && controllerIds.size() != 1){
+                FacilioContext context = new FacilioContext();
+                context.put(AgentConstants.POINT_IDS, pointIds);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
                 context.put(AgentConstants.DATA_INTERVAL, interval);
                 context.put(AgentConstants.LOGICAL, logical);
-                chain.execute();
-                //sendConfigurePointCommand(points,controllerType);
+                FacilioTimer.scheduleInstantJob("BulkConfigurePointsJob", context);
             } else {
-                throw new Exception(" No points for ids->" + pointIds);
+                List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
+                if(points != null && (!points.isEmpty())){
+                    long controllerId = points.get(0).getControllerId();
+                    if (controllerId < 0) {
+                        throw new Exception("Point's Controller Id Id can't be less than 1");
+                    }
+                    FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
+                    FacilioContext context = chain.getContext();
+                    context.put(AgentConstants.CONTROLLER_ID, controllerId);
+                    context.put(AgentConstants.POINTS, points);
+                    context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+                    context.put(AgentConstants.DATA_INTERVAL, interval);
+                    context.put(AgentConstants.LOGICAL, logical);
+                    chain.execute();
+                } else {
+                    throw new Exception("No points found in DB for ids->" + pointIds);
+                }
             }
         } else {
-            throw new Exception("pointIds can't be null or empty ->" + pointIds);
+            throw new Exception("PointIds can't be null or empty ->" + pointIds);
         }
     }
 

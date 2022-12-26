@@ -54,21 +54,21 @@ public class ConfigurePointCommand extends FacilioCommand {
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);
                 Objects.requireNonNull(points,"points can't be null");
                 Objects.requireNonNull(controller,"controller can't be null");
-                LOGGER.info("------configuring "+points.size()+" points for "+controller.getId());
+                LOGGER.info("Configuring "+points.size() + " points for " + controller.getName());
                 List<Point> pointsToConfigure = new ArrayList<>();
                 for (Point point : points) {
                     if ((point.getControllerId() < 1) || (point.getControllerId() == controller.getId())) {
                         point.setControllerId(controller.getId());
                         pointsToConfigure.add(point);
                     } else {
-                        LOGGER.info(" point already configured "+point.getId());
+                        LOGGER.info("Point already configured "+point.getName());
                     }
                 }
                 boolean isLogical = (boolean) context.getOrDefault(AgentConstants.LOGICAL, false);
                 PointsAPI.configurePoints(pointsToConfigure, controller, isLogical, interval);
             }
         } else {
-            throw new Exception(AgentConstants.RECORD_IDS + ", " + AgentConstants.CONTROLLER_TYPE + " missing from context->" + context);
+            throw new Exception(AgentConstants.POINTS + ", " + AgentConstants.CONTROLLER_TYPE + " missing from context->" + context);
         }
         return false;
     }

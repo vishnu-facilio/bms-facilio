@@ -55,6 +55,16 @@ public class controllerTypeIdsAction extends IdsAction {
 		this.logical = logical;
 	}
 
+    List<Long> controllerIds;
+
+    public List<Long> getControllerIds() {
+        return controllerIds;
+    }
+
+    public void setControllerIds(List<Long> controllerIds) {
+        this.controllerIds = controllerIds;
+    }
+
     @Getter
     @Setter
     private int interval = -1;
@@ -63,7 +73,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             List<Long> pointIds = getRecordIds();
             if (!pointIds.isEmpty()) {
-                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
+                PointsAPI.configurePointsAndMakeController(getControllerIds(), pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();
