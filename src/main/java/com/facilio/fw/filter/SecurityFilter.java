@@ -43,7 +43,6 @@ public class SecurityFilter implements Filter {
         urls.add("/api/v2/agent/config");
         urls.add("/api/v2/connection/callBack");
         urls.add("/api/integ/authorizeproxyuser");
-        urls.add("/api/v3/file/public");
         return urls;
     }
 

@@ -1491,7 +1491,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("exportable","IS_EXPORTABLE",module,FieldType.BOOLEAN));
 
         return fields;
     }
@@ -1519,7 +1518,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("deletedBy", "DELETED_BY", module));
         fields.add(getNumberField("deletedTime", "DELETED_TIME", module));
 
-        fields.add(getBooleanField("exportable","IS_EXPORTABLE",module));
         return fields;
     }
 
