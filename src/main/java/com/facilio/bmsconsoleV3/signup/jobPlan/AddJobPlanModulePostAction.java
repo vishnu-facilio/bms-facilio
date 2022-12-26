@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -35,18 +36,19 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
-public class AddJobPlanModulePostAction extends SignUpData {
+public class AddJobPlanModulePostAction extends BaseModuleConfig {
+
+	public AddJobPlanModulePostAction() {
+		setModuleName(FacilioConstants.ContextNames.JOB_PLAN);
+	}
 
 	@Override
-	public void addData() throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void addForms(List<ApplicationContext> allApplications) throws Exception {
 		FacilioModule jobPlanModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.JOB_PLAN);
-		
+
 		addFormRulesForJP(jobPlanModule);
 	}
 
-	
 	public void addFormRulesForJP(FacilioModule jobPlanModule) throws Exception {
     	
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
