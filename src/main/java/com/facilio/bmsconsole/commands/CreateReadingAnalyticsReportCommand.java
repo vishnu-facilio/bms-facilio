@@ -186,6 +186,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			resourceAlias.put(report.getxAlias(), moduleName);
 		}
 		dataPoint.setModuleName(moduleName);
+		if(metric.getRule_aggr_type() != null) {
+			dataPoint.setRule_aggr_type(metric.getRule_aggr_type());
+		}
 		
 		return dataPoint;
 	}

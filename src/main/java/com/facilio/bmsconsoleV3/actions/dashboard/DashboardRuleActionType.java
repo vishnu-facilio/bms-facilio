@@ -40,6 +40,7 @@ public enum DashboardRuleActionType {
         public void performAction(DashboardRuleContext dashboardRule , DashboardRuleActionContext dashboard_rule_action, DashboardExecuteMetaContext dashboard_execute_meta, Long trigger_widget_id) throws Exception
         {
             JSONObject result_json = null;
+            JSONObject datapoint_result_json = new JSONObject();
 
             JSONObject placeHolders = dashboard_execute_meta.getPlaceHolders();
             JSONObject placeHoldersMeta = dashboard_execute_meta.getPlaceHoldersMeta();
@@ -113,11 +114,12 @@ public enum DashboardRuleActionType {
                         ReportContext report =  ReportUtil.getReport(chart_Widget.getNewReportId().longValue());
                         if(report.getTypeEnum().equals(ReportContext.ReportType.READING_REPORT))
                         {
-                            if(result_json.containsKey("widget_id") && (Long) result_json.get("widget_id") == target_widget_id)
+                            if(datapoint_result_json.containsKey(target_widget_id) &&  datapoint_result_json.get(target_widget_id) != null )
                             {
-
+                                result_json = (JSONObject) datapoint_result_json.get(target_widget_id);
                                 JSONObject actionMeta= (JSONObject)result_json.get("actionMeta");
-                                JSONArray datapoint_meta = (JSONArray)actionMeta.get("datapoint");
+                                JSONObject filter = (JSONObject)actionMeta.get("FILTER");
+                                JSONArray datapoint_meta = (JSONArray)filter.get("datapoint");
                                 if(datapoint_meta != null && !datapoint_meta.isEmpty()) {
                                     JSONObject datapoint_json = new JSONObject();
                                     if(target_widget.getDataPointMeta() != null)
@@ -125,15 +127,10 @@ public enum DashboardRuleActionType {
                                         if(target_widget_criteria != null)
                                         {
                                             JSONObject dataPoing_obj = (JSONObject) target_widget.getDataPointMeta();
-                                            datapoint_json.put("datapoint_id", dataPoing_obj.containsKey("datapoint_link") ? dataPoing_obj.get("datapoint_link") : null);
+                                            datapoint_json.put("datapoint_link", dataPoing_obj.containsKey("datapoint_link") ? dataPoing_obj.get("datapoint_link") : null);
                                             datapoint_json.put("criteria", target_widget_criteria);
                                             datapoint_meta.add(datapoint_json);
-                                            actionMeta.put("datapoint", datapoint_meta);
                                         }
-
-                                        JSONObject temp = new JSONObject();
-                                        temp.put("FILTER", actionMeta);
-                                        result_json.put("actionMeta", temp);
                                     }
                                 }
 
@@ -160,7 +157,9 @@ public enum DashboardRuleActionType {
                                 V3DashboardAPIHandler.setUserFilterResp(temp, target_widget_id, dashboard_execute_meta.getGlobal_filter_widget_map(), dashboard_execute_meta.getPlaceHolders());
                                 V3DashboardAPIHandler.setTimeLineFilterResp(temp, target_widget_id, dashboard_execute_meta.getTimeline_widget_field_map(), dashboard_execute_meta.getGlobal_timeline_filter_widget_map());
                                 result_json.put("actionMeta", temp);
+                                datapoint_result_json.put(target_widget_id, result_json);
                             }
+                            continue;
                         }
                         else
                         {
@@ -172,6 +171,14 @@ public enum DashboardRuleActionType {
                     dashboardRule.getResult_json().add(result_json);
                 }
             }
+            if(datapoint_result_json != null && !datapoint_result_json.isEmpty()){
+                Iterator<Long> iter = datapoint_result_json.keySet().iterator();
+                while(iter.hasNext())
+                {
+                    dashboardRule.getResult_json().add(datapoint_result_json.get(iter.next()));
+                }
+            }
+
         }
 
         private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data, String trigger_widget_link_name, DashboardTriggerAndTargetWidgetContext dashboard_widget)throws Exception

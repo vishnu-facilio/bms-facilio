@@ -252,4 +252,14 @@ public class ReadingAnalysisContext {
 			return null;
 		}
 	}
+
+	public String getRule_aggr_type() {
+		return rule_aggr_type;
+	}
+
+	public void setRule_aggr_type(String rule_aggr_type) {
+		this.rule_aggr_type = rule_aggr_type;
+	}
+
+	public String rule_aggr_type="SUM";
 }

@@ -173,6 +173,8 @@ public class FetchReportDataCommand extends FacilioCommand {
             if(datapoints_with_rule != null && datapoints_with_rule.size() > 0)
             {
                 dataPoints = datapoints_with_rule;
+            }else{
+                dataPoints = null;
             }
         }
         List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum(), report.getDateRange());
@@ -623,7 +625,13 @@ public class FetchReportDataCommand extends FacilioCommand {
         {
             StringBuilder sb = new StringBuilder(dp.getyAxis().getField().getTableName());
             String tableName = sb.toString();
-            String parent_id_condition = new StringBuilder(" AND (" ).append(tableName+".PARENT_ID IN (" ).append(Strings.join(dp.getDp_parent_ids(), ',') ).append("))").toString();
+            JSONObject table_vs_parentCol = new JSONObject();
+            String parent_column="PARENT_ID";//no i18n
+            if(tableName.equals("Energy_Data_2")){
+                table_vs_parentCol.put("Energy_Data_2", "PARENT_METER_ID");
+                parent_column = (String) table_vs_parentCol.get("Energy_Data_2");
+            }
+            String parent_id_condition = new StringBuilder(" AND (" ).append(tableName+"."+parent_column +" IN (" ).append(Strings.join(dp.getDp_parent_ids(), ',') ).append("))").toString();
             newSelectBuilder.andCustomWhere("ORGID = ?" + parent_id_condition, AccountUtil.getCurrentOrg().getOrgId());
             newSelectBuilder.groupBy(null);
         }
@@ -1771,24 +1779,15 @@ public class FetchReportDataCommand extends FacilioCommand {
             JSONObject categoryWithFields = (JSONObject) result_json.get("categoryWithFields");
             if(fields !=  null && fields.containsKey(fieldId))
             {
-                HashMap fieldObj = (HashMap)fields.get(fieldId);
-                if(fieldObj != null && fieldObj.containsKey("module"))
-                {
-                    Map module = (Map)fieldObj.get("module");
-                    if(module != null && module.containsKey("type"))
+                if(categoryWithFields != null) {
+                    Iterator<Long> category_itr = categoryWithFields.keySet().iterator();
+                    while(category_itr.hasNext())
                     {
-                        Integer category = (Integer) module.get("type");
-                        if(categoryWithFields != null && categoryWithFields.containsKey(Long.valueOf(category)))
+                        Long categroy_type = category_itr.next();
+                        HashMap fld_vs_asset = (HashMap)categoryWithFields.get(categroy_type);
+                        if(fld_vs_asset != null && fld_vs_asset.containsKey(fieldId))
                         {
-                            HashMap fieldVsAssetList =(HashMap) categoryWithFields.get(Long.valueOf(category));
-                            if(fieldVsAssetList != null && fieldVsAssetList.containsKey(fieldId))
-                            {
-                                Set<Long> parent_ids = (HashSet<Long>) fieldVsAssetList.get(fieldId);
-                                if(parent_ids != null && parent_ids.size() <= 10)
-                                {
-                                    return parent_ids;
-                                }
-                            }
+                            return (HashSet<Long>) fld_vs_asset.get(fieldId);
                         }
                     }
                 }
@@ -1840,24 +1839,22 @@ public class FetchReportDataCommand extends FacilioCommand {
                                     JSONObject  result_json = AssetsAPI.getAssetsWithReadingsForSpecificCategory(null, null,false, dp_rule_criteria);
                                     JSONObject assets_id_vs_name = result_json.containsKey("assets") ? (JSONObject) result_json.get("assets") : null;
                                     Set<Long> parentIds = getDataPointDetails(dp_rule_criteria, report_dp.getyAxis().getFieldId(), result_json);
-                                        report_dp.setRule_aggr_type("SPLIT");
                                         if(report_dp.getRule_aggr_type() == null || !report_dp.getRule_aggr_type().equals("SPLIT"))
                                         {
-                                            List<Long> parentid_list = new ArrayList<>();
-                                            parentid_list.addAll(parentIds);
-                                            if(report.getAnalyticsType() == ReadingAnalysisContext.AnalyticsType.PORTFOLIO.getIntVal())
-                                            {
-                                                newDataPointsList.add(report_dp);
-                                            }
-                                            else
-                                            {
-                                                report_dp.setDp_parent_ids(parentid_list);
-                                                if(report_dp.getCriteria() != null)
-                                                {
-                                                    report_dp.setCriteria(null);
+                                            if(parentIds != null) {
+                                                List<Long> parentid_list = new ArrayList<>();
+                                                parentid_list.addAll(parentIds);
+                                                if (report.getAnalyticsType() == ReadingAnalysisContext.AnalyticsType.PORTFOLIO.getIntVal()) {
+                                                    newDataPointsList.add(report_dp);
+                                                } else {
+                                                    report_dp.getyAxis().setLabel(report_dp.getyAxis().getField().getDisplayName());
+                                                    if (report_dp.getCriteria() != null) {
+                                                        report_dp.setCriteria(null);
+                                                    }
+                                                    newDataPointsList.add(report_dp);
                                                 }
+
                                             }
-                                            newDataPointsList.add(report_dp);
                                         }
                                         else if(report_dp.getRule_aggr_type() != null && report_dp.getRule_aggr_type().equals("SPLIT"))
                                         {
@@ -1928,7 +1925,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                         JSONObject datapoint = (JSONObject)chartState_alias_vs_dp.get(dp_alias_map.get("actual"));
                         new_chartState_alias_vs_dp.add(datapoint);
                     }
-                    newDataPointsList.add(report_dp);
+//                    newDataPointsList.add(report_dp);
                 }
         }
         if(new_chartState_alias_vs_dp != null && new_chartState_alias_vs_dp.size() > 0)
