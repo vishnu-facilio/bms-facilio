@@ -33,6 +33,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 	
 	public static long addCriteria(Criteria criteria, long orgId) throws Exception {
 		if(criteria != null) {
+			criteria.validatePattern();
 			criteria.setCriteriaId(-1);
 			criteria.setOrgId(orgId);
 			Map<String, Object> criteriaProp = FieldUtil.getAsProperties(criteria);

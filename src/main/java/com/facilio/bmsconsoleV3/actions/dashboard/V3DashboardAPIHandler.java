@@ -1116,7 +1116,6 @@ public class V3DashboardAPIHandler {
     public static Long generateDashboardCriteriaId(Criteria criteria, String moduleName)throws Exception
     {
         if(criteria != null) {
-            criteria.validatePattern();
             if (moduleName != null) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 for (String key : criteria.getConditions().keySet()) {

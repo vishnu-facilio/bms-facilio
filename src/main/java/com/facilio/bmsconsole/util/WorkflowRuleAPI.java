@@ -270,7 +270,6 @@ public class WorkflowRuleAPI {
 	protected static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
 		if(workflowRuleContext.getCriteria() != null) {
 			Criteria criteria = workflowRuleContext.getCriteria();
-			criteria.validatePattern();
 			if (workflowRuleContext.getModuleName() != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (String key : criteria.getConditions().keySet()) {
