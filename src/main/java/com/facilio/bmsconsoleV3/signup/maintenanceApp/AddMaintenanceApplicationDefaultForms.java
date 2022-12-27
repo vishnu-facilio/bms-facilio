@@ -79,10 +79,6 @@ public class AddMaintenanceApplicationDefaultForms extends FacilioCommand {
                     }
                 }
             }
-            AddInductionModules inductionModules = new AddInductionModules();
-            inductionModules.addDefaultFormForInductionTemplateMaintenanceApp(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE));
-            AddInspectionModules inspectionModules = new AddInspectionModules();
-            inspectionModules.addDefaultFormForInspectionTemplateMaintenanceApp(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
         }
         return false;
     }
