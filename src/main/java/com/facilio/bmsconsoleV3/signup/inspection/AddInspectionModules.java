@@ -106,8 +106,9 @@ public class AddInspectionModules extends BaseModuleConfig {
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-        
-      	addScoping(inspection);
+        if(!SignupUtil.maintenanceAppSignup()) {
+			addScoping(inspection);
+		}
 		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 		addScopingMaintenanceApp(inspection,applicationScopingId);
 
@@ -134,9 +135,10 @@ public class AddInspectionModules extends BaseModuleConfig {
         
         addDefaultStateFlowForInspectionTemplate(inspection);
         addDefaultStateFlowForInspectionResponse(inspectionResponseModule);
-        
-        addDefaultFormForInspectionTemplate(inspection);
-        
+        if(!SignupUtil.maintenanceAppSignup()) {
+			addDefaultFormForInspectionTemplate(inspection);
+		}
+		addDefaultFormForInspectionTemplateMaintenanceApp(inspection);
         addDefaultScheduleJobs();
         
         addDefaultInspectionPriorities(inspectionPriorityModule,modBean);
@@ -553,6 +555,7 @@ public class AddInspectionModules extends BaseModuleConfig {
 		sections.add(configSection);
 		defaultForm.setSections(sections);
 		defaultForm.setType(FacilioForm.Type.FORM);
+		defaultForm.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 		defaultForm.setIsSystemForm(true);
 		FormsAPI.createForm(defaultForm, inspection);
 		Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));

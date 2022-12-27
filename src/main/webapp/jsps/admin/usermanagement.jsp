@@ -11,6 +11,7 @@ java.sql.Timestamp,
 <%@ page import="org.apache.commons.collections4.CollectionUtils" %>
 <%@ page import="com.facilio.bmsconsole.util.ApplicationApi" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.bmsconsoleV3.signup.util.SignupUtil" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
   
@@ -24,13 +25,17 @@ java.sql.Timestamp,
        		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
        		try {
 
-                   long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                   long appId = ApplicationApi.getApplicationIdForLinkName(SignupUtil.getSignupApplicationLinkName());
        			usr = AccountUtil.getUserBean().getAppUserForUserName(email, appId, -1);//for now only main app  users
           		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
           		long orgId = usr.getOrgId();
           		long roleId = usr.getRoleId();
-          		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
+                  String roleName = FacilioConstants.DefaultRoleNames.SUPER_ADMIN;
+                  if(SignupUtil.maintenanceAppSignup()) {
+                      roleName = FacilioConstants.DefaultRoleNames.MAINTENANCE_SUPER_ADMIN;
+                  }
+          		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase(roleName)) {
           			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, appId, false);
        			}
                 userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);

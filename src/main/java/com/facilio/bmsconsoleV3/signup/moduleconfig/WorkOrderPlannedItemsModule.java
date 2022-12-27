@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -51,7 +52,9 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         super.addData();
 
         ArrayList<String> apps = new ArrayList<>();
-        apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        if(!SignupUtil.maintenanceAppSignup()) {
+            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        }
         apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
         for(String app : apps){

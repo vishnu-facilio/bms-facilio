@@ -52,7 +52,7 @@ public class AddModuleViewsAndGroups {
             allApplicationMap = allApplications.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, Function.identity()));
         }
         List<Long> allApplicationIds = allApplications.stream().map(ApplicationContext::getId).collect(Collectors.toList());
-        long mainAppId = allApplicationMap.get(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId();
+        long mainAppId = allApplicationMap.get(SignupUtil.getSignupApplicationLinkName()).getId();
 
         Map<Long, Map<String, ViewGroups>> allViewGroupsMap = new HashMap<>();
         allApplicationIds.forEach(appId -> allViewGroupsMap.put(appId, new HashMap<>()));
@@ -73,8 +73,11 @@ public class AddModuleViewsAndGroups {
                 List<String> groupAppLinkNames = new ArrayList<>();
                 if (CollectionUtils.isNotEmpty(groupAppLinkNamesFromMap)){
                     groupAppLinkNames.addAll(groupAppLinkNamesFromMap);
+                    if(SignupUtil.maintenanceAppSignup()) {
+                        groupAppLinkNames.remove(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    }
                 } else{
-                    groupAppLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    groupAppLinkNames.add(SignupUtil.getSignupApplicationLinkName());
                 }
                 for (String groupAppLinkName : groupAppLinkNames) {
                     long appId = allApplicationMap.get(groupAppLinkName).getId();
@@ -87,9 +90,11 @@ public class AddModuleViewsAndGroups {
                     if (CollectionUtils.isNotEmpty(view.getAppLinkNames())) {
                         viewAppLinkNames.addAll(view.getAppLinkNames());
                     } else {
-                        viewAppLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                        viewAppLinkNames.add(SignupUtil.getSignupApplicationLinkName());
                     }
-
+                    if(SignupUtil.maintenanceAppSignup()) {
+                        viewAppLinkNames.remove(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    }
                     for (String viewAppLinkName : viewAppLinkNames) {
                         long groupId = -1;
                         String viewName = view.getName();

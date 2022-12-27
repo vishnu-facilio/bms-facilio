@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 
 import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -31,12 +32,7 @@ public class AddApplicationRelatedAppsCommand extends FacilioCommand {
             applicationRelatedApp.setRelatedApplicationId(relatedApplicationId);
             relatedApplications.add(applicationRelatedApp);
         }
-        List<Map<String, Object>> props = FieldUtil.getAsMapList(relatedApplications, ApplicationRelatedAppsContext.class);
-           GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getApplicationRelatedAppsModule().getTableName())
-                .fields(FieldFactory.getApplicationRelatedAppsModuleFields());
-        builder.addRecords(props);
-        builder.save();
+        ApplicationApi.addRelatedApplications(relatedApplications);
 
         return false;
     }

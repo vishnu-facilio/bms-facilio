@@ -263,6 +263,9 @@ public class AddSurveyModules extends SignUpData {
       defaultForm.setSections(sections);
 	  defaultForm.setType(FacilioForm.Type.FORM);
 	  defaultForm.setIsSystemForm(true);
+	  if(SignupUtil.maintenanceAppSignup()){
+		  defaultForm.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+	  }
       FormsAPI.createForm(defaultForm, survey);
       
       Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));

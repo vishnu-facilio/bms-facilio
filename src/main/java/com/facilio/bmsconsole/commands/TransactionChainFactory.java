@@ -38,10 +38,8 @@ import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCom
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.classification.command.UpdateClassificationStatusCommand;
@@ -101,14 +99,21 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultWoTimelineCommand());
 //			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
-			c.addCommand(new AddMaintenanceApplicationLayout());
-			c.addCommand(new AddMaintenanceApplicationDefaultViews());
-			c.addCommand(new AddMaintenanceApplicationDefaultForms());
-			c.addCommand(new AddDefaultRolesMaintenanceApp());
+			c.addCommand(addMaintenanceApplication());
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(addScopingChain());
 			return c;
 		}
+
+	public static FacilioChain addMaintenanceApplication() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddMaintenanceApplicationLayout());
+		c.addCommand(new AddMaintenanceApplicationDefaultViews());
+		c.addCommand(new AddMaintenanceApplicationDefaultForms());
+		c.addCommand(new AddDefaultRolesMaintenanceApp());
+		c.addCommand(new AddMaintenanceAppRelatedApplicationsCommand());
+		return c;
+	}
 
 		public static FacilioChain runDefaultFieldsMigration() {
 			FacilioChain c = getDefaultChain();

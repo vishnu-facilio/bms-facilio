@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -7,6 +9,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -17,6 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -217,10 +221,18 @@ public class SignupUtil {
                         }
                         form.setSections(newSections);
                         if (form.getAppLinkNamesForForm() == null || form.getAppLinkNamesForForm().isEmpty()) {
-                                form.setAppId(allApplicationMap.get(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
-                                form.setAppLinkNamesForForm(Arrays.asList(form.getAppLinkName()!=null?form.getAppLinkName():FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+                                String linkName = form.getAppLinkName();
+                                if(linkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && SignupUtil.maintenanceAppSignup()) {
+                                        linkName = null;
+                                }
+                                form.setAppId(allApplicationMap.get(linkName!=null?form.getAppLinkName():SignupUtil.getSignupApplicationLinkName()).getId());
+                                form.setAppLinkNamesForForm(Arrays.asList(linkName!=null?form.getAppLinkName():SignupUtil.getSignupApplicationLinkName()));
                         }
-                        for (String linkName : form.getAppLinkNamesForForm()) {
+                        List<String> appLinkName = new ArrayList<>(form.getAppLinkNamesForForm());
+                        if(SignupUtil.maintenanceAppSignup()) {
+                                appLinkName.remove(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                        }
+                        for (String linkName : appLinkName) {
                                 if (Objects.equals(linkName, "wokplace")) {
                                         continue;
                                 }
@@ -264,5 +276,29 @@ public class SignupUtil {
                 FacilioContext context= defaultFormRuleChain.getContext();
                 context.put(FacilioConstants.ContextNames.FORM,form);
                 defaultFormRuleChain.execute();
+        }
+
+        public static boolean maintenanceAppSignup() {
+                if(FacilioProperties.isProduction()) {
+                        return false;
+                }
+                if(FacilioProperties.isOnpremise()) {
+                        return false;
+                }
+                try {
+                        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MAINTENANCE_APP_SIGNUP)) {
+                                return true;
+                        }
+                } catch(Exception e) {
+                        LOGGER.info("Unable to check feature license for maintenance app signup");
+                }
+                return false;
+        }
+
+        public static String getSignupApplicationLinkName () {
+                if(maintenanceAppSignup()) {
+                        return FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
+                }
+                return FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
         }
 }

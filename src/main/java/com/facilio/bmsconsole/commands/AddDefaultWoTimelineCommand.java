@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -39,7 +40,7 @@ public class AddDefaultWoTimelineCommand extends FacilioCommand {
 		List<FacilioField> fields = modBean.getAllFields(ContextNames.WORK_ORDER);
 		Map<String, FacilioField> fieldNameVsField = fields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 
-		ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		ApplicationContext app = ApplicationApi.getApplicationForLinkName(SignupUtil.getSignupApplicationLinkName());
 		ViewGroups viewGroup = new ViewGroups();
 		viewGroup.setModuleName(ContextNames.WORK_ORDER);
 		viewGroup.setName("systemtimelineviews");

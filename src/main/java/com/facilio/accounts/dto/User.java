@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.license.LicenseContext.FacilioLicense;
 
 public class User extends IAMUser {
@@ -234,7 +235,8 @@ public class User extends IAMUser {
 			Role role = null;
 			try {
 				role = AccountUtil.getRoleBean().getRole(roleId);
-				if (role != null && role.getName().equalsIgnoreCase("Super Administrator")) {
+				//Will remove this Super Administrator equals condition once isSuperAdmin boolean is migrated to true.
+				if (role != null && (role.getName().equalsIgnoreCase("Super Administrator") || role.isSuperAdmin())) {
 					return true;
 				}
 			} catch (Exception e) {

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -28,34 +29,36 @@ import java.util.Map;
 public class AddMaintenanceApplicationDefaultViews extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<String> sysModuleNames = V3ModuleAPI.getSystemModuleNamesForApp(maintenance.getLinkName());
-        if(!AddSignupDataCommandV3.createViews) {
-            for (String moduleName : sysModuleNames) {
-                List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
-                if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER) || moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-                    for (Map<String, Object> groupView : groupViews) {
-                        ViewGroups viewGroup = new ViewGroups();
-                        viewGroup.setName((String) groupView.get("name") + "_system_maintenance");
-                        viewGroup.setDisplayName((String) groupView.get("displayName"));
-                        viewGroup.setAppId(maintenance.getId());
-                        long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
-                        if (groupView.get("views") != null) {
-                            for (String view : (List<String>) groupView.get("views")) {
-                                addViewsAndColumns(moduleName, groupId, view, modBean, maintenance);
+        if(!SignupUtil.maintenanceAppSignup()) {
+            ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<String> sysModuleNames = V3ModuleAPI.getSystemModuleNamesForApp(maintenance.getLinkName());
+            if (!AddSignupDataCommandV3.createViews) {
+                for (String moduleName : sysModuleNames) {
+                    List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
+                    if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER) || moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+                        for (Map<String, Object> groupView : groupViews) {
+                            ViewGroups viewGroup = new ViewGroups();
+                            viewGroup.setName((String) groupView.get("name") + "_system_maintenance");
+                            viewGroup.setDisplayName((String) groupView.get("displayName"));
+                            viewGroup.setAppId(maintenance.getId());
+                            long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
+                            if (groupView.get("views") != null) {
+                                for (String view : (List<String>) groupView.get("views")) {
+                                    addViewsAndColumns(moduleName, groupId, view, modBean, maintenance);
+                                }
                             }
                         }
-                    }
-                } else {
-                    Map<String, FacilioView> moduleViews = ViewFactory.getModuleViews(moduleName, modBean.getModule(moduleName));
-                    ViewGroups viewGroup = new ViewGroups();
-                    viewGroup.setName(moduleName + "_system_maintenance");
-                    viewGroup.setDisplayName("System");
-                    viewGroup.setAppId(maintenance.getId());
-                    long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
-                    for (String viewName : moduleViews.keySet()) {
-                        addViewsAndColumns(moduleName, groupId, viewName, modBean, maintenance);
+                    } else {
+                        Map<String, FacilioView> moduleViews = ViewFactory.getModuleViews(moduleName, modBean.getModule(moduleName));
+                        ViewGroups viewGroup = new ViewGroups();
+                        viewGroup.setName(moduleName + "_system_maintenance");
+                        viewGroup.setDisplayName("System");
+                        viewGroup.setAppId(maintenance.getId());
+                        long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
+                        for (String viewName : moduleViews.keySet()) {
+                            addViewsAndColumns(moduleName, groupId, viewName, modBean, maintenance);
+                        }
                     }
                 }
             }

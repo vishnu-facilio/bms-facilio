@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -27,6 +28,9 @@ public class AddEmployeePortalDefaultForms extends FacilioCommand {
         List<String> excludeForms = Arrays.asList("multi_web_pm");
         ApplicationContext employee_portal = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
         ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        if(SignupUtil.maintenanceAppSignup()) {
+            mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if(!AddSignupDataCommandV3.createForms) {
             for (String moduleName : V3ModuleAPI.getSystemModuleNamesForApp(employee_portal.getLinkName())) {

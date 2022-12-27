@@ -38,8 +38,8 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
             AccountUtil.FeatureLicense.RESOURCE_SCHEDULER,
             AccountUtil.FeatureLicense.NEW_V3API,
             AccountUtil.FeatureLicense.NEW_SITE_SUMMARY,
-            AccountUtil.FeatureLicense.WEATHER_INTEGRATION
-
+            AccountUtil.FeatureLicense.WEATHER_INTEGRATION,
+            AccountUtil.FeatureLicense.MAINTENANCE_APP_SIGNUP
             // Add new default licenses here
     )));
 

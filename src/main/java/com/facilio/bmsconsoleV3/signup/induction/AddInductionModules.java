@@ -86,8 +86,9 @@ public class AddInductionModules extends BaseModuleConfig {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-        
-        addScoping(induction);
+        if(!SignupUtil.maintenanceAppSignup()) {
+            addScoping(induction);
+        }
         long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         addScopingForMaintenanceApp(induction,applicationScopingId);
 
@@ -117,9 +118,10 @@ public class AddInductionModules extends BaseModuleConfig {
         
         addDefaultStateFlowForInductionTemplate(induction);
         addDefaultStateFlowForInductionResponse(InductionResponseModule);
-        
-        addDefaultFormForInductionTemplate(induction);
-        
+        if(!SignupUtil.maintenanceAppSignup()) {
+            addDefaultFormForInductionTemplate(induction);
+        }
+        addDefaultFormForInductionTemplateMaintenanceApp(induction);
         addActivityModuleForInductionResponse(InductionResponseModule);
         
 //        addDefaultScheduleJobs();
@@ -174,6 +176,7 @@ public class AddInductionModules extends BaseModuleConfig {
         defaultForm.setSections(sections);
         defaultForm.setType(FacilioForm.Type.FORM);
         defaultForm.setIsSystemForm(true);
+        defaultForm.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
         FormsAPI.createForm(defaultForm, Induction);
         Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
         addApplyToSiteRule(defaultForm, fieldMap, formFieldMap);
@@ -325,6 +328,7 @@ public class AddInductionModules extends BaseModuleConfig {
       defaultForm.setSections(sections);
       defaultForm.setType(FacilioForm.Type.FORM);
       defaultForm.setIsSystemForm(true);
+      defaultForm.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
       FormsAPI.createForm(defaultForm, Induction);
       
       Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));

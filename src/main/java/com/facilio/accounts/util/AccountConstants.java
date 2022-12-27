@@ -1365,6 +1365,12 @@ public class AccountConstants {
 		previlegedRole.setModule(module);
 		fields.add(previlegedRole);
 
+		FacilioField isSuperAdminRole = new FacilioField();
+		isSuperAdminRole.setName("isSuperAdmin");
+		isSuperAdminRole.setDataType(FieldType.BOOLEAN);
+		isSuperAdminRole.setColumnName("IS_SUPER_ADMIN");
+		isSuperAdminRole.setModule(module);
+		fields.add(isSuperAdminRole);
 
 		return fields;
 	}

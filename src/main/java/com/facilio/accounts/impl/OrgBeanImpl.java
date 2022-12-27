@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -505,10 +506,12 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
-
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-
+		if(SignupUtil.maintenanceAppSignup()) {
+			superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, FacilioConstants.DefaultRoleNames.MAINTENANCE_SUPER_ADMIN, false);
+			applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+		}
 		if(superAdminRole == null) {
 			return null;
 		}
@@ -842,6 +845,9 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	public Long getDefaultApplicationId() throws Exception {
+		if(SignupUtil.maintenanceAppSignup()) {
+			return ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+		}
 		return ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 	}
 }
