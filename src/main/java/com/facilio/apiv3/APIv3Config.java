@@ -1067,7 +1067,7 @@ public class APIv3Config {
 
     @Module("visitor")
     public static Supplier<V3Config> getVisitor() {
-        return () -> new V3Config(V3VisitorContext.class, null)
+        return () -> new V3Config(V3VisitorContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getVisitorBeforeSaveOnAddChain())
                 .afterSave(TransactionChainFactoryV3.getVisitorAfterSaveOnAddChain())
