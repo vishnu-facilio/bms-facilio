@@ -32,6 +32,10 @@ public class WeatherAction extends V3Action {
         context.put("SITE_ID", siteId);
         chain.execute();
         setData((JSONObject) context.get("data"));
+        if(context.get("CODE")!=null) {
+            setCode((Integer) context.get("CODE"));
+            setMessage((String) context.get("MESSAGE"));
+        }
         return V3Action.SUCCESS;
     }
 

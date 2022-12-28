@@ -17,12 +17,15 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class GetCurrentWeatherDataCommand extends FacilioCommand {
 
     @Override
@@ -36,10 +39,13 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
         JSONObject data = new JSONObject();
         if(stationId == 0) {
             stationId = WeatherAPI.getStationIdForSiteId(siteId);
-            V3Util.throwRestException(stationId == 0, ErrorCode.RESOURCE_NOT_FOUND,
-                    "given siteId is not associated with any weather station");
+            if(stationId == 0) {
+                String errMsg = "given siteId is not associated with any weather station, siteId :: "+siteId;
+                LOGGER.error(errMsg);
+                context.put("CODE", -1);
+                context.put("MESSAGE", errMsg);
+            }
         }
-
         List<ReadingContext> records = getTodayWeatherRecords(stationId);
         if(!records.isEmpty()) {
             data = FieldUtil.getAsJSON(records.get(0));
@@ -49,6 +55,9 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
     }
 
     private List<ReadingContext> getTodayWeatherRecords(Long stationId) throws Exception {
+        if(stationId == 0) {
+            return new ArrayList<>();
+        }
         long startTime = DateTimeUtil.getDayStartTime();
         long currTime = DateTimeUtil.getCurrenTime();
 
