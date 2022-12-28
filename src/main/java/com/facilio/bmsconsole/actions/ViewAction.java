@@ -363,7 +363,8 @@ public String v2customizeView() throws Exception {
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
-		
+		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
+
 		FacilioChain addView = FacilioChainFactory.getViewsListCustomizeChain();
 		addView.execute(context);
 		
