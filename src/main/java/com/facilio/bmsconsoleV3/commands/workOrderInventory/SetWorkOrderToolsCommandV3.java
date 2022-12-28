@@ -177,22 +177,26 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                                                       V3ToolContext tool, long parentId, V3WorkOrderContext workorder, V3WorkorderToolsContext workorderTools,
                                                       ApprovalState approvalState, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
         V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
-        woTool.setIssueTime(workorderTools.getIssueTime());
-        woTool.setReturnTime(workorderTools.getReturnTime());
-        woTool.setDuration(workorderTools.getDuration());
+        Long issueTime = workorderTools.getIssueTime();
+        Long returnTime = workorderTools.getReturnTime();
+        woTool.setIssueTime(issueTime);
+        woTool.setReturnTime(returnTime);
         woTool.setTransactionState(TransactionState.USE);
-
         if(lineItem != null) {
             woTool.setRequestedLineItem(lineItem);
             woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
-
         }
-        Double duration = 1.0;
-        if (woTool.getDuration()==null || woTool.getDuration() <= 0) {
-            duration = V3InventoryUtil.getWorkorderActualsDuration(woTool.getIssueTime(), woTool.getReturnTime(), workorder);
-        } else {
-            Long returnTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(woTool.getDuration(), woTool.getIssueTime());
+        Double duration = workorderTools.getDuration();
+        if (issueTime != null && issueTime >0 && returnTime !=null && returnTime >0) {
+            duration = V3InventoryUtil.getWorkorderActualsDuration(issueTime, returnTime, workorder);
+        }
+        if(duration !=null && duration > 0 && issueTime != null && issueTime >0 && (returnTime == null || returnTime <= 0) ) {
+            returnTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(duration, issueTime);
             woTool.setReturnTime(returnTime);
+        }
+        else if(duration !=null && duration > 0 && returnTime != null && returnTime >0 && (issueTime ==null || issueTime <= 0)){
+            issueTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, returnTime);
+            woTool.setIssueTime(issueTime);
         }
         woTool.setTransactionType(TransactionType.WORKORDER);
         woTool.setIsReturnable(false);
@@ -202,6 +206,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         if(asset!=null) {
             woTool.setAsset(asset);
         }
+        woTool.setDuration(duration);
         woTool.setApprovedState(approvalState);
         woTool.setRemainingQuantity(quantity);
         woTool.setQuantity(quantity);
@@ -213,9 +218,9 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         Double rate = null;
         rate = tool.getRate();
         woTool.setRate(rate);
-        double costOccurred = 0;
-        if (tool.getRate()!=null && tool.getRate() > 0) {
-            costOccurred = tool.getRate() * duration * woTool.getQuantity();
+        Double costOccurred = 0.0;
+        if (tool.getRate()!=null && tool.getRate() > 0 && duration !=null && duration >=0) {
+            costOccurred = tool.getRate() * (duration / 3600) * woTool.getQuantity();
         }
         woTool.setCost(costOccurred);
         if(workorder!=null) {

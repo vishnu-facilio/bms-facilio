@@ -18,7 +18,7 @@ public class V3InventoryUtil {
     }
 
     public static Double getWorkorderActualsDuration(Long issueTime, Long returnTime, V3WorkOrderContext workorder) {
-        Double duration = 1.0;
+        Double duration = null;
         if (issueTime!=null && returnTime!=null && issueTime >= 0 && returnTime >= 0) {
             duration = getEstimatedWorkDuration(issueTime, returnTime);
         } else {
@@ -35,16 +35,22 @@ public class V3InventoryUtil {
         if (issueTime != -1 && returnTime != -1) {
             duration = returnTime - issueTime;
         }
-
-        double hours = ((duration / (1000 * 60 * 60)));
-        return Math.round(hours*100.0)/100.0;
+        return duration / 1000;
     }
 
     public static Long getReturnTimeFromDurationAndIssueTime(Double duration, Long issueTime) {
         Long returnTime = null;
         if (issueTime!=null && issueTime >= 0) {
-            returnTime = (long) (issueTime + (duration * (60*60*1000)));
+            returnTime = (long) (issueTime + (duration * 1000));
         }
         return returnTime;
+    }
+
+    public static Long getIssueTimeFromDurationAndReturnTime(Double duration, Long returnTime) {
+        Long issueTime = null;
+        if(returnTime != null && returnTime >= 0) {
+            issueTime = (long) (returnTime - (duration * 1000));
+        }
+        return issueTime;
     }
 }

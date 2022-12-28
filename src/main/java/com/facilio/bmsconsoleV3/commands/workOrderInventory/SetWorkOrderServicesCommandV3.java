@@ -19,6 +19,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -93,18 +94,24 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
 
     private V3WorkOrderServiceContext setWorkorderServiceObj(V3ServiceContext service, long parentId, V3WorkOrderContext workorder, V3WorkOrderServiceContext workorderService) throws Exception {
         V3WorkOrderServiceContext woService = new V3WorkOrderServiceContext();
-        woService.setStartTime(workorderService.getStartTime());
-        woService.setEndTime(workorderService.getEndTime());
-        woService.setDuration(workorderService.getDuration());
+        Long startTime = workorderService.getStartTime();
+        Long endTime = workorderService.getEndTime();
+        woService.setStartTime(startTime);
+        woService.setEndTime(endTime);
         woService.setId(workorderService.getId());
         woService.setParent(workorderService.getParent());
         Double duration = workorderService.getDuration();
-        if (woService.getDuration()==null || woService.getDuration() <= 0) {
-            duration = V3InventoryUtil.getWorkorderActualsDuration(woService.getStartTime(), woService.getEndTime(), workorder);
-        } else {
-            Long endTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(woService.getDuration(), woService.getStartTime());
-            woService.setEndTime(endTime);
+        if (startTime != null && startTime >0 && endTime != null && endTime >0) {
+            duration = V3InventoryUtil.getWorkorderActualsDuration(startTime, endTime, workorder);
         }
+        if(duration != null && duration > 0 && startTime != null && startTime > 0 && (endTime == null || endTime <= 0)) {
+            endTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(duration, startTime);
+            woService.setEndTime(endTime);
+        } else if (duration != null && duration > 0 && endTime != null && endTime > 0 && (startTime == null || startTime <= 0)) {
+            startTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, endTime);
+            woService.setStartTime(startTime);
+        }
+        woService.setDuration(duration);
         V3ServiceContext serviceUtil = (V3ServiceContext) V3Util.getRecord(FacilioConstants.ContextNames.SERVICE,service.getId(),null);
         Double unitPrice = serviceUtil.getBuyingPrice();
         woService.setUnitPrice(unitPrice);
@@ -113,7 +120,10 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         if(workorderService.getQuantity()==null || workorderService.getQuantity() <= 0) {
             woService.setQuantity(1.0);
         }
-        Double costOccurred = V3InventoryUtil.getServiceCost(serviceUtil, duration, woService.getQuantity());
+        Double costOccurred = 0.0;
+        if(duration != null && duration >=0) {
+            costOccurred = V3InventoryUtil.getServiceCost(serviceUtil, (duration / 3600), woService.getQuantity());
+        }
         woService.setCost(costOccurred);
         woService.setService(serviceUtil);
         woService.setDuration(duration);

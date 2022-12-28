@@ -169,7 +169,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         workOrderToolsModuleFormFields.add(new FormField("tool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "tool", ++seqNum, 1));
         workOrderToolsModuleFormFields.add(new FormField("issueTime", FacilioField.FieldDisplayType.DATETIME,"Issue Time", FormField.Required.OPTIONAL,++seqNum,1));
         workOrderToolsModuleFormFields.add(new FormField("returnTime", FacilioField.FieldDisplayType.DATETIME,"Return Time", FormField.Required.OPTIONAL,++seqNum,1));
-        workOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER,"Duration", FormField.Required.OPTIONAL,++seqNum,1));
+        workOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,"duration",++seqNum,1));
         workOrderToolsModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
 
         FormSection workOrderToolsModuleFormSection = new FormSection("Default", 1, workOrderToolsModuleFormFields, false);

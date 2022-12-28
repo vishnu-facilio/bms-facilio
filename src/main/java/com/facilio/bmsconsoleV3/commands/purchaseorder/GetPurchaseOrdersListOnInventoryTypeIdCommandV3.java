@@ -31,12 +31,12 @@ public class GetPurchaseOrdersListOnInventoryTypeIdCommandV3 extends FacilioComm
             boolean filterPO=FacilioUtil.parseBoolean((Constants.getQueryParam(context, "filterPO")));
             if(Objects.nonNull(Constants.getQueryParam(context,"storeRoomId"))
                     &&Objects.nonNull(Constants.getQueryParam(context,"inventoryType"))
-                    &&Objects.nonNull(Constants.getQueryParam(context,"id"))
+                    &&Objects.nonNull(Constants.getQueryParam(context,"inventoryId"))
                     &&filterPO)
             {
                 long storeRoomId=FacilioUtil.parseLong((Constants.getQueryParam(context, "storeRoomId")));
                 int inventoryType=FacilioUtil.parseInt((Constants.getQueryParam(context, "inventoryType")));
-                long id=FacilioUtil.parseLong((Constants.getQueryParam(context, "id")));
+                long inventoryId = FacilioUtil.parseLong((Constants.getQueryParam(context, "inventoryId")));
                 ModuleBean modBean = Constants.getModBean();
                 FacilioModule purchaseOrderModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
                 FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
@@ -53,9 +53,9 @@ public class GetPurchaseOrdersListOnInventoryTypeIdCommandV3 extends FacilioComm
                     builder.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
                 }
                 if (inventoryType == InventoryType.ITEM.ordinal() + 1) {
-                    builder.andCondition(CriteriaAPI.getCondition("ITEM_TYPE", "itemType", String.valueOf(id), NumberOperators.EQUALS));
+                    builder.andCondition(CriteriaAPI.getCondition("ITEM_TYPE", "itemType", String.valueOf(inventoryId), NumberOperators.EQUALS));
                 } else if (inventoryType == InventoryType.TOOL.ordinal() + 1) {
-                    builder.andCondition(CriteriaAPI.getCondition("TOOL_TYPE", "toolType", String.valueOf(id), NumberOperators.EQUALS));
+                    builder.andCondition(CriteriaAPI.getCondition("TOOL_TYPE", "toolType", String.valueOf(inventoryId), NumberOperators.EQUALS));
                 }
                 List<V3PurchaseOrderContext> list = builder.get();
                 List<Long> poIds = new ArrayList<>();
