@@ -126,6 +126,14 @@ public enum FacilioBusinessHourFunctions implements FacilioWorkflowFunctionInter
 		}
 		
 	},
+	IS_TIME_BETWEEN(4,"isTimeBetween"){
+		@Override
+		public Object execute(Map<String, Object> map, Object... objects) throws Exception {
+			BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
+			long time=(long) Double.parseDouble(objects[1].toString());
+			return BusinessHoursAPI.isTimeBetweenBusinessHours(bussBusinessHoursContext,time);
+		}
+	},
 	;
 	
 	private Integer value;

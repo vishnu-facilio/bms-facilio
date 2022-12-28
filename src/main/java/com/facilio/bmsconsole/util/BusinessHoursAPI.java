@@ -492,5 +492,13 @@ public class BusinessHoursAPI {
 		}
 
 	}
-
+	public static boolean isTimeBetweenBusinessHours(BusinessHoursContext businessHoursContext,long time) throws Exception {
+		long dayStartTime=DateTimeUtil.getDayStartTimeOf(time);
+		long dayEndTime=DateTimeUtil.getDayEndTimeOf(time);
+		List<DateRange> businessHoursList=getBusinessHoursList(businessHoursContext,dayStartTime,dayEndTime);
+		if((businessHoursList!=null && !businessHoursList.isEmpty())  && (time>=businessHoursList.get(0).getStartTime() && time<=businessHoursList.get(0).getEndTime())) {
+			return true;
+		}
+		return false;
+	}
 }
