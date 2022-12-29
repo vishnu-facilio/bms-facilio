@@ -1311,6 +1311,7 @@
 /api/v3/accessiblespace/add
 /api/v3/accessiblespace/delete
 /api/v3/report/create
+/api/v3/report/clone
 /api/v3/report/modules/list
 /api/v3/report/update
 /api/v3/report/delete
@@ -1334,6 +1335,7 @@
 /api/v3/report/scheduled/list
 /api/v3/report/fetch_data
 /api/v3/report/pivot/create
+/api/v3/report/pivot/clone
 /api/v3/report/pivot/update
 /api/v3/report/pivot/execute
 /api/v3/report/pivot/export

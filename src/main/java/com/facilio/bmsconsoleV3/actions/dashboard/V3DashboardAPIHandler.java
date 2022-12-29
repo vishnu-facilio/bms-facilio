@@ -691,7 +691,12 @@ public class V3DashboardAPIHandler {
     public static void setTimeLineFilterResp(JSONObject actionMeta , Long widget_id, Map<Long, Map<String, String>> timeline_widget_field_map, JSONObject global_timeline_filter_widget_map)throws Exception
     {
         if (global_timeline_filter_widget_map != null && timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
-            actionMeta.put("TIMELINE_FILTER", global_timeline_filter_widget_map.get("TIMELINE_FILTER"));
+            JSONObject timeline_filter = (JSONObject) global_timeline_filter_widget_map.get("TIMELINE_FILTER");
+            HashMap dateField = (HashMap) timeline_widget_field_map.get(widget_id);
+            if(dateField != null && timeline_filter != null && dateField.containsKey("dateField")){
+                timeline_filter.put("dateField", dateField.get("dateField"));
+            }
+            actionMeta.put("TIMELINE_FILTER", timeline_filter);
         }
     }
 

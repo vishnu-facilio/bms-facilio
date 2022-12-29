@@ -779,6 +779,10 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="sendMail">
         </action>
+        <action name="clone"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="clonetoAnotherApp">
+        </action>
         <action name="details"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="getReport">
@@ -817,6 +821,10 @@
         <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
                 method="create">
+        </action>
+        <action name="clone"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="clonetoAnotherApp">
         </action>
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"

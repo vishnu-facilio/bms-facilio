@@ -7,6 +7,7 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 import java.util.Collections;
 
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -195,17 +196,6 @@ import com.facilio.bmsconsoleV3.commands.receipts.GetReceiptsListOnReceivableIdC
 import com.facilio.bmsconsoleV3.commands.receipts.LoadReceiptsListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.PurchaseOrderLineItemQuantityRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.PurchaseOrderQuantityRecievedRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
-import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
-import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDetailsCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetAllReportsCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetCreateFolderCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetDataPointFromAlarmCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetFolderPermissionUpdateCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetMoveReportCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetReportFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetReportFoldersCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetSubModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.AwardVendorsCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.ConvertPrToRfqCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.ConvertRfqToPoCommandV3;
@@ -2201,8 +2191,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CloneDashboardCommand());
         return c;
     }
-
-    public static FacilioChain getMoveToDashboardChain() {
+    public static FacilioChain getCloneReportChain(){
+        FacilioChain c =getDefaultChain();
+        c.addCommand(new GetReportCloneCommand());
+        return c;
+    }
+    public static FacilioChain getMoveToDashboardChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new MoveToDashboardCommand());
         return c;

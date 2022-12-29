@@ -30,6 +30,7 @@ import com.facilio.v3.exception.RESTException;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -131,6 +132,27 @@ public class V3PivotReportAction extends V3Action {
         reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message,
                 AuditLogHandler.ActionType.ADD);
         return SUCCESS;
+    }
+    public String clonetoAnotherApp() throws Exception {
+        try
+        {
+            JSONObject cloned_json = this.getData();
+                FacilioChain chain = TransactionChainFactoryV3.getCloneReportChain();
+                FacilioContext context = chain.getContext();
+                updateContextToClone(context, cloned_json);
+                chain.execute();
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while cloning dashboard");
+        }
+        return SUCCESS;
+    }
+    private void updateContextToClone(Context context, JSONObject cloned_json) throws Exception{
+        context.put("cloned_report_name", cloned_json.get("cloned_report_name"));
+        context.put("target_app_id", cloned_json.get("target_app_id"));
+        context.put("cloned_app_id", cloned_json.get("cloned_app_id"));
+        context.put(FacilioConstants.ContextNames.REPORT_ID, cloned_json.get("report_id"));
     }
     public String sendPivotMail() throws Exception {
         FacilioContext context = new FacilioContext();

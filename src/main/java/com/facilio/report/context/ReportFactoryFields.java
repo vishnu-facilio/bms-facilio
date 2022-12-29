@@ -496,7 +496,7 @@ public class ReportFactoryFields {
 	private static List<FacilioField> getPivotRowSupportedFields(List<FacilioField> fields) throws Exception{
 		List<FacilioField> pivotRowFields = new ArrayList<>();
 		for (FacilioField field : fields) {
-			if(field != null) {
+			if(field != null && field.getColumnName() != null) {
 				if (     
 						field.getDataTypeEnum() == FieldType.ID 
 						||field.getDataTypeEnum() == FieldType.NUMBER
@@ -508,6 +508,8 @@ public class ReportFactoryFields {
 						|| field.getDataTypeEnum() == FieldType.DATE 
 						|| field.getDataTypeEnum() == FieldType.DATE_TIME
 						|| field.getDataTypeEnum() == FieldType.MULTI_ENUM
+						|| field.getDataTypeEnum() == FieldType.BIG_STRING
+						|| field.getDataTypeEnum() == FieldType.LARGE_TEXT
 						|| field.isMainField()
 					) {
 					
