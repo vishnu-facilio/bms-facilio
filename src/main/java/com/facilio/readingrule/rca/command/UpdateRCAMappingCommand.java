@@ -19,7 +19,10 @@ public class UpdateRCAMappingCommand extends FacilioCommand {
         NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
         ReadingRuleRCAContext rca = newReadingRule.getRca();
-        List<Long> newRcaRuleIds = new ArrayList<>(rca.getRcaRuleIds());
+        List<Long> newRcaRuleIds=new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(rca.getRcaRuleIds())) {
+            newRcaRuleIds.addAll(rca.getRcaRuleIds());
+        }
         List<Long> oldRcaRuleIds = oldReadingRule.getRca() != null ? oldReadingRule.getRca().getRcaRuleIds() : new ArrayList<>();
 
         ReadingRuleRcaAPI.removeIntersection(newRcaRuleIds, oldRcaRuleIds);
@@ -32,5 +35,6 @@ public class UpdateRCAMappingCommand extends FacilioCommand {
         }
 
         return false;
-    }
+}
+
 }

@@ -30,7 +30,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         this.rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
-        updateReadingRule();
         updateAlarmDetails();
         updateNamespace();
         updateNamespaceFields();
@@ -39,14 +38,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
 
 
         return false;
-    }
-
-    private void updateReadingRule() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .fields(FieldFactory.getNewReadingRuleFields())
-                .table(ModuleFactory.getNewReadingRuleModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rule.getId()), NumberOperators.EQUALS));
-        updateBuilder.update(FieldUtil.getAsProperties(rule));
     }
 
     private void updateAlarmDetails() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {

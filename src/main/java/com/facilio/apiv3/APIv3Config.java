@@ -2525,7 +2525,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.addReadingRuleChain())
                 .afterSave(TransactionChainFactoryV3.afterSaveReadingRuleChain())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.updateReadingRuleChain())
+                .afterSave(TransactionChainFactoryV3.updateReadingRuleChain())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())
                 .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())

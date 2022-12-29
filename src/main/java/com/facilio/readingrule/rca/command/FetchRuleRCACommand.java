@@ -20,10 +20,6 @@ public class FetchRuleRCACommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<NewReadingRuleContext> ruleList = NewReadingRuleAPI.destructureRuleFromRecordMap(context);
-        if (CollectionUtils.isEmpty(ruleList)) {
-            return true;
-        }
-
         for (NewReadingRuleContext rule : ruleList) {
             SelectRecordsBuilder<ReadingRuleRCAContext> builder = new SelectRecordsBuilder<ReadingRuleRCAContext>()
                     .moduleName(FacilioConstants.ReadingRules.RCA.RCA_MODULE)
