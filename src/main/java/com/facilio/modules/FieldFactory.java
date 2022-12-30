@@ -9683,6 +9683,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
+        fields.add(getStringField("iconTypeEnum","ICON_TYPE_ENUM",module));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
         FacilioField layoutField = getField("layoutId", "LAYOUT_ID", module, FieldType.NUMBER);
@@ -9700,6 +9701,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
+        fields.add(getStringField("iconTypeEnum","ICON_TYPE_ENUM",module));
         fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));

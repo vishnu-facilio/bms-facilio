@@ -5155,6 +5155,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateTabGroupCommandValidationCommand());
 		chain.addCommand(new AddOrUpdateTabGroupCommand());
 		return chain;
 	}

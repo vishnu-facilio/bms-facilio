@@ -6,6 +6,7 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -40,9 +41,26 @@ public class WebTabContext implements Serializable {
     public int getIconType() {
         return iconType;
     }
+
+    public IconType getIconTypeEnum() {
+        return iconTypeEnum;
+    }
+
+    public void setIconTypeEnum(IconType iconTypeEnum) {
+        this.iconTypeEnum = iconTypeEnum;
+    }
+    public void setIconTypeEnum(String iconTypeEnum) {
+        if(StringUtils.isNotEmpty(iconTypeEnum)){
+            this.iconTypeEnum = IconType.valueOf(iconTypeEnum);
+        }
+
+    }
     public void setIconType(int iconType) {
         this.iconType = iconType;
     }
+
+    private IconType iconTypeEnum;
+
 
     private String name;
     public String getName() {

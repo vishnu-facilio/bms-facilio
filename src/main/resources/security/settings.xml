@@ -272,6 +272,7 @@
         <requestbody type="object">
             <property name="tabGroup" type="object">
                 <property name="iconType" type="number"/>
+                <property name="iconTypeEnum" type="string"/>
                 <property name="layoutId" type="number"/>
                 <property name="name" type="string" mandatory="true"/>
                 <property name="route" type="string"/>

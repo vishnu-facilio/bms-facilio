@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.QuestionType;
+import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
+import com.facilio.util.FacilioUtil;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +56,21 @@ public class WebTabGroupContext implements Serializable {
     public void setIconType(int iconType) {
         this.iconType = iconType;
     }
+    private IconType iconTypeEnum;
 
+    public IconType getIconTypeEnum() {
+        return iconTypeEnum;
+    }
+
+    public void setIconTypeEnum(IconType iconTypeEnum){
+        this.iconTypeEnum =iconTypeEnum;
+    }
+    public void setIconTypeEnum(String iconTypeEnum) {
+        if(StringUtils.isNotEmpty(iconTypeEnum)){
+            this.iconTypeEnum = IconType.valueOf(iconTypeEnum);
+        }
+
+    }
     private int order = -1;
     public int getOrder() {
         return order;
@@ -104,4 +126,5 @@ public class WebTabGroupContext implements Serializable {
     public void setLayoutId(long layoutId) {
         this.layoutId = layoutId;
     }
+
 }

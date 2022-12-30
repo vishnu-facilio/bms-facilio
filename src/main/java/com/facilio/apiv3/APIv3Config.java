@@ -2,6 +2,7 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.attribute.chain.ClassificationAttributeChain;
 import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
 import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
 import com.facilio.attribute.context.ClassificationAttributeContext;
@@ -2578,6 +2579,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getClassificationAttributeHandler() {
         return () -> new V3Config(ClassificationAttributeContext.class,  null)
                 .list()
+                .beforeFetch(ClassificationAttributeChain.getBeforeListChain())
                 .create()
                 .beforeSave(new BeforeSaveClassificationAttributeCommand())
                 .update()

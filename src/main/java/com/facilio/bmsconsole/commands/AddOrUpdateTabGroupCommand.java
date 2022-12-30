@@ -29,20 +29,12 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         WebTabGroupContext tabGroup = (WebTabGroupContext) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP);
         if (tabGroup != null) {
-            if (StringUtils.isEmpty(tabGroup.getName())) {
-                throw new IllegalArgumentException("Name cannot be empty");
-            }
-
             if (tabGroup.getId() <= 0) {
                 int lastOrderNumber = getLastOrderNumber(tabGroup.getLayoutId());
                 tabGroup.setOrder(lastOrderNumber + 1);
             }
             else {
                 tabGroup.setOrder(-1);
-            }
-
-            if (checkRouteAlreadyFound(tabGroup)) {
-                throw new IllegalArgumentException("Route is already found for this layout");
             }
 
             if (tabGroup.getId() > 0) {
@@ -67,29 +59,7 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
         return false;
     }
 
-    private boolean checkRouteAlreadyFound(WebTabGroupContext tabGroup) throws Exception {
-        if (StringUtils.isEmpty(tabGroup.getRoute())) {
-            throw new IllegalArgumentException("Route cannot be empty");
-        }
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                .select(FieldFactory.getWebTabGroupFields())
-                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", tabGroup.getRoute(), StringOperators.IS));
-
-        if (tabGroup.getId() > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(tabGroup.getId()), NumberOperators.NOT_EQUALS));
-        }
-
-        if (tabGroup.getLayoutId() <= 0) {
-            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
-        }
-        else {
-            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(tabGroup.getLayoutId()), NumberOperators.EQUALS));
-        }
-        Map<String, Object> map = builder.fetchFirst();
-        return map != null;
-    }
 
     private int getLastOrderNumber(long layoutId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
