@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,41 +32,50 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
 		FacilioCache modulecache = LRUCache.getModuleCache();
-		// FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		if (moduleObj == null) {
-			
 			moduleObj = super.getModule(moduleName);
-			
-		//	CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
 			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
-			
-			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
+			LOGGER.info("getModule result from DB for module: " + String.valueOf(moduleName));
 		}
-		else {
-			//LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleName);
-		}
-		return moduleObj;
+		return handleInvalidModuleNull(moduleObj);
 	}
 
 	@Override
 	public FacilioModule getModule(long moduleId) throws Exception {
-		FacilioCache modulecache = LRUCache.getModuleCache();
 
+		FacilioCache modulecache = LRUCache.getModuleCache();
 		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleId));
-		
 		if (moduleObj == null) {
-			
 			moduleObj = super.getModule(moduleId);
-			
 			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
-			
-			LOGGER.debug("getModule result from DB for module: "+moduleId);
+			LOGGER.info("getModule result from DB for module: " + moduleId);
 		}
-		else {
-			//LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
+		return handleInvalidModuleNull(moduleObj);
+	}
+
+	private FacilioModule handleInvalidModuleNull (FacilioModule module) {
+		if (module != null && RESERVED_NULL_MODULE_NAME.equals(module.getName())) {
+			return null;
 		}
-		return moduleObj;
+		return module;
+	}
+
+	private void clearModuleCache (long moduleId) throws Exception {
+		FacilioModule newModule = super.getModule(moduleId);
+		FacilioCache moduleCache = LRUCache.getModuleCache();
+		moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
+		moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
+	}
+
+	@Override
+	public long addModule(FacilioModule module) throws Exception {
+		// TODO Auto-generated method stub
+		long moduleId =  super.addModule(module);
+		if (moduleId > 0) {
+			clearModuleCache(moduleId);
+		}
+		return moduleId;
 	}
 	
 	@Override
@@ -73,10 +83,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		// TODO Auto-generated method stub
 		int row =  super.updateModule(module);
 		if (row > 0) {
-			FacilioModule newModule = super.getModule(module.getModuleId());
-			FacilioCache moduleCache = LRUCache.getModuleCache();
-			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
-			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
+			clearModuleCache(module.getModuleId());
 		}
 		return row;
 	}
@@ -87,12 +94,8 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName));
 		
 		if (modules == null) {
-			
 			modules = super.getAllSubModules(moduleName);
-			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), new ArrayList<>(modules));
-			
-			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
 			LOGGER.debug("getSubModules result from CACHE for module: "+moduleName);
@@ -107,11 +110,8 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		List<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId));
 		
 		if (modules == null) {
-			
 			modules = super.getAllSubModules(moduleId);
-			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), new ArrayList<>(modules));
-			
 			LOGGER.debug("getSubModules result from DB for module: "+moduleId);
 		}
 		else {

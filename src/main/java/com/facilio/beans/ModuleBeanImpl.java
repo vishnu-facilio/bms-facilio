@@ -56,8 +56,11 @@ public class ModuleBeanImpl implements ModuleBean {
 		return DBConf.getInstance().getCurrentOrgId();
 	}
 
+	protected static final String RESERVED_NULL_MODULE_NAME = "system_dummy_module_name_when_null"; //No i18n
+	// This is called from getModule which is used in cacheBeanImpl alone
 	private FacilioModule getModuleFromRS(ResultSet rs) throws Exception {
-		FacilioModule module = null;
+		FacilioModule module = new FacilioModule();
+		module.setName(RESERVED_NULL_MODULE_NAME);
 		boolean isFirst = true;
 		FacilioModule prevModule = null;
 		while(rs.next()) {
@@ -1725,7 +1728,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Invalid Module for insertion");
 		}
 		
-		if(module.getName() == null || module.getName().isEmpty() || module.getTableName() == null || module.getTableName().isEmpty()) {
+		if(module.getName() == null || module.getName().isEmpty() || module.getName().equals(RESERVED_NULL_MODULE_NAME) || module.getTableName() == null || module.getTableName().isEmpty()) {
 			throw new IllegalArgumentException("Invalid Module Name/ Module table Name");
 		}
 		
