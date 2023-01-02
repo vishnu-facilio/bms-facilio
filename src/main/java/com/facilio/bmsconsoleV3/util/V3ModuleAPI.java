@@ -18,7 +18,7 @@ public class V3ModuleAPI {
         VENDOR_CONTACT(FacilioConstants.ContextNames.VENDOR_CONTACT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         PURCHASE_CONTRACTS(FacilioConstants.ContextNames.PURCHASE_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         LABOUR_CONTRACTS(FacilioConstants.ContextNames.LABOUR_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        LABOURS(FacilioConstants.ContextNames.LABOUR,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+//        LABOURS(FacilioConstants.ContextNames.LABOUR,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         RENTAL_LEASE_CONTRACTS(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         WARRANTY_CONTRACTS(FacilioConstants.ContextNames.WARRANTY_CONTRACTS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SERVICE(FacilioConstants.ContextNames.SERVICE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
