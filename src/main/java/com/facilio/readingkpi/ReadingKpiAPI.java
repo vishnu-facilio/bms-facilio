@@ -479,9 +479,9 @@ public class ReadingKpiAPI {
     public static List<Integer> getFrequencyTypesToBeFetched() {
         List<Integer> types = new ArrayList<>();
         ZonedDateTime zdt = DateTimeUtil.getDateTime();
-        types.add(NamespaceFrequency.WEEKLY.getIndex());
 
         if (zdt.getHour() == 0) {
+            types.add(NamespaceFrequency.ONE_DAY.getIndex());
             if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
                 types.add(NamespaceFrequency.WEEKLY.getIndex());
             }

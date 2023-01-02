@@ -103,6 +103,9 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         }
     }
 
+    /**
+     * @return a readingContext only for those rules (in the map) that have an associated fault
+     */
     private List<RCAScoreReadingContext> setReadingContextWithRuleIds(Long parentAlarmId, List<Long> rcaRuleIds) throws Exception {
         List<RCAScoreReadingContext> rcaScoreReadingContexts = new ArrayList<>();
         ReadingAlarm parentAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(parentAlarmId);

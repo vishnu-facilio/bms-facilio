@@ -24,21 +24,21 @@ public class ReadingKpiAction extends V3Action {
     private Long recordId;
     private Long startTime;
     private Long endTime;
-    private List<Long> historicalLoggerAssetIds;
+    private List<Long> assets;
 
     public String runHistorical() throws Exception {
         ReadingKPIContext kpi = validatePayload();
         try {
             if (kpi.getKpiType() == KPIType.SCHEDULED.getIndex()) {
                 JSONObject props = new JSONObject();
-                props.put(FacilioConstants.ContextNames.START_TIME, startTime);
-                props.put(FacilioConstants.ContextNames.END_TIME, endTime);
+                props.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+                props.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
                 props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
-                props.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+                props.put(FacilioConstants.ContextNames.RESOURCE_LIST, getAssets());
                 props.put(FacilioConstants.ReadingKpi.READING_KPI, getRecordId());
 
                 scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
-                setData(SUCCESS, "Historical KPI Calculation is started and will be notified when done");
+                setData(SUCCESS, "Historical KPI Calculation has started");
 
             } else {
                 FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
@@ -49,7 +49,7 @@ public class ReadingKpiAction extends V3Action {
                 instructionData.put("recordId", getRecordId());
                 instructionData.put("startTime", getStartTime());
                 instructionData.put("endTime", getEndTime());
-                instructionData.put("assetIds", getHistoricalLoggerAssetIds());
+                instructionData.put("assetIds", getAssets());
                 context.put("data", instructionData);
                 runStormHistorical.execute();
 

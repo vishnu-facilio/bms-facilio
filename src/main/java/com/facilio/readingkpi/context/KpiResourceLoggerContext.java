@@ -30,14 +30,21 @@ public class KpiResourceLoggerContext extends V3Context {
 
         private String name;
 
-        KpiLoggerStatus(String name){
-            this.name=name;
+        KpiLoggerStatus(String name) {
+            this.name = name;
         }
+
         public static KpiLoggerStatus valueOf(int idx) {
             if (idx > 0 && idx <= values().length) {
                 return values()[idx - 1];
             }
             return null;
         }
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
     }
 }

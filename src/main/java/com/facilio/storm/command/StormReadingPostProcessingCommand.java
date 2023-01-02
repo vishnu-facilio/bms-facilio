@@ -28,50 +28,56 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
+        long startTime = System.currentTimeMillis();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-        if (MapUtils.isNotEmpty(readingMap)) {
+        try {
+            if (MapUtils.isNotEmpty(readingMap)) {
 
-            for (val entry : readingMap.entrySet()) {
-                String moduleName = entry.getKey();
-                List<ReadingContext> readingCtxList = entry.getValue();
-                for (ReadingContext readingContext : readingCtxList) {
-                    Map<String, Object> readings = readingContext.getReadings();
-                    for (val readingEntry : readings.entrySet()) {
-                        String fieldName = readingEntry.getKey();
-                        Object readingVal = readingEntry.getValue();
+                for (val entry : readingMap.entrySet()) {
+                    String moduleName = entry.getKey();
+                    List<ReadingContext> readingCtxList = entry.getValue();
+                    for (ReadingContext readingContext : readingCtxList) {
+                        Map<String, Object> readings = readingContext.getReadings();
+                        for (val readingEntry : readings.entrySet()) {
+                            String fieldName = readingEntry.getKey();
+                            Object readingVal = readingEntry.getValue();
 
-                        if(readingVal == null) {
-                            LOGGER.info("reading value is null while pushing reading to storm queue " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
-                            continue;
+                            if (readingVal == null) {
+                                LOGGER.info("reading value is null while pushing reading to storm queue " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                                continue;
+                            }
+
+                            FacilioField field = modBean.getField(fieldName, moduleName);
+                            if (field == null) {//TODO: find the problem and delete this check.
+                                LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                                continue;
+                            }
+
+                            if (field.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && field.getColumnName().equals("SYS_INFO")) {
+                                //SYS_INFO for only for debugging purpose. No need to push to storm kafka queue. Intentionally omitted.
+                                continue;
+                            }
+
+                            JSONObject json = new JSONObject();
+                            json.put("orgId", readingContext.getOrgId());
+                            json.put("resourceId", readingContext.getParentId());
+                            json.put("value", readingVal);
+                            json.put("fieldId", field.getFieldId());
+                            json.put("ttime", readingContext.getTtime());
+
+                            String partitionKey = "rule-exec/" + readingContext.getOrgId() + "/" + readingContext.getParentId();
+
+                            mq.put(getTopicName(), new FacilioRecord(partitionKey, json));
                         }
-
-                        FacilioField field = modBean.getField(fieldName, moduleName);
-                        if (field == null) {//TODO: find the problem and delete this check.
-                            LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
-                            continue;
-                        }
-
-                        if (field.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && field.getColumnName().equals("SYS_INFO")) {
-                            //SYS_INFO for only for debugging purpose. No need to push to storm kafka queue. Intentionally omitted.
-                            continue;
-                        }
-
-                        JSONObject json = new JSONObject();
-                        json.put("orgId", readingContext.getOrgId());
-                        json.put("resourceId", readingContext.getParentId());
-                        json.put("value", readingVal);
-                        json.put("fieldId", field.getFieldId());
-                        json.put("ttime", readingContext.getTtime());
-
-                        String partitionKey = "rule-exec/" + readingContext.getOrgId() + "/" + readingContext.getParentId();
-
-                        mq.put(getTopicName(), new FacilioRecord(partitionKey, json));
                     }
                 }
             }
+        } finally {
+            LOGGER.info("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
         }
+
 
         return false;
     }

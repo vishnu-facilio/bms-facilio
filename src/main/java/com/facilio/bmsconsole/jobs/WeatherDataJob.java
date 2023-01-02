@@ -23,6 +23,7 @@ public class WeatherDataJob extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) {
+		long startTime = System.currentTimeMillis();
 		try {
 			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			if (!WeatherAPI.allow()) {
@@ -94,6 +95,9 @@ public class WeatherDataJob extends FacilioJob {
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			CommonCommandUtil.emailException("WeatherDataJob", "Exception in Weather Data job ", e);
+		}
+		finally {
+			LOGGER.info("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
 		}
 	}
 }

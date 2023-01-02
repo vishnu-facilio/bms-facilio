@@ -2279,7 +2279,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<V3Config> getNewReadingAlarm() {
-        return () -> new V3Config(ReadingAlarm.class, new ModuleCustomFieldCount15())
+        return () -> new V3Config(ReadingAlarm.class, new ModuleCustomFieldCount30())
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
@@ -2294,13 +2294,13 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.READING_EVENT)
     public static Supplier<V3Config> getReadingEvent() {
-        return () -> new V3Config(ReadingEventContext.class, new ModuleCustomFieldCount15())
+        return () -> new V3Config(ReadingEventContext.class, new ModuleCustomFieldCount30())
                 .build();
     }
 
     @Module(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE)
     public static Supplier<V3Config> getReadingAlarmOccurrence() {
-        return () -> new V3Config(ReadingAlarmOccurrenceContext.class, new ModuleCustomFieldCount15())
+        return () -> new V3Config(ReadingAlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
                 .build();
     }
 
@@ -2364,7 +2364,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
     public static Supplier<V3Config> getAlarmOccurrence() {
-        return () -> new V3Config(AlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(AlarmOccurrenceContext.class, null)
                 .list()
                 .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .summary()
@@ -2379,6 +2379,13 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
+    @Module(FacilioConstants.ContextNames.BMS_ALARM_OCCURRENCE)
+    public static Supplier<V3Config> getBmsAlarmOccurrence() {
+        return () -> new V3Config(BMSAlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
+                .build();
+    }
+
     @Module(FacilioConstants.ContextNames.BASE_EVENT)
     public static Supplier<V3Config> getBaseEvent() {
         return () -> new V3Config(BaseEventContext.class, null)

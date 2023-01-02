@@ -46,7 +46,7 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
             // duration of an occurrence
             StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
                     .append(clearedTimeFieldColumn).append(",") //if the occurrence is cleared
-                    .append(System.currentTimeMillis()) // else
+                    .append(Math.min(System.currentTimeMillis(), dateRange.getEndTime())) // else
                     .append(") - ")
                     .append(createdTimeFieldColumn).append(")");
 
