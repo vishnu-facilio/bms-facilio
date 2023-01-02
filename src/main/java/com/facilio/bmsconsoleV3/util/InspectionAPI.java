@@ -91,8 +91,9 @@ public class InspectionAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER))
 				.skipModuleCriteria();
 		
-		deleteBuilder1.delete();
-		
+		int deleteCount = deleteBuilder1.delete();
+
+		LOGGER.info("COUNT OF DELETED PRE OPEN INSPECTIONS - "+deleteCount + " for template ID : "+inspectionIds);
 		System.out.println(deleteBuilder1);
 	}
 	

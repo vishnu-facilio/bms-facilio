@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -28,6 +29,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 
+@Log4j
 public class DeleteInspectionTriggersCommand extends FacilioCommand {
 
 	@Override
@@ -57,7 +59,8 @@ public class DeleteInspectionTriggersCommand extends FacilioCommand {
 					.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER))
 					.andCondition(CriteriaAPI.getIdCondition(triggerIds, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER)));
 			deleteBuilder.delete();
-			
+
+			LOGGER.info("List of deleted inspection trigger ids : "+triggerIds);
 			List<Long> scheduleIds = triggers.stream().filter(t -> (t.getScheduleId() != null && t.getScheduleId() > 0)).map(InspectionTriggerContext::getScheduleId).collect(Collectors.toList());
 			
 			if(scheduleIds != null && scheduleIds.size() > 0) {
@@ -68,6 +71,8 @@ public class DeleteInspectionTriggersCommand extends FacilioCommand {
 						;
 				
 				delete.delete();
+
+				LOGGER.info("List of deleted Base Scheduler ids : "+scheduleIds);
 			}
 			
 		}
