@@ -118,7 +118,10 @@ public class NameSpaceContext implements Serializable {
         if (workflowContext != null) {
             return this.workflowContext;
         }
-        return this.workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+        if(workflowId != null) {
+            return this.workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+        }
+        return null;
     }
 
     public void setNullForResponse() {

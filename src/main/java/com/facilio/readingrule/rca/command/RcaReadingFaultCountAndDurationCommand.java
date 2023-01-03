@@ -18,10 +18,12 @@ import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
@@ -40,7 +42,6 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
 
             String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
             String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
-            FacilioField rule = modBean.getField("rule", FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
 
             // duration of an occurrence
             StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
@@ -63,14 +64,27 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
                     .groupBy(fieldMap.get("alarm").getCompleteColumnName());
 
             List<Map<String, Object>> list = builder.getAsProps();
-            for (int i = 0; i < list.size(); i++) {
-                Map<String, Object> prop = list.get(i);
-                RCAScoreReadingContext readingContext = readingContexts.get(i);
-                readingContext.setDuration(((BigDecimal) prop.get("duration")).longValue());
-                readingContext.setCount((Long) prop.get("count"));
+            List<Long> alarmsWithOccurrence = list.stream().map(RcaReadingFaultCountAndDurationCommand::getAlarmId).collect(Collectors.toList());
+            readingContexts = readingContexts.stream().filter(x -> alarmsWithOccurrence.contains(x.getRcaFault().getId())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (Map<String, Object> prop : list) {
+                    Long alarmId = getAlarmId(prop);
+                    Optional<RCAScoreReadingContext> readingContextOpt = readingContexts.stream().filter(x -> x.getRcaFault().getId() == alarmId).findFirst();
+                    if (readingContextOpt.isPresent()) {
+                        RCAScoreReadingContext readingContext = readingContextOpt.get();
+                        readingContext.setDuration(((BigDecimal) prop.get("duration")).longValue());
+                        readingContext.setCount((Long) prop.get("count"));
+                    }
+                }
             }
+            context.put(FacilioConstants.ReadingRules.RCA.RCA_SCORE_READINGS, readingContexts);
         }
 
         return false;
+    }
+
+    private static Long getAlarmId(Map<String, Object> map) {
+        Map<String, Object> alarm = (Map<String, Object>) map.get("alarm");
+        return (Long) alarm.get("id");
     }
 }
