@@ -51,6 +51,16 @@ public class PivotRowColumnContext extends PivotColumnContext {
 	}
 
 	private String fieldDisplayName;
+
+	public int getSelectedTimeAggr() {
+		return selectedTimeAggr;
+	}
+
+	public void setSelectedTimeAggr(int selectedTimeAggr) {
+		this.selectedTimeAggr = selectedTimeAggr;
+	}
+
+	private int selectedTimeAggr;
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

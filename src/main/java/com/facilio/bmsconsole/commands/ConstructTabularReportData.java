@@ -216,7 +216,7 @@ public class ConstructTabularReportData extends FacilioCommand {
             xAxis.setModule(modBean.getModule(firstRow.getModuleName()));
         }
         dataPointContext.setxAxis(xAxis);
-        reportContext.setxAggr(0);
+        reportContext.setxAggr(firstRow.getSelectedTimeAggr() > 0 ? firstRow.getSelectedTimeAggr() : 0);
         reportContext.setxAlias(firstRow.getAlias());
 
         ReportYAxisContext yAxis = new ReportYAxisContext();
@@ -471,6 +471,9 @@ public class ConstructTabularReportData extends FacilioCommand {
                 }
                 if (groupByRowField != null) {
                     groupByField.setAggr(groupByRowField.getAggr());
+                }
+                if(groupByRowField != null && groupByRow.getSelectedTimeAggr() > 0 && groupByField.getAggr() <= 0){
+                    groupByField.setAggr(groupByRow.getSelectedTimeAggr());
                 }
                 groupByFields.add(groupByField);
             }
