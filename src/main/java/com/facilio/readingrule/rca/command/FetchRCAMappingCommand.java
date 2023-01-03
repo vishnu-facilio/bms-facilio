@@ -3,7 +3,9 @@ package com.facilio.readingrule.rca.command;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -31,9 +33,12 @@ public class FetchRCAMappingCommand extends FacilioCommand {
             ReadingRuleRCAContext rca = rule.getRca();
             if (rca != null) {
                 GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                        .table(rcaMappingModule.getTableName())
                         .select(fields)
-                        .andCondition(CriteriaAPI.getCondition(fieldsMap.get("rcaId"), Collections.singleton(rca.getId()), NumberOperators.EQUALS));
+                        .table(rcaMappingModule.getTableName())
+                        .innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName())
+                        .on(rcaMappingModule.getTableName()+".RCA_RULE_ID"+"="+ModuleFactory.getNewReadingRuleModule().getTableName()+".ID ")
+                        .andCondition(CriteriaAPI.getCondition(fieldsMap.get("rcaId"), Collections.singleton(rca.getId()), NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(ModuleFactory.getNewReadingRuleModule().getTableName()+".SYS_DELETED","sys_deleted",null ,CommonOperators.IS_EMPTY));
 
                 List<Map<String, Object>> props = selectRecordBuilder.get();
                 List<Long> rcaRuleIds = new ArrayList<>();

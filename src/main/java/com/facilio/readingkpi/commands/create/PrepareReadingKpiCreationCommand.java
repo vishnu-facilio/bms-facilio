@@ -94,7 +94,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
         return null;
     }
 
-    public void setContextForNsAndWorkflow(Context context, ReadingKPIContext kpi) {
+    public void setContextForNsAndWorkflow(Context context, ReadingKPIContext kpi) throws Exception {
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, kpi.getNs().getWorkflowContext());
         context.put(NamespaceConstants.NAMESPACE_FIELDS, kpi.getNs().getFields());
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());

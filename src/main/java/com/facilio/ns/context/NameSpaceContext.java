@@ -1,6 +1,7 @@
 package com.facilio.ns.context;
 
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,7 @@ public class NameSpaceContext implements Serializable {
         fields = new ArrayList<>();
     }
 
-    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval,Long workflowId) {
+    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId) {
         this.type = type;
         this.parentRuleId = parentRuleId;
         this.execInterval = execInterval;
@@ -111,6 +112,13 @@ public class NameSpaceContext implements Serializable {
 
     public void setType(Integer type) {
         this.type = NSType.valueOf(type);
+    }
+
+    public WorkflowContext getWorkflowContext() throws Exception {
+        if (workflowContext != null) {
+            return this.workflowContext;
+        }
+        return this.workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
     }
 
     public void setNullForResponse() {
