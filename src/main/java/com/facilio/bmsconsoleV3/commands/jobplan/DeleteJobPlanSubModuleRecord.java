@@ -26,7 +26,7 @@ import java.util.Map;
 public class DeleteJobPlanSubModuleRecord extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("jobplan"));
+        List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ContextNames.JOB_PLAN));
         for (JobPlanContext jobPlanContext : jobPlanContextList) {
             List<JobPlanTaskSectionContext> jobPlanSection = jobPlanContext.getJobplansection();
             List<Long> jobPlanSectionIds = new ArrayList<>();

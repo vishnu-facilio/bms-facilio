@@ -122,24 +122,6 @@ public class ScheduleExecutor extends ExecutorBase {
 		
 		return computedCreatedTime;
 	}
-	
-	@Override
-	public void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule workorderModule = modBean.getModule("workorder");
-		FacilioField statusField = modBean.getField("status", "workorder");
-		FacilioField jobStatusField = modBean.getField("jobStatus", "workorder");
-		FacilioField pmPlannerField = modBean.getField("pmPlanner", "workorder");
-
-		DeleteRecordBuilder<V3WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
-		deleteRecordBuilder.module(workorderModule);
-		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(pmPlannerField, plannerId+"", NumberOperators.EQUALS));
-		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(statusField,preOpenStatus.getId()+"", NumberOperators.EQUALS));
-		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(jobStatusField, V3WorkOrderContext.JobsStatus.ACTIVE.getValue()+"", NumberOperators.EQUALS));
-		deleteRecordBuilder.skipModuleCriteria();
-		deleteRecordBuilder.delete();
-	}
 
 	@Override
 	protected Boolean canProceedWithCreatedTime(Long createdTime) throws Exception {
@@ -149,4 +131,8 @@ public class ScheduleExecutor extends ExecutorBase {
     	}
 		return true;
 	}
+    @Override
+    public  void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
+        PlannedMaintenanceAPI.deletePreOpenworkOrder(plannerId,preOpenStatus);
+    }
 }

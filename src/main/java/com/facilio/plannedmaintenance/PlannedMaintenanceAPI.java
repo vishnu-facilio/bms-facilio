@@ -4,13 +4,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMResourcePlanner;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStringEnum;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.ClientAnswerContext;
@@ -131,4 +129,23 @@ public class PlannedMaintenanceAPI {
                 .andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
         return records.get();
     }
+
+    public static void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workorderModule = modBean.getModule("workorder");
+        FacilioField statusField = modBean.getField("status", "workorder");
+        FacilioField jobStatusField = modBean.getField("jobStatus", "workorder");
+        FacilioField pmPlannerField = modBean.getField("pmPlanner", "workorder");
+
+        DeleteRecordBuilder<V3WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
+        deleteRecordBuilder.module(workorderModule);
+        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(pmPlannerField, plannerId+"", NumberOperators.EQUALS));
+        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(statusField,preOpenStatus.getId()+"", NumberOperators.EQUALS));
+        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(jobStatusField, V3WorkOrderContext.JobsStatus.ACTIVE.getValue()+"", NumberOperators.EQUALS));
+        deleteRecordBuilder.skipModuleCriteria();
+        deleteRecordBuilder.delete();
+    }
+
+
 }

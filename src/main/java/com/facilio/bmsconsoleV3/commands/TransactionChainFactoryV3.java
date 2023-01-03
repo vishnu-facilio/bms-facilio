@@ -6,7 +6,9 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 
 import java.util.Collections;
 
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import org.apache.commons.chain.Command;
@@ -20,58 +22,6 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableComman
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
-import com.facilio.bmsconsole.commands.ActivateMLServiceCommand;
-import com.facilio.bmsconsole.commands.AddBulkToolStockTransactionsCommand;
-import com.facilio.bmsconsole.commands.AddClientUserCommandV3;
-import com.facilio.bmsconsole.commands.AddFaultImpactRelationCommand;
-import com.facilio.bmsconsole.commands.AddItemCommandV3;
-import com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommandV3;
-import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
-import com.facilio.bmsconsole.commands.AddPMDetailsBeforeUpdateCommand;
-import com.facilio.bmsconsole.commands.AddTemplateCommand;
-import com.facilio.bmsconsole.commands.BeforeSavePMPlannerCommand;
-import com.facilio.bmsconsole.commands.ConstructMLModelDetails;
-import com.facilio.bmsconsole.commands.ConstructReadingForMLServiceCommand;
-import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.ConstructTabularReportData;
-import com.facilio.bmsconsole.commands.ConstructTicketNotesCommand;
-import com.facilio.bmsconsole.commands.CreateReadingAnalyticsReportCommand;
-import com.facilio.bmsconsole.commands.DeleteScheduledReportsCommand;
-import com.facilio.bmsconsole.commands.DuplicateDashboardForBuildingCommand;
-import com.facilio.bmsconsole.commands.EnableMobileDashboardCommand;
-import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
-import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
-import com.facilio.bmsconsole.commands.ExecuteTaskFailureActionCommand;
-import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.ExportPivotReport;
-import com.facilio.bmsconsole.commands.FetchCustomBaselineData;
-import com.facilio.bmsconsole.commands.FetchReadingsModuleFieldsCommand;
-import com.facilio.bmsconsole.commands.ForkChainToInstantJobCommand;
-import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
-import com.facilio.bmsconsole.commands.GetAddPurchasedItemCommandV3;
-import com.facilio.bmsconsole.commands.GetCategoryReadingsCommand;
-import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
-import com.facilio.bmsconsole.commands.GetExportReportFileCommand;
-import com.facilio.bmsconsole.commands.GetReadingFieldsCommand;
-import com.facilio.bmsconsole.commands.GetSpaceSpecifcReadingsCommand;
-import com.facilio.bmsconsole.commands.InitMLServiceCommand;
-import com.facilio.bmsconsole.commands.InsertReadingDataMetaForNewResourceCommand;
-import com.facilio.bmsconsole.commands.ItemTypeQuantityRollupCommandV3;
-import com.facilio.bmsconsole.commands.LoadWorkOrderServiceLookUpCommand;
-import com.facilio.bmsconsole.commands.LoadWorkorderItemLookUpCommand;
-import com.facilio.bmsconsole.commands.LoadWorkorderToolLookupCommand;
-import com.facilio.bmsconsole.commands.PMBeforeCreateCommand;
-import com.facilio.bmsconsole.commands.PivotColumnFormatCommand;
-import com.facilio.bmsconsole.commands.PurchaseOrderAutoCompleteCommand;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.ScheduleV2ReportCommand;
-import com.facilio.bmsconsole.commands.SetItemAndToolTypeForStoreRoomCommandV3;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.TriggerMLServiceJobCommand;
-import com.facilio.bmsconsole.commands.UpdateServiceVendorPriceCommand;
-import com.facilio.bmsconsole.commands.UpdateTransactionEventTypeCommand;
-import com.facilio.bmsconsole.commands.VerifyQrCommand;
 import com.facilio.bmsconsole.commands.util.AddColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.DeleteColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
@@ -2875,6 +2825,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PMBeforeCreateCommand());
         c.addCommand(new AddPMDetailsBeforeUpdateCommand());
         c.addCommand(new UpdateResourcePlannerOnPMSitesUpdateCommand());
+        return c;
+    }
+
+    public static FacilioChain PMPlannerAfterUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateTimelineViewCalenderTypeCommand());
+        c.addCommand(new DeleteWorkOrdersGeneratedFromTriggerCommand());
         return c;
     }
 }

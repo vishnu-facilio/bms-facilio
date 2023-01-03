@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
@@ -68,7 +69,7 @@ public class PlannedMaintenanceV3Config {
         return () -> new V3Config(PMPlanner.class, null)
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getPMPlannerBeforeUpdateCommand())
-                    .afterSave(new UpdateTimelineViewCalenderTypeCommand())
+                    .afterSave(TransactionChainFactoryV3.PMPlannerAfterUpdateChain())
                 .create()
                 .afterSave(new AddTimelineViewForPMPlannerCommand())
                 .delete()
