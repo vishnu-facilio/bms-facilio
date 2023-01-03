@@ -36,10 +36,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -844,6 +841,28 @@ public class OrgBeanImpl implements OrgBean {
 		return criteria;
 	}
 
+	public Long getOrgUserIdForPeople(long peopleID,long appID) throws Exception {
+		FacilioField userId = new FacilioField();
+		userId.setName("orgUserId");
+		userId.setDataType(FieldType.NUMBER);
+		userId.setColumnName("ORG_USERID");
+		userId.setModule(ModuleFactory.getOrgUserModule());
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(userId);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields).table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.PEOPLE_ID","peopleId",String.valueOf(peopleID),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID","appId",String.valueOf(appID),NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Long Id = (Long) props.get(0).get("orgUserId");
+			return Id;
+		}
+		return null;
+	}
 	public Long getDefaultApplicationId() throws Exception {
 		if(SignupUtil.maintenanceAppSignup()) {
 			return ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);

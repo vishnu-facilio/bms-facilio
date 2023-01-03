@@ -19,7 +19,9 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.iam.accounts.util.IAMUserException;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Command;
@@ -461,7 +463,6 @@ public class UserAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	
 	public String resendInvite() throws Exception {
 		try {
 			AppDomain appDomain = null;
@@ -472,6 +473,9 @@ public class UserAction extends FacilioAction {
 			}
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
+				if(peopleId >0){
+					userId = AccountUtil.getOrgBean().getOrgUserIdForPeople(peopleId,appId);
+				}
 				User appUser = AccountUtil.getUserBean().getUser(userId, false);
 				if(appUser != null) {
 					appUser.setAppDomain(appDomain);
@@ -506,6 +510,16 @@ public class UserAction extends FacilioAction {
 	}
 
 	private  long userId;
+
+	public long getPeopleId() {
+		return peopleId;
+	}
+
+	public void setPeopleId(long peopleId) {
+		this.peopleId = peopleId;
+	}
+
+	private long peopleId;
 	public  long getUserId() {
 		return userId;
 	}

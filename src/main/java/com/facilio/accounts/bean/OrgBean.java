@@ -104,4 +104,6 @@ public interface OrgBean {
 	Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception;
 
 	public Long getDefaultApplicationId() throws Exception;
+
+	public Long getOrgUserIdForPeople(long peopleID,long appID) throws Exception;
 }
