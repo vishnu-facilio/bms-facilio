@@ -919,14 +919,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		boolean ignoreEntry = CollectionUtils.isNotEmpty(result);
 
-		List<Map<String, Object>> res = new GenericSelectRecordBuilder().
-				table(IAMAccountConstants.getDCLookupModule().getTableName())
-				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), String.valueOf(props.get("userName")), StringOperators.IS))
-				.get();
-
-		if (CollectionUtils.isNotEmpty(res)) {
-			if (!res.get(0).get("dc").toString().equals(props.get("dc").toString())) {
+		if (CollectionUtils.isNotEmpty(result)) {
+			if (!result.get(0).get("dc").toString().equals(props.get("dc").toString())) {
 				throw new IllegalArgumentException("User cannot be of different DC.");
 			}
 		}
