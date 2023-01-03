@@ -23,8 +23,7 @@ public class AddOrUpdateTabGroupCommandValidationCommand extends FacilioCommand 
 
         FacilioUtil.throwIllegalArgumentException(tabGroup==null,"Invalid tabGroup payLoad data");
         FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(tabGroup.getName()),"Name connot be empty");
-        FacilioUtil.throwIllegalArgumentException(tabGroup.getIconType()==-1,"IconType cannot be empty");
-        //FacilioUtil.throwIllegalArgumentException(tabGroup.getIconTypeEnum()==null,"IconTypeEnum cannot be empty");
+        FacilioUtil.throwIllegalArgumentException((tabGroup.getIconType()==-1&&tabGroup.getIconTypeEnum()==null),"IconType or IconTypeEnum either one should cannot be empty");
         if (checkRouteAlreadyFound(tabGroup)) {
             throw new IllegalArgumentException("Route is already found for this layout");
         }
