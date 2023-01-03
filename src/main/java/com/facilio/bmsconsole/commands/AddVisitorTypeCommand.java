@@ -109,6 +109,50 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormContextMaintenance.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateMaintenance);
 		addVisitorInviteFormChainMaintenance.execute();
 
+
+		//IWMS application
+		FacilioForm visitorLogFormTemplateIWMS=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_LOG_CHECKIN_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
+		FacilioForm visitorInviteFormTemplateIWMS=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		visitorLogFormTemplateIWMS.setId(-1);
+		visitorLogFormTemplateIWMS.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_checkin_form_iwms");
+		visitorLogFormTemplateIWMS.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_checkin_form_iwms");
+		visitorLogFormTemplateIWMS.setAppLinkName(ApplicationLinkNames.IWMS_APP);
+		visitorInviteFormTemplateIWMS.setId(-1);
+		visitorInviteFormTemplateIWMS.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form_iwms");
+		visitorInviteFormTemplateIWMS.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form_iwms");
+		visitorInviteFormTemplateIWMS.setAppLinkName(ApplicationLinkNames.IWMS_APP);
+		FormField visitorLogModuleHostFieldIWMS=visitorLogFormTemplateIWMS.getFieldsMap().get("host");
+		FormField inviteModuleHostFieldIWMS=visitorInviteFormTemplateIWMS.getFieldsMap().get("host");
+		JSONObject jsonObjectIWMS = new JSONObject();
+		jsonObjectIWMS.put("filterValue", 6); //default employee
+		jsonObjectIWMS.put("isFiltersEnabled", true);
+		visitorLogModuleHostFieldIWMS.setConfig(jsonObjectIWMS);
+		inviteModuleHostFieldIWMS.setConfig(jsonObjectIWMS);
+		FacilioChain addVisitorLogFormChainIWMS=TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorLogFormContextIWMS=addVisitorLogFormChainIWMS.getContext();
+		visitorLogFormContextIWMS.put(ContextNames.MODULE_NAME, ContextNames.VISITOR_LOG);
+		visitorLogFormContextIWMS.put(FacilioConstants.ContextNames.FORM, visitorLogFormTemplateIWMS);
+		addVisitorLogFormChainIWMS.execute();
+		FacilioChain addVisitorInviteFormChainIWMS=TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorInviteFormContextIWMS=addVisitorInviteFormChainIWMS.getContext();
+		visitorInviteFormContextIWMS.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);
+		visitorInviteFormContextIWMS.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateIWMS);
+		addVisitorInviteFormChainIWMS.execute();
+
+
+		//employee portal
+		FacilioForm visitorInviteFormTemplateForEmployee=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		visitorInviteFormTemplateForEmployee.setId(-1);
+		visitorInviteFormTemplateForEmployee.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form_Employee");
+		visitorInviteFormTemplateForEmployee.setDisplayName(newVisitorType.getName()+" Invite Form");
+		visitorInviteFormTemplateForEmployee.setAppLinkName(ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+
+		FacilioChain addVisitorInviteFormEmployeeChain = TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorInviteFormEmployeeContext = addVisitorInviteFormEmployeeChain.getContext();
+		visitorInviteFormEmployeeContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);
+		visitorInviteFormEmployeeContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForEmployee);
+		addVisitorInviteFormEmployeeChain.execute();
+
 		FacilioForm visitorInviteFormTemplateForOccupant=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 		visitorInviteFormTemplateForOccupant.setId(-1);
 		visitorInviteFormTemplateForOccupant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form_Occupant");
@@ -179,13 +223,18 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorTypeForm.setVisitorTypeId(visitorTypeId);
 		visitorTypeForm.setVisitorLogFormId(visitorLogFormTemplate.getId());
 		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplate.getId());
+		visitorTypeForm.setVisitorLogEnabled(true);
+		visitorTypeForm.setInviteEnabled(true);
 		long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		visitorTypeForm.setAppId(appId);
-		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
+		if(appId > 0) {
+			visitorTypeForm.setAppId(appId);
+			visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm, true));
+		}
 		
 		visitorTypeForm = new VisitorTypeFormsContext();
 		visitorTypeForm.setVisitorTypeId(visitorTypeId);
 		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateForOccupant.getId());
+		visitorTypeForm.setInviteEnabled(true);
 		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		visitorTypeForm.setAppId(appId);
 		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
@@ -194,13 +243,37 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorTypeForm.setVisitorTypeId(visitorTypeId);
 		visitorTypeForm.setVisitorLogFormId(visitorLogFormTemplateMaintenance.getId());
 		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateMaintenance.getId());
+		visitorTypeForm.setVisitorLogEnabled(true);
+		visitorTypeForm.setInviteEnabled(true);
 		appId = ApplicationApi.getApplicationIdForLinkName(ApplicationLinkNames.MAINTENANCE_APP);
 		visitorTypeForm.setAppId(appId);
 		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
 
 		visitorTypeForm = new VisitorTypeFormsContext();
 		visitorTypeForm.setVisitorTypeId(visitorTypeId);
+		visitorTypeForm.setVisitorLogFormId(visitorLogFormTemplateIWMS.getId());
+		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateIWMS.getId());
+		visitorTypeForm.setVisitorLogEnabled(true);
+		visitorTypeForm.setInviteEnabled(true);
+		appId = ApplicationApi.getApplicationIdForLinkName(ApplicationLinkNames.IWMS_APP);
+		if(appId >1) {
+			visitorTypeForm.setAppId(appId);
+			visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm, true));
+		}
+
+
+		visitorTypeForm = new VisitorTypeFormsContext();
+		visitorTypeForm.setVisitorTypeId(visitorTypeId);
+		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateForEmployee.getId());
+		visitorTypeForm.setInviteEnabled(true);
+		appId = ApplicationApi.getApplicationIdForLinkName(ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+		visitorTypeForm.setAppId(appId);
+		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
+
+		visitorTypeForm = new VisitorTypeFormsContext();
+		visitorTypeForm.setVisitorTypeId(visitorTypeId);
 		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateForTenant.getId());
+		visitorTypeForm.setInviteEnabled(true);
 		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
 		visitorTypeForm.setAppId(appId);
 		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
@@ -210,6 +283,7 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 			visitorTypeForm = new VisitorTypeFormsContext();
 			visitorTypeForm.setVisitorTypeId(visitorTypeId);
 			visitorTypeForm.setVisitorLogFormId(visitorLogFormTemplateForKiosk.getId());
+			visitorTypeForm.setVisitorLogEnabled(true);
 			visitorTypeForm.setAppId(appId);
 			visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm,true));
 		}

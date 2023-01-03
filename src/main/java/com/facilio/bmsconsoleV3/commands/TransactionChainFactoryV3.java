@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.reports.*;
+import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -211,26 +212,6 @@ import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorId
 import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddNdaForVisitorLogModuleCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileBaseVisitCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateScheduleInRecurringVisitorCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromBaseVisitCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorTypeFormCommand;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddWatchListRecordCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeInviteVisitorStateCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeVisitorLogStateCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.CheckForWatchListRecordBaseVisitCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.GenerateQrInviteUrlForBaseVisitCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillInviteVisitorCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillVisitorLogCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInInviteVisitorContextCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInVisitorLogContextCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateInviteVisitorStateInChangeSetCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateRecurringRecordIdForBaseScheduleTrigger;
-import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateVisitorLogArrivedStateCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.VisitResponseCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNdaForVisitorLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNewVisitorWhileLoggingCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.AddOrUpdateVisitorFromVisitsCommandV3;
@@ -470,6 +451,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PreFillInviteVisitorCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+        c.addCommand(new ValidateInviteCommandV3());
 
         return c;
     }
@@ -494,6 +476,7 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new ValidateInviteCommandV3());
 
         return c;
     }

@@ -8165,7 +8165,7 @@ public class ViewFactory {
 	}
 	
 	public static Condition getActiveInvitesCondition() {
-		FacilioModule module = ModuleFactory.getVisitorLoggingModule();
+		FacilioModule module = ModuleFactory.getInviteVisitorLogModule();
 		LookupField statusField = new LookupField();
 		statusField.setName("moduleState");
 		statusField.setColumnName("MODULE_STATE");

@@ -2129,6 +2129,11 @@ public class ApplicationApi {
                         apps.add(app);
                     }
                 }
+                else if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.KIOSK_APP)) {
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.KIOSK_APP_FORM)) {
+                        apps.add(app);
+                    }
+                }
                 else {
                     apps.add(app);
                 }
