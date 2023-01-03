@@ -30,7 +30,29 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class ConnectedAppAPI {
-	
+
+	public static int getConnectedAppsCount() throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField countField = new FacilioField();
+		countField.setName("count");
+		countField.setColumnName("COUNT(*)");
+		countField.setDataType(FieldType.NUMBER);
+		fields.add(countField);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getConnectedAppsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return ((Number) props.get(0).get("count")).intValue();
+		}
+		return 0;
+	}
+
 	public static ConnectedAppContext getConnectedApp(long connectedAppId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

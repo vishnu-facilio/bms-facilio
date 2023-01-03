@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.fw.FacilioException;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -237,7 +239,12 @@ public class ConnectedAppAction extends FacilioAction {
 	}
 
 	public String addConnectedApp() throws Exception {
-		
+
+		int connectedAppsCount = ConnectedAppAPI.getConnectedAppsCount();
+		int connectedAppsLimit = Integer.parseInt(CommonCommandUtil.getOrgInfo("connectedAppsLimit", 2));
+		if (connectedAppsCount > connectedAppsLimit) {
+			throw new FacilioException("Connected Apps limit: ("+connectedAppsLimit+") exceeded.");
+		}
 		connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
 		connectedApp.setIsActive(true);
 		if (connectedApp.getProductionBaseUrl() == null) {
@@ -578,6 +585,7 @@ public class ConnectedAppAction extends FacilioAction {
 		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
 		String viewURL = (String) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_VIEW_URL);
 
+		setResult("connectedApp", connectedApp);
 		setResult("connectedAppWidget", connectedAppWidget);
 		handleSAMLResponse(connectedApp, viewURL);
 
