@@ -8,6 +8,7 @@ import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -101,6 +102,11 @@ public class PdfUtil {
 	}
 	
 	private static String getToken() {
+		if(AccountUtil.getCurrentUser().isPortalUser()){
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String Faciliotoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+			return Faciliotoken;
+		}
 		return IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
 	}
 	
