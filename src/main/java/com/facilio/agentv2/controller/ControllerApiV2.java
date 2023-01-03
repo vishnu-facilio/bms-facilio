@@ -627,7 +627,6 @@ public class ControllerApiV2 {
 
     public static List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getIdField(CONTROLLER_MODULE));
         fields.add(FieldFactory.getControllerTypeField(CONTROLLER_MODULE));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(CONTROLLER_MODULE.getTableName())
