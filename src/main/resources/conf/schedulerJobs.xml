@@ -203,7 +203,7 @@
 	<job name='ImapJob' classname='com.facilio.bmsconsole.jobs.ImapJob' transactionTimeout='7200000' />
 
     <!-- cloud agent job -->
-    <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="7200000"/>
+    <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="300000"/>
 
 	<!-- PointsMissingAlarm Job -->
 	<job name="PointsDataMissingAlarmJob" classname="com.facilio.bmsconsole.jobs.PointsDataMissingAlarmJob" transactionTimeout="300000"/>

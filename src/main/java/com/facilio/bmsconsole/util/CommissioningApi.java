@@ -301,8 +301,11 @@ public class CommissioningApi {
 		List<String> mappedDetials = new ArrayList<>(); 
 		
 		for(Point point: points) {
+			Long categoryId = point.getCategoryId();
 			Long resourceId = point.getResourceId();
 			Long fieldId = point.getFieldId();
+
+			validatePoint(point.getName(), categoryId, resourceId, fieldId, point.getUnit());
 			
 			Point dbPoint = dbPointMap.get(point.getId());
 			Long dbResourceId = dbPoint.getResourceId();
@@ -334,6 +337,15 @@ public class CommissioningApi {
 			return checkRDMType(rdmPairs);
 		}
 		return null;
+	}
+
+	private static void validatePoint(String name, Long categoryId, Long resourceId, Long fieldId, int unit) throws Exception {
+		if (categoryId == null && (resourceId != null || fieldId != null || unit > 0) ) {
+			throw new IllegalArgumentException(name + " cannot be mapped without selecting category");
+		}
+		if (unit > 0 && fieldId == null) {
+			throw new IllegalArgumentException("Unit for " + name + " cannot be mapped without selecting reading");
+		}
 	}
 	
 	public static Map<Long, String> getResources(Set<Long> resourceIds) throws Exception {

@@ -85,11 +85,13 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			long pointId = (long) point.get("id");
 			boolean writable = false;
 			Map<String, Object> dbPoint = null;
+			Long dbCategoryId = null;
 			Long dbResourceId = null;
 			Long dbFieldId = null;
 			if (pointMap != null && pointMap.containsKey(pointId)) {
 				dbPoint = pointMap.get(pointId);
 				writable = (Boolean) dbPoint.getOrDefault(AgentConstants.WRITABLE, false);
+				dbCategoryId = (Long) dbPoint.get(AgentConstants.ASSET_CATEGORY_ID);
 				dbResourceId = (Long) dbPoint.get(AgentConstants.RESOURCE_ID);
 				dbFieldId = (Long) dbPoint.get(AgentConstants.FIELD_ID);
 			}
@@ -100,7 +102,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			Long unitId = (Long) point.get(AgentConstants.UNIT);
 			Unit unit = null;
 			
-			boolean isCommissioned = dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0;
+			boolean isAlreadyCommissioned = dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0;
 			boolean resourceAvailable = resourceId != null && resourceId > 0;
 			boolean fieldAvailable = fieldId != null && fieldId > 0;
 			boolean unitAvailable = false;
@@ -112,11 +114,14 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			boolean unitChanged = unitAvailable;
 			
 			boolean  mappingChanged = true;
-			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitAvailable) {
-				
+
+			// Case: If any mapping done or if already commissioned and removed mapping
+			if (( (categoryId != null && categoryId > 0) ||  (dbCategoryId != null && dbCategoryId > 0) )
+					|| resourceAvailable || fieldAvailable || unitAvailable) {
+
 				// Case 1: point is already mapped
 				if (fieldAvailable && resourceAvailable) {
-					if (isCommissioned) {
+					if (isAlreadyCommissioned) {
 						
 						// Case 1a: If point is remapped
 						if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
@@ -141,6 +146,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					
 					if(point.get("inputValues") != null) {
 						List<Map<String, Object>> inputValues = (List<Map<String, Object>>) point.get("inputValues");
+						inputValues.forEach(val -> val.put("pointId", pointId));
 						String rdmKey = resourceId+"_"+fieldId;
 						inputValuePoints.put(rdmKey, inputValues);
 						if (rdmMap == null || !rdmMap.containsKey(rdmKey)) {
@@ -171,15 +177,15 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					}
 					
 				}
-				
-				// Case 2: New commissioning (or recommissioning)
+
+				// Case 2: New commissioning (or recommissioning or removed mapping)
 				if(mappingChanged || unitChanged) {
 					addPointToBatchUpdateProp(point, batchUpdateList, publishTime);
 				}
 			}
 			
 			// Changing the input type in rdm if field or asset removed/changed from mapping
-			if (isCommissioned && (!resourceAvailable || !fieldAvailable || mappingChanged)) {
+			if (isAlreadyCommissioned && (!resourceAvailable || !fieldAvailable || mappingChanged)) {
 				unmappedAssetIds.add(dbResourceId);
 				removeMapping(rdmList, dbResourceId, dbFieldId);
 			}
@@ -210,7 +216,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		}
 		rdmMap = CommissioningApi.filterAndValidatePointsOnUpdate(log, null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<Map<String, Object>> getDbPoints(CommissioningLogContext log) throws Exception {
 		
@@ -236,24 +242,29 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 
 	private void addPointToBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime) {
 		BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
-
 		batchValue.setWhereId((long) point.get("id"));
-
-		Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
-		if (fieldId != null && fieldId > 0) {
-			batchValue.addUpdateValue(AgentConstants.FIELD_ID, fieldId);
-		}
-		Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
-		if (resourceId != null && resourceId > 0) {
-			batchValue.addUpdateValue(AgentConstants.RESOURCE_ID, resourceId);
-		}
-		Unit unit = (Unit) point.get(AgentConstants.UNIT);
-		if (unit != null) {
-			batchValue.addUpdateValue(AgentConstants.UNIT, unit.getUnitId());
-		}
-		batchValue.addUpdateValue(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
 		batchValue.addUpdateValue(AgentConstants.MAPPED_TIME, publishTime);
-		
+
+		Long categoryId = (Long) point.get(AgentConstants.ASSET_CATEGORY_ID);
+		if (categoryId != null && categoryId > 0) {
+			batchValue.addUpdateValue(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
+
+			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
+			if (resourceId != null && resourceId > 0) {
+				batchValue.addUpdateValue(AgentConstants.RESOURCE_ID, resourceId);
+			}
+
+			Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
+			if (fieldId != null && fieldId > 0) {
+				batchValue.addUpdateValue(AgentConstants.FIELD_ID, fieldId);
+
+				Unit unit = (Unit) point.get(AgentConstants.UNIT);
+				if (unit != null) {
+					batchValue.addUpdateValue(AgentConstants.UNIT, unit.getUnitId());
+				}
+			}
+		}
+
 		batchUpdateList.add(batchValue);
 	}
 	
