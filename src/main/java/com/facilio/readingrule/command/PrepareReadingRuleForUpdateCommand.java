@@ -65,9 +65,6 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
             oldRule.setAlarmDetails(newCtx.getAlarmDetails());
             setSeverity(oldRule);
         }
-        if (newCtx.getAlarmRCARules() != null) {
-            oldRule.setAlarmRCARules(newCtx.getAlarmRCARules());
-        }
         if (newCtx.getNs() != null && newCtx.getNs().getWorkflowContext() != null) {
             newCtx.getNs().setId(oldRule.getNs().getId());
             newCtx.getNs().getWorkflowContext().setId(oldRule.getNs().getWorkflowId());

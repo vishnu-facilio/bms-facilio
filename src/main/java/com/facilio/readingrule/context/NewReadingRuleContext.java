@@ -59,13 +59,8 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
         this.status = status;
     }
 
-    List<Long> alarmRCARules;
 
     private ReadingRuleRCAContext rca;
-
-    public List<Long> getAlarmRCARules() {
-        return (alarmRCARules == null) ? new ArrayList<>() : alarmRCARules;
-    }
 
     public boolean isActive() {
         if (status != null) {

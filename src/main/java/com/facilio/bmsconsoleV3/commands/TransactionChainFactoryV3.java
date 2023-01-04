@@ -343,7 +343,6 @@ import com.facilio.readingkpi.commands.update.PrepareReadingKpiForUpdateCommand;
 import com.facilio.readingkpi.commands.update.UpdateNamespaceAndFieldsCommand;
 import com.facilio.readingrule.command.AddAlarmDetailsCommand;
 import com.facilio.readingrule.command.AddNewReadingRuleCommand;
-import com.facilio.readingrule.command.AddRCARulesCommand;
 import com.facilio.readingrule.command.AddRuleReadingsModuleCommand;
 import com.facilio.readingrule.command.DeleteNamespaceReadingRuleCommand;
 import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
@@ -2758,7 +2757,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddAlarmDetailsCommand());
         c.addCommand(new SetParentIdForNamespaceCommand());
         c.addCommand(addNamespaceAndFieldsChain());
-        c.addCommand(new AddRCARulesCommand());
         c.addCommand(addRCARuleChain());
         c.addCommand(new AddFaultImpactRelationCommand());
         return c;

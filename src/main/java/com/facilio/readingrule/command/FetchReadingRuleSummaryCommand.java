@@ -33,13 +33,10 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
                 NameSpaceContext namespaceContext = NamespaceAPI.getNameSpaceByRuleId(rule.getId(), NSType.READING_RULE);
                 fetchAndUpdateAlarmDetails(rule);
                 rule.setNs(namespaceContext);
-                Map<String, Object> resourcesWithCount = NewReadingRuleAPI.getMatchedResourcesWithCount(rule);
-                rule.setAssets((List<Long>) resourcesWithCount.get("resourceIds"));
                 if(CollectionUtils.isNotEmpty(namespaceContext.getIncludedAssetIds())) {
                     rule.setAssets(namespaceContext.getIncludedAssetIds());
                 }
                 rule.setModuleName(FacilioConstants.ReadingRules.NEW_READING_RULE);
-                rule.setAlarmRCARules(NewReadingRuleAPI.getRCARulesForReadingRule(rule.getId()));
             }
         }
         return false;
