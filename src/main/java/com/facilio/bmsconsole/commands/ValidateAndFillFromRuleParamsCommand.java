@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.log4j.LogManager;
@@ -126,7 +122,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			for (String eachKey : formData.keySet()) {
 				FormField respectiveFormField = fieldMap.get(eachKey);
 				boolean hasValue = false;
-				if (respectiveFormField != null && respectiveFormField.getField() != null && respectiveFormField.getField().getName() != null) {
+				if (respectiveFormField != null && respectiveFormField.getField() != null && respectiveFormField.getField().getName() != null && !Objects.equals(respectiveFormField.getName(), "siteId") && respectiveFormField.getField().getDataTypeEnum()!= FieldType.NUMBER) {
 					
 					if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
 						long id = -1;
