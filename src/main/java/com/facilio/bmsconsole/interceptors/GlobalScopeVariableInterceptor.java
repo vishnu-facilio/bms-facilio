@@ -36,7 +36,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
         try {
             if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-                return computeScopeVariable(invocation);
+                computeScopeVariable();
             }
         } catch (Exception e) {
             LOGGER.error("Error at compute scope variable");
@@ -44,9 +44,9 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
         return invocation.invoke();
     }
 
-    public static String computeScopeVariable(ActionInvocation invocation) throws Exception {
+    public static void computeScopeVariable() throws Exception {
         Long appId = null;
-        if(AccountUtil.getCurrentApp() != null){
+        if(AccountUtil.getCurrentApp() != null) {
             appId = AccountUtil.getCurrentApp().getId();
         }
         if(appId != null && appId > 0) {
@@ -90,7 +90,6 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                 }
             }
         }
-        return invocation.invoke();
     }
 
     private static void setGlobalScopeVariableValues(GlobalScopeVariableEvaluationContext scopeVariable) {

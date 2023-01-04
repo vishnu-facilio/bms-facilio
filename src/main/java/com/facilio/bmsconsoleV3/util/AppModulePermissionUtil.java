@@ -139,7 +139,7 @@ public class AppModulePermissionUtil {
         List<Permission> permissionTypes = new ArrayList<>();
 
         //All Module Type
-        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("IMPORT"), permissionMap.get("EXPORT"));
+        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("EXPORT"));
         modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.ALL_PERMISSIONS), new ModuleAppPermission(permissionTypes));
 
         //Workorder
@@ -165,7 +165,6 @@ public class AppModulePermissionUtil {
 
         permissionTypes = Arrays.asList(
                 permissionMap.get("CREATE"),
-                permissionMap.get("IMPORT"),
                 new PermissionGroup("Read", Arrays.asList(readPerm, readOwnPerm, readTeamPerm)),
                 new PermissionGroup("Update", Arrays.asList(updatePerm, updateOwnPerm, updateTeamPerm)),
                 permissionMap.get("UPDATE_CHANGE_OWNERSHIP"),
@@ -177,7 +176,7 @@ public class AppModulePermissionUtil {
         modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.WORK_ORDER), new ModuleAppPermission(permissionTypes));
 
         //Preventive Maintenance
-        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("IMPORT"), permissionMap.get("EXPORT"));
+        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("EXPORT"));
         modulePermissionGroupMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, new ModuleAppPermission(permissionTypes));
 
         //Approval

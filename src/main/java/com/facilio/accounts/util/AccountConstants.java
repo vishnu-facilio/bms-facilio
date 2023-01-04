@@ -509,6 +509,7 @@ public class AccountConstants {
 			superAdmin.setName(SUPER_ADMIN);
 			superAdmin.setDescription(SUPER_ADMIN);
 			superAdmin.setIsPrevileged(true);
+			superAdmin.setIsSuperAdmin(true);
 
 //			superAdmin.setPermissions(0L);
 //			superAdmin.setPermissions(superAdminPermission);

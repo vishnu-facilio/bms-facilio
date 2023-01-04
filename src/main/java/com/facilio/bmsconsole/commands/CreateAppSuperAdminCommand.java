@@ -179,6 +179,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		long orgId = (long) context.get("orgId");
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN,
 				false);
+		superAdminRole.setIsSuperAdmin(true);
 		User user = AccountUtil.getCurrentUser();
 
 		user.setRoleId(superAdminRole.getRoleId());

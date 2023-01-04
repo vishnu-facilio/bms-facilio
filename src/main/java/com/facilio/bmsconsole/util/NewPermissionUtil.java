@@ -53,7 +53,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
         moduleTabType.put("CREATE", 1);
-        moduleTabType.put("IMPORT", 2);
+        moduleTabType.put("IMPORT", 2); //Deprecated
         moduleTabType.put("READ", 4);
         moduleTabType.put("UPDATE", 8);
         moduleTabType.put("DELETE", 16);
@@ -239,7 +239,6 @@ public class NewPermissionUtil {
         List<Permission> permissions = new ArrayList<>();
 
         permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
-        permissions.add(new Permission("IMPORT", "Import", moduleTabType.get("IMPORT"), null));
         permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
         permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
@@ -249,7 +248,6 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
-        permissions.add(new Permission("IMPORT", "Import", moduleTabType.get("IMPORT"), null));
         List<Permission> readGroup = new ArrayList<>();
         readGroup.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
         readGroup.add(new Permission("READ_TEAM", "Team", moduleTabType.get("READ_TEAM"), null));
@@ -274,7 +272,6 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
-        permissions.add(new Permission("IMPORT", "Import", moduleTabType.get("IMPORT"), null));
         List<Permission> read = new ArrayList<>();
         read.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
         read.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
@@ -293,7 +290,6 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
-        permissions.add(new Permission("IMPORT", "Import", moduleTabType.get("IMPORT"), null));
         permissions.add(new PermissionGroup("Read", readGroup));
         permissions.add(new PermissionGroup("Update", updateGroup));
         permissions.add(new PermissionGroup("Delete", deleteGroup));
@@ -508,6 +504,9 @@ public class NewPermissionUtil {
             }
         }
     }
+
+    //Whenever adding a new permission set here add in AppModulePermissionUtil.java also for backward compatability
+
 
     public static List<Permission> getPermissions(int tabType, String moduleName){
         Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
