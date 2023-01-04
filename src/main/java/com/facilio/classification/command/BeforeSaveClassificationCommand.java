@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -38,7 +39,8 @@ public class BeforeSaveClassificationCommand extends FacilioCommand {
         for (ClassificationContext classificationContext : classificationList) {
             validateClassification(classificationContext);
 
-            classificationContext.setLinkName(generateLinkName(classificationContext.getName()));
+            String linkname= DisplayNameToLinkNameUtil.getLinkName(classificationContext.getName(),FacilioConstants.ContextNames.CLASSIFICATION,"linkName");
+            classificationContext.setLinkName(linkname);
             classificationContext.setStatus(true);
 
         }
@@ -57,22 +59,5 @@ public class BeforeSaveClassificationCommand extends FacilioCommand {
         }
     }
 
-    private String generateLinkName(String name) throws Exception {
-        String linkName = name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-        // check this name exists before
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule classificationModule = modBean.getModule(FacilioConstants.ContextNames.CLASSIFICATION);
-        SelectRecordsBuilder builder = new SelectRecordsBuilder()
-                .module(classificationModule)
-                .beanClass(ClassificationContext.class)
-                .select(modBean.getAllFields(classificationModule.getName()))
-                .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", linkName, StringOperators.STARTS_WITH));
-        List<Map<String, Object>> maps = builder.get();
-        if (CollectionUtils.isNotEmpty(maps)) {
-            // TODO
-            throw new IllegalArgumentException("Link name already found");
-        }
-        return linkName;
-    }
 
 }

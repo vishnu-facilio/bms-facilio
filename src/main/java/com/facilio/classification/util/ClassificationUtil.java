@@ -246,9 +246,14 @@ public class ClassificationUtil {
     public static FacilioModule getNewClassificationDataModule(FacilioModule parentModule, String tableName) throws Exception {
         FacilioModule newClassificationDataModule = new FacilioModule();
         newClassificationDataModule.setName(parentModule.getName() + "_" + "classification_data");
-        newClassificationDataModule.setDisplayName(parentModule.getDisplayName() +"CMD Classifications");
         newClassificationDataModule.setType(FacilioModule.ModuleType.CLASSIFICATION_DATA);
         newClassificationDataModule.setTableName(tableName);
+
+        if(parentModule.isCustom()){
+            newClassificationDataModule.setCustom(true);
+            newClassificationDataModule.setDisplayName(parentModule.getDisplayName() +" CMD Classifications");
+        }
+        newClassificationDataModule.setDisplayName(parentModule.getDisplayName() +" Classifications");
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule attributeModule = modBean.getModule(FacilioConstants.ContextNames.CLASSIFICATION_ATTRIBUTE);
