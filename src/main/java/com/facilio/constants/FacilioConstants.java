@@ -2228,6 +2228,8 @@ public class FacilioConstants {
 		}
 
 		public static final String ROUTES = "routes";
+
+		public static final String MULTIRESOURCE = "multiresource";
 		public static final String VALUE_GENERATORS = "valueGenerators";
 		public static final String RCA_RULE_IDS = "rca_rule_ids";
 		public static final String CALL_FROM_STORM = "req_from_storm_service";

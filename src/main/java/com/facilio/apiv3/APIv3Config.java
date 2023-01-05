@@ -2108,6 +2108,7 @@ public class APIv3Config {
 	public static Supplier<V3Config> getMultiResource() {
 		return () -> new V3Config(MultiResourceContext.class, null)
 							 .create()
+                             .beforeSave(new ValidateBeforeSaveCommandV3())
                              .summary()
                              .beforeFetch(new LoadMultiResourcesLookUpFieldsCommandV3())
 							 .list()

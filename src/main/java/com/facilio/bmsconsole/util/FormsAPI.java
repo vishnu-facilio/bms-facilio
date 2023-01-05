@@ -1040,6 +1040,7 @@ public class FormsAPI {
 			switch (form.getModule().getName()) {
 
 			case ContextNames.WORK_ORDER:
+
 					if(isPortalApp(form.getAppLinkName())){
 						fields.addAll(FormFactory.getWoClassifierFields());
 						fields.add(FormFactory.getWoResourceField());
@@ -1085,6 +1086,8 @@ public class FormsAPI {
 							fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
 						}
 					}
+					fields.add(new FormField("route", FieldDisplayType.LOOKUP_SIMPLE, "Route", Required.OPTIONAL, "route", 1, 1));
+				
 				break;
 			case ContextNames.WorkPermit.WORKPERMIT:
 				fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));

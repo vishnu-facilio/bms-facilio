@@ -212,8 +212,10 @@ public class WorkorderPageFactory extends PageFactory {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule workOrderModule = modBean.getModule("workorder");
                 JSONObject moduleData = new JSONObject();
+                moduleData.put("summaryWidgetName", "multiResourceWidget");
                 moduleData.put("module", workOrderModule);
                 multiResourceWidget.setWidgetParams(moduleData);
+                multiResourceWidget.setRelatedList(moduleData);
                 summarySection.addWidget(multiResourceWidget);
             }
             // comments widget

@@ -39,6 +39,7 @@ public class RouteModule extends BaseModuleConfig{
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
+
     }
 
     private FacilioModule constructRoutesModule() throws Exception{
@@ -61,6 +62,7 @@ public class RouteModule extends BaseModuleConfig{
         module.setFields(fields);
         return module;
     }
+
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -72,7 +74,7 @@ public class RouteModule extends BaseModuleConfig{
         defaultForm.setDisplayName("Standard");
         defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultForm.setShowInWeb(true);
-        defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));   //form needs to be created for multiple applications
+        defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
         defaultForm.setIsSystemForm(true);
         defaultForm.setType(FacilioForm.Type.FORM);
 

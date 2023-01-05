@@ -41,17 +41,17 @@ public class RoutePageFactory extends PageFactory{
         tab1.addSection(tab1Sec2);
         PageWidget previewWidget2 = new PageWidget(PageWidget.WidgetType.MULTIRESOURCE);
         previewWidget2.addToLayoutParams(tab1Sec1, 24, 9);
-
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         FacilioModule routeModule = modBean.getModule("routes");
+
         JSONObject moduleData = new JSONObject();
-        moduleData.put("module",routeModule);
-
+        moduleData.put("summaryWidgetName", "multiResourceWidget");
+        moduleData.put("module", routeModule);
         previewWidget2.setWidgetParams(moduleData);
-
+        previewWidget2.setRelatedList(moduleData);
         tab1Sec2.addWidget(previewWidget2);
-
+        
         List<String> formSubModules = new ArrayList<>();
 
         Page.Tab tab2 = page.new Tab("Related");
