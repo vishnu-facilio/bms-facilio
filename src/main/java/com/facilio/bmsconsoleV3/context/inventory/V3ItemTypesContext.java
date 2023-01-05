@@ -9,6 +9,7 @@ public class V3ItemTypesContext extends V3Context {
     private String name;
 	private String description;
 	private String serialNumber;
+	public Boolean isASparePart;
 	private V3InventoryCategoryContext category;
 	private Double minimumQuantity;
 	public Boolean isRotating;
@@ -118,6 +119,8 @@ public class V3ItemTypesContext extends V3Context {
 		this.category = category;
 	}
 
+
+
 	public Boolean getIsRotating() {
 		return isRotating;
 	}
@@ -143,6 +146,14 @@ public class V3ItemTypesContext extends V3Context {
 	public void setLocalId(long localId) {
 		// TODO Auto-generated method stub
 		super.setLocalId(localId);
+	}
+
+	public Boolean getIsASparePart() {
+		return isASparePart;
+	}
+
+	public void setIsASparePart(Boolean isASparePart) {
+		this.isASparePart = isASparePart;
 	}
 
 	public Boolean getIsApprovalNeeded() {

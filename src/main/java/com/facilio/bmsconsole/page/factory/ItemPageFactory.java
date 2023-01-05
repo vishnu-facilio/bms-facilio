@@ -1,27 +1,22 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 
 public class ItemPageFactory extends PageFactory{
     private static final Logger LOGGER = LogManager.getLogger(ItemPageFactory.class.getName());
@@ -60,6 +55,9 @@ public class ItemPageFactory extends PageFactory{
         }
 
         addTransactionsWidget(tab1Sec1);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)) {
+            addWhereUsedWidget(tab1Sec1);
+        }
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
         page.addTab(tab2);
@@ -89,6 +87,11 @@ public class ItemPageFactory extends PageFactory{
         section.addWidget(purchasedItemsWidget);
 
         return purchasedItemsWidget;
+    }
+    private static void addWhereUsedWidget(Page.Section section) {
+        PageWidget whereUsedWidget = new PageWidget(PageWidget.WidgetType.WHERE_USED);
+        whereUsedWidget.addToLayoutParams(section, 24, 11);
+        section.addWidget(whereUsedWidget);
     }
     private static PageWidget addTransactionsWidget(Page.Section section) {
 

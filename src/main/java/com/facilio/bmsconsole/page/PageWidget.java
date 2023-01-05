@@ -206,6 +206,7 @@ public class PageWidget {
 		DETAILS_WIDGET("detailsWidget"),
 		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
 		SPARE_PARTS("spareParts"),
+		WHERE_USED("whereUsed"),
 		MV_DETAILS_WIDGET("mvSummaryWidget"),
 		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
 		WORKORDER_SECONDARY_DETAILS_WIDGET("workOrderSecondaryDetailsWidget"),

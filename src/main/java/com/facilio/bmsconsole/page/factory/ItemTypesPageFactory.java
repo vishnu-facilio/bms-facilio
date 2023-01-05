@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -39,9 +40,15 @@ public class ItemTypesPageFactory extends PageFactory{
         card3.addToWidgetParams("card","itemtypescard3");
         tab1Sec1.addWidget(card3);
 
+
+
         addStoreroomWidget(tab1Sec1);
 
         addTransactionsWidget(tab1Sec1);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)) {
+            addWhereUsedWidget(tab1Sec1);
+        }
+
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
         page.addTab(tab2);
@@ -82,6 +89,11 @@ public class ItemTypesPageFactory extends PageFactory{
         section.addWidget(transactionsWidget);
 
         return transactionsWidget;
+    }
+    private static void addWhereUsedWidget(Page.Section section) {
+        PageWidget whereUsedWidget = new PageWidget(PageWidget.WidgetType.WHERE_USED);
+        whereUsedWidget.addToLayoutParams(section, 24, 11);
+        section.addWidget(whereUsedWidget);
     }
     private static PageWidget addNotesAttachmentsModule(Page.Section section) {
 

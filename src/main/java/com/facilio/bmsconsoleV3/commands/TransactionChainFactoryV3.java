@@ -84,6 +84,7 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpaces
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
+import com.facilio.bmsconsoleV3.commands.asset.SparePartsSelectionCommand;
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
@@ -99,7 +100,6 @@ import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientId
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.ValidateContactDirectoryEmailCommand;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
@@ -1716,6 +1716,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
         return c;
     }
+    public static FacilioChain getSparePartBeforeCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExistingSparePartSelectionCommandV3());
+        c.addCommand(new CheckForDuplicateSparePartCommandV3());
+        c.addCommand(new CheckForRotatableItemCommand());
+        return c;
+    }
 
     public static FacilioChain getBulkAddToolChain() {
         FacilioChain c = getDefaultChain();
@@ -2538,6 +2545,11 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JobPlanItemsUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        return chain;
+    }
+    public static FacilioChain getUnsavedSparePartsSelectionChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SparePartsSelectionCommand());
         return chain;
     }
     public static FacilioChain getUnsavedJobPlanToolsListChainV3() {

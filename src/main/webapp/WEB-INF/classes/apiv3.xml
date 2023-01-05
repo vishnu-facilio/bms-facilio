@@ -1198,6 +1198,14 @@
         <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getSwitchVariable">
         </action>
     </package>
+    <package name="assetSpareParts" namespace="/api/v3/assetSpareParts"
+             extends="v3Api">
+        <action name="select"
+                class="com.facilio.bmsconsoleV3.actions.SparePartsUnsavedAction"
+                method="select">
+        </action>
+    </package>
+
 
     <package name="workorderItem" namespace="/api/v3/workOrderItem"
              extends="v3Api">

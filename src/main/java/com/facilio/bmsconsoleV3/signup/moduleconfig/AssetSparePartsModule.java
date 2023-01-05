@@ -30,6 +30,7 @@ public class AssetSparePartsModule extends BaseModuleConfig{
         int order = 1;
         ArrayList<FacilioView> assetSpareParts = new ArrayList<FacilioView>();
         assetSpareParts.add(getAllAssetSparePartsView().setOrder(order++));
+        assetSpareParts.add(getAllWhereUsedView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -40,6 +41,29 @@ public class AssetSparePartsModule extends BaseModuleConfig{
 
         return groupVsViews;
     }
+    private static FacilioView getAllWhereUsedView() {
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("SYS_CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getAssetSparePartsModule());
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+        FacilioView allView = new FacilioView();
+        allView.setName("whereUsed");
+        allView.setDisplayName("Where Used");
+        allView.setSortFields(sortFields);
+        List<ViewField> columns = new ArrayList<ViewField>();
+
+        columns.add(new ViewField("name", "Asset","asset"));
+        columns.add(new ViewField("description", "Description","asset"));
+        columns.add(new ViewField("requiredCount", "Required Count"));
+        columns.add(new ViewField("remarks", "Remarks"));
+
+        allView.setFields(columns);
+
+        return allView;
+    }
+
     private static FacilioView getAllAssetSparePartsView() {
         FacilioField createdTime = new FacilioField();
         createdTime.setName("sysCreatedTime");
@@ -56,7 +80,7 @@ public class AssetSparePartsModule extends BaseModuleConfig{
         columns.add(new ViewField("name", "Item Type","itemType"));
         columns.add(new ViewField("description", "Description","itemType"));
         columns.add(new ViewField("requiredCount", "Required Count"));
-        columns.add(new ViewField("remarks", "Required Count"));
+        columns.add(new ViewField("remarks", "Remarks"));
         columns.add(new ViewField("issuedCount", "Issued Count"));
 
         allView.setFields(columns);
@@ -73,7 +97,7 @@ public class AssetSparePartsModule extends BaseModuleConfig{
         AssetSparePartsForm.setName("default_assetSpareParts_web");
         AssetSparePartsForm.setModule(sparePartsModule);
         AssetSparePartsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        AssetSparePartsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        AssetSparePartsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> assetSparePartsFormFields = new ArrayList<>();
         assetSparePartsFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, 1, 1));

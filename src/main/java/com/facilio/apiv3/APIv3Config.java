@@ -2139,9 +2139,11 @@ public class APIv3Config {
     public static Supplier<V3Config> getAssetSpareparts() {
         return () -> new V3Config(AssetSpareParts.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(TransactionChainFactoryV3.getSparePartBeforeCreateChain())
                 .list()
                 .beforeFetch(new LoadSparePartsSupplementsCommand())
                 .update()
+                .beforeSave(new CheckForRotatableItemCommand())
                 .delete()
                 .build();
     }
