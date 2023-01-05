@@ -1370,4 +1370,18 @@
             <param name="actionType">{3}</param>
         </action>
     </package>
+
+    <package name="relationAction" namespace="/api/v3/modules" extends="v3Api">
+        <action name="*/*/relationship/*" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
+            <param name="moduleName">{1}</param>
+            <param name="id">{2}</param>
+            <param name="relationName">{3}</param>
+        </action>
+        <action name="*/*/relatedList/*/*" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
+            <param name="moduleName">{1}</param>
+            <param name="id">{2}</param>
+            <param name="relatedModuleName">{3}</param>
+            <param name="relatedFieldName">{4}</param>
+        </action>
+    </package>
 </struts>

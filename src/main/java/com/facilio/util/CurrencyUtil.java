@@ -10,9 +10,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -21,6 +19,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +109,24 @@ public class CurrencyUtil {
 
 		StringBuilder orderBy = new StringBuilder().append(currencyFields.get("id").getCompleteColumnName()).append(" ASC");
 		selectBuilder.orderBy(orderBy.toString());
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, CurrencyContext.class);
+		}
+		return null;
+	}
+
+	public static List<CurrencyContext> getUnconfiguredCurrencies() throws Exception {
+		FacilioModule module = ModuleFactory.getCurrencyModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("currencyCode", "CURRENCY_CODE", module, FieldType.STRING));
+		fields.add(FieldFactory.getField("displaySymbol", "DISPLAY_SYMBOL", module, FieldType.STRING));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {

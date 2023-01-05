@@ -182,7 +182,7 @@ public enum CurrencyOperator implements Operator<String> {
                         .append(" AND ");
 
                 if (fetchValue) {
-                    FacilioField valueField = FieldFactory.getField("currencyValue", "Currency Value", "CURRENCY_VALUE", currModule, FieldType.DECIMAL);
+                    FacilioField valueField = FieldFactory.getField("baseCurrencyValue", "BaseCurrency Value", "BASECURRENCY_VALUE", currModule, FieldType.DECIMAL);
                     if (value.contains(",")) {
                         builder.append(valueField.getCompleteColumnName()).append(" IN (").append(value).append(")");
                     } else {
@@ -200,7 +200,7 @@ public enum CurrencyOperator implements Operator<String> {
         String[] values = value.trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule currModule = modBean.getModule(FacilioConstants.SystemLookup.CURRENCY_RECORD);
-        FacilioField valueField = FieldFactory.getField("currencyValue", "Currency Value", "CURRENCY_VALUE", currModule, FieldType.DECIMAL);
+        FacilioField valueField = FieldFactory.getField("baseCurrencyValue", "BaseCurrency Value", "BASECURRENCY_VALUE", currModule, FieldType.DECIMAL);
 
         StringBuilder builder = new StringBuilder();
         builder.append(valueField.getCompleteColumnName());

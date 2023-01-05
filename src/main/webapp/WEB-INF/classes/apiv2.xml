@@ -6973,6 +6973,9 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getAllCurrencies">
 		</action>
+		<action name="list/filter"
+				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getFilteredCurrencies">
+		</action>
 		<action name="list/count"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getCurrenciesCount">
 		</action>

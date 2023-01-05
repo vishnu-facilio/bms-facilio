@@ -196,9 +196,13 @@ public class FacilioConstants {
 		public static final String OLD_CURRENCY = "oldCurrency";
 		public static final String CURRENCIES_LIST = "currencies";
 		public static final String SUPPLEMENTS = "supplements";
+		public static final String RELATED_LIST = "relatedList";
+		public static final String RELATED_MODULE_NAME = "relatedModuleName";
+		public static final String RELATED_FIELD_NAME = "relatedFieldName";
 		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
 		public static final String READING_IMPORT_APP = "readingimport";
 		public static final String ORDER_TYPE="orderType";
+		public static final String ORDER_BY="orderBy";
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
@@ -326,7 +330,7 @@ public class FacilioConstants {
 		public static final String AGGREGATION_META = "aggregationMeta";
 		public static final String POSITION_TYPE = "positionType";
 		public static final String CUSTOM_BUTTONS = "customButtons";
-
+		public static final String GET_CUSTOM_BUTTONS = "getCustomButtons";
 		public static final String CUSTOM_BUTTON_LIST = "customButtonList";
 
 		public static final String TRIGGER = "trigger";
@@ -687,6 +691,7 @@ public class FacilioConstants {
 
 		public static final String MODULE_NAME = "moduleName";
 		public static final String DATA_MODULE_NAME = "dataModuleName";
+		public static final String SUMMARY_MODULE_NAME = "summaryModuleName";
 		public static final String MODULE_SETTING = "setting";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
@@ -1369,6 +1374,8 @@ public class FacilioConstants {
 		public static final String RELATION_MAPPING = "relationMapping";
 		public static final String RELATION_NAME = "relationName";
 		public static final String RELATION_MODULE_NAME = "relationModuleName";
+		public static final String RELATION_POSITION_TYPE = "relationPosition";
+		public static final String RELATION_OPERATION = "relationOperation";
 
 		public static final String CLASSIFICATION = "classification";
 		public static final String CLASSIFICATION_DATA = "classificationData";
@@ -1910,8 +1917,8 @@ public class FacilioConstants {
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
 		public static final String SEARCH_QUERY = "searchQuery";
+		public static final String PARAMS = "params";
 		public static final String QUERY_PARAMS = "queryParams";
-
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
 

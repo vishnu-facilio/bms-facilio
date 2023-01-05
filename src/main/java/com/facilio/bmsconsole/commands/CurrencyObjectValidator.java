@@ -71,6 +71,9 @@ public class CurrencyObjectValidator extends FacilioCommand {
                 throw new IllegalArgumentException("Decimal Places is too high");
             }
             // Validate Exchange Rate
+            if (exchangeRate <= 0.0) {
+                throw new IllegalArgumentException("Exchange Rate should greater than 0");
+            }
             exchangeRate = Math.round(exchangeRate * Math.pow(10, validDecimalPlaces)) / Math.pow(10, validDecimalPlaces);
             currencyContext.setExchangeRate(exchangeRate);
         }

@@ -11,12 +11,14 @@ import com.facilio.relation.util.RelationUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 public class ValidateRelationParamCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long fromModuleId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "fromModuleId"));
+        String mappingLinkName = (String) Constants.getQueryParam(context, "mappingLinkName");
 
         String relationModuleName = Constants.getModuleName(context);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -28,10 +30,19 @@ public class ValidateRelationParamCommand extends FacilioCommand {
         }
 
         RelationMappingContext relationMapping = null;
-        for (RelationMappingContext mapping : relation.getMappings()) {
-            if (mapping.getFromModuleId() == fromModuleId) {
-                relationMapping = mapping;
-                break;
+        if (StringUtils.isNotEmpty(mappingLinkName)) {
+            for (RelationMappingContext mapping : relation.getMappings()) {
+                if (!mappingLinkName.equals(mapping.getMappingLinkName())) {
+                    relationMapping = mapping;
+                    break;
+                }
+            }
+        } else {
+            for (RelationMappingContext mapping : relation.getMappings()) {
+                if (mapping.getFromModuleId() == fromModuleId) {
+                    relationMapping = mapping;
+                    break;
+                }
             }
         }
 

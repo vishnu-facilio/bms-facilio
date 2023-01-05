@@ -40,10 +40,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookup
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
-import com.facilio.relation.command.AppendRelationFilterCommand;
-import com.facilio.relation.command.UpdateRelationSupplementsCommand;
-import com.facilio.relation.command.ValidateRelationParamCommand;
-import org.apache.commons.chain.Command;
+import com.facilio.relation.command.*;
 
 public class ReadOnlyChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -243,7 +240,21 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new UpdateRelationSupplementsCommand());
         return c;
     }
-    
+
+    public static FacilioChain getRelatedDataChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateRelatedDataAndSetParamsCommand());
+        c.addCommand(new GetRelatedDataListCommand());
+        return c;
+    }
+
+    public static FacilioChain getAssociateDissociateDataChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateRelatedDataAndSetParamsCommand());
+        c.addCommand(new AssociateOrDissociateDataCommand());
+        return c;
+    }
+
     public static FacilioChain getAgentDetailsCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchAgentDetailsCommand());

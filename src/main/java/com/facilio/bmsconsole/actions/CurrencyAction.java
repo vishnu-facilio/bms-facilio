@@ -69,4 +69,14 @@ public class CurrencyAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
         return SUCCESS;
     }
+
+    public String getFilteredCurrencies() throws Exception {
+        FacilioChain filteredListChain = TransactionChainFactory.getUnconfiguredCurrenciesChain();
+
+        FacilioContext context = filteredListChain.getContext();
+        filteredListChain.execute();
+
+        setResult(FacilioConstants.ContextNames.CURRENCIES_LIST, context.get(FacilioConstants.ContextNames.CURRENCIES_LIST));
+        return SUCCESS;
+    }
 }
