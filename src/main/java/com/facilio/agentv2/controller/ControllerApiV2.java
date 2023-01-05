@@ -97,9 +97,9 @@ public class ControllerApiV2 {
             if (agent != null) {
                 FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain(fromAgent);
                 FacilioContext context = addControllerChain.getContext();
-                if(controller.getControllerType() == FacilioControllerType.SYSTEM.asInt()){
+                /* if(controller.getControllerType() == FacilioControllerType.SYSTEM.asInt()){
                     context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-                }
+                } */
                 if (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
                     RtuNetworkContext rtuNetworkContext = ((ModbusRtuControllerContext) controller).getNetwork();
                     rtuNetworkContext.setAgentId(agent.getId());
