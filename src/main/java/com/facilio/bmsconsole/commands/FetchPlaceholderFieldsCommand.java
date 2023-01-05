@@ -147,6 +147,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		placeHolder.put("name", name);
 		placeHolder.put("displayName", field.getDisplayName());
 		placeHolder.put("dataType", field.getDataTypeEnum().name());
+		placeHolder.put("fieldId", field.getFieldId());
 		FieldDisplayType displayType = field.getDisplayType();
 		if (displayType == null) {
 			FacilioField.FieldDisplayType type = FieldFactory.getDefaultDisplayTypeFromDataType(field.getDataTypeEnum());
