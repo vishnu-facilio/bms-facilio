@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
@@ -6682,6 +6683,9 @@ public class TransactionChainFactory {
 		c.addCommand(new FetchSpaceBookingWithIdCommand());
 		c.addCommand(new SpaceBookingCancelCommand());
 		c.addCommand(new ExtendSpaceBookingCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
 		return c;
 	}
 }
