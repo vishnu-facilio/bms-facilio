@@ -790,6 +790,13 @@ public class IAMAccountConstants {
 			domainType.setModule(module);
 			fields.add(domainType);
 
+			FacilioField securityPolicyId = new FacilioField();
+			securityPolicyId.setName("securityPolicyId");
+			securityPolicyId.setDataType(FieldType.NUMBER);
+			securityPolicyId.setColumnName("SECURITY_POLICY_ID");
+			securityPolicyId.setModule(module);
+			fields.add(securityPolicyId);
+
 			return fields;
 		}
 		

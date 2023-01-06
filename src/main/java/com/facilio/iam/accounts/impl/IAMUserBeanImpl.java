@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.auth.beans.SecretsManagerBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.context.APIClient;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
@@ -39,7 +37,6 @@ import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
 import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -48,7 +45,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.MembersHasMember;
-import com.google.auth.oauth2.GoogleCredentials;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -1198,9 +1194,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		return -1L;
 	}
-
 	@Override
 	public boolean isSessionExpired(long uid, long sessionId) throws Exception {
+		return isSessionExpired( uid, sessionId,null);
+	}
+	@Override
+	public boolean isSessionExpired(long uid, long sessionId, AppDomain appdomainObj) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
@@ -1215,10 +1214,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return false;
 		}
 
-		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid,appdomainObj);
 
 		if (userSecurityPolicy == null){
-			return false;
+				return false;
 		}
 
 		boolean isWebSessManagementEnabled = BooleanUtils.isTrue(userSecurityPolicy.getIsWebSessManagementEnabled());
@@ -2472,6 +2471,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public SecurityPolicy getUserSecurityPolicy(long uid) throws Exception {
+		return getUserSecurityPolicy(uid ,null);
+	}
+
+	public SecurityPolicy getUserSecurityPolicy(long uid, AppDomain appDomain) throws Exception {
 		var prop = (Map<String, Object>) LRUCache.getUserSecurityPolicyCache().get(uid+"");
 		if (MapUtils.isNotEmpty(prop)) {
 			return FieldUtil.getAsBeanFromMap(prop, SecurityPolicy.class);
@@ -2490,11 +2493,30 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition(accountUserFieldMap.get("uid"), uid+"", NumberOperators.EQUALS));
 
 		Map<String, Object> map = selectBuilder.fetchFirst();
+		if(map == null && appDomain != null && appDomain.getSecurityPolicyId() > 0){
+			map = getUserSecurityPolicyForApp(appDomain.getSecurityPolicyId());
+		}
 		LRUCache.getUserSecurityPolicyCache().put(uid+"", map);
 		return FieldUtil.getAsBeanFromMap(map, SecurityPolicy.class);
 	}
-	
 
+	public Map<String, Object> getUserSecurityPolicyForApp(long securityPolicyId) throws Exception {
+		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
+		Map<String, FacilioField> appDomainFieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAppDomainFields());
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(securityPolicyFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("App_Domain")
+				.innerJoin("SecurityPolicies")
+				.on("SecurityPolicies.SECURITY_POLICY_ID = App_Domain.SECURITY_POLICY_ID")
+				.andCondition(CriteriaAPI.getCondition(appDomainFieldMap.get("securityPolicyId"), securityPolicyId+"", NumberOperators.EQUALS));
+
+		Map<String, Object> map = selectBuilder.fetchFirst();
+		return map;
+	}
 	@Override
 	public Map<String, Object> getUserForEmail(String email, long orgId, String identifier) throws Exception {
 		return getUserForEmail(email, orgId, identifier, false);

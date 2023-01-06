@@ -106,7 +106,13 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 
 		if (iamAccount != null && iamAccount.getOrg() != null && iamAccount.getUser() != null) {
 			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
-			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
+			AppDomain appdomainObj = null;
+			try {
+				appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId(), appdomainObj);
 			if (sessionExpired) {
 				LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
 				if(request.getRequestURI().endsWith("application/fetchDetails")) {
