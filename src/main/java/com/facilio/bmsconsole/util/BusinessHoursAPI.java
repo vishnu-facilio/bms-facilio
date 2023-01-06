@@ -366,7 +366,7 @@ public class BusinessHoursAPI {
 						endTimeScheduleInfo.setTimes(Collections.singletonList(fromTimePair.getRight().toString()));
 						
 						long tempStartTime = startTimeScheduleInfo.nextExecutionTime(startTime/1000) * 1000;
-						long tempEndTime = endTimeScheduleInfo.nextExecutionTime(tempStartTime/1000) * 1000;
+						long tempEndTime = endTimeScheduleInfo.nextExecutionTime((tempStartTime-1)/1000) * 1000;
 						
 						if(tempStartTime < endTime && tempEndTime <= endTime) {
 							dateRanges.add(new DateRange(tempStartTime, tempEndTime));
