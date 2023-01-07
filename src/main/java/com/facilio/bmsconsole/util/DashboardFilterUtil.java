@@ -344,7 +344,7 @@ public class DashboardFilterUtil {
 		 else if(widget.getWidgetType().equals(WidgetType.CARD))
 		 {
 			 WidgetCardContext newCardWidget = (WidgetCardContext) widget;
-			 if (newCardWidget.getCardLayout().equals(CardLayout.KPICARD_LAYOUT_1.getName())) {
+			 if (newCardWidget.getCardLayout().equals(CardLayout.KPICARD_LAYOUT_1.getName()) || newCardWidget.getCardLayout().equals(CardLayout.KPICARD_LAYOUT_2.getName())) {
 					JSONObject cardParams = newCardWidget.getCardParams();
 //				
 					String kpiType = (String) cardParams.get("kpiType");
