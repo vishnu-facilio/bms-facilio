@@ -40,6 +40,16 @@ public class CurrencyAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String getBaseCurrency() throws Exception {
+        FacilioChain baseCurrencyChain = TransactionChainFactory.getBaseCurrencyChain();
+
+        FacilioContext context = baseCurrencyChain.getContext();
+        baseCurrencyChain.execute();
+
+        setResult("currency", context.get(FacilioConstants.ContextNames.CURRENCY));
+        return SUCCESS;
+    }
+
     public String getAllCurrencies() throws Exception {
         FacilioChain listChain = TransactionChainFactory.getAllCurrenciesChain();
 

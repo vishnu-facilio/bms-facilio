@@ -6678,6 +6678,12 @@ public class TransactionChainFactory {
 		c.addCommand(new GetUnconfiguredCurrenciesCommand());
 		return c;
 	}
+
+	public static FacilioChain getBaseCurrencyChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetBaseCurrencyCommand());
+		return c;
+	}
 	public static FacilioChain getSpaceBookingActionChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchSpaceBookingWithIdCommand());

@@ -5,6 +5,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.fw.BeanFactory;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.util.V3Util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.util.CurrencyUtil;
@@ -18,6 +20,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map<String, Object>>{
 
@@ -85,6 +88,12 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> record : props) {
                 Long recordId = (Long) record.get(getParentFieldName());
+                String currencyCode = (String) record.get("currencyCode");
+                Unit metricUnit = Unit.getUnitsForMetric(Metric.CURRENCY).stream()
+                        .filter(unit -> unit.getDisplayName().equals(currencyCode))
+                        .findFirst()
+                        .orElse(null);
+                record.put("displaySymbol", (metricUnit != null) ? metricUnit.getSymbol() : currencyCode);
                 addToRecordMap(recordId, record);
             }
         }
@@ -143,7 +152,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (currencyCode.equals(baseCurrency.getCurrencyCode())) {
             exchangeRate = 1;
         }
-        double currencyValue = (double) props.get("currencyValue");
+        double currencyValue = Double.parseDouble((String) props.get("currencyValue"));
         double baseCurrencyValue = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, exchangeRate);
 
         props.put(PARENT_FIELD_NAME, parentId);
@@ -168,7 +177,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         int decimalPlaces = currency.getDecimalPlaces();
         int baseCurrencyDecimalPlaces = baseCurrency.getDecimalPlaces();
 
-        double currencyValue = (double) newProps.get("currencyValue");
+        double currencyValue = Double.parseDouble((String) newProps.get("currencyValue"));
         double oldExchangeRate = (double) oldProps.get("exchangeRate");
         double newBaseCurrencyVale = currencyValue * oldExchangeRate;
 

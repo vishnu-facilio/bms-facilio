@@ -6970,6 +6970,9 @@
 		<action name="updateStatus"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="updateStatus">
 		</action>
+		<action name="getBaseCurrency"
+				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getBaseCurrency">
+		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getAllCurrencies">
 		</action>
