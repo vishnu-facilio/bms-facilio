@@ -175,7 +175,7 @@ public class FacilioAction extends ActionSupport {
 	public void setStackTrace(Exception e) {
 		if (e != null) {
 			LOGGER.error("Exception occured: - ", e);
-			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
+			if(getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
 				Throwable msg = e;
 				if (e instanceof InvocationTargetException) {
 					msg = e.getCause();
