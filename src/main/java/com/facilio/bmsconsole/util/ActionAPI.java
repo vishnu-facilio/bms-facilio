@@ -656,6 +656,8 @@ public class ActionAPI {
 		}
 		action.setTemplate(pushNotificationTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
+		checkAndSetUserWorkflow(action.getTemplateJson(), pushNotificationTemplate);
+
 	}
 	
 	private static void checkAndSetWorkflow(JSONObject templateJson, Template template) {
