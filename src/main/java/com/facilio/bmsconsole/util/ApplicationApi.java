@@ -2479,8 +2479,8 @@ public class ApplicationApi {
         return null;
     }
 
-    public static ApplicationContext getDefaultOrFirstApp(List<ApplicationContext> applications) throws Exception {
-        ApplicationContext defaultAppForUser = getUserDefaultApp(applications);
+    public static ApplicationContext getDefaultOrFirstApp(List<ApplicationContext> applications,long ouid) throws Exception {
+        ApplicationContext defaultAppForUser = getUserDefaultApp(applications,ouid);
         ApplicationContext finalDefaultApplication = null;
         for(ApplicationContext app : applications) {
             if(defaultAppForUser != null && defaultAppForUser.getId() == app.getId()){
@@ -2496,14 +2496,15 @@ public class ApplicationApi {
         }
         return applications.get(0);
     }
-    public static ApplicationContext getUserDefaultApp(List<ApplicationContext> permissibleApplications) throws Exception {
-        if(CollectionUtils.isNotEmpty(permissibleApplications)){
+    public static ApplicationContext getUserDefaultApp(List<ApplicationContext> permissibleApplications,long ouid) throws Exception {
+        if(CollectionUtils.isNotEmpty(permissibleApplications) && ouid > -1){
             List<Long> appIds = permissibleApplications.stream().map(ApplicationContext::getId).collect(Collectors.toList());
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .select(AccountConstants.getOrgUserAppsFields())
                     .table(AccountConstants.getOrgUserAppsModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(appIds,","), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("IS_DEFAULT_APP", "isDefaultApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS));
+                    .andCondition(CriteriaAPI.getCondition("IS_DEFAULT_APP", "isDefaultApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
 
             List<Map<String, Object>> props = selectBuilder.get();
             if(CollectionUtils.isNotEmpty(props)) {

@@ -178,7 +178,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             if(!ApplicationApi.isAuthorisedApplication(permissibleAppsForThisDomain,appId)) {
                                 return ErrorUtil.sendError(ErrorUtil.Error.USER_NOT_IN_APP);
                             }
-                            ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain);
+                            ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain,user.getOuid());
                             ApplicationApi.setThisAppForUser(user, appToBeAssigned, false);
                         } else {
                             if(isAuthRequired()) {
