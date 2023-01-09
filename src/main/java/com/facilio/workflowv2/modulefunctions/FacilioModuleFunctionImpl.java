@@ -301,7 +301,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
-		
+		if (updateMap.containsKey("moduleState")){
+			Map<String,Object> moduleState = (Map<String, Object>) updateMap.get("moduleState");
+			LOGGER.info("updating module state via script update \n" + "Org Id : " + AccountUtil.getCurrentOrg().getOrgId() +
+					"\n Module name : " + module.getName() + "\n module state : " + moduleState.get("id"));
+		}
 		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 		
 		if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
