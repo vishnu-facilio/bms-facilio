@@ -75,6 +75,7 @@ public abstract class ExecutorBase implements Executor {
                     workOrderCopy.setAdhocJobPlan(pmPlanner.getAdhocJobPlan());
                     workOrderCopy.setPrerequisiteJobPlan(pmPlanner.getPreReqJobPlan());
                     workOrderCopy.setCreatedTime(computedCreatedTime);
+                    workOrderCopy.setModifiedTime(computedCreatedTime);
 
                     workOrderCopy.setJobStatus(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
                     workOrderCopy.setSourceType(V3TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal());
