@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -8,19 +7,14 @@ import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
-import com.facilio.bmsconsoleV3.context.V3ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;

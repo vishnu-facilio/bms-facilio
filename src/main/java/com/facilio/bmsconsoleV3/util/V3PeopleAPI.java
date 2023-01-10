@@ -42,9 +42,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 public class V3PeopleAPI {
 
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(V3PeopleAPI.class);
 
     public static List<V3VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact) throws Exception {
@@ -145,6 +147,11 @@ public class V3PeopleAPI {
 
         if(primaryContactForParent != null) {
             if(StringUtils.isNotEmpty(tc.getEmail())) {
+
+                String trimmedEmail = tc.getEmail().trim();
+                tc.setEmail(trimmedEmail);
+                validatePeopleEmail(trimmedEmail);
+
                 if(StringUtils.isEmpty(primaryContactForParent.getEmail())) {
                     tc.setId(primaryContactForParent.getId());
                     updatePeopleRecord(tc, module, fields);
@@ -176,6 +183,11 @@ public class V3PeopleAPI {
                 tc.setFormId(defaultform.getId());
             }
             if(StringUtils.isNotEmpty(tc.getEmail())) {
+
+                String trimmedEmail = tc.getEmail().trim();
+                tc.setEmail(trimmedEmail);
+                validatePeopleEmail(trimmedEmail);
+
                 addPeopleRecord(tc, module, fields, parentId);
                 return;
             }
@@ -968,6 +980,12 @@ public class V3PeopleAPI {
             LOGGER.info("Exception occurred ", e);
         }
         return false;
+    }
+
+    public static void validatePeopleEmail(String email) throws Exception {
+        if (StringUtils.isNotEmpty(email) && !VALID_EMAIL_ADDRESS_REGEX.matcher(email).find()) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - " + email);
+        }
     }
 
 }

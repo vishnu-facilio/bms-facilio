@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
+import com.facilio.bmsconsoleV3.commands.people.SetPeopleTypeCommand;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -781,6 +782,13 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
         c.addCommand(new AssignDefaultShift());
+        return c;
+    }
+
+    public static FacilioChain getPeopleBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetPeopleTypeCommand());
+        c.addCommand(new PeopleValidationCommandV3());
         return c;
     }
 

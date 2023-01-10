@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.facilio.bmsconsole.context.ClientContactContext;
+import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -18,8 +21,6 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class PeopleValidationCommand extends FacilioCommand {
-	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
-
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -30,9 +31,25 @@ public class PeopleValidationCommand extends FacilioCommand {
 				if(StringUtils.isNotEmpty(people.getEmail())){
 					String trimmedEmail = people.getEmail().trim();
 					people.setEmail(trimmedEmail);
-					if(!VALID_EMAIL_ADDRESS_REGEX.matcher(people.getEmail()).find()){
-						throw new RESTException(ErrorCode.VALIDATION_ERROR, "Not a valid email - "+ people.getEmail());
+					PeopleContext existingPeopleRecord = PeopleAPI.getPeopleForId(people.getId());
+					if(existingPeopleRecord != null && (!people.getEmail().equalsIgnoreCase(existingPeopleRecord.getEmail()))){
+						if(people.isOccupantPortalAccess()){
+							throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email id cannot be altered for an active occupant portal user");
+						}
+						else if(people.employeePortalAccess()){
+							throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email id cannot be altered for an active employee portal user");
+						}
+						else if(people instanceof TenantContactContext && ((TenantContactContext) people).isTenantPortalAccess()){
+							throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email id cannot be altered for an active tenant portal user");
+						}
+						else if(people instanceof ClientContactContext && ((ClientContactContext) people).isClientPortalAccess()){
+							throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email id cannot be altered for an active client portal user");
+						}
+						else if(people instanceof VendorContactContext && ((VendorContactContext) people).isVendorPortalAccess()){
+							throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email id cannot be altered for an active vendor portal user");
+						}
 					}
+					V3PeopleAPI.validatePeopleEmail(people.getEmail());
 					if(PeopleAPI.checkForDuplicatePeople(people)) {
 						throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
 					}}

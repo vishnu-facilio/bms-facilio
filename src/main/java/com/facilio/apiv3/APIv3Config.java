@@ -691,6 +691,7 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddClientsAfterSaveChain())
                 .update()
                 .beforeSave(new AssociateClientFromSite(), new DisassociateClientFromSiteCommand(), new UpdateAddressForClientLocationCommandV3())
+                .afterSave(new AddClientUserCommandV3())
                 .list()
                 .beforeFetch(new LoadClientLookupCommandV3())
                 .summary()
@@ -2484,7 +2485,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getPeoples() {
         return () -> new V3Config(V3PeopleContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetPeopleTypeCommand())
+                .beforeSave(TransactionChainFactoryV3.getPeopleBeforeSaveChain())
+                .update()
+                .beforeSave(new PeopleValidationCommandV3())
                 .list()
                 .summary()
                 .afterFetch(new FetchLabourAndUserContextForPeople())

@@ -135,6 +135,13 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	@Getter @Setter
 	private Boolean employeePortalAccess,user,labour;
 
+	public boolean employeePortalAccess() {
+		if (employeePortalAccess != null) {
+			return employeePortalAccess.booleanValue();
+		}
+		return false;
+	}
+
 	public Map<String, Long> getScopingsMap() {
 		return scopingsMap;
 	}

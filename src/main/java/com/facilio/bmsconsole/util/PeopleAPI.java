@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
@@ -37,6 +38,8 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -111,6 +114,7 @@ public class PeopleAPI {
 		if(peopleExisiting == null) {
 			EmployeeContext people = new EmployeeContext();
 			people.setIsAssignable(false);
+			V3PeopleAPI.validatePeopleEmail(user.getEmail());
 			people.setEmail(user.getEmail());
 			people.setName(user.getName());
 			people.setActive(true);
@@ -153,6 +157,18 @@ public class PeopleAPI {
 		
 	}
 
+	public static void updatePeopleOnUserUpdate(User user) throws Exception {
+		PeopleContext peopleExisting = getPeople(user.getEmail());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+		EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisting), EmployeeContext.class);
+		emp.setName(user.getName());
+		emp.setPhone(user.getMobile());
+		emp.setRoleId(user.getRoleId());
+		emp.setLanguage(user.getLanguage());
+		RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
+	}
+
 	public static PeopleContext getOrAddRequester(String email) throws Exception {  //used only for service Request Module
 
 		email = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(email);
@@ -187,6 +203,7 @@ public class PeopleAPI {
 			long pplId = -1;
 			if (peopleExisiting == null) {
 				PeopleContext people = new PeopleContext();
+				V3PeopleAPI.validatePeopleEmail(user.getEmail());
 				people.setEmail(user.getEmail());
 				people.setName(user.getName());
 				people.setActive(true);
@@ -473,7 +490,7 @@ public class PeopleAPI {
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
 
 		PeopleContext existingPeople = getPeopleForId(person.getId(),true);
-		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess() || existingPeople.employeePortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
 		boolean isSsoEnabled = isSsoEnabledForApplication(linkName);
@@ -521,7 +538,7 @@ public class PeopleAPI {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
 					}
 				}
-				else if((linkName.equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP) && existingPeople.getEmployeePortalAccess())) {
+				else if((linkName.equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP) && existingPeople.employeePortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)){
 						throw new IllegalArgumentException("Role is mandatory");
 					}
@@ -703,6 +720,7 @@ public class PeopleAPI {
 			com.facilio.modules.DeleteRecordBuilder<PeopleContext> deleteBuilder = new com.facilio.modules.DeleteRecordBuilder<PeopleContext>()
 					.module(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
 			deleteBuilder.andCondition(CriteriaAPI.getIdCondition(peopleId, ModuleFactory.getPeopleModule()));
+			PeopleGroupUtils.markAsDeletePeopleGroupMember(Collections.singletonList(peopleId));
 			return deleteBuilder.markAsDelete();
 
 		}

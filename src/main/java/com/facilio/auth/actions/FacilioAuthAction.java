@@ -356,7 +356,6 @@ public class FacilioAuthAction extends FacilioAction {
 		Locale locale = request.getLocale();
 		IAMAccount iamAccount = null;
 		try {
-			
 			iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
 			Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
 			

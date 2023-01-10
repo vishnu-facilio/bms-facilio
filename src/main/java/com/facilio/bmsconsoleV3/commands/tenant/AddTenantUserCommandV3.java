@@ -3,7 +3,6 @@ package com.facilio.bmsconsoleV3.commands.tenant;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
