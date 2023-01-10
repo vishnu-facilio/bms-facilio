@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.annotations.AnnotationEnums;
+import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionType;
 import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
@@ -12,9 +14,35 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+@ImmutableChildClass(className = "WebTabGroupCacheContext", constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class WebTabGroupContext implements Serializable {
 
-    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId){
+    public WebTabGroupContext(WebTabGroupContext object) {
+        this.id = object.id;
+        this.name = object.name;
+        this.route = object.route;
+        this.iconType = object.iconType;
+        this.iconTypeEnum = object.iconTypeEnum;
+        this.order = object.order;
+        this.webTabs = object.webTabs;
+        this.featureLicense = object.featureLicense;
+        this.layoutId = object.layoutId;
+    }
+
+    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId,IconType iconTypeEnum){
+        this.webTabs = webTabs;
+        this.name = name;
+        this.route = route;
+        this.iconType = iconType;
+        this.order = order;
+        if(featureLicense != null){
+            this.featureLicense = featureLicense;
+        }
+        this.layoutId = layoutId;
+        this.iconTypeEnum = iconTypeEnum;
+    }
+
+    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense, long layoutId){
         this.webTabs = webTabs;
         this.name = name;
         this.route = route;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
@@ -11,6 +12,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -37,18 +39,12 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                 tabGroup.setOrder(-1);
             }
 
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
             if (tabGroup.getId() > 0) {
-                GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                        .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                        .fields(FieldFactory.getWebTabGroupFields())
-                        .andCondition(CriteriaAPI.getIdCondition(tabGroup.getId(), ModuleFactory.getWebTabGroupModule()));
-                builder.update(FieldUtil.getAsProperties(tabGroup));
+                tabBean.updateWebTabGroup(tabGroup);
             }
             else {
-                GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                        .fields(FieldFactory.getWebTabGroupFields());
-                long id = builder.insert(FieldUtil.getAsMapList(Collections.singletonList(tabGroup), WebTabGroupContext.class).get(0));
+                long id = tabBean.addWebTabGroup(tabGroup);
                 tabGroup.setId(id);
                 context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, id);
             }

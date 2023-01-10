@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.facilio.bmsconsole.context.ScopingConfigCacheContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.collections.UniqueMap;
@@ -39,6 +40,10 @@ public class LRUCache {
 	private static FacilioCache<String, Object> agentCache = new PubSubLRUCache<>("agentCache", 1000);
 	private static FacilioCache<String, Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>>> globalScopeVariableCache = new PubSubLRUCache<>("globalScopeVariableCache", 2000);
 	private static FacilioCache<String, List<ScopingConfigCacheContext>> scopeConfigCache = new PubSubLRUCache<>("scopeConfigCache", 2000);
+	private static FacilioCache<String, WebTabCacheContext> webTabCache = new PubSubLRUCache<>("webTabCache", 5000);
+	private static FacilioCache<String, List<WebTabCacheContext>> webTabsCache = new PubSubLRUCache<>("webTabsCache", 5000);
+	private static FacilioCache<String, List<WebTabGroupCacheContext>> webTabGroupCache = new PubSubLRUCache<>("webTabGroupCache", 5000);
+	private static FacilioCache<String, List<TabIdAppIdMappingCacheContext>> tabAppModuleCache = new PubSubLRUCache<>("tabAppModuleCache", 5000);
 
 
 	public static void purgeAllCache() {
@@ -101,5 +106,22 @@ public class LRUCache {
 
 	public static FacilioCache<String, List<ScopingConfigCacheContext>> getScopeConfigCache() {
 		return scopeConfigCache;
+	}
+	
+	public static FacilioCache<String, WebTabCacheContext> getWebTabCache() {
+		return webTabCache;
+	}
+
+	public static FacilioCache<String, List<TabIdAppIdMappingCacheContext>> getTabAppModuleCache() {
+		return tabAppModuleCache;
+	}
+
+
+	public static FacilioCache<String, List<WebTabCacheContext>> getWebTabsCache() {
+		return webTabsCache;
+	}
+
+	public static FacilioCache<String, List<WebTabGroupCacheContext>> getWebTabGroupCache() {
+		return webTabGroupCache;
 	}
 }

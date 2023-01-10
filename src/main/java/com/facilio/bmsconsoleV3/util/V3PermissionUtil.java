@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
@@ -11,6 +12,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -74,7 +76,8 @@ public class V3PermissionUtil {
 
     //Backward compatability for write - read handled by feature license
     public static void addPermissionV3(long roleId, NewPermission newPermissions) throws Exception {
-        WebTabContext tab = ApplicationApi.getWebTab(newPermissions.getTabId());
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+        WebTabContext tab = tabBean.getWebTab(newPermissions.getTabId());
         FacilioModule module;
         NewPermission perm;
         List < FacilioField > fields;
