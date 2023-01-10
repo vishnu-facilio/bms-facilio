@@ -31,6 +31,9 @@ public class GetModuleSummaryCommand extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module while getting module summary");
 
+        // Parent Module
+        FacilioModule parentModule = module.getParentModule();
+
         // Form Templates (only DB Forms, not FormFactory)
         ApplicationContext application = AccountUtil.getCurrentApp();
         if (application == null) {
@@ -56,7 +59,7 @@ public class GetModuleSummaryCommand extends FacilioCommand {
         long customButtonsCount = WorkflowRuleAPI.getCustomButtonsCount(module, null);
 
         summary.put("module", module);
-        summary.put("parentModule", module.getParentModule());
+        summary.put("parentModule", parentModule == null ? null : module.getModuleId() != parentModule.getModuleId() ? parentModule : null);
 
         customization.put("templates", formsCount);
         customization.put("systemFields", systemFieldsCount);

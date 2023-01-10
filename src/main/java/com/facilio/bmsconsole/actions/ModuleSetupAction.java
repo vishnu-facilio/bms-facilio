@@ -67,7 +67,7 @@ public class ModuleSetupAction extends FacilioAction {
         FacilioContext context = getFieldsChain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
-        context.put("handleStateField", true);
+        context.put("skipStateField", true);
         addPagination(context);
         
         getFieldsChain.execute();

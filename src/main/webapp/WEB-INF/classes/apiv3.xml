@@ -1311,52 +1311,6 @@
                 method="addOrUpdateFormRelation"/>
     </package>
 
-    <package name="moduleApiV3" namespace="/api/v3/setup/modules" extends="v2Api">
-        <action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
-                method="v2AddModule"/>
-        <action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
-                method="v2UpdateModule"/>
-        <action name="lists/system" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getSystemModulesList"/>
-        <action name="lists/custom" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getCustomModulesList"/>
-        <action name="forms" class="com.facilio.bmsconsole.actions.FormAction"
-                method="formList"/>
-        <action name="relation" class="com.facilio.relation.action.RelationAction"
-                method="list" />
-        <action name="customButton" class="com.facilio.bmsconsole.actions.CustomButtonAction"
-                method="getAllCustomButtons" />
-        <action name="fields" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getModuleFields"/>
-        <action name="getFieldForms" class="com.facilio.bmsconsole.actions.ModuleAction"
-                method="v2getFieldUsageInForms" />
-        <action name="related" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getRelatedModules"/>
-        <action name="extended" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getExtendedModules"/>
-        <action name="summary" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getSummary"/>
-        <action name="setting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getSetting"/>
-        <action name="updateSetting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="updateSetting"/>
-
-        <action name="lists/system/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getSystemModulesCount"/>
-        <action name="lists/custom/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getCustomModulesCount"/>
-        <action name="fields/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getModuleFieldsCount"/>
-        <action name="related/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getRelatedModulesCount"/>
-        <action name="extended/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getExtendedModulesCount"/>
-        <action name="relation/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getRelationsCount" />
-        <action name="customButton/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getCustomButtonsCount" />
-    </package>
-
     <package name="spaceBooking" namespace="/api/v3/spacebooking" extends="v3Api">
         <action name="action"
                 class="com.facilio.bmsconsoleV3.actions.SpaceBookingAction"

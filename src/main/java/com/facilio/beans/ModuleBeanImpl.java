@@ -821,7 +821,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
-		return getAllFields(moduleName, null, null);
+		return getAllFields(moduleName, null, null, null);
 	}
 	
 	@Override
@@ -2080,7 +2080,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 
 		if (StringUtils.isNotEmpty(searchString)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));
 		}
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -2108,25 +2108,31 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	@Override
-	public List<FacilioField> getAllFields(String moduleName, JSONObject pagination, String searchString) throws Exception {
+	public List<FacilioField> getAllFields(String moduleName, JSONObject pagination, String searchString, Criteria filterCriteria) throws Exception {
 
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
-		List<FacilioField> fields = null;
+		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = getMod(moduleName);
 		FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module while getting module");
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		List<Long> extendedModuleIds = module.getExtendedModuleIds();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getFieldFields());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSelectFieldFields())
 				.table("Fields")
-				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
+		if (filterCriteria != null && !filterCriteria.isEmpty()) {
+			selectBuilder.andCriteria(filterCriteria);
+		}
 
 		if (StringUtils.isNotEmpty(searchString)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));
 		}
+
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
@@ -2176,7 +2182,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				.andCondition(CriteriaAPI.getCondition(modFieldsMap.get("type"), getTypes(types), StringOperators.IS));
 
 		if (StringUtils.isNotEmpty(searchString)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(modFieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(modFieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));
 		}
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -2220,7 +2226,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("extendsId"), String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
 
 		if (StringUtils.isNotEmpty(searchString)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));
 		}
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
