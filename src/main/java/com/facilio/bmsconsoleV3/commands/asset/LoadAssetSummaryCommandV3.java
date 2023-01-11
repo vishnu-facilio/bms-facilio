@@ -106,15 +106,16 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
     private void getAssetLocation(V3AssetContext asset) throws Exception {
         V3BaseSpaceContext assetLocation = asset.getSpace();
 
-        LOGGER.info("Asset Summary location ID ===>"+assetLocation.getId());
-        LOGGER.info("Asset Summary Site ID ===>"+assetLocation.getSiteId() + " -- "+assetLocation.getSite());
-        LOGGER.info("Asset Summary Building ID ===>"+assetLocation.getBuildingId() + " -- "+assetLocation.getBuilding());
-        LOGGER.info("Asset Summary Floor ID ===>"+assetLocation.getFloorId() + " -- "+assetLocation.getFloor());
-        LOGGER.info("Asset Summary Space ID ===>"+assetLocation.getSpaceId() + " -- "+assetLocation.getSpace());
-
         if (assetLocation == null || assetLocation.getId() <= 0) {
             return;
         }
+
+        LOGGER.debug("Asset Summary location ID ===>"+assetLocation.getId());
+        LOGGER.debug("Asset Summary Site ID ===>"+assetLocation.getSiteId() + " -- "+assetLocation.getSite());
+        LOGGER.debug("Asset Summary Building ID ===>"+assetLocation.getBuildingId() + " -- "+assetLocation.getBuilding());
+        LOGGER.debug("Asset Summary Floor ID ===>"+assetLocation.getFloorId() + " -- "+assetLocation.getFloor());
+        LOGGER.debug("Asset Summary Space ID ===>"+assetLocation.getSpaceId() + " -- "+assetLocation.getSpace());
+
         Set<Long> spaceIds = new HashSet<>();
         LocationContext currentLocation = null;
         if (assetLocation.getSiteId() > 0) {
