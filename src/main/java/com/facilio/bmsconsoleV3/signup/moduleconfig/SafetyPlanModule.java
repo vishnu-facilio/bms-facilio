@@ -45,6 +45,11 @@ public class SafetyPlanModule extends BaseModuleConfig{
         allView.setName("all");
         allView.setDisplayName("Safety Plans");
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -58,12 +63,12 @@ public class SafetyPlanModule extends BaseModuleConfig{
         safetyPlanForm.setName("default_safetyPlan_web");
         safetyPlanForm.setModule(safetyPlanModule);
         safetyPlanForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        safetyPlanForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        safetyPlanForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> safetyPlanFormFields = new ArrayList<>();
         safetyPlanFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         safetyPlanFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        safetyPlanFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL,"site", 3, 1));
+        safetyPlanFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 3, 1));
 //        safetyPlanForm.setFields(safetyPlanFormFields);
 
         FormSection section = new FormSection("Default", 1, safetyPlanFormFields, false);

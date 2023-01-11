@@ -42,6 +42,11 @@ public class PrecautionModule extends BaseModuleConfig{
         allView.setName("all");
         allView.setDisplayName("Precautions");
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -55,7 +60,7 @@ public class PrecautionModule extends BaseModuleConfig{
         precautionForm.setName("default_precaution_web");
         precautionForm.setModule(precautionModule);
         precautionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        precautionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        precautionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> precautionFormFields = new ArrayList<>();
         precautionFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

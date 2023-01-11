@@ -42,6 +42,11 @@ public class HazardModule extends BaseModuleConfig{
         allView.setName("all");
         allView.setDisplayName("Hazards");
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
         return allView;
     }
 
@@ -55,7 +60,7 @@ public class HazardModule extends BaseModuleConfig{
         hazardForm.setName("default_hazard_web");
         hazardForm.setModule(hazardModule);
         hazardForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        hazardForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        hazardForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> hazardFormFields = new ArrayList<>();
         hazardFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

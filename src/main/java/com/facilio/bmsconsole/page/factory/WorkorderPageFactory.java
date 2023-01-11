@@ -464,7 +464,7 @@ public class WorkorderPageFactory extends PageFactory {
         safetyPlanTab.addSection(safetyPlanSection);
 
         PageWidget safetyPlan = new PageWidget(PageWidget.WidgetType.WORKORDER_SAFETY_PLAN);
-        safetyPlan.addToLayoutParams(0, 0, 17, 7);
+        safetyPlan.addToLayoutParams(0, 0, 17, 8);
         safetyPlanSection.addWidget(safetyPlan);
 
         if(workorder.getSafetyPlan() != null) {
@@ -474,7 +474,7 @@ public class WorkorderPageFactory extends PageFactory {
             safetyPlanSection.addWidget(hazards);
 
             // precautions widget
-            PageWidget precautions = new PageWidget(PageWidget.WidgetType.LIST, "safetyPlanPrecautions");
+            PageWidget precautions = new PageWidget(PageWidget.WidgetType.WORKORDER_HAZARD_PRECAUTIONS);
             precautions.addToLayoutParams(0, 8, 17, 9);
             safetyPlanSection.addWidget(precautions);
         }

@@ -7,7 +7,6 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardPrecautionContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.V3HazardPrecautionContext;
-import com.facilio.bmsconsoleV3.context.safetyplans.V3SafetyPlanHazardContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -47,7 +46,7 @@ public class AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3 extends Facili
                         for (V3WorkorderHazardContext woHazard : wohazards) {
                             List<V3HazardPrecautionContext> hazardPrecautions = HazardsAPI.fetchAssociatedPrecautions(woHazard.getHazard().getId());
                             for (V3HazardPrecautionContext hazardPrecaution : hazardPrecautions) {
-                                Map<Long, V3WorkorderHazardPrecautionContext> props = checkIfPrecautionAvailable(workOrder,woHazard,hazardPrecaution);
+                                Map<Long, V3WorkorderHazardPrecautionContext> props = HazardsAPI.checkIfPrecautionAvailable(workOrder,woHazard,hazardPrecaution);
                                 if(props != null && props.size() == 0) {
                                     V3WorkorderHazardPrecautionContext temp = new V3WorkorderHazardPrecautionContext();
                                     temp.setWorkorder(workOrder);
@@ -72,15 +71,5 @@ public class AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3 extends Facili
             }
         }
         return false;
-    }
-    public static Map<Long, V3WorkorderHazardPrecautionContext> checkIfPrecautionAvailable(V3WorkOrderContext workOrder,V3WorkorderHazardContext woHazard,V3HazardPrecautionContext hazardPrecaution) throws Exception {
-        Criteria criteria = new Criteria();
-        Condition condition = CriteriaAPI.getCondition("WORKORDER_ID", "workorder", String.valueOf(workOrder.getId()), NumberOperators.EQUALS);
-        Condition condition_1 = CriteriaAPI.getCondition("WORKORDER_HAZARD_ID", "hazard", String.valueOf(woHazard.getId()), NumberOperators.EQUALS);
-        Condition condition_2 = CriteriaAPI.getCondition("PRECAUTION_ID", "precaution", String.valueOf(hazardPrecaution.getPrecaution().getId()), NumberOperators.EQUALS);
-        criteria.addAndCondition(condition);
-        criteria.addAndCondition(condition_1);
-        criteria.addAndCondition(condition_2);
-        return V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION, null, V3WorkorderHazardPrecautionContext.class, criteria, null);
     }
 }

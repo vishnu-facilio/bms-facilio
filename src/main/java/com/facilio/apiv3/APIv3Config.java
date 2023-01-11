@@ -2733,9 +2733,11 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderHazard() {
         return () -> new V3Config(V3WorkorderHazardContext.class, null)
                 .create()
+                .afterSave(new AddPrecautionsFromWorkOrderHazardCommandV3())
                 .list()
                 .beforeFetch(new FetchWorkOrderHazardSupplements())
                 .delete()
+                .afterDelete(new DeleteWorkorderPrecaution())
                 .build();
     }
 

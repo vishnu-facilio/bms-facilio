@@ -445,6 +445,7 @@ public class PageWidget {
 		FAILURE_REPORT("failurereports"),
 		WORK_ASSET("workAsset"),
 		SAFETYPLAY_HAZARD("safetyPlanHazards"),
+		WORKORDER_HAZARD_PRECAUTIONS("workorderHazardPrecautions"),
 		FAILURE_CLASS_ASSOCIATED_PROBELMS("failureclassassociatedproblems"),
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),

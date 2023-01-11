@@ -7,7 +7,9 @@ import java.util.Map;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.safetyplan.V3AssetHazardContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
+import com.facilio.bmsconsoleV3.context.V3WorkorderHazardPrecautionContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
@@ -38,6 +40,17 @@ public class HazardsAPI {
 		List<V3SafetyPlanHazardContext> list = builder.get();
 		return list;
 			                 
+	}
+
+	public static Map<Long, V3WorkorderHazardPrecautionContext> checkIfPrecautionAvailable(V3WorkOrderContext workOrder, V3WorkorderHazardContext woHazard, V3HazardPrecautionContext hazardPrecaution) throws Exception {
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition("WORKORDER_ID", "workorder", String.valueOf(workOrder.getId()), NumberOperators.EQUALS);
+		Condition condition_1 = CriteriaAPI.getCondition("WORKORDER_HAZARD_ID", "hazard", String.valueOf(woHazard.getId()), NumberOperators.EQUALS);
+		Condition condition_2 = CriteriaAPI.getCondition("PRECAUTION_ID", "precaution", String.valueOf(hazardPrecaution.getPrecaution().getId()), NumberOperators.EQUALS);
+		criteria.addAndCondition(condition);
+		criteria.addAndCondition(condition_1);
+		criteria.addAndCondition(condition_2);
+		return V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION, null, V3WorkorderHazardPrecautionContext.class, criteria, null);
 	}
 
 	public static List<Long> fetchAssociatedSafetyPlanHazardIds(String safetyPlanId) throws Exception {

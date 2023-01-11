@@ -23,12 +23,16 @@ public class ExcludeAvailableWorkOrderHazardPrecautions extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> queryMap = (Map<String, List>) context.get("queryParams");
         List excludeAvailableWorkOrderHazardPrecautions = queryMap.get("excludeAvailableWorkOrderHazardPrecautions");
+        List workorder = queryMap.get("workorder");
         List<Long> precautionIds = new ArrayList<>();
-        if(excludeAvailableWorkOrderHazardPrecautions != null && excludeAvailableWorkOrderHazardPrecautions.size() > 0) {
+        if(excludeAvailableWorkOrderHazardPrecautions != null && excludeAvailableWorkOrderHazardPrecautions.size() > 0 && workorder.size() > 0) {
             String workorderHazardId = (String) excludeAvailableWorkOrderHazardPrecautions.get(0);
+            String workorderId = (String) workorder.get(0);
             Criteria criteria = new Criteria();
-            Condition condition = CriteriaAPI.getCondition("WORKORDER_HAZARD_ID", "workorderHazard", workorderHazardId, NumberOperators.EQUALS);
-            criteria.addAndCondition(condition);
+            Condition condition_1 = CriteriaAPI.getCondition("WORKORDER_HAZARD_ID", "workorderHazard", workorderHazardId, NumberOperators.EQUALS);
+            Condition condition_2 = CriteriaAPI.getCondition("WORKORDER_ID", "workorder", workorderId, NumberOperators.EQUALS);
+            criteria.addAndCondition(condition_1);
+            criteria.addAndCondition(condition_2);
             Map<Long, V3WorkorderHazardPrecautionContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION, null, V3WorkorderHazardPrecautionContext.class, criteria, null);
             if(props != null){
                 for (V3WorkorderHazardPrecautionContext workorderHazardPrecaution : props.values()){
