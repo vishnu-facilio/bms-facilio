@@ -2,20 +2,43 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class ConstructTicketNotesCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String comment = (String) context.get(FacilioConstants.ContextNames.COMMENT);
+		
+		try {
+			if (comment == null) {
+				HashMap<String, Object> recordMap = (HashMap<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+				if(recordMap != null) {
+					List<V3WorkOrderContext> workOrderContextList = (List<V3WorkOrderContext>) recordMap.get(FacilioConstants.ContextNames.WORK_ORDER);
+					if(CollectionUtils.isNotEmpty(workOrderContextList)) {
+						comment = (String) workOrderContextList.get(0).getDatum("comment");
+					}
+				}
+			}
+		}
+		catch (Exception e){
+			LOGGER.error(e.getMessage(),e);
+		}
+
+		
 		if (comment != null && !comment.isEmpty()) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			if (recordIds == null) {

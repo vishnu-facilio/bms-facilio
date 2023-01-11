@@ -120,12 +120,15 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
         if (assetLocation.getSiteId() > 0) {
             if (asset.getCurrentLocation() == null) {
                 V3SiteContext assetSite = V3SpaceAPI.getSiteSpace(assetLocation.getSiteId());
-                V3SiteContext site = new V3SiteContext();
-                site.setId(assetSite.getId());
-                site.setName(assetSite.getName());
-                assetLocation.setSite(site);
-                if (assetSite.getLocation() != null) {
-                    currentLocation = assetSite.getLocation();
+                if(assetSite != null) {
+                	
+                	V3SiteContext site = new V3SiteContext();
+                    site.setId(assetSite.getId());
+                    site.setName(assetSite.getName());
+                    assetLocation.setSite(site);
+                    if (assetSite.getLocation() != null) {
+                        currentLocation = assetSite.getLocation();
+                    }
                 }
             }
             else {
@@ -143,12 +146,14 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
         if (assetLocation.getBuildingId() != null && assetLocation.getBuildingId() > 0) {
             if (asset.getCurrentLocation() == null && currentLocation == null) {
                 V3BuildingContext assetBuilding = V3SpaceAPI.getBuildingSpace(assetLocation.getBuildingId());
-                V3BuildingContext building = new V3BuildingContext();
-                building.setId(assetBuilding.getId());
-                building.setName(assetBuilding.getName());
-                assetLocation.setBuilding(building);
-                if (assetBuilding.getLocation() != null) {
-                    currentLocation = assetBuilding.getLocation();
+                if(assetBuilding != null) {
+                	V3BuildingContext building = new V3BuildingContext();
+                    building.setId(assetBuilding.getId());
+                    building.setName(assetBuilding.getName());
+                    assetLocation.setBuilding(building);
+                    if (assetBuilding.getLocation() != null) {
+                        currentLocation = assetBuilding.getLocation();
+                    }
                 }
             }
             else {

@@ -1736,7 +1736,6 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			try {
-
 				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1805,6 +1804,10 @@ public enum ActionType {
 								}
 							}
 						}
+					}
+
+					if(!module.getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {	// only SR module is allowed to thread.other modules are not allowed.
+						recordId = null;
 					}
 
 					if (recordId != null) {
