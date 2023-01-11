@@ -30,23 +30,26 @@ public class UpdateResourcePlannerOnPMSitesUpdateCommand extends FacilioCommand 
     @Override
     public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-    	
-    	
+
+
     	List<PlannedMaintenance> newPms = Constants.getRecordList((FacilioContext)context);
     	
     	Map<Long,PlannedMaintenance> oldPMs = Constants.getOldRecordMap(context);
     	
     	
     	for(PlannedMaintenance newPm : newPms) {
-    		
-    		PlannedMaintenance oldPm = oldPMs.get(newPm.getId());
-    		
-    		List<V3SiteContext> deletedSites = getDeletedSites(newPm,oldPm);
-    		
-    		if(CollectionUtils.isNotEmpty(deletedSites)) {
-    			removeSitesResourceFormPlanner(deletedSites,newPm);
-    		}
-    	}
+
+			if (newPm instanceof PlannedMaintenance && oldPMs.get(newPm.getId()) instanceof PlannedMaintenance) {
+
+				PlannedMaintenance oldPm = oldPMs.get(newPm.getId());
+
+				List<V3SiteContext> deletedSites = getDeletedSites(newPm, oldPm);
+
+				if (CollectionUtils.isNotEmpty(deletedSites)) {
+					removeSitesResourceFormPlanner(deletedSites, newPm);
+				}
+			}
+		}
     	
 		return false;
 	}

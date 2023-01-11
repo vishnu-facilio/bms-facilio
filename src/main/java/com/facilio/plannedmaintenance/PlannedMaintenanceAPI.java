@@ -5,8 +5,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -145,6 +147,20 @@ public class PlannedMaintenanceAPI {
         deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(jobStatusField, V3WorkOrderContext.JobsStatus.ACTIVE.getValue()+"", NumberOperators.EQUALS));
         deleteRecordBuilder.skipModuleCriteria();
         deleteRecordBuilder.delete();
+    }
+
+    public static PMPlanner getPlanner(Long pmId, String plannerName) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmPlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_PLANNER);
+        List<FacilioField> pmPlannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_PLANNER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
+        SelectRecordsBuilder<PMPlanner> records = new SelectRecordsBuilder<PMPlanner>();
+        records.select(pmPlannerFields)
+                .module(pmPlannerModule)
+                .beanClass(PMPlanner.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), String.valueOf(pmId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), plannerName, StringOperators.IS));
+        return records.fetchFirst();
     }
 
 

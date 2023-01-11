@@ -1,13 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -33,10 +39,16 @@ public class UpdateTimelineViewCalenderTypeCommand extends FacilioCommand {
             TimelineViewContext.CalendarViewType calendarViewType = getCalendarViewType(getScheduleInfo(trigger));
 
             TimelineViewContext timelineViewContext = (TimelineViewContext) pmPlanner.getResourceTimelineView();
+            if(timelineViewContext == null){
+                timelineViewContext = (TimelineViewContext) ViewAPI.getView(pmPlanner.getResourceTimelineViewId());
+            }
             timelineViewContext.setDefaultCalendarView(calendarViewType);
             ViewAPI.updateView(pmPlanner.getResourceTimelineViewId(),timelineViewContext);
 
             timelineViewContext = (TimelineViewContext) pmPlanner.getStaffTimelineView();
+            if(timelineViewContext == null){
+                timelineViewContext = (TimelineViewContext) ViewAPI.getView(pmPlanner.getStaffTimelineViewId());
+            }
             timelineViewContext.setDefaultCalendarView(calendarViewType);
             ViewAPI.updateView(pmPlanner.getStaffTimelineViewId(),timelineViewContext);
         }

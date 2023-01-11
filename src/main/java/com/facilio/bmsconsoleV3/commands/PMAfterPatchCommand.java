@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class PMAfterPatchCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
         Constants.getModuleName(context);
         Map<Long, ModuleBaseWithCustomFields> oldRecordMap = Constants.getOldRecordMap(context);
         List<ModuleBaseWithCustomFields> values = Constants.getRecordMap(context).get(Constants.getModuleName(context));
@@ -29,14 +31,16 @@ public class PMAfterPatchCommand extends FacilioCommand {
 
         for (ModuleBaseWithCustomFields value: values) {
             ModuleBaseWithCustomFields oldRecord = oldRecordMap.get(value.getId());
-            PlannedMaintenance currentVal = (PlannedMaintenance) value;
-            PlannedMaintenance oldVal =  (PlannedMaintenance) oldRecord;
+            if(value instanceof  PlannedMaintenance && oldRecord instanceof PlannedMaintenance) {
+                PlannedMaintenance currentVal = (PlannedMaintenance) value;
+                PlannedMaintenance oldVal = (PlannedMaintenance) oldRecord;
 
-            if (currentVal.getAssignmentTypeEnum() == oldVal.getAssignmentTypeEnum()) {
-                continue;
+                if (currentVal.getAssignmentTypeEnum() == oldVal.getAssignmentTypeEnum()) {
+                    continue;
+                }
+
+                clearResources(currentVal.getId());
             }
-
-            clearResources(currentVal.getId());
         }
         return false;
     }

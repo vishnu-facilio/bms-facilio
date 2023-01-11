@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.imports;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.commands.UpdateTimelineViewCalenderTypeCommand;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.imports.annotations.AfterRowFunction;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.WhitelistSystemFields;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteAndCreateResourcePlanner;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.fillTriggerIdAfterImport;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.handlePmV2TriggerBeforeImport;
@@ -91,7 +93,7 @@ public class ImportConfiguration {
 
                 .importHandler()
                 .beforeImportCommand(new handlePmV2TriggerBeforeImport())
-                .afterImportCommand(new fillTriggerIdAfterImport())
+                .afterImportCommand(new fillTriggerIdAfterImport() )
                 .done()
                 .build();
     }
@@ -121,6 +123,7 @@ public class ImportConfiguration {
                 .done()
 
                 .importHandler()
+                .beforeImportCommand(new DeleteAndCreateResourcePlanner())
                 .afterImportFunction(new AfterRowFunction() {
 
                     @Override

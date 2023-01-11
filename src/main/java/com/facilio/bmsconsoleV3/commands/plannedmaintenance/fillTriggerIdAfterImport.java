@@ -26,11 +26,23 @@ import java.util.*;
 public class fillTriggerIdAfterImport extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        PMTriggerV2 trigger =  (PMTriggerV2) context.get("trigger");
-        ArrayList<LinkedHashMap<String,Object>> pmPlannerList = (ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.INSERT_RECORDS);
+        ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+        Integer setting = importProcessContext.getImportSetting();
+        ArrayList<LinkedHashMap<String,Object>> pmPlannerList = new ArrayList<>();
+        List<PMTriggerV2> trigger = (List<PMTriggerV2>) context.get("trigger");
 
-        for(LinkedHashMap<String,Object> map : pmPlannerList){
-          map.put("trigger",trigger);
+        if(setting == 1 || setting == 2){
+            pmPlannerList = (ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.INSERT_RECORDS);
+        }
+        else{
+            pmPlannerList = (ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.UPDATE_RECORDS);
+        }
+        if(trigger != null) {
+            int increment = 0;
+            for (LinkedHashMap<String, Object> map : pmPlannerList) {
+                map.put("trigger", trigger.get(increment));
+                increment++;
+            }
         }
 
             return false;
