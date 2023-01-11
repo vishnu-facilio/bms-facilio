@@ -2252,6 +2252,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAutomationModulesCommand());
 		return chain;
 	}
+
+	public static FacilioChain getSlaModules(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSLAModulesCommand());
+		return chain;
+	}
+
 	public static FacilioChain getClassificationSupportedModules() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetClassificationModulesCommand());

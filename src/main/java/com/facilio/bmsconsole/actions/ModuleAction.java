@@ -60,6 +60,15 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String slaModules() throws Exception{
+		FacilioChain chain = ReadOnlyChainFactory.getSlaModules();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+
+		setResult(ContextNames.MODULE_LIST,context.get(ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
+
 	public String transactionRuleModules() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getTransactionRuleModules();
 		FacilioContext context = chain.getContext();

@@ -747,6 +747,8 @@
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">
 		<action name="module"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules" />
+		<action name="slaModule"
+				class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules"/>
 	</package>
 	<package name="permalinkToken" namespace="/api/v2/permalink" extends="v2Api">
 		<action name="details"
