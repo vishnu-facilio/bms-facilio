@@ -20,6 +20,7 @@ public class UpdatePostMailLoggerCommand extends FacilioCommand {
             row.put(MailConstants.Params.MAIL_STATUS, mailLogContext.getMailStatus());
             if (StringUtils.isNotEmpty(messageId)) {
                 row.put(MailConstants.Params.MESSAGE_ID, messageId);
+                mailLogContext.setMessageId(messageId);
             }
             OutgoingMailAPI.updateRecord(mailLogContext.getId(), MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, row);
         }

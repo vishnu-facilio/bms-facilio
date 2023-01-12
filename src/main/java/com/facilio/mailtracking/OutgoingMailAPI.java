@@ -61,13 +61,13 @@ public class OutgoingMailAPI {
     public static long updateRecord(long id, String moduleName, Map<String, Object> row) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
-        List<FacilioField> fields = modBean.getModuleFields(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
         Condition condition = CriteriaAPI.getIdCondition(id, module);
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(module.getTableName())
+        UpdateRecordBuilder builder = new UpdateRecordBuilder()
+                .module(module)
                 .fields(fields)
                 .andCondition(condition);
-        return builder.update(row);
+        return builder.updateViaMap(row);
     }
 
     public static List<V3OutgoingMailAttachmentContext> getMailAttachments(long mailId) throws Exception {
