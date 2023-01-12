@@ -26,7 +26,6 @@ public class ConstructTicketNotesCommand extends FacilioCommand {
 				if(recordMap != null) {
 					List<V3WorkOrderContext> workOrderContextList = (List<V3WorkOrderContext>) recordMap.get(FacilioConstants.ContextNames.WORK_ORDER);
 					if(CollectionUtils.isNotEmpty(workOrderContextList)) {
-						comment = (String) workOrderContextList.get(0).getDatum("comment");
 						ArrayList<LinkedHashMap<String,Object>> commentList = (ArrayList<LinkedHashMap<String, Object>>) workOrderContextList.get(0).getDatum("comment");
 						if(commentList != null) {
 							comment = (String) commentList.get(0).get("body");
