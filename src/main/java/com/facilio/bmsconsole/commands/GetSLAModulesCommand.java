@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -19,7 +20,10 @@ public class GetSLAModulesCommand extends FacilioCommand {
         List<FacilioModule> modules = new ArrayList<>();
 
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-        modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+        }
 
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY,true));
 
