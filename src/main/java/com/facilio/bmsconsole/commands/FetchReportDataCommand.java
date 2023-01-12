@@ -242,16 +242,10 @@ public class FetchReportDataCommand extends FacilioCommand {
                 .setAggregation();
         Set<FacilioModule> addedModules = new HashSet<>();
         addedModules.add(baseModule);
-
-
-//		if (report.getModuleId() > 0 && report.getTypeEnum() == ReportType.PIVOT_REPORT) {
-//			reportModule = modBean.getModule(report.getModuleId());
-//			if(!baseModule.equals(reportModule)) {
-//				List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
-//				Map<String, LookupField> lookupFields = getLookupFields(allFields);
-//				handleLookupJoin(lookupFields, reportModule, selectBuilder, addedModules, null);
-//			}
-//		}
+        if(report.getTypeEnum() == ReportType.PIVOT_REPORT && baseModule != null && baseModule.getName().equals("inspectionResponse"))
+        {
+            baseModule.setCriteria(null);
+        }
 
         if (!shouldIncludeMarked) {
             FacilioField marked = modBean.getField("marked", baseModule.getName());

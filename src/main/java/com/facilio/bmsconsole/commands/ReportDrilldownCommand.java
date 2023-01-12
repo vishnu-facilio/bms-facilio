@@ -1,14 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -17,16 +23,9 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportDrilldownParamsContext;
 import com.facilio.report.context.ReportDrilldownParamsContext.DrilldownCriteria;
-import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.util.ReportUtil;
 
 public class ReportDrilldownCommand extends FacilioCommand {
@@ -184,23 +183,82 @@ public class ReportDrilldownCommand extends FacilioCommand {
 			Map<String, Object> groupBy = drilldownCriteria.getGroupBy();
 			if (groupBy != null) {
 				long groupByFieldId = (long) groupBy.get("field_id");
-				long groupByModuleId = (long) groupBy.get("module_id");
+//				long groupByModuleId = (long) groupBy.get("module_id");
 				long groupByXAggrOperator = (long) groupBy.get("xAggr");
 				AggregateOperator groupByXAggr = AggregateOperator.getAggregateOperator((int)groupByXAggrOperator);
 
 				String groupByValues = drilldownCriteria.getGroupByValues();
 
-				FacilioModule groupBymodule = modBean.getModule(groupByModuleId);
+//				FacilioModule groupBymodule = modBean.getModule(groupByModuleId);
 				FacilioField groupByField = modBean.getField(groupByFieldId);
-
-				Condition groupByCondition = CriteriaAPI.getCondition(groupByField, groupByValues,
-						getOperator(groupByField, groupByXAggr));
-				criteria.addAndCondition(groupByCondition);
+				Condition groupByCondition = null;
+				if(groupByFieldId != -1){
+					groupByCondition = CriteriaAPI.getCondition(groupByField, groupByValues,
+							getOperator(groupByField, groupByXAggr));
+					criteria.addAndCondition(groupByCondition);
+				}
+				else  if(groupBy.containsKey("colName") && groupBy.get("colName") != null)
+				{
+					ReportFactory.ReportFacilioField groupbyfield = (ReportFactory.ReportFacilioField)ReportFactory.getReportField((String)groupBy.get("colName"));
+					Map<String, Condition> condition_map = replaceSpecialFieldVals((String)groupBy.get("colName"), groupByValues, groupbyfield);
+					groupByCondition = !condition_map.isEmpty() && condition_map.containsKey(groupByValues) ? condition_map.get(groupByValues): null;
+					criteria.addAndCondition(groupByCondition);
+				}
 			}
 
 		}
 
 		return criteria;
+	}
+
+	private Map<String, Condition> replaceSpecialFieldVals(String colName, String sel_value, ReportFactory.ReportFacilioField reportField)throws Exception
+	{
+		Map<String, Condition> conditions = new HashMap<>();
+		switch (colName)
+		{
+			case ReportFactory.WorkOrder.OPENVSCLOSE_COL:
+				FacilioStatus.StatusType statusType = FacilioStatus.StatusType.OPEN.getStringVal().equals(sel_value) ? FacilioStatus.StatusType.OPEN :
+						FacilioStatus.StatusType.CLOSED.getStringVal().equals(sel_value) ? FacilioStatus.StatusType.CLOSED : FacilioStatus.StatusType.SKIPPED;
+				List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(statusType);
+				Map<String, Object> status_data = new HashMap<>();
+				if (CollectionUtils.isNotEmpty(list)) {
+					List<Long> statusIds = new ArrayList<>();
+					for (FacilioStatus status : list) {
+						statusIds.add(status.getId());
+					}
+					status_data.put("status_id", StringUtils.join(statusIds, ","));
+				}
+				String openarguments="", closedarguments="", skippedarguments="";
+				if(statusType == FacilioStatus.StatusType.OPEN){
+					openarguments = String.valueOf(status_data.get("status_id"));
+				}else if(statusType == FacilioStatus.StatusType.CLOSED){
+					closedarguments = String.valueOf(status_data.get("status_id"));
+				}else {
+					skippedarguments = String.valueOf(status_data.get("status_id"));
+				}
+				Map<String, Condition> genericConditions = reportField.getGenericConditions();
+				for (String key : genericConditions.keySet())
+				{
+					Condition condition = genericConditions.get(key);
+					Map<String, Object> conditionProperty = FieldUtil.getAsProperties(condition);
+					Condition c = FieldUtil.getAsBeanFromMap(conditionProperty, Condition.class);
+					String value = c.getValue();
+					value = value.replace("?", closedarguments);
+					value = value.replace("*", openarguments);
+					value = value.replaceAll("@", skippedarguments);
+					c.setColumnName("Tickets.MODULE_STATE");
+					c.setValue(value);
+					conditions.put(key, c);
+				}
+
+				String columnName = reportField.getGenericColumnName();
+				columnName = columnName.replace("?", closedarguments);
+				columnName = columnName.replace("*", openarguments);
+				columnName = columnName.replace("@", skippedarguments);
+				reportField.setColumnName(columnName);
+				break;
+		}
+		return conditions;
 	}
 
 	private Operator getOperator(FacilioField field, AggregateOperator xAggr) {
