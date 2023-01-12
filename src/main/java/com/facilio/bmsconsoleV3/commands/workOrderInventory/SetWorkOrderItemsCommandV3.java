@@ -24,8 +24,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -56,70 +54,52 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
 
         long itemTypesId = -1;
         ApprovalState approvalState = null;
-        List<Long> parentIds = new ArrayList<>();
-        Map<Long,V3WorkOrderContext> workOrderMap = new HashMap<>();
-        V3WorkOrderContext wo = new V3WorkOrderContext();
         if (CollectionUtils.isNotEmpty(workOrderItems)) {
-            for (V3WorkorderItemContext workorderItem : workOrderItems) {
-                long parentId = workorderItem.getParentId()>0 ? workorderItem.getParentId() : -1;
+            long parentId = workOrderItems.get(0).getParentId();
+            for (V3WorkorderItemContext workorderitem : workOrderItems) {
+                long parentTransactionId = workorderitem.getParentTransactionId();
 
-                if(workorderItem.getWorkorder()!= null && parentId < 0){
-                    parentId = workorderItem.getWorkorder().getId();
-                }
-                if(parentId<0){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work order cannot be null");
-                }
-
-                parentIds.add(parentId);
-                long parentTransactionId = workorderItem.getParentTransactionId();
-
-                V3ItemContext item = getItem(workorderItem.getItem().getId());
+                V3ItemContext item = getItem(workorderitem.getItem().getId());
                 itemTypesId = item.getItemType().getId();
                 V3ItemTypesContext itemType = getItemType(itemTypesId);
+                V3WorkOrderContext wo = getWorkorderContext(parentId);
 
-                if(workOrderMap.get(parentId)==null){
-                     wo = getWorkorderContext(parentId);
-                    workOrderMap.put(parentId,wo);
-                }else{
-                    wo = workOrderMap.get(parentId);
-                }
-
-                if (workorderItem.getRequestedLineItem() != null && workorderItem.getRequestedLineItem().getId() > 0) {
-                    if(!V3InventoryRequestAPI.checkQuantityForWoItemNeedingApprovalV3(itemType, workorderItem.getRequestedLineItem(), workorderItem.getQuantity())) {
+                if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
+                    if(!V3InventoryRequestAPI.checkQuantityForWoItemNeedingApprovalV3(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
                         throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
                     }
                 }
-                else if(workorderItem.getParentTransactionId() > 0) {
-                    if(!InventoryRequestAPI.checkQuantityForWoItem(workorderItem.getParentTransactionId(), workorderItem.getQuantity(), workorderItem.getRemainingQuantity())){
+                else if(workorderitem.getParentTransactionId() > 0) {
+                    if(!InventoryRequestAPI.checkQuantityForWoItem(workorderitem.getParentTransactionId(), workorderitem.getQuantity(), workorderitem.getRemainingQuantity())){
                         throw new IllegalArgumentException("Please check the quantity issued");
                     }
                 }
-                if (workorderItem.getId() > 0) {
+                if (workorderitem.getId() > 0) {
 //                    if (!eventTypes.contains(EventType.EDIT)) {
 //                        eventTypes.add(EventType.EDIT);
 //                    }
-                    V3WorkorderItemContext wItem  = V3RecordAPI.getRecord(workorderItemsModule.getName(),workorderItem.getId(),V3WorkorderItemContext.class);
+                    V3WorkorderItemContext wItem  = V3RecordAPI.getRecord(workorderItemsModule.getName(),workorderitem.getId(),V3WorkorderItemContext.class);
                     if (wItem != null) {
-                        V3PurchasedItemContext purchasedItem  = V3RecordAPI.getRecord(purchasedItemModule.getName(),wItem.getPurchasedItem().getId(),V3PurchasedItemContext.class);
+                        V3PurchasedItemContext purchaseditem  = V3RecordAPI.getRecord(purchasedItemModule.getName(),wItem.getPurchasedItem().getId(),V3PurchasedItemContext.class);
 
-                        if (purchasedItem != null) {
+                        if (purchaseditem != null) {
                             double q = wItem.getQuantity();
-                            if ((q + purchasedItem.getCurrentQuantity() < workorderItem.getQuantity())) {
+                            if ((q + purchaseditem.getCurrentQuantity() < workorderitem.getQuantity())) {
                                 throw new IllegalArgumentException("Insufficient quantity in inventory!");
                             } else {
                                 approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                                if (workorderItem.getRequestedLineItem() != null && workorderItem.getRequestedLineItem().getId() > 0) {
+                                if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
                                     approvalState = ApprovalState.APPROVED;
                                 }
                                 if (itemType.isRotating()) {
-                                    wItem = setWorkorderItemObj(purchasedItem, 1, item, parentId, approvalState, wo, workorderItem.getAsset(), workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
 
                                 } else {
-                                    wItem = setWorkorderItemObj(purchasedItem, workorderItem.getQuantity(), item,
-                                            parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
+                                            parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                 }
                                 // updatePurchasedItem(purchaseditem);
-                                wItem.setId(workorderItem.getId());
+                                wItem.setId(workorderitem.getId());
                                 workorderItemslist.add(wItem);
                                 itemToBeAdded.add(wItem);
                             }
@@ -130,24 +110,24 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
 //                    if (!eventTypes.contains(EventType.CREATE)) {
 //                        eventTypes.add(EventType.CREATE);
 //                    }
-                    if (workorderItem.getRequestedLineItem() == null && workorderItem.getParentTransactionId() <= 0 && item.getQuantity() < workorderItem.getQuantity()) {
+                    if (workorderitem.getRequestedLineItem() == null && workorderitem.getParentTransactionId() <= 0 && item.getQuantity() < workorderitem.getQuantity()) {
                         throw new IllegalArgumentException("Insufficient quantity in inventory!");
                     } else {
                         approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                        if (workorderItem.getRequestedLineItem() != null && workorderItem.getRequestedLineItem().getId() > 0) {
+                        if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
                             approvalState = ApprovalState.APPROVED;
                         }
                         if (itemType.isRotating()) {
-                            List<Long> assetIds = workorderItem.getAssetIds();
+                            List<Long> assetIds = workorderitem.getAssetIds();
                             List<V3AssetContext> purchasedItem = getAssetsFromId(assetIds, assetModule, assetFields);
                             if (purchasedItem != null) {
                                 for (V3AssetContext asset : purchasedItem) {
-                                    if (workorderItem.getRequestedLineItem() == null && workorderItem.getParentTransactionId() <= 0 && asset.isUsed()) {
+                                    if (workorderitem.getRequestedLineItem() == null && workorderitem.getParentTransactionId() <= 0 && asset.isUsed()) {
                                         throw new IllegalArgumentException("Insufficient quantity in inventory!");
                                     }
                                     V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                     asset.setIsUsed(true);
-                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                     updatePurchasedItem(asset);
                                     workorderItemslist.add(woItem);
                                     itemToBeAdded.add(woItem);
@@ -167,14 +147,14 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
 
                             if (purchasedItem != null && !purchasedItem.isEmpty()) {
                                 V3PurchasedItemContext pItem = purchasedItem.get(0);
-                                if (workorderItem.getQuantity() <= pItem.getCurrentQuantity()) {
+                                if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
                                     V3WorkorderItemContext woItem = new V3WorkorderItemContext();
-                                    woItem = setWorkorderItemObj(pItem, workorderItem.getQuantity(), item, parentId,
-                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
+                                            approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                     workorderItemslist.add(woItem);
                                     itemToBeAdded.add(woItem);
                                 } else {
-                                    double requiredQuantity = workorderItem.getQuantity();
+                                    double requiredQuantity = workorderitem.getQuantity();
                                     for (V3PurchasedItemContext purchaseitem : purchasedItem) {
                                         V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                         double quantityUsedForTheCost = 0;
@@ -184,7 +164,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                             quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
                                         }
                                         woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-                                                parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                                parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context, workorderitem);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         workorderItemslist.add(woItem);
                                         itemToBeAdded.add(woItem);
@@ -213,7 +193,9 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ITEMS);
             }
-            context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
+            context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderItems.get(0).getParentId());
+            context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,
+                    Collections.singletonList(workOrderItems.get(0).getParentId()));
             context.put(FacilioConstants.ContextNames.ITEM_ID, workOrderItems.get(0).getItem().getId());
             context.put(FacilioConstants.ContextNames.ITEM_IDS,
                     Collections.singletonList(workOrderItems.get(0).getItem().getId()));
@@ -233,8 +215,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         woItem.setIsReturnable(false);
         double costOccured = 0;
         Double unitPrice = null;
-        if(workOrderItem.getInventoryReservation()!=null){
-            woItem.setInventoryReservation(workOrderItem.getInventoryReservation());
+        if(workOrderItem.getWorkOrderPlannedItem()!=null){
+            woItem.setWorkOrderPlannedItem(workOrderItem.getWorkOrderPlannedItem());
         }
         if (purchasedItem != null) {
             woItem.setPurchasedItem(purchasedItem);
@@ -310,7 +292,6 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         Collection<SupplementRecord> lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
-        lookUpfields.add((LookupField) fieldMap.get("itemType"));
 
         List<V3ItemContext> inventories = V3RecordAPI.getRecordsListWithSupplements(module.getName(),Collections.singletonList(id),V3ItemContext.class,lookUpfields);
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -99,26 +98,7 @@ public class StoreRoomPageFactory extends PageFactory{
         
         addRelatedListWidgets(tab3Sec1, module.getModuleId());
 
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
-                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
-            Page.Tab tab4 = page.new Tab("Issues and Returns");
-            page.addTab(tab4);
-            Page.Section tab4Sec1 = page.new Section();
-            tab4.addSection(tab4Sec1);
-            addIssuesAndReturnsWidget(tab4Sec1);
-        }
-
         return page;
-    }
-
-    private static PageWidget addIssuesAndReturnsWidget(Page.Section section) {
-
-        PageWidget purchasedItemsWidget = new PageWidget();
-        purchasedItemsWidget.addToLayoutParams(section, 24, 12);
-        purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.ISSUES_RETURNS);
-        section.addWidget(purchasedItemsWidget);
-
-        return purchasedItemsWidget;
     }
 
     private static void addSecondaryDetailsWidget(Page.Section section) {

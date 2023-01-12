@@ -2514,7 +2514,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTransactionEventTypeCommand());
         c.addCommand(getInventoryReservationChainV3());
-        //c.addCommand(new LoadWorkorderItemLookUpCommand());
+        c.addCommand(new LoadWorkorderItemLookUpCommand());
         c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
         c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());

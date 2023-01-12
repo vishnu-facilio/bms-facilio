@@ -32,12 +32,10 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(workOrderItems)){
             for(V3WorkorderItemContext workOrderItem : workOrderItems){
-                if(workOrderItem.getInventoryReservation()!=null && workOrderItem.getInventoryReservation().getId()>0){
-                    Long reservationId = workOrderItem.getInventoryReservation().getId();
-                    InventoryReservationContext reservation = V3RecordAPI.getRecord(FacilioConstants.ContextNames.INVENTORY_RESERVATION,reservationId,InventoryReservationContext.class);
-
+                if(workOrderItem.getWorkOrderPlannedItem()!=null && workOrderItem.getWorkOrderPlannedItem().getId()>0){
+                    Long workOrderPlannedItemId = workOrderItem.getWorkOrderPlannedItem().getId();
                     Double woQuantity = workOrderItem.getQuantity();
-
+                    InventoryReservationContext reservation = getReservationRecord(workOrderPlannedItemId);
                     if(reservation.getReservationStatusEnum().equals(InventoryReservationContext.InventoryReservationStatus.ISSUED)){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected reserved item is fully issued");
                     }
@@ -66,5 +64,12 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
             }
         }
         return false;
+    }
+    public InventoryReservationContext getReservationRecord(Long workOrderPlannedItemId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("WO_PLANNED_ITEM_ID", "workOrderPlannedItem", String.valueOf(workOrderPlannedItemId), NumberOperators.EQUALS));
+        List<InventoryReservationContext> reservations = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.INVENTORY_RESERVATION, null, InventoryReservationContext.class, criteria, null);
+
+        return reservations.get(0);
     }
 }
