@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
 import java.util.List;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -19,6 +20,7 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private String productionBaseUrl;
 	private String startUrl;
 	private Boolean showInLauncher;
+	private File sourceZip;
 	private ConnectedAppSAMLContext connectedAppSAML;
 	private List<ConnectedAppWidgetContext> connectedAppWidgetsList;
 	private List<VariableContext> variablesList;
@@ -154,25 +156,59 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 		this.startUrl = startUrl;
 	}
 
+	public File getSourceZip() {
+		return sourceZip;
+	}
+	public void setSourceZip(File sourceZip) {
+		this.sourceZip = sourceZip;
+	}
 	private HostingType hostingType;
-
 	public HostingType getHostingTypeEnum() {
 		return hostingType;
 	}
-
 	public void setHostingType(HostingType hostingType) {
 		this.hostingType = hostingType;
 	}
-
 	public int getHostingType() {
 		if (hostingType != null) {
 			return hostingType.getValue();
 		}
 		return -1;
 	}
-
 	public void setHostingType(int hostingType) {
 		this.hostingType = HostingType.valueOf(hostingType);
+	}
+
+	private AppType appType;
+	public AppType getAppTypeEnum() {
+		return appType;
+	}
+	public void setAppType(AppType appType) {
+		this.appType = appType;
+	}
+	public int getAppType() {
+		if (appType != null) {
+			return appType.getValue();
+		}
+		return -1;
+	}
+	public void setAppType(int appType) {
+		this.appType = AppType.valueOf(appType);
+	}
+
+	public enum AppType {
+		CLIENT_SIDE_APP, SERVER_SIDE_APP;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static AppType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 
 	public enum HostingType {

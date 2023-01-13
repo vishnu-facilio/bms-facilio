@@ -5420,4 +5420,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		currencyModule.setTableName("Currencies");
 		return currencyModule;
 	}
+
+	public static FacilioModule getConnectedAppDeploymentsModule() {
+		FacilioModule connectedAppDeployments = new FacilioModule();
+		connectedAppDeployments.setName("connectedAppDeployments");
+		connectedAppDeployments.setDisplayName("ConnectedApp Deployments");
+		connectedAppDeployments.setTableName("ConnectedApp_Deployments");
+		return connectedAppDeployments;
+	}
+
+	public static FacilioModule getConnectedAppFilesModule() {
+		FacilioModule connectedAppFiles = new FacilioModule();
+		connectedAppFiles.setName("connectedAppFiles");
+		connectedAppFiles.setDisplayName("ConnectedApp Files");
+		connectedAppFiles.setTableName("ConnectedApp_Files");
+		return connectedAppFiles;
+	}
 }

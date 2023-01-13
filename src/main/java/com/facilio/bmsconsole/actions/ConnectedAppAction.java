@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.fw.FacilioException;
+import com.facilio.connectedapp.util.ConnectedAppHostingAPI;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -245,24 +247,66 @@ public class ConnectedAppAction extends FacilioAction {
 		if (connectedAppsCount > connectedAppsLimit) {
 			throw new FacilioException("Connected Apps limit: ("+connectedAppsLimit+") exceeded.");
 		}
-		connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
-		connectedApp.setIsActive(true);
-		if (connectedApp.getProductionBaseUrl() == null) {
-			connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		if (StringUtils.isEmpty(connectedApp.getName())) {
+			throw new FacilioException("Connected app name cannot be empty.");
 		}
-		
-		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
-		addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
-		addItem.execute();
-		
+		else {
+			ConnectedAppContext alreadyExists = ConnectedAppAPI.getConnectedApp(connectedApp.getLinkName());
+			if (alreadyExists != null) {
+				throw new FacilioException("Connected app already exists with same name, please try again with different name.");
+			}
+		}
+		connectedApp.setIsActive(true);
+		if (connectedApp.getAppTypeEnum() == ConnectedAppContext.AppType.SERVER_SIDE_APP) {
+			// server side apps are always external hosting
+			connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
+			if (connectedApp.getProductionBaseUrl() == null) {
+				connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+			}
+
+			FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
+			addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
+			addItem.execute();
+		}
+		else if (connectedApp.getHostingTypeEnum() == null || connectedApp.getHostingTypeEnum() == HostingType.EXTERNAL) {
+			// external client side app hosting
+			connectedApp.setAppType(ConnectedAppContext.AppType.CLIENT_SIDE_APP);
+			connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
+			if (connectedApp.getProductionBaseUrl() == null) {
+				connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+			}
+
+			FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
+			addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
+			addItem.execute();
+		}
+		else {
+			// client side app internal hosting
+			connectedApp.setAppType(ConnectedAppContext.AppType.CLIENT_SIDE_APP);
+			if (!ConnectedAppHostingAPI.isInternalHostingEnabled()) {
+				throw new Exception("Internal hosting is not enabled.");
+			}
+
+			FacilioChain addItem = TransactionChainFactory.getAddClientSideConnectedAppInternalHostingChain();
+			addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
+			addItem.execute();
+		}
+
+		connectedApp.setSourceZip(null); // resetting file in response
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
 		return SUCCESS;
 	}
 
 	public String updateConnectedApp() throws Exception {
-		
-		if (connectedApp.getProductionBaseUrl() == null) {
-			connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		ConnectedAppContext existingConnectedApp = ConnectedAppAPI.getConnectedApp(connectedApp.getId());
+		if (connectedApp.getAppTypeEnum() != null && connectedApp.getAppTypeEnum() != existingConnectedApp.getAppTypeEnum()) {
+			throw new Exception("Connected App Type (servier-side / client-side) cannot be changed.");
+		}
+		if (connectedApp.getHostingTypeEnum() != null && connectedApp.getHostingTypeEnum() != existingConnectedApp.getHostingTypeEnum()) {
+			throw new Exception("Connected Hosting Type (external / internal) cannot be changed.");
+		}
+		if (existingConnectedApp.getHostingTypeEnum() == HostingType.INTERNAL && (connectedApp.getProductionBaseUrl() != null || connectedApp.getSandBoxBaseUrl() != null)) {
+			throw new Exception("Sandbox/Production Base URL cannot be changed for internally hosted connected app.");
 		}
 
 		FacilioChain updateItemChain = TransactionChainFactory.getAddOrUpdateConnectedAppChain();

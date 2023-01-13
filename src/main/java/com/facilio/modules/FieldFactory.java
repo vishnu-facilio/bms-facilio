@@ -4336,9 +4336,13 @@ public class FieldFactory extends BaseFieldFactory {
         showInLauncher.setDefault(true);
         fields.add(showInLauncher);
         
-        FacilioField hostingType = getField("hostingType", "HOSTING_TYPE", module, FieldType.SYSTEM_ENUM);
+        FacilioField hostingType = getField("hostingType", "HOSTING_TYPE", module, FieldType.NUMBER);
         hostingType.setDefault(true);
         fields.add(hostingType);
+
+        FacilioField appType = getField("appType", "APP_TYPE", module, FieldType.NUMBER);
+        appType.setDefault(true);
+        fields.add(appType);
         
         FacilioField sandBoxBaseUrl = getField("sandBoxBaseUrl", "SANDBOX_BASE_URL", module, FieldType.STRING);
         sandBoxBaseUrl.setDefault(true);
@@ -11197,6 +11201,43 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getConnectedAppDeploymentsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getConnectedAppDeploymentsModule();
+        fields.add(getIdField(module));
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+        fields.add(getField("versionNumber", "VERSION_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("uniqueId", "UNIQUE_ID", module, FieldType.STRING));
+        fields.add(getField("comments", "COMMENTS", module, FieldType.STRING));
+        fields.add(getField("published", "IS_PUBLISHED", module, FieldType.BOOLEAN));
+        fields.add(getField("deployStatus", "DEPLOY_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getConnectedAppFilesFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getConnectedAppFilesModule();
+        fields.add(getIdField(module));
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+        fields.add(getField("fileName", "FILE_NAME", module, FieldType.STRING));
+        fields.add(getField("fileSize", "FILE_SIZE", module, FieldType.NUMBER));
+        fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("contentType", "CONTENT_TYPE", module, FieldType.STRING));
+        fields.add(getField("directory", "IS_DIRECTORY", module, FieldType.BOOLEAN));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysDeletedBy", "SYS_DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysDeletedTime", "SYS_DELETED_TIME", module, FieldType.NUMBER));
         return fields;
     }
 

@@ -44,6 +44,7 @@ public class SecurityFilter implements Filter {
         urls.add("/api/v2/connection/callBack");
         urls.add("/api/integ/authorizeproxyuser");
         urls.add("/api/v3/file/public");
+        urls.add("/api/v1/setup/connectedapps/hosting/download");
         return urls;
     }
 

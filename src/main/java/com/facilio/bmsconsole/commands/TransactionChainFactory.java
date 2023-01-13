@@ -45,6 +45,8 @@ import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.classification.command.UpdateClassificationStatusCommand;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connectedapp.commands.AddConnectedAppCommand;
+import com.facilio.connectedapp.commands.AddDefaultConnectedAppFilesCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.*;
 import com.facilio.delegate.command.AddOrUpdateDelegateCommand;
@@ -2006,6 +2008,13 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUpdateConnectedAppChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateConnectedAppCommand());
+			return c;
+		}
+
+		public static FacilioChain getAddClientSideConnectedAppInternalHostingChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddConnectedAppCommand());
+			c.addCommand(new AddDefaultConnectedAppFilesCommand());
 			return c;
 		}
 

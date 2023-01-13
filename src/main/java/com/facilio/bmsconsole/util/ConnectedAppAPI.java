@@ -58,8 +58,8 @@ public class ConnectedAppAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getConnectedAppFields())
 				.table(ModuleFactory.getConnectedAppsModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(connectedAppId, (ModuleFactory.getConnectedAppsModule())))
-				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getIdCondition(connectedAppId, (ModuleFactory.getConnectedAppsModule())));
+//				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

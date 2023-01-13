@@ -99,4 +99,86 @@
                 method="getCustomButtonsCount" />
     </package>
 
+    <package name="connectedAppsHostSettingsApi" namespace="/api/v1/setup/connectedapps/hosting/settings" extends="v2Api">
+        <action name="isInternalHostingEnabled" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="isInternalHostingEnabled">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+    </package>
+
+    <package name="connectedAppsHostFileApi" namespace="/api/v1/setup/connectedapps/hosting/files" extends="v2Api">
+        <action name="add" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="addFile">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="update" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="updateFile">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="get" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="getFile">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="list" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="getFileList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="tree" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="fetchTree">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="delete" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="deleteFile">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+    </package>
+
+    <package name="connectedAppsHostFileDownloadApi" namespace="/api/v1/setup/connectedapps/hosting/files/download" extends="fileDownload,v2Api">
+        <action name="*" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="downloadFile">
+            <param name="connectedAppFileId">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+    </package>
+
+    <package name="connectedAppsDownloadApi" namespace="/api/v1/setup/connectedapps/hosting/download" extends="fileDownload,v2Api">
+        <action name="*" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="downloadConnectedApp">
+            <param name="connectedAppId">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+    </package>
+
+    <package name="connectedAppsHostDeployApi" namespace="/api/v1/setup/connectedapps/hosting/deployments" extends="v2Api">
+        <action name="canDeploy" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="canDeploy">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="create" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="createDeploy">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="publish" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="publishDeploy">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+        <action name="list" class="com.facilio.connectedapp.actions.ConnectedAppHostingAction"
+                method="listDeployments">
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONNECTED_APPS</param>
+        </action>
+    </package>
+
 </struts>
