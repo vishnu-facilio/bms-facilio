@@ -123,6 +123,7 @@ public class FacilioProperties {
     private static String mobileTenantportalAppScheme;
     private static String mobileVendorportalAppScheme;
     private static String mobileClientportalAppScheme;
+    private static String mobileVisitorKioskAppScheme;
 
     private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
     private static long responseSizeThreshold = 5000000; // In Bytes
@@ -292,6 +293,7 @@ public class FacilioProperties {
             mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
             mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
             workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme", "workq");
+            mobileVisitorKioskAppScheme = PROPERTIES.getProperty("mobile.visitorkiosk.scheme");
 
             senderEmail = PROPERTIES.getProperty("sender.email");
             senderName = PROPERTIES.getProperty("sender.name");
@@ -803,6 +805,14 @@ public class FacilioProperties {
 
     public static void setMobileMainAppScheme(String mobileMainAppScheme) {
         FacilioProperties.mobileMainAppScheme = mobileMainAppScheme;
+    }
+
+    public static String getMobileVisitorKioskAppScheme() {
+        return mobileVisitorKioskAppScheme;
+    }
+
+    public static void setMobileVisitorKioskAppScheme(String mobileVisitorKioskAppScheme) {
+        FacilioProperties.mobileVisitorKioskAppScheme = mobileVisitorKioskAppScheme;
     }
 
     public static String getWmsBroadcaster() {

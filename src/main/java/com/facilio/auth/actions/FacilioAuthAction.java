@@ -910,7 +910,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String loginWithPasswordAndDigest() throws Exception {
-		if (!StringUtils.isEmpty(getLookUpType()) && !getLookUpType().equalsIgnoreCase("workq")) {
+		if (!StringUtils.isEmpty(getLookUpType()) && !getLookUpType().equalsIgnoreCase("workq") && !getLookUpType().equalsIgnoreCase("visitorkiosk")) {
 //			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 			return serviceLoginWithPasswordAndDigest();
 //			} else if (getLookUpType().equals("vendor")) {
@@ -963,6 +963,8 @@ public class FacilioAuthAction extends FacilioAction {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileMainAppScheme());
 		} else if (mobileAppType.equalsIgnoreCase("workQ")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getWorkQAppScheme());
+		} else if (mobileAppType.equalsIgnoreCase("visitorKiosk")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileVisitorKioskAppScheme());
 		}
 
 		setTempCookieProperties(schemeCookie, false);
@@ -1681,6 +1683,9 @@ public class FacilioAuthAction extends FacilioAction {
 						} else if ("mobile-vendorportal".equals(relayState)) {
 							setLookUpType("vendor");
 							setPortalWebViewCookies("vendor");
+						} else if ("mobile-visitorkiosk".equals(relayState)) {
+							setLookUpType("visitorkiosk");
+							setPortalWebViewCookies("visitorkiosk");
 						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
@@ -1885,6 +1890,8 @@ public class FacilioAuthAction extends FacilioAction {
 							setPortalWebViewCookies("tenant");
 						} else if ("mobile-vendorportal".equals(relayState)) {
 							setPortalWebViewCookies("vendor");
+						} else if ("mobile-visitorkiosk".equals(relayState)) {
+							setPortalWebViewCookies("visitorkiosk");
 						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
