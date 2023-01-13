@@ -591,7 +591,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateEventListForStateFlowCommandV3());
         c.addCommand(new AddWorkOrderCommandV3());
         c.addCommand(new AddFailureClassFromResource());
-
+        c.addCommand(new TrimWorkOrderDescriptionCommandV3());
         return c;
     }
 
@@ -705,6 +705,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
         c.addCommand(new ToVerifyStateFlowtransitionForStartCommandV3());
         c.addCommand(new AddFailureClassFromResource());
+        c.addCommand(new TrimWorkOrderDescriptionCommandV3());
 
         return c;
     }
