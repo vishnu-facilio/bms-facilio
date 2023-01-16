@@ -127,9 +127,11 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
-			
-			String serviceRequestLink = FacilioProperties.getAppProtocol()+ "://" +FacilioProperties.getAppDomain()+"/app/sr/serviceRequest/all/"+emailConversation.getRecordId()+"/overview";
-			
+
+			FacilioModule module = modBean.getModule(emailConversation.getDataModuleId());
+
+			String serviceRequestLink = getRecordSummaryLink(emailConversation.getTo(),module,emailConversation.getRecordId());
+
 			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
 			
 			String newMessage = "Hi,<br><br>"+AccountUtil.getCurrentUser().getName() +" added a "+emailConversation.getMessageTypeEnum().getName()+" note to "+hrefTag+" and wants you to have a look<br><br>";
