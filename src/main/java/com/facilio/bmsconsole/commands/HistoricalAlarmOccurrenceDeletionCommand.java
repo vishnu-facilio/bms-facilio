@@ -110,7 +110,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 
 	
 	public static void updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext, DateRange modifiedRange) throws Exception {
-		parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal());
+		parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIndex());
 		parentRuleResourceLoggerContext.setModifiedStartTime(modifiedRange.getStartTime()); //lesserStartTime
 		parentRuleResourceLoggerContext.setModifiedEndTime(modifiedRange.getEndTime()); 	//greaterEndTime
 		WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
@@ -123,7 +123,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdates = new ArrayList<>();
 
 		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers) {
-			ruleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal());
+			ruleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIndex());
 
             GenericUpdateRecordBuilder.BatchUpdateByIdContext batchValue = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
             batchValue.setWhereId(ruleResourceLoggerContext.getId());
@@ -158,11 +158,11 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			if(parentRuleResourceLoggerContext != null)	{
 				if(retryCount == 0) {
 					NewTransactionService.newTransaction(() -> 
-						WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIntVal()));	
+						WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIndex()));
 				}
 				else if(retryCount == 1) {
 					NewTransactionService.newTransaction(() -> 
-					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()));	
+					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIndex()));
 				}			
 			}
 			else  {

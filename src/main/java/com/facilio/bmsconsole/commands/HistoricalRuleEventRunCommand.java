@@ -75,8 +75,8 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			Boolean isFirstIntervalJob = false,isLastIntervalJob = false;
 			
 			if(logState != null) {
-				isFirstIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
-				isLastIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
+				isFirstIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIndex() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIndex()) ? Boolean.TRUE : Boolean.FALSE;
+				isLastIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIndex() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIndex()) ? Boolean.TRUE : Boolean.FALSE;
 			}
 			
 			jobStatesMap = constructJobStates(isFirstIntervalJob, isLastIntervalJob, false);
@@ -91,7 +91,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 
 			LOGGER.info("HistoricalRuleEventRunCommand Time taken for Historical Run for jobId: "+jobId+" Primary Rule : "+primaryId+" for secondaryId : "+secondaryId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime)+ 
 					" and Event insertion time is -- " +(System.currentTimeMillis() - eventInsertStartTime));
-			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
+			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIndex());
 		}		
 	}
 	
@@ -130,10 +130,10 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 			Boolean isManualFailed = jobStatesMap.get("isManualFailed");
 			if(isFailed && !isManualFailed) {
-				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIndex());
 			}
 			else {
-				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIndex());
 			}			
 			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)
@@ -159,10 +159,10 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			if(workflowRuleHistoricalLogsContext != null)	{
 				Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
 				if(isManualFailed) { //Failed by us
-					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.SKIPPED.getIntVal()));
+					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.SKIPPED.getIndex()));
 				}
 				else {
-					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
+					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIndex()));
 					CommonCommandUtil.emailException(HistoricalRuleEventRunCommand.class.getName(), "Historical Run Failed for Reading_Rule_Resource_Event_Logger : "+jobId, mailExp);
 					LOGGER.error(exceptionMessage);
 				}
@@ -173,10 +173,10 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 				{
 					WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 					if(isFailed && !isManualFailed) {
-						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
+						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIndex());
 					}
 					else {
-						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
+						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIndex());
 					}
 					int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 					if(rowsUpdated == 1)

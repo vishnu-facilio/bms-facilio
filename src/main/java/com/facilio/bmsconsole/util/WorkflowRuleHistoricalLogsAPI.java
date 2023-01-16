@@ -1,13 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -22,6 +15,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class WorkflowRuleHistoricalLogsAPI {
 	
@@ -78,8 +77,8 @@ public class WorkflowRuleHistoricalLogsAPI {
 		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
 
 		Criteria subCriteria = new Criteria();
-		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
-		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIndex(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIndex(), NumberOperators.EQUALS));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Collections.singletonList(countField))
@@ -105,8 +104,8 @@ public class WorkflowRuleHistoricalLogsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Collections.singletonList(countField))
 				.table(ModuleFactory.getWorkflowRuleHistoricalLogsModule().getTableName())
-				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
-				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal(), NumberOperators.EQUALS));		
+				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIndex(), NumberOperators.EQUALS))
+				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIndex(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		long activeDailyEventRuleJobsCountForCurrentOrg = 0l;
@@ -146,7 +145,7 @@ public class WorkflowRuleHistoricalLogsAPI {
 	{
 		WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 		workflowRuleHistoricalLogsContext.setParentRuleResourceId(parentRuleResourceId);
-		workflowRuleHistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal());
+		workflowRuleHistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIndex());
 		workflowRuleHistoricalLogsContext.setSplitStartTime(splitRange.getStartTime());
 		workflowRuleHistoricalLogsContext.setSplitEndTime(splitRange.getEndTime());
 		workflowRuleHistoricalLogsContext.setRuleJobType(ruleJobType);

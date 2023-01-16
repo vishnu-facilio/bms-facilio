@@ -73,7 +73,7 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand {
 			parentHistoricalLogs.setResourceId(finalResourceId);
 			addOperationAlarmHistoricalLogsContext(parentHistoricalLogs);
 			if(intervals.size() == 1 && (firstInterval.getStartTime() == lastInterval.getStartTime() && firstInterval.getEndTime() == lastInterval.getEndTime())){
-				OperationAlarmHistoricalLogsContext HistoricalLogsContext = setOperationAlarmHistoricalLogsContext(firstInterval, WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal());
+				OperationAlarmHistoricalLogsContext HistoricalLogsContext = setOperationAlarmHistoricalLogsContext(firstInterval, WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIndex());
 				HistoricalLogsContext.setResourceId(finalResourceId);
 				HistoricalLogsContext.setParentId(parentHistoricalLogs.getId());
 				addOperationAlarmHistoricalLogsContext(HistoricalLogsContext);
@@ -85,10 +85,10 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand {
 					// OperationAlarmHistoricalLogsContext parentHistoricalLogs = new OperationAlarmHistoricalLogsContext();
 					OperationAlarmHistoricalLogsContext historicalLogsContext = new OperationAlarmHistoricalLogsContext();
 					if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime()) {
-						historicalLogsContext =setOperationAlarmHistoricalLogsContext(interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal());
+						historicalLogsContext =setOperationAlarmHistoricalLogsContext(interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIndex());
 					}
 					else if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime()) {
-						historicalLogsContext =setOperationAlarmHistoricalLogsContext(interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal());
+						historicalLogsContext =setOperationAlarmHistoricalLogsContext(interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIndex());
 					}
 					else {
 						historicalLogsContext =setOperationAlarmHistoricalLogsContext(interval, null);
@@ -110,7 +110,7 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand {
 	public static OperationAlarmHistoricalLogsContext setOperationAlarmHistoricalLogsContext(DateRange splitRange, Integer logState)
 	{
 		OperationAlarmHistoricalLogsContext HistoricalLogsContext = new OperationAlarmHistoricalLogsContext();
-		HistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal());
+		HistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIndex());
 		HistoricalLogsContext.setSplitStartTime(splitRange.getStartTime());
 		HistoricalLogsContext.setSplitEndTime(splitRange.getEndTime());
 		if(logState != null)

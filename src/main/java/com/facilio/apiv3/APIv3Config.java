@@ -8,6 +8,7 @@ import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
 import com.facilio.attribute.context.ClassificationAttributeContext;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -196,6 +197,7 @@ import com.facilio.faults.baseevent.LoadSupplementsForBaseEventCommand;
 import com.facilio.faults.bmsalarm.LoadSupplementsForBMSAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
+import com.facilio.faults.sensoralarm.LoadSupplementsForSensorAlarmCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
@@ -2276,6 +2278,18 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM)
+    public static Supplier<V3Config> getSensorRollupAlarm() {
+        return () -> new V3Config(SensorRollUpAlarmContext.class, null)
+                .update()
+                .list()
+                .beforeFetch(new LoadSupplementsForSensorAlarmCommand())
+                .summary()
+                .beforeFetch(new LoadSupplementsForSensorAlarmCommand())
+                .delete()
+                .build();
+    }
+
 
     @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<V3Config> getNewReadingAlarm() {
@@ -2535,6 +2549,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.addReadingRuleChain())
                 .afterSave(TransactionChainFactoryV3.afterSaveReadingRuleChain())
                 .update()
+                .beforeSave(TransactionChainFactoryV3.beforeUpdateReadingRuleChain())
                 .afterSave(TransactionChainFactoryV3.updateReadingRuleChain())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.beforeFetchReadingRuleSummaryChain())

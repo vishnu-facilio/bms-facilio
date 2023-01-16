@@ -78,7 +78,7 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
                 }
             }
         }
-        ReadingKpiLoggerAPI.updateLog(kpi.getId(), COMPLETED.getIndex(), System.currentTimeMillis(), ReadingKpiLoggerAPI.getSuccessCount(parentLoggerId));
+        ReadingKpiLoggerAPI.updateLogWithKpiId(kpi.getId(), COMPLETED.getIndex(), System.currentTimeMillis(), ReadingKpiLoggerAPI.getSuccessCount(parentLoggerId));
 
         if (!readings.isEmpty()) {
             Unit inputUnit = kpi.getUnit();

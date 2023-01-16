@@ -74,7 +74,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIndex(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -112,7 +112,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Collections.singletonList(fieldMap.get("id")))
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIndex(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleResourceLoggerId"), "" +ruleResourceLoggerId, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -203,7 +203,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIndex(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -300,13 +300,13 @@ public class WorkflowRuleHistoricalLoggerUtil {
 								workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
 							}
 							
-							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIndex());
 							
 							long loggerGroupId = (long) prop.get("loggerGroupId");
 							List<WorkflowRuleHistoricalLoggerContext> activeChildLoggers = getGroupedInProgressWorkflowRuleHistoricalLoggers(loggerGroupId);
 							if(activeChildLoggers == null || activeChildLoggers.isEmpty())
 							{
-								workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+								workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIndex());
 								workflowRuleHistoricalLoggerContext.setResolvedLogCount(workflowRuleHistoricalLoggerContext.getResourceLogCount());					
 							}
 							else
@@ -326,7 +326,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 	
 	public static void updateRuleLoggerContextToResolvedState(WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext) throws Exception {
 		parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-		parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+		parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIndex());
 		updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);	
 	}
 	
@@ -347,7 +347,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleHistoricalLogger.getId(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.EVENT_GENERATING_STATE.getIndex(), NumberOperators.EQUALS));
 
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleHistoricalLogger);
 		int rowsUpdated = updateBuilder.update(props);
@@ -403,9 +403,9 @@ public class WorkflowRuleHistoricalLoggerUtil {
 	{
 		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
 		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
-		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
+		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIndex());
 		workflowRuleHistoricalLoggerContext.setResourceId(resourceId);
-		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIndex());
 		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
 		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
 		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());

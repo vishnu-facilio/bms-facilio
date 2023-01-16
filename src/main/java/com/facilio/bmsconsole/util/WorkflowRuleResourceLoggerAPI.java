@@ -91,8 +91,8 @@ public class WorkflowRuleResourceLoggerAPI {
 		selectFields.add(sumField);
 		
 		Criteria subCriteria = new Criteria();
-		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
-		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIndex(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIndex(), NumberOperators.EQUALS));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(selectFields)
@@ -138,9 +138,9 @@ public class WorkflowRuleResourceLoggerAPI {
 				.on("Workflow_Rule_Resource_Logger.PARENT_RULE_LOGGER_ID = Workflow_Rule_Logger.ID")
 				.andCondition(CriteriaAPI.getCondition("Workflow_Rule_Logger.RULE_ID", "ruleId", "" +ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal(), NumberOperators.NOT_EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIndex(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIndex(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIndex(), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"),"" +ruleJobType, NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -169,7 +169,7 @@ public class WorkflowRuleResourceLoggerAPI {
 				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleResourceLoggerFields())
 				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleResourceLoggerContext.getId(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIndex(), NumberOperators.EQUALS));
 
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleResourceLoggerContext);
 		int rowsUpdated = updateBuilder.update(props);
@@ -197,7 +197,7 @@ public class WorkflowRuleResourceLoggerAPI {
 		workflowRuleResourceLoggerContext.setParentRuleLoggerId(parentRuleLoggerId);
 		workflowRuleResourceLoggerContext.setResourceId(resourceId);
 		workflowRuleResourceLoggerContext.setLoggerInfo(loggerInfo);
-		workflowRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.IN_PROGRESS.getIndex());
 		workflowRuleResourceLoggerContext.setRuleJobType(ruleJobType);
 		workflowRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
 		if(modifiedRange != null)

@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
+import java.util.HashMap;
+
 public class SensorAlarmPageFactory extends PageFactory {
 	public static Page getSensorAlarmPage(SensorRollUpAlarmContext alarms, FacilioModule module) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -30,8 +32,11 @@ public class SensorAlarmPageFactory extends PageFactory {
         }
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
-        addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
-        addAlarmDetail(tab1Sec1);
+//		addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
+//		addAlarmDetail(tab1Sec1);
+		HashMap<String, String> titles = new HashMap<>();
+		titles.put("notes", "Comment");
+		addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, false, WidgetType.COMMENT);
         
         
         
@@ -60,18 +65,18 @@ public class SensorAlarmPageFactory extends PageFactory {
 	        pageWidget.addToLayoutParams(section, 24, 4);
 	        section.addWidget(pageWidget);
 	    }
-	 protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
-	        PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-	        alarmReport.addToLayoutParams(section, 24, 15);
-	        section.addWidget(alarmReport);
-	        return alarmReport;
-	    }
-	 protected static PageWidget addAlarmDetail(Section section) {
-	        PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.SENSOR_ALARM_DETAIL);
-	        alarmReport.addToLayoutParams(section, 24, 7);
-	        section.addWidget(alarmReport);
-	        return alarmReport;
-	    }
+//	 protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
+//	        PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
+//	        alarmReport.addToLayoutParams(section, 24, 15);
+//	        section.addWidget(alarmReport);
+//	        return alarmReport;
+//	    }
+//	 protected static PageWidget addAlarmDetail(Section section) {
+//	        PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.SENSOR_ALARM_DETAIL);
+//	        alarmReport.addToLayoutParams(section, 24, 7);
+//	        section.addWidget(alarmReport);
+//	        return alarmReport;
+//	    }
 	 private static PageWidget addOccurrenceHistoryWidget(Section section) {
 	        PageWidget occurrenceListWidget = new PageWidget(PageWidget.WidgetType.OCCURRENCE_HISTORY);
 	        section.addWidget(occurrenceListWidget);

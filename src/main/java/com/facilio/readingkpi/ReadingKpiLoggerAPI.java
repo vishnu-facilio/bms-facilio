@@ -6,16 +6,17 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingkpi.context.KpiLoggerContext;
 import com.facilio.readingkpi.context.KpiResourceLoggerContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReadingKpiLoggerAPI {
     public static long insertLog(Long kpiId, Integer kpiType, Boolean isSysCreated, Integer resourceCount) throws Exception {
@@ -23,7 +24,7 @@ public class ReadingKpiLoggerAPI {
     }
 
     public static long insertLog(Long kpiId, Integer kpiType, Long intervalStartTime, Long intervalEndTime, Boolean isSysCreated, Integer resourceCount) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         KpiLoggerContext kpiLoggerContext = new KpiLoggerContext();
 
         ReadingKPIContext kpi = new ReadingKPIContext();
@@ -49,8 +50,26 @@ public class ReadingKpiLoggerAPI {
         return insertRecordBuilder.insert(kpiLoggerContext);
     }
 
-    public static void updateLog(Long kpiId, Integer status, Long execEndTime, Integer successCount) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    public static void updateLogWithId(Long id, Integer status, Long execEndTime, Integer successCount) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
+
+        KpiLoggerContext kpiLoggerContext = new KpiLoggerContext();
+        kpiLoggerContext.setExecEndTime(execEndTime);
+        kpiLoggerContext.setStatus(status);
+        if (successCount != null) {
+            kpiLoggerContext.setSuccessCount(successCount);
+        }
+        UpdateRecordBuilder<KpiLoggerContext> updateRecordBuilder = new UpdateRecordBuilder<KpiLoggerContext>()
+                .moduleName(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE)
+                .fields(fields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE)), String.valueOf(id), NumberOperators.EQUALS));
+
+        updateRecordBuilder.update(kpiLoggerContext);
+    }
+
+    public static void updateLogWithKpiId(Long kpiId, Integer status, Long execEndTime, Integer successCount) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
@@ -70,7 +89,7 @@ public class ReadingKpiLoggerAPI {
     }
 
     public static Integer getSuccessCount(Long parentLoggerId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule kpiResourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -88,7 +107,7 @@ public class ReadingKpiLoggerAPI {
             for (Map<String, Object> prop : props) {
                 count = (Long) prop.get("id");
             }
-            if(count!=null) {
+            if (count != null) {
                 return count.intValue();
             }
         }
@@ -96,7 +115,7 @@ public class ReadingKpiLoggerAPI {
     }
 
     public static List<KpiResourceLoggerContext> getResourceIdsForLogger(Long parentLoggerId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule kpiResourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -108,8 +127,24 @@ public class ReadingKpiLoggerAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentLoggerId"), Collections.singleton(parentLoggerId), NumberOperators.EQUALS));
         return builder.get();
     }
+
+    public static List<Map<String, Object>> getResourceLoggersForParentLogger(Long parentLoggerId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule kpiResourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
+        fields.add(FieldFactory.getIdField(kpiResourceLoggerModule));
+        fields = fields.stream().filter(x -> !Objects.equals(x.getName(), "sysCreatedBy")).collect(Collectors.toList());
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(kpiResourceLoggerModule.getTableName())
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentLoggerId"), Collections.singleton(parentLoggerId), NumberOperators.EQUALS));
+        return builder.get();
+    }
+
     public static void insertResourceLog(Long kpiId, Long parentLoggerId, Long resourceId, Long intervalStartTime, Long intervalEndTime, Boolean isHistorical) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         KpiResourceLoggerContext kpiResourceLoggerContext = new KpiResourceLoggerContext();
         kpiResourceLoggerContext.setKpiId(kpiId);
         kpiResourceLoggerContext.setParentLoggerId(parentLoggerId);
@@ -128,12 +163,35 @@ public class ReadingKpiLoggerAPI {
         insertRecordBuilder.insert(kpiResourceLoggerContext);
     }
 
+    public static void updateResourceLog(Long id, KpiResourceLoggerContext.KpiLoggerStatus status) throws Exception {
+        updateResourceLog(id, status, null);
+    }
+
+    public static void updateResourceLog(Long id, KpiResourceLoggerContext.KpiLoggerStatus status, String message) throws Exception {
+
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule kpiResourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
+        KpiResourceLoggerContext kpiResourceLoggerContext = new KpiResourceLoggerContext();
+
+        kpiResourceLoggerContext.setStatus(status.getIndex());
+        if(message!=null) {
+            kpiResourceLoggerContext.setMessage(message);
+        }
+        UpdateRecordBuilder<KpiResourceLoggerContext> updateRecordBuilder = new UpdateRecordBuilder<KpiResourceLoggerContext>()
+                .module(kpiResourceLoggerModule)
+                .fields(fields)
+                .andCondition(CriteriaAPI.getIdCondition(id, kpiResourceLoggerModule));
+
+        updateRecordBuilder.update(kpiResourceLoggerContext);
+    }
+
     public static void updateResourceLog(Long kpiId, Long resourceId, Integer status, Long intervalStartTime, Long calcEndTime) throws Exception {
         updateResourceLog(kpiId, resourceId, status, intervalStartTime, calcEndTime, null);
     }
 
     public static void updateResourceLog(Long kpiId, Long resourceId, Integer status, Long intervalStartTime, Long calcEndTime, String message) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule kpiResourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -156,7 +214,7 @@ public class ReadingKpiLoggerAPI {
     }
 
     public static long getNextJobId() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
         FacilioField idField = FieldFactory.getIdField(module);
 

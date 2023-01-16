@@ -69,7 +69,7 @@ public class ExecuteSchKpiOfACategoryCommand extends FacilioCommand implements P
             LOGGER.info("Exception occurred ", e);
             CommonCommandUtil.emailException("ExecuteSchKpiOfACategoryCommand", "Execution of scheduled kpi failed for type " + this.scheduleType, e);
         } finally {
-            LOGGER.info("Time taken for ScheduledFormulaExecution job : " + (System.currentTimeMillis() - jobStartTime));
+            LOGGER.info("Time taken for calculating all kpis : " + (System.currentTimeMillis() - jobStartTime));
         }
         return false;
     }

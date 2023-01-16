@@ -81,13 +81,13 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount, isAutomatedSystemHistory);			
 			}			
 		
-			if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal()) {
+			if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIndex()) {
 				parentRuleResourceLoggerContext.setAlarmCount(totalAlarmOccurrenceCount);
-				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal());
+				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIndex());
 			}
 			else {
 				parentRuleResourceLoggerContext.setAlarmCount(totalAlarmOccurrenceCount);
-				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal());	
+				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIndex());
 			}
 		}
 		
@@ -195,13 +195,13 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				propagateStatusToRuleLog(parentRuleLoggerContext);			
 				int rowsUpdated = 0;
 				if(retryCount == 0) {
-					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIndex());
 				}
 				else if(retryCount == 1) {
-					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIndex());
 				}
 				
-				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
+				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIndex() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIndex())) {
 					checkforRollUpAlarms(parentRuleLoggerContext);
 				}
 			}
@@ -223,11 +223,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				parentRuleResourceLoggerContext.setAlarmCount(-1);
 				if(retryCount == 0) {
 					NewTransactionService.newTransaction(() -> 
-						WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIntVal()));	
+						WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIndex()));
 				}
 				else if(retryCount == 1) {
 					NewTransactionService.newTransaction(() -> 
-					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()));	
+					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIndex()));
 				}	
 				
 				JSONObject loggerInfo = parentRuleResourceLoggerContext.getLoggerInfo();
@@ -240,12 +240,12 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 					
 					int rowsUpdated = 0;
 					if(retryCount == 0) {
-						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIndex());
 					}
 					else if(retryCount == 1) {
-						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIndex());
 					}
-	 				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
+	 				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIndex() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIndex())) {
 	 					checkforRollUpAlarms(parentRuleLoggerContext);
 	 				}
 				}
@@ -268,16 +268,16 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			for(Map<String, Object> prop:propList) {
 				if(prop.get("status") != null && prop.get("count") != null) {
 					int status = (int)prop.get("status");
-					if(status == WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal()) {
+					if(status == WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIndex()) {
 						resolvedCount = (long)prop.get("count");
 					}
-					else if(status == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal()) {
+					else if(status == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIndex()) {
 						partiallyCompletedCount = (long)prop.get("count");
 					}
-					else if(status == WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIntVal()) {
+					else if(status == WorkflowRuleResourceLoggerContext.Status.RESCHEDULED.getIndex()) {
 						rescheduledCount = (long)prop.get("count");
 					}
-					else if(status == WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()) {
+					else if(status == WorkflowRuleResourceLoggerContext.Status.FAILED.getIndex()) {
 						failedCount = (long)prop.get("count");
 					}	
 				}
@@ -287,22 +287,22 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			
 			if(rescheduledCount > 0)
 			{
-				parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+				parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.RESCHEDULED.getIndex());
 				parentRuleLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());	 
 			}
 			else if(currentLogsCount == parentRuleLoggerContext.getNoOfResources())
 			{	
 				if(partiallyCompletedCount > 0){
-					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal());
+					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIndex());
 				}
 				else if(partiallyCompletedCount == 0 && parentRuleLoggerContext.getResolvedResourcesCount() == parentRuleLoggerContext.getNoOfResources()) {
-					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal());
+					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.RESOLVED.getIndex());
 				}
 				else if(partiallyCompletedCount == 0 && failedCount == parentRuleLoggerContext.getNoOfResources()) {
-					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.FAILED.getIntVal());
+					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.FAILED.getIndex());
 				}
 				else {
-					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal());
+					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIndex());
 				}
 				parentRuleLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 			}

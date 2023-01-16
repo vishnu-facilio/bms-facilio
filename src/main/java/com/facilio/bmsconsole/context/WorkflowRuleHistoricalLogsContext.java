@@ -1,204 +1,92 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 public class WorkflowRuleHistoricalLogsContext {
-	
-	private long id = -1;
-	private long orgId;
-	private long parentRuleResourceId;
-	private long splitStartTime;
-	private long splitEndTime;
-	private Status status;	
-	private LogState logState;
-	private long calculationStartTime;
-	private long calculationEndTime;
-	private String errorMessage;
-	private RuleJobType ruleJobType;
 
-	public long getId() {
-		return id;
-	}
+    private long id = -1;
+    private long orgId;
+    private long parentRuleResourceId;
+    private long splitStartTime;
+    private long splitEndTime;
+    private Status status;
+    private LogState logState;
+    private long calculationStartTime;
+    private long calculationEndTime;
+    private String errorMessage;
+    private RuleJobType ruleJobType;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public int getLogState() {
+        return (logState != null) ? logState.getIndex() : -1;
+    }
 
-	public long getOrgId() {
-		return orgId;
-	}
+    public LogState getLogStateAsEnum() {
+        return logState;
+    }
 
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+    public void setLogState(int logStateint) {
+        this.logState = LogState.valueOf(logStateint);
+    }
 
-	public long getParentRuleResourceId() {
-		return parentRuleResourceId;
-	}
+    public Status getStatusAsEnum() {
+        return status;
+    }
 
-	public void setParentRuleResourceId(long parentRuleResourceId) {
-		this.parentRuleResourceId = parentRuleResourceId;
-	}
+    public int getStatus() {
+        return (status != null) ? status.getIndex() : -1;
+    }
 
-	public long getSplitStartTime() {
-		return splitStartTime;
-	}
+    public void setStatus(int statusint) {
+        this.status = Status.valueOf(statusint);
+    }
 
-	public void setSplitStartTime(long splitStartTime) {
-		this.splitStartTime = splitStartTime;
-	}
+    public RuleJobType getRuleJobTypeEnum() {
+        return ruleJobType;
+    }
 
-	public long getSplitEndTime() {
-		return splitEndTime;
-	}
+    public int getRuleJobType() {
+        return (ruleJobType == null) ? -1 : ruleJobType.getIndex();
+    }
+    
+    public void setRuleJobType(int ruleJobType) {
+        this.ruleJobType = RuleJobType.valueOf(ruleJobType);
+    }
 
-	public void setSplitEndTime(long splitEndTime) {
-		this.splitEndTime = splitEndTime;
-	}
+    public enum Status implements FacilioIntEnum {
 
-	public int getLogState() {
-		if (logState != null) {
-			return logState.getIntVal();
-		}
-		return -1;
-	}
+        IN_PROGRESS,
+        RESOLVED,
+        FAILED,
+        YET_TO_BE_SCHEDULED,
+        SKIPPED,
+        ;
 
-	public LogState getLogStateAsEnum() {
-		return logState;
-	}
+        public static Status valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+    }
 
-	public void setLogStateAsEnum(LogState logState) {
-		this.logState = logState;
-	}
+    public enum LogState implements FacilioIntEnum {
 
-	public void setLogState(int logStateint) {
-		this.logState = LogState.getAllOptions().get(logStateint);
-	}
-	
-	public Status getStatusAsEnum() {
-		return status;
-	}
-	public int getStatus() {
-		if (status != null) {
-			return status.getIntVal();
-		}
-		return -1;
-	}
-	public void setStatus(int statusint) {
-		this.status = Status.getAllOptions().get(statusint);
-	}
-	public void setStatusAsEnum(Status status) {
-		this.status = status;
-	}
+        IS_FIRST_JOB,
+        IS_LAST_JOB,
+        FIRST_AS_WELL_AS_LAST,
+        ;
 
-	public long getCalculationStartTime() {
-		return calculationStartTime;
-	}
+        public static LogState valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
 
-	public void setCalculationStartTime(long calculationStartTime) {
-		this.calculationStartTime = calculationStartTime;
-	}
-
-	public long getCalculationEndTime() {
-		return calculationEndTime;
-	}
-
-	public void setCalculationEndTime(long calculationEndTime) {
-		this.calculationEndTime = calculationEndTime;
-	}
-	
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	
-	public RuleJobType getRuleJobTypeEnum() {
-		return ruleJobType;
-	}
-	
-	public int getRuleJobType() {
-		if (ruleJobType == null) {
-			return -1;
-		}
-		return ruleJobType.getIndex();
-	}
-
-	public void setRuleJobType(RuleJobType ruleJobType) {
-		this.ruleJobType = ruleJobType;
-	}
-
-	public void setRuleJobType(int ruleJobType) {
-		this.ruleJobType = RuleJobType.valueOf(ruleJobType);
-	}
-	
-	public enum Status {
-		
-		IN_PROGRESS(1),
-		RESOLVED(2),
-		FAILED(3),
-		YET_TO_BE_SCHEDULED(4),
-		SKIPPED(5),
-		;
-
-		int intVal;
-		private Status(int intVal) {
-			this.intVal = intVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
-
-		private static final Map<Integer, Status> optionMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, Status> initTypeMap() {
-			Map<Integer, Status> typeMap = new HashMap<>();
-
-			for (Status status : values()) {
-				typeMap.put(status.getIntVal(), status);
-			}
-			return typeMap;
-		}
-
-		public static Map<Integer, Status> getAllOptions() {
-			return optionMap;
-		}
-	}
-	public enum LogState {
-		
-		IS_FIRST_JOB(1),
-		IS_LAST_JOB(2),
-		FIRST_AS_WELL_AS_LAST(3),
-		;
-
-		int intVal;
-		private LogState(int intVal) {
-			this.intVal = intVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
-
-		private static final Map<Integer, LogState> optionMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, LogState> initTypeMap() {
-			Map<Integer, LogState> typeMap = new HashMap<>();
-
-			for (LogState logState : values()) {
-				typeMap.put(logState.getIntVal(), logState);
-			}
-			return typeMap;
-		}
-
-		public static Map<Integer, LogState> getAllOptions() {
-			return optionMap;
-		}
-	}
+    }
 }

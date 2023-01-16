@@ -933,6 +933,10 @@
 		</action>
 	</package>
 
+    <package name="ReadingRuleHistorical" namespace="/api/v3/readingrule/historical" extends="v3Api">
+        <action name="run" class="com.facilio.readingrule.action.ReadingRuleAction" method="runHistorical"/>
+    </package>
+
     <package name="KpiReadingsList" namespace="/api/v3/readingKpi" extends="v3Api">
         <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchReadings"/>
         <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames"/>

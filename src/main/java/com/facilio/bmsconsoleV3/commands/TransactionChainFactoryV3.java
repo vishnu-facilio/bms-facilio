@@ -2743,9 +2743,14 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain updateReadingRuleChain() {
+    public static FacilioChain beforeUpdateReadingRuleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PrepareReadingRuleForUpdateCommand());
+        return c;
+    }
+
+    public static FacilioChain updateReadingRuleChain() {
+        FacilioChain c = getDefaultChain();
         c.addCommand(addOrDeleteFaultImpactChain());
         c.addCommand(new UpdateReadingRuleCommand());
         c.addCommand(new UpdateWorkflowCommand());

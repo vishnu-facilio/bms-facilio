@@ -88,7 +88,7 @@ public class ReadingKpiAPI {
         if (CollectionUtils.isEmpty(kpis)) {
             return null;
         }
-        LOGGER.info("valid frequency types: " + scheduleTypes + " , qry : " + selectRecordsBuilder);
+        LOGGER.info("Active KPI Ids: " + kpis.stream().map(x->x.getId()).collect(Collectors.toList()));
 
         return getIndepAndDepKpisWithGraph(kpis);
 

@@ -1,17 +1,16 @@
 package com.facilio.storm;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum InstructionType implements FacilioEnum {
-    LIVE_KPI_HISTORICAL;
+public enum InstructionType implements FacilioIntEnum {
+    LIVE_KPI_HISTORICAL,
+    READING_RULE_HISTORICAL;
 
-    public Integer getIndex() {
-        return ordinal() + 1;
-    }
-
-    @Override
-    public String getValue() {
-        return name();
+    public static InstructionType valueOf(int type) {
+        if (type > 0 && type <= values().length) {
+            return values()[type - 1];
+        }
+        return null;
     }
 
 }

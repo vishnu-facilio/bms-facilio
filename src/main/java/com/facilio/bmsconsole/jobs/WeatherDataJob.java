@@ -97,7 +97,7 @@ public class WeatherDataJob extends FacilioJob {
 			CommonCommandUtil.emailException("WeatherDataJob", "Exception in Weather Data job ", e);
 		}
 		finally {
-			LOGGER.info("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
+			LOGGER.info("Time taken for Weather Data job. " + (System.currentTimeMillis() - startTime));
 		}
 	}
 }

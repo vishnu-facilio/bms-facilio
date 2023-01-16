@@ -16,10 +16,11 @@ public class ExecuteScheduledReadingKpiJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         Long jobStartTime = System.currentTimeMillis();
-        LOGGER.info("job Start Time " + jobStartTime );
+        LOGGER.info("ExecuteScheduledReadingKpiJob Start Time " + jobStartTime );
         try {
             JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
             Long scheduleType = (Long) props.get(FacilioConstants.ReadingKpi.SCHEDULE_TYPE);
+            LOGGER.info("Schedule types from common job props: " + scheduleType);
             FacilioChain execKpiChain = TransactionChainFactory.executeScheduleKpi(scheduleType.intValue());
             execKpiChain.execute();
             BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
@@ -27,7 +28,7 @@ public class ExecuteScheduledReadingKpiJob extends FacilioJob {
             LOGGER.info("Execution of scheduled kpi failed", e);
             CommonCommandUtil.emailException("ExecuteScheduledReadingKpiJob", "Execution of scheduled kpi failed", e);
         }
-        LOGGER.info("Time taken for job execution " + (System.currentTimeMillis() - jobStartTime));
+        LOGGER.info("Time taken for ExecuteScheduledReadingKpiJob execution " + (System.currentTimeMillis() - jobStartTime));
     }
 
     @Override

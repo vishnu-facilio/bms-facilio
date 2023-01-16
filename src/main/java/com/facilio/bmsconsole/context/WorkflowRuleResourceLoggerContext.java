@@ -1,183 +1,100 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.enums.RuleJobType;
+import java.io.Serializable;
 
+@Getter
+@Setter
 public class WorkflowRuleResourceLoggerContext implements Serializable {
-	
-	private long id = -1;
-	private long orgId;
-	private long parentRuleLoggerId;
-	private long resourceId;
-	public JSONObject loggerInfo;
-	private ResourceContext resourceContext;
-	private Status status;
-	private long alarmCount;
-	private long modifiedStartTime;
-	private long modifiedEndTime;
-	private long calculationStartTime;
-	private long calculationEndTime;
-	private RuleJobType ruleJobType;
 
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-	public long getParentRuleLoggerId() {
-		return parentRuleLoggerId;
-	}
-	public void setParentRuleLoggerId(long parentRuleLoggerId) {
-		this.parentRuleLoggerId = parentRuleLoggerId;
-	}
-	public long getResourceId() {
-		return resourceId;
-	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
-	}
-	public ResourceContext getResourceContext() {
-		return resourceContext;
-	}
-	public void setResourceContext(ResourceContext resourceContext) {
-		this.resourceContext = resourceContext;
-	}
-	
-	public JSONObject getLoggerInfo() {
-		return loggerInfo;
-	}
-	public void setLoggerInfo(JSONObject loggerInfo) {
-		this.loggerInfo = loggerInfo;
-	}
-	public void addLoggerInfo(String key, Object value) {
-		if(this.loggerInfo == null) {
-			this.loggerInfo =  new JSONObject();
-		}
-		this.loggerInfo.put(key,value);
-	}
-	
-	private String loggerInfoStr;
-	public String getLoggerInfoStr() {
-		if(loggerInfo != null) {
-			return loggerInfo.toJSONString();
-		}
-		return loggerInfoStr;
-	}
-	public void setLoggerInfoStr(String loggerInfoStr) throws ParseException {
-		this.loggerInfoStr = loggerInfoStr;
-		JSONParser parser = new JSONParser();
-		this.loggerInfo = (JSONObject) parser.parse(loggerInfoStr);
-	}
-	
-	public int getStatus() {
-		if (status != null) {
-			return status.getIntVal();
-		}
-		return -1;
-	}
-	public Status getStatusAsEnum() {
-		return status;
-	}
-	public void setStatus(int statusint) {
-		this.status = Status.getAllOptions().get(statusint);
-	}
-	public void setStatusAsEnum(Status status) {
-		this.status = status;
-	}
-	public long getAlarmCount() {
-		return alarmCount;
-	}
-	public void setAlarmCount(long alarmCount) {
-		this.alarmCount = alarmCount;
-	}
-	public long getModifiedStartTime() {
-		return modifiedStartTime;
-	}
-	public void setModifiedStartTime(long modifiedStartTime) {
-		this.modifiedStartTime = modifiedStartTime;
-	}
-	public long getModifiedEndTime() {
-		return modifiedEndTime;
-	}
-	public void setModifiedEndTime(long modifiedEndTime) {
-		this.modifiedEndTime = modifiedEndTime;
-	}
-	public long getCalculationStartTime() {
-		return calculationStartTime;
-	}
-	public void setCalculationStartTime(long calculationStartTime) {
-		this.calculationStartTime = calculationStartTime;
-	}
-	public long getCalculationEndTime() {
-		return calculationEndTime;
-	}
-	public void setCalculationEndTime(long calculationEndTime) {
-		this.calculationEndTime = calculationEndTime;
-	}
-	public RuleJobType getRuleJobTypeEnum() {
-		return ruleJobType;
-	}
-	public int getRuleJobType() {
-		if (ruleJobType == null) {
-			return -1;
-		}
-		return ruleJobType.getIndex();
-	}
-	public void setRuleJobType(RuleJobType ruleJobType) {
-		this.ruleJobType = ruleJobType;
-	}
-	public void setRuleJobType(int ruleJobType) {
-		this.ruleJobType = RuleJobType.valueOf(ruleJobType);
-	}
-	
-	public enum Status {
-		
-		IN_PROGRESS(1),
-		EVENT_GENERATING_STATE(2),
-		ALARM_PROCESSING_STATE(3),
-		RESOLVED(4),
-		FAILED(5),
-		PARTIALLY_PROCESSED_STATE(6),
-		PARTIALLY_COMPLETED_STATE(7),
-		RESCHEDULED(8),
-		;
+    long id = -1;
+    long orgId;
+    long parentRuleLoggerId;
+    long resourceId;
+    JSONObject loggerInfo;
+    ResourceContext resourceContext;
+    Status status;
+    long alarmCount;
+    long modifiedStartTime;
+    long modifiedEndTime;
+    long calculationStartTime;
+    long calculationEndTime;
+    RuleJobType ruleJobType;
 
-		int intVal;
-		private Status(int intVal) {
-			this.intVal = intVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
 
-		private static final Map<Integer, Status> optionMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, Status> initTypeMap() {
-			Map<Integer, Status> typeMap = new HashMap<>();
+    public void addLoggerInfo(String key, Object value) {
+        if (this.loggerInfo == null) {
+            this.loggerInfo = new JSONObject();
+        }
+        this.loggerInfo.put(key, value);
+    }
 
-			for (Status status : values()) {
-				typeMap.put(status.getIntVal(), status);
-			}
-			return typeMap;
-		}
+    private String loggerInfoStr;
 
-		public static Map<Integer, Status> getAllOptions() {
-			return optionMap;
-		}
-	}
+    public String getLoggerInfoStr() {
+        return (loggerInfo != null) ? loggerInfo.toJSONString() : loggerInfoStr;
+    }
+
+    public void setLoggerInfoStr(String loggerInfoStr) throws ParseException {
+        this.loggerInfoStr = loggerInfoStr;
+        JSONParser parser = new JSONParser();
+        this.loggerInfo = (JSONObject) parser.parse(loggerInfoStr);
+    }
+
+    public int getStatus() {
+        return (status != null) ? status.getIndex() : -1;
+    }
+
+    public Status getStatusAsEnum() {
+        return status;
+    }
+
+    public void setStatus(int idx) {
+        this.status = Status.valueOf(idx);
+    }
+
+    public void setStatusAsEnum(Status status) {
+        this.status = status;
+    }
+
+    public RuleJobType getRuleJobTypeEnum() {
+        return ruleJobType;
+    }
+
+    public int getRuleJobType() {
+        return (ruleJobType == null) ? -1 : ruleJobType.getIndex();
+    }
+
+    public void setRuleJobType(int ruleJobType) {
+        this.ruleJobType = RuleJobType.valueOf(ruleJobType);
+    }
+
+    public enum Status implements FacilioIntEnum {
+
+        IN_PROGRESS,
+        EVENT_GENERATING_STATE,
+        ALARM_PROCESSING_STATE,
+        RESOLVED,
+        FAILED,
+        PARTIALLY_PROCESSED_STATE,
+        PARTIALLY_COMPLETED_STATE,
+        RESCHEDULED,
+        ;
+
+        public static Status valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+
+    }
 
 }

@@ -1,13 +1,14 @@
 package com.facilio.readingrule.action;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
+import com.facilio.storm.InstructionType;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class ReadingRuleAction extends V3Action {
         setData("result", newReadingRuleContext);
         return SUCCESS;
     }
+
     public String rcaReadingsFetch() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.fetchRcaReadingsChain();
         FacilioContext context = chain.getContext();
@@ -59,6 +61,30 @@ public class ReadingRuleAction extends V3Action {
         result.put(FacilioConstants.ContextNames.RECORD_COUNT, context.get(FacilioConstants.ContextNames.COUNT));
         setData(FacilioConstants.ContextNames.RESULT, result);
         setData("result", result);
+        return SUCCESS;
+    }
+
+    private Long recordId;
+    private Long startTime;
+    private Long endTime;
+    private List<Long> assetIds;
+
+    public String runHistorical() throws Exception {
+        FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
+        FacilioContext context = runStormHistorical.getContext();
+        context.put("type", InstructionType.READING_RULE_HISTORICAL.getIndex());
+
+        JSONObject instructionData = new JSONObject();
+        instructionData.put("recordId", getRecordId());
+        instructionData.put("startTime", getStartTime());
+        instructionData.put("endTime", getEndTime());
+        instructionData.put("createdBy", AccountUtil.getCurrentUser().getId());
+        instructionData.put("assetIds", getAssetIds());
+        context.put("data", instructionData);
+        runStormHistorical.execute();
+
+        setData("success", "Instruction Processing has begun");
+
         return SUCCESS;
     }
 }

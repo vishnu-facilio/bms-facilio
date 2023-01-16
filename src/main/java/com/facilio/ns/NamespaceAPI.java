@@ -164,6 +164,23 @@ public class NamespaceAPI {
         return new ArrayList<>(resourceIds);
     }
 
+    public static List<Long> getMatchedResources(NameSpaceContext ns, Long categoryId) throws Exception {
+        Set<Long> resourceIds = new HashSet<>();
+
+        List<Long> inclusions = fetchResourceIdsFromNamespaceInclusions(ns.getId());
+        if (CollectionUtils.isNotEmpty(inclusions)) {
+            return inclusions;
+        }
+
+        List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
+        if (CollectionUtils.isNotEmpty(assets)) {
+            resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
+            return new ArrayList<>(resourceIds);
+        }
+
+        return new ArrayList<>();
+    }
+
     public static List<Long> fetchMatchedResourceIds(Long nsId) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())

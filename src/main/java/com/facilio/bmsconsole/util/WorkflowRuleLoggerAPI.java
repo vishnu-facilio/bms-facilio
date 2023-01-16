@@ -9,6 +9,8 @@ import java.util.Map;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
+import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -23,7 +25,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class WorkflowRuleLoggerAPI {
-	
+
 	public static void addWorkflowRuleLogger(WorkflowRuleLoggerContext workflowRuleLoggerContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -93,14 +95,14 @@ public class WorkflowRuleLoggerAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
 		
 	}
-	
+
 	public static WorkflowRuleLoggerContext setWorkflowRuleLoggerContext(long ruleId, long noOfResources, DateRange range, int ruleJobType)
 	{
 		WorkflowRuleLoggerContext workflowRuleLoggerContext = new WorkflowRuleLoggerContext();
 		workflowRuleLoggerContext.setRuleId(ruleId);
 		workflowRuleLoggerContext.setNoOfResources(noOfResources);
 		workflowRuleLoggerContext.setResolvedResourcesCount(0);
-		workflowRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIndex());
 		workflowRuleLoggerContext.setRuleJobType(ruleJobType);
 		workflowRuleLoggerContext.setStartTime(range.getStartTime());
 		workflowRuleLoggerContext.setEndTime(range.getEndTime());

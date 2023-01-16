@@ -210,7 +210,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
 				}
 				
-				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIndex());
 				workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 				
@@ -255,7 +255,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 
 			if(workflowRuleHistoricalLoggerContext != null )
 			{
-				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.FAILED.getIntVal());
+				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.FAILED.getIndex());
 				workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 			}
