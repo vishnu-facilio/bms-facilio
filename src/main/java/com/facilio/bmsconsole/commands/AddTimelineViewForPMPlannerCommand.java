@@ -176,7 +176,7 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
         context.setModuleName(module.getName());
         context.setModuleId(module.getModuleId());
 
-        context.setAllowRescheduling(true);
+        context.setAllowRescheduling(false);
         context.setAllowGroupAssignment(true);
         context.setAllowReAssignment(true);
         context.setAllowPastAssignment(true);

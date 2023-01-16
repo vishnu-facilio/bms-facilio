@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -983,6 +985,7 @@ public class ViewFactory {
 		views.put("all", getAllJobPlanView().setOrder(order++));
 		views.put("active", getActiveJobPlanView().setOrder(order++));
 		views.put("inactive", getInActiveJobPlanView().setOrder(order++));
+		views.put("disabled",getDisabledJobPlanView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.JOB_PLAN, views);
 
 		order = 1;
@@ -7329,22 +7332,43 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getDisabledJobPlanView() {
+		Criteria criteria = getDisabledJobPlanCriteria();
+		FacilioModule jobPlanModule = ModuleFactory.getJobPlanModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(jobPlanModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("disabled");
+		allView.setDisplayName("Disabled");
+		allView.setCriteria(criteria);
+		allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
+		return allView;
+	}
+
 	public static Criteria getActiveJobPlanCriteria() {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getJobPlanBooleanCondition("isActive", "IS_ACTIVE", "true"));
-		criteria.addAndCondition(getJobPlanBooleanCondition("isDisabled", "IS_DISABLED", "false"));
+		criteria.addAndCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.ACTIVE.getVal()),NumberOperators.EQUALS));
+		criteria.setPattern("(1)");
 		return criteria;
 	}
 
 	public static Criteria getInActiveJobPlanCriteria() {
 		Criteria criteria = new Criteria();
 
-		criteria.addCondition("1", getJobPlanBooleanCondition("isActive", "IS_ACTIVE", "false"));
-		criteria.addCondition("2", getJobPlanBooleanCondition("isDisabled", "IS_DISABLED", "false"));
-		criteria.setPattern("(1 and 2)");
+		criteria.addAndCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.IN_ACTIVE.getVal()),NumberOperators.EQUALS));
+		criteria.setPattern("(1)");
 
 		return criteria;
 	}
+	public static Criteria getDisabledJobPlanCriteria(){
+		Criteria criteria = new Criteria();
+
+		criteria.addAndCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.DISABLED.getVal()),NumberOperators.EQUALS));
+		criteria.setPattern("(1)");
+
+		return criteria;
+	}
+
 
 	public static Condition getJobPlanBooleanCondition(String fieldName, String columnName, String conditionValue) {
 		FacilioModule module = ModuleFactory.getJobPlanModule();

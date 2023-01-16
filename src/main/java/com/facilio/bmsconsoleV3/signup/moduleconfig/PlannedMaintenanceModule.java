@@ -1,16 +1,20 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -63,8 +67,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
     }
 
     private static FacilioView getInActivePlannedMaintenanceView() {
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(getInActivePlannedMaintenanceCondition());
+        Criteria criteria = getUnPublishedPlannedMaintenanceCriteria();
         FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
         FacilioField idField = FieldFactory.getIdField();
         idField.setModule(plannedMaintenanceModule);
@@ -84,8 +87,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
     }
 
     private static FacilioView getActivePlannedMaintenanceView() {
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(getActivePlannedMaintenanceCondition());
+        Criteria criteria = getPublishedPlannedMaintenanceCriteria();
         FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
         FacilioField idField = FieldFactory.getIdField();
         idField.setModule(plannedMaintenanceModule);
@@ -103,36 +105,20 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         return allView;
     }
 
-    public static Condition getActivePlannedMaintenanceCondition() {
-        FacilioModule module = ModuleFactory.getPlannedMaintenanceModule();
-        FacilioField booleanField = new FacilioField();
-        booleanField.setName("isActive");
-        booleanField.setColumnName("IS_ACTIVE");
-        booleanField.setDataType(FieldType.BOOLEAN);
-        booleanField.setModule(module);
-
-        Condition open = new Condition();
-        open.setField(booleanField);
-        open.setOperator(BooleanOperators.IS);
-        open.setValue("true");
-
-        return open;
+    public static Criteria getPublishedPlannedMaintenanceCriteria() {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PM_STATUS","pmStatus",String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()), NumberOperators.EQUALS));
+        criteria.setPattern("(1)");
+        return criteria;
     }
 
-    public static Condition getInActivePlannedMaintenanceCondition() {
-        FacilioModule module = ModuleFactory.getPlannedMaintenanceModule();
-        FacilioField booleanField = new FacilioField();
-        booleanField.setName("isActive");
-        booleanField.setColumnName("IS_ACTIVE");
-        booleanField.setDataType(FieldType.BOOLEAN);
-        booleanField.setModule(module);
+    public static Criteria getUnPublishedPlannedMaintenanceCriteria() {
+        Criteria criteria = new Criteria();
 
-        Condition open = new Condition();
-        open.setField(booleanField);
-        open.setOperator(BooleanOperators.IS);
-        open.setValue("false");
+        criteria.addAndCondition(CriteriaAPI.getCondition("PM_STATUS","pmStatus",String.valueOf(PlannedMaintenance.PMStatus.IN_ACTIVE.getVal()), NumberOperators.EQUALS));
+        criteria.setPattern("(1)");
 
-        return open;
+        return criteria;
     }
 
     @Override
