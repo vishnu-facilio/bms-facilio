@@ -2828,6 +2828,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("latestMessageUID", "LATEST_MESSAGE_UID", module, FieldType.NUMBER));
         fields.add(getField("uidValidaity", "UID_VALIDAITY", module, FieldType.NUMBER));
         fields.add(getField("supportRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("imapServiceProviderType","IMAP_SERVICE_PROVIDER_TYPE",module,FieldType.STRING));
 
         return fields;
     }

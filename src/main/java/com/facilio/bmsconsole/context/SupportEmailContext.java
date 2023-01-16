@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
+
 
 public class SupportEmailContext implements  Serializable{
 	private static final long serialVersionUID = 1L;
@@ -208,4 +211,15 @@ public class SupportEmailContext implements  Serializable{
 	}
 
 	private long uidValidaity;
+	@Getter @Setter
+	IMAPServiceProviderType imapServiceProviderType;
+
+	public enum IMAPServiceProviderType {
+		DEFAULT,
+		GMAIL,
+		MICROSOFT_OFFICE_365,
+		OTHERS,
+		;
+	}
+
 }

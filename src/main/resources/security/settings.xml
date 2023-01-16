@@ -409,6 +409,8 @@
 
                 <property name="verified" type="boolean"/>
 
+                <property name="imapServiceProviderType" type="string"/>
+
             </property>
 
         </requestbody>
