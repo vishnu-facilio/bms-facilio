@@ -6,9 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -20,9 +21,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.FormSiteRelationContext;
-import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
@@ -41,9 +39,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.FacilioModule;
@@ -137,9 +132,11 @@ public class FormsAPI {
 		}
 		return forms.get(0);
 	}
-
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		return getDBFormList(null, criteria, null, true, false,true, -1l);
+		return getFormFromDB(criteria,false);
+	}
+	public static List<FacilioForm> getFormFromDB(Criteria criteria,Boolean skipTemplatePermission) throws Exception {
+		return getDBFormList(null, criteria, null, true, false,true, -1l, skipTemplatePermission);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -633,8 +630,7 @@ public class FormsAPI {
 	public static List<FacilioForm> getFormsFromDB(Collection<Long> ids) throws Exception {
 		Criteria formNameCriteria = new Criteria();
 		formNameCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
-		List<FacilioForm> forms = getFormFromDB(formNameCriteria);
-		return forms;
+		return getFormFromDB(formNameCriteria,true);
 	}
 	
 	public static FacilioForm getFormFromDB(long id) throws Exception {
@@ -762,9 +758,11 @@ public class FormsAPI {
 		}
 		return null;
 	}
-	
 	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms, long appId) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, fetchExtendedModuleForms, fetchDisabledForms, appId);
+		return getFormsAsMap(moduleName,fetchExtendedModuleForms,fetchDisabledForms,appId,false);
+	}
+	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms, long appId,Boolean skipTemplatePermission) throws Exception {
+		List<FacilioForm> forms = getDBFormList(moduleName,null,null,false,fetchExtendedModuleForms,fetchDisabledForms,appId, skipTemplatePermission);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -786,13 +784,25 @@ public class FormsAPI {
 	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, boolean fetchExtendedModuleForms) throws Exception{
 		return getDBFormList(moduleName, criteria, selectParams, fetchFields, fetchExtendedModuleForms, true, -1l);
 	}
-	
 	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms, long appId) throws Exception{
+		return getDBFormList(moduleName, criteria, selectParams, fetchFields,fetchExtendedModuleForms, fetchDisabledForms, appId,false);
+	}
+
+	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms, long appId,Boolean skipTemplatePermission) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
-		
+		FacilioModule formSharingModule = ModuleFactory.getFormSharingModule();
+
 		List<FacilioField> fields = FieldFactory.getFormFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String, FacilioField> formSharingFieldsMap = FieldFactory.getAsMap(FieldFactory.getFormSharingFields());
+		FacilioField formSharingRoleField  = formSharingFieldsMap.get("roleId");
+		long currentUserRoleId = -1;
+		User currentUser = AccountUtil.getCurrentUser();
+		if(currentUser != null && currentUser.getRole() != null) {
+			currentUserRoleId = currentUser.getRole().getRoleId();
+		}
+
+		Map<String, FacilioField> formsColumnFieldMap = FieldFactory.getAsMap(fields);
 		Map<String, FacilioField> formSiteFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSiteRelationFields());
 		List<Long> spaces = new ArrayList<>();
 		if (AccountUtil.getCurrentSiteId() > 0) {
@@ -820,11 +830,19 @@ public class FormsAPI {
 
 
 		 GenericSelectRecordBuilder formListBuilder = new GenericSelectRecordBuilder()
-									.select(fields)
-									.table(formModule.getTableName())
-									.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), formModule));
-		 
+				 .select(fields)
+				 .table(formModule.getTableName())
+				 .andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), formModule));
 
+
+		if(!skipTemplatePermission && currentUser.getRole() != null && !AccountUtil.isFeatureEnabled(FeatureLicense.DISABLE_FORM_SHARING)) {
+			formListBuilder.leftJoin(formSharingModule.getTableName()).on("Forms.ID =Form_Sharing.PARENT_ID");
+
+			Criteria sharingCriteria = new Criteria();
+			sharingCriteria.addAndCondition(CriteriaAPI.getCondition(formSharingRoleField, Collections.singleton(currentUserRoleId), NumberOperators.EQUALS));
+			sharingCriteria.addOrCondition(CriteriaAPI.getCondition(formSharingRoleField, CommonOperators.IS_EMPTY));
+			formListBuilder.andCriteria(sharingCriteria);
+		}
 
 		 if (moduleName != null) {
 				List<Long> moduleIds = new ArrayList<>();
@@ -836,20 +854,20 @@ public class FormsAPI {
 					moduleIds.add(module.getExtendModule().getModuleId());
 					StringJoiner ids = new StringJoiner(",");
 					moduleIds.stream().forEach(f -> ids.add(String.valueOf(f)));
-					formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), ids.toString(), NumberOperators.EQUALS));
+					formListBuilder.andCondition(CriteriaAPI.getCondition(formsColumnFieldMap.get("moduleId"), ids.toString(), NumberOperators.EQUALS));
 				}
 				else {
-					formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+					formListBuilder.andCondition(CriteriaAPI.getCondition(formsColumnFieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
 				}
 			}
 		if (spaces != null && spaces.size() > 0) {
-			formListBuilder.andCustomWhere("(" + FieldFactory.getIdField().getColumnName() + " in (" + forms1.constructSelectStatement() + ")");
-			formListBuilder.orCustomWhere(FieldFactory.getIdField().getColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
+			formListBuilder.andCustomWhere("(" +formsColumnFieldMap.get("id").getCompleteColumnName() + " in (" + forms1.constructSelectStatement() + ")");
+			formListBuilder.orCustomWhere(formsColumnFieldMap.get("id").getCompleteColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
 		}
 		if (fetchDisabledForms != null && fetchDisabledForms) {
 		}
 		else {
-			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("showInWeb"), "true", BooleanOperators.IS));
+			formListBuilder.andCondition(CriteriaAPI.getCondition(formsColumnFieldMap.get("showInWeb"), "true", BooleanOperators.IS));
 		}
 
 		if (criteria != null) {
@@ -860,24 +878,24 @@ public class FormsAPI {
 		if (appId > 0) {
 			app = ApplicationApi.getApplicationForId(appId);
 			List<Long> appIds = Collections.singletonList(app.getId());
-			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));
+			formListBuilder.andCondition(CriteriaAPI.getCondition(formsColumnFieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));
 		}
 	
 		if (MapUtils.isNotEmpty(selectParams)) {
 			if (selectParams.containsKey(Builder.ORDER_BY)) {
 				String orderBy = (String) selectParams.get(Builder.ORDER_BY);
 				String orderByType = (String) selectParams.get(Builder.ORDER_BY_TYPE);
-				formListBuilder.orderBy(fieldMap.get(orderBy).getCompleteColumnName() + (orderByType != null ? " " + orderByType : " asc"));
+				formListBuilder.orderBy(formsColumnFieldMap.get(orderBy).getCompleteColumnName() + (orderByType != null ? " " + orderByType : " asc"));
 			}
 			if(selectParams.containsKey(ContextNames.HIDE_IN_LIST)){
-				formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("hideInList"), String.valueOf(selectParams.get(ContextNames.HIDE_IN_LIST)), BooleanOperators.IS));
+				formListBuilder.andCondition(CriteriaAPI.getCondition(formsColumnFieldMap.get("hideInList"), String.valueOf(selectParams.get(ContextNames.HIDE_IN_LIST)), BooleanOperators.IS));
 			}
 			if (selectParams.containsKey(Builder.LIMIT)) {
 				formListBuilder.limit((int) selectParams.get(Builder.LIMIT));
 			}
 		}
 		else {
-			formListBuilder.orderBy("ID asc");
+			formListBuilder.orderBy(formsColumnFieldMap.get("id").getCompleteColumnName()+" asc");
 		}
 		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
@@ -1326,6 +1344,9 @@ public class FormsAPI {
 	}
 	
 	public static List<FormField> getAllFormFields(String moduleName, String appLinkName) throws Exception {
+		return getAllFormFields(moduleName,appLinkName,false);
+	}
+	public static List<FormField> getAllFormFields(String moduleName, String appLinkName,Boolean skipTemplatePermission) throws Exception {
 		if (appLinkName == null) {
 			ApplicationContext app = (AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP));
 			appLinkName = app.getLinkName();
@@ -1333,7 +1354,7 @@ public class FormsAPI {
 		FacilioForm form = new FacilioForm();
 		form.setAppLinkName(appLinkName);
 		List<FormField> allFields = new ArrayList<>();
-		FacilioForm defaultForm = getDefaultForm(moduleName, appLinkName, true);
+		FacilioForm defaultForm = getDefaultForm(moduleName,skipTemplatePermission, appLinkName, true);
 		List<Long> defaultCustomFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (defaultForm != null) {
@@ -1389,14 +1410,18 @@ public class FormsAPI {
 	}
 	
 	// From factory first. If not (for custom module), then will check in db
-	public static FacilioForm getDefaultForm(String moduleName, String appLinkName, Boolean...onlyFields) throws Exception {
+
+	public static FacilioForm getDefaultForm(String moduleName, String appLinkName,Boolean...onlyFields) throws Exception {
+		return getDefaultForm(moduleName,false,appLinkName,onlyFields);
+	}
+	public static FacilioForm getDefaultForm(String moduleName,Boolean skipTemplatePermission, String appLinkName, Boolean...onlyFields) throws Exception {
 
 		Map<String, Object> params = new HashMap<>();
 		params.put(Builder.ORDER_BY, "id");
 		params.put(Builder.LIMIT, 1);
 		params.put(ContextNames.HIDE_IN_LIST,false);
 		ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
-		List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId());
+		List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId(),skipTemplatePermission);
 		if (CollectionUtils.isNotEmpty(forms)) {
 			return forms.get(0);
 		}else if(!appLinkName.equals(ApplicationLinkNames.FACILIO_MAIN_APP)){
@@ -1788,4 +1813,101 @@ public class FormsAPI {
 
 	}
 
+	public static Map<String,Long> getFormIdsFromName(List<String>formNames, long moduleId,long appId) throws Exception {
+
+		FacilioModule formModule = ModuleFactory.getFormModule();
+		List<FacilioField> formFields = FieldFactory.getFormFields();
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(formFields);
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(formModule.getTableName())
+				.select(formFields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"),StringUtils.join(formNames, ","),StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), Collections.singleton(moduleId),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), Collections.singleton(appId),NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = builder.get();
+
+		Map<String,Long> formNameVsId = new HashMap<>();
+		for(Map<String, Object> prop : props){
+			formNameVsId.put((String) prop.get("name"), (Long) prop.get("id"));
+		}
+
+		return formNameVsId;
+	}
+
+	public static <E> double setSequenceNumber(Map<String,Map<String,Object>> records,FacilioModule module,List<FacilioField> fieldList,Map<String,Long> fieldNameVsFieldValue,String fieldName, Class<E> classObj) throws Exception {
+
+		double sequenceNumber = 0;
+		double newSequenceNumber = 0;
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+		Map<String, Object> previousRecord = records.get("previousRecord");
+		Map<String, Object> nextRecord = records.get("nextRecord");
+		long recordId = -1;
+		String recordName = null;
+		for (Map.Entry<String, Long> recordEntry : fieldNameVsFieldValue.entrySet()) {
+			recordId = recordEntry.getValue();
+			recordName = recordEntry.getKey();
+		}
+
+		if (MapUtils.isEmpty(previousRecord) && MapUtils.isEmpty(nextRecord)) {
+			return sequenceNumber + 10;
+		} else if (MapUtils.isNotEmpty(previousRecord) && MapUtils.isEmpty(nextRecord)) {
+			return (double) previousRecord.get(fieldName) + 10;
+		}
+
+		double nextSequenceNumber = (nextRecord != null) ? (double) nextRecord.get(fieldName) : 0;
+		double previousSequenceNumber = (previousRecord != null) ? (double) previousRecord.get(fieldName) : 0;
+
+		double recordSequenceNumber = (nextSequenceNumber + previousSequenceNumber) / 2;
+
+		if (recordSequenceNumber > 0.000009d) {
+			return recordSequenceNumber;
+		} else {
+
+			if (MapUtils.isEmpty(previousRecord)) {
+				sequenceNumber = 10;
+				newSequenceNumber = 10;
+			}
+
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.select(fieldList)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get(recordName).getColumnName(), recordName, String.valueOf(recordId), NumberOperators.EQUALS))
+					.orderBy(fieldMap.get(fieldName).getColumnName());
+
+			List<E> dbRecords = FieldUtil.getAsBeanListFromMapList(selectRecordBuilder.get(), classObj);
+			List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+			for (E record : dbRecords) {
+
+				sequenceNumber += 10;
+				Map<String, Object> recordMap = FieldUtil.getAsProperties(record);
+				GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+				updateVal.addWhereValue("id", recordMap.get("id"));
+				updateVal.addUpdateValue(fieldName, sequenceNumber);
+				batchUpdateList.add(updateVal);
+
+				if (MapUtils.isNotEmpty(previousRecord)) {
+					long previousRecordId = (long) previousRecord.get("id");
+					if ((long) recordMap.get("id") == previousRecordId) {
+						newSequenceNumber = new Double(sequenceNumber + 10);
+						sequenceNumber += 10;
+					}
+				}
+			}
+
+			FacilioField fieldIdField = fieldMap.get("id");
+			List<FacilioField> whereFields = new ArrayList<>();
+			whereFields.add(fieldIdField);
+
+			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+					.table(module.getTableName())
+					.fields(Collections.singletonList(fieldMap.get(fieldName)));
+			updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);
+
+		}
+
+		return newSequenceNumber;
+	}
 }

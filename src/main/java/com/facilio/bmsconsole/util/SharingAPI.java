@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.util;
 
 import java.util.*;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -22,9 +21,14 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SharingAPI {
 	public static void addSharing (SharingContext<? extends SingleSharingContext> sharing, long parentId, FacilioModule module) throws Exception {
+		List<FacilioField> sharingFieldsList = FieldFactory.getSharingFields(module);
+		addSharing(sharing,sharingFieldsList,parentId,module);
+	}
+
+	public static void addSharing (SharingContext<? extends SingleSharingContext> sharing,List<FacilioField> facilioFields, long parentId, FacilioModule module) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(module.getTableName())
-														.fields(FieldFactory.getSharingFields(module))
+														.fields(facilioFields)
 														;
 		
 		for (SingleSharingContext share : sharing) {
@@ -42,14 +46,19 @@ public class SharingAPI {
 	
 	
 	public static <E extends SingleSharingContext> SharingContext<E> getSharing (long parentId, FacilioModule module, Class<E> classObj) throws Exception {
-		List<FacilioField> fields = FieldFactory.getSharingFields(module);
+		List<FacilioField> sharingFields = FieldFactory.getSharingFields(module);
+		return getSharing(Collections.singletonList(parentId),module,classObj,sharingFields);
+	}
+
+	public static <E extends SingleSharingContext> SharingContext<E> getSharing (List<Long> parentIds , FacilioModule module, Class<E> classObj,List<FacilioField> fields) throws Exception {
+
 		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(parentIdField, StringUtils.join(parentIds, ","), NumberOperators.EQUALS))
 														.orderBy("ID")
 														;
 		
