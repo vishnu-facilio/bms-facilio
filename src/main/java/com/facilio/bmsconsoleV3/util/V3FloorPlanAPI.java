@@ -539,15 +539,18 @@ public class V3FloorPlanAPI {
 				   tooltip.put("content", tooltipConent);
 
 			   }
-         return checkViewAssignmentUserPermission(tooltip,record, context);
+         return checkViewAssignmentUserPermission(tooltip,record, context, markerModuleId);
      }
 
-	public static JSONObject checkViewAssignmentUserPermission(JSONObject tooltip,V3ResourceContext record, Context context) throws Exception {
+	public static JSONObject checkViewAssignmentUserPermission(JSONObject tooltip,V3ResourceContext record, Context context, Long markerModuleId) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return tooltip;
 		}
-
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (record != null && markerModuleId != null) {
+			FacilioModule module = modBean.getModule(markerModuleId);
+			if (module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 			V3DeskContext desk = (V3DeskContext) record;
 			JSONObject marktooltip = (JSONObject) getMarkerObject();
 			V3EmployeeContext employee = (V3EmployeeContext) marktooltip.get("employee");
@@ -577,7 +580,7 @@ public class V3FloorPlanAPI {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}}}
 
 		return tooltip;
 	}
@@ -1033,17 +1036,20 @@ public class V3FloorPlanAPI {
 
 		   }
 
-		   return checkViewAssignmentPermission(properties, employeemarker, deskdepartment,record, context);
+		   return checkViewAssignmentPermission(properties, employeemarker, deskdepartment,record, context, markerModuleId);
 
 	   }
 
-	public static V3IndoorFloorPlanPropertiesContext checkViewAssignmentPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment, V3ResourceContext record, Context context) throws Exception {
+	public static V3IndoorFloorPlanPropertiesContext checkViewAssignmentPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment, V3ResourceContext record, Context context, Long markerModuleId) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if (role.isPrevileged()) {
 			return properties;
 		}
 		JSONObject mark = (JSONObject) context.get("markerObject");
-
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (record != null && markerModuleId != null) {
+			FacilioModule module = modBean.getModule(markerModuleId);
+			if (module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 		V3EmployeeContext employee = (V3EmployeeContext)mark.get("employee");
 		V3DeskContext desk = (V3DeskContext) record;
 		try {
@@ -1085,7 +1091,7 @@ public class V3FloorPlanAPI {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
+		}}}
 		properties.setMarkerPermission(mark);
 		return properties;
 	}
