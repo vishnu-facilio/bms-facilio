@@ -138,6 +138,11 @@ public class GetApplicationDetails extends FacilioCommand {
 										webtab.setModules(modules);
 									}
 								}
+								if (webTabGroup.getRoute().equals("general")) {
+									webTabs.removeIf(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)
+											? (webTabContext -> webTabContext.getType() == Type.COMPANY_PROFILE.getIndex() || (webTabContext.getType() == Type.TAX.getIndex()))
+											: (webTabContext -> webTabContext.getType() == Type.ORGANIZATION_SETTINGS.getIndex()));
+								}
 							}
 							if(!fetchAllLayouts) {
 								webTabs.removeIf(t -> !hasLicense(t));

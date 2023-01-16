@@ -2631,6 +2631,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("General", "general", layout.getId(), 200, groupOrder++));
             webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Organization Settings", "organizationsettings", WebTabContext.Type.ORGANIZATION_SETTINGS, null, appId, null, AccountUtil.FeatureLicense.MULTI_CURRENCY.getFeatureId()));
             webTabs.add(new WebTabContext("Company Profile", "companyprofile", WebTabContext.Type.COMPANY_PROFILE, null, appId, null));
             webTabs.add(new WebTabContext("Portals", "portal", WebTabContext.Type.PORTALS, null, appId, null));
             webTabs.add(new WebTabContext("Visitor Settings", "visitorsettings", WebTabContext.Type.VISITOR_SETTINGS, null, appId, null));
@@ -2781,6 +2782,7 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             //configJSON = new JSONObject();
             //configJSON.put("type", "portalOverview");
+            webTabs.add(new WebTabContext("Organization Settings", "organizationsettings", WebTabContext.Type.ORGANIZATION_SETTINGS, null, appId, null, AccountUtil.FeatureLicense.MULTI_CURRENCY.getFeatureId()));
             webTabs.add(new WebTabContext("Company Profile", "companyprofile", WebTabContext.Type.COMPANY_PROFILE, null, appId, null));
             webTabs.add(new WebTabContext("Portals", "portal", WebTabContext.Type.PORTALS, null, appId, null));
             webTabs.add(new WebTabContext("Visitor Settings", "visitorsettings", WebTabContext.Type.VISITOR_SETTINGS, null, appId, null));
