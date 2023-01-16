@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.modules.FacilioIntEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -40,6 +41,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	private ContractsContext contract;
 	private List<V3PoAssociatedTermsContext> termsAssociated;
 	private V3RequestForQuotationContext requestForQuotation;
+	private V3VendorQuotesContext vendorQuote;
 
 
 	public void setName(String name) {
@@ -317,5 +319,13 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 
 	public void setRequestForQuotation(V3RequestForQuotationContext requestForQuotation) {
 		this.requestForQuotation = requestForQuotation;
+	}
+
+	public V3VendorQuotesContext getVendorQuote() {
+		return vendorQuote;
+	}
+
+	public void setVendorQuote(V3VendorQuotesContext vendorQuote) {
+		this.vendorQuote = vendorQuote;
 	}
 }

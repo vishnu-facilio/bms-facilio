@@ -1,7 +1,20 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3ServiceContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.xpath.operations.Bool;
+
+import java.util.List;
 
 public class V3InventoryUtil {
     public static Double getServiceCost(V3ServiceContext service, Double duration, Double quantity) {
@@ -52,5 +65,25 @@ public class V3InventoryUtil {
             issueTime = (long) (returnTime - (duration * 1000));
         }
         return issueTime;
+    }
+
+    public static Boolean hasVendorPortalAccess(Long vendorId) throws Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String vendorContact = FacilioConstants.ContextNames.VENDOR_CONTACT;
+        List<FacilioField> fields = modBean.getAllFields(vendorContact);
+
+        SelectRecordsBuilder<V3VendorContactContext> builder = new SelectRecordsBuilder<V3VendorContactContext>()
+                .moduleName(vendorContact)
+                .select(fields)
+                .beanClass(V3VendorContactContext.class)
+                .andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("VENDOR_PORTAL_ACCESS", "isVendorPortalAccess", String.valueOf(true), BooleanOperators.IS));
+
+        List<V3VendorContactContext> list = builder.get();
+        if(CollectionUtils.isNotEmpty(list) && list.size()>0){
+            return true;
+        }
+        return false;
     }
 }

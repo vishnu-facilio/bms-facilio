@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestForQuotationDefaultStateflow extends SignUpData {
+public class RequestForQuotationStateTransition extends SignUpData {
     @Override
     public void addData() throws Exception {
 

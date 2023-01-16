@@ -21,6 +21,7 @@ public class V3VendorQuotesLineItemsContext extends V3Context {
     private Double quantity;
     private Double counterPrice;
     private String remarks;
+    private Boolean isLineItemAwarded;
 
     public V3VendorQuotesContext getVendorQuotes() {
         return vendorQuotes;
@@ -145,5 +146,16 @@ public class V3VendorQuotesLineItemsContext extends V3Context {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Boolean getIsLineItemAwarded() {
+        if(isLineItemAwarded != null){
+            return isLineItemAwarded.booleanValue();
+        }
+        return false;
+    }
+
+    public void setIsLineItemAwarded(Boolean lineItemAwarded) {
+        isLineItemAwarded = lineItemAwarded;
     }
 }

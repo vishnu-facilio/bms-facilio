@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context.vendorquotes;
 
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.v3.context.V3Context;
 
@@ -16,6 +17,9 @@ public class V3VendorQuotesContext extends V3Context {
     private Boolean isFinalized;
     private Boolean isDiscarded;
     private Long expectedReplyDate;
+    private Boolean negotiation;
+    private V3PurchaseOrderContext purchaseOrder;
+    private Boolean vendorPortalAccess;
 
     public Boolean getIsDiscarded() {
         if(isDiscarded != null){
@@ -76,5 +80,29 @@ public class V3VendorQuotesContext extends V3Context {
 
     public void setReplyDate(Long replyDate) {
         this.replyDate = replyDate;
+    }
+
+    public Boolean getNegotiation() {
+        return negotiation;
+    }
+
+    public void setNegotiation(Boolean negotiation) {
+        this.negotiation = negotiation;
+    }
+
+    public V3PurchaseOrderContext getPurchaseOrder() {
+        return purchaseOrder;
+    }
+
+    public void setPurchaseOrder(V3PurchaseOrderContext purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
+
+    public Boolean getVendorPortalAccess() {
+        return vendorPortalAccess;
+    }
+
+    public void setVendorPortalAccess(Boolean vendorPortalAccess) {
+        this.vendorPortalAccess = vendorPortalAccess;
     }
 }

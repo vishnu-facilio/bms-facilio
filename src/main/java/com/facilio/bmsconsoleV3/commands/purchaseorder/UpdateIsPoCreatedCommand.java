@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
@@ -21,14 +22,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UpdateIsPoCreatedCommand extends FacilioCommand {
@@ -85,6 +85,15 @@ public class UpdateIsPoCreatedCommand extends FacilioCommand {
                     patchChain.execute();
                 }
 
+                //updating PO_ID in vendorQuote
+                if(po.getVendorQuote()!=null){
+                    Map<String, Object> patchObj = new HashMap<>();
+                    Map<String, Object> poCreated = new HashMap<>();
+                    poCreated.put("isPoCreated",true);
+                    poCreated.put("purchaseOrderId", po.getId());
+                    V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.VENDOR_QUOTES, po.getVendorQuote().getId(), patchObj, FieldUtil.getAsJSON(poCreated) , null, null, null, null,null);
+
+                }
             }
 
         }

@@ -124,7 +124,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.workordersurvey.AddWorkOrderSurveyModules
 
     #Adding stateflow Rfq
-    #  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
+    #  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationStateTransition
+  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateFlow
 
   #Adding Weather service modules
   - com.facilio.weather.signup.AddWeatherModules
@@ -381,5 +382,6 @@ classes:
 
   - com.facilio.bmsconsoleV3.signup.asset.AddAssetDepreciationRelModule
 
-
+    #Adding Vendor Quote stateflow
+  - com.facilio.bmsconsoleV3.signup.requestForQuotation.VendorQuoteDefaultStateflow
   

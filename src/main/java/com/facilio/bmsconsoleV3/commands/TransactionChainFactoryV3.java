@@ -17,6 +17,10 @@ import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -146,16 +150,6 @@ import com.facilio.bmsconsoleV3.commands.receipts.GetReceiptsListOnReceivableIdC
 import com.facilio.bmsconsoleV3.commands.receipts.LoadReceiptsListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.PurchaseOrderLineItemQuantityRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.PurchaseOrderQuantityRecievedRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.AwardVendorsCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.ConvertPrToRfqCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.ConvertRfqToPoCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.RfqBeforeCreateOrUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationBooleanFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRequestForQuotationCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRequestForQuotationLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAssociatedHazardPrecautions;
 import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHazardPrecautions;
@@ -2061,7 +2055,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ConvertRfqToPoCommandV3());
         return c;
     }
-
+    public static FacilioChain getConvertVendorQuoteToPoChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertVendorQuoteToPoCommandV3());
+        return c;
+    }
     public static FacilioChain getRfqBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -2074,6 +2072,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateRequestForQuotationCommandV3());
         c.addCommand(new UpdateRequestForQuotationLineItemsCommandV3());
+        return c;
+    }
+    public static FacilioChain getVendorQuotesAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetVendorQuotesLineItemsCommandV3());
+        c.addCommand(new CheckVendorPortalAccessibilityCommandV3());
         return c;
     }
 

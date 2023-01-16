@@ -1,12 +1,15 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -51,6 +54,13 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
                     }
                     if(purchaseOrderContext.getQuantityReceived() == null || purchaseOrderContext.getQuantityReceived() <= 0){
                         purchaseOrderContext.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex());
+                    }
+
+                    if(purchaseOrderContext.getVendorQuote()!=null){
+                        V3VendorQuotesContext vendorQuote = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_QUOTES,purchaseOrderContext.getVendorQuote().getId());
+                        if(vendorQuote.getRequestForQuotation()!=null){
+                            purchaseOrderContext.setRequestForQuotation(vendorQuote.getRequestForQuotation());
+                        }
                     }
 
 

@@ -238,7 +238,7 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         requestForQuotationModuleForm.setName("default_requestForQuotation_web");
         requestForQuotationModuleForm.setModule(requestForQuotationModule);
         requestForQuotationModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        requestForQuotationModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        requestForQuotationModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> requestForQuotationModuleFormDefaultFields = new ArrayList<>();
         requestForQuotationModuleFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

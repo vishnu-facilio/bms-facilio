@@ -1119,6 +1119,8 @@
         </action>
         <action name="convertRfqToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertRfqToPo">
         </action>
+        <action name="convertVendorQuoteToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertVendorQuoteToPo">
+        </action>
     </package>
 
     <package name="plannedMaintenance" namespace="/api/v3/plannedmaintenance" extends="v3Api">

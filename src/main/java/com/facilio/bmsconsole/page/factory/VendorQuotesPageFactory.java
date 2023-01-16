@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
@@ -18,12 +19,20 @@ public class VendorQuotesPageFactory extends PageFactory{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
-
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
         addVendorQuotesLineItemsWidget(tab1Sec1);
         addNotesAttachmentsModule(tab1Sec1);
+
+        Page.Tab tab3 = page.new Tab("History");
+        page.addTab(tab3);
+        Page.Section tab3Sec1 = page.new Section();
+        tab3.addSection(tab3Sec1);
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.VENDOR_QUOTES_ACTIVITY);
+        tab3Sec1.addWidget(activityWidget);
 
         return page;
     }
@@ -52,7 +61,7 @@ public class VendorQuotesPageFactory extends PageFactory{
     private static PageWidget addVendorQuotesLineItemsWidget(Page.Section section) {
 
         PageWidget vendorQuotesLineItemsWidget = new PageWidget();
-        vendorQuotesLineItemsWidget.addToLayoutParams(section, 24, 7);
+        vendorQuotesLineItemsWidget.addToLayoutParams(section, 24, 9);
         vendorQuotesLineItemsWidget.setWidgetType(PageWidget.WidgetType.VENDOR_QUOTES_LINE_ITEMS);
         section.addWidget(vendorQuotesLineItemsWidget);
 

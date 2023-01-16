@@ -336,6 +336,7 @@ public class PageWidget {
 		PR_PREVIEW("prPreview"),
 		PO_PREVIEW("poPreview"),
 		RFQ_PREVIEW("rfqPreview"),
+		RFQ_VENDOR("rfqVendor"),
 		VENDOR_QUOTES_LINE_ITEMS("vendorQuotesLineItems"),
 
 		// Facility Module Widgets

@@ -26,13 +26,14 @@ public class UpdateRequestForQuotationCommandV3 extends FacilioCommand {
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS,requestForQuotations.get(0).getRequestForQuotationLineItems());
             chain.execute();
         }
-        else if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("createPo") && (boolean) bodyParams.get("createPo")) {
+        /*
+         else if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("createPo") && (boolean) bodyParams.get("createPo")) {
             FacilioChain chain = TransactionChainFactoryV3.getCreatePurchaseOrdersChainV3();
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,requestForQuotations.get(0));
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS,requestForQuotations.get(0).getRequestForQuotationLineItems());
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_CONTEXT,context);
             chain.execute();
-        }
+            */
         else if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("awardQuotes") && (boolean) bodyParams.get("awardQuotes")) {
             FacilioChain chain = TransactionChainFactoryV3.getAwardVendorsChainV3();
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,requestForQuotations.get(0));

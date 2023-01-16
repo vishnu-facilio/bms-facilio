@@ -120,10 +120,7 @@ import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuoteLineItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsOnListCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.*;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -859,13 +856,16 @@ public class APIv3Config {
     public static Supplier<V3Config> getVendorQuotes() {
         return () -> new V3Config(V3VendorQuotesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
                 .update()
+                .beforeSave(new VendorQuoteBeforeUpdateCommandV3())
+                .afterSave(new VendorQuoteAfterUpdateCommandV3(), new ConstructUpdateCustomActivityCommandV3())
                 .list()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
                 .afterFetch(new SetVendorQuotesLineItemsOnListCommandV3())
                 .summary()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
-                .afterFetch(new SetVendorQuotesLineItemsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getVendorQuotesAfterFetchChain())
                 .delete()
                 .build();
     }

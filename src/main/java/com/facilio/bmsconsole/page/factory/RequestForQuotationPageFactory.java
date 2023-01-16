@@ -22,7 +22,7 @@ public class RequestForQuotationPageFactory extends PageFactory{
     private static final Logger LOGGER = LogManager.getLogger(RequestForQuotationPageFactory.class.getName());
     public static Page getRequestForQuotationPage(V3RequestForQuotationContext requestForQuotation, FacilioModule module) throws Exception {
         Page page = new Page();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
         Page.Section tab1Sec1 = page.new Section();
@@ -32,37 +32,46 @@ public class RequestForQuotationPageFactory extends PageFactory{
         previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
         tab1Sec1.addWidget(previewWidget);
 
-        Page.Tab tab2 = page.new Tab("Notes & Information");
+        Page.Tab tab2 = page.new Tab("Vendor");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
 
-        addSecondaryDetailsWidget(tab2Sec1);
-        addNotesAttachmentsModule(tab2Sec1);
+        PageWidget vendorWidget = new PageWidget(PageWidget.WidgetType.RFQ_VENDOR);
+        vendorWidget.addToLayoutParams(tab2Sec1, 24, 16);
+        tab2Sec1.addWidget(vendorWidget);
 
-        Page.Tab tab3 = page.new Tab("Related");
+        Page.Tab tab3 = page.new Tab("Notes & Information");
         page.addTab(tab3);
-        addRelationshipSection(page, tab3, module.getModuleId());
-        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
+        Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
 
-        addRelatedListWidget(tab3Sec1,"vendorQuotes",module.getModuleId());
-        addRelatedListWidget(tab3Sec1,"purchaseorder", module.getModuleId());
-        addRelatedListWidget(tab3Sec1,"purchaserequest", module.getModuleId());
+        addSecondaryDetailsWidget(tab3Sec1);
+        addNotesAttachmentsModule(tab3Sec1);
 
-        Page.Tab tab4 = page.new Tab("History");
+        Page.Tab tab4 = page.new Tab("Related");
         page.addTab(tab4);
-        Page.Section tab4Sec1 = page.new Section();
-
+        addRelationshipSection(page, tab4, module.getModuleId());
+        Page.Section tab4Sec1 = getRelatedListSectionObj(page);
         tab4.addSection(tab4Sec1);
+
+        addRelatedListWidget(tab4Sec1,"vendorQuotes",module.getModuleId());
+        addRelatedListWidget(tab4Sec1,"purchaseorder", module.getModuleId());
+        addRelatedListWidget(tab4Sec1,"purchaserequest", module.getModuleId());
+
+        Page.Tab tab5 = page.new Tab("History");
+        page.addTab(tab5);
+        Page.Section tab5Sec1 = page.new Section();
+
+        tab5.addSection(tab5Sec1);
 
         PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
 
-        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+        activityWidget.addToLayoutParams(tab5Sec1, 24, 3);
 
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ACTIVITY);
 
-        tab4Sec1.addWidget(activityWidget);
+        tab5Sec1.addWidget(activityWidget);
 
         return page;
     }

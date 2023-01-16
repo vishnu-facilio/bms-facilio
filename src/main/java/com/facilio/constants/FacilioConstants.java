@@ -2209,6 +2209,8 @@ public class FacilioConstants {
 		public static final String REQUEST_FOR_QUOTATION_CONTEXT = "requestForQuotationContext";
 		public static final String VENDOR_QUOTES = "vendorQuotes";
 		public static final String VENDOR_QUOTES_LINE_ITEMS = "vendorQuotesLineItems";
+		public static final String VENDOR_QUOTES_ACTIVITY = "vendorQuotesActivity";
+		public static final String VENDOR_QUOTE_ID = "vendorQuoteId";
 		public static final String REQUEST_FOR_QUOTATION_ACTIVITY = "requestForQuotationActivity";
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
 		public static final String SEND_INVITE = "sendinvite";
@@ -2877,6 +2879,7 @@ public class FacilioConstants {
 			classMap.put(WO_PLANNED_SERVICES, WorkOrderPlannedServicesContext.class);
 			classMap.put(SpaceBooking.SPACE_BOOKING, V3SpaceBookingContext.class);
 			classMap.put(INVENTORY_RESERVATION, InventoryReservationContext.class);
+			classMap.put(VENDOR_QUOTES_ACTIVITY, ActivityContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
