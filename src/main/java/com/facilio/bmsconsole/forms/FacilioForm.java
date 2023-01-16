@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.modules.FacilioModule;
@@ -287,6 +289,16 @@ public class FacilioForm implements Serializable {
 			return typeMap;
 		}
 	}
+
+	public SharingContext<SingleSharingContext> getFormSharing() {
+		return formSharing;
+	}
+
+	public void setFormSharing(SharingContext<SingleSharingContext> formSharing) {
+		this.formSharing = formSharing;
+	}
+
+	private SharingContext<SingleSharingContext> formSharing;
 	private LabelPosition labelPosition;
 	
 	public enum LabelPosition {

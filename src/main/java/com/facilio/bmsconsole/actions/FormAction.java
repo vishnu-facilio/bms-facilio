@@ -7,20 +7,14 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.formFactory.FacilioFormChainFactory;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
-import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.FacilioException;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
@@ -194,6 +188,16 @@ public class FormAction extends FacilioAction {
 		this.formField = formField;
 	}
 
+	public Boolean getSkipTemplatePermission() {
+		return skipTemplatePermission;
+	}
+
+	public void setSkipTemplatePermission(Boolean skipTemplatePermission) {
+		this.skipTemplatePermission = skipTemplatePermission;
+	}
+
+	private Boolean skipTemplatePermission = false;
+
 	private Boolean forCreate = false;
 
 	public Boolean getForCreate() {
@@ -315,6 +319,7 @@ public class FormAction extends FacilioAction {
 		}
 		
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		context.put(FacilioConstants.ContextNames.SKIP_TEMPLATE_PERMISSION, getSkipTemplatePermission());
 
 		
 		ReadOnlyChainFactory.getFormList().execute(context);
@@ -533,11 +538,37 @@ public String getServicePortalForms() throws Exception{
 	}
 
 	public String fetchFormFromId() throws Exception {
+
 		FacilioChain chain = ReadOnlyChainFactory.getFormFromDBChain();
 		FacilioContext context = chain.getContext();
 		context.put(ContextNames.FORM_ID, getFormId());
 		chain.execute();
-		setResult("form",context.get(ContextNames.FORM));
-		return  SUCCESS;
+
+		setResult("form", context.get(ContextNames.FORM));
+
+		return SUCCESS;
+	}
+	
+	public String addOrUpdateFormSharingRoles() throws Exception{
+
+		FacilioChain facilioChain = TransactionChainFactory.getAddOrUpdateFormSharingRolesChain();
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.FORM,getForm());
+		facilioChain.execute();
+
+		setResult(ContextNames.FORM_SHARING, context.get(ContextNames.FORM_SHARING));
+
+		return SUCCESS;
+	}
+
+	public String getFormSharingRolesForForms() throws Exception{
+
+		FacilioChain facilioChain = TransactionChainFactory.getFormSharingRolesChain();
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.FORM_ID,getFormId());
+		facilioChain.execute();
+		setResult(ContextNames.FORM_SHARING, context.get(ContextNames.FORM_SHARING));
+
+		return SUCCESS;
 	}
 }

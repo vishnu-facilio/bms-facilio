@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.util;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
@@ -57,6 +56,7 @@ public class SharingAPI {
 		Map<Long, SharingContext<E>> sharingContextMap = getSharing(Collections.singletonList(parentId), module, classObj, sharingFields);
 		return sharingContextMap.get(parentId);
 	}
+
 
 	public static int deleteSharingForParent (List<Long> parentIds, FacilioModule module) throws Exception {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

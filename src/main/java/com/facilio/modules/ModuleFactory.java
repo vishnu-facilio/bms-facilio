@@ -161,6 +161,7 @@ public class ModuleFactory {
 		moduleMap.put("currency", getCurrencyModule());
 
 		moduleMap.put(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION,getSpaceBookingFormRelationModule());
+		moduleMap.put(ContextNames.FORM_SHARING, getFormSharingModule());
 		return moduleMap;
 	}
 	
@@ -190,8 +191,13 @@ public class ModuleFactory {
 		formModule.setTableName("Forms");
 		return formModule;
 	}
-
-
+	public static FacilioModule getFormSharingModule() {
+		FacilioModule formSharing = new FacilioModule();
+		formSharing.setName("formSharing");
+		formSharing.setDisplayName("Form Sharing");
+		formSharing.setTableName("Form_Sharing");
+		return formSharing;
+	}
 	public static FacilioModule getReadingToolsModule() {
 		FacilioModule formModule = new FacilioModule();
 		formModule.setName("readingTools");

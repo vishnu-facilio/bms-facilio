@@ -6711,6 +6711,18 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
 		return c;
 	}
+
+	public static FacilioChain getAddOrUpdateFormSharingRolesChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddFormSharingCommand());
+		return c;
+	}
+
+	public static FacilioChain getFormSharingRolesChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFormSharingRolesCommand());
+		return c;
+	}
 }
 
 
