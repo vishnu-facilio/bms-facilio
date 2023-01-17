@@ -13,13 +13,19 @@ public class GetFormFromDBCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
+        String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,null);
+        String formName = (String) context.getOrDefault(FacilioConstants.ContextNames.FORM_NAME,null);
+        long formId = (long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID,-1);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = moduleBean.getModule(moduleName);
 
-        FacilioForm facilioForm = FormsAPI.getFormFromDB(formName, facilioModule);
+        FacilioForm facilioForm = null;
+        if(formId<0) {
+            facilioForm = FormsAPI.getFormFromDB(formName, facilioModule);
+        }else{
+            facilioForm = FormsAPI.getFormFromDB(formId);
+        }
 
         context.put(FacilioConstants.ContextNames.FORM, facilioForm);
 
