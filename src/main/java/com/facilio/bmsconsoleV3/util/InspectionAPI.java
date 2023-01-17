@@ -81,11 +81,8 @@ public class InspectionAPI {
 	}
 	
 	public static void deleteScheduledPreOpenInspections(List<Long> inspectionIds) throws Exception {
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
-
 		SelectRecordsBuilder<InspectionResponseContext> selectBuilder = new SelectRecordsBuilder<InspectionResponseContext>()
 				.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
 				.select(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE))
@@ -98,22 +95,21 @@ public class InspectionAPI {
 		SelectRecordsBuilder.BatchResult<InspectionResponseContext> batches = selectBuilder.getInBatches("Inspection_Responses.ID", 5000);
 
 		int i=0;
-		while (batches.hasNext()) {
-			LOGGER.info("Fetching pre open inspection Batch wise, Batch ID == "+i++);
-			List<InspectionResponseContext> props = batches.get();
-			List<Long> ids = props.stream().map(InspectionResponseContext::getId).collect(Collectors.toList());
-			LOGGER.info("Pre open inspection Id's to be deleted === "+ids);
+		List<List<Long>> inspectionIdsToBeDeleted = new ArrayList<>();
 
+		while (batches.hasNext()) {
+			List<InspectionResponseContext> props = batches.get();
+			LOGGER.info("Batch ID == "+ i++ +"Count of Records Fetched for this batch == "+props.size());
+			inspectionIdsToBeDeleted.add(props.stream().map(InspectionResponseContext::getId).collect(Collectors.toList()));
+		}
+		for(List<Long> ids:inspectionIdsToBeDeleted){
+			LOGGER.info("Pre open inspection Id's to be deleted === "+ids);
 			DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()
 					.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
-					.andCondition(CriteriaAPI.getIdCondition(ids, modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE)))
 					.skipModuleCriteria();
-
-			int countOfDeletedRecords= deleteBuilder1.delete();
-
+			int countOfDeletedRecords= deleteBuilder1.batchDeleteById(ids);
 			LOGGER.info("COUNT OF DELETED PRE OPEN INSPECTIONS ===  "+countOfDeletedRecords + " for template ID === "+inspectionIds);
 		}
-
 	}
 	
 	public static List<InspectionTriggerContext> getInspectionTrigger(Condition condition,boolean fetchRelated) throws Exception {
