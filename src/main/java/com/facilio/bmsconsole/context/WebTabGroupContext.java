@@ -9,6 +9,7 @@ import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -93,6 +94,7 @@ public class WebTabGroupContext implements Serializable {
     public void setIconTypeEnum(IconType iconTypeEnum){
         this.iconTypeEnum =iconTypeEnum;
     }
+    @JSON(deserialize = false)
     public void setIconTypeEnum(String iconTypeEnum) {
         if(StringUtils.isNotEmpty(iconTypeEnum)){
             this.iconTypeEnum = IconType.valueOf(iconTypeEnum);

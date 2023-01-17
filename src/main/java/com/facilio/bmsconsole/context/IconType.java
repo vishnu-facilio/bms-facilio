@@ -61,10 +61,13 @@ public enum IconType implements FacilioStringEnum {
         }
         return null;
     }
+    public static IconType getIconTypeByIconName(String iconName){
+        return ICON_NAME_VS_TYPE.get(iconName);
+    }
     private static Map<String, IconType> initIconNamevsType() {
         Map<String, IconType> iconNameVsIconType = new HashMap<>(values().length);
         for (IconType type : values()) {
-            iconNameVsIconType .put(type.getValue(), type);
+            iconNameVsIconType .put(type.getIconName(), type);
         }
         return Collections.unmodifiableMap(iconNameVsIconType);
     }

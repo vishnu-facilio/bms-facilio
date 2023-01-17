@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -73,6 +74,7 @@ public class WebTabContext implements Serializable {
     public void setIconTypeEnum(IconType iconTypeEnum) {
         this.iconTypeEnum = iconTypeEnum;
     }
+    @JSON(deserialize = false)
     public void setIconTypeEnum(String iconTypeEnum) {
         if(StringUtils.isNotEmpty(iconTypeEnum)){
             this.iconTypeEnum = IconType.valueOf(iconTypeEnum);
