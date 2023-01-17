@@ -812,6 +812,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteViewCommand());
 			return c;
 		}
+
+		public static FacilioChain getViewFromIdChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetDBViewCommand());
+			return c;
+		}
 		public static FacilioChain updateWorkflowRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateWorkflowRuleCommand());

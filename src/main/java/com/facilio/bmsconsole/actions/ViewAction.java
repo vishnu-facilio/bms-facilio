@@ -433,6 +433,17 @@ public String v2customizeView() throws Exception {
 		return SUCCESS;	
 		
 	}
+
+	public String getViewFromId() throws Exception {
+		FacilioChain getViewChain = TransactionChainFactory.getViewFromIdChain();
+
+		FacilioContext context = getViewChain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, id);
+		getViewChain.execute();
+
+		setResult("view", context.get(FacilioConstants.ContextNames.EXISTING_CV));
+		return SUCCESS;
+	}
 	
 		
 	public String customizeView() throws Exception {

@@ -1082,6 +1082,9 @@
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="translationImpl">ViewTranslation</param>
 		</action>
+		<action name="getViewFromId"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="getViewFromId">
+		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
 		</action>
