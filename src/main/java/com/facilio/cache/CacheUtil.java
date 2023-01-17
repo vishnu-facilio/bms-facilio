@@ -39,6 +39,8 @@ public class CacheUtil {
 
 	public static final String APP_ID = "appId";
 
+	public static final String SCOPE_ID = "scopeId";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -122,8 +124,16 @@ public class CacheUtil {
 		return APP_ID + KEY_SEPARATOR + appId;
 	}
 
+	public static String SCOPEID_KEY(long scopeId) {
+		return SCOPE_ID + KEY_SEPARATOR + scopeId;
+	}
+
 	public static String GLOBAL_SCOPE_VARIABLE_KEY(long orgId, long appId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + APPID_KEY(appId);
+	};
+
+	public static String USER_SCOPE_CONFIG_VARIABLE_KEY(long orgId, long scopeId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + SCOPEID_KEY(scopeId);
 	};
 
 	public static boolean isCacheEnabled() {

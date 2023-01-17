@@ -35,4 +35,5 @@
 
 	<bean name="ValueGeneratorBean" class="com.facilio.beans.ValueGeneratorCacheBeanImpl"></bean>
 
+	<bean name="UserScopeBean" class="com.facilio.beans.UserScopeBeanImplCache"></bean>
 </beans>

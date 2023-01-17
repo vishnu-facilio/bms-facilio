@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.beans.ValueGeneratorBean;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
@@ -274,7 +275,8 @@ public class ScopingUtil {
                                         scopingConfig.setCriteria(newCriteria);
                                         newScopingConfigList.add(scopingConfig);
                                     }
-                                    ApplicationApi.deleteScopingConfigForId(scopingConfig.getId());
+                                    UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+                                    userScopeBean.deleteScopingConfigForId(scopingConfig.getId());
                                 }
                             }
                         }
@@ -341,7 +343,8 @@ public class ScopingUtil {
                                                         }
                                                         scopingConfig.setCriteria(criteria);
                                                     }
-                                                    ApplicationApi.deleteScopingConfigForId(scopingConfig.getId());
+                                                    UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+                                                    userScopeBean.deleteScopingConfigForId(scopingConfig.getId());
                                                     newScopingConfigList.add(scopingConfig);
                                                     visited.add(scopingConfig.getModuleId());
                                                     break;

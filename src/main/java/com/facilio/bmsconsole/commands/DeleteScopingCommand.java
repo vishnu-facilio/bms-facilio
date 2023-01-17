@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -10,6 +11,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -37,7 +39,8 @@ public class DeleteScopingCommand extends FacilioCommand {
             if(scoping != null && scoping.isDefault()) {
                 throw new IllegalArgumentException("Default Scoping can't be deleted");
             }
-            ApplicationApi.deleteScopingConfig(scopingId);
+            UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+            userScopeBean.deleteScopingConfig(scopingId);
             ApplicationApi.deleteScoping(scopingId);
         }
         return false;

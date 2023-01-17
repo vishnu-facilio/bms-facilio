@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
@@ -1888,20 +1889,12 @@ public class ApplicationApi {
 
     public static Map<Long, ScopingConfigContext> getScopingMapForApp(long scopingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getScopingConfigFields())
-                .table("Scoping_Config")
-                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId),
-                        NumberOperators.EQUALS));
+        UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
 
-        List<Map<String, Object>> props = selectBuilder.get();
+        List<ScopingConfigCacheContext> list = userScopeBean.getScopingConfig(scopingId);
         Map<Long, ScopingConfigContext> moduleScoping = new HashMap<Long, ScopingConfigContext>();
-        if (CollectionUtils.isNotEmpty(props)) {
-            List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
+        if (CollectionUtils.isNotEmpty(list)) {
             for (ScopingConfigContext scopingConfig : list) {
-                if (scopingConfig.getCriteriaId() > 0) {
-                    scopingConfig.setCriteria(CriteriaAPI.getCriteria(scopingConfig.getCriteriaId()));
-                }
                 moduleScoping.put(scopingConfig.getModuleId(), scopingConfig);
             }
             return moduleScoping;
@@ -2352,22 +2345,8 @@ public class ApplicationApi {
 
     public static void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
 
-        List<FacilioField> fields = FieldFactory.getScopingConfigFields();
-        for (ScopingConfigContext scopingConfig : scoping) {
-            if (scopingConfig.getCriteria() == null) {
-                throw new IllegalArgumentException("Criteria Object cannot be null");
-            }
-            long criteriaId = CriteriaAPI.addCriteria(scopingConfig.getCriteria());
-            scopingConfig.setCriteriaId(criteriaId);
-        }
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getScopingConfigModule().getTableName())
-                .fields(fields);
-
-        List<Map<String, Object>> props = FieldUtil.getAsMapList(scoping, ScopingConfigContext.class);
-
-        insertBuilder.addRecords(props);
-        insertBuilder.save();
+        UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+        userScopeBean.addScopingConfigForApp(scoping);
 
     }
 
@@ -2406,21 +2385,7 @@ public class ApplicationApi {
         return null;
     }
 
-    public static void deleteScopingConfig(long scopingId) throws Exception {
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getScopingConfigModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId),
-                        NumberOperators.EQUALS));
-        int rows = builder.delete();
-    }
 
-    public static void deleteScopingConfigForId(long scopingConfigId) throws Exception {
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getScopingConfigModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingConfigId),
-                        NumberOperators.EQUALS));
-        int rows = builder.delete();
-    }
 
     public static void deleteScoping(long scopingId) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -2590,21 +2555,6 @@ public class ApplicationApi {
 
     }
 
-    public static void updateCriteria(long criteriaId, long scopingId, long moduleId) throws Exception {
-
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getScopingConfigModule().getTableName())
-                .fields(FieldFactory.getScopingConfigFields())
-                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId),
-                        NumberOperators.EQUALS))
-
-        ;
-        Map<String, Object> map = new HashMap<>();
-        map.put("criteriaId", criteriaId);
-        builder.update(map);
-    }
-
     public static void updateRoleForUserInApp(Long ouId, Long appId, Long roleId) throws Exception {
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -2641,51 +2591,6 @@ public class ApplicationApi {
             Map<String, Object> map = new HashMap<>();
             map.put("versionNumber", layout.getVersionNumber() + 1);
             builder.update(map);
-        }
-    }
-
-    public static void migrateUserScoping() throws Exception {
-        try {
-            List<ApplicationContext> applications = ApplicationApi.getAllApplications();
-            if (CollectionUtils.isNotEmpty(applications)) {
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                for (ApplicationContext app : applications) {
-                    if (app.getScopingId() > 0) {
-                        Map<Long, List<ScopingConfigContext>> scopingConfigContexts = ApplicationApi
-                                .migrateScopingMapForApp(app.getScopingId());
-                        if (MapUtils.isNotEmpty(scopingConfigContexts)) {
-                            Iterator<Map.Entry<Long, List<ScopingConfigContext>>> itr = scopingConfigContexts.entrySet()
-                                    .iterator();
-                            while (itr.hasNext()) {
-                                Map.Entry<Long, List<ScopingConfigContext>> entry = itr.next();
-                                FacilioModule module = modBean.getModule(entry.getKey());
-
-                                long criteriaId = -1;
-                                List<ScopingConfigContext> list = entry.getValue();
-                                if (CollectionUtils.isNotEmpty(list)) {
-                                    for (ScopingConfigContext sc : list) {
-                                        if (sc.getCriteriaId() > 0) {
-                                            criteriaId = sc.getCriteriaId();
-                                            continue;
-                                        }
-                                        if (criteriaId == -1) {
-                                            criteriaId = ApplicationApi.updateCriteria(sc, module);
-                                            ApplicationApi.updateCriteria(criteriaId, sc.getId(), sc.getModuleId());
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-                        }
-                    } else {
-                        ApplicationApi.addDefaultScoping(app.getId());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LogManager.getLogger(ApplicationApi.class.getName()).error("Error occurred while running migration.", e);
         }
     }
 

@@ -2,14 +2,33 @@ package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
 
+import com.facilio.annotations.AnnotationEnums;
+import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.Operator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@ImmutableChildClass(className = "ScopingConfigCacheContext",constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class ScopingConfigContext implements Serializable{
 	/**
 	 * 
 	 */
+
+	public ScopingConfigContext(ScopingConfigContext object) {
+		this.id = object.id;
+		this.orgId = object.orgId;
+		this.scopingId = object.scopingId;
+		this.moduleId = object.moduleId;
+		this.criteriaId = object.criteriaId;
+		this.criteria = object.criteria;
+		this.fieldName = object.fieldName;
+		this.value = object.value;
+		this.operatorId = object.operatorId;
+		this.valueGenerator = object.valueGenerator;
+	}
+
 	private static final long serialVersionUID = 1L;
 	
 	private long id;

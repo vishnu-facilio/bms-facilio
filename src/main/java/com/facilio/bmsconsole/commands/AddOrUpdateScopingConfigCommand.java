@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -23,7 +25,8 @@ public class AddOrUpdateScopingConfigCommand extends FacilioCommand {
             else if (scopingContext.isDefault()) {
                 throw new IllegalArgumentException("There can be only one default scoping for an application");
             }
-            ApplicationApi.deleteScopingConfig(scopingContext.getId());
+            UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+            userScopeBean.deleteScopingConfig(scopingContext.getId());
         }
         for(ScopingConfigContext sc : scopingContext.getScopingConfigList()) {
             sc.setScopingId(scopingContext.getId());
