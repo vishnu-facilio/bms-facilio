@@ -11,6 +11,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.SecurityUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
@@ -126,8 +127,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     private void handleListRequest(String moduleName) throws Exception {
 
         api currentApi = currentApi();
+        if(!SecurityUtil.isClean(this.getOrderBy(),this.getOrderType())){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Invalid order clause parameter passed");
+        }
         FacilioContext listContext = V3Util.fetchList(moduleName, (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
-                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons());
+                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null, this.getWithoutCustomButtons());
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
         this.setData(recordJSON);
@@ -136,6 +140,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             this.setMeta((JSONObject) listContext.get(FacilioConstants.ContextNames.META));
         }
     }
+
 
     private void bulkPatchHandler(Map<String, Object> dataMap, String moduleName, Map<String, Object> bodyParams) throws Exception{
         List<Map<String, Object>> rawRecords = (List<Map<String, Object>>) dataMap.get(moduleName);

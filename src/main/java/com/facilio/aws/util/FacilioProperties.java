@@ -191,6 +191,9 @@ public class FacilioProperties {
     @Getter
     private static Integer malwareScannerPort;
 
+    @Getter
+    private static boolean isOrderByCleaningEnabled;
+
     static {
         loadProperties();
     }
@@ -395,6 +398,7 @@ public class FacilioProperties {
                 malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
                 malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
             }
+            isOrderByCleaningEnabled = Boolean.valueOf(PROPERTIES.getProperty("sanitizeOrderBy.enabled"));
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
         } catch (IOException e) {

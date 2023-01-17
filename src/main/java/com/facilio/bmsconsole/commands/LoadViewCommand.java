@@ -23,6 +23,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.SecurityUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import org.apache.commons.chain.Context;
@@ -35,6 +38,8 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.facilio.security.SecurityUtil.sanitizeSqlOrderbyParam;
 
 public class LoadViewCommand extends FacilioCommand {
 
@@ -52,6 +57,16 @@ public class LoadViewCommand extends FacilioCommand {
 		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		boolean isFetchCall = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_FETCH_CALL, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		JSONObject tempSortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+		if(tempSortObj!=null) {
+			String tempOrderBy = (String) tempSortObj.get("orderBy");
+			String tempOrderType = (String) tempSortObj.get("orderType");
+			if (!SecurityUtil.isClean(tempOrderBy, tempOrderType)) {
+				throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
+			}
+		}
+
 		if(viewName != null && !viewName.isEmpty()) {
 			String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
 			FacilioView view = null;
