@@ -1,10 +1,12 @@
 package com.facilio.bmsconsoleV3.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.v3.context.Constants;
 import org.apache.log4j.Priority;
 import org.apache.poi.util.StringUtil;
 import org.json.simple.JSONObject;
@@ -81,20 +83,37 @@ public class InspectionAPI {
 	public static void deleteScheduledPreOpenInspections(List<Long> inspectionIds) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
-		
-		DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()
+
+		SelectRecordsBuilder<InspectionResponseContext> selectBuilder = new SelectRecordsBuilder<InspectionResponseContext>()
 				.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
+				.select(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE))
+				.beanClass(InspectionResponseContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), inspectionIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER))
 				.skipModuleCriteria();
-		
-		int deleteCount = deleteBuilder1.delete();
 
-		LOGGER.info("COUNT OF DELETED PRE OPEN INSPECTIONS - "+deleteCount + " for template ID : "+inspectionIds);
-		System.out.println(deleteBuilder1);
+		SelectRecordsBuilder.BatchResult<InspectionResponseContext> batches = selectBuilder.getInBatches("Inspection_Responses.ID", 5000);
+
+		int i=0;
+		while (batches.hasNext()) {
+			LOGGER.info("Fetching pre open inspection Batch wise, Batch ID == "+i++);
+			List<InspectionResponseContext> props = batches.get();
+			List<Long> ids = props.stream().map(InspectionResponseContext::getId).collect(Collectors.toList());
+			LOGGER.info("Pre open inspection Id's to be deleted === "+ids);
+
+			DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()
+					.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
+					.andCondition(CriteriaAPI.getIdCondition(ids, modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE)))
+					.skipModuleCriteria();
+
+			int countOfDeletedRecords= deleteBuilder1.delete();
+
+			LOGGER.info("COUNT OF DELETED PRE OPEN INSPECTIONS ===  "+countOfDeletedRecords + " for template ID === "+inspectionIds);
+		}
+
 	}
 	
 	public static List<InspectionTriggerContext> getInspectionTrigger(Condition condition,boolean fetchRelated) throws Exception {
