@@ -838,6 +838,17 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_WEEK_OF_YEAR(41,"getWeekOfTheYear"){
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			if (objects != null && objects.length > 0 && objects[0] instanceof Long){
+				return DateTimeUtil.getWeekOfWeekBasedYear(DateTimeUtil.getZonedDateTime((Long) objects[0]));
+			}
+
+			return null;
+		}
+	}
 	;
 	private Integer value;
 	private String functionName;
