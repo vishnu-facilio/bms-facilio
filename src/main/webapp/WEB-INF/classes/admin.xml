@@ -113,6 +113,9 @@
 		<action name="pmv2monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/pmv2Monitoring.jsp</result>
 		</action>
+		<action name="srmonitoring" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/srMonitoring.jsp</result>
+		</action>
 		<action name="inspectionmonitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/inspectionMonitoring.jsp</result>
 		</action>
@@ -222,7 +225,6 @@
 		<action name="disableAgent" class="com.facilio.bmsconsole.actions.AdminAction" method ="disableAgent">
 			<result type="tiles">adminpage/agentcontrol.jsp</result>
 		</action>
-		
 	</package>
 
 </struts>

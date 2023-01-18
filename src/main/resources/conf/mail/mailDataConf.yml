@@ -4,3 +4,5 @@ date: July 26, 2022
 handlers:
   - modulename: workorder
     handler: com.facilio.mailtracking.handlers.WorkorderMailHandler
+  - modulename: customMailMessages
+    handler: com.facilio.mailtracking.handlers.ServiceRequestMailHandler

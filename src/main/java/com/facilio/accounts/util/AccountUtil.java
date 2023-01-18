@@ -557,10 +557,15 @@ public class AccountUtil {
 
 		PEOPLE_USER_SCOPING(121,getExponentValue(57),LicenseMapping.GROUP2LICENSE),//2^27
 		OFFLINE_SUPPORT(122,getExponentValue(58),LicenseMapping.GROUP2LICENSE),//2^58
+
 		CLIENT_PORTAL(123,getExponentValue(59),LicenseMapping.GROUP2LICENSE),//2^59
+
 		ERROR_FRAMEWORK_GENERALIZATION(124, getExponentValue(60), LicenseMapping.GROUP2LICENSE), // 2 ^ 60
 
-		QUICK_SEARCH(125,getExponentValue(61),LicenseMapping.GROUP2LICENSE);//2^61
+
+		QUICK_SEARCH(125,getExponentValue(61),LicenseMapping.GROUP2LICENSE),//2^61
+		SEND_EMAIL_WITH_CALLBACK_FUNCTION(126,getExponentValue(62),LicenseMapping.GROUP2LICENSE);//2^62
+
 		public int featureId;
 		private long license;
 		private String[] modules;

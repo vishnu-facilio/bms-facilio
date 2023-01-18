@@ -109,6 +109,13 @@ if (buildinfo == null) {
                <span class="nav-title">PM V2 Monitoring</span>
                </a>
            </li>
+           <li>
+                <a href="srmonitoring">
+                    <span class="nav-icon">
+                        <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">SR Monitoring</span>
+                </a>
+           </li>
 
            <li>
                <a href="inspectionmonitoring">

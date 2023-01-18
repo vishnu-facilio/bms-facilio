@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -53,13 +55,15 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
 			if(emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 
+
 				EmailToModuleDataContext emailToModuleContext = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getDataModuleId());
 				
 				if(emailToModuleContext != null) {
 					
 					String messageId = emailToModuleContext.getMessageId();
-					
+
 					emailConversation.setMessageId(sendMail(emailConversation, messageId));
+
 				}
 				else {
 					
@@ -68,8 +72,9 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 					if(firstEmailConversationOfThisRecord != null) {
 						
 						String messageId = firstEmailConversationOfThisRecord.getMessageId();
-						
+
 						emailConversation.setMessageId(sendMail(emailConversation, messageId));
+
 					}
 					
 					else {
@@ -230,42 +235,55 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment() && (AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 172l)) {
 			canSendMail = true;
 		}
-		if(!canSendMail) {
-			return null;
+		if(canSendMail) {
+			JSONObject mailJson = new JSONObject();
+
+			String message = emailConversation.getHtmlContent();
+
+			message = getMessageForReply(emailConversation.getTo(), emailConversation, message);
+
+			boolean isSendEmailWithCallbackEnabled=AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SEND_EMAIL_WITH_CALLBACK_FUNCTION);
+
+			mailJson.put(EmailClient.SENDER, emailConversation.getFrom());
+			mailJson.put(EmailClient.TO, emailConversation.getTo());
+			mailJson.put(EmailClient.CC, emailConversation.getCc());
+			mailJson.put(EmailClient.BCC, emailConversation.getBcc());
+			mailJson.put(EmailClient.SUBJECT, "Re: " + emailConversation.getSubject());
+			mailJson.put(EmailClient.MESSAGE, message);
+			mailJson.put(EmailClient.MAIL_TYPE, EmailClient.HTML);
+			mailJson.put(FacilioConstants.ContextNames.SOURCE_TYPE, MailSourceType.SERVICE_REQUEST.name());
+			mailJson.put(FacilioConstants.ContextNames.MODULE_ID,emailConversation.getDataModuleId());
+
+			ModuleBean modBean = Constants.getModBean();
+			long moduleId=modBean.getModule("customMailMessages").getModuleId();
+			mailJson.put(MailConstants.Params.RECORDS_MODULE_ID, moduleId);
+
+			if (messageId != null) {
+				JSONObject HeaderJSON = new JSONObject();
+
+				HeaderJSON.put("References", messageId);
+				HeaderJSON.put("In-Reply-To", messageId);
+
+				mailJson.put(EmailClient.HEADER, HeaderJSON);
+			}
+
+			Map<String, String> files = getAttachments(emailConversation);
+
+			LOGGER.info("emailConversation -- " + emailConversation.getId() + " mail JSON --- " + mailJson + " files -- " + files);
+
+			if(isSendEmailWithCallbackEnabled){
+				mailJson.put(MailConstants.Params.RECORD_ID, emailConversation.getId());
+				FacilioFactory.getEmailClient().sendEmail(mailJson, files); // using this method to get messageId back
+			}
+			else{
+				mailJson.put(FacilioConstants.ContextNames.RECORD_ID, emailConversation.getRecordId());
+				String returnMessageId = AwsUtil.sendMail(mailJson, files);	// using this method to get messageId back
+
+				return returnMessageId;
+			}
+
 		}
-		JSONObject mailJson = new JSONObject();
-		
-		String message = emailConversation.getHtmlContent();
-			
-	    message = getMessageForReply(emailConversation.getTo(),emailConversation,message);
-		
-		mailJson.put(EmailClient.SENDER, emailConversation.getFrom());
-		mailJson.put(EmailClient.TO, emailConversation.getTo());
-		mailJson.put(EmailClient.CC, emailConversation.getCc());
-		mailJson.put(EmailClient.BCC, emailConversation.getBcc());
-		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
-		mailJson.put(EmailClient.MESSAGE, message);
-		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
-		mailJson.put(FacilioConstants.ContextNames.SOURCE_TYPE,MailSourceType.SERVICE_REQUEST.name());
-		mailJson.put(FacilioConstants.ContextNames.MODULE_ID,emailConversation.getDataModuleId());
-		mailJson.put(FacilioConstants.ContextNames.RECORD_ID,emailConversation.getRecordId());
-		
-		if(messageId != null) {
-			JSONObject HeaderJSON = new JSONObject();
-			
-			HeaderJSON.put("References", messageId);
-			HeaderJSON.put("In-Reply-To", messageId);
-			
-			mailJson.put(EmailClient.HEADER, HeaderJSON);
-		}
-		
-		Map<String, String> files = getAttachments(emailConversation);
-		
-		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
-		
-		String returnMessageId = AwsUtil.sendMail(mailJson, files);	// using this method to get messageId back
-		
-		return returnMessageId;
+		return null;
 		
 //		FacilioFactory.getEmailClient().sendEmail(mailJson);
 	}

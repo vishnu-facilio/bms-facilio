@@ -11,7 +11,6 @@ import com.facilio.services.email.EmailFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
-
 import java.util.Map;
 
 @Log4j
