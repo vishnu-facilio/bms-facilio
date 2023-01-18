@@ -15,7 +15,7 @@ public class GetFormFromDBCommand extends FacilioCommand {
 
         String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,null);
         String formName = (String) context.getOrDefault(FacilioConstants.ContextNames.FORM_NAME,null);
-        long formId = (long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID,-1);
+        long formId = (long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID,-1L);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = moduleBean.getModule(moduleName);
