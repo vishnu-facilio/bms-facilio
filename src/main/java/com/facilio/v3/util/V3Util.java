@@ -517,11 +517,6 @@ public class V3Util {
             if (filters != null && !filters.isEmpty()) {
                 JSONParser parser = new JSONParser();
                 JSONObject json = (JSONObject) parser.parse(filters);
-                if(json.containsKey("drillDownPattern") && json.get("drillDownPattern") != null) {
-                    String drillDownPattern = json.get("drillDownPattern").toString();
-                    context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN, drillDownPattern);
-                    json.remove("drillDownPattern");
-                }
                 context.put(Constants.FILTERS, json);
 
                 context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);

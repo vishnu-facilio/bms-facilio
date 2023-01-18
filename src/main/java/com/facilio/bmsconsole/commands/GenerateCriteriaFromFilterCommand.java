@@ -49,10 +49,16 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			if (isPm) {
 				templateFields = PreventiveMaintenanceAPI.getTemplateFields();
 			}
-			
+
+			String drillDownPattern=null;
+			if(filters.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && filters.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null) {
+				drillDownPattern = filters.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN).toString();
+				filters.remove(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN);
+			}
+
 			Criteria criteria = new Criteria();
 
-			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
+			if(StringUtils.isNotEmpty(drillDownPattern)){
 				Queue<String> fieldNamesFromFilter = getFieldNamesFromFilter(filters);
 				filterIterator = fieldNamesFromFilter.iterator();
 			}
@@ -62,7 +68,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				String fieldName = filterIterator.next();
 				Object fieldJson = filters.get(fieldName);
 
-				if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
+				if(StringUtils.isNotEmpty(drillDownPattern)){
 					fieldName = fieldName.split("----")[0];
 				}
 
@@ -81,8 +87,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				criteria.groupOrConditions(conditionList);
 			}
 
-			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
-				criteria.setPattern(context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN).toString());
+			if(StringUtils.isNotEmpty(drillDownPattern)){
+				criteria.setPattern(drillDownPattern);
 			}
 			if (!criteria.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
