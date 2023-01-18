@@ -66,12 +66,14 @@ public class UserListCommand extends FacilioCommand {
                 String defaultIdAndOrderBy = MessageFormat.format("FIELD ( ORG_Users.ORG_USERID, {0} ) DESC", StringUtils.join(defaultIds,","));
                 selectBuilder.orderBy(defaultIdAndOrderBy);
             }
-            if (filterCriteria != null){
+        if (filterCriteria != null && !filterCriteria.isEmpty()) {
             selectBuilder.andCriteria(filterCriteria);
             }
 
             selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+        if(appId > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+        }
 
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
             if (pagination != null) {

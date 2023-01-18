@@ -50,6 +50,7 @@ public class NewUserListAction extends FacilioAction{
             appId = AccountUtil.getCurrentApp().getId();
         }
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        chain.execute();
         setUsers((List<User>) context.get(FacilioConstants.ContextNames.USERS));
         return SUCCESS;
         }
