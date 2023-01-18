@@ -2125,9 +2125,9 @@
 				method="getFormFormDB">
 			<param name="formName">{1}</param>
 		</action>
-		<action name="getForm"
+		<action name="getFromId"
 				class="com.facilio.bmsconsole.actions.FormAction"
-				method="getFormFormId">
+				method="getFormFromId">
 		</action>
 		<action name="fields"
 			class="com.facilio.bmsconsole.actions.FormAction"

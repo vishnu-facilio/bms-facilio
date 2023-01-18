@@ -532,7 +532,7 @@ public String getServicePortalForms() throws Exception{
 		return SUCCESS;
 	}
 
-	public String getFormFormId() throws Exception {
+	public String getFormFromId() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getFormFromDBChain();
 		FacilioContext context = chain.getContext();
 		context.put(ContextNames.FORM_ID, getFormId());
