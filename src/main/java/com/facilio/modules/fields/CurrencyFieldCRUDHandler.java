@@ -88,7 +88,13 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> record : props) {
                 Long recordId = (Long) record.get(getParentFieldName());
-                String currencyCode = (String) record.get("currencyCode");
+                String currencyCode;
+                if (record.get("currencyCode") != null) {
+                    currencyCode = (String) record.get("currencyCode");
+                } else {
+                    currencyCode = (String) CurrencyUtil.getCurrencyInfo().get("currencyCode");
+                    record.put("currencyCode", currencyCode);
+                }
                 Unit metricUnit = Unit.getUnitsForMetric(Metric.CURRENCY).stream()
                         .filter(unit -> unit.getDisplayName().equals(currencyCode))
                         .findFirst()
@@ -137,13 +143,22 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
 
     @Override
     protected Map<String, Object> createRelRecord(long parentId, Map<String, Object> props) throws Exception {
-        ((CurrencyField) getField()).validateRecord(props);
-
         String currencyCode = String.valueOf(props.get("currencyCode"));
         CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
-        V3Util.throwRestException(baseCurrency == null, ErrorCode.VALIDATION_ERROR, "BaseCurrency not defined");
         CurrencyContext currency  = CurrencyUtil.getCurrencyFromCode(currencyCode);
-        V3Util.throwRestException(currency == null, ErrorCode.VALIDATION_ERROR, "Currency code not defined");
+
+        props.put("currencyObject", currency);
+        props.put("baseCurrency", baseCurrency);
+        props.put(PARENT_FIELD_NAME, parentId);
+        props.put(FIELD_ID_FIELD_NAME, getField().getFieldId());
+
+        ((CurrencyField) getField()).validateRecord(props);
+
+        if (baseCurrency == null) {
+            props.put("currencyCode", null);
+            props.put("exchangeRate", 1);
+            return props;
+        }
 
         int decimalPlaces = currency.getDecimalPlaces();
         int baseCurrencyDecimalPlaces = baseCurrency.getDecimalPlaces();
@@ -155,8 +170,6 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         double currencyValue = Double.parseDouble((String) props.get("currencyValue"));
         double baseCurrencyValue = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, exchangeRate);
 
-        props.put(PARENT_FIELD_NAME, parentId);
-        props.put(FIELD_ID_FIELD_NAME, getField().getFieldId());
         props.put("exchangeRate", roundOff(exchangeRate, 10));
         props.put("currencyValue", roundOff(currencyValue, decimalPlaces));
         props.put("baseCurrencyValue", roundOff(baseCurrencyValue, baseCurrencyDecimalPlaces));
@@ -167,9 +180,18 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
     protected Map<String, Object> updateRelRecord(Map<String, Object> oldProps, Map<String, Object> newProps) throws Exception {
         String currencyCode = String.valueOf(newProps.get("currencyCode"));
         CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
-        V3Util.throwRestException(baseCurrency == null, ErrorCode.VALIDATION_ERROR, "BaseCurrency not defined");
         CurrencyContext currency  = CurrencyUtil.getCurrencyFromCode(currencyCode);
-        V3Util.throwRestException(currency == null, ErrorCode.VALIDATION_ERROR, "Currency code not defined");
+
+        newProps.put("currencyObject", currency);
+        newProps.put("baseCurrency", baseCurrency);
+
+        ((CurrencyField) getField()).validateRecord(newProps);
+
+        if (baseCurrency == null) {
+            oldProps.put("exchangeRate", 1);
+            oldProps.put("currencyValue", newProps.get("currencyValue"));
+            return oldProps;
+        }
 
         boolean isSameCurrency = oldProps.get("currencyCode").equals(newProps.get("currencyCode"));
         V3Util.throwRestException(!isSameCurrency, ErrorCode.VALIDATION_ERROR, "Currency code cannot be changed");

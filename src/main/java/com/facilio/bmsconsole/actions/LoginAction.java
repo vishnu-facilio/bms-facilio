@@ -29,6 +29,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
@@ -999,6 +1000,8 @@ public class LoginAction extends FacilioAction {
 		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
 		data.put("users", users);
 		data.put("userSites", userSites);
+
+		data.put("currencyInfo", CurrencyUtil.getCurrencyInfo());
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);

@@ -1,5 +1,6 @@
 package com.facilio.util;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
@@ -12,6 +13,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +36,39 @@ public class CurrencyUtil {
 			return getCurrencyFromCode((String) orgInfo.get("value"));
 		}
 		return null;
+	}
+
+	public static Map<String, Object> getCurrencyInfo() throws Exception {
+		try {
+			Organization organization = AccountUtil.getCurrentOrg();
+
+			String currencyCode, displaySymbol = null;
+			Map<String, Object> currencyInfo = new HashMap<>();
+			CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
+
+			if (baseCurrency != null) {
+				currencyCode = baseCurrency.getCurrencyCode();
+				displaySymbol = baseCurrency.getDisplaySymbol();
+			} else {
+				currencyCode = (organization != null && StringUtils.isNotEmpty(organization.getCurrency())) ? organization.getCurrency() : "USD";
+				if (currencyCode != null) {
+					Unit metricUnit = Unit.getUnitsForMetric(Metric.CURRENCY).stream()
+							.filter(unit -> unit.getDisplayName().equals(currencyCode))
+							.findFirst()
+							.orElse(null);
+					displaySymbol = (metricUnit != null) ? metricUnit.getSymbol() : currencyCode;
+				}
+			}
+
+			currencyInfo.put("multiCurrencyEnabled", baseCurrency != null);
+			currencyInfo.put("currencyCode", currencyCode);
+			currencyInfo.put("displaySymbol", displaySymbol);
+
+			return currencyInfo;
+		} catch (Exception e) {
+			LOGGER.info("Currency Info Exception" + e);
+			return null;
+		}
 	}
 
 	public static void setDefaultProps(CurrencyContext currencyContext, boolean isAdd) {

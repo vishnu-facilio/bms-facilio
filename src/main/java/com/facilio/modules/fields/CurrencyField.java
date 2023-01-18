@@ -53,8 +53,12 @@ public class CurrencyField extends FacilioField implements SupplementRecord {
 
 	public void validateRecord (Map< String, Object > lookupRecord) throws Exception {
 		String currencyCode = (String) lookupRecord.get("currencyCode");
-		V3Util.throwRestException(StringUtils.isEmpty (currencyCode), ErrorCode.VALIDATION_ERROR, "Currency code should not be empty");
-		CurrencyContext currencyContext = CurrencyUtil.getCurrencyFromCode(currencyCode);
-		V3Util.throwRestException(currencyContext == null, ErrorCode.VALIDATION_ERROR, "Currency not defined");
+		CurrencyContext baseCurrency = (CurrencyContext) lookupRecord.get("baseCurrency");
+		CurrencyContext currencyContext = (CurrencyContext) lookupRecord.get("currencyObject");
+
+		if (baseCurrency != null)  {
+			V3Util.throwRestException(StringUtils.isEmpty (currencyCode), ErrorCode.VALIDATION_ERROR, "Currency code should not be empty");
+			V3Util.throwRestException(currencyContext == null, ErrorCode.VALIDATION_ERROR, "Currency not defined");
+		}
 	}
 }
