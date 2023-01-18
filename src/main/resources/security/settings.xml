@@ -1203,4 +1203,12 @@
         </urlparams>
         <requestbody type="v3fields"/>
     </request>
+    <request path="/api/setup/newUserList">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
 </config>

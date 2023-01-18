@@ -584,7 +584,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">controllerSettingsId</param>
 			</result>
-		</action>		
+		</action>
+		<action name="newUserList" class="com.facilio.bmsconsole.actions.NewUserListAction" method="newUserList">
+			<param name="moduleName">setup</param>
+			<param name="cache">org</param>
+			<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param></result>
+		</action>
 	</package>
 
 </struts>

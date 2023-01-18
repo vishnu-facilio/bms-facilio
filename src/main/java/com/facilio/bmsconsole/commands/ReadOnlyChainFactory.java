@@ -3246,4 +3246,11 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new RcaReadingFaultCountAndDurationCommand());
 		return c;
 	}
+
+	public static FacilioChain getUserList(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new UserListCommand());
+		return c;
+	}
 }

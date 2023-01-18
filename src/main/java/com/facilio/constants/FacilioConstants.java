@@ -1291,6 +1291,7 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
 		public static final String PM_JOBS = "pmjobs";
 		public static final String GROUP_STATUS = "groupStatus";
+		public static final String DEFAULT_IDS = "defaultIds";
 
 		public static final String APPROVAL_LIST = "approvalList";
 
