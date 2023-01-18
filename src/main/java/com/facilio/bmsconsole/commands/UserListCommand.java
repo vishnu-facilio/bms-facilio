@@ -77,6 +77,9 @@ public class UserListCommand extends FacilioCommand {
             if (pagination != null) {
                 int page = (int) pagination.get("page");
                 int perPage = (int) pagination.get("perPage");
+                if(page <= 0){
+                    page = 1;
+                }
                 if (perPage == -1) {
                     perPage = 50;
                 }
