@@ -19,9 +19,9 @@ public class AddDefaultRolesMaintenanceApp extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         Role maintenanceManager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_MANAGER);
-        //ApplicationApi.addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
+        ApplicationApi.addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
         Role maintenanceTechnician = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_TECHNICIAN);
-        //ApplicationApi.addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
+        ApplicationApi.addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
         return false;
     }
 }

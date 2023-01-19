@@ -40,11 +40,6 @@ public class CacheUtil {
 	public static final String APP_ID = "appId";
 
 	public static final String SCOPE_ID = "scopeId";
-	public static final String TAB_ID = "tabId";
-
-	public static final String TAB_GROUP_ID = "tabGroupId";
-
-	public static final String APP_LAYOUT_ID = "appLayoutId";
 
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
@@ -74,33 +69,6 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleId;
 	}
 
-	public static String TABGROUPID_KEY(long groupId) {
-		return TAB_GROUP_ID + KEY_SEPARATOR + groupId;
-	}
-
-	public static String APP_LAYOUT_KEY(long layoutId) {
-		return APP_LAYOUT_ID + layoutId;
-	}
-
-	public static String ORG_APP_KEY(long orgId, long appId) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR  + APPID_KEY(appId);
-	}
-
-	public static String TABID_KEY(long tabId) {
-		return TAB_ID + KEY_SEPARATOR + tabId;
-	}
-
-	public static String ORG_TAB_KEY(long orgId, long tabId) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR  + TABID_KEY(tabId);
-	}
-
-	public static String ORG_APP_LAYOUT_KEY(long orgId, long layoutId) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR  + APP_LAYOUT_KEY(layoutId);
-	}
-
-	public static String ORG_TAB_GROUP_KEY(long orgId, long groupId) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR  + TABGROUPID_KEY(groupId);
-	}
 	public static String SUB_MODULE_KEY(long orgId, String moduleName) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + moduleName;
 	}

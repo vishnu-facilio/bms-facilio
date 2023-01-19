@@ -3701,7 +3701,6 @@ public class FacilioConstants {
 	public static class AuditLogRecordTypes {
 		public static final String VIEW_FOLDER = "ViewFolder";
 		public static final String VIEW = "View";
-		public static final String GLOBAL_SCOPE = "GlobalScope";
 	}
 
 	public static class ColourPalette {

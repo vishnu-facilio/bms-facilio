@@ -3,11 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
-import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.WebtabWebgroupContext;
@@ -27,13 +25,16 @@ public class ReorderTabCommand extends FacilioCommand {
 		if (!tabsGroupsList.isEmpty()) {
 			long tabGroupId = tabsGroupsList.get(0).getWebTabGroupId();
 			for(WebtabWebgroupContext tabGroup:tabsGroupsList) {
-				WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-				tabBean.updateWebtabWebtabGroup(tabGroup);
+				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getWebTabWebGroupModule().getTableName())
+						.fields(FieldFactory.getWebTabWebGroupFields())
+						.andCondition(CriteriaAPI.getCondition("WEBTAB_ID", "webTabId", String.valueOf(tabGroup.getWebTabId()), NumberOperators.EQUALS))
+	                    .andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "webTabGroupId", String.valueOf(tabGroup.getWebTabGroupId()), NumberOperators.EQUALS));
+				builder.update(FieldUtil.getAsProperties(tabGroup));
 			}
 
 			// increment layout version
-			WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-			WebTabGroupContext webTabGroup = tabBean.getWebTabGroup(tabGroupId);
+			WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(tabGroupId);
 			if (webTabGroup == null) {
 				throw new IllegalArgumentException("Invalid web group");
 			}

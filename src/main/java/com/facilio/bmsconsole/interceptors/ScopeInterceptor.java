@@ -13,7 +13,6 @@ import com.facilio.audit.FacilioAuditOrgList;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -543,8 +542,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
     private void permissionLogsForTabs(Long tabId,String moduleName,String roleName,String action) throws Exception {
         try {
-            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-            WebTabContext tab = tabBean.getWebTab(tabId);
+            WebTabContext tab = ApplicationApi.getWebTab(tabId);
             if (tab != null) {
                 ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
                 List<String> modulesList = ApplicationApi.getModulesForTab(tabId);

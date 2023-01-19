@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.WebTabBean;
-import com.facilio.bmsconsole.context.TabIdAppIdMappingCacheContext;
-import com.facilio.bmsconsole.context.WebTabCacheContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
@@ -22,15 +19,13 @@ public class GetAllWebTabCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Long tabGroupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
-		WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-
 		if (tabGroupId != null && tabGroupId > 0) {
 
-			List<WebTabCacheContext> tabs = tabBean.getWebTabsForWebGroup(tabGroupId);
+			List<WebTabContext> tabs = ApplicationApi.getWebTabsForWebGroup(tabGroupId);
 			if (tabs != null && !tabs.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (WebTabContext tab : tabs) {
-					List<TabIdAppIdMappingCacheContext> tabIdAppIdMappingContextList = tabBean.getTabIdModules(tab.getId());
+					List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(tab.getId());
 					List<Long> moduleIds = new ArrayList<>();
 					List<String> specialTypes = new ArrayList<>();
 					if(tabIdAppIdMappingContextList!=null && !tabIdAppIdMappingContextList.isEmpty()) {
