@@ -58,7 +58,7 @@ public class GetAllModuleFieldsCountCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
 
             if (StringUtils.isNotEmpty(searchString)) {
-                selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
+                selectBuilder.andCondition(CriteriaAPI.getCondition("DISPLAY_NAME", "displayName", searchString, StringOperators.CONTAINS));
             }
 
             if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {

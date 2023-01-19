@@ -2063,6 +2063,35 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	@Override
+	public List<FacilioModule> getModuleList(Criteria criteria) throws Exception {
+		List<FacilioModule> moduleList = new ArrayList<>();
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(moduleFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(moduleFields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS));
+
+		if (criteria != null && !criteria.isEmpty()) {
+			selectBuilder.andCriteria(criteria);
+		}
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		for (Map<String, Object> prop : props) {
+			if (prop.containsKey("createdBy")) {
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
+		moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+
+		return moduleList;
+	}
+
+	@Override
 	public List<FacilioModule> getModuleList(ModuleType moduleType, boolean onlyCustom, JSONObject pagination, String searchString) throws Exception {
 		List<FacilioModule> moduleList = new ArrayList<>();
 		FacilioModule moduleModule = ModuleFactory.getModuleModule();

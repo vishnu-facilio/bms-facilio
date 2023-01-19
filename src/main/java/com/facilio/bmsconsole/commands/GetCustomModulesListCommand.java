@@ -1,18 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class GetCustomModulesListCommand extends FacilioCommand {
     @Override
@@ -45,7 +50,29 @@ public class GetCustomModulesListCommand extends FacilioCommand {
             }
         }
 
-        context.put(FacilioConstants.ContextNames.MODULE_LIST, customModules);
+        List<Map<String, Object>> customModuleProps = FieldUtil.getAsMapList(customModules, FacilioModule.class);
+
+        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+        List<Long> userIds = customModules.stream()
+                .map(module -> module.getCreatedBy().getId())
+                .distinct().collect(Collectors.toList());
+
+        List<User> usersList = userBean.getUsers(userIds, true);
+        Map<Long, User> userMap = usersList.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+
+        // Add User Object Props
+        for (Map<String, Object> customModuleProp : customModuleProps) {
+            if (customModuleProp.containsKey("createdBy")) {
+                Map<String, Object> iamUser = (Map<String, Object>) customModuleProp.get("createdBy");
+                User userObject = userMap.get(iamUser.getOrDefault("id", null));
+                if (userObject != null) {
+                    iamUser.put("avatarUrl", userObject.getAvatarUrl());
+                    iamUser.put("name", userObject.getName());
+                }
+            }
+        }
+
+        context.put(FacilioConstants.ContextNames.MODULE_LIST, customModuleProps);
         return false;
     }
 }

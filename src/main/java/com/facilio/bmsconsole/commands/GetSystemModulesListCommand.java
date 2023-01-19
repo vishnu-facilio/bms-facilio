@@ -4,6 +4,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -31,26 +34,28 @@ public class GetSystemModulesListCommand extends FacilioCommand {
             }
         }
 
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", StringUtils.join(systemModuleNames, ","), StringOperators.IS));
         if (StringUtils.isNotEmpty(searchString)) {
-            systemModuleNames.removeIf(modName -> !modName.contains(searchString));
+            criteria.addAndCondition(CriteriaAPI.getCondition("DISPLAY_NAME", "displayName", searchString, StringOperators.CONTAINS));
         }
+
+        systemModules = modBean.getModuleList(criteria);
 
         if (pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
             int fromIndex = ((page-1) * perPage);
             int toIndex =  fromIndex + perPage;
-            int listSize = systemModuleNames.size();
+            int listSize = systemModules.size();
             if (fromIndex < 0 || fromIndex > listSize) {
                 fromIndex = 0;
             }
             if (toIndex == 0 || toIndex > listSize) {
                 toIndex = listSize;
             }
-            systemModuleNames = systemModuleNames.subList(fromIndex, toIndex);
+            systemModules = systemModules.subList(fromIndex, toIndex);
         }
-
-        systemModules = modBean.getModuleList(systemModuleNames);
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, systemModules);
         return false;
