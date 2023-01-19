@@ -136,6 +136,7 @@ public class V3DashboardAction extends V3Action {
                 FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardChainV3();
                 FacilioContext context = updateDashboardChain.getContext();
                 context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+                context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboard_meta.containsKey("isFromReport") ? (Boolean) dashboard_meta.get("isFromReport"): Boolean.FALSE);
                 context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
                 updateDashboardChain.execute();
                 setData("dashboard", DashboardUtil.getDashboardResponseJson(dashboard, false));
@@ -215,7 +216,8 @@ public class V3DashboardAction extends V3Action {
                                 List<DashboardWidgetContext> widgets = V3DashboardAPIHandler.getDashboardSectionWidgetFromWidgetMeta(dashboardWidgets);
                                 dashboardTabContext.setDashboardWidgets(widgets);
                                 dashboardTabContext.setName((String) tab.get("dashboardTabName"));
-                                V3DashboardAPIHandler.updateDashboardTabAPI(dashboard, dashboardTabContext, data);
+                                Boolean isFromReport = dashboard_meta.containsKey("isFromReport") ? (Boolean) dashboard_meta.get("isFromReport"): Boolean.FALSE;
+                                V3DashboardAPIHandler.updateDashboardTabAPI(dashboard, dashboardTabContext, isFromReport);
                             }
                         }
                     }
@@ -235,7 +237,8 @@ public class V3DashboardAction extends V3Action {
                         DashboardTabContext dashboardTabContext = (DashboardTabContext) context.get("dashboardTabContext");
                         if (dashboardTabContext != null) {
                             V3DashboardAPIHandler.updateDashboardTabProp(dashboardTabContext, data);
-                            V3DashboardAPIHandler.updateDashboardTabAPI(dashboard, dashboardTabContext, data);
+                            Boolean isFromReport = dashboard_meta.containsKey("isFromReport") ? (Boolean) dashboard_meta.get("isFromReport"): Boolean.FALSE;
+                            V3DashboardAPIHandler.updateDashboardTabAPI(dashboard, dashboardTabContext, isFromReport);
                         }
                     }
                 }

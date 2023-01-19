@@ -167,16 +167,14 @@ public class V3DashboardAPIHandler {
         return widgetContext;
     }
 
-    public static void updateDashboardTabAPI(DashboardContext dashboard, DashboardTabContext dashboardTabContext, JSONObject data)throws Exception
+    public static void updateDashboardTabAPI(DashboardContext dashboard, DashboardTabContext dashboardTabContext, Boolean isFromReport)throws Exception
     {
         if(dashboardTabContext != null) {
             FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardTabChainV3();
             FacilioContext updateTabContext = updateDashboardChain.getContext();
-            if (data.containsKey("fromType")) {
-                updateTabContext.put("fromType", data.get("fromType"));
-            }
             updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
             updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+            updateTabContext.put(FacilioConstants.ContextNames.IS_FROM_REPORT, isFromReport);
             updateDashboardChain.execute();
         }
     }

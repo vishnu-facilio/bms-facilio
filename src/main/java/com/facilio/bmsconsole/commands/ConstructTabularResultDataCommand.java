@@ -108,7 +108,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 									field = groupBy.getField();
 								}
 								groupByVal = prop.get(field.getName());
-								groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap,lookupMap);
+								groupByVal = formatVal(groupBy, groupBy.getAggrEnum(), groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap,lookupMap);
 								rows.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
@@ -183,6 +183,12 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				List<Long> ids = dpLookUpMap.getOrDefault(reportFieldContext, new ArrayList<Long>());
 				ids.add((Long)val);
 				dpLookUpMap.put(reportFieldContext, ids);
+				break;
+			case DATE:
+			case DATE_TIME:
+				if (aggr != null && aggr instanceof DateAggregateOperator) {
+					val = ((DateAggregateOperator) aggr).getAdjustedTimestamp((long) val);
+				}
 				break;
 			default:
 				break;

@@ -6565,7 +6565,7 @@ public class DashboardAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		
+		context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboardMeta.containsKey("isFromReport") ? (Boolean) dashboardMeta.get("isFromReport"): Boolean.FALSE);
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
 		
@@ -6605,9 +6605,7 @@ public class DashboardAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		if (dashboardMeta.containsKey("fromType")) {
-			context.put("fromType", dashboardMeta.get("fromType"));
-		}
+		context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboardMeta.containsKey("isFromReport") ? (Boolean) dashboardMeta.get("isFromReport"): Boolean.FALSE);
 		
 		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
 		updateDashboardChain.execute(context);
@@ -6655,6 +6653,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
 			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+			context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboardMeta.containsKey("isFromReport") ? (Boolean) dashboardMeta.get("isFromReport"): Boolean.FALSE);
 			
 			FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
 			updateDashboardChain.execute(context);

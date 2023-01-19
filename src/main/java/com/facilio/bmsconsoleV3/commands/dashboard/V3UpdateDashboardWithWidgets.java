@@ -98,7 +98,8 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
                     removedWidgets.add(existingWidgets.get(i).getId());
                 }
             }
-            if(removedWidgets.size() > 0) {
+            Boolean isFromReport = (Boolean) context.get(FacilioConstants.ContextNames.IS_FROM_REPORT);
+            if(!(isFromReport != null && isFromReport) && removedWidgets.size() > 0) {
                 GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
                 genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
                         .andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedWidgets, ","), StringOperators.IS));
