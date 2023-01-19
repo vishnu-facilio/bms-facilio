@@ -339,7 +339,7 @@ public class FormAction extends FacilioAction {
 		return  SUCCESS;
 	}
 
-	public String getFormFormDB() throws Exception {
+	public String fetchFormFromDB() throws Exception {
 
 		FacilioChain chain = ReadOnlyChainFactory.getFormFromDBChain();
 		FacilioContext context = chain.getContext();
@@ -532,7 +532,7 @@ public String getServicePortalForms() throws Exception{
 		return SUCCESS;
 	}
 
-	public String getFormFromId() throws Exception {
+	public String fetchFormFromId() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getFormFromDBChain();
 		FacilioContext context = chain.getContext();
 		context.put(ContextNames.FORM_ID, getFormId());

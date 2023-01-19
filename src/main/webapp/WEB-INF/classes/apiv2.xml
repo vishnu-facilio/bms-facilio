@@ -2122,12 +2122,12 @@
 		extends="v2Api">
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.FormAction"
-				method="getFormFormDB">
+				method="fetchFormFromDB">
 			<param name="formName">{1}</param>
 		</action>
 		<action name="getFromId"
 				class="com.facilio.bmsconsole.actions.FormAction"
-				method="getFormFromId">
+				method="fetchFormFromId">
 		</action>
 		<action name="fields"
 			class="com.facilio.bmsconsole.actions.FormAction"
