@@ -597,7 +597,7 @@ public class PageFactory {
 				if(pageWidget != null){
 					isNewSummaryWidget = true;
 					PageWidget newSummaryFieldsWidget = new PageWidget(WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);
-					newSummaryFieldsWidget.addToLayoutParams(section, 24, 7);
+					newSummaryFieldsWidget.addToLayoutParams(section, 24, 8);
 					section.addWidget(newSummaryFieldsWidget);
 				}
 			}
