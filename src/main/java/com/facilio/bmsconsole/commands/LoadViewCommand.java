@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.command.FacilioCommand;
@@ -63,7 +64,11 @@ public class LoadViewCommand extends FacilioCommand {
 			String tempOrderBy = (String) tempSortObj.get("orderBy");
 			String tempOrderType = (String) tempSortObj.get("orderType");
 			if (!SecurityUtil.isClean(tempOrderBy, tempOrderType)) {
-				throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
+				if(FacilioProperties.isOrderByCleaningEnabled()) {
+					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
+				}else{
+					LOGGER.error("Invalid order clause passed: "+tempOrderBy+" "+tempOrderType);
+				}
 			}
 		}
 
