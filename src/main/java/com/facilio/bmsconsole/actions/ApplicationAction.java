@@ -58,6 +58,16 @@ public class ApplicationAction extends FacilioAction {
 
 	private long appId;
 
+	public boolean isEmailVerificationNeeded() {
+		return emailVerificationNeeded;
+	}
+
+	public void setEmailVerificationNeeded(boolean emailVerificationNeeded) {
+		this.emailVerificationNeeded = emailVerificationNeeded;
+	}
+
+	private boolean emailVerificationNeeded = true;
+
 	public long getAppId() {
 		return appId;
 	}
@@ -342,6 +352,7 @@ public class ApplicationAction extends FacilioAction {
 		FacilioChain chain = TransactionChainFactory.addApplicationUsersChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		context.put(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED,emailVerificationNeeded);
 		context.put(FacilioConstants.ContextNames.USER, user);
 
 		chain.execute();

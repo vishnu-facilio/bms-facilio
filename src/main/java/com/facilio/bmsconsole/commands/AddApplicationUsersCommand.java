@@ -30,14 +30,22 @@ public class AddApplicationUsersCommand extends FacilioCommand {
 		if(CollectionUtils.isEmpty(appDomains)) {
 			throw new IllegalArgumentException("Invalid app domain");
 		}
-		
-		user.setUserVerified(false);
-		user.setInviteAcceptStatus(false);
+
+		boolean isEmailverificationNeeded = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, true);
+		if(isEmailverificationNeeded){
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+		}
+		else{
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+		}
+
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setAppDomain(appDomains.get(0));
 		user.setApplicationId(appId);
-	
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomains.get(0).getIdentifier(), true, false);
+
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomains.get(0).getIdentifier(), isEmailverificationNeeded, false);
 		context.put(FacilioConstants.ContextNames.ORG_USER_ID, user.getOuid());
 		
 		return false;
