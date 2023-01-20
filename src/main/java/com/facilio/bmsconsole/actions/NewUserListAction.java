@@ -18,7 +18,7 @@ import java.util.List;
 public class NewUserListAction extends FacilioAction{
     private long appId;
     private int page;
-    public int perPage = -1;
+    private int perPage = -1;
 
     private SetupLayout setup;
 
@@ -28,6 +28,10 @@ public class NewUserListAction extends FacilioAction{
 
     private List<Long> defaultIds;
 
+    private String search;
+
+    private boolean inviteAcceptStatus = true;
+
     public String newUserList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getUserList();
         FacilioContext context = chain.getContext();
@@ -36,8 +40,12 @@ public class NewUserListAction extends FacilioAction{
         pagination.put("page", page);
         pagination.put("perPage", perPage);
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-        context.put(FacilioConstants.ContextNames.FILTERS,filters);
         context.put(FacilioConstants.ContextNames.DEFAULT_IDS,defaultIds);
+        if(getSearch() != null)
+        {
+            context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        }
+        context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS,inviteAcceptStatus);
         if(getFilters() != null)
         {
             JSONParser parser = new JSONParser();

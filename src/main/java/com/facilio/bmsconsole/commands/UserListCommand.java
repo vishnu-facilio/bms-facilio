@@ -12,9 +12,12 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
@@ -39,15 +42,12 @@ public class UserListCommand extends FacilioCommand {
             }
             long orgId = AccountUtil.getCurrentOrg().getOrgId();
             long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
-            List<Long> defaultIds = new ArrayList<>();
-            Criteria filterCriteria = new Criteria();
-            if(context.get(FacilioConstants.ContextNames.DEFAULT_IDS) !=null) {
-                defaultIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEFAULT_IDS);
-            }
-            if(context.get(FacilioConstants.ContextNames.FILTER_CRITERIA) !=null) {
-                filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-            }
-            List<FacilioField> fields = new ArrayList<>();
+             List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEFAULT_IDS);
+            Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+            String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+        Boolean inviteAcceptStatus = (Boolean)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS);
+
+        List<FacilioField> fields = new ArrayList<>();
             fields.addAll(AccountConstants.getAppOrgUserFields());
             fields.add(AccountConstants.getApplicationIdField());
             fields.add(AccountConstants.getRoleIdField());
@@ -66,11 +66,21 @@ public class UserListCommand extends FacilioCommand {
                 String defaultIdAndOrderBy = MessageFormat.format("FIELD ( ORG_Users.ORG_USERID, {0} ) DESC", StringUtils.join(defaultIds,","));
                 selectBuilder.orderBy(defaultIdAndOrderBy);
             }
-        if (filterCriteria != null && !filterCriteria.isEmpty()) {
-            selectBuilder.andCriteria(filterCriteria);
+            selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+
+            if (filterCriteria != null && !filterCriteria.isEmpty()) {
+                selectBuilder.andCriteria(filterCriteria);
+            }
+            if(!StringUtils.isEmpty(search))
+            {
+                selectBuilder.andCriteria(getUserSearchCriteria(search));
             }
 
-            selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+            if(inviteAcceptStatus != null)
+            {
+                selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
+            }
+
         if(appId > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
         }
@@ -88,10 +98,10 @@ public class UserListCommand extends FacilioCommand {
                     int offset = ((page - 1) * perPage);
                     if (offset < 0) {
                         offset = 0;
-
+                    }
                 selectBuilder.offset(offset);
                 selectBuilder.limit(perPage);
-            }
+
         }
             List<Map<String, Object>> props = selectBuilder.get();
             if (props != null && !props.isEmpty()) {
@@ -149,5 +159,25 @@ public class UserListCommand extends FacilioCommand {
 
 
         return false;
+    }
+    private Criteria getUserSearchCriteria(String search)
+    {
+        Criteria criteria = new Criteria();
+        Condition condition_name = new Condition();
+        condition_name.setColumnName("People.Name");
+        condition_name.setFieldName("name");
+        condition_name.setOperator(StringOperators.CONTAINS);
+        condition_name.setValue(search);
+        criteria.addOrCondition(condition_name);
+
+        Condition condition_email = new Condition();
+        condition_email.setColumnName("People.EMAIL");
+        condition_email.setFieldName("email");
+        condition_email.setOperator(StringOperators.CONTAINS);
+        condition_email.setValue(search);
+        criteria.addOrCondition(condition_email);
+
+
+        return criteria;
     }
 }

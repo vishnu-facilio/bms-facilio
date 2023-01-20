@@ -2257,6 +2257,11 @@ public class V2ReportAction extends FacilioAction {
     }
 
     private long endTime = -1;
+    private String url;
+
+    public String getUrl() { return url;}
+
+    public void setUrl(String url) { this.url = url; }
 
     public long getEndTime() {
         return endTime;
@@ -2454,6 +2459,7 @@ public class V2ReportAction extends FacilioAction {
                 JSONParser parser = new JSONParser();
                 context.put(FacilioConstants.ContextNames.FILTERS, (JSONObject) parser.parse(getFilters()));
             }
+            context.put("url",getUrl());
             context.put("is_export_report", true);
             // pass filterJsonString as is, will be set in summary url in export command
             getReport(context);

@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.reports;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.report.context.ReadingAnalysisContext;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -54,25 +52,32 @@ public class ReportExportUtil {
 		else {
 			url.append(FacilioProperties.getClientAppUrl());
 		}
-		url.append("/app/");
-		String moduleName = module.getName();
-		
-		if (report.getTypeEnum() == ReportType.READING_REPORT) {
-			url.append("em");
+		String name = AccountUtil.getCurrentApp().getLinkName();
+		if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+
+			url.append("/app/");
+			String moduleName = module.getName();
+
+			if (report.getTypeEnum() == ReportType.READING_REPORT) {
+				url.append("em");
+			}
+			else if (module.isCustom()) {
+				url.append("ca");
+			}
+			else if (moduleVsRoute.containsKey(moduleName)) {
+				url.append(moduleVsRoute.get(moduleName));
+			}
+			else {
+				url.append("wo");
+			}
+			if (reportId > 0) {
+				url.append("/reports/newview/").append(reportId);
+			}
 		}
-		else if (module.isCustom()) {
-			url.append("ca");
+		else{
+			url.append((String) context.get("url"));
 		}
-		else if (moduleVsRoute.containsKey(moduleName)) {
-			url.append(moduleVsRoute.get(moduleName));
-		}
-		else {
-			url.append("wo");
-		}
-		
-		if (reportId > 0) {
-			url.append("/reports/newview/").append(reportId);			
-		}
+
 		url.append("?print=true");
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("&showOnlyImage=true");
