@@ -29,7 +29,7 @@ public class FetchRolesForPeopleCommandV3 extends FacilioCommand {
         List<V3PeopleContext> pplList = recordMap.get(moduleName);
 
         if(CollectionUtils.isNotEmpty(pplList)) {
-            List<ApplicationContext> apps = ApplicationApi.getAllApplications();
+            List<ApplicationContext> apps = ApplicationApi.getAllApplications(true);
             Map<Long, String> appLinkNames= new HashMap<>();
             if(CollectionUtils.isNotEmpty(apps)) {
                 for(ApplicationContext app : apps) {

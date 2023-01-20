@@ -1217,6 +1217,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadEmployeeLookupCommandV3())
                 .afterFetch(new FetchRolesForPeopleCommandV3())
                 .delete()
+                .beforeDelete(new EmployeeDeleteValidationCommandV3())
                 .afterDelete(new PeopleUserDeletionV3())
                 .build();
     }
