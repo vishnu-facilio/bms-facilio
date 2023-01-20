@@ -36,9 +36,9 @@ public class GetConnectedAppViewURLCommand extends FacilioCommand {
 		
 		if (connectedAppWidget != null) {
 			viewURL = baseUrl + connectedAppWidget.getResourcePath();
-			if (connectedAppWidget.getEntityTypeEnum() == ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE && recordId != null && recordId > 0) {
-				viewURL = replacePlaceholders(viewURL, connectedAppWidget.getEntityId(), recordId, connectedAppWidget.getCriteria());
-			}
+			// if (connectedAppWidget.getEntityTypeEnum() == ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE && recordId != null && recordId > 0) {
+			// 	viewURL = replacePlaceholders(viewURL, connectedAppWidget.getEntityId(), recordId, connectedAppWidget.getCriteria());
+			// }
 		}
 		else if (connectedApp != null) {
 			viewURL = baseUrl;
