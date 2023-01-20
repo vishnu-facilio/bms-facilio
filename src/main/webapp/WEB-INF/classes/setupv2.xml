@@ -28,8 +28,7 @@
 	<package name="portalssoApiV2" namespace="/api/v2/setup/portalsso" extends="v2Api">
 		<action name="update" class="com.facilio.bmsconsole.actions.SetupActions" method="updatePortalSSOSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">SINGLE_SIGN_ON</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^domainSSO.*</param>
@@ -51,14 +50,12 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.SetupActions" method="deletePortalSSOSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">SINGLE_SIGN_ON</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="fetchPortalSSOSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">SINGLE_SIGN_ON</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^domainSSO.*</param>
@@ -67,12 +64,9 @@
 
 		<action name="updateCreateUserStatus" class="com.facilio.bmsconsole.actions.SetupActions" method="updateCreateUserStatus">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">SINGLE_SIGN_ON</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 		</action>
 		<action name="metadata" class="com.facilio.auth.actions.FacilioSSOAction" method="downloadDomainMetaData">
-		 <param name="permission">ALL</param>
-		 <param name="setupTab">SINGLE_SIGN_ON</param>
 			<result name="success" type="stream">
 				<param name="contentType">application/download</param>
 				<param name="contentDisposition">attachment;filename="facilio_metadata.xml"</param>
@@ -107,8 +101,7 @@
 
 		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="getSSOSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">SINGLE_SIGN_ON</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^sso.*</param>
@@ -237,13 +230,11 @@
 		<action name="addassignment" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addAssignmentRule">
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
 		</action>
 
 		<action name="updateassignment" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateAssignmentRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES,ALL</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
+			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES</param>
 		</action>
 
 		<action name="addsla" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addSLARule">
@@ -258,14 +249,12 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="deleteWorkflowRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES,ALL</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
+			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES</param>
 		</action>
 
 		<action name="status" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="changeWorkflowStatus">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES,ALL</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
+			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES</param>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflow">

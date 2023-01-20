@@ -143,8 +143,7 @@
 		</action>
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT,USERS,ALL</param>
-            <param name="setupTab">FUNCTIONS</param>
+			<param name="permission">USER_MANAGEMENT,USERS</param>
 			<param name="cache">org</param>  
 			<result name="success" type="json">
 			<param name="includeProperties">users.*</param></result>
@@ -189,7 +188,7 @@
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 		<param name="moduleName">setup</param>
 		<param name="permission">ALL,USER_MANAGEMENT,ROLES</param>
-			<param name="setupTab">EMAIL_LOGS,PORTALS,SERVICE_CATALOGS,USERS,ROLES,API_SETUP</param>
+			<param name="setupTab">EMAIL_LOGS</param>
 			<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
@@ -248,8 +247,7 @@
 		</action>
 		<action name="deleteUser" class = "com.facilio.bmsconsole.actions.UserAction" method = "deleteUser">
 			<param name="moduleName">setup</param>
-			<param name= "permission">USER_MANAGEMENT,USERS,ALL</param>
-			<param name="setupTab">API_SETUP</param>
+			<param name= "permission">USER_MANAGEMENT,USERS</param>
 			<result name = "success" type="json">
 				<param name ="includeProperties">userId</param>
 			</result>
@@ -261,8 +259,7 @@
 		</action>
 	    <action name="adduser" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT,ALL</param>
-		    <param name="setupTab">USERS</param>
+			<param name="permission">USER_MANAGEMENT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
 			</result>
@@ -371,8 +368,7 @@
 		
 		<action name="deleterole" class="com.facilio.bmsconsole.actions.RoleAction" method="deleteRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT,ROLES,ALL</param>
-			<param name="setupTab">ROLES</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -421,8 +417,7 @@
 		</action>
 		<action name="updaterole" class="com.facilio.bmsconsole.actions.RoleAction" method="updateRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT,ROLES,ALL</param>
-			<param name="setupTab">ROLES</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -482,8 +477,7 @@
 		</action>
 		<action name="turnonrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOnWorkflow">
             <param name="moduleName">setup</param>
-			<param name="permission">GENERAL,ALL</param>
-			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES</param>
+			<param name="permission">GENERAL</param>
             <result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
@@ -491,8 +485,7 @@
 		
 		<action name="turnoffrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOffWorkflow">
             <param name="moduleName">setup</param>
-			<param name="permission">GENERAL,ALL</param>
-			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES</param>
+			<param name="permission">GENERAL</param>
             <result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
@@ -507,8 +500,7 @@
 	<!-- Work Order Actions -->		
 	 <action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS,ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailSetting.*,supportEmails.*,supportMailRules.*</param>
 			</result>
@@ -543,24 +535,21 @@
 		</action>	
 	<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS,ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
 		<action name="addemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS,ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">supportEmailId</param>
 			</result>
 		</action>
 		<action name="deleteemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS,ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 			</result>
 		</action>
@@ -568,8 +557,7 @@
 		<action name="subscription" class="com.facilio.bmsconsole.actions.UserAction"
 			method="subscriptionInfo">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT,COMPANY_PROFILE,ALL</param>
-			<param name="setupTab">COMPANY_PROFILE</param>
+			<param name="permission">USER_MANAGEMENT,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^subscription.*</param>
 			</result>
