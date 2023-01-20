@@ -3,13 +3,41 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringSystemEnumOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.qa.rules.Constants;
+import com.facilio.qa.rules.actions.QAndARuleAction;
+import com.facilio.qa.rules.commands.QAndARuleTransactionChainFactory;
+import com.facilio.qa.rules.pojo.QAndARuleType;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflowv2.util.WorkflowV2Util;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
 public class ScoringRuleAction extends FacilioAction {
 
     private long id;

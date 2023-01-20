@@ -6,13 +6,12 @@ import com.facilio.qa.rules.bean.QAndARuleBean;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.qa.rules.pojo.RuleCondition;
+import com.facilio.qa.rules.pojo.ScoringRule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,8 +29,12 @@ public class SplitRulesToAddOrUpdateRules extends FacilioCommand {
 
             for (QAndARule rule : rules) {
                 QAndARule oldRule = oldRuleMap.get(rule.getQuestionId());
+                ScoringRule scoringRule = null;
+                if(type == QAndARuleType.SCORING){
+                    scoringRule =(ScoringRule) rule;
+                }
                 if (oldRule == null) {
-                    if (CollectionUtils.isNotEmpty(rule.getRuleConditions())) { // Preventing empty rules getting added
+                    if (CollectionUtils.isNotEmpty(rule.getRuleConditions()) || (scoringRule!=null && Objects.nonNull(scoringRule) && scoringRule.getWorkflowId()!=null) ) { // Preventing empty rules getting added
                         getRulesToBeAdded().add(rule);
                     }
                 }

@@ -101,6 +101,7 @@ public class Constants {
 
             fields.add(getIdField(module));
             fields.add(getField("fullScore", "FULL_SCORE", module, FieldType.DECIMAL));
+            fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
             fields.addAll(qandaRuleFields());
 
             return Collections.unmodifiableList(fields);

@@ -111,7 +111,7 @@
 	 <job name= 'ShiftRotationSchedulerJob' classname='com.facilio.bmsconsole.commands.ShiftRotationSchedulerJob' transactionTimeout= '14400000'></job>
 
 	<job name='BaseSchedulerJob' classname= 'com.facilio.bmsconsole.jobs.BaseSchedulerJob' transactionTimeout='3600000'/> -->
-	<job name='BaseSchedulerSingleInstanceJob' classname= 'com.facilio.bmsconsole.jobs.BaseSchedulerSingleInstanceJob' transactionTimeout='600000'/> -->
+	<job name='BaseSchedulerSingleInstanceJob' classname= 'com.facilio.bmsconsole.jobs.BaseSchedulerSingleInstanceJob' transactionTimeout='1800000'/> -->
 	<!-- Visitor Jobs -->
 	<job name='ScheduleVisitorLogs' classname= 'com.facilio.bmsconsole.jobs.VisitorLogScheduler' transactionTimeout='600000'/> -->
 	<job name='AutoCheckOutVisitors' classname= 'com.facilio.bmsconsole.jobs.AutoCheckOutVisitorsScheduler' transactionTimeout='600000'/> -->

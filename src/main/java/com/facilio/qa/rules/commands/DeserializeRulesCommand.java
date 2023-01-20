@@ -45,7 +45,8 @@ public class DeserializeRulesCommand extends FacilioCommand {
 //                if (CollectionUtils.isNotEmpty(conditionsWithActionValue)) {
                 QAndARule rule = FieldUtil.getAsBeanFromMap(prop, type.getRuleClass());
 
-                if (type.isActionMandatory()) {
+                Long workflowId = (Long) prop.get("workflowId");
+                if (workflowId == null && type.isActionMandatory()) {
                     V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Condition {0} cannot be empty", type.getEmptyActionErrorValue()));
                 }
 

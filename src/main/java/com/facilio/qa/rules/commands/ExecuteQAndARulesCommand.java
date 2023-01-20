@@ -1,9 +1,11 @@
 package com.facilio.qa.rules.commands;
 
+import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
@@ -11,7 +13,10 @@ import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.qa.rules.pojo.RuleCondition;
+import com.facilio.qa.rules.pojo.ScoringRule;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.MathUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -81,7 +86,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
         }
     }
 
-    private void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule) throws Exception {
+    protected void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule) throws Exception {
         if (rule == null) {
             return;
         }
@@ -89,6 +94,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
         rule.manipulateAnswer(question, answer);
         RuleHandler handler = Objects.requireNonNull(question.getQuestionType().getRuleHandler(), "Rule handler cannot be null when rule is present for a question");
         List<RuleCondition> conditions = rule.getRuleConditions();
+
         if (CollectionUtils.isNotEmpty(conditions)) {
             List<Map<String, Object>> answersForEval = handler.constructAnswersForEval(type, question, answer);
             // Populate answer props further if needed

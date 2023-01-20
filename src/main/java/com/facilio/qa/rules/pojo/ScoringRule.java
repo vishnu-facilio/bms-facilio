@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Setter
 public class ScoringRule extends QAndARule<ScoringRuleCondition> {
     private Double fullScore;
+    private Long workflowId;
 
     public double fullScoreWithZeroOnNull() {
         return fullScore == null ? 0 : fullScore;

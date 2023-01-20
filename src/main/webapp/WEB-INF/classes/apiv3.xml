@@ -560,7 +560,6 @@
             <param name="pageId">{1}</param>
         </action>
     </package>
-
     <package name="baseSchedulerJob" namespace="/api/v3/baseSchedulerJob"
              extends="v3Api">
         <action name="*"
