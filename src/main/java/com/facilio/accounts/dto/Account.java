@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.logging.FacilioLogHandler;
@@ -84,6 +85,8 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	@Getter @Setter
 	private String prevService;
 
+	@Getter @Setter
+	private WebTabContext currentTab;
 
 	private RemoteScreenContext remoteScreen;
 

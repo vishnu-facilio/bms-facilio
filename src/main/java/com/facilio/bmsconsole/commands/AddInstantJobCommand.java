@@ -8,7 +8,6 @@ import com.facilio.db.transaction.FTransactionManager;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.db.util.DBConf;
 import com.facilio.tasker.FacilioTimer;
-import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;

@@ -97,7 +97,8 @@
 		</action>
 		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING,ALL</param>
+			<param name="setupTab">BMS_EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRules</param>
 			</result>
@@ -105,7 +106,8 @@
 		
 		<action name="addEventRule" class="com.facilio.events.actions.EventAction" method="addEventRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING,ALL</param>
+			<param name="setupTab">BMS_EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
@@ -113,7 +115,8 @@
 		
 		<action name="updateEventRule" class="com.facilio.events.actions.EventAction" method="updateEventRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING,ALL</param>
+			<param name="setupTab">BMS_EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
@@ -121,7 +124,8 @@
 		
 		<action name="deleteEventRule" class="com.facilio.events.actions.EventAction" method="deleteEventRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING,ALl</param>
+			<param name="setupTab">BMS_EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
@@ -129,7 +133,8 @@
 		
 		<action name="geteventrule" class="com.facilio.events.actions.EventAction" method="fetchEventRule">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING,ALL</param>
+			<param name="setupTab">BMS_EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>

@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WebTabUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.filters.MultiReadServletRequest;
@@ -219,6 +220,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
         try {
             if(request != null) {
                 AccountUtil.setReqUri(request.getRequestURI());
+                String currentTab = request.getHeader("X-Tab-Id");
+                if (StringUtils.isNotEmpty(currentTab)) {
+                    WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+                    Long currentTabId = Long.parseLong(currentTab);
+                    if(currentTabId != null) {
+                        AccountUtil.setCurrentTab(tabBean.getWebTab(Long.parseLong(currentTab)));
+                    }
+                }
             }
         } catch (Exception e) {
             LOGGER.info("Setting Request URI error");
@@ -347,6 +356,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         boolean isSetupPermission = false;
                         if(setupTab != null && setupTab.getValue() != null) {
                             moduleName = getModuleNameParam("setup");
+
                             isSetupPermission = true;
                         }
                         String method = request.getMethod();
@@ -511,6 +521,10 @@ public class ScopeInterceptor extends AbstractInterceptor {
             return true;
         }
 
+        if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
+            return true;
+        }
+        
         if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             try {
                 HttpServletRequest request = ServletActionContext.getRequest();
@@ -519,15 +533,18 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     long tabId = Long.parseLong(currentTab);
                     boolean hasPerm = WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId);
                     if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                        permissionLogsForTabs(tabId,moduleName,role.getName(),action);
+                        if(!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
+                            permissionLogsForTabs(tabId, moduleName, role.getName(), action);
+                        }
                     }
+                    return checkAndReturnHasWebtabPermission(hasPerm);
                 } else {
                     LOGGER.info("scope interceptor tab permission - Tab id is empty " + getReferrerUri());
                 }
             } catch (Exception e) {
                 LOGGER.info("scope interceptor error occured tab");
             }
-            return true;
+            return checkAndReturnHasWebtabPermission(false);
         } else {
             try{
                 boolean hasPerm = WebTabUtil.checkModulePermission(action,moduleName,isV3Permission);
@@ -611,5 +628,16 @@ public class ScopeInterceptor extends AbstractInterceptor {
             }
         }
         return "";
+    }
+
+    private boolean checkAndReturnHasWebtabPermission(boolean hasPerm) {
+        try {
+            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
+                return hasPerm;
+            }
+        } catch(Exception e) {
+            LOGGER.info("Error occured in checkAndReturnHasWebtabPermission method");
+        }
+        return true;
     }
 }

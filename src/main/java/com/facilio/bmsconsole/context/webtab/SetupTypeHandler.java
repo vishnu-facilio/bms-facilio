@@ -9,8 +9,13 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class SetupTypeHandler implements WebTabHandler{
@@ -39,9 +44,16 @@ public class SetupTypeHandler implements WebTabHandler{
     public static boolean currentUserHasPermission(WebTabContext tab,String setupTabType, String moduleName, String action, Role role) {
         try {
             long tabId = tab.getId();
-            if(!moduleName.equals("setup"))
-                return false;
-            if(!tab.getTypeEnum().name().equals(setupTabType))
+            boolean passedTabTypeCheck = false;
+            if(StringUtils.isNotEmpty(setupTabType)) {
+                List<String> tabTypesSupportedForRequest = Arrays.asList(StringUtils.split(setupTabType,","));
+                if(CollectionUtils.isNotEmpty(tabTypesSupportedForRequest)) {
+                    if(tabTypesSupportedForRequest.contains(tab.getTypeEnum().name())) {
+                        passedTabTypeCheck = true;
+                    }
+                }
+            }
+            if(!passedTabTypeCheck)
                 return false;
             if(V3PermissionUtil.isFeatureEnabled()){
                 NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());

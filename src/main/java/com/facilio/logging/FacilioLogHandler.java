@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -118,7 +119,22 @@ public class FacilioLogHandler extends Handler {
                 event.setProperty(RequestUtil.REQUEST_URL, "-");
             }
         }
-        
+        try {
+            WebTabContext currentTab = AccountUtil.getCurrentTab();
+            if (currentTab != null) {
+                event.setProperty("tab", String.valueOf(currentTab.getId()));
+                if (currentTab.getTypeEnum() != null && currentTab.getTypeEnum().getTabType() != null) {
+                    event.setProperty("tabTypeEnum", currentTab.getTypeEnum().getTabType().name());
+                } else {
+                    event.setProperty("tabTypeEnum", "-");
+                }
+            } else {
+                event.setProperty("tab", "-");
+                event.setProperty("tabTypeEnum", "-");
+            }
+        } catch (Exception e) {
+            event.setProperty("exception", "LogAppenderException Tabs");
+        }
         event.setProperty("region", FacilioProperties.getRegionCountryCode());
         
         try {

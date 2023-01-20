@@ -9,6 +9,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.constants.FacilioConstants;
@@ -102,7 +103,19 @@ public class AccountUtil {
 		setScopingMap(getCurrentAccount());
 		setSwitchScopingFieldValue("siteId", siteId);
 	}
-	
+
+	public static void setCurrentTab(WebTabContext currentTab) {
+		if(getCurrentAccount() != null) {
+			getCurrentAccount().setCurrentTab(currentTab);
+		}
+	}
+
+	public static WebTabContext getCurrentTab() {
+		if(getCurrentAccount() != null) {
+			return getCurrentAccount().getCurrentTab();
+		}
+		return null;
+	}
 	public static Account getCurrentAccount() {
 		if (currentAccount.get() != null && !currentAccount.get().isScoped()) {
 			return null;
@@ -524,8 +537,8 @@ public class AccountUtil {
 		DISABLE_FORM_SHARING(114,1125899906842624L,LicenseMapping.GROUP2LICENSE), //2^50
 		DISABLE_VIEWLIST_OPTIMIZATION(115, 2251799813685248L, LicenseMapping.GROUP2LICENSE),//2^51
 		BULK_ACTION_IN_PORTAL(116,4503599627370496L,LicenseMapping.GROUP2LICENSE),//2^52
-		PUSHNOTIFICATION_WMS(117,9007199254740992L,LicenseMapping.GROUP2LICENSE);//2^53
-
+		PUSHNOTIFICATION_WMS(117,9007199254740992L,LicenseMapping.GROUP2LICENSE),//2^53
+		THROW_403_WEBTAB(118,18014398509481984L,LicenseMapping.GROUP2LICENSE);//2^54
 
 		public int featureId;
 		private long license;
