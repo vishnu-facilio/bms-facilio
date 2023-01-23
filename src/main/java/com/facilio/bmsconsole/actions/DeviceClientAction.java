@@ -1,14 +1,26 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.context.DeviceContext;
+import com.facilio.bmsconsole.util.AESEncryption;
+import com.facilio.bmsconsole.util.DevicesAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.impl.IamClient;
 import com.facilio.iam.accounts.util.DCUtil;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.util.RequestUtil;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -59,9 +71,13 @@ public String validateCode() {
 			}
 			else {
 				Long connectedDeviceId = (Long) codeObj.get("connectedDeviceId");
+				String scheme;
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
-					
+					ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
+
+					scheme= generateScheme(connectedDeviceId);
+
 					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
 	                ServletActionContext.getRequest();
@@ -73,6 +89,21 @@ public String validateCode() {
 	                cookie.setHttpOnly(true);
 	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
+
+					Cookie cookie1 = new Cookie("fc.mobile.scheme", scheme);
+					cookie1.setMaxAge(60 * 60 * 24 * 30);
+					cookie1.setPath("/");
+					cookie1.setHttpOnly(true);
+					//   cookie.setSecure(true);
+					response.addCookie(cookie1);
+
+					FacilioAuthAction facilio = new FacilioAuthAction();
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", facilio.getDomain(), "baseUrl", getBaseUrl(connectedDevice));
+					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
+					setTempCookieProperties(mobileTokenCookie, false);
+
+					response.addCookie(mobileTokenCookie);
+
 	                IamClient.deleteDevicePassCode(getCode());
 	                
 	                setResponseCode(0);
@@ -100,6 +131,47 @@ public String validateCode() {
 			throw new IllegalArgumentException("passcode_error");
 		}
 	}
-	
+
+	private JSONObject getMobileAuthJSON(String token, String authtoken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(token, authtoken);
+		jsonObject.put(homePath, value);
+		jsonObject.put(domain, Domain);
+		jsonObject.put(baseUrl, BaseUrl);
+		return jsonObject;
+	}
+
+	private String getProtocol() {
+		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+		return RequestUtil.getProtocol(request);
+	}
+
+	private String generateScheme(long connectedDeviceId) throws Exception {
+		String scheme;
+		ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
+		AccountUtil.setCurrentAccount(connectedDevice.getOrgId());
+		DeviceContext device= DevicesAPI.getDevice(connectedDevice.getDeviceId());
+		scheme = device.getDeviceTypeEnum().toString().toLowerCase();
+
+		return scheme;
+	}
+
+	private void setTempCookieProperties(Cookie cookie, boolean authModel) {
+		cookie.setMaxAge(60 * 60); // Make the cookie last an hour
+		cookie.setPath("/");
+		cookie.setHttpOnly(authModel);
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
+			cookie.setSecure(true);
+		}
+	}
+
+	private String getBaseUrl(ConnectedDeviceContext connectedDevice) throws Exception {
+
+		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
+		List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.FACILIO, connectedDevice.getOrgId());
+		baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+		String s = baseUrl.toString();
+		return s;
+	}
 
 }
