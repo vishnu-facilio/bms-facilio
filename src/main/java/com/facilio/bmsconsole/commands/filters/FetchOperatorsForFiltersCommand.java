@@ -119,6 +119,9 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                 || operator == EnumOperators.VALUE_IS
                 || operator == EnumOperators.VALUE_ISN_T
                 || operator instanceof RelatedModuleOperator
+                || operator instanceof MultiLookupOperator
+                || operator instanceof SiteOperator
+                || operator instanceof UserOperator
         ) {
             return null;
         }

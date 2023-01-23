@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.criteria.util.LookupCriteriaUtil;
+import com.facilio.modules.FieldFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -56,29 +58,7 @@ public enum LookupOperator implements Operator<Criteria> {
 						lookupModule = modBean.getModule(lookupField.getSpecialType());
 					}
 					if(module != null) {
-						StringBuilder builder = new StringBuilder();
-						builder.append(lookupField.getCompleteColumnName())
-								.append(" IN (SELECT ID FROM ")
-								.append(lookupModule.getTableName());
-
-						FacilioModule currentMod = lookupModule.getExtendModule();
-						while (currentMod != null) {
-							builder.append(" INNER JOIN ")
-									.append(currentMod.getTableName())
-									.append(" ON (")
-									.append(lookupModule.getTableName()).append(".ID = ")
-									.append(currentMod.getTableName()).append(".ID) ");
-							currentMod = currentMod.getExtendModule();
-						}
-
-						builder.append(" WHERE ")
-								.append(lookupModule.getTableName()).append(".ORGID = ")
-								.append(AccountUtil.getCurrentOrg().getId())
-								.append(" AND (")
-								.append(value.computeWhereClause())
-								.append("))");
-						
-						return builder.toString();
+						return LookupCriteriaUtil.constructLookupQuery(lookupField, FieldFactory.getIdField(lookupModule),lookupModule,value);
 					}
 				}
 			}

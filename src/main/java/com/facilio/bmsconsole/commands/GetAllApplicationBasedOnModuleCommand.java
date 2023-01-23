@@ -34,12 +34,11 @@ public class GetAllApplicationBasedOnModuleCommand extends FacilioCommand {
 				List<ApplicationContext> appsList = ApplicationApi.getRelatedApplications(currentAppId);
 				if(CollectionUtils.isNotEmpty(appsList)) {
 					List<Long> relatedAppIds = appsList.stream().map(ApplicationContext::getId).collect(Collectors.toList());
-					applications = applications.stream().filter(app -> relatedAppIds.contains(app.getId())).collect(Collectors.toList());
+					if(CollectionUtils.isNotEmpty(relatedAppIds)) {
+						relatedAppIds.add(currentAppId);
+						applications = applications.stream().filter(app -> relatedAppIds.contains(app.getId())).collect(Collectors.toList());
+					}
 				}
-				if(applications == null) {
-					applications = new ArrayList<>();
-				}
-				applications.add(AccountUtil.getCurrentApp());
 			}
 		}
 		context.put(FacilioConstants.ContextNames.APPLICATION, applications);

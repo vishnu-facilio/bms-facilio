@@ -146,11 +146,12 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if (genericSearchCriteria != null && !genericSearchCriteria.isEmpty()) {
 			builder.andCriteria(genericSearchCriteria);
 		}
-		
+
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
-		if(scopeCriteria != null && !scopeCriteria.isEmpty())
-		{
-			builder.andCriteria(scopeCriteria);
+		if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPING)) {
+			if (scopeCriteria != null && !scopeCriteria.isEmpty()) {
+				builder.andCriteria(scopeCriteria);
+			}
 		}
 		
 		//TODO remove here and handle in select builder always
