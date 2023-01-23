@@ -48,7 +48,7 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
                     throw new IllegalArgumentException("Invalid relation");
                 }
 
-                if (!isRelationOperation && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
+                if (!isRelationOperation && !unAssociated && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
                         || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex())) {
                     isToManyRelation = false;
                     constructRelationListQueryParams(queryParams, recordId, relationMapping);
