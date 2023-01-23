@@ -40,7 +40,7 @@ public class SSOUtil {
 	public static String getLoginSuccessURL(boolean isWebView) {
 		String loginSuccessURL = getCurrentAppURL();
 		if (isWebView) {
-			loginSuccessURL += "/app/loginsuccess";
+			loginSuccessURL += "/auth/loginsuccess";
 		}
 		return loginSuccessURL;
 	}
