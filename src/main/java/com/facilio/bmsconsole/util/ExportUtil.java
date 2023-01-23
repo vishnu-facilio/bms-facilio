@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ExportUtil {
@@ -103,19 +104,27 @@ public class ExportUtil {
 
 		return fs.getDownloadUrl(fileId);
 	}
-	
+	public static Map<Long,SiteContext> getSiteIdVsSitesMap(List<? extends ModuleBaseWithCustomFields> records, List<ViewField> fields) throws Exception {
+		Map<Long, SiteContext> siteIdVsSiteMap = new HashMap<>();
+		if(isSiteIdFieldPresent(fields)){
+			Set<Long> siteIds = getAllRecordSiteIds(records);
+			List<SiteContext> siteContextList=SpaceAPI.getSitesWithoutScoping(new ArrayList<>(siteIds));
+			for(SiteContext siteContext:siteContextList){
+				Long siteId=siteContext.getSiteId();
+				siteIdVsSiteMap.put(siteId,siteContext);
+			}
+		}
+		return siteIdVsSiteMap;
+	}
 	@SuppressWarnings("resource")
 	public static long exportDataAsXLSFileId(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, FileStore fs) throws Exception
 	{
 		try(HSSFWorkbook workbook = new HSSFWorkbook();){
 			HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
 			HSSFRow rowhead = sheet.createRow((short) 0);
-			
-			List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-			Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-			for (BaseSpaceContext site : siteList) {
-				siteIdVsSiteMap.put(site.getId(), site);
-			}
+
+			Map<Long, SiteContext> siteIdVsSiteMap = getSiteIdVsSitesMap(records,fields);
+
 			int i = 0;
 			for(ViewField vf : fields)
 			{
@@ -368,12 +377,9 @@ public class ExportUtil {
 	        	
 	        	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
 	    		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
-	    		
-	    		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-	    		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-	    		for (BaseSpaceContext site : siteList) {
-	    			siteIdVsSiteMap.put(site.getId(), site);
-	    		}
+
+
+				Map<Long, SiteContext> siteIdVsSiteMap = getSiteIdVsSitesMap(records,fields);
 	        
 	        	for(ModuleBaseWithCustomFields record : records)
 	        	{
@@ -1011,5 +1017,22 @@ public class ExportUtil {
 		
 		return fs.getDownloadUrl(fileId);
 	}
-	
+	public static Set<Long> getAllRecordSiteIds(List<? extends ModuleBaseWithCustomFields> records){
+		Set<Long> siteIds=new HashSet<>();
+		for(ModuleBaseWithCustomFields record:records){
+			if(record.getSiteId()!=-1){
+				siteIds.add(record.getSiteId());
+			}
+		}
+		return siteIds;
+	}
+	public static boolean isSiteIdFieldPresent(List<ViewField> viewFields){
+		for(ViewField vf :viewFields){
+			FacilioField field = vf.getField();
+			if(field.getName().equals("siteId")){
+				return true;
+			}
+		}
+		return false;
+	}
 }
