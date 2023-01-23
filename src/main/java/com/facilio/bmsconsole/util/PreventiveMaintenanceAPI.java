@@ -1066,6 +1066,7 @@ public class PreventiveMaintenanceAPI {
 				prop.put("nextExecutionTime", wo.getCreatedTime());
 				prop.put("orgId", wo.getOrgId());
 				prop.put("pmId", wo.getPm().getId());
+				prop.put("woSubject",wo.getSubject());
 				if (wo.getResource() != null && wo.getResource().getId() > 0) {
 					prop.put("resourceId", wo.getResource().getId());
 				}

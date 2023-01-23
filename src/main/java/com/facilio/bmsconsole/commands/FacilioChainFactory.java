@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.GetScheduledWoCommandV3;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -2524,6 +2525,11 @@ public class FacilioChainFactory {
 	public static FacilioChain getDeleteClient() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteClient());
+		return c;
+	}
+	public static FacilioChain getPpmJobListChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetScheduledWoCommandV3());
 		return c;
 	}
 }

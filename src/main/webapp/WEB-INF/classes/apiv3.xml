@@ -1341,4 +1341,7 @@
             <param name="relatedFieldName">{4}</param>
         </action>
     </package>
+    <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
+        <action name="getPpmJobs" class="com/facilio/bmsconsoleV3/actions/WorkorderAction" method="getPpmJobs"/>
+    </package>
 </struts>
