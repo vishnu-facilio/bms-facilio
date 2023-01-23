@@ -94,6 +94,7 @@ public class FacilioProperties {
     private static String pythonPath;
     private static String allowedAppDomains;
     private static List<String> stageDomains;
+    private static List<String> portalStageDomains;
 
     private static String wmsBroadcaster;
     private static boolean wmsConsumerEnabled;
@@ -241,6 +242,7 @@ public class FacilioProperties {
             portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
             allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
             stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
+            portalStageDomains = parseCommaSeparatedProps("portal.stage.domains", PROPERTIES.getProperty("portal.stage.domains"));
 
             nodejs = PROPERTIES.getProperty("nodejs");
             isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -470,6 +472,9 @@ public class FacilioProperties {
 
     public static List<String> getStageDomains() {
         return stageDomains;
+    }
+    public static List<String> getPortalStageDomains() {
+        return portalStageDomains;
     }
 
     public static String getPushNotificationKey() {

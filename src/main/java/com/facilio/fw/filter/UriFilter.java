@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class UriFilter implements Filter {
     private static final String URL_PATTERN = "/api/";
@@ -73,25 +74,44 @@ public class UriFilter implements Filter {
 
     // For handling dynamic client builds
     private HttpServletRequest constructFacilioRequestIfNeeded (HttpServletRequest request) {
-        if (!FacilioProperties.isProduction() && CollectionUtils.isNotEmpty(FacilioProperties.getStageDomains())) {
-            for (String stageDomain : FacilioProperties.getStageDomains()) {
+        if (!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
+            HttpServletRequest fRequest = parseAndConstructFacilioRequest(request, FacilioProperties.getStageDomains(), false);
+            fRequest = fRequest == null ? parseAndConstructFacilioRequest(request, FacilioProperties.getPortalStageDomains(), true) : fRequest;
+            if (fRequest != null) {
+                return fRequest;
+            }
+        }
+        return request;
+    }
+
+    private HttpServletRequest parseAndConstructFacilioRequest (HttpServletRequest request, List<String> stageDomains, boolean isPortal) {
+        if (CollectionUtils.isNotEmpty(stageDomains)) {
+            for (String stageDomain : stageDomains) {
                 if (request.getServerName().endsWith(stageDomain)) {
-                    if (request.getServerName().equals(stageDomain)) {
-                        break;
+                    if (request.getServerName().equals(stageDomain)) { //This is to handle main app stage domain
+                        return request;
                     }
                     else {
                         String[] strings = request.getServerName().split("\\."); // There could be a better way to do this.
-                        if (strings.length > 3) {
+                        int noOfPartsInDomain = isPortal ? 4 : 3;
+                        if (strings.length > noOfPartsInDomain) {
                             String clientBuild = strings[0];
-                            String serverName = MessageFormat.format("{0}.{1}.{2}", strings[1], strings[2], strings[3]);
-                            request.setAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION, clientBuild);
-                            return new FacilioHttpRequest(request, serverName);
+                            StringJoiner serverName = new StringJoiner(".");
+                            for (int i=1; i <= noOfPartsInDomain; i++) {
+                                serverName.add(strings[i]);
+                            }
+                            return constructFacilioRequest (request, serverName.toString(), clientBuild);
                         }
                     }
                 }
             }
         }
-        return request;
+        return null;
+    }
+
+    private FacilioHttpRequest constructFacilioRequest (HttpServletRequest request, String serverName, String clientBuild) {
+        request.setAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION, clientBuild);
+        return new FacilioHttpRequest(request, serverName);
     }
 
     @Override
