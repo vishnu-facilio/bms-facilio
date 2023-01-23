@@ -3,6 +3,7 @@ package com.facilio.beans;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
+import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.db.criteria.Criteria;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,4 +39,6 @@ public interface GlobalScopeBean {
     public void setStatus(Long appId, Long scopeVariableId,boolean status) throws Exception;
 
     public void setSwitchStatus(Long appId,Long scopeVariableId,boolean status) throws Exception;
+
+    public DAGCache getGlobalScopeGraph(Long appId) throws Exception;
 }

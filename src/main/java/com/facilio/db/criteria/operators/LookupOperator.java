@@ -29,13 +29,13 @@ public enum LookupOperator implements Operator<Criteria> {
 		this.operatorId = operatorId;
 		this.operator = operator;
 	}
-	
+
 	private int operatorId;
 	@Override
 	public int getOperatorId() {
 		return operatorId;
 	}
-	
+
 	private String operator;
 	@Override
 	public String getOperator() {
@@ -52,7 +52,7 @@ public enum LookupOperator implements Operator<Criteria> {
 				if(module.length > 1) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					LookupField lookupField = (LookupField) modBean.getField(module[1], module[0]);
-					
+
 					FacilioModule lookupModule = lookupField.getLookupModule();
 					if(lookupModule == null && lookupField.getSpecialType() != null) {
 						lookupModule = modBean.getModule(lookupField.getSpecialType());
@@ -73,7 +73,7 @@ public enum LookupOperator implements Operator<Criteria> {
 	public boolean isDynamicOperator() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isValueNeeded() {
 		// TODO Auto-generated method stub

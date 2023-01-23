@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -93,6 +94,11 @@ public class NmdpFloorValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 9;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 
 }

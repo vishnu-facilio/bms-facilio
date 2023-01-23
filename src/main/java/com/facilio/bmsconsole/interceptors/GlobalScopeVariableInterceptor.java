@@ -6,7 +6,9 @@ import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ValueGenerator;
@@ -51,7 +53,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
         }
         if(appId != null && appId > 0) {
             GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
-            JSONObject switchMap = getFilterRecordIdMapFromHeader();
+            JSONObject switchMap = GlobalScopeUtil.getFilterRecordIdMapFromHeader();
             Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(appId);
             if (scopeVsValueGen != null && !scopeVsValueGen.isEmpty()) {
                 if (scopeVsValueGen != null && switchMap != null && !scopeVsValueGen.keySet().containsAll(switchMap.keySet())) {
@@ -63,25 +65,27 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                     ValueGeneratorContext valueGeneratorContext = scopeVariableValGenPair.getRight();
                     String ValueGenLinkName = valueGeneratorContext.getLinkName();
                     GlobalScopeVariableContext gs = scopeVariableValGenPair.getLeft();
-                    List<Long> switchValues = getFilterRecordIdFromHeader(switchMap, entry.getKey());
+                    List<Long> switchValues = GlobalScopeUtil.getFilterRecordIdFromHeader(switchMap, entry.getKey());
                     List<Long> computedValGenIds = null;
                     List<Long> evaluatedValues = null;
-                    if(gs.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()){
-                        computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
-                    }
-                    if (CollectionUtils.isNotEmpty(switchValues)) {
-                        if (computedValGenIds != null) { //When empty list all values are accessible
-                            if (!computedValGenIds.containsAll(switchValues)) {
-                                LOGGER.error("Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request");
-//                              return "invalid";
-                            }
+                    if(needValueGeneration(valueGeneratorContext)) {
+                        if (gs.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()) {
+                            computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
                         }
-                        evaluatedValues = switchValues;
-                    } else {
-                        evaluatedValues = computedValGenIds;
+                        if (CollectionUtils.isNotEmpty(switchValues)) {
+                            if (computedValGenIds != null) { //When empty list all values are accessible
+                                if (!computedValGenIds.containsAll(switchValues)) {
+                                    LOGGER.error("Provided switch value is not accessible by the user or not a valid record id. Throws 400 Bad Request");
+//                                  return "invalid";
+                                }
+                            }
+                            evaluatedValues = switchValues;
+                        } else {
+                            evaluatedValues = computedValGenIds;
+                        }
+                        GlobalScopeVariableEvaluationContext scopeVariableEvaluation = new GlobalScopeVariableEvaluationContext(gs.getLinkName(), gs.getApplicableModuleName(), gs.getApplicableModuleId(), gs.getScopeVariableModulesFieldsList(), evaluatedValues, gs.getTypeEnum());
+                        setGlobalScopeVariableValues(scopeVariableEvaluation);
                     }
-                    GlobalScopeVariableEvaluationContext scopeVariableEvaluation = new GlobalScopeVariableEvaluationContext(gs.getLinkName(),gs.getApplicableModuleName(),gs.getApplicableModuleId(),gs.getScopeVariableModulesFieldsList(),evaluatedValues,gs.getTypeEnum());
-                    setGlobalScopeVariableValues(scopeVariableEvaluation);
                 }
             } else {
                 if (switchMap != null) {
@@ -123,7 +127,11 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                     valueGenerators.put(linkName, value);
                 }
                 if(value != null && !value.equals(Strings.EMPTY)) {
-                    ids = Arrays.stream(value.split(",")).map(Long::parseLong).collect(Collectors.toList());
+                    if(value.equals(FacilioConstants.ContextNames.ALL_VALUE)) {
+                        ids = null;
+                    } else {
+                        ids = Arrays.stream(value.split(",")).map(Long::parseLong).collect(Collectors.toList());
+                    }
                 }
                 AccountUtil.setValueGenerator(valueGenerators);
                 return ids;
@@ -131,7 +139,6 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
         }
         return new ArrayList<>();
     }
-
     private static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         String switchVariable = request.getHeader("X-Switch-Value");
@@ -164,5 +171,23 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
             }
         }
         return null;
+    }
+
+    private static boolean needValueGeneration(ValueGeneratorContext valueGeneratorContext) throws Exception {
+        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_SUBQUERY)) {
+            return true;
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_SUBQUERY)) {
+            if(valueGeneratorContext.getValueGeneratorType() == null) {
+                return true;
+            }
+            else if(valueGeneratorContext.getValueGeneratorType() == ValueGeneratorContext.ValueGeneratorType.IDENTIFIER) {
+                return true;
+            }
+            else if(valueGeneratorContext.getValueGeneratorType() == ValueGeneratorContext.ValueGeneratorType.SUB_QUERY) {
+                return false;
+            }
+        }
+        return false;
     }
 }

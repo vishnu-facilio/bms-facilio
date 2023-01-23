@@ -2,14 +2,18 @@ package com.facilio.modules;
 
 import java.util.*;
 
+import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.datastructure.dag.DAG;
+import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
@@ -191,24 +195,22 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			moduleList.add(0,primaryModule);
 			joinModules = moduleList;
 		}
-		List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> fields = new ArrayList<>();
 		Criteria criteria = null;
 
-		boolean globalScopeApplied = false;
 		for(FacilioModule module : joinModules) {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-				Pair<List<FacilioField>, Criteria> fieldsAndCriteria = constructScopeVariableCriteria(module);
-				if (fieldsAndCriteria != null && !globalScopeApplied) {
+				Pair<List<FacilioField>, Criteria> fieldsAndCriteriaForSubquery = constructScopeVariableCriteria(module);
+				if (fieldsAndCriteriaForSubquery != null) {
 					if(!isInsert) {
-						if (CollectionUtils.isNotEmpty(fieldsAndCriteria.getLeft())) {
-							fields.addAll(fieldsAndCriteria.getLeft());
+						if (CollectionUtils.isNotEmpty(fieldsAndCriteriaForSubquery.getLeft())) {
+							fields.addAll(fieldsAndCriteriaForSubquery.getLeft());
 						}
 						if (criteria == null) {
 							criteria = new Criteria();
 						}
-						criteria.andCriteria(fieldsAndCriteria.getRight());
+						criteria.andCriteria(fieldsAndCriteriaForSubquery.getRight());
 					}
-					globalScopeApplied = true;
 				}
 			}
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
@@ -222,6 +224,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 					criteria.andCriteria(moduleScoping.getCriteria());
 				}
 			}
+			if(module.hideFromParents()) {
+				break;
+			}
 		}
 		return ScopeFieldsAndCriteria.of(fields, criteria);
 	}
@@ -233,27 +238,10 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			}
 			return null;
 		}
-		List<FacilioField> fieldList = new ArrayList<>();
-		Criteria criteria = new Criteria();
-		Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationList = AccountUtil.getGlobalScopeVariableValues();
-		if(MapUtils.isNotEmpty(variableEvaluationList)){
-			for(Map.Entry<String,GlobalScopeVariableEvaluationContext> entry : variableEvaluationList.entrySet()){
-				GlobalScopeVariableEvaluationContext variableEvaluation = entry.getValue();
-				if(module != null) {
-					Pair<List<FacilioField>, Criteria> criteriaAndFields = variableEvaluation.getGlobalScopeVariableCriteriaForModule(module.getName());
-					if(criteriaAndFields != null) {
-						if (CollectionUtils.isNotEmpty(criteriaAndFields.getLeft())) {
-							fieldList.addAll(criteriaAndFields.getLeft());
-						}
-						if (criteriaAndFields.getRight() != null){
-							criteria.andCriteria(criteriaAndFields.getRight());
-						}
-					}
-				}
-			}
-			return Pair.of(fieldList, criteria);
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_SUBQUERY)) {
+			return getSubQueryCriteria(module);
 		}
-		return null;
+		return getGlobalScopeIdsBasedCriteria(module);
 	}
 
 
@@ -296,5 +284,39 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			return val;
 		}
 		return StringUtils.EMPTY;
+	}
+
+	private Pair<List<FacilioField>,Criteria> getGlobalScopeIdsBasedCriteria(FacilioModule module) throws Exception {
+		List<FacilioField> fieldList = new ArrayList<>();
+		Criteria criteria = new Criteria();
+		Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationList = AccountUtil.getGlobalScopeVariableValues();
+		if(MapUtils.isNotEmpty(variableEvaluationList)){
+			for(Map.Entry<String,GlobalScopeVariableEvaluationContext> entry : variableEvaluationList.entrySet()){
+				GlobalScopeVariableEvaluationContext variableEvaluation = entry.getValue();
+				if(module != null) {
+					Pair<List<FacilioField>, Criteria> criteriaAndFields = variableEvaluation.getGlobalScopeVariableCriteriaForModule(module.getName());
+					if(criteriaAndFields != null) {
+						if (CollectionUtils.isNotEmpty(criteriaAndFields.getLeft())) {
+							fieldList.addAll(criteriaAndFields.getLeft());
+						}
+						if (criteriaAndFields.getRight() != null){
+							criteria.andCriteria(criteriaAndFields.getRight());
+						}
+					}
+				}
+			}
+			return Pair.of(fieldList, criteria);
+		}
+		return null;
+	}
+
+
+	private Pair<List<FacilioField>, Criteria> getSubQueryCriteria(FacilioModule module) throws Exception {
+		if(AccountUtil.getCurrentApp() != null) {
+			GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+			DAGCache scopeGraph = scopeBean.getGlobalScopeGraph(AccountUtil.getCurrentApp().getId());
+			return GlobalScopeUtil.getScopeCriteriaFromGraph(module, scopeGraph);
+		}
+		return null;
 	}
 }

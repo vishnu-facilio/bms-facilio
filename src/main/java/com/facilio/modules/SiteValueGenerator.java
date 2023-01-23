@@ -1,4 +1,4 @@
-	package com.facilio.modules;
+package com.facilio.modules;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +11,9 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -180,4 +183,18 @@ public class SiteValueGenerator extends ValueGenerator {
 		return 36;
 	}
 
+	@Override
+	public Criteria getCriteria(FacilioField field,List<Long> value) {
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Criteria criteria = new Criteria();
+			if(value != null) {
+				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(getModuleName())), StringUtils.join(value, ","), NumberOperators.EQUALS));
+			}
+			return criteria;
+		} catch (Exception e) {
+
+		}
+		return null;
+	}
 }

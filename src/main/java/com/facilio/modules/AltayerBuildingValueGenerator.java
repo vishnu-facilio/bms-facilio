@@ -12,6 +12,8 @@ import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -75,6 +77,10 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
         return 9;
     }
 
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
+    }
     public List<Long> getBuildingIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
         V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId,V3VendorContactContext.class,true);
         List<Long> buildingIds = new ArrayList<>();

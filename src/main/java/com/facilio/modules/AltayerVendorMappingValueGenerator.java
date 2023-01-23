@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -114,6 +116,11 @@ public class AltayerVendorMappingValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 
 }

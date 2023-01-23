@@ -101,19 +101,4 @@ public class StoreRoomModule extends BaseModuleConfig{
 
         return Collections.singletonList(storeRoomForm);
     }
-
-    @Override
-    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleName());
-        List<ScopeVariableModulesFields> scopeConfigList;
-
-        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
-        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_user"));
-        maintenanceApp.setModuleId(module.getModuleId());
-        maintenanceApp.setFieldName("owner");
-
-        scopeConfigList = Arrays.asList(maintenanceApp);
-        return scopeConfigList;
-    }
 }

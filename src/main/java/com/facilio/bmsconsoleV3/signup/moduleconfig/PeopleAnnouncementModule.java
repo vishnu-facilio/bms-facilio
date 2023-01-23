@@ -81,19 +81,4 @@ public class PeopleAnnouncementModule extends BaseModuleConfig{
 
         return allView;
     }
-
-    @Override
-    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleName());
-        List<ScopeVariableModulesFields> scopeConfigList;
-
-        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
-        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_people"));
-        tenantApp.setModuleId(module.getModuleId());
-        tenantApp.setFieldName("people");
-
-        scopeConfigList = Arrays.asList(tenantApp);
-        return scopeConfigList;
-    }
 }

@@ -46,6 +46,8 @@ public class CacheUtil {
 
 	public static final String APP_LAYOUT_ID = "appLayoutId";
 
+	public static final String VALUE_GENERATOR_ID = "valueGeneratorId";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -90,6 +92,10 @@ public class CacheUtil {
 		return TAB_ID + KEY_SEPARATOR + tabId;
 	}
 
+	public static String VALUE_GENERATOR_KEY(long valueGenId) {
+		return VALUE_GENERATOR_ID + KEY_SEPARATOR + valueGenId;
+	}
+
 	public static String ORG_TAB_KEY(long orgId, long tabId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + TABID_KEY(tabId);
 	}
@@ -101,6 +107,11 @@ public class CacheUtil {
 	public static String ORG_TAB_GROUP_KEY(long orgId, long groupId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + TABGROUPID_KEY(groupId);
 	}
+
+	public static String ORG_VAL_GEN_KEY(long orgId, long valGenId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + VALUE_GENERATOR_KEY(valGenId);
+	}
+
 	public static String SUB_MODULE_KEY(long orgId, String moduleName) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + SUB_MODULES + KEY_SEPARATOR + moduleName;
 	}

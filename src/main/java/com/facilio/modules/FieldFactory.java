@@ -11081,6 +11081,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isHidden", "IS_HIDDEN", module, FieldType.BOOLEAN));
         fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
         fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+        fields.add(getStringField("valueGeneratorType","VALUE_GENERATOR_TYPE",module));
         return fields;
     }
 
@@ -11231,8 +11232,7 @@ public class FieldFactory extends BaseFieldFactory {
         return getField(name, null, colName, module, type);
     }
 
-    public static <F extends FacilioField> F getField(String name, String displayName, String colName, FacilioModule module,
-                                                      FieldType type) {
+    public static <F extends FacilioField> F getField(String name, String displayName, String colName, FacilioModule module, FieldType type) {
         return constructField(FieldFactory::getNewFieldObject, name, displayName, colName, module, type);
     }
 }

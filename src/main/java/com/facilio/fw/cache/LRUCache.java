@@ -7,8 +7,10 @@ import com.facilio.bmsconsole.context.ScopingConfigCacheContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorCacheContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.collections.UniqueMap;
+import com.facilio.datastructure.dag.DAGCache;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -44,6 +46,8 @@ public class LRUCache {
 	private static FacilioCache<String, List<WebTabCacheContext>> webTabsCache = new PubSubLRUCache<>("webTabsCache", 5000);
 	private static FacilioCache<String, List<WebTabGroupCacheContext>> webTabGroupCache = new PubSubLRUCache<>("webTabGroupCache", 5000);
 	private static FacilioCache<String, List<TabIdAppIdMappingCacheContext>> tabAppModuleCache = new PubSubLRUCache<>("tabAppModuleCache", 5000);
+	private static FacilioCache<String, DAGCache> globalScopeGraphCache = new PubSubLRUCache<>("globalScopeGraph", 2000);
+	private static FacilioCache<String, ValueGeneratorCacheContext> valueGeneratorCache = new PubSubLRUCache<>("valueGeneratorCache", 2000);
 
 
 	public static void purgeAllCache() {
@@ -124,4 +128,12 @@ public class LRUCache {
 	public static FacilioCache<String, List<WebTabGroupCacheContext>> getWebTabGroupCache() {
 		return webTabGroupCache;
 	}
+
+	public static FacilioCache<String, DAGCache> getGlobalScopeGraphCache() {
+		return globalScopeGraphCache;
+	}
+	public static FacilioCache<String, ValueGeneratorCacheContext> getValueGeneratorCache() {
+		return valueGeneratorCache;
+	}
+
 }

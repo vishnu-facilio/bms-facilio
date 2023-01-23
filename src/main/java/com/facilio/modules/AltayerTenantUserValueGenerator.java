@@ -3,6 +3,8 @@ package com.facilio.modules;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,5 +50,10 @@ public class AltayerTenantUserValueGenerator extends ValueGenerator {
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

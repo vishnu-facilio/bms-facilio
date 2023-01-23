@@ -6,6 +6,9 @@ import com.facilio.bmsconsole.exception.DependencyException;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
+import com.facilio.datastructure.dag.DAG;
+import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -18,7 +21,6 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -474,6 +476,9 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
                         orderedScopeVariables.put(linkname, scopeVariables.get(linkname));
                     }
                 }
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_SUBQUERY)) {
+                    GlobalScopeUtil.constructAndGetGraph(scopeVariables.values().stream().map(Pair::getLeft).collect(Collectors.toList()), 3, true);
+                }
             }
         } catch (CircularDependencyException e){
             throw new IllegalArgumentException(e.getMessage());
@@ -537,5 +542,11 @@ public class GlobalScopeBeanImpl implements GlobalScopeBean {
             }
         }
         return currentScopeVariable.getLinkName();
+    }
+
+    public DAGCache getGlobalScopeGraph(Long appId) throws Exception {
+        DAG dag = GlobalScopeUtil.constructAndGetGraph(appId,4);
+        DAGCache dagCache = new DAGCache(dag);
+        return dagCache;
     }
 }

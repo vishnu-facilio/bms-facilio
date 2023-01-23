@@ -9,6 +9,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -68,5 +70,10 @@ public class TenantBasedOnTenantUnit extends ValueGenerator {
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

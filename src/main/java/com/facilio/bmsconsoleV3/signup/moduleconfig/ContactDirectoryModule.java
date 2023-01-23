@@ -96,19 +96,4 @@ public class ContactDirectoryModule extends BaseModuleConfig{
 
         return Collections.singletonList(contactDirectoryForm);
     }
-
-    @Override
-    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleName());
-        List<ScopeVariableModulesFields> scopeConfigList;
-
-        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
-        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_audience"));
-        tenantApp.setModuleId(module.getModuleId());
-        tenantApp.setFieldName("audience");
-
-        scopeConfigList = Arrays.asList(tenantApp);
-        return scopeConfigList;
-    }
 }

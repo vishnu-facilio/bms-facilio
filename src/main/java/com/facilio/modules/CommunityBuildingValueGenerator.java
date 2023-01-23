@@ -6,10 +6,12 @@ import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,6 +86,11 @@ public class CommunityBuildingValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 
 }

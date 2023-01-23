@@ -38,6 +38,7 @@ import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.translation.TranslationConf;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.ValidatePermissionUtil;
+import com.facilio.util.ValueGeneratorUtil;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.weather.service.WeatherServiceType;
 import lombok.SneakyThrows;
@@ -123,6 +124,7 @@ public class FacilioContextListener implements ServletContextListener {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
 			ValidatePermissionUtil.initialize();
+			ValueGeneratorUtil.initialize();
 			Operator.getOperator(1);
 			registerMBeans();
 			TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);

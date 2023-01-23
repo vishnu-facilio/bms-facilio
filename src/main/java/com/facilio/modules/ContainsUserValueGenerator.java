@@ -6,6 +6,11 @@ import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
 
 public class ContainsUserValueGenerator extends ValueGenerator{
 
@@ -66,5 +71,10 @@ public class ContainsUserValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 90;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

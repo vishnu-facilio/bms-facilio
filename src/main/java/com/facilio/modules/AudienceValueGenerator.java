@@ -9,12 +9,14 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -198,5 +200,18 @@ public class AudienceValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 90;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field,List<Long> value) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Criteria resultCriteria = new Criteria();
+            resultCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(getModuleName())),StringUtils.join(value,","),NumberOperators.EQUALS));
+            return resultCriteria;
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
+        return null;
     }
 }

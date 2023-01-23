@@ -4,40 +4,27 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ValueGenerator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AddValueGenerators extends SignUpData {
     @Override
     public void addData() throws Exception {
-        List<String> systemValueGeneratorsLinkNames = Arrays.asList(
-                "com.facilio.modules.AccessibleSpacesValueGenerator",
-                "com.facilio.modules.AudienceValueGenerator",
-                "com.facilio.modules.BasespaceHasValueGenerator",
-                "com.facilio.modules.BuildingValueGenerator",
-                "com.facilio.modules.PeopleListValueGenerator",
-                "com.facilio.modules.PeopleValueGenerator",
-                "com.facilio.modules.SiteTenantValueGenerator",
-                "com.facilio.modules.SiteValueGenerator",
-                "com.facilio.modules.StoreRoomValueGenerator",
-                "com.facilio.modules.TenantValueGenerator",
-                "com.facilio.modules.VendorValueGenerator",
-                "com.facilio.modules.CurrentUserValueGenerator",
-                "com.facilio.modules.OrgUserValueGenerator",
-                "com.facilio.modules.TenantBasedOnTenantUnit",
-                "com.facilio.modules.TenantsValueGenerator",
-                "com.facilio.modules.VendorsValueGenerator"
-        );
+        Map<String, Pair<ValueGeneratorContext.ValueGeneratorType,String>> linkNameVsTypeModule = new HashMap<>();
+        linkNameVsTypeModule.put("com.facilio.modules.AccessibleBasespaceValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.IDENTIFIER, FacilioConstants.ContextNames.BASE_SPACE));
+        linkNameVsTypeModule.put("com.facilio.modules.AudienceValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.IDENTIFIER,FacilioConstants.ContextNames.AUDIENCE));
+        linkNameVsTypeModule.put("com.facilio.modules.PeopleValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.PEOPLE));
+        linkNameVsTypeModule.put("com.facilio.modules.TenantValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.TENANT));
+        linkNameVsTypeModule.put("com.facilio.modules.VendorValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.VENDORS));
+        linkNameVsTypeModule.put("com.facilio.modules.CurrentUserValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.USERS));
+
         Reflections reflections = new Reflections("com.facilio.modules");
         Set<Class<? extends ValueGenerator>> valueGeneratorClasses = reflections.getSubTypesOf(ValueGenerator.class);
         List<ValueGeneratorContext> valueGeneratorList = new ArrayList<>();
@@ -46,8 +33,8 @@ public class AddValueGenerators extends SignUpData {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             for(Class<? extends ValueGenerator> valueGenerator : valueGeneratorClasses){
                 ValueGenerator obj = valueGenerator.newInstance();
-                if(systemValueGeneratorsLinkNames.contains(obj.getLinkName())) {
-                    FacilioModule module = modBean.getModule(obj.getModuleName());
+                if(linkNameVsTypeModule.containsKey(obj.getLinkName())) {
+                    FacilioModule module = modBean.getModule(linkNameVsTypeModule.get(obj.getLinkName()).getRight());
                     if (module != null) {
                         ValueGeneratorContext valueGeneratorContext = new ValueGeneratorContext();
                         valueGeneratorContext.setLinkName(obj.getLinkName());
@@ -60,6 +47,7 @@ public class AddValueGenerators extends SignUpData {
                         } else {
                             valueGeneratorContext.setSpecialModuleName(module.getName());
                         }
+                        valueGeneratorContext.setValueGeneratorType(linkNameVsTypeModule.get(obj.getLinkName()).getLeft());
                         valueGeneratorContext.setOperatorId(obj.getOperatorId());
                         valueGeneratorList.add(valueGeneratorContext);
                     }

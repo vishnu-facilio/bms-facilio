@@ -126,25 +126,4 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
 
         return Collections.singletonList(tenantUnitSpaceForm);
     }
-
-    @Override
-    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleName());
-        List<ScopeVariableModulesFields> scopeConfigList;
-
-        ScopeVariableModulesFields maintenanceApp = new ScopeVariableModulesFields();
-        maintenanceApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_maintenance_site"));
-        maintenanceApp.setModuleId(module.getModuleId());
-        maintenanceApp.setFieldName("siteId");
-
-        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
-        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
-        tenantApp.setModuleId(module.getModuleId());
-        tenantApp.setFieldName("tenant");
-
-
-        scopeConfigList = Arrays.asList(maintenanceApp,tenantApp);
-        return scopeConfigList;
-    }
 }

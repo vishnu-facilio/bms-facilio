@@ -26,7 +26,7 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         maintenanceSiteScopeVariable.setDescription("Default Site Scope Variable");
         maintenanceSiteScopeVariable.setDisplayName("Site Scope Variable");
         maintenanceSiteScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        maintenanceSiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.SiteValueGenerator").getId());
+        maintenanceSiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AccessibleBasespaceValueGenerator").getId());
         scopeBean.addScopeVariable(maintenanceSiteScopeVariable);
 
         //Occupant app - user
@@ -38,7 +38,7 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         occupantUserScopeVariable.setDescription("Default User Scope Variable");
         occupantUserScopeVariable.setDisplayName("User Scope Variable");
         occupantUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        occupantUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.OrgUserValueGenerator").getId());
+        occupantUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.CurrentUserValueGenerator").getId());
         scopeBean.addScopeVariable(occupantUserScopeVariable);
 
         //Tenant app - tenant
@@ -64,65 +64,5 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         vendorUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
         vendorUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.VendorValueGenerator").getId());
         scopeBean.addScopeVariable(vendorUserScopeVariable);
-
-        //Maintenance app - storeroom
-        GlobalScopeVariableContext maintenanceStoreroomScopeVariable = new GlobalScopeVariableContext();
-        maintenanceStoreroomScopeVariable.setLinkName("default_maintenance_storeroom");
-        maintenanceStoreroomScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM).getModuleId());
-        maintenanceStoreroomScopeVariable.setStatus(true);
-        maintenanceStoreroomScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        maintenanceStoreroomScopeVariable.setDescription("Default Storeroom Scope Variable");
-        maintenanceStoreroomScopeVariable.setDisplayName("Storeroom Scope Variable");
-        maintenanceStoreroomScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        maintenanceStoreroomScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.StoreRoomValueGenerator").getId());
-        scopeBean.addScopeVariable(maintenanceStoreroomScopeVariable);
-
-        //Maintenance app - user
-        GlobalScopeVariableContext maintenanceUserScopeVariable = new GlobalScopeVariableContext();
-        maintenanceUserScopeVariable.setLinkName("default_maintenance_user");
-        maintenanceUserScopeVariable.setApplicableModuleName(FacilioConstants.ContextNames.USERS);
-        maintenanceUserScopeVariable.setStatus(true);
-        maintenanceUserScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        maintenanceUserScopeVariable.setDescription("Default Users Scope Variable");
-        maintenanceUserScopeVariable.setDisplayName("Users Scope Variable");
-        maintenanceUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        maintenanceUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.OrgUserValueGenerator").getId());
-        scopeBean.addScopeVariable(maintenanceUserScopeVariable);
-
-        //Tenant app - people
-        GlobalScopeVariableContext tenantPeopleScopeVariable = new GlobalScopeVariableContext();
-        tenantPeopleScopeVariable.setLinkName("default_tenant_people");
-        tenantPeopleScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.PEOPLE).getModuleId());
-        tenantPeopleScopeVariable.setStatus(true);
-        tenantPeopleScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
-        tenantPeopleScopeVariable.setDescription("Default People Scope Variable");
-        tenantPeopleScopeVariable.setDisplayName("People Scope Variable");
-        tenantPeopleScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        tenantPeopleScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.PeopleValueGenerator").getId());
-        scopeBean.addScopeVariable(tenantPeopleScopeVariable);
-
-        //Tenant app - audience
-        GlobalScopeVariableContext tenantAudienceScopeVariable = new GlobalScopeVariableContext();
-        tenantAudienceScopeVariable.setLinkName("default_tenant_audience");
-        tenantAudienceScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.AUDIENCE).getModuleId());
-        tenantAudienceScopeVariable.setStatus(true);
-        tenantAudienceScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
-        tenantAudienceScopeVariable.setDescription("Default Audience Scope Variable");
-        tenantAudienceScopeVariable.setDisplayName("Audience Scope Variable");
-        tenantAudienceScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        tenantAudienceScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AudienceValueGenerator").getId());
-        scopeBean.addScopeVariable(tenantAudienceScopeVariable);
-
-        //Tenant app - site
-        GlobalScopeVariableContext tenantSiteScopeVariable = new GlobalScopeVariableContext();
-        tenantSiteScopeVariable.setLinkName("default_tenant_site");
-        tenantSiteScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.SITE).getModuleId());
-        tenantSiteScopeVariable.setStatus(true);
-        tenantSiteScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
-        tenantSiteScopeVariable.setDescription("Default Site Scope Variable");
-        tenantSiteScopeVariable.setDisplayName("Site Scope Variable");
-        tenantSiteScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        tenantSiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.SiteValueGenerator").getId());
-        scopeBean.addScopeVariable(tenantSiteScopeVariable);
     }
 }

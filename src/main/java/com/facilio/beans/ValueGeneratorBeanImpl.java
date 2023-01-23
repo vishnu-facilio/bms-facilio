@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorCacheContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -11,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,7 @@ import java.util.Map;
 public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
 
     @Override
-    public List<ValueGeneratorContext> getValueGenerators(List<Long> ids) throws Exception {
+    public List<ValueGeneratorCacheContext> getValueGenerators(List<Long> ids) throws Exception {
         if (CollectionUtils.isNotEmpty(ids)) {
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getValueGeneratorModule().getTableName())
@@ -27,15 +29,19 @@ public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
             List<Map<String, Object>> props = selectRecordBuilder.get();
             if (CollectionUtils.isNotEmpty(props)) {
                 List<ValueGeneratorContext> valueGenerators = FieldUtil.getAsBeanListFromMapList(props, ValueGeneratorContext.class);
-                return valueGenerators;
+                List<ValueGeneratorCacheContext> valueGeneratorsCache = new ArrayList<>();
+                for(ValueGeneratorContext valGen : valueGenerators) {
+                    valueGeneratorsCache.add(new ValueGeneratorCacheContext(valGen));
+                }
+                return valueGeneratorsCache;
             }
         }
         return null;
     }
 
     @Override
-    public ValueGeneratorContext getValueGenerator(Long id) throws Exception {
-        List<ValueGeneratorContext> valGens = getValueGenerators(Collections.singletonList(id));
+    public ValueGeneratorCacheContext getValueGenerator(Long id) throws Exception {
+        List<ValueGeneratorCacheContext> valGens = getValueGenerators(Collections.singletonList(id));
         if (CollectionUtils.isNotEmpty(valGens)) {
             return valGens.get(0);
         }

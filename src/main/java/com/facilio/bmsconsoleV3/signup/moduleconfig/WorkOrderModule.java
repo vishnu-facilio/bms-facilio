@@ -1313,7 +1313,17 @@ public class WorkOrderModule extends BaseModuleConfig {
         occupantApp.setModuleId(module.getModuleId());
         occupantApp.setFieldName("requester");
 
-        scopeConfigList = Arrays.asList(maintenanceApp,occupantApp);
+        ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
+        tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
+        tenantApp.setModuleId(module.getModuleId());
+        tenantApp.setFieldName("tenant");
+
+        ScopeVariableModulesFields vendorApp = new ScopeVariableModulesFields();
+        vendorApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_vendor_user"));
+        vendorApp.setModuleId(module.getModuleId());
+        vendorApp.setFieldName("vendor");
+
+        scopeConfigList = Arrays.asList(maintenanceApp,occupantApp,tenantApp,vendorApp);
         return scopeConfigList;
     }
 }

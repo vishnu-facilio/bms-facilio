@@ -5,6 +5,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,5 +74,10 @@ public class PeopleListValueGenerator extends ValueGenerator{
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

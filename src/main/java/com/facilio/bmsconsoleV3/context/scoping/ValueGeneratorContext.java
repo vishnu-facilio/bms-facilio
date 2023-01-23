@@ -1,7 +1,19 @@
 package com.facilio.bmsconsoleV3.context.scoping;
 
+import com.facilio.annotations.ImmutableChildClass;
+import com.facilio.bmsconsole.context.IconType;
+import com.facilio.modules.FacilioStringEnum;
+import com.facilio.modules.ValueGenerator;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
+@ImmutableChildClass(className = "ValueGeneratorCacheContext")
+@NoArgsConstructor
 public class ValueGeneratorContext implements Serializable {
     private long id = -1L;
     private String specialModuleName;
@@ -12,6 +24,19 @@ public class ValueGeneratorContext implements Serializable {
     private Boolean isHidden;
     private Boolean isSystem;
     private Integer operatorId;
+
+    public ValueGeneratorContext(ValueGeneratorContext object) {
+        this.id = object.id;
+        this.specialModuleName = object.specialModuleName;
+        this.moduleId = object.moduleId;
+        this.linkName = object.linkName;
+        this.displayName = object.displayName;
+        this.isConstant = object.isConstant;
+        this.isHidden = object.isHidden;
+        this.isSystem = object.isSystem;
+        this.operatorId = object.operatorId;
+        this.valueGeneratorType = object.valueGeneratorType;
+    }
 
     public long getId() {
         return id;
@@ -83,5 +108,13 @@ public class ValueGeneratorContext implements Serializable {
 
     public void setOperatorId(Integer operatorId) {
         this.operatorId = operatorId;
+    }
+
+    private ValueGeneratorType valueGeneratorType;
+
+    @Getter
+    public enum ValueGeneratorType implements FacilioStringEnum {
+        IDENTIFIER,
+        SUB_QUERY;
     }
 }

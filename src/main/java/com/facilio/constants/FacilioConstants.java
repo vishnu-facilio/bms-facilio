@@ -284,6 +284,7 @@ public class FacilioConstants {
 		public static final String VISITOR_FACES = "visitorFaces";
 		public static final String VISITOR_PHOTO = "visitorPhoto";
 		public static final String ALL_PERMISSIONS = "*";
+		public static final String ALL_VALUE = "*";
 
 		public static final String SIGNATURE_CONTENT = "signatureContent";
 		public static final String SIGNATURE_FILE_ID = "signatureFileId";

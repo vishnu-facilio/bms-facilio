@@ -10,6 +10,8 @@ import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -108,5 +110,10 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
     @Override
     public Integer getOperatorId() {
         return 36;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

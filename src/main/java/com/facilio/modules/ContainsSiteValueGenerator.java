@@ -14,6 +14,8 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -174,5 +176,10 @@ public class ContainsSiteValueGenerator extends ValueGenerator {
     @Override
     public Integer getOperatorId() {
         return 90;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }

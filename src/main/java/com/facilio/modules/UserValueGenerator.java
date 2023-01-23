@@ -8,8 +8,22 @@ import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
 
 public class UserValueGenerator extends ValueGenerator{
+
+
+	public Criteria getCriteria(FacilioField field, List<Long> value) {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(field,String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+		return criteria;
+	}
 
 	@Override
 	public String generateValueForCondition(int appType) {

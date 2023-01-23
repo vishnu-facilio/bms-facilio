@@ -14,6 +14,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class GlobalScopeVariableEvaluationContext implements Serializable{
 
     public GlobalScopeVariableEvaluationContext() {

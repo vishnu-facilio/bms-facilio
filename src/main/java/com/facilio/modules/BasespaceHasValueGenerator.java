@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
@@ -101,5 +104,10 @@ public class BasespaceHasValueGenerator extends ValueGenerator {
     @Override
     public Integer getOperatorId() {
         return 38;
+    }
+
+    @Override
+    public Criteria getCriteria(FacilioField field, List<Long> values) {
+        return null;
     }
 }
