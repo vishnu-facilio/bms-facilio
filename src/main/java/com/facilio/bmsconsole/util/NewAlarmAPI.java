@@ -478,13 +478,6 @@ public class NewAlarmAPI {
 
 	private static void rollUpAlarm(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
 									boolean mostRecent, Context context) throws Exception {
-		try {
-			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L);
-			if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
-				LOGGER.info("mostRecent for Alarm id: "+ alarmOccurrence.getAlarm().getId() + " in rollupAlarm function: "+mostRecent+ Arrays.toString(Thread.currentThread().getStackTrace()).replace( ',', '\n' ));
-			}
-		}catch (Exception ex) {}
-
 		if (!mostRecent) {
 			return;
 		}
@@ -493,28 +486,11 @@ public class NewAlarmAPI {
 		baseEvent.updateAlarmContext(baseAlarm, false);
 		alarmOccurrence.updateAlarm(baseAlarm);
 
-		try {
-			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L, 286708L);
-			if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
-				JSONObject alarmOccurrenceFields = FieldUtil.getAsJSON(alarmOccurrence);
-				LOGGER.info("AlarmOccurrence Context for Alarm id: " + alarmOccurrence.getAlarm().getId() + " before updating Alarm : " + alarmOccurrenceFields);
-			}
-		}catch (Exception ex) {}
-
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence,context );
 	}
 
 	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence, Context context)
 			throws Exception {
-
-		try {
-			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L, 286708L);
-			if (alarmIds.contains(baseAlarm.getId())) {
-				JSONObject baseAlarmFields = FieldUtil.getAsJSON(baseAlarm);
-				LOGGER.info("BaseAlarm Context for Alarm id: " + baseAlarm.getId() + " before updating Alarm System Fields : " + baseAlarmFields);
-			}
-		}catch (Exception ex) {}
-
 		baseAlarm.setLastOccurredTime(alarmOccurrence.getLastOccurredTime());
 		baseAlarm.setLastCreatedTime(alarmOccurrence.getCreatedTime());
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
@@ -529,14 +505,6 @@ public class NewAlarmAPI {
 			}
 			baseAlarm.setLastClearedTime(alarmOccurrence.getLastOccurredTime());
 		}
-
-		try {
-			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L, 286708L);
-			if (alarmIds.contains(baseAlarm.getId())) {
-				JSONObject baseAlarmFields = FieldUtil.getAsJSON(baseAlarm);
-				LOGGER.info("BaseAlarm Context for Alarm id: " + baseAlarm.getId() + " after updating Alarm System Fields : " + baseAlarmFields);
-			}
-		}catch (Exception ex) {}
 	}
 
 	public static void loadAlarmLookups(List<BaseAlarmContext> alarms) throws Exception {

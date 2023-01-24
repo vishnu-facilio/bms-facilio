@@ -36,8 +36,6 @@ public class FaultImpactAfterSaveCommand extends FacilioCommand {
 		
 		List<Long> fieldImpactIdsToBeDeleted = new ArrayList<Long>();
 		
-		Map<Long, FaultImpactContext> oldRecordMap = Constants.getOldRecordMap(context);
-		
 		for(FaultImpactContext faultImpact : faultImpacts) {
 			
 			if(faultImpact.getId() > 0) {
@@ -50,10 +48,7 @@ public class FaultImpactAfterSaveCommand extends FacilioCommand {
 				
 				faultImpactFields.addAll(faultImpact.getFields());
 			}
-			
-			if(oldRecordMap != null && oldRecordMap.get(faultImpact.getId()) != null) {
-				WorkflowUtil.deleteWorkflow(oldRecordMap.get(faultImpact.getId()).getWorkflowId());
-			}
+
  		}
 		
 		deleteFaultImpactFields(fieldImpactIdsToBeDeleted);

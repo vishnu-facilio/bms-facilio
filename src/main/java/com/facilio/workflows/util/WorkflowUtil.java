@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.systemfunctions.*;
@@ -556,6 +557,17 @@ public class WorkflowUtil {
 		}
 
 		return workflowContext.getId();
+	}
+
+	public static void updateWorkflow(WorkflowContext workflowContext, Long workflowId) throws Exception{
+		throwExceptionIfScriptValidationFailed(workflowContext);
+		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getWorkflowModule().getTableName())
+				.fields(FieldFactory.getWorkflowFields())
+				.andCondition(CriteriaAPI.getIdCondition(workflowId,ModuleFactory.getWorkflowModule()));
+		updateBuilder.update(props);
 	}
 	
 	public static List<WorkflowFieldContext>  getWorkflowField(WorkflowContext workflowContext) throws Exception {

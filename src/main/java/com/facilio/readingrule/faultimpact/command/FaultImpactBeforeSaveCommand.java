@@ -1,8 +1,6 @@
 package com.facilio.readingrule.faultimpact.command;
 
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
 import com.facilio.chain.FacilioContext;
@@ -35,10 +33,13 @@ public class FaultImpactBeforeSaveCommand extends FacilioCommand {
 				
 			}
 			faultImpact.getWorkflow().setIsV2Script(true);
-			Long workflowId = WorkflowUtil.addWorkflow(faultImpact.getWorkflow());
-			
-			faultImpact.setWorkflowId(workflowId);
-			
+			if(faultImpact.getWorkflowId() == null) {
+				Long workflowId = WorkflowUtil.addWorkflow(faultImpact.getWorkflow());
+				faultImpact.setWorkflowId(workflowId);
+			}
+			else {
+				WorkflowUtil.updateWorkflow(faultImpact.getWorkflow(),faultImpact.getWorkflowId());
+			}
 		}
 		return false;
 	}

@@ -201,6 +201,7 @@ import com.facilio.faults.bmsalarm.LoadSupplementsForBMSAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
 import com.facilio.faults.sensoralarm.LoadSupplementsForSensorAlarmCommand;
+import com.facilio.faults.AfterDeleteAlarmCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
@@ -2298,6 +2299,7 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadSupplementsForSensorAlarmCommand())
                 .delete()
+                .afterDelete(new AfterDeleteAlarmCommand())
                 .build();
     }
 
@@ -2314,6 +2316,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .delete()
+                .afterDelete(new AfterDeleteAlarmCommand())
                 .build();
     }
 
@@ -2371,6 +2374,7 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .delete()
+                .afterDelete(new AfterDeleteAlarmCommand())
                 .build();
     }
 
