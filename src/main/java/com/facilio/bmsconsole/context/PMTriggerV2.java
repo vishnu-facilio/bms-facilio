@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -135,5 +136,12 @@ public class PMTriggerV2 extends V3Context {
             }
             return null;
         }
+    }
+    private String scheduleMsg;
+    public String getScheduleMsg(){
+        return this.scheduleMsg;
+    }
+    public void setScheduleMsg(String scheduleMsg){
+        this.scheduleMsg = scheduleMsg;
     }
 }

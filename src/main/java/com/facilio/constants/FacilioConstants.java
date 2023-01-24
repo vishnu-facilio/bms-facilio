@@ -2227,7 +2227,7 @@ public class FacilioConstants {
 		public static final String PLANNEDMAINTENANCE = "plannedmaintenance";
 		public static final String PLANNEDMAINTENANCE_START_TIME = "plannedmaintenanceStartTime";
 		public static final String PLANNEDMAINTENANCE_END_TIME = "plannedmaintenanceEndTime";
-		public static final String PLANNEDMAINTENANCE_LIST = "plannedmaintenanceList";
+		public static final String PLANNEDMAINTENANCE_MAP = "plannedmaintenanceMap";
 		public static final String PLANNEDMAINTENANCE_JOB_LIST = "plannedmaintenanceJobList";
 		public static final String PLANNEDMAINTENANCE_TRIGGER_LIST = "planedmaintenaceTriggerList";
 		public static final String PLANNEDMAINTENANCE_RESOURCE_LIST = "plannedmaintenanceResourceList";

@@ -47,6 +47,7 @@ public class GetScheduledWoCommandV3 extends FacilioCommand {
         }
 
         List<Map<String, Object>> pmJobList = new ArrayList<>();
+        Map<Long, PMTriggerV2> pmTriggerMap = new HashMap<>();
 
         Set<Long> keys = pmJobsMap.keySet();
         for (Long key: keys) {
@@ -57,24 +58,32 @@ public class GetScheduledWoCommandV3 extends FacilioCommand {
         }
 
         Map<Long, List<PMTriggerV2>> pmTriggersMap = PlannedMaintenanceAPI.getTriggerFromPmV2Ids(pmIds);
+        if(pmTriggersMap == null || pmTriggersMap.isEmpty()){
+            return false;
+        }
         Map<Long, PlannedMaintenance> pmMap = PlannedMaintenanceAPI.getActivePpm(pmIds);
+        if(pmMap == null || pmMap.isEmpty()){
+            return false;
+        }
         List<PlannedMaintenance> pmList = pmMap.values().stream().collect(Collectors.toList());
         Set<Long> resourceIds = new HashSet<>();
         fillResourceIds(pmJobsMap,pmTriggersMap,pmIds,resourceIds);
         Map<Long, ResourceContext> resourceAsMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
         if(CollectionUtils.isNotEmpty(pmIds)){
-            for(long pmId : pmIds){
-                List<PMTriggerV2> pmTrigggers = pmTriggersMap.get(pmId);
+            for(PlannedMaintenance plannedMaintenance : pmList){
+                List<PMTriggerV2> pmTrigggers = pmTriggersMap.get(plannedMaintenance.getId());
                 if(CollectionUtils.isEmpty(pmTrigggers)){
                     break;
                 }
                 for (PMTriggerV2 trigger : pmTrigggers) {
+
                     if (trigger.getSchedule() == null) {
-                         break;
+                         continue;
                     }
+                    pmTriggerMap.put(trigger.getId(),trigger);
                     List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
                     if(CollectionUtils.isEmpty(pmJobs)){
-                        break;
+                        continue;
                     }
                     for(Map<String, Object> pmJob : pmJobs) {
                         if(pmJob.get("resourceId") != null) {
@@ -86,9 +95,9 @@ public class GetScheduledWoCommandV3 extends FacilioCommand {
                         }
                     }
                 }
-                context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_LIST, pmList);
+                context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_MAP, pmMap);
                 context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_JOB_LIST, pmJobList);
-                context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_TRIGGER_LIST, pmTriggersMap);
+                context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_TRIGGER_LIST, pmTriggerMap);
                 context.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_RESOURCE_LIST,resourceAsMap);
             }
         }
@@ -100,11 +109,11 @@ public class GetScheduledWoCommandV3 extends FacilioCommand {
             List<PMTriggerV2> pmTrigggers = pmTriggersMap.get(pmId);
             for (PMTriggerV2 trigger : pmTrigggers) {
                 if(trigger.getSchedule() == null) {
-                    return;
+                    continue;
                 }
                 List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
-                if(pmJobs == null && pmJobs.isEmpty()) {
-                    return;
+                if(pmJobs == null || pmJobs.isEmpty()) {
+                    continue;
                 }
                 for(Map<String, Object> pmJob : pmJobs) {
                     if(pmJob.get("resourceId") != null) {

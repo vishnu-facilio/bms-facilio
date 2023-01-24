@@ -3,6 +3,7 @@ package com.facilio.plannedmaintenance;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -20,6 +21,10 @@ import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.NumberQuestionContext;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
@@ -176,6 +181,15 @@ public class PlannedMaintenanceAPI {
                     .beanClass(PMTriggerV2.class)
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"),String.valueOf(pmId),NumberOperators.EQUALS));
             List<PMTriggerV2> pmTriggerV2List = builder.get();
+            if(pmTriggerV2List == null || pmTriggerV2List.isEmpty()){
+                continue;
+            }
+            for(PMTriggerV2 pmTriggerV2 : pmTriggerV2List){
+                if(pmTriggerV2.getFrequencyEnum() != null){
+                    String scheduleMsg = StringUtils.capitalize(pmTriggerV2.getFrequencyEnum().getName());
+                    pmTriggerV2.setScheduleMsg(scheduleMsg);
+                }
+            }
             pmTriggerMap.put(pmId,pmTriggerV2List);
         }
         return pmTriggerMap;
@@ -197,7 +211,9 @@ public class PlannedMaintenanceAPI {
                     .andCondition(CriteriaAPI.getIdCondition(pmId,plannedMaintenanceModule))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("pmStatus"),String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()),NumberOperators.EQUALS));
             PlannedMaintenance plannedMaintenance = builder.fetchFirst();
-            pmMap.put(plannedMaintenance.getId(),plannedMaintenance);
+            if(plannedMaintenance != null ) {
+                pmMap.put(plannedMaintenance.getId(), plannedMaintenance);
+            }
         }
         return pmMap;
     }
@@ -241,7 +257,10 @@ public class PlannedMaintenanceAPI {
                 if (wo.getAssignedTo() != null) {
                     prop.put("assignedToId", wo.getAssignedTo().getId());
                 }
-                if (wo.getPmTriggerV2()  > 0) {
+                if (wo.getType().getId() > 0){
+                    prop.put("type", TicketAPI.getType(wo.getOrgId(),wo.getType().getId()).getName());
+                }
+                if (wo.getPmTriggerV2() != null ) {
                     prop.put("pmTriggerId", wo.getPmTriggerV2());
 
                     List<Map<String, Object>> woList = pmWos.get(wo.getPmTriggerV2());

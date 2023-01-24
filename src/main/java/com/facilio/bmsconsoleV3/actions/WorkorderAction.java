@@ -139,7 +139,7 @@ public class WorkorderAction extends V3Action {
         getPmchain.execute(context);
         Map<String ,Object> result = new HashMap<>();
         result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_JOB_LIST,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_JOB_LIST));
-        result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_LIST,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_LIST));
+        result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_MAP,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_MAP));
         result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_TRIGGER_LIST,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_TRIGGER_LIST));
         result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_RESOURCE_LIST,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_RESOURCE_LIST));
         setData("result",result);
