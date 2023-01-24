@@ -2,6 +2,7 @@ package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -296,7 +297,7 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace()) {
+			if(getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
 				Throwable msg = e;
 				if (e instanceof InvocationTargetException) {
 					msg = e.getCause();
