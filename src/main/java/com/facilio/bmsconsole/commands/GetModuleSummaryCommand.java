@@ -48,10 +48,10 @@ public class GetModuleSummaryCommand extends FacilioCommand {
 
         // Fields
         List<FacilioField> fields = modBean.getAllFields(moduleName);
-        List<String> moduleFieldsToHide = getModuleFieldsToHide(moduleName);
+//        List<String> moduleFieldsToHide = getModuleFieldsToHide(moduleName);
         fields.removeIf(field -> field.getName().equals("stateFlowId") || (field.getName().equals("moduleState") && !module.isStateFlowEnabled()));     // handleStateField
         List<FacilioField> systemFields = fields.stream().filter(FacilioField::isDefault).collect(Collectors.toList());
-        long systemFieldsCount = systemFields.size() - moduleFieldsToHide.size();
+        long systemFieldsCount = systemFields.size();
         long customFieldsCount = fields.size() - systemFields.size();
 
         // Buttons

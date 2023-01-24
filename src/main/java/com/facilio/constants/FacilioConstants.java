@@ -3288,6 +3288,7 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_SUPER_ADMIN = "CAFM Super Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Administrator";
+		public static final String CAFM_ADMIN = "CAFM Admin";
 		public static final String KIOSK_ADMIN = "Kiosk Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";

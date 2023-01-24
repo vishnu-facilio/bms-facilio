@@ -15,7 +15,7 @@ public class DeleteViewGroupCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long viewGroupId = (long) context.get(FacilioConstants.ContextNames.VIEW_GROUP_ID);
-		ViewGroups viewGroup = ViewAPI.getGroup(viewGroupId);
+		ViewGroups viewGroup = ViewAPI.getViewGroup(viewGroupId);
 
 		if (viewGroup == null) {
 			throw new IllegalArgumentException("ViewGroup not found");

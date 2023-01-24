@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class GetFormSharingRolesCommand extends FacilioCommand {
     @Override
@@ -22,8 +23,7 @@ public class GetFormSharingRolesCommand extends FacilioCommand {
 
         FacilioModule formSharingModule = ModuleFactory.getFormSharingModule();
         List<FacilioField> formSharingFields = FieldFactory.getFormSharingFields();
-
-        SharingContext<SingleSharingContext> formSharing = SharingAPI.getSharing(Collections.singletonList(formId),formSharingModule,SingleSharingContext.class, formSharingFields);
+        SharingContext<SingleSharingContext> formSharing = SharingAPI.getSharing(formId,formSharingModule,SingleSharingContext.class, formSharingFields);
 
         context.put(FacilioConstants.ContextNames.FORM_SHARING, formSharing);
 

@@ -908,7 +908,7 @@ public class FieldUtil {
 	}
 	
 	public static final List<String> INTERNAL_FIELDS = Collections.unmodifiableList(Arrays.asList(new String[] {
-			ContextNames.STATE_FLOW_ID, ContextNames.SLA_POLICY_ID, ContextNames.FORM_ID,  ContextNames.APPROVAL_STATUS, "approvalFlowId",
+			ContextNames.SITE_ID, ContextNames.STATE_FLOW_ID, ContextNames.SLA_POLICY_ID, ContextNames.FORM_ID,  ContextNames.APPROVAL_STATUS, "approvalFlowId",
 	}));
 
 	public static final boolean isSupplementRecord (FacilioField field) { // By default will exclude system rel record
