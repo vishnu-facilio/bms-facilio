@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -79,8 +80,10 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    		if(emailConversation.getTo() != null && !emailConversation.getTo().contains("<")) {
 	    			
 	    			EmailFromAddress emailFromAddress = MailMessageUtil.getEmailFromAddress(emailConversation.getTo(), false);
-	    			
-	    			emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
+
+					if(emailFromAddress != null && emailFromAddress.getDisplayName() != null) {
+						emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
+					}
 	    		}
 	    	}
 	    }
