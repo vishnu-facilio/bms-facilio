@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
@@ -8,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,7 +26,8 @@ public class DisAssociateTabGroupCommand extends FacilioCommand {
         Long groupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
 
         if(CollectionUtils.isNotEmpty(tabs) && groupId != null && groupId > 0){
-            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(groupId);
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+            WebTabGroupContext webTabGroup = tabBean.getWebTabGroup(groupId);
             if (webTabGroup == null) {
                 throw new IllegalArgumentException("Invalid web group");
             }
@@ -33,13 +36,7 @@ public class DisAssociateTabGroupCommand extends FacilioCommand {
             for(WebTabContext wt : tabs){
                 ids.add(wt.getId());
             }
-            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                    .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
-                    .andCondition(CriteriaAPI.getCondition("WEBTAB_ID", "webTabId", StringUtils.join(ids, ","), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "webTabGroupId", String.valueOf(groupId), NumberOperators.EQUALS));
-
-            builder.delete();
-
+            tabBean.disassociateTabGroup(ids,groupId);
             ApplicationApi.incrementLayoutVersionByIds(Collections.singletonList(webTabGroup.getLayoutId()));
         }
 

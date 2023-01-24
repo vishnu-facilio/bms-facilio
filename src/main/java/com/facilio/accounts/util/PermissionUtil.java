@@ -8,11 +8,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.AppModulePermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -219,7 +221,8 @@ public class PermissionUtil {
 				long tabId = Long.valueOf(currentTab);
 				WebTabContext webTabContext;
 				try {
-					webTabContext = ApplicationApi.getWebTab(tabId);
+					WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+					webTabContext = tabBean.getWebTab(tabId);
 					if (webTabContext != null) {
 						boolean hasAccess = false;
 						long userPermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getId());
@@ -357,7 +360,8 @@ public class PermissionUtil {
 				long tabId = Long.valueOf(currentTab);
 				WebTabContext webTabContext;
 				try {
-					webTabContext = ApplicationApi.getWebTab(tabId);
+					WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+					webTabContext = tabBean.getWebTab(tabId);
 					if (webTabContext != null) {
 						boolean hasAccess = false;
 
@@ -684,7 +688,8 @@ public class PermissionUtil {
 					}
 				}
 				else if(moduleName.equalsIgnoreCase("setup")) {
-					WebTabContext tab = ApplicationApi.getWebTab(tabId);
+					WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+					WebTabContext tab = tabBean.getWebTab(tabId);
 					if(tab != null) {
 						if (tabType != null && tab.getTypeEnum().name().equals(tabType)) {
 							boolean hasPerm = hasPermission(rolePermissionVal, action, tabId);
@@ -774,7 +779,8 @@ public class PermissionUtil {
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
 		Type tabType = null;
-		WebTabContext webTabContext = ApplicationApi.getWebTab(tabId);
+		WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+		WebTabContext webTabContext = tabBean.getWebTab(tabId);
 		if(webTabContext!=null) {
 			tabType = webTabContext.getTypeEnum();
 			if(tabType != null){
@@ -814,7 +820,8 @@ public class PermissionUtil {
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
 		Type tabType = null;
-		WebTabContext webTabContext = ApplicationApi.getWebTab(tabId);
+		WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+		WebTabContext webTabContext = tabBean.getWebTab(tabId);
 		if(webTabContext!=null) {
 			tabType = webTabContext.getTypeEnum();
 			if(tabType != null){

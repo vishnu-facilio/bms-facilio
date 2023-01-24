@@ -114,7 +114,6 @@ public class BmsDBConf extends DBConf {
         return FacilioProperties.getMalwareScannerEngine();
     }
 
-
     @Override
     public String getTransactionId() {
         Account account = AccountUtil.getCurrentAccount();

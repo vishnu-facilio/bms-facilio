@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.maintenanceApp;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.IconType;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -123,17 +124,17 @@ public class DefaultTabsAndTabGroups {
     public List<WebTabGroupContext> getWebTabGroups(long appId,long layoutId) throws Exception {
         Map<String,WebTabContext> tabsMap = getWebTabs(appId);
         List<WebTabGroupContext> webTabGroups = Arrays.asList(
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"),tabsMap.get("portfolio"),tabsMap.get("approval")), "Home", "home", 1, 1, null,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("assets"),tabsMap.get("assetreport")), "Asset", "asset", 6, 2, 4l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("storeroom"),tabsMap.get("itemtypes"),tabsMap.get("items"),tabsMap.get("tooltypes"),tabsMap.get("tools"),tabsMap.get("inventoryrequests"),tabsMap.get("inventoryreports")), "Inventory", "inventory", 27, 3, 14l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("preventive-maintenance"),tabsMap.get("calender"),tabsMap.get("resourcescheduler"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("jobplans"),tabsMap.get("safetyplans")), "Plans", "plans", 7, 5, 81l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("servicerequest"),tabsMap.get("servicecatalog"),tabsMap.get("contactdirectory"),tabsMap.get("documents"),tabsMap.get("servicereport")), "help Center", "helpcenter", 8, 6, 31l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("inspection"),tabsMap.get("inspectiontemplates"),tabsMap.get("inspectionreport")), "Inspection", "inspection", 34, 7, 54l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("purchaserequest"),tabsMap.get("rfq"),tabsMap.get("purchaseorder"),tabsMap.get("receivables"),tabsMap.get("termsandconditions"),tabsMap.get("purchasereports")), "Procurement", "procurement", 25, 8, 56l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("vendors"),tabsMap.get("vendorcontact"),tabsMap.get("certificateofinsurance"),tabsMap.get("vendorreports")), "Vendor", "vendor", 26, 9, 57l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit"),tabsMap.get("quote"),tabsMap.get("tenantreports")), "Tenant", "tenant", 12, 10, 16l,layoutId),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact"),tabsMap.get("clientreports")), "Client", "client", 17, 11, 33l,layoutId)
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"),tabsMap.get("portfolio"),tabsMap.get("approval")), "Home", "home", 1, 1, null,layoutId,IconType.home),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("assets"),tabsMap.get("assetreport")), "Asset", "asset", 6, 2, 4l,layoutId,IconType.asset),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("storeroom"),tabsMap.get("itemtypes"),tabsMap.get("items"),tabsMap.get("tooltypes"),tabsMap.get("tools"),tabsMap.get("inventoryrequests"),tabsMap.get("inventoryreports")), "Inventory", "inventory", 27, 3, 14l,layoutId,IconType.inventory),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("preventive-maintenance"),tabsMap.get("calender"),tabsMap.get("resourcescheduler"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("jobplans"),tabsMap.get("safetyplans")), "Plans", "plans", 7, 5, 81l,layoutId,IconType.safety_plan),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("servicerequest"),tabsMap.get("servicecatalog"),tabsMap.get("contactdirectory"),tabsMap.get("documents"),tabsMap.get("servicereport")), "help Center", "helpcenter", 8, 6, 31l,layoutId,IconType.service_request),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("inspection"),tabsMap.get("inspectiontemplates"),tabsMap.get("inspectionreport")), "Inspection", "inspection", 34, 7, 54l,layoutId,IconType.inspection),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("purchaserequest"),tabsMap.get("rfq"),tabsMap.get("purchaseorder"),tabsMap.get("receivables"),tabsMap.get("termsandconditions"),tabsMap.get("purchasereports")), "Procurement", "procurement", 25, 8, 56l,layoutId,IconType.procurement),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("vendors"),tabsMap.get("vendorcontact"),tabsMap.get("certificateofinsurance"),tabsMap.get("vendorreports")), "Vendor", "vendor", 26, 9, 57l,layoutId,IconType.vendor),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit"),tabsMap.get("quote"),tabsMap.get("tenantreports")), "Tenant", "tenant", 12, 10, 16l,layoutId,IconType.tenant),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact"),tabsMap.get("clientreports")), "Client", "client", 17, 11, 33l,layoutId,IconType.client)
 
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("purchase"),tabsMap.get("leaserental"),tabsMap.get("warranty"),tabsMap.get("labourcontracts"),tabsMap.get("termsandconditions"),tabsMap.get("contractreports")), "Contracts", "contracts", 18, 4, 21l,layoutId),
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("announcement"),tabsMap.get("newsandinformation"),tabsMap.get("neighbourhood"),tabsMap.get("dealsandoffers"),tabsMap.get("audience")), "Community", "community", 21, 8, 16l,layoutId),

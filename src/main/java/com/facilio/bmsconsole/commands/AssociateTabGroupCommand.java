@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.context.WebtabWebgroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -22,18 +24,13 @@ public class AssociateTabGroupCommand extends FacilioCommand {
         List<WebtabWebgroupContext> tabsGroups = (List<WebtabWebgroupContext>) context.get(FacilioConstants.ContextNames.WEB_TAB_WEB_GROUP);
 
         if(CollectionUtils.isNotEmpty(tabsGroups)){
-            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                    .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
-                    .fields(FieldFactory.getWebTabWebGroupFields());
-
-            List<Map<String, Object>> props = FieldUtil.getAsMapList(tabsGroups, WebtabWebgroupContext.class);
-
-           insertBuilder.addRecords(props);
-           insertBuilder.save();
-
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+            for(WebtabWebgroupContext tabGroup : tabsGroups) {
+                tabBean.addWebtabWebtabGroup(tabGroup);
+            }
             // Increment layout version
             Long groupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
-            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(groupId);
+            WebTabGroupContext webTabGroup = tabBean.getWebTabGroup(groupId);
             if (webTabGroup == null) {
                 throw new IllegalArgumentException("Invalid web group");
             }

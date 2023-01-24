@@ -279,12 +279,6 @@ public class SignupUtil {
         }
 
         public static boolean maintenanceAppSignup() {
-                if(FacilioProperties.isProduction()) {
-                        return false;
-                }
-                if(FacilioProperties.isOnpremise()) {
-                        return false;
-                }
                 try {
                         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MAINTENANCE_APP_SIGNUP)) {
                                 return true;

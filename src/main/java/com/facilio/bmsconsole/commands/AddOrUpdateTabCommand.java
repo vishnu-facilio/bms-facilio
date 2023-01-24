@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.WebTabBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
@@ -69,21 +70,17 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
                 }
             }
 
-           if (tab.getId() > 0) {
-                GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                        .table(ModuleFactory.getWebTabModule().getTableName()).fields(FieldFactory.getWebTabFields())
-                        .andCondition(CriteriaAPI.getIdCondition(tab.getId(), ModuleFactory.getWebTabModule()));
-                builder.update(FieldUtil.getAsProperties(tab));
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+            if (tab.getId() > 0) {
+                tabBean.updateWebTab(tab);
                 context.put(FacilioConstants.ContextNames.WEB_TAB_ID, tab.getId());
-                deleteEntriesForTab(tab.getId());
-                insertIntoTabIdAppIdMappingTable(tab);
+                tabBean.deleteTabMappingEntriesForTab(tab.getId());
+                tabBean.insertIntoTabIdAppIdMappingTable(tab);
             } else {
-                GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getWebTabModule().getTableName()).fields(FieldFactory.getWebTabFields());
-                long tabId = builder.insert(FieldUtil.getAsProperties(tab));
+                long tabId = tabBean.addTab(tab);
                 context.put(FacilioConstants.ContextNames.WEB_TAB_ID, tabId);
                 tab.setId(tabId);
-                insertIntoTabIdAppIdMappingTable(tab);
+                tabBean.insertIntoTabIdAppIdMappingTable(tab);
             }
            context.put(FacilioConstants.ContextNames.WEB_TAB,tab);
         }
@@ -197,12 +194,4 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
         }
         return false;
     }
-
-    private void deleteEntriesForTab(long tabId) throws Exception {
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName()).andCondition(CriteriaAPI.getCondition(
-                        "TABID_MODULEID_APPID_MAPPING.TAB_ID", "tabId", String.valueOf(tabId), NumberOperators.EQUALS));
-        builder.delete();
-    }
-
 }

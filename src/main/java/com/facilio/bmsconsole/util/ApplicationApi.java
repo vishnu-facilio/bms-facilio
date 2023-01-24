@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.beans.UserScopeBean;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
@@ -698,12 +699,12 @@ public class ApplicationApi {
             Role maintenanceAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
                     FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN);
             addAppRoleMapping(maintenanceAdmin.getRoleId(), maintenance.getId());
-            Role maintenanceManager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
-                    FacilioConstants.DefaultRoleNames.MAINTENANCE_MANAGER);
-            addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
-            Role maintenanceTechnician = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
-                    FacilioConstants.DefaultRoleNames.MAINTENANCE_TECHNICIAN);
-            addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
+//            Role maintenanceManager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+//                    FacilioConstants.DefaultRoleNames.MAINTENANCE_MANAGER);
+//            addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
+//            Role maintenanceTechnician = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+//                    FacilioConstants.DefaultRoleNames.MAINTENANCE_TECHNICIAN);
+//            addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
         }
 
         ApplicationContext dataLoader = getApplicationForLinkName(
@@ -1053,6 +1054,7 @@ public class ApplicationApi {
     public static void addTenantPortalWebGroupsForMobileLayout(ApplicationLayoutContext layout) {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
             int groupOrder = 1;
 
             long appId = layout.getApplicationId();
@@ -1069,14 +1071,14 @@ public class ApplicationApi {
 
             WebTabContext homeTab = new WebTabContext("Home", "home", WebTabContext.Type.PORTAL_OVERVIEW, null, appId,
                     configJSON);
-            addWebTab(homeTab);
+            tabBean.addTab(homeTab);
             webTabs.add(homeTab);
 
             webTabs.add(getWebTabForApplication(appId, "workorder"));
             webTabs.add(getWebTabForApplication(appId, "catalog"));
             WebTabContext notificationWebTab = new WebTabContext("Notifications", "notification",
                     WebTabContext.Type.NOTIFICATION, null, appId, null);
-            addWebTab(notificationWebTab);
+            tabBean.addTab(notificationWebTab);
             webTabs.add(notificationWebTab);
             groupNameVsWebTabsMap.put("favorite", webTabs);
 

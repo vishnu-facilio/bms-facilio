@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
@@ -8,6 +9,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
@@ -24,12 +26,9 @@ public class DeleteTabGroupCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Web Tab are found inside group");
             }
 
-            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(id);
-
-            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                    .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                    .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getWebTabGroupModule()));
-            builder.delete();
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+            WebTabGroupContext webTabGroup = tabBean.getWebTabGroup(id);
+            tabBean.deleteWebTabGroup(webTabGroup.getId());
 
             if (webTabGroup == null) {
                 throw new IllegalArgumentException("Invalid web group");

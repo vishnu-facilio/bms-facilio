@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.annotations.AnnotationEnums;
+import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
@@ -13,8 +15,30 @@ import org.json.simple.parser.JSONParser;
 import java.io.Serializable;
 import java.util.List;
 
+@ImmutableChildClass(className = "WebTabCacheContext",constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class WebTabContext implements Serializable {
-    public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense,List<String> specialTypeModules,long appId) {
+    public WebTabContext(WebTabContext object) {
+        this.id = object.id;
+        this.iconType = object.iconType;
+        this.iconTypeEnum = object.iconTypeEnum;
+        this.name = object.name;
+        this.applicationId = object.applicationId;
+        this.route = object.route;
+        this.type = object.type;
+        this.config = object.config;
+        this.permissions = object.permissions;
+        this.moduleIds = object.moduleIds;
+        this.modules = object.modules;
+        this.permissionVal = object.permissionVal;
+        this.permissionVal2 = object.permissionVal2;
+        this.permission = object.permission;
+        this.featureLicense = object.featureLicense;
+        this.specialTypeModules = object.specialTypeModules;
+        this.order = object.order;
+        this.typeVsColumns = object.typeVsColumns;
+    }
+
+    public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense, List<String> specialTypeModules, long appId) {
         this.name = name;
         this.route = route;
         this.type = type;

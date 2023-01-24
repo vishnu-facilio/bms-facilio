@@ -6,6 +6,7 @@ import java.util.List;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
@@ -13,6 +14,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -40,6 +42,7 @@ public class GetApplicationDetails extends FacilioCommand {
 		Boolean fetchAllLayouts  = (Boolean)context.get(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS);
 		Boolean considerRole  = (Boolean) context.get(FacilioConstants.ContextNames.CONSIDER_ROLE);
 		Long roleId  = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
+		WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
 
 		ApplicationContext application = null;
 		if (appId <= 0) {
@@ -66,15 +69,15 @@ public class GetApplicationDetails extends FacilioCommand {
 			}
 			if (CollectionUtils.isNotEmpty(appLayouts)) {
 				for (ApplicationLayoutContext layout : appLayouts) {
-					List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupForLayoutID(layout);
+					List<WebTabGroupContext> webTabGroups = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(tabBean.getWebTabGroupForLayoutID(layout),WebTabGroupCacheContext.class),WebTabGroupContext.class);
 					if (webTabGroups != null && !webTabGroups.isEmpty()) {
 						for (WebTabGroupContext webTabGroup : webTabGroups) {
-							List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
+							List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(tabBean.getWebTabsForWebGroup(webTabGroup.getId()),WebTabCacheContext.class),WebTabContext.class);
 							if (webTabs != null && !webTabs.isEmpty()) {
 								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 								for (WebTabContext webtab : webTabs) {
 									webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
-									List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
+									List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(tabBean.getTabIdModules(webtab.getId()),TabIdAppIdMappingCacheContext.class),TabIdAppIdMappingContext.class);
 									List<Long> moduleIds = new ArrayList<>();
 									List<String> specialTypes = new ArrayList<>();
 									if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
@@ -144,7 +147,7 @@ public class GetApplicationDetails extends FacilioCommand {
 											: (webTabContext -> webTabContext.getType() == Type.ORGANIZATION_SETTINGS.getIndex()));
 								}
 							}
-							if(!fetchAllLayouts) {
+							if(!fetchAllLayouts && CollectionUtils.isNotEmpty(webTabs)) {
 								webTabs.removeIf(t -> !hasLicense(t));
 							}
 							if(CollectionUtils.isNotEmpty(webTabs) && considerRole != null && considerRole && AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && !AccountUtil.getCurrentUser().getRole().isPrevileged()) {
