@@ -71,13 +71,21 @@ public class UpdateDataCommandStatus extends AgentV2Command {
                     String pointName = (String) command.getDatum("name");
                     String sentValue = command.getValue();
                     Object receivedValue = jsonObject.get(pointName);
+                    LOGGER.info("Sent value : "+sentValue);
+                    LOGGER.info("Received Value : "+receivedValue);
 
                     GenericUpdateRecordBuilder.BatchUpdateByIdContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
                     batchUpdate.setWhereId(commandId);
                     batchUpdateList.add(batchUpdate);
-                    
+
+                    FacilioField field = modbean.getField(command.getFieldId());
+                    if(field.getDataType() == FieldType.DECIMAL.getTypeAsInt()){
+                        sentValue =String.valueOf(Double.parseDouble(sentValue));
+                    }
+
                     Status status;
-                    // On sending null to agents like niagara, the value received will be latest and not null 
+                    // On sending null to agents like niagara, the value received will be latest and not null
+
                     if( receivedValue != null && (sentValue == null || sentValue.equals(receivedValue.toString()) )){
                     	status = Status.SUCCESS;
                     }
@@ -86,6 +94,7 @@ public class UpdateDataCommandStatus extends AgentV2Command {
                         batchUpdate.addUpdateValue("retriedCount", ++retriedCount);
                         command.setRetriedCount(retriedCount);
                         commandsToRetry.add(command);
+                        LOGGER.info("Retried count : "+retriedCount);
                     }
                     else {
                     	status = Status.FAILED;

@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AgentType implements FacilioIntEnum {
-    CUSTOM(0, "custom", true, false, true),
-    FACILIO(1, "facilio", false, false, true),
-    NIAGARA(2, "niagara", false, false, true),
-    CLOUD(3, "cloud", true, false, false),
-    REST(4, "rest", true, false, false),
+    CUSTOM(0, "Custom", true, false, true),
+    FACILIO(1, "Facilio", false, false, true),
+    NIAGARA(2, "Niagara", false, false, true),
+    CLOUD(3, "Cloud", true, false, false),
+    REST(4, "Rest", true, false, false),
     RDM(6, "RDM", false, true, false),
-    CLOUD_ON_SERVICE(7, "cloud-on-service", true, true, false),
-    MQTT(8, "mqtt", true, true, false),
+    CLOUD_ON_SERVICE(7, "Cloud Service", true, true, false),
+    MQTT(8, "MQTT Client", true, true, false),
     E2(9,"E2",false,true,false);
 
 
