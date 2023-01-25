@@ -17,6 +17,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -284,6 +285,13 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 		alarmMap.put(baseEvent.getMessageKey(), alarmOccurrence.getAlarm());
 		baseEvent.setAlarmOccurrence(alarmOccurrence);
 		baseEvent.setBaseAlarm(alarmOccurrence.getAlarm());
+		try {
+			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L, 286708L);
+			if (alarmIds.contains(baseEvent.getBaseAlarm().getId())) {
+				JSONObject baseEventFields = FieldUtil.getAsJSON(baseEvent);
+				LOGGER.info("BaseEvent Context for Alarm id: " + baseEvent.getBaseAlarm().getId() + " after updating Alarm : " + baseEventFields);
+			}
+		}catch (Exception ex) {}
 	}
 	public static class PointedList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = 1L;
