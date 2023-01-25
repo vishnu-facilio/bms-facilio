@@ -1,6 +1,7 @@
 package com.facilio.v3.context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bundle.bean.BundleBean;
@@ -461,7 +462,11 @@ public class Constants {
     public static ScriptBean getScriptBean() throws Exception {
         return (ScriptBean) BeanFactory.lookup("ScriptBean");
     }
-    
+
+    public static NamespaceBean getNsBean() throws Exception {
+        return (NamespaceBean) BeanFactory.lookup("NamespaceBean");
+    }
+
     public static BundleBean getBundleBean(long orgid) throws Exception {
         return (BundleBean) BeanFactory.lookup("BundleBean",orgid);
     }

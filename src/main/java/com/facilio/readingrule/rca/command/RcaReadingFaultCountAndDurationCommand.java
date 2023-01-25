@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
@@ -61,6 +62,7 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), rcaAlarmIds, NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(firstReading.getRcaFault().getResource().getId()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("isNewReadingRule"), String.valueOf(true), BooleanOperators.IS))
                     .groupBy(fieldMap.get("alarm").getCompleteColumnName());
 
             List<Map<String, Object>> list = builder.getAsProps();

@@ -192,63 +192,6 @@ public class NewReadingRuleAPI {
         return new ArrayList<>();
     }
 
-    public static void addNamespaceFields(Long nsId, Map<Long, ResourceContext> assetsMap, List<NameSpaceField> fields) throws Exception {
-        deleteFieldsIfAlreadyExists(nsId);
-        List<Map<String, Object>> assetList = new ArrayList<>();
-
-        for (NameSpaceField fld : fields) {
-            Long resourceID = (fld.getResourceId() != null && fld.getResourceId() != -1) ? fld.getResourceId() : -1;
-            if (resourceID == -1) {
-                if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
-                    getRelationMappingFields(fld);
-                    prepareNSField(fld, nsId, resourceID, false);
-                    assetList.add(FieldUtil.getAsProperties(fld));
-                } else {
-                    prepareNSField(fld, nsId, resourceID, true);
-                    assetList.add(FieldUtil.getAsProperties(fld));
-                }
-
-            } else {
-                prepareNSField(fld, nsId, resourceID, false);
-                assetList.add(FieldUtil.getAsProperties(fld));
-            }
-        }
-
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                .fields(NamespaceModuleAndFieldFactory.getNamespaceFieldFields())
-                .addRecords(assetList);
-
-        insertBuilder.save();
-    }
-
-    private static void getRelationMappingFields(NameSpaceField nsField) throws Exception {
-        RelationMappingContext mapping = RelationUtil.getRelationMapping(nsField.getRelMapContext().getMappingLinkName());
-        nsField.setRelMapId(mapping.getId());
-        nsField.setRelMapContext(mapping);
-    }
-
-    private static void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
-        GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS));
-        delBuilder.delete();
-
-    }
-
-    private static void prepareNSField(NameSpaceField fld, long nsId, long resourceId, boolean isPrimary) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioField field = modBean.getField(fld.getFieldId());
-        FacilioModule module = field.getModule();
-
-        fld.setField(field);
-        fld.setModule(module);
-        fld.setNsId(nsId);
-        fld.setResourceId(resourceId);
-        fld.setPrimary(isPrimary);
-
-    }
-
     public static Map<Long, String> getReadingRuleNamesByIds(List<Long> ruleIds) throws Exception {
 
         String s = "(" + StringUtils.join(ruleIds, ",") + ")";

@@ -1,8 +1,6 @@
 package com.facilio.readingrule.faultimpact.command;
 
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.v3.context.Constants;
@@ -27,11 +25,11 @@ public class DeleteFaultImpactFromReadingRuleCommand extends FacilioCommand {
             nsList.add(NSType.FAULT_IMPACT_RULE);
             if (CollectionUtils.isNotEmpty(list)) {
                 for (NewReadingRuleContext readingRule : list) {
-                    NamespaceAPI.deleteNameSpacesFromRuleId(readingRule.getId(), nsList);
+                    Constants.getNsBean().deleteNameSpacesFromRuleId(readingRule.getId(), nsList);
                     LOGGER.info("Successfully deleted fault impact rules. rule : " + readingRule.getImpactId());
                 }
             }
         }
-            return false;
+        return false;
     }
 }

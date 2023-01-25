@@ -38,8 +38,8 @@ public class AddNamespaceInKpiListCommand extends FacilioCommand {
     }
 
     private String getResourceName(Long id) throws Exception {
-        AssetContext asset = AssetsAPI.getAssetInfo(id);
-        return asset.getName();
+        AssetContext asset = AssetsAPI.getAssetInfo(id, true);
+        return asset!=null ? asset.getName() : "";
     }
 
 }

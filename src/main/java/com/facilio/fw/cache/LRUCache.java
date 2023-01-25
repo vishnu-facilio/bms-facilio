@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorCacheContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.collections.UniqueMap;
 import com.facilio.datastructure.dag.DAGCache;
+import com.facilio.ns.context.NameSpaceCacheContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -48,7 +49,8 @@ public class LRUCache {
 	private static FacilioCache<String, List<TabIdAppIdMappingCacheContext>> tabAppModuleCache = new PubSubLRUCache<>("tabAppModuleCache", 5000);
 	private static FacilioCache<String, DAGCache> globalScopeGraphCache = new PubSubLRUCache<>("globalScopeGraph", 2000);
 	private static FacilioCache<String, ValueGeneratorCacheContext> valueGeneratorCache = new PubSubLRUCache<>("valueGeneratorCache", 2000);
-
+	private static FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = new PubSubLRUCache<>("nameSpaceCache", 2000);
+	private static FacilioCache<String, List<Long>> nameSpaceIdsCache = new PubSubLRUCache("nameSpaceIdsCache", 2000);
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
@@ -135,5 +137,13 @@ public class LRUCache {
 	public static FacilioCache<String, ValueGeneratorCacheContext> getValueGeneratorCache() {
 		return valueGeneratorCache;
 	}
+
+	public static FacilioCache<String, NameSpaceCacheContext> getNameSpaceCache(){ return nameSpaceCache;}
+
+	public static FacilioCache<String, List<Long>> getNameSpaceIdCache() {
+		return nameSpaceIdsCache;
+	}
+
+
 
 }

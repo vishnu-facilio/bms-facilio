@@ -1,7 +1,6 @@
 package com.facilio.readingkpi.commands.delete;
 
 import com.facilio.command.FacilioCommand;
-import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
@@ -21,7 +20,7 @@ public class DeleteNamespaceReadingKpiCommand extends FacilioCommand {
         ReadingKPIContext readingKPIContext = list.get(0);
         List<NSType> nsList =new ArrayList<>();
         nsList.add(NSType.KPI_RULE);
-        NamespaceAPI.deleteNameSpacesFromRuleId(readingKPIContext.getId(),nsList);
+        Constants.getNsBean().deleteNameSpacesFromRuleId(readingKPIContext.getId(),nsList);
         return false;
     }
 }

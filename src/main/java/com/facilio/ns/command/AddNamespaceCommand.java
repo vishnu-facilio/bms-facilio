@@ -1,10 +1,9 @@
 package com.facilio.ns.command;
 
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
@@ -27,8 +26,8 @@ public class AddNamespaceCommand extends FacilioCommand {
         if (parentRuleId != null) {
             ns.setParentRuleId(parentRuleId);
         }
-        
-        Long id = NamespaceAPI.addNamespace(ns);
+
+        Long id = Constants.getNsBean().addNamespace(ns);
 
         context.put(NamespaceConstants.NAMESPACE_ID, id);
         return Boolean.FALSE;

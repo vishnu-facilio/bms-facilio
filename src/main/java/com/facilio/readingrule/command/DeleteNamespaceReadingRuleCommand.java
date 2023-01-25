@@ -1,6 +1,8 @@
 package com.facilio.readingrule.command;
 
+import com.facilio.beans.NamespaceBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
@@ -21,7 +23,7 @@ public class DeleteNamespaceReadingRuleCommand extends FacilioCommand {
         List<NSType> list=new ArrayList<>();
         list.add(NSType.READING_RULE);
         list.add(NSType.FAULT_IMPACT_RULE);
-        NamespaceAPI.deleteNameSpacesFromRuleId(newReadingRuleContext.getId(),list);
+        Constants.getNsBean().deleteNameSpacesFromRuleId(newReadingRuleContext.getId(),list);
         return false;
     }
 }

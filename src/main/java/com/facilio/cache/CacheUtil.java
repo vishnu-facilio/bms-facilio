@@ -46,6 +46,8 @@ public class CacheUtil {
 
 	public static final String APP_LAYOUT_ID = "appLayoutId";
 
+	public static final String NS_FIELD_ID = "nsReadingFieldId";
+
 	public static final String VALUE_GENERATOR_ID = "valueGeneratorId";
 
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
@@ -178,6 +180,14 @@ public class CacheUtil {
 	public static String USER_SCOPE_CONFIG_VARIABLE_KEY(long orgId, long scopeId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + SCOPEID_KEY(scopeId);
 	};
+
+	public static String NAMESPACE_KEY(long orgId, long nsId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + nsId ;
+	}
+
+	public static String NAMESPACE_IDS_KEY(long orgId, long fieldId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + NS_FIELD_ID + KEY_SEPARATOR + fieldId;
+	}
 
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();

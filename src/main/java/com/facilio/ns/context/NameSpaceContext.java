@@ -1,5 +1,6 @@
 package com.facilio.ns.context;
 
+import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,7 +14,39 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@ImmutableChildClass(className = "NameSpaceCacheContext")
 public class NameSpaceContext implements Serializable {
+
+    public NameSpaceContext(NameSpaceContext ns) {
+        this.id = ns.id;
+        this.orgId = ns.orgId;
+        this.parentRuleId = ns.parentRuleId;
+        this.execInterval = ns.execInterval;
+        this.includedAssetIds = ns.includedAssetIds;
+        this.type = ns.type;
+        this.assetCategoryId = ns.assetCategoryId;
+        this.workflowId = ns.workflowId;
+        this.workflowContext = ns.workflowContext;
+        this.status = ns.status;
+        this.fields = ns.fields;
+    }
+
+    /**
+     * this constructor is used in storm to clone NameSpaceContext
+     */
+    public NameSpaceContext(NameSpaceCacheContext ns) {
+        this.id = ns.id;
+        this.orgId = ns.orgId;
+        this.parentRuleId = ns.parentRuleId;
+        this.execInterval = ns.execInterval;
+        this.includedAssetIds = ns.includedAssetIds;
+        this.type = ns.type;
+        this.assetCategoryId = ns.assetCategoryId;
+        this.workflowId = ns.workflowId;
+        this.workflowContext = ns.workflowContext;
+        this.status = ns.status;
+        this.fields = ns.fields;
+    }
 
     Long id;
 
@@ -118,7 +151,7 @@ public class NameSpaceContext implements Serializable {
         if (workflowContext != null) {
             return this.workflowContext;
         }
-        if(workflowId != null) {
+        if (workflowId != null) {
             return this.workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
         }
         return null;
