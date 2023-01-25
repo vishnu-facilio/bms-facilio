@@ -437,7 +437,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Team / Staff"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));
 		columns.add(new ViewField("noOfTasks", "Tasks"));
@@ -487,7 +487,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("priority", "Priority"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("createdTime", "Created Time"));
 		columns.add(new ViewField("actualWorkEnd", "Resolved Time"));
 		columns.add(new ViewField("dueDate", "Due Date"));
@@ -498,7 +498,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		columns.add(new ViewField("noOfNotes", "Comments"));
 
@@ -509,7 +509,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("urgency", "Urgency"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		columns.add(new ViewField("vendor", "Vendor"));
@@ -524,7 +524,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));
 		columns.add(new ViewField("noOfTasks", "Tasks"));
@@ -587,7 +587,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		
 		return columns;
