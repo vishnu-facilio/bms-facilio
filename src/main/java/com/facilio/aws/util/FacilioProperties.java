@@ -98,6 +98,7 @@ public class FacilioProperties {
 
     private static String wmsBroadcaster;
     private static boolean wmsConsumerEnabled;
+    private static List<String> wmsTopics;
 
     private static String emailClient;
     private static String fileStore;
@@ -356,6 +357,7 @@ public class FacilioProperties {
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
             wmsConsumerEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("wms.enableConsumer", "true"));
+            wmsTopics = parseCommaSeparatedProps("wms.topics", PROPERTIES.getProperty("wms.topics"));
 
             proxyUrl = PROPERTIES.getProperty("proxyUrl");
             portalProxyUserUrl = PROPERTIES.getProperty("portalProxyUrl");
@@ -421,6 +423,9 @@ public class FacilioProperties {
         return wmsConsumerEnabled;
     }
 
+    public static List<String> getWmsTopics() {
+        return wmsTopics;
+    }
     public static Long getMessageReprocessInterval() {
         return messageReprocessInterval;
     }

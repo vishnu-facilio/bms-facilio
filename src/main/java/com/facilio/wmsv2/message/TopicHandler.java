@@ -8,10 +8,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TopicHandler {
+
     enum DELIVER_TO { ALL, USER, ORG, SESSION, APP }
 
     String[] topic();
+
     DELIVER_TO deliverTo() default DELIVER_TO.ORG;
+
     int priority();
-    boolean sendToAllWorkers() default true;
+
+    Group group() default Group.DEFAULT;
+
+    int recordTimeout() default 300; //5 mins (in seconds)
+
 }

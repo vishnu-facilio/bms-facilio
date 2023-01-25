@@ -2,6 +2,7 @@ package com.facilio.wmsv2.handler;
 
 import com.facilio.fw.BeanFactory;
 import com.facilio.queueingservice.QueueingServiceBean;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 
@@ -11,7 +12,8 @@ import lombok.extern.log4j.Log4j;
         topic = ScriptLogHander.TOPIC+"/#/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        sendToAllWorkers = false
+        group = Group.DEFAULT_SINGLE_WORKER,
+		recordTimeout = 120
 )
 @Log4j
 public class ScriptLogHander extends BaseHandler {

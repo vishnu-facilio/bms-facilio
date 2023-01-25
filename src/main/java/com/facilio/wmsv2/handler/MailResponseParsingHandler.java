@@ -5,6 +5,7 @@ import com.facilio.mailtracking.commands.ParseMailResponseCommand;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
 import com.facilio.modules.FieldUtil;
 import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
@@ -12,8 +13,9 @@ import org.json.simple.JSONObject;
 
 @TopicHandler(
         topic = Topics.Mail.mailResponse + "/#",
-        sendToAllWorkers = false,
-        priority = -5
+        group = Group.DEFAULT_SINGLE_WORKER,
+        priority = -5,
+        recordTimeout = 120
 )
 @Log4j
 public class MailResponseParsingHandler extends BaseHandler {

@@ -2,6 +2,7 @@ package com.facilio.wmsv2.handler;
 
 import com.facilio.wmsv2.filters.BaseFilter;
 import com.facilio.wmsv2.filters.WMSFilter;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 import com.facilio.wmsv2.util.TopicUtil;
@@ -9,15 +10,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Processor {
 
     public static final Processor instance = new Processor();
     private final List<BaseHandler> handlers = new ArrayList<>();
+    private final Map<Group, List<BaseHandler>> groupMap = new HashMap<>();
     private final List<BaseFilter> filters = new ArrayList<>();
 
     private Processor() {
@@ -37,9 +36,14 @@ public class Processor {
                         handler.setPriority(annotation.priority());
                         handler.setTopics(topics);
                         handler.setDeliverTo(annotation.deliverTo());
-                        handler.setSendToAllWorkers(annotation.sendToAllWorkers());
-
+                        handler.setGroup(annotation.group());
+                        handler.setRecordTimeout(annotation.recordTimeout());
                         handlers.add(handler);
+
+                        //adding group level topics
+                        List<BaseHandler> groupTopics = groupMap.getOrDefault(annotation.group(), new ArrayList<>());
+                        groupTopics.add(handler);
+                        groupMap.put(annotation.group(), groupTopics);
                     }
                     else {
                         // log
@@ -97,6 +101,10 @@ public class Processor {
 //            }
 //        }
 //    }
+
+    public List<BaseHandler> getGroupTopics(Group group) {
+        return groupMap.getOrDefault(group, new ArrayList<>());
+    }
 
     public BaseHandler getHandler(String topic) {
         for (BaseHandler baseHandler : handlers) {

@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
 import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,7 +24,8 @@ import org.json.simple.parser.ParseException;
         topic = Topics.System.auditLogs,
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        sendToAllWorkers = false
+        group = Group.DEFAULT_SINGLE_WORKER,
+        recordTimeout = 15
 )
 public class AuditLogHandler extends BaseHandler {
 

@@ -8,7 +8,8 @@ import com.facilio.wmsv2.message.TopicHandler;
 @TopicHandler(
         topic = {Topics.System.subscribe, Topics.System.unsubscribe},
         priority = -9,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION
+        deliverTo = TopicHandler.DELIVER_TO.SESSION,
+        recordTimeout = 15
 )
 public class SubscribeHandler extends BaseHandler {
 

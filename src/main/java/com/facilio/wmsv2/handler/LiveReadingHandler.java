@@ -7,7 +7,8 @@ import com.facilio.wmsv2.message.TopicHandler;
 @TopicHandler(
         topic = Topics.System.livereading,
         priority = -10,
-        deliverTo = TopicHandler.DELIVER_TO.ORG
+        deliverTo = TopicHandler.DELIVER_TO.ORG,
+        recordTimeout = 15
 )
 public class LiveReadingHandler extends BaseHandler {
 

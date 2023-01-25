@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 
 import java.util.*;
@@ -123,11 +124,11 @@ public class SessionManager {
 			}
 
 			BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-			boolean sendToAllWorkers = true;
+			Group group = Group.DEFAULT;
 			if (handler != null) {
-				sendToAllWorkers = handler.isSendToAllWorkers();
+				group = handler.getGroup();
 			}
-			broadcaster.broadcast(message, sendToAllWorkers);
+			broadcaster.broadcast(message, group);
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "Send message failed: " + message.toString(), ex);
 		}

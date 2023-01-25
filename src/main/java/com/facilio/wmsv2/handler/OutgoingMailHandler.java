@@ -10,6 +10,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 @TopicHandler(
         topic = Topics.Mail.outgoingMail + "/#",
-        sendToAllWorkers = false,
+        group = Group.DEFAULT_SINGLE_WORKER,
         priority = -5
 )
 @Log4j

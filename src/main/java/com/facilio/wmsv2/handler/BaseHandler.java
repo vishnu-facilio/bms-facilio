@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.handler;
 
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 
@@ -11,7 +12,11 @@ public class BaseHandler {
     private String[] topics;
     private int priority;
     private TopicHandler.DELIVER_TO deliverTo;
-    private boolean sendToAllWorkers;
+    private Group group;
+
+    private int recordTimeout;
+
+//    private boolean sendToAllWorkers;
 
     final void setTopics(String[] topics) {
         this.topics = topics;
@@ -37,13 +42,29 @@ public class BaseHandler {
         this.deliverTo = deliverTo;
     }
 
-    public boolean isSendToAllWorkers() {
-        return sendToAllWorkers;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setSendToAllWorkers(boolean sendToAllWorkers) {
-        this.sendToAllWorkers = sendToAllWorkers;
+    public void setGroup(Group group) {
+        this.group = group;
     }
+
+    public int getRecordTimeout() {
+        return recordTimeout;
+    }
+
+    public void setRecordTimeout(int recordTimeout) {
+        this.recordTimeout = recordTimeout;
+    }
+
+    //    public boolean isSendToAllWorkers() {
+//        return sendToAllWorkers;
+//    }
+
+//    public void setSendToAllWorkers(boolean sendToAllWorkers) {
+//        this.sendToAllWorkers = sendToAllWorkers;
+//    }
 
     public void processIncomingMessage(Message message) {
     }

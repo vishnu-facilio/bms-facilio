@@ -1,24 +1,5 @@
 package com.facilio.wmsv2.handler;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.mail.util.MimeMessageParser;
-
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -26,26 +7,32 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser.Status;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.queueingservice.QueueingServiceBean;
+import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
-
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.mail.util.MimeMessageParser;
+
+import javax.mail.internet.MimeMessage;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @TopicHandler(
         topic = EmailProcessHandler.TOPIC+"/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        sendToAllWorkers = false
+        group = Group.DEFAULT_SINGLE_WORKER
 )
 @Log4j
 public class EmailProcessHandler extends BaseHandler{

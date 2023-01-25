@@ -7,7 +7,8 @@ import com.facilio.wmsv2.message.TopicHandler;
 @TopicHandler(
         topic = Topics.System.agentpoints,
         priority = -10,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION
+        deliverTo = TopicHandler.DELIVER_TO.SESSION,
+		recordTimeout = 60
 )
 public class AgentPointHandler extends BaseHandler{
 	

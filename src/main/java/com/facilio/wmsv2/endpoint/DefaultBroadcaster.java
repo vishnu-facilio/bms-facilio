@@ -3,15 +3,14 @@ package com.facilio.wmsv2.endpoint;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.websocket.EncodeException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class DefaultBroadcaster {
 
@@ -102,7 +101,7 @@ public class DefaultBroadcaster {
         }
     }
 
-    public void broadcast(Message data, boolean sendToAllWorkers) throws Exception {
+    public void broadcast(Message data, Group group) throws Exception {
         // ignoring sendToAllWorkers in default
         pushToLiveSession(data);
     }

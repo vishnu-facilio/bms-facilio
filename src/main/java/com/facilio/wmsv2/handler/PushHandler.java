@@ -9,7 +9,8 @@ import org.json.simple.JSONObject;
 
 @TopicHandler(
         topic = Topics.Push.push,
-        priority = -5
+        priority = -5,
+        recordTimeout = 15
 )
 public class PushHandler extends BaseHandler {
 

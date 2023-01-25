@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
@@ -18,7 +19,8 @@ import java.time.Duration;
         topic = Topics.System.pmPlanner,
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        sendToAllWorkers = false
+        recordTimeout = 1800,
+        group = Group.PM_PLANNER_WORKER
 )
 
 @Log4j
