@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agent.AgentType;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.fw.BeanFactory;
@@ -168,6 +170,9 @@ public class ControllerMessenger {
 	            	case ADD_CONTROLLER:
 	            		break;
 	            	case DISCOVER_POINTS:
+                        if(agent.getAgentTypeEnum() == AgentType.FACILIO && controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt()){
+                            object.put(AgentConstants.TIMEOUT_SEC, 300); // 5 mins
+                        }
 	            		if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
 	            		controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
 	            			object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);

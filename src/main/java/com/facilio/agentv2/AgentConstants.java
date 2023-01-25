@@ -58,6 +58,9 @@ public class AgentConstants
     public static final String URL = "url";
     public static final String INSTANCE_TYPE = "instanceType";
     public static final String VENDOR_ID = "vendorId";
+    public static final String RANGE = "range";
+    public static final String BACNET_PORT = "port";
+    public static final String TIMEOUT_SEC = "timeout.sec";
 
     // opc-ua
     public static final String CERT_PATH = "certPath";

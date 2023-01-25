@@ -59,10 +59,6 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agentType == AgentType.CLOUD) {
                 agentBean.scheduleRestJob(agent);
             }
-            agentBean.schedulePointsDataMissingJob(agent);
-            if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
-                AgentUtilV2.togglePointsDataMissingAlarmJob(agent);
-            }
                JobContext job =  FacilioTimer.getJob(currentOrg.getOrgId(), FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB);
                 if (job == null){
                     AgentUtilV2.scheduleMlBmsJob(currentOrg.getOrgId());
@@ -70,7 +66,10 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
             }
-
+            agentBean.schedulePointsDataMissingJob(agent);
+            if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
+                AgentUtilV2.togglePointsDataMissingAlarmJob(agent);
+            }
             return false;
         } else {
             throw new Exception(" agent missing from context " + context);

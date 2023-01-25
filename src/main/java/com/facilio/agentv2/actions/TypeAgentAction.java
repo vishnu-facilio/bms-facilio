@@ -6,6 +6,10 @@ import java.util.Map;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.facilio.agent.AgentType;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
@@ -32,13 +36,21 @@ public class TypeAgentAction extends AgentIdAction {
     @NotNull
     private  Integer controllerType;
 
-    private  String ipAddress;
-    private  Long port;
+    private String ipAddress;
+    private Long port;
+    private Long timeout_sec = null;
+    private Long bacnetPort = null;
+    private JSONObject range;
 
     public String discoverControllers(){
         try {
-            if(FacilioControllerType.valueOf(getControllerType()) == FacilioControllerType.E2 && getIpAddress() != null && getPort() != null){
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            FacilioAgent agent = agentBean.getAgent(getAgentId());
+
+            if(agent.getAgentTypeEnum() == AgentType.E2 && FacilioControllerType.valueOf(getControllerType()) == FacilioControllerType.E2 && getIpAddress() != null && getPort() != null){
                 setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType()), getIpAddress(), getPort()));
+            } else if (agent.getAgentTypeEnum() == AgentType.FACILIO && getControllerType()==1) { // Facilio Agent - BACnet-ip
+                setResult(AgentConstants.DATA, AgentMessenger.discoverBacnetController(getAgentId(), FacilioControllerType.valueOf(getControllerType()), getBacnetPort(), getRange(), getTimeout_sec()));
             } else {
                 setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
             }

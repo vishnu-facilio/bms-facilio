@@ -1,5 +1,6 @@
 package com.facilio.agentv2.iotmessage;
 
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
@@ -68,6 +69,13 @@ public class AgentMessenger {
                     if (extraMsgContent != null && type == FacilioControllerType.E2 && extraMsgContent.containsKey(AgentConstants.IP_ADDRESS) && extraMsgContent.containsKey(AgentConstants.PORT)){
                         messageBody.put(AgentConstants.IP_ADDRESS, extraMsgContent.get(AgentConstants.IP_ADDRESS));
                         messageBody.put(AgentConstants.PORT, extraMsgContent.get(AgentConstants.PORT));
+                    }
+                    if (extraMsgContent != null && type == FacilioControllerType.BACNET_IP && AgentType.FACILIO == agent.getAgentTypeEnum()){
+                        messageBody.put(AgentConstants.BACNET_PORT, extraMsgContent.get(AgentConstants.BACNET_PORT));
+                        if(extraMsgContent.containsKey(AgentConstants.RANGE) && extraMsgContent.get(AgentConstants.RANGE) != null){
+                            messageBody.put(AgentConstants.RANGE, extraMsgContent.get(AgentConstants.RANGE));
+                        }
+                        messageBody.put(AgentConstants.TIMEOUT_SEC, extraMsgContent.get(AgentConstants.TIMEOUT_SEC));
                     }
                      break;
                 case DISCOVER_POINTS:
@@ -190,6 +198,19 @@ public class AgentMessenger {
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.IP_ADDRESS, ipAddress);
             context.put(AgentConstants.PORT, port);
+            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, context, controllerType);
+            MessengerUtil.addAndPublishNewAgentData(data);
+            return true;
+        }
+        return true;
+    }
+
+    public static boolean discoverBacnetController(Long agentId, FacilioControllerType controllerType, Long bacnetPort, JSONObject range, Long timeout_sec) throws Exception {
+        if (agentId > 0) {
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.TIMEOUT_SEC, timeout_sec);
+            context.put(AgentConstants.BACNET_PORT, bacnetPort);
+            context.put(AgentConstants.RANGE, range);
             IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, context, controllerType);
             MessengerUtil.addAndPublishNewAgentData(data);
             return true;

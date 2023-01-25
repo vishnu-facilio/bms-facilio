@@ -78,9 +78,6 @@ public class AddAgentAction extends AgentActionV2
 //            agent.setPartitionId(partitionId);
             agent.setMessageSourceId(getMessageSourceId());
             agent.setSubscribeTopics(getSubscribeTopics());
-            if (agentType != AgentType.CUSTOM.getKey()) {
-                agent.setProcessorVersion(2);
-            }
             switch (AgentType.valueOf(agentType)){
                 case REST:
                     long orgId = AccountUtil.getCurrentOrg().getOrgId();

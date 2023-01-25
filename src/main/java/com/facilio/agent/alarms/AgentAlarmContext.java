@@ -65,7 +65,14 @@ public class AgentAlarmContext extends BaseAlarmContext {
     public Long getPointsDataMissingCount() { return pointsDataMissingCount; }
 
     public static enum AgentAlarmType implements FacilioIntEnum {
-        AGENT,CONTROLLER,POINT;
+        AGENT("Agent"),
+        CONTROLLER("Controller"),
+        POINT("Point");
+
+        private String name;
+        AgentAlarmType(String name) {
+            this.name = name;
+        }
 
         public Integer getIndex() {
             return ordinal() + 1;
@@ -73,7 +80,7 @@ public class AgentAlarmContext extends BaseAlarmContext {
 
         @Override
         public String getValue() {
-            return name();
+            return name;
         }
 
         public static AgentAlarmType valueOf(int value) {

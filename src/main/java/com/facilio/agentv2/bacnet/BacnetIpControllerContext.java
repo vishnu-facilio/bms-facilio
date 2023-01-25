@@ -96,11 +96,9 @@ public class BacnetIpControllerContext extends Controller {
     @Override
     public JSONObject getChildJSON() {
         JSONObject bacnetIpControllerJSON = new JSONObject();
-        bacnetIpControllerJSON.put(AgentConstants.ID, getId());
         bacnetIpControllerJSON.put(AgentConstants.INSTANCE_NUMBER, getInstanceNumber());
         bacnetIpControllerJSON.put(AgentConstants.IP_ADDRESS, getIpAddress());
         bacnetIpControllerJSON.put(AgentConstants.NETWORK_NUMBER, getNetworkNumber());
-        bacnetIpControllerJSON.put(AgentConstants.VENDOR_ID, getVendorId());
         return bacnetIpControllerJSON;
     }
 
