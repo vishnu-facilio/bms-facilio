@@ -1129,9 +1129,7 @@ public class AddInspectionModules extends BaseModuleConfig {
         
         FacilioField createdTime = (FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
-        
-        
-        
+
         FacilioField scheduledWorkStart = (FacilioField) FieldFactory.getDefaultField("scheduledWorkStart", "Scheduled Start", "SCHEDULED_WORK_START", FieldType.DATE_TIME);
         fields.add(scheduledWorkStart);
         
@@ -1181,6 +1179,11 @@ public class AddInspectionModules extends BaseModuleConfig {
         SystemEnumField sourceType = (SystemEnumField) FieldFactory.getDefaultField("sourceType", "Source", "SOURCE_TYPE", FieldType.SYSTEM_ENUM);
         sourceType.setEnumName("InspectionResponseSourceType");
         fields.add(sourceType);
+
+		FacilioField slaPolicyId = FieldFactory.getField("slaPolicyId", "SLA Policy Id", "SLA_POLICY_ID", module, FieldType.NUMBER);
+		slaPolicyId.setDefault(true);
+		slaPolicyId.setDisplayType(FieldDisplayType.NUMBER);
+		fields.add(slaPolicyId);
         
         fields.addAll(getInspectionCommonFieldList(modBean));
 

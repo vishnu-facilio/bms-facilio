@@ -3606,6 +3606,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getDefaultWorkflowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetDefaultWorkflowContext());
+			return c;
+		}
 		public static FacilioChain getExecuteDefaultWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetDefaultWorkflowContext());

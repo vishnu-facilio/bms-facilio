@@ -25,6 +25,10 @@ public class GetSLAModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
         }
 
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INSPECTION)) {
+            modules.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+        }
+
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY,true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST,modules);

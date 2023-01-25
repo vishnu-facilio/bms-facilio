@@ -3217,6 +3217,10 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getNameSpaceListWithFunctions"></action>
 
+		<action name="getWorkflow"
+				class="com.facilio.workflows.action.WorkflowAction"
+				method="getDefaultWorkflow"></action>
+
 		<action name="addWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="addWorkflow"></action>

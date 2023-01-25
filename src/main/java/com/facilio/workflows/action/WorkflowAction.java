@@ -304,7 +304,15 @@ public class WorkflowAction extends FacilioAction {
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXTS, UserFunctionAPI.getWorkflowFunction(ids));
 		return SUCCESS;
 	}
-	
+
+	public String getDefaultWorkflow() throws Exception {
+		if(workflowId > -1) {
+			workflow = WorkflowUtil.getWorkflowContext(workflowId);
+
+			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		}
+		return SUCCESS;
+	}
 	public String getDefaultWorkflowResultV2() throws Exception {
 		if(defaultWorkflowId > -1) {
 			FacilioContext context = new FacilioContext();

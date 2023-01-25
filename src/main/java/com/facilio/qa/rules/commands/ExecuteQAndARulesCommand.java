@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.pojo.QAndARule;
@@ -76,9 +77,10 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
         }
 
         if (CollectionUtils.isNotEmpty(rules)) {
+            ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
             Map<Long, QAndARule> questionVsRule = rules.stream().collect(Collectors.toMap(QAndARule::getQuestionId, Function.identity()));
             for (AnswerContext answer : answers) {
-                evaluateRule(answer, questions.get(answer.getQuestion().getId()), questionVsRule.get(answer.getQuestion().getId()));
+                evaluateRule(answer, questions.get(answer.getQuestion().getId()), questionVsRule.get(answer.getQuestion().getId()),(ResponseContext) response);
             }
         }
         else {
@@ -86,7 +88,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
         }
     }
 
-    protected void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule) throws Exception {
+    protected void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule,ResponseContext responsecontext) throws Exception {
         if (rule == null) {
             return;
         }

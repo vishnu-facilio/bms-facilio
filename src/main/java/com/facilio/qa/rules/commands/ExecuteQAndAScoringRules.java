@@ -39,7 +39,7 @@ public class ExecuteQAndAScoringRules extends ExecuteQAndARulesCommand {
     }
 
     @Override
-    protected void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule) throws Exception {
+    protected void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule,ResponseContext responseContext) throws Exception {
         if (rule == null) {
             return;
         }
@@ -54,9 +54,15 @@ public class ExecuteQAndAScoringRules extends ExecuteQAndARulesCommand {
             answer.setFullScore(FacilioUtil.parseDouble(workflowResult.get("fullScore")));
             answer.setScore(FacilioUtil.parseDouble(workflowResult.get("totalScore")));
             answer.setScorePercent(MathUtil.calculatePercentage(answer.getScore(), answer.getFullScore()));
+
+            if(responseContext.getFullScore()!=null){
+                responseContext.setFullScore(responseContext.getFullScore()+answer.getFullScore());
+            }else{
+                responseContext.setFullScore(answer.getFullScore());
+            }
         }
         else{
-            super.evaluateRule(answer,question,rule);
+            super.evaluateRule(answer,question,rule,responseContext);
         }
     }
 }
