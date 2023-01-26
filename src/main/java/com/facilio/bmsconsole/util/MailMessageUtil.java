@@ -502,6 +502,9 @@ public class MailMessageUtil {
             MimeBodyPart bodyPart = (MimeBodyPart) mimeMultipart.getBodyPart(i);
             if (Part.INLINE.equalsIgnoreCase(bodyPart.getDisposition())) {
                 String fileName = bodyPart.getFileName();
+				if (fileName == null) {
+					fileName = "Temp-File";
+				}
                 MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
                 MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
                 parser.parse();
