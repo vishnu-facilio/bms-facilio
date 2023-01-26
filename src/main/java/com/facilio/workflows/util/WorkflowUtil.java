@@ -2205,6 +2205,8 @@ public class WorkflowUtil {
 				case AUTOMATION:
 					facilioWorkflowFunction = FacilioAutomationFunctions.getFacilioAutomationFunction(functionName);
 					break;
+				case IAM:
+					facilioWorkflowFunction = FacilioIAMFunction.getFacilioIAMFunction(functionName);
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2345,6 +2347,8 @@ public class WorkflowUtil {
 				case AUTOMATION:
 					facilioWorkflowFunction = new ArrayList<>(FacilioAutomationFunctions.getAllFunctions().values());
 					break;
+				case IAM:
+					facilioWorkflowFunction = new ArrayList<>(FacilioIAMFunction.getAllFunctions().values());
 			}
 		}
 		

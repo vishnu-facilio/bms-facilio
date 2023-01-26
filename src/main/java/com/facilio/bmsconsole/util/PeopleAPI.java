@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -1121,6 +1122,69 @@ public class PeopleAPI {
 		}
 		return false;
 
+	}
+
+	public static void addApplicationUsersByPeopleId(Long peopleId,Long appId, Long roleId,boolean sendInvitation) throws Exception {
+		FacilioChain chain = TransactionChainFactory.addApplicationUsersChain();
+		FacilioContext context = chain.getContext();
+		PeopleContext people = getPeopleForId(peopleId);
+		User user = new User();
+		user.setRoleId(roleId);
+		user.setEmail(people.getEmail());
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		context.put(FacilioConstants.ContextNames.USER, user);
+		context.put(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED,sendInvitation);
+		chain.execute();
+	}
+
+	public static void updateUserByPeopleId(Long peopleId,Long appId, Long roleId) throws Exception {
+		FacilioChain updateUser = TransactionChainFactory.updateUserChain();
+		long ouid = getOrgUserIdForPeople(peopleId,appId);
+		if(ouid>0) {
+			User user = AccountUtil.getUserBean().getUser(appId, ouid);
+			user.setRoleId(roleId);
+			updateUser.getContext().put(FacilioConstants.ContextNames.USER, user);
+			updateUser.getContext().put(FacilioConstants.ContextNames.USER_OPERATION, "updating user");
+			updateUser.execute();
+		}
+		else{
+			throw new IllegalArgumentException("User not present");
+		}
+	}
+
+	public static void deleteApplicationUsersByPeopleId(Long peopleId,Long appId) throws Exception {
+		FacilioChain chain = TransactionChainFactory.deleteApplicationUsersChain();
+		long ouid = getOrgUserIdForPeople(peopleId,appId);
+		if(ouid>0) {
+			User user = AccountUtil.getUserBean().getUser(appId, ouid);
+			chain.getContext().put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+			chain.getContext().put(FacilioConstants.ContextNames.USER, user);
+			chain.execute();
+		}
+		else{
+			throw new IllegalArgumentException("User not present");
+		}
+	}
+
+	public static long getOrgUserIdForPeople(long peopleId,long appId) throws Exception{
+		long ouid = 0L;
+		List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> selectFields = Arrays.asList(fieldMap.get("ouid"));
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			for (Map<String, Object> prop : props) {
+				ouid = (long) prop.get("ouid");
+			}
+		}
+		return ouid;
 	}
 
 }
