@@ -295,5 +295,16 @@ public class PlannedMaintenanceAPI {
         PMTriggerV2 pmTriggerV2 = pmTriggerV2SelectRecordsBuilder.fetchFirst();
         return pmTriggerV2;
     }
+    public static int deleteTriggerByIds(List<Long> triggerIdList) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmTriggerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_TRIGGER);
+
+        DeleteRecordBuilder<PMTriggerV2> builder = new DeleteRecordBuilder<PMTriggerV2>()
+                .module(pmTriggerModule)
+                .andCondition(CriteriaAPI.getIdCondition(triggerIdList,pmTriggerModule));
+        int count = builder.markAsDelete();
+        return count;
+    }
+
 
 }
