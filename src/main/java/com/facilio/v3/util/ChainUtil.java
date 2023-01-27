@@ -1,5 +1,7 @@
 package com.facilio.v3.util;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
@@ -17,6 +19,7 @@ import com.facilio.classification.command.AddClassificationDataCommand;
 import com.facilio.classification.command.SummaryClassificationDataCommand;
 import com.facilio.classification.command.UpdateClassificationDataCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.SupplementRecord;
@@ -625,9 +628,14 @@ public class ChainUtil {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-        );
+        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && DBConf.getInstance().getCurrentOrgId() == 592) {
+            chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+        }
+        else {
+            chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                    .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+            );
+        }
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new ExecuteSLAWorkFlowsCommand());
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
