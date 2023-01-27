@@ -1036,7 +1036,7 @@ public class FormsAPI {
 		if (form.getModule().isCustom()) {
 			addUnusedCustomModuleSystemFields(form, fields);
 		}
-		 if (form.getModule().getName() != null) {
+		else if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
 
 			case ContextNames.WORK_ORDER:
