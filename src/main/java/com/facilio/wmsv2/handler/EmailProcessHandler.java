@@ -32,7 +32,8 @@ import java.util.Map;
         topic = EmailProcessHandler.TOPIC+"/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        group = Group.DEFAULT_SINGLE_WORKER
+        group = Group.RECIEVE_MAIL_WORKER,
+		recordTimeout = 300 //5 mins
 )
 @Log4j
 public class EmailProcessHandler extends BaseHandler{

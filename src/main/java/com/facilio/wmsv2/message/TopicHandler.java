@@ -19,6 +19,6 @@ public @interface TopicHandler {
 
     Group group() default Group.DEFAULT;
 
-    int recordTimeout() default 300; //5 mins (in seconds)
+    int recordTimeout() default 5; //5 secs
 
 }

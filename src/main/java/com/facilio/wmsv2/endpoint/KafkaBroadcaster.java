@@ -43,8 +43,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
 
     private KafkaBroadcaster() { // Making it singleton
-        initOldKafkaConsumers();
-        // new group implementations
         kafkaProducer = new FacilioKafkaProducer();
 
         if(!FacilioProperties.isWMSConsumerEnable()) {
@@ -79,28 +77,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
     }
 
-    // TODO - delete this method after a week from releasing wms-group feature
-    private Properties getProperties(String groupId, String client, int recordTimeout) {
-        // Assuming default source is kafka type. If not, source should be passed as a param from some config
-        KafkaMessageSource source = MessageSourceUtil.getDefaultSource();
-
-        Properties props = new Properties();
-        props.put("bootstrap.servers", source.getBroker());
-        props.put("group.id", groupId);
-        props.put("enable.auto.commit", "false");
-        props.put("session.timeout.ms", "300000");
-        props.put("auto.offset.reset", "earliest");
-        props.put("max.poll.records", 10);
-        props.put("max.poll.interval.ms", 11*recordTimeout*1000);
-        props.put("key.deserializer", StringDeserializer.class.getName());
-        props.put("value.deserializer", StringDeserializer.class.getName());
-
-        props.put("group.instance.id", client);
-        props.put("client.id", client);
-        KafkaUtil.setKafkaAuthProps(props, source);
-        return props;
-    }
-
     @Override
     protected void outgoingMessage(Message message, Group group) throws Exception {
         String topic = this.getTopicName(group);
@@ -126,7 +102,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         private KafkaConsumer<String, String> consumer;
         private String kafkaTopicName;
         private String kafkaGroupName;
-        private final int recordCount = 10;
+        private int recordCount = 10;
 
         public KafkaConsumerThread(Group group)  {
             kafkaTopicName = getTopicName(group);
@@ -134,21 +110,23 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
             List<BaseHandler> list = Processor.getInstance().getGroupTopics(group);
             int maxTimeOut = list.stream().max(Comparator.comparing(BaseHandler::getRecordTimeout)).get().getRecordTimeout();
-            int pollInterval = (recordCount+1) * maxTimeOut; // in seconds
 
             kafkaGroupName = FacilioProperties.getEnvironment()+"-"+ group.getName();
             if(group.isSendToAllWorker()) {
                 kafkaGroupName = kafkaGroupName +"-"+ ServerInfo.getHostname();
+                recordCount = 500;
             }
 
-            consumer = new KafkaConsumer<>(getProperties(pollInterval));
+            consumer = new KafkaConsumer<>(getProperties(maxTimeOut));
             consumer.subscribe(Collections.singleton(kafkaTopicName));
 
             LOGGER.info("Kafka-consumer create for :: "+kafkaTopicName);
         }
 
-        private Properties getProperties(int pollInterval) {
+        private Properties getProperties(int maxTimeOut) {
             // Assuming default source is kafka type. If not, source should be passed as a param from some config
+            int pollInterval = (recordCount+1) * maxTimeOut; // in seconds
+
             KafkaMessageSource source = MessageSourceUtil.getDefaultSource();
             Properties props = new Properties();
             props.put("bootstrap.servers", source.getBroker());
@@ -160,7 +138,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             props.put("max.poll.interval.ms", pollInterval*1000);
             props.put("key.deserializer", StringDeserializer.class.getName());
             props.put("value.deserializer", StringDeserializer.class.getName());
-
 
             props.put("group.instance.id", ServerInfo.getHostname());
             props.put("client.id", ServerInfo.getHostname());
@@ -229,82 +206,4 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         }
     }
 
-    // TODO - delete this inner class after a week from releasing wms-group feature
-    private class KafkaProcessor {
-        private KafkaConsumer<String, String> consumer;
-
-        private ScheduledExecutorService executor = null;
-
-        public KafkaProcessor(Set<String> topics, String groupId, String client, int recordTimeout) {
-
-            if (FacilioProperties.isWMSConsumerEnable()) {
-                consumer = new KafkaConsumer<>(getProperties(groupId, client, recordTimeout));
-                consumer.subscribe(topics);
-
-                executor = Executors.newScheduledThreadPool(1);
-                executor.scheduleAtFixedRate(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        final JSONParser parser = new JSONParser();
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-                        int partition;
-                        long offset;
-                        String kafkaTopicName;
-                        for (ConsumerRecord<String, String> record : records) {
-                            partition = record.partition();
-                            offset = record.offset();
-                            kafkaTopicName = record.topic();
-                            ExecutorService localExecutor = Executors.newSingleThreadExecutor();
-                            try {
-                                Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(record.value()), Message.class);
-                                localExecutor.submit(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        incomingMessage(message);
-                                    }
-                                }).get(recordTimeout, TimeUnit.SECONDS);
-
-                            } catch (Exception e) {
-                                if(e instanceof TimeoutException) {
-                                    LOGGER.error("Time limit exceeded. Possible rogue record");
-                                    localExecutor.shutdownNow();
-                                }
-                                LOGGER.error("Exception while processing record on <partition="+partition+", offset="+offset+">", e);
-                            }
-                            finally {
-                                consumer.commitSync(Collections.singletonMap(new TopicPartition(kafkaTopicName, partition), new OffsetAndMetadata(offset + 1)));
-                                localExecutor.shutdown();
-                            }
-                        }
-                        if(!records.isEmpty()) {
-                            consumer.commitSync();
-                        }
-                    }
-
-                }, 0, 3, TimeUnit.SECONDS);
-            }
-        }
-    }
-
-    // TODO - delete this method after a week from releasing wms-group feature
-    private void initOldKafkaConsumers() {
-        String broadcastTopic;
-        if(FacilioProperties.isProduction()) {
-            broadcastTopic = "production-notifications-new";
-        } else {
-            broadcastTopic = FacilioProperties.getEnvironment() + "-notifications-new";
-        }
-
-        LOGGER.debug("Notification topic: " + broadcastTopic);
-
-        // consumer initialization
-        String environment = FacilioProperties.getConfig("environment");
-        String applicationName = environment+"-"+ ServerInfo.getHostname();
-
-        // TODO Start this thread for some period to consume all the messages from old topics - Remove after one week
-        new KafkaProcessor(Collections.singleton(broadcastTopic), applicationName, ServerInfo.getHostname(), 300); //in secs
-        String singleConsumerTopic = broadcastTopic + "-singleConsumer";
-        new KafkaProcessor(Collections.singleton(singleConsumerTopic), singleConsumerTopic, ServerInfo.getHostname(), 300);
-    }
 }

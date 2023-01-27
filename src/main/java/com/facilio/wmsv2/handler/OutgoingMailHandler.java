@@ -22,8 +22,9 @@ import java.util.Map;
 
 @TopicHandler(
         topic = Topics.Mail.outgoingMail + "/#",
-        group = Group.DEFAULT_SINGLE_WORKER,
-        priority = -5
+        group = Group.SEND_MAIL_WORKER,
+        priority = -5,
+        recordTimeout = 300 // 5 mins
 )
 @Log4j
 public class OutgoingMailHandler extends BaseHandler {

@@ -7,10 +7,9 @@ import com.facilio.wmsv2.message.TopicHandler;
 @TopicHandler(
         topic = Topics.System.agentpoints,
         priority = -10,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION,
-		recordTimeout = 60
+        deliverTo = TopicHandler.DELIVER_TO.SESSION
 )
-public class AgentPointHandler extends BaseHandler{
+public class AgentPointHandler extends BaseHandler {
 	
 	@Override
 	public Message processOutgoingMessage(Message message) {

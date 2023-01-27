@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j;
         topic = ScriptLogHander.TOPIC+"/#/#",
         priority = -5,
         deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        group = Group.DEFAULT_SINGLE_WORKER,
+        group = Group.SCRIPTLOG_WORKER,
 		recordTimeout = 120
 )
 @Log4j
