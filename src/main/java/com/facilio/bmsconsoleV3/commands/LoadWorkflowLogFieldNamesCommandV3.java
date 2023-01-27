@@ -6,10 +6,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
+import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.rules.pojo.ActionRule;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
@@ -32,21 +31,26 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
 
         Set<Long> workflowRuleIds = new HashSet<>();
         Set<Long> scheduledWoIds = new HashSet<>();
+        Set<Long> qandaRuleIds = new HashSet<>();
+        Set<Long> questionsIds = new HashSet<>();
 
         for (WorkflowLogContext workflowLog : workflowLogs) {
             if (workflowLog.getParentId() > 0){
                 if (workflowLog.getLogType() == WorkflowLogContext.WorkflowLogType.SCHEDULER.getTypeId()) {
                     scheduledWoIds.add(workflowLog.getParentId());
-                    continue;
+                } else if (workflowLog.getLogType() == WorkflowLogContext.WorkflowLogType.Q_AND_A_RULE.getTypeId()) {
+                    qandaRuleIds.add(workflowLog.getParentId());
+                }else {
+                    workflowRuleIds.add(workflowLog.getParentId());
                 }
-                workflowRuleIds.add(workflowLog.getParentId());
             }
 
         }
 
         Map<Long,WorkflowRuleContext> workflowRulesAsMap = WorkflowRuleAPI.getWorkflowRulesAsMap(new ArrayList<>(workflowRuleIds),false,false);
         Map<Long,ScheduledWorkflowContext> scheduledWorkflowContextMap = getScheduledWorkflowContext(scheduledWoIds);
-
+        Map<Long, ActionRule> qAndARuleMap = getQandARuleContext(qandaRuleIds,questionsIds);
+        Map<Long,QuestionContext> questionContextMap = getQandAQuestions(questionsIds);
 
         for (WorkflowLogContext workflowLog : workflowLogs) {
             Long moduleId = workflowLog.getRecordModuleId();
@@ -64,6 +68,12 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
 
                     if (scheduledWorkflowContext != null) {
                         workflowLog.setWorkflowRuleName(scheduledWorkflowContext.getName());
+                    }
+                } else if (workflowLog.getLogType() == WorkflowLogContext.WorkflowLogType.Q_AND_A_RULE.getTypeId() && qAndARuleMap != null) {
+                    ActionRule qAndARule = qAndARuleMap.get(workflowLog.getParentId());
+
+                    if (qAndARule != null && questionContextMap != null) {
+                        workflowLog.setWorkflowRuleName(questionContextMap.get(qAndARule.getQuestionId()).getQuestion());
                     }
                 } else if (workflowRulesAsMap != null && !workflowRulesAsMap.isEmpty()) {
                     WorkflowRuleContext ruleContext = workflowRulesAsMap.get(workflowLog.getParentId());
@@ -88,6 +98,47 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
         }
         return false;
     }
+
+    private Map<Long, ActionRule> getQandARuleContext(Set<Long> qandaRuleIds, Set<Long> questionsIds) throws Exception {
+
+        FacilioModule qandaRuleModule = com.facilio.qa.rules.Constants.ModuleFactory.qandaRuleModule();
+
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .select(com.facilio.qa.rules.Constants.FieldFactory.qandaRuleFields())
+                .table(qandaRuleModule.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(qandaRuleIds,qandaRuleModule));
+
+        List<Map<String, Object>> props = select.get();
+
+        if(props != null && !props.isEmpty()) {
+            List<ActionRule> rules =  FieldUtil.getAsBeanListFromMapList(props, ActionRule.class);
+            if(CollectionUtils.isNotEmpty(rules)) {
+                for (ActionRule rule : rules) {
+                    questionsIds.add(rule.getQuestionId());
+                }
+                   return rules.stream()
+                            .collect(Collectors.toMap(ActionRule::getId, Function.identity()))
+                    ;
+            }
+        }
+        return null;
+    }
+
+    private Map<Long, QuestionContext> getQandAQuestions(Set<Long> questionsIds) throws Exception {
+        FacilioModule module = Constants.getModBean().getModule("qandaQuestion");
+        SelectRecordsBuilder<QuestionContext> builder = new SelectRecordsBuilder<QuestionContext>()
+                .select(Constants.getModBean().getModuleFields(module.getName()))
+                .moduleName(module.getName())
+                .beanClass(QuestionContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(questionsIds,module));
+        List<QuestionContext> questions = builder.get();
+
+        if (CollectionUtils.isNotEmpty(questions)) {
+            return questions.stream().collect(Collectors.toMap(QuestionContext::getId,Function.identity()));
+        }
+        return null;
+    }
+
 
     private Map<Long,ScheduledWorkflowContext> getScheduledWorkflowContext(Set<Long> scheduledWorkflowIds) throws Exception {
 

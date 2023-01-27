@@ -15,6 +15,7 @@ import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
+import com.facilio.bmsconsoleV3.commands.assetCategory.SetAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDepreciationExistingCommand;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.DeleteAssetDepreciationCalCommand;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.SaveDepreciationLastCalCommand;
@@ -2192,6 +2193,8 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getCreateAssetCategoryChain())
                 .list()
+                .summary()
+                .afterFetch(new SetAssetCategoryModuleCommandV3())
                 .update()
                 .delete()
                 .beforeDelete(TransactionChainFactoryV3.getDeleteAssetCategoryChain())

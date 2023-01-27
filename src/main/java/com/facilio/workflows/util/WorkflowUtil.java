@@ -2618,7 +2618,7 @@ public class WorkflowUtil {
 	}
 	
 	public static void sendScriptLogs(WorkflowContext workflowContext, String logs,WorkflowLogStatus statusId,String exception) throws Exception {
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKFLOW_LOG)){
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKFLOW_LOG) && workflowContext!= null && (workflowContext.getLogType() == WorkflowLogType.WORKFLOW_RULE_EVALUATION || workflowContext.getLogType() == WorkflowLogType.FORMULA)){
             return;
         }
 		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
