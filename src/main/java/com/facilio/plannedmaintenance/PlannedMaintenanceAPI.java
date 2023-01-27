@@ -256,6 +256,44 @@ public class PlannedMaintenanceAPI {
         return pmWos;
 
     }
+    public static PlannedMaintenance getPmV2fromId(long pmV2Id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedMaintenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        List<FacilioField> plannedMaintenanceFields = modBean.getAllFields(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
 
+        SelectRecordsBuilder<PlannedMaintenance> plannedMaintenanceSelectRecordsBuilder = new SelectRecordsBuilder<PlannedMaintenance>()
+                .module(plannedMaintenanceModule)
+                .select(plannedMaintenanceFields)
+                .beanClass(PlannedMaintenance.class)
+                .andCondition(CriteriaAPI.getIdCondition(pmV2Id,plannedMaintenanceModule));
+        PlannedMaintenance plannedMaintenance = plannedMaintenanceSelectRecordsBuilder.fetchFirst();
+        return plannedMaintenance;
+    }
+    public static PMPlanner getPmPlannerFromId(long plannerId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmPlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_PLANNER);
+        List<FacilioField> pmPlannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_PLANNER);
+
+        SelectRecordsBuilder<PMPlanner> pmPlannerSelectRecordsBuilder = new SelectRecordsBuilder<PMPlanner>()
+                .module(pmPlannerModule)
+                .select(pmPlannerFields)
+                .beanClass(PMPlanner.class)
+                .andCondition(CriteriaAPI.getIdCondition(plannerId,pmPlannerModule));
+        PMPlanner pmPlanner = pmPlannerSelectRecordsBuilder.fetchFirst();
+        return pmPlanner;
+    }
+    public static PMTriggerV2 getPmV2TriggerFromId(long pmV2TriggerId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmV2TriggerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_TRIGGER);
+        List<FacilioField> pmV2TriggerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_TRIGGER);
+
+        SelectRecordsBuilder<PMTriggerV2> pmTriggerV2SelectRecordsBuilder = new SelectRecordsBuilder<PMTriggerV2>()
+                .module(pmV2TriggerModule)
+                .select(pmV2TriggerFields)
+                .beanClass(PMTriggerV2.class)
+                .andCondition(CriteriaAPI.getIdCondition(pmV2TriggerId,pmV2TriggerModule));
+        PMTriggerV2 pmTriggerV2 = pmTriggerV2SelectRecordsBuilder.fetchFirst();
+        return pmTriggerV2;
+    }
 
 }
