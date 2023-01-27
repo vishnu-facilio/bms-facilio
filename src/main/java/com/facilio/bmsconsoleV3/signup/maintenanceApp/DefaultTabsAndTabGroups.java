@@ -46,6 +46,7 @@ public class DefaultTabsAndTabGroups {
             new WebTabContext("Reports", "tenantreports", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT,FacilioConstants.ContextNames.TENANT_CONTACT,FacilioConstants.ContextNames.TENANT_UNIT_SPACE,FacilioConstants.ContextNames.QUOTE)), "{\"type\": \"module_reports\"}", 16,null,appId),
             new WebTabContext("Workorder", "workorder", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER)), null, 1,null,appId),
             new WebTabContext("Approval", "approval", WebTabContext.Type.APPROVAL, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,FacilioConstants.ContextNames.ASSET)), null, 11,null,appId),
+            new WebTabContext("Survey", "workorder-survey", WebTabContext.Type.SURVEY, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE)), null, 64, null, appId),
             new WebTabContext("KPI", "kpi", WebTabContext.Type.KPI, Arrays.asList(), null, 30,null,appId),
             new WebTabContext("Reports", "workorderreport", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER)), "{\"type\": \"module_reports\"}", 1,null,appId),
             new WebTabContext("Calender", "calender", WebTabContext.Type.CUSTOM, null, "{\"type\": \"pmCalendar\"}", 1,null,appId),
@@ -124,7 +125,7 @@ public class DefaultTabsAndTabGroups {
     public List<WebTabGroupContext> getWebTabGroups(long appId,long layoutId) throws Exception {
         Map<String,WebTabContext> tabsMap = getWebTabs(appId);
         List<WebTabGroupContext> webTabGroups = Arrays.asList(
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"),tabsMap.get("portfolio"),tabsMap.get("approval")), "Home", "home", 1, 1, null,layoutId,IconType.home),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"), tabsMap.get("portfolio"), tabsMap.get("approval"),tabsMap.get("workorder-survey")), "Home", "home", 1, 1, null, layoutId, IconType.home),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("assets"),tabsMap.get("assetreport")), "Asset", "asset", 6, 2, 4l,layoutId,IconType.asset),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("storeroom"),tabsMap.get("itemtypes"),tabsMap.get("items"),tabsMap.get("tooltypes"),tabsMap.get("tools"),tabsMap.get("inventoryrequests"),tabsMap.get("inventoryreports")), "Inventory", "inventory", 27, 3, 14l,layoutId,IconType.inventory),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("preventive-maintenance"),tabsMap.get("calender"),tabsMap.get("resourcescheduler"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance),

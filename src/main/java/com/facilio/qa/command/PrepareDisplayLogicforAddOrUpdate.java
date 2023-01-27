@@ -45,7 +45,7 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 		Predicate<DisplayLogicAction> predicate = (action) -> { return action == null; };
 		V3Util.throwRestException((displaylogic.getActions() == null || displaylogic.getActions().isEmpty() || !displaylogic.getActions().stream().filter(predicate).collect(Collectors.toList()).isEmpty()), ErrorCode.VALIDATION_ERROR, "Actions cannot be empty during save");
 		
-		QAndATemplateContext template = (QAndATemplateContext) Constants.getRecordList(V3Util.getSummary(FacilioConstants.Inspection.INSPECTION_TEMPLATE, Collections.singletonList(displaylogic.getTemplateId()))).get(0);
+		QAndATemplateContext template = (QAndATemplateContext) Constants.getRecordList(V3Util.getSummary(FacilioConstants.QAndA.Q_AND_A_TEMPLATE, Collections.singletonList(displaylogic.getTemplateId()))).get(0);
 		QAndAUtil.populatePagesAndQuestionsInTemplates(Collections.singletonList(template));
 		Predicate<PageContext> pagePredicate = (page) -> displaylogic.getPageId().equals(page.getId());
 		PageContext page = (PageContext) template.getPages().stream().filter(pagePredicate).findFirst().get();

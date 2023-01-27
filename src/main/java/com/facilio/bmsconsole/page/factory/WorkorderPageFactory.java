@@ -395,7 +395,7 @@ public class WorkorderPageFactory extends PageFactory {
     }
 
     private static void addMetricandTimelogTab(Page page, long workOrderId) throws Exception {
-        Page.Tab metricandTimelogTab = page.new Tab("timelog");
+        Page.Tab metricandTimelogTab = page.new Tab("timelog and metrics");
         page.addTab(metricandTimelogTab);
 
         addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId);
@@ -412,7 +412,7 @@ public class WorkorderPageFactory extends PageFactory {
 
     private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId) throws Exception{
 
-        if(isSurveyAvailable(workOrderId) && AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName())){
+        if(isSurveyAvailable(workOrderId)){
 
             Page.Section surveyTimeLogSection = page.new Section();
             metricandTimelogTab.addSection(surveyTimeLogSection);
