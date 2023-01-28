@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -445,6 +446,9 @@ public class FormsAPI {
 				long sequenceNumber = (long) prop.get("sequenceNumber");
 				FormSection section = sectionMap.get(sequenceNumber);
 				section.setId(id);
+				if (section.getFields() == null) {
+					section.setFields(new ArrayList<>());
+				}
 				if(section.getSectionTypeEnum() != FormSection.SectionType.SUB_FORM){
 					section.getFields().forEach(field -> field.setSectionId(id));
 					fields.addAll(section.getFields());
@@ -1012,13 +1016,8 @@ public class FormsAPI {
 	}
 
 	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields, ModuleBean modBean, String moduleName) throws Exception {
-		String appLinkName = form.getAppLinkName();
-		if (isPortalApp(appLinkName)) {
-			addUnusedPortalSystemFields(form, defaultFields);
-		}
-		else {
-			addUnusedWebSystemFields(form, defaultFields);
-		}
+
+		addUnusedWebSystemFields(form, defaultFields);
 		
 		for (FormField f: defaultFields) {
 			if (f.getField() == null) {
@@ -1037,39 +1036,55 @@ public class FormsAPI {
 		if (form.getModule().isCustom()) {
 			addUnusedCustomModuleSystemFields(form, fields);
 		}
-		 if (form.getModule().getName() != null) {
+		 else if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
 
 			case ContextNames.WORK_ORDER:
-				FormField serviceRequest = new FormField("serviceRequest", FieldDisplayType.LOOKUP_SIMPLE, "Service Request", Required.OPTIONAL, 14, 1);
-				serviceRequest.setHideField(true);
-				fields.add(serviceRequest);
-				fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-				fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
-				fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-				fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
-				fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, "tickettype", 4, 3));
-				fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 1));
-				fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
-				fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
-				fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-				fields.add(new FormField("parentWO", FieldDisplayType.LOOKUP_SIMPLE, "Parent WorkOrder", Required.OPTIONAL, 9, 1));
-				fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
-				fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
-				fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
-				fields.addAll(FormFactory.getRequesterFormFields(false, false));
-				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
-				// scheduled duration specific
-				fields.add(new FormField("scheduledStart", FieldDisplayType.DATETIME, "Scheduled Start", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("estimatedEnd", FieldDisplayType.DATETIME, "Estimated End", Required.OPTIONAL, 1, 1));
-				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
-					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
-				}
-				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
-					fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
-				}
+					if(isPortalApp(form.getAppLinkName())){
+						fields.addAll(FormFactory.getWoClassifierFields());
+						fields.add(FormFactory.getWoResourceField());
+						fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
+						if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+							fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 1, 1));
+						}
+						fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site" ,2, 1));
+						fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 3, 1));
+						fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+						FormField urgency = new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1);
+						urgency.setValueObject(WorkOrderContext.WOUrgency.NOTURGENT.getValue());
+						fields.add(urgency);
+						fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
+					}else {
+						FormField serviceRequest = new FormField("serviceRequest", FieldDisplayType.LOOKUP_SIMPLE, "Service Request", Required.OPTIONAL, 14, 1);
+						serviceRequest.setHideField(true);
+						fields.add(serviceRequest);
+						fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+						fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+						fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+						fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+						fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, "tickettype", 4, 3));
+						fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 1));
+						fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
+						fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
+						fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
+						fields.add(new FormField("parentWO", FieldDisplayType.LOOKUP_SIMPLE, "Parent WorkOrder", Required.OPTIONAL, 9, 1));
+						fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
+						fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
+						fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
+						fields.addAll(FormFactory.getRequesterFormFields(false, false));
+						fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+						fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
+						fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
+						// scheduled duration specific
+						fields.add(new FormField("scheduledStart", FieldDisplayType.DATETIME, "Scheduled Start", Required.OPTIONAL, 1, 1));
+						fields.add(new FormField("estimatedEnd", FieldDisplayType.DATETIME, "Estimated End", Required.OPTIONAL, 1, 1));
+						if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+							fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
+						}
+						if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+							fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
+						}
+					}
 				break;
 			case ContextNames.WorkPermit.WORKPERMIT:
 				fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -1353,18 +1368,20 @@ public class FormsAPI {
 	}
 
 	public static void setFieldDetails(ModuleBean modBean, List<FormField> fields, String moduleName) throws Exception {
-		for (int i = 0; i < fields.size(); i++) {
-			FormField f = fields.get(i);
-			if(f.getName() == null && (f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER || f.getDisplayTypeEnum() == FieldDisplayType.TEAMSTAFFASSIGNMENT)){
-				f.setName(f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER ? ContextNames.RESOURCE:ContextNames.ASSIGNMENT);
+		if (CollectionUtils.isNotEmpty(fields)) {
+			for (int i = 0; i < fields.size(); i++) {
+				FormField f = fields.get(i);
+				if (f.getName() == null && (f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER || f.getDisplayTypeEnum() == FieldDisplayType.TEAMSTAFFASSIGNMENT)) {
+					f.setName(f.getDisplayTypeEnum() == FieldDisplayType.WOASSETSPACECHOOSER ? ContextNames.RESOURCE : ContextNames.ASSIGNMENT);
+				}
+				FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
+				FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
+				if (field != null) {
+					mutatedField.setFieldId(field.getFieldId());
+				}
+				handleFormField(mutatedField, moduleName, field);
+				fields.set(i, mutatedField);
 			}
-			FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
-			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
-			if (field != null) {
-				mutatedField.setFieldId(field.getFieldId());
-			}
-			handleFormField(mutatedField, moduleName, field);
-			fields.set(i, mutatedField);
 		}
 	}
 	
