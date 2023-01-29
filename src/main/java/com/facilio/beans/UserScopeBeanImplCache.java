@@ -39,4 +39,17 @@ public class UserScopeBeanImplCache extends UserScopeBeanImpl implements UserSco
         super.deleteScopingConfig(scopingId);
         scopeConfigCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
+
+    public void deleteUserScoping (Long userScopingId) throws Exception {
+        FacilioCache<String, List<ScopingConfigCacheContext>> scopeConfigCache = LRUCache.getScopeConfigCache();
+        super.deleteUserScoping(userScopingId);
+        scopeConfigCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
+    }
+
+    public void updateScopingConfigForUserScoping(List<ScopingConfigContext> userScopingConfigList, Long userScopingId) throws Exception {
+        FacilioCache<String, List<ScopingConfigCacheContext>> scopeConfigCache = LRUCache.getScopeConfigCache();
+        super.updateScopingConfigForUserScoping(userScopingConfigList, userScopingId);
+        scopeConfigCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
+
+    }
 }

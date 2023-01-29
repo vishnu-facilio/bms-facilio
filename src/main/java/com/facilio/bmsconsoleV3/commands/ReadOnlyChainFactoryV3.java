@@ -34,6 +34,9 @@ import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
+import com.facilio.bmsconsoleV3.commands.userScoping.GetUserScopingConfigCommand;
+import com.facilio.bmsconsoleV3.commands.userScoping.GetUserScopingListCommand;
+import com.facilio.bmsconsoleV3.commands.userScoping.GetUserScopingModulesCommand;
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
 import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotificationCommand;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
@@ -438,6 +441,24 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchJobPlanLookupCommand());
         c.addCommand(new FetchExtraFieldsForJobPlanCommand());
+        return c;
+    }
+
+    public static FacilioChain getUserScopingModulesListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetUserScopingModulesCommand());
+        return c;
+    }
+
+    public static FacilioChain getUserScopingListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetUserScopingListCommand());
+        return c;
+    }
+
+    public  static FacilioChain getUserScopingConfigChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetUserScopingConfigCommand());
         return c;
     }
 }

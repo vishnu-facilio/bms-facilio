@@ -359,6 +359,9 @@ public class FacilioConstants {
 		public static final String CUSTOM_WIDGET_GROUP_FIELDS = "customWidgetGroupFields";
 		public static final String PAGE_ID = "pageId";
 		public static final String WIDGET_NAME = "widgetName";
+		public static final String SCOPING_CONFIG_LIST = "scopingConfigList";
+        public static final String USER_SCOPING_LIST = "userScopingList";
+        public static final String CREATED_BY = "createBy";
 
 		public static class EmployeePortal {
 			public static final String EMPLOYEE_ADMIN_SCOPING_ID = "employeeadminscopingid";

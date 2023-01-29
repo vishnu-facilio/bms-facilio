@@ -28,10 +28,14 @@ import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsAndConditio
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingStatusCommand;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.userScoping.AddOrUpdateUserScopingCommand;
+import com.facilio.bmsconsoleV3.commands.userScoping.DeleteUserScopingCommand;
+import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingConfigCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -2962,6 +2966,30 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new RemoveDuplicateSites());
         c.addCommand(new PMBeforeCreateCommand());
         c.addCommand(new AddPMDetailsBeforeCreateCommand());
+        return c;
+    }
+
+    public static FacilioChain addOrUpdateUserScopingChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateUserScopingCommand());
+        return c;
+    }
+
+    public static FacilioChain deleteUserScopingChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteUserScopingCommand());
+        return c;
+    }
+
+    public  static  FacilioChain addOrUpdateUserScopingConfigChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateUserScopingConfigCommand());
+        return  c;
+    }
+
+    public static FacilioChain updateUserScopingStatusChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateUserScopingStatusCommand());
         return c;
     }
 }

@@ -194,5 +194,35 @@
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetch"/>
         <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>
     </package>
+    <package name="userScoping" namespace="/api/v1/setup/userScoping" extends="v3Api">
+        <action name="scopingModules" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="getUserScopingModules">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="addOrUpdateUserScoping">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="list" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="delete" >
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="updateStatus" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="updateStatus" >
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="getConfig" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="getUserScopingConfig" >
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+        <action name="updateConfig" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="updateUserScopingConfig" >
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
+        </action>
+    </package>
 
 </struts>

@@ -22,6 +22,16 @@ public class ScopingContext implements Serializable {
 	private long createdBy;
 	private long modifiedBy;
 
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	private boolean status;
+
 	public long getId() {
 		return id;
 	}

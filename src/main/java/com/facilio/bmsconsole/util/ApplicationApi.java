@@ -2313,6 +2313,7 @@ public class ApplicationApi {
     public static long addScoping(ScopingContext scoping) throws Exception {
         List<FacilioField> fields = FieldFactory.getScopingFields();
 
+        scoping.setStatus(true);
         scoping.setCreatedTime(System.currentTimeMillis());
         scoping.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
         scoping.setModifiedTime(System.currentTimeMillis());

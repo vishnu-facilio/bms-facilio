@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.UserScopeBean;
@@ -12,24 +14,30 @@ import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.MultiFieldOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.ScopeOperator;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
+import org.bouncycastle.math.raw.Mod;
 import org.reflections.Reflections;
 
 import java.util.*;
@@ -173,7 +181,7 @@ public class ScopingUtil {
     }
 
 
-    public static List<FacilioModule> getModulesList() throws Exception {
+    public static List<FacilioModule> getModulesList(boolean includeOthers) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> moduleList = V3ModuleAPI.getSystemModuleWithFeatureLicenceCheck();
@@ -182,8 +190,10 @@ public class ScopingUtil {
         List<String> excludeModules = Arrays.asList(FacilioConstants.Inspection.INSPECTION_TEMPLATE,FacilioConstants.Induction.INDUCTION_TEMPLATE);
 
         //temp handling - can be removed once all fields are moved to people
-        for (String modName : otherModulesList) {
-            moduleList.add(modBean.getModule(modName));
+        if(includeOthers) {
+            for (String modName : otherModulesList) {
+                moduleList.add(modBean.getModule(modName));
+            }
         }
         List<FacilioModule> customModuleList = modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true);
         if (CollectionUtils.isNotEmpty(customModuleList)) {
@@ -198,6 +208,10 @@ public class ScopingUtil {
                     .collect(Collectors.toList());
         }
         return moduleList;
+    }
+
+    public static List<FacilioModule> getUserScopingModulesList() throws Exception{
+        return getModulesList(false);
     }
 
     public static Long getScopeVariableId(String linkName) throws Exception {
@@ -407,5 +421,28 @@ public class ScopingUtil {
             }
         }
         return linkName;
+    }
+
+    public static boolean isScopingAssociatedToUser(Long scopingId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(AccountConstants.getOrgUserAppsModule().getTableName())
+                .select(AccountConstants.getOrgUserAppsFields())
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID","scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = builder.get();
+        return CollectionUtils.isEmpty(props);
+    }
+
+    public static void deleteCriteriaAssociatedWithUserScoping(Long scopingId) throws Exception {
+        List<FacilioField> field = new ArrayList<>();
+        field.add(FieldFactory.getField("criteriaId", "CRITERIA_ID", FieldType.NUMBER));
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingConfigModule().getTableName())
+                .select(field)
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID","scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = builder.get();
+        if(CollectionUtils.isNotEmpty(props)){
+            List<Long> criteriaIds = props.stream().map(i->(Long)i.get("criteriaId")).collect(Collectors.toList());
+            CriteriaAPI.batchDeleteCriteria(criteriaIds);
+        }
     }
 }

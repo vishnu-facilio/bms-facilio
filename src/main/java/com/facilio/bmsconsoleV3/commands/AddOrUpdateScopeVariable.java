@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddOrUpdateScopeVariable extends FacilioCommand {
+public class    AddOrUpdateScopeVariable extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         try {
