@@ -51,8 +51,12 @@ public enum SiteOperator implements Operator<Criteria> {
                 String[] module = fieldName.split("\\.");
                 if(module.length > 1) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    if(!module[1].equals(FacilioConstants.ContextNames.SITE_ID)) {
+                        throw new RuntimeException("No siteId field found");
+                    }
                     FacilioField siteField = modBean.getField(module[1],module[0]);
                     FacilioModule lookupModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+
                     if(module != null) {
                         return LookupCriteriaUtil.constructLookupQuery(siteField,FieldFactory.getIdField(lookupModule),lookupModule,value);
                     }
