@@ -149,7 +149,20 @@ public class TranslationAction extends FacilioAction {
                                             }
                                         }
                                     }
-                                    webTab.setTypeVsColumns(columnTypeEnums);
+                                    if (webTab.getRoute().equals("portfolio")) {
+                                        List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums1 = new ArrayList<>(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(WebTabContext.Type.MODULE));
+                                        columnTypeEnums1.removeIf(clientColumnTypeEnum ->
+                                                clientColumnTypeEnum.getLabel().equals(TranslationTypeEnum.WORKORDER_FIELDS.getClientColumnName())
+                                                        || clientColumnTypeEnum.getLabel().equals(TranslationTypeEnum.ASSET_FIELDS.getClientColumnName())
+                                                        || clientColumnTypeEnum.getLabel().equals(TranslationTypeEnum.STATES.getClientColumnName())
+                                                        || clientColumnTypeEnum.getLabel().equals(TranslationTypeEnum.STATE_TRANSITION.getClientColumnName())
+                                                        || clientColumnTypeEnum.getLabel().equals(TranslationTypeEnum.STATE_TRANSITION_FORM.getClientColumnName()));
+
+
+                                        webTab.setTypeVsColumns(columnTypeEnums1);
+                                    } else {
+                                        webTab.setTypeVsColumns(columnTypeEnums);
+                                    }
                                 }
                             }
                         }

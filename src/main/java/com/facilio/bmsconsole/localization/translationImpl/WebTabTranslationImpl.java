@@ -31,14 +31,14 @@ public class WebTabTranslationImpl implements TranslationIfc {
             for (int k = 0; k < webTabGroupList.size(); k++) {
 
                 JSONObject webTabGroupObject = (JSONObject)webTabGroupList.get(k);
-                String webTabGroupkey = getTranslationKey(WEB_TAB_GROUP,(String)webTabGroupObject.get("id"));
+                String webTabGroupkey = getTranslationKey(WEB_TAB_GROUP,(String)webTabGroupObject.get("route"));
                 webTabGroupObject.put(TranslationConstants.NAME,getTranslation(translationFile,webTabGroupkey,(String)webTabGroupObject.get(TranslationConstants.NAME)));
 
                 JSONArray webTabArray = (JSONArray)webTabGroupObject.get("webTabs");
 
                 for (int j = 0; j < webTabArray.size(); j++) {
                     JSONObject webTabObject = (JSONObject)webTabArray.get(j);
-                    String key = getTranslationKey(WEB_TAB,(String)webTabObject.get("id"));
+                    String key = getTranslationKey(WEB_TAB,(String)webTabObject.get("route"));
                     webTabObject.put(TranslationConstants.NAME,getTranslation(translationFile,key,(String)webTabObject.get(TranslationConstants.NAME)));
                 }
             }

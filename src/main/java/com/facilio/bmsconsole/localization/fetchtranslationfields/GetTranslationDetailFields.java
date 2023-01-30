@@ -24,7 +24,7 @@ public class GetTranslationDetailFields implements TranslationTypeInterface {
     @Override
     public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
 
-        FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
+//        FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
 
         List<Long> moduleIds = context.getModuleIds();
         JSONArray jsonArray = new JSONArray();
@@ -38,7 +38,7 @@ public class GetTranslationDetailFields implements TranslationTypeInterface {
             }
         }
         String webTabKey = getTranslationKey(WEB_TAB,context.getRoute());
-        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getId()+"",webTabKey,properties));
+        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getRoute(),webTabKey,properties));
 
         JSONObject fieldObject = new JSONObject();
         fieldObject.put("fields",jsonArray);

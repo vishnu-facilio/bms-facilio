@@ -27,14 +27,14 @@ public class GetWebTabTranslationFields implements TranslationTypeInterface{
         JSONArray jsonArray = new JSONArray();
 
         List<Long> moduleIds = context.getModuleIds();
-        String webTabKey = WebTabTranslationImpl.getTranslationKey(WebTabTranslationImpl.WEB_TAB,context.getId()+"");
-        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WebTabTranslationImpl.WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getId()+"",webTabKey,properties));
+        String webTabKey = WebTabTranslationImpl.getTranslationKey(WebTabTranslationImpl.WEB_TAB,context.getRoute());
+        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WebTabTranslationImpl.WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getRoute(),webTabKey,properties));
 
         if(CollectionUtils.isNotEmpty(moduleIds)){
             ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
             for (long moduleId : moduleIds){
                 FacilioModule module = moduleBean.getModule(moduleId);
-                String key = ModuleTranslationUtils.getTranslationKey(context.getId()+"");
+                String key = ModuleTranslationUtils.getTranslationKey(context.getRoute());
                 jsonArray.add(TranslationsUtil.constructJSON(module.getDisplayName(),ModuleTranslationUtils.PREFIX_MODULE,TranslationConstants.DISPLAY_NAME,module.getName(),key,properties));
             }
         }

@@ -6,14 +6,15 @@ import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 public class GetTranslationFieldsCommand extends FacilioCommand {
     @Override
@@ -29,8 +30,23 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
         FacilioUtil.throwIllegalArgumentException(properties == null,"Translation file is an empty");
 
         WebTabContext webTab = ApplicationApi.getWebTab(tabId);
-        List<Long> moduleIds = ApplicationApi.getModuleIdsForTab(tabId);
-        webTab.setModuleIds(moduleIds);
+
+        FacilioUtil.throwIllegalArgumentException(webTab == null, "Invalid WebTab Id");
+
+        switch (webTab.getTypeEnum()) {
+            case MODULE:
+                webTab.setModuleIds(ApplicationApi.getModuleIdsForTab(tabId));
+                break;
+            case CUSTOM:
+                if (MapUtils.isNotEmpty(filters) && webTab.getRoute().equals("portfolio")) {
+                    String moduleName = filters.get("moduleName");
+                    FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "ModuleName should not be null while fetching Custom type");
+                    long moduleId = Constants.getModBean().getModule(moduleName).getModuleId();
+                    webTab.setModuleIds(Collections.singletonList(moduleId));
+                    webTab.setType(WebTabContext.Type.MODULE);
+                }
+                break;
+        }
 
         TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(translationType);
         Objects.requireNonNull(type,"Invalid enum type for Translation");

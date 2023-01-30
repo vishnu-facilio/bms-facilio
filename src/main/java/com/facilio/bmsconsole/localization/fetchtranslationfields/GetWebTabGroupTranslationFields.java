@@ -34,8 +34,8 @@ public class GetWebTabGroupTranslationFields {
 
         JSONArray jsonArray = new JSONArray();
         WebTabGroupContext webTabGroupContext = getWebTabGroups(queryString);
-        String webTabGroupKey = WebTabTranslationImpl.getTranslationKey(WebTabTranslationImpl.WEB_TAB_GROUP,webTabGroupContext.getId()+"");
-        jsonArray.add(TranslationsUtil.constructJSON(webTabGroupContext.getName(),WebTabTranslationImpl.WEB_TAB_GROUP,TranslationConstants.DISPLAY_NAME,webTabGroupContext.getId()+"",webTabGroupKey,properties));
+        String webTabGroupKey = WebTabTranslationImpl.getTranslationKey(WebTabTranslationImpl.WEB_TAB_GROUP,webTabGroupContext.getRoute());
+        jsonArray.add(TranslationsUtil.constructJSON(webTabGroupContext.getName(),WebTabTranslationImpl.WEB_TAB_GROUP,TranslationConstants.DISPLAY_NAME,webTabGroupContext.getRoute(),webTabGroupKey,properties));
 
         JSONObject fieldObject = new JSONObject();
         fieldObject.put("fields",jsonArray);
