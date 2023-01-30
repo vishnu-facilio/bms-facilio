@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.filters.MultiReadServletRequest;
@@ -298,6 +297,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
                         Parameter action = ActionContext.getContext().getParameters().get("permission");
                         Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
+                        Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");
                         Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
                         Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
                         Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
@@ -331,7 +331,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             }
                         }
 
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(),isSetupPermission)) {
+                        boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
+                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm, isV3Permission,setupTab.getValue(),isSetupPermission)) {
                             if(isSetupPermission || isV3Permission) {
                                 if(!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
                                     return logAndReturn("unauthorized", null, startTime, request);
@@ -453,7 +454,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission) throws Exception {
+    private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission, boolean isV3Permission,String tabType,boolean isSetupPermission) throws Exception {
 
         if (action == null || "".equals(action.trim())) {
             return true;
@@ -479,10 +480,46 @@ public class ScopeInterceptor extends AbstractInterceptor {
             String currentTab = request.getHeader("X-Tab-Id");
             if (currentTab != null && !currentTab.isEmpty()) {
                 long tabId = Long.parseLong(currentTab);
-                return WebTabUtil.checkPermission(ActionContext.getContext().getParameters(),action,tabId);
+                boolean hasPerm = PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role, tabType);
+                if (!hasPerm) {
+                    permissionLogsForTabs(tabId,moduleName,role.getName(),action);
+                    //temp handling - need to be removed
+                    //LOGGER.log(Level.DEBUG, "Permission denied for role - " + role.getName() + " for action - " + action + " in tab - " + tabId);
+                }
+                if(isSetupPermission) {
+                    return hasPerm;
+                }
+                return true;
             }
         } else {
-            return WebTabUtil.checkModulePermission(action,moduleName,isV3Permission);
+            if (isNewPermission) {
+                return true;
+            }
+
+            //portfolio is handled for space module - check for facilio main app
+            if(moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor")) {
+                moduleName = "space";
+            }
+            boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
+            
+
+            if(!hasPerm) {
+                permissionLogsForModule(moduleName,role.getName(),action);
+            }
+            if(isV3Permission) {
+                if (PermissionUtil.permCheckSysModules().contains(moduleName)) {
+                    return hasPerm;
+                } else {
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    FacilioModule module = modBean.getModule(moduleName);
+                    if (module != null) {
+                        if (module.isCustom()) {
+                            return hasPerm;
+                        }
+                    }
+                }
+            }
+            return true;
         }
         return false;
     }
