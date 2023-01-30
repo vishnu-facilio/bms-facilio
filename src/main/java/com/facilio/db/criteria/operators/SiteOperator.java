@@ -10,6 +10,7 @@ import com.facilio.db.criteria.util.LookupCriteriaUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -51,9 +52,7 @@ public enum SiteOperator implements Operator<Criteria> {
                 String[] module = fieldName.split("\\.");
                 if(module.length > 1) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    if(!module[1].equals(FacilioConstants.ContextNames.SITE_ID)) {
-                        throw new RuntimeException("No siteId field found");
-                    }
+                    FacilioUtil.throwRunTimeException(!module[1].equals(FacilioConstants.ContextNames.SITE_ID),"No siteId field found");
                     FacilioField siteField = modBean.getField(module[1],module[0]);
                     FacilioModule lookupModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
 
