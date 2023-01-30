@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -272,4 +274,7 @@ public class ApplicationContext implements Serializable{
 	public void setScopingId(long scopingId) {
 		this.scopingId = scopingId;
 	}
+
+	@Getter @Setter
+	private boolean hasSetupPermission;
 }

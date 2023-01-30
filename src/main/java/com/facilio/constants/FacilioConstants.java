@@ -75,10 +75,7 @@ import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 //import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
@@ -2456,13 +2453,16 @@ public class FacilioConstants {
 
 
 		}
-
 		public static class ControlGroup {
 			public static final String CONTROL_GROUP_V2 = "controlGroupv2";
 			public static final String CONTROL_GROUP_V2_TENANT_SHARING = "controlGroupv2TenantSharing";
 			public static final String CONTROL_SCHEDULE = "controlSchedule";
 			public static final String CONTROL_SCHEDULE_EXCEPTION = "controlScheduleException";
 			public static final String CONTROL_SCHEDULE_EXCEPTION_TENANT = "controlScheduleExceptionTenant";
+		}
+		public static class WebTab {
+			public static final String MODULE_NAME = "moduleName";
+			public static final String PARENT_MODULE_NAME = "parentModuleName";
 		}
 
 		public static class SpaceCategoryFormRelation {
@@ -3802,5 +3802,9 @@ public class FacilioConstants {
 		public static final String TRANSITION="transition";
 		public static final String CUSTOM_BUTTON="customButton";
 		public static final String APPROVAL="approval";
+	}
+
+	public static class HTTPParameter {
+		public static final List<String> KEYS = Arrays.asList("permission","moduleName","setupTab","permissionModuleName",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME);
 	}
 }

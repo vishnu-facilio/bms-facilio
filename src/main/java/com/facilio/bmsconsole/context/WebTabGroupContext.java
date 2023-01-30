@@ -19,15 +19,17 @@ import java.util.List;
 public class WebTabGroupContext implements Serializable {
 
     public WebTabGroupContext(WebTabGroupContext object) {
-        this.id = object.id;
-        this.name = object.name;
-        this.route = object.route;
-        this.iconType = object.iconType;
-        this.iconTypeEnum = object.iconTypeEnum;
-        this.order = object.order;
-        this.webTabs = object.webTabs;
-        this.featureLicense = object.featureLicense;
-        this.layoutId = object.layoutId;
+        if(object != null) {
+            this.id = object.id;
+            this.name = object.name;
+            this.route = object.route;
+            this.iconType = object.iconType;
+            this.iconTypeEnum = object.iconTypeEnum;
+            this.order = object.order;
+            this.webTabs = object.webTabs;
+            this.featureLicense = object.featureLicense;
+            this.layoutId = object.layoutId;
+        }
     }
 
     public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId,IconType iconTypeEnum){

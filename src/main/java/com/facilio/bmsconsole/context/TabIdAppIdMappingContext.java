@@ -8,11 +8,13 @@ import java.io.Serializable;
 @ImmutableChildClass(className = "TabIdAppIdMappingCacheContext", constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class TabIdAppIdMappingContext implements Serializable{
 	public TabIdAppIdMappingContext(TabIdAppIdMappingContext object) {
-		this.id = object.id;
-		this.tabId = object.tabId;
-		this.moduleId = object.moduleId;
-		this.appId = object.appId;
-		this.specialType = object.specialType;
+		if(object != null) {
+			this.id = object.id;
+			this.tabId = object.tabId;
+			this.moduleId = object.moduleId;
+			this.appId = object.appId;
+			this.specialType = object.specialType;
+		}
 	}
 
 	private long id;

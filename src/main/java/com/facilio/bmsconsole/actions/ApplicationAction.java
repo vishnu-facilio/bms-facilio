@@ -344,7 +344,6 @@ public class ApplicationAction extends FacilioAction {
 		boolean isWebTabEnabled = AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB);
 		setResult("isWebTabEnabled", isWebTabEnabled);
 		setResult("hasSetupPermission", NewPermissionUtil.hasSetupPermission());
-
 		return SUCCESS;
 	}
 

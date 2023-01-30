@@ -163,6 +163,7 @@ public class GetApplicationDetails extends FacilioCommand {
 					application.setLayoutType(appLayouts.get(0).getAppLayoutType());
 
 					application.setLayouts(appLayouts);
+					application.setHasSetupPermission(NewPermissionUtil.hasSetupPermission());
 					context.put(FacilioConstants.ContextNames.APPLICATION, application);
 				}
 			}

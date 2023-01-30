@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShiftModules extends SignUpData {
-    private final int CASCADE_DELETE = 2;
+    public final int CASCADE_DELETE = 2;
     @Override
     public void addData() throws Exception {
 
@@ -34,7 +34,7 @@ public class ShiftModules extends SignUpData {
         createDefaultShit();
     }
 
-    private void createDefaultShit() throws Exception {
+    public void createDefaultShit() throws Exception {
         FacilioModule shiftMod = Constants.getModBean().getModule(FacilioConstants.Shift.SHIFT);
         long orgID = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
 
@@ -57,14 +57,14 @@ public class ShiftModules extends SignUpData {
         V3Util.createRecord(shiftMod, props);
     }
 
-    private StateFlowRuleContext filterStateFlowRule(List<WorkflowRuleContext> rules) {
+    public StateFlowRuleContext filterStateFlowRule(List<WorkflowRuleContext> rules) {
         return (StateFlowRuleContext) rules.stream()
                 .filter(r -> r instanceof StateFlowRuleContext)
                 .collect(Collectors.toList())
                 .get(0);
     }
 
-    private void createShiftChildModules() throws Exception {
+    public void createShiftChildModules() throws Exception {
 
         FacilioModule shiftMod = Constants.getModBean().getModule(FacilioConstants.Shift.SHIFT);
 
@@ -81,7 +81,7 @@ public class ShiftModules extends SignUpData {
         persistRichTextDescriptionFieldForShift(shiftRichTextMod, shiftMod);
     }
 
-    private void createShiftModule() throws Exception {
+    public void createShiftModule() throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
         modules.add(composeShiftModule());
         FacilioChain chain = TransactionChainFactory.addSystemModuleChain();
@@ -132,7 +132,7 @@ public class ShiftModules extends SignUpData {
 
     }
 
-    private FacilioModule composeShiftModule() throws Exception {
+    public FacilioModule composeShiftModule() throws Exception {
         FacilioModule mod = new FacilioModule(
                 FacilioConstants.Shift.SHIFT,
                 "Shift",

@@ -35,7 +35,7 @@ public class AddBreakModule extends SignUpData {
         addShiftsFieldToBreakModule();
     }
 
-    private void addShiftsFieldToBreakModule() throws Exception {
+    public void addShiftsFieldToBreakModule() throws Exception {
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
         FacilioModule breakMod = Constants.getModBean().getModule(FacilioConstants.Break.BREAK);
         FacilioModule shiftBreakRelMod = Constants.getModBean().getModule(FacilioConstants.ContextNames.SHIFT_BREAK_REL);
@@ -55,13 +55,13 @@ public class AddBreakModule extends SignUpData {
         Constants.getModBean().addField(shiftsField);
     }
 
-    private void createMod(FacilioModule mod) throws Exception {
+    public void createMod(FacilioModule mod) throws Exception {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(mod));
         addModuleChain.execute();
     }
 
-    private void createBreakChildModules() throws Exception {
+    public void createBreakChildModules() throws Exception {
 
         FacilioModule breakMod = Constants.getModBean().getModule(FacilioConstants.Break.BREAK);
         List<FacilioModule> childModules = new ArrayList<>();
@@ -75,14 +75,14 @@ public class AddBreakModule extends SignUpData {
         
     }
 
-    private void persistRichTextDescriptionFieldForBreak(FacilioModule breakRichTextMod, FacilioModule breakMod) throws Exception {
+    public void persistRichTextDescriptionFieldForBreak(FacilioModule breakRichTextMod, FacilioModule breakMod) throws Exception {
         LargeTextField richTextField = FieldFactory.getDefaultField("description", "Description", null, FieldType.LARGE_TEXT);
         richTextField.setModule(breakMod);
         richTextField.setRelModuleId(breakRichTextMod.getModuleId());
         Constants.getModBean().addField(richTextField);
     }
 
-    private FacilioModule composeBreakRichTextModule() throws Exception {
+    public FacilioModule composeBreakRichTextModule() throws Exception {
         FacilioModule breakMod = Constants.getModBean().getModule(FacilioConstants.Break.BREAK);
         FacilioModule mod = new FacilioModule(FacilioConstants.Break.BREAK_RICH_TEXT,
                 "Break Rich Text",
@@ -98,7 +98,7 @@ public class AddBreakModule extends SignUpData {
         return mod;
     }
 
-    private FacilioModule composeBreakMod() {
+    public FacilioModule composeBreakMod() {
 
         FacilioModule mod = new FacilioModule(FacilioConstants.Break.BREAK,
                 "Break",
@@ -127,7 +127,7 @@ public class AddBreakModule extends SignUpData {
         return mod;
     }
 
-    private FacilioModule composeShiftBreakRelMod() throws Exception {
+    public FacilioModule composeShiftBreakRelMod() throws Exception {
 
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
 
