@@ -731,11 +731,11 @@ public class PermissionUtil {
 		return (perm.getPermission() & permission) == permission;
 	}
 
-	private static boolean hasPermission(Permissions perm, AccountConstants.ModulePermission permission) {
+	public static boolean hasPermission(Permissions perm, AccountConstants.ModulePermission permission) {
 		return hasPermission(perm, permission.getModulePermission());
 	}
 
-	private static boolean hasPermission(Permissions perm, String actions) throws Exception {
+	public static boolean hasPermission(Permissions perm, String actions) throws Exception {
 
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
@@ -764,7 +764,7 @@ public class PermissionUtil {
 		return hasAccess;
 	}
 
-	private static boolean hasPermission(long perm, long permission) {
+	public static boolean hasPermission(long perm, long permission) {
 		if (perm == 0) {
 			return true;
 		}
@@ -774,7 +774,7 @@ public class PermissionUtil {
 		return (perm & permission) == permission;
 	}
 
-	private static boolean hasPermission(NewPermission permission, String actions, long tabId) throws Exception {
+	public static boolean hasPermission(NewPermission permission, String actions, long tabId) throws Exception {
 		long perm = -1;
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
@@ -816,7 +816,7 @@ public class PermissionUtil {
 		return hasAccess;
 	}
 
-	private static boolean hasPermission(long perm,  String actions, long tabId) throws Exception {
+	public static boolean hasPermission(long perm,  String actions, long tabId) throws Exception {
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
 		Type tabType = null;
