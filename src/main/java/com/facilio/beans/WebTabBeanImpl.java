@@ -91,8 +91,13 @@ public class WebTabBeanImpl implements WebTabBean{
     public void updateWebTab(WebTabContext webTab) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getWebTabModule().getTableName()).fields(FieldFactory.getWebTabFields())
-                .andCondition(CriteriaAPI.getIdCondition(webTab.getId(), ModuleFactory.getWebTabModule()));
-        builder.update(FieldUtil.getAsProperties(webTab));
+                .andCondition(CriteriaAPI.getIdCondition(webTab.getId(), ModuleFactory.getWebTabModule()))
+                .ignoreSplNullHandling();
+        Map<String,Object> objectMap = FieldUtil.getAsProperties(webTab);
+        if(webTab.getConfig() == null && webTab.getType() == 7) {
+            objectMap.put("config",null);
+        }
+        builder.update(objectMap);
     }
 
 

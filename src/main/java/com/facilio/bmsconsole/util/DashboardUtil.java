@@ -1260,7 +1260,7 @@ public class DashboardUtil {
 		}
 		List<DashboardContext> dashboardsFinalList = new ArrayList<>();
 
-		if (getOnlyMobileDashboard) 
+		if (getOnlyMobileDashboard)
 		{
 			dashboardsFinalList = sortDashboardByOrder(getFilteredDashboards(dashboardMap));
 
@@ -1273,7 +1273,7 @@ public class DashboardUtil {
 			splitBuildingDashboardForMobile(dashboardsFinalList);
 		}
 
-		for(DashboardFolderContext folder :folders) {		
+		for(DashboardFolderContext folder :folders) {
 			for(DashboardContext dashboard :dashboardsFinalList) {
 				if(dashboard.getDashboardFolderId() == folder.getId()) {
 					folder.addDashboard(dashboard);
@@ -1282,6 +1282,7 @@ public class DashboardUtil {
 		}
 
 		if (getOnlyMobileDashboard) {
+			folders.removeIf(folder -> CollectionUtils.isEmpty(folder.getDashboards()));
 			return sortDashboardFolderByOrder(folders);
 		}
 		else {
@@ -1499,7 +1500,7 @@ public class DashboardUtil {
 				splitBuildingDashboardForMobile(dashboards);
 			}
 			
-			return sortDashboardByFolder(dashboards);
+			return sortDashboardByFolder(dashboards,getOnlyMobileDashboard);
 		}
 		return null;
 	}
@@ -1743,8 +1744,12 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-	
+
 	public static List<DashboardFolderContext> sortDashboardByFolder(List<DashboardContext> dashboards) throws Exception {
+		return sortDashboardByFolder( dashboards, false);
+	};
+
+	public static List<DashboardFolderContext> sortDashboardByFolder(List<DashboardContext> dashboards, boolean getOnlyMobileDashboard) throws Exception {
 		
 		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		
@@ -1768,6 +1773,7 @@ public class DashboardUtil {
 				}
 			}
 		}
+		dashboardFolderContexts.removeIf(folder -> (getOnlyMobileDashboard && CollectionUtils.isEmpty(folder.getDashboards())));
 		return dashboardFolderContexts;
 	}
 	public static List<DashboardContext> sortDashboardByOrder(List<DashboardContext> dashboards) throws Exception {
