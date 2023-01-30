@@ -224,6 +224,13 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 			}
 			// create alarm occurrence
 			mostRecent = baseEvent.getCreatedTime() > pointedList.getLastRecord().getCreatedTime();
+
+			try {
+				List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L);
+				if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
+					LOGGER.info("mostRecent for Alarm id: "+ alarmOccurrence.getAlarm().getId() + " in alarm occurrence creation: "+mostRecent);
+				}
+			}catch (Exception ex) {}
 			
 			int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
 			if (alarmOccurrence.getCreatedTime() < baseEvent.getCreatedTime()) {

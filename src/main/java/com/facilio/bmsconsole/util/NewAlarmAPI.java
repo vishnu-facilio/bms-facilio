@@ -472,6 +472,13 @@ public class NewAlarmAPI {
 
 	private static void rollUpAlarm(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
 									boolean mostRecent, Context context) throws Exception {
+		try {
+			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L);
+			if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
+				LOGGER.info("mostRecent for Alarm id: "+ alarmOccurrence.getAlarm().getId() + " in rollupAlarm function: "+mostRecent);
+			}
+		}catch (Exception ex) {}
+
 		if (!mostRecent) {
 			return;
 		}
