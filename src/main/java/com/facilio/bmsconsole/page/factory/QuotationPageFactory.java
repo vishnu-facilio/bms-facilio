@@ -35,11 +35,12 @@ public class QuotationPageFactory extends PageFactory {
         addNotesAttachmentsModule(tab2Sec1);
 
         Page.Tab tab3 = page.new Tab("Related");
-        page.addTab(tab3);
         addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
         addAssociatedTermsWidget(tab3Sec1);
+        addRelatedListWidgets(tab3Sec1, module.getModuleId());
+        page.addTab(tab3);
 
         Page.Tab tab4 = page.new Tab("History");
         page.addTab(tab4);
