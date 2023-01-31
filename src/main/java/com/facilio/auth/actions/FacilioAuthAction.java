@@ -1766,7 +1766,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private void createPortalUser(String emailaddress, String name, long orgId) throws Exception {
 		PeopleAction peopleAction = new PeopleAction();
-		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress);
+		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress,true);
 		if (pplContext == null) {
 			pplContext = new PeopleContext();
 			pplContext.setEmail(emailaddress);

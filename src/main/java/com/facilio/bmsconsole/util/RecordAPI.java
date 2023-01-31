@@ -38,13 +38,13 @@ public class RecordAPI {
 	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		addRecord(isLocalIdNeeded, list, module, fields, false);
 	}
-	
+
 	public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded) throws Exception {
 		return addRecord(isLocalIdNeeded, list, module, fields, isChangeSetNeeded, null);
 	}
-	
+
 	public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded, List<SupplementRecord> supplements) throws Exception {
-		
+
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
@@ -54,12 +54,12 @@ public class RecordAPI {
 		if (isChangeSetNeeded != null && isChangeSetNeeded) {
 			insertRecordBuilder.withChangeSet();
 		}
-		
+
 		if(CollectionUtils.isNotEmpty(supplements)) {
 			insertRecordBuilder.insertSupplements(supplements);
 		}
-		
-	
+
+
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
 		if (isChangeSetNeeded != null && isChangeSetNeeded) {
@@ -67,15 +67,15 @@ public class RecordAPI {
 		}
 		return null;
 	}
-	
+
 	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
 		updateRecord(data, module, fields, false);
 	}
-	
+
 	public static Map<Long, List<UpdateChangeSet>> updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded) throws Exception {
 		return updateRecord(data, module, fields, isChangeSetNeeded, null);
 	}
-	
+
 	public static Map<Long, List<UpdateChangeSet>> updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded, List<SupplementRecord> supplements) throws Exception {
 		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
@@ -91,22 +91,22 @@ public class RecordAPI {
 		if (isChangeSetNeeded != null && isChangeSetNeeded) {
 			return updateRecordBuilder.getChangeSet();
 		}
-	
+
 		return null;
-	
+
 	}
-	
+
 	public static Object getPrimaryValue (String modName, long recId) throws Exception{
 		if (LookupSpecialTypeUtil.isSpecialType(modName)) {
 			return LookupSpecialTypeUtil.getPrimaryFieldValue(modName, recId);
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField primaryField = modBean.getPrimaryField(modName);
 		List<FacilioField> fields = Collections.singletonList(primaryField);
-		
+
 		ModuleBaseWithCustomFields record = getRecord(modName, recId, fields);
-		
+
 		String primaryVal = null;
 		try {
 			primaryVal = (String) PropertyUtils.getProperty(record, primaryField.getName());
@@ -115,11 +115,11 @@ public class RecordAPI {
 		}
 		return primaryVal;
 	}
-	
+
 	public static ModuleBaseWithCustomFields getRecord (String modName, Long recId) throws Exception{
 		return (ModuleBaseWithCustomFields) getRecord(modName, recId, null);
 	}
-	
+
 	public static ModuleBaseWithCustomFields getRecord (String modName, Long recId, List<FacilioField> fields) throws Exception{
 		List<? extends ModuleBaseWithCustomFields> records = getRecords(modName, Collections.singletonList(recId), fields);
 		if(CollectionUtils.isNotEmpty(records)) {
@@ -127,21 +127,21 @@ public class RecordAPI {
 		}
 		return null;
 	}
-	
+
 	public static List<? extends ModuleBaseWithCustomFields> getRecords(String modName, Collection<Long> ids) throws Exception {
 		return getRecords(modName, ids, null);
 	}
-	
+
 	public static List<? extends ModuleBaseWithCustomFields> getRecords(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
 		SelectRecordsBuilder builder = getRecordsBuilder(modName, ids, fields);
 		return builder.get();
 	}
-	
+
 	public static List<Map<String, Object>> getRecordsAsProps(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
 		SelectRecordsBuilder builder = getRecordsBuilder(modName, ids, fields);
 		return builder.getAsProps();
 	}
-	
+
 	private static SelectRecordsBuilder getRecordsBuilder(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(modName);

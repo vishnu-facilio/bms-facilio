@@ -49,14 +49,17 @@ public class PeopleAPI {
 	private static Logger log = LogManager.getLogger(PeopleAPI.class.getName());
 
 	public static boolean checkForDuplicatePeople(PeopleContext people) throws Exception {
-		PeopleContext peopleExisiting = getPeople(people.getEmail());
-		if(peopleExisiting != null && people.getId() != peopleExisiting.getId()) {
+		PeopleContext peopleExisiting = getPeople(people.getEmail(),true);
+		if (peopleExisiting != null && people.getId() != peopleExisiting.getId()) {
 			return true;
 		}
 		return false;
 	}
 
 	public static PeopleContext getPeople(String email) throws Exception {
+		return getPeople(email,false);
+	}
+	public static PeopleContext getPeople(String email,boolean skipScoping) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
@@ -65,6 +68,9 @@ public class PeopleAPI {
 				.beanClass(PeopleContext.class)
 				.select(fields)
 				;
+		if(skipScoping) {
+			builder.skipScopeCriteria();
+		}
 
 		if(StringUtils.isNotEmpty(email)) {
 			builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
@@ -75,6 +81,9 @@ public class PeopleAPI {
 	}
 
 	public static PeopleContext getPeopleForId(long id) throws Exception {
+		return getPeopleForId(id,false);
+	}
+	public static PeopleContext getPeopleForId(long id,boolean skipScoping) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
@@ -83,7 +92,9 @@ public class PeopleAPI {
 				.beanClass(PeopleContext.class)
 				.select(fields)
 				;
-
+		if(skipScoping) {
+			builder.skipScopeCriteria();
+		}
 		builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
 
 		PeopleContext records = builder.fetchFirst();
@@ -461,7 +472,7 @@ public class PeopleAPI {
 	}
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
 
-		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
+		PeopleContext existingPeople = getPeopleForId(person.getId(),true);
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
