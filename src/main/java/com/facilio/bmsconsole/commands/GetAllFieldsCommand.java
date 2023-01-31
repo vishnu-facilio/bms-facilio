@@ -121,10 +121,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					else if(fieldObject.getName().equals("safetyPlan") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
 						fields.add(fieldObject);
 					}
-					else if(fieldObject.getName().equals("workPermitNeeded") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
+					else if(fieldObject.getName().equals("workPermitNeeded") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORK_PERMIT)) {
 						fields.add(fieldObject);
 					}
-					else if(fieldObject.getName().equals("workPermitIssued") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
+					else if(fieldObject.getName().equals("workPermitIssued") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORK_PERMIT)) {
 						fields.add(fieldObject);
 					}
 					

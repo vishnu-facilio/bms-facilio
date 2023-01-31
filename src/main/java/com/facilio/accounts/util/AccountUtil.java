@@ -423,7 +423,7 @@ public class AccountUtil {
 		INVENTORY(14,8192, new String[]{ContextNames.TOOL, ContextNames.ITEM,ContextNames.ITEM_TYPES,ContextNames.TOOL_TYPES,ContextNames.INVENTORY_REQUEST,ContextNames.ITEM_TRANSACTIONS,ContextNames.STORE_ROOM,ContextNames.TOOL_TRANSACTIONS,},LicenseMapping.GROUP1LICENSE),
 		SCHEDULED_WO(15,16384,LicenseMapping.GROUP1LICENSE),
 		TENANTS(16,32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_CONTACT, ContextNames.TENANT_UNIT_SPACE},LicenseMapping.GROUP1LICENSE),
-		HUDSON_YARDS(17,65536, new String[]{ContextNames.WorkPermit.WORKPERMIT},LicenseMapping.GROUP1LICENSE), // TEMP
+		HUDSON_YARDS(17,65536, LicenseMapping.GROUP1LICENSE), // TEMP
 		CONNECTEDAPPS(18,131072,LicenseMapping.GROUP1LICENSE),
 		M_AND_V(19,262144,LicenseMapping.GROUP1LICENSE),
 		GRAPHICS(20,524288,LicenseMapping.GROUP1LICENSE),
