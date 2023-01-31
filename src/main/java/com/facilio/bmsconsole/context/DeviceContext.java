@@ -128,7 +128,8 @@ public class DeviceContext extends AssetContext {
         VISITOR_KIOSK("Visitor Kiosk"),
         DIGITAL_LOGBOOK("Digital Log Book"),
 		FEEDBACK_KIOSK("Feedback Kiosk"),
-		SMART_CONTROL_KIOSK("Smart Control Kiosk")
+		SMART_CONTROL_KIOSK("Smart Control Kiosk"),
+		CUSTOM_KIOSK("Custom Kiosk")
         ;
 
         private String name;

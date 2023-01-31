@@ -2,13 +2,17 @@ package com.facilio.bmsconsoleV3.context.asset;
 
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class V3DeviceContext extends V3AssetContext {
 
     private static final long serialVersionUID = 1L;
 
     private String deviceInfo;
-    private DeviceType deviceType;
+    private long deviceType;
+    private DeviceType deviceTypeEnum;
     private KioskType kioskType;
     private V3ResourceContext associatedResource;
     private Boolean isDeviceConnected;
@@ -24,14 +28,6 @@ public class V3DeviceContext extends V3AssetContext {
 
     public void setDeviceInfo(String deviceInfo) {
         this.deviceInfo = deviceInfo;
-    }
-
-    public DeviceType getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(DeviceType deviceType) {
-        this.deviceType = deviceType;
     }
 
     public KioskType getKioskType() {
@@ -125,7 +121,8 @@ public class V3DeviceContext extends V3AssetContext {
         VISITOR_KIOSK("Visitor Kiosk"),
         DIGITAL_LOGBOOK("Digital Log Book"),
         FEEDBACK_KIOSK("Feedback Kiosk"),
-        SMART_CONTROL_KIOSK("Smart Control Kiosk")
+        SMART_CONTROL_KIOSK("Smart Control Kiosk"),
+        CUSTOM_KIOSK("Custom Kiosk")
         ;
 
         private String name;

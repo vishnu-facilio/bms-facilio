@@ -173,6 +173,7 @@ public class FacilioConstants {
 		public static final String SPACE = "space";
 		public static final String WEATHER_SERVICE = "weatherservice";
 		public static final String WEATHER_STATION = "weatherstation";
+		public static final String DEVICE = "Devices";
 
 	}
 
@@ -205,8 +206,14 @@ public class FacilioConstants {
 		public static final String ORDER_TYPE="orderType";
 		public static final String ORDER_BY="orderBy";
         public static final String SHIFT_BREAK_REL = "shiftbreakrel";
+		public static final String CUSTOM_KIOSK = "customkiosk";
+		public static final String CUSTOM_KIOSK_BUTTON = "customkioskbutton";
+		public static final String CUSTOM_DEVICE_BUTTON_MAPPING = "customdevicebuttonmapping";
 
-        public static class HomePage {
+		public static final String CUSTOM_KIOSK_DATA= "customKiosk";
+		public static final String SUMMARY_CONTEXT= "summaryContext";
+
+		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
 			public static final String WIDGET_DATA = "widgetData";

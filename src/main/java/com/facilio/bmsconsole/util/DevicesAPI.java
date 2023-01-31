@@ -10,12 +10,14 @@ import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.FeedbackKioskContext;
 import com.facilio.bmsconsole.context.FeedbackTypeContext;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.context.SmartControlKioskContext;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
+import com.facilio.bmsconsoleV3.context.V3CustomKioskContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +32,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 
 public class DevicesAPI {
 
@@ -191,5 +194,19 @@ public class DevicesAPI {
 
 		return (SmartControlKioskContext)context.get(ContextNames.RECORD);
 	}
+
+	public static V3CustomKioskContext getCustomKioskDetails(long deviceId) throws Exception{
+
+		FacilioChain chain= ReadOnlyChainFactoryV3.getCustomKioskDetailsChain();
+		FacilioContext context=chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, deviceId);
+		chain.execute();
+		FacilioContext V3CustomKioskContext = (FacilioContext) context.get(FacilioConstants.ContextNames.SUMMARY_CONTEXT);
+		Map<String, List> recordMap = (Map<String, List>)  V3CustomKioskContext.get(Constants.RECORD_MAP);
+		List<V3CustomKioskContext> customKioskmoduleContexts = recordMap.get(ContextNames.CUSTOM_KIOSK);
+        return customKioskmoduleContexts.get(0);
+
+	}
+
 
 }

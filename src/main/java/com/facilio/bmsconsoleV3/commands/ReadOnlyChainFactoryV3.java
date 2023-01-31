@@ -400,4 +400,13 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new FillReadingObjForJobPlanTaskCommand());
         return c;
     }
+
+    public static FacilioChain getCustomKioskDetailsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchCustomKioskDetailsCommand());
+        c.addCommand(new GetCustomkKioskButtonCommand());
+        return c;
+    }
+
+
 }

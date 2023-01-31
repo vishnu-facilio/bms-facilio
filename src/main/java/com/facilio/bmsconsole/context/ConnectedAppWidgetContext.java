@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
@@ -14,6 +17,13 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private String linkName;
 	private long entityId;
 	private String resourcePath;
+
+	private String connectedAppLinkName;
+
+	private String sandBoxBaseUrl;
+
+	private String productionBaseUrl;
+
 
 	public String getLinkName() {
 		if (this.linkName == null && this.widgetName != null && !this.widgetName.trim().isEmpty()) {

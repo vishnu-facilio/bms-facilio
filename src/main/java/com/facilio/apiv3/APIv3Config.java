@@ -228,6 +228,7 @@ import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
@@ -2847,4 +2848,32 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.ContextNames.CUSTOM_KIOSK_BUTTON)
+    public static Supplier<V3Config> getCustomKioskButton() {
+        return () -> new V3Config(V3CustomKioskButtonContext.class, null)
+                .create()
+                .update()
+                .list()
+                .afterFetch( new GetKioskConnectedCommand())
+                .summary()
+                .afterFetch( new GetKioskConnectedCommand())
+                .delete()
+                .beforeDelete(new ValidateBeforeButtonDeletionCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.CUSTOM_KIOSK)
+    public static Supplier<V3Config> getCustomKiosk() {
+        return () -> new V3Config(V3CustomKioskContext.class, null)
+                .create()
+                .beforeSave(new AddCustomDeviceCommand())
+                .update()
+                .beforeSave(new AddCustomDeviceCommand())
+                .list()
+                .summary()
+                .afterFetch(new GetCustomkKioskButtonCommand())
+                .delete()
+                .build();
+    }
+
 }

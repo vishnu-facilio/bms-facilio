@@ -365,6 +365,11 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TicketModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ZoneModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WeatherStationModule
+#    Customkiosk Modules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomKioskModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomKioskButtonModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomDeviceButtonMappingModule
+
 
   #adding commissioninglog module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule
