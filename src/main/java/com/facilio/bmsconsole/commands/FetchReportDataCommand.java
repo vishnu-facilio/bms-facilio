@@ -242,10 +242,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                 .setAggregation();
         Set<FacilioModule> addedModules = new HashSet<>();
         addedModules.add(baseModule);
-        if(report.getTypeEnum() == ReportType.PIVOT_REPORT && baseModule != null && baseModule.getName().equals("inspectionResponse"))
-        {
-            baseModule.setCriteria(null);
-        }
 
         if (!shouldIncludeMarked) {
             FacilioField marked = modBean.getField("marked", baseModule.getName());
@@ -435,6 +431,11 @@ public class FetchReportDataCommand extends FacilioCommand {
 
     private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules) throws Exception {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
+        if(report.getTypeEnum() == ReportType.PIVOT_REPORT && baseModule != null && baseModule.getName().equals("inspectionResponse"))
+        {
+            newSelectBuilder.skipModuleCriteria();
+        }
+
         if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
             DateRange dateRange = report.getDateRange();
             if (dateRange != null && originalDateRange != null) {

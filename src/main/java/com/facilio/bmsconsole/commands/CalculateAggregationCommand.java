@@ -229,17 +229,16 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			}
 		}
 		
-		if (endTime == -1) {
-			if (report.getDateOperatorEnum().isCurrentOperator()) {
+		if (endTime == -1)
+		{
+			if(report.getDateRange() != null && report.getDateRange().getEndTime() > 0) {
+				endTime = report.getDateRange().getEndTime();
+			}
+			else if (report.getDateOperatorEnum().isCurrentOperator()) {
 				endTime = currentTime;
 			}
 			else {
-				if(report.getDateRange() != null) {
-					endTime = report.getDateRange().getEndTime();
-				}
-				else {
 				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
-				}
 			}
 			timeline.add(new SimpleEntry<Long, Integer>(endTime, previousRecord.getValue())); 
 			endTime++; //Because this endttime is inclusive

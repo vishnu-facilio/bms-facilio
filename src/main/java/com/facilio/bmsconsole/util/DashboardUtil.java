@@ -1475,6 +1475,10 @@ public class DashboardUtil {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterChain();
+				FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+				getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,dashboard);
+				getDashboardFilterChain.execute();
 				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1482,6 +1486,11 @@ public class DashboardUtil {
 				FacilioModule module = modBean.getModule(dashboard.getModuleId());
 				dashboard.setModuleName(module.getName());
 				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
+				List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
+				dashboard.setDashboardWidgets(dashbaordWidgets);
+				if(dashboard.isTabEnabled()) {
+					dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));
+				}
 				dashboardMap.put(dashboard.getId(), dashboard);
 			}
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap,isfromPortal);
