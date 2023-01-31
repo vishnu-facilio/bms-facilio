@@ -61,6 +61,7 @@ public class ModuleAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(moduleModule.getTableName())
                 .select(FieldFactory.getCountField())
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("hideFromParents"), String.valueOf(false), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("extendsId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
         if (StringUtils.isNotEmpty(searchString)) {

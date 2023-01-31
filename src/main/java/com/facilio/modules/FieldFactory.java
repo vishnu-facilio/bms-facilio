@@ -1440,6 +1440,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
         fields.add(getField("extendsId", "EXTENDS_ID", module, FieldType.NUMBER));
+        fields.add(getField("hideFromParents", "HIDE_FROM_PARENTS", module, FieldType.BOOLEAN));
         return fields;
     }
 

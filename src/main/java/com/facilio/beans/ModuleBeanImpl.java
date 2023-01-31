@@ -2240,6 +2240,11 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public List<FacilioModule> getChildModules(FacilioModule parentModule, JSONObject pagination, String searchString) throws Exception {
+		return getChildModules(parentModule, pagination, searchString, true);
+	}
+
+	@Override
+	public List<FacilioModule> getChildModules(FacilioModule parentModule, JSONObject pagination, String searchString, boolean fetchHideFromParentModules) throws Exception {
 		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
 			return null;
 		}
@@ -2253,6 +2258,10 @@ public class ModuleBeanImpl implements ModuleBean {
 				.table(moduleModule.getTableName())
 				.select(moduleFields)
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("extendsId"), String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
+
+		if (!fetchHideFromParentModules) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("hideFromParents"), String.valueOf(false), BooleanOperators.IS));
+		}
 
 		if (StringUtils.isNotEmpty(searchString)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));

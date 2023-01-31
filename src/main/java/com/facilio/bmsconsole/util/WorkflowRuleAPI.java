@@ -544,7 +544,7 @@ public class WorkflowRuleAPI {
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
-		if (searchQuery!= null) {
+		if (StringUtils.isNotEmpty(searchQuery)) {
 			builder.andCondition(CriteriaAPI.getCondition(ruleNameField, searchQuery, StringOperators.CONTAINS));
 		}
 		if(criteria != null && !criteria.isEmpty()) {
@@ -1432,7 +1432,7 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.innerJoin(customButtonRuleModule.getTableName()).on("Workflow_Rule.ID = " + customButtonRuleModule.getTableName() + ".ID");
 
-		if (searchString!= null) {
+		if (StringUtils.isNotEmpty(searchString)) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchString, StringOperators.CONTAINS));
 		}
 

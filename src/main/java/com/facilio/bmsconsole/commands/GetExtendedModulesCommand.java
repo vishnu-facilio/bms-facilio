@@ -27,7 +27,7 @@ public class GetExtendedModulesCommand extends FacilioCommand {
             moduleType = FacilioModule.ModuleType.BASE_ENTITY.getValue();
         }
 
-        List<FacilioModule> extendedModules = modBean.getChildModules(parentModule, pagination, searchString);
+        List<FacilioModule> extendedModules = modBean.getChildModules(parentModule, pagination, searchString, false);
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, extendedModules);
 
