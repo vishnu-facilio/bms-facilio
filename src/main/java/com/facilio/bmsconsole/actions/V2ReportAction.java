@@ -1608,7 +1608,8 @@ public class V2ReportAction extends FacilioAction {
             if (readingFieldId > 0) {
                 JSONObject dataPoint = new JSONObject();
 
-                dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+                Long parentId = nsField.getResourceId()!= null ? nsField.getResourceId(): resource.getId();
+                dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(parentId));
 
                 JSONObject yAxisJson = new JSONObject();
                 yAxisJson.put("fieldId", readingFieldId);
