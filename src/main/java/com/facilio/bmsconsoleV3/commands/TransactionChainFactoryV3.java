@@ -750,7 +750,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
-        c.addCommand(new AssignDefaultShift());
         return c;
     }
 
@@ -767,7 +766,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
-        c.addCommand(new AssignDefaultShift());
         return c;
     }
 
@@ -798,7 +796,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         c.addCommand(new UpdateScopingForPeopleCommandV3());
-        c.addCommand(new AssignDefaultShift());
         return c;
     }
 
