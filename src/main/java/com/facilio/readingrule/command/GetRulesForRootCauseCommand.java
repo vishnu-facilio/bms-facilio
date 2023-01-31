@@ -25,26 +25,30 @@ public class GetRulesForRootCauseCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
-        AssetCategoryContext assetCategory= getAssetCategoryFromModuleId(module.getModuleId());
-        List<NewReadingRuleContext> rules=getRulesByCategoryId(Collections.singletonList(assetCategory.getId()));
-        getRelatedRules(rules,module);
+        List<AssetCategoryContext> assetCategory= getAssetCategoryFromModuleId(module.getModuleId());
+        List<NewReadingRuleContext> rules = getRulesByCategoryId(Collections.singletonList(assetCategory.get(0).getId()));
+        fetchRelatedRules(rules, module);
         context.put(FacilioConstants.ReadingRules.NEW_READING_RULE_LIST, rules);
         return false;
     }
 
-    private static void getRelatedRules(List<NewReadingRuleContext> rules, FacilioModule moduleName) throws Exception {
+    private void fetchRelatedRules(List<NewReadingRuleContext> rules, FacilioModule moduleName) throws Exception {
         List<RelationRequestContext> relations = RelationUtil.getAllRelations(moduleName);
         if (CollectionUtils.isNotEmpty(relations)) {
             Set<Long> toModuleAssetCategory = new HashSet<>();
             for (RelationRequestContext rel : relations) {
-                AssetCategoryContext assetCategoryContext = getAssetCategoryFromModuleId(rel.getToModuleId());
-                toModuleAssetCategory.add(assetCategoryContext.getId());
+                List<AssetCategoryContext> assetCategoryContext = getAssetCategoryFromModuleId(rel.getToModuleId());
+                if(CollectionUtils.isNotEmpty(assetCategoryContext)) {
+                    toModuleAssetCategory.add(assetCategoryContext.get(0).getId());
+                }
             }
-            rules.addAll(getRulesByCategoryId(toModuleAssetCategory.stream().collect(Collectors.toList())));
+            if(CollectionUtils.isNotEmpty(toModuleAssetCategory)) {
+                rules.addAll(getRulesByCategoryId(toModuleAssetCategory.stream().collect(Collectors.toList())));
+            }
         }
     }
     
-    private static AssetCategoryContext getAssetCategoryFromModuleId(Long moduleId) throws Exception {
+    private  List<AssetCategoryContext> getAssetCategoryFromModuleId(Long moduleId) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
@@ -55,10 +59,10 @@ public class GetRulesForRootCauseCommand extends FacilioCommand {
                 .skipModuleCriteria()
                 .andCondition(CriteriaAPI.getCondition("ASSET_MODULEID", "assetmoduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
         List<AssetCategoryContext> assetCategoryContext = selectBuilder.get();
-        return assetCategoryContext.get(0);
+        return assetCategoryContext;
     }
 
-    private static List<NewReadingRuleContext> getRulesByCategoryId(List<Long> assetCategory) throws Exception {
+    private  List<NewReadingRuleContext> getRulesByCategoryId(List<Long> assetCategory) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
         SelectRecordsBuilder<NewReadingRuleContext> selectBuilder = new SelectRecordsBuilder<NewReadingRuleContext>()
