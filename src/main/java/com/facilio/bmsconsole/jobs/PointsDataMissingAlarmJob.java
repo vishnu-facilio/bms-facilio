@@ -126,14 +126,34 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
     private void updatePointsDataMissing(long agentId, Collection<Long> pointIds) throws SQLException {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+        /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getPointModule().getTableName())
                 .fields(FieldFactory.getPointFields())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getIdCondition(pointIds, ModuleFactory.getPointModule()));
         Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.DATA_MISSING, true);
-        builder.update(toUpdate);
+        builder.update(toUpdate);*/
+
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+        for(long pointId: pointIds) {
+            GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateVal.addUpdateValue(AgentConstants.DATA_MISSING, true);
+            updateVal.addWhereValue(AgentConstants.ID, pointId);
+            updateVal.addWhereValue(AgentConstants.AGENT_ID, agentId);
+            batchUpdateList.add(updateVal);
+        }
+
+        List<FacilioField> whereFields = new ArrayList<>();
+        whereFields.add(fieldMap.get(AgentConstants.ID));
+        whereFields.add(fieldMap.get(AgentConstants.AGENT_ID));
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .fields(Collections.singletonList(fieldMap.get(AgentConstants.DATA_MISSING)));
+
+        updateBuilder.batchUpdate(whereFields, batchUpdateList);
     }
 
 }

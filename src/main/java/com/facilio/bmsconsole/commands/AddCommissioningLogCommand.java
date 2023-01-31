@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
@@ -98,6 +99,7 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		allFields.add(FieldFactory.getIdField(controllerModule));
 //		allFields.add(FieldFactory.getPointsCount());
 		allFields.add(FieldFactory.getConfiguredPointCountConditionField());
+		allFields.add(FieldFactory.getSubscribedPointCountConditionField());
 		allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
 
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -110,19 +112,20 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 
 
 		List<Map<String, Object>> result = selectRecordBuilder.get();
-		Map<String,Long>NameVsPointsCountMap = result.stream().collect(Collectors.toMap(prop->(String)prop.get("name"),prop->((BigDecimal) prop.get("configured")).longValue()));
+		Map<String,Long>NameVsPointsCountMap = result.stream().collect(Collectors.toMap(prop->(String)prop.get("name"),prop->(((BigDecimal) prop.get(AgentConstants.SUBSCRIBED_COUNT)).longValue()) + ((BigDecimal) prop.get(AgentConstants.CONFIGURED_COUNT)).longValue()));
 		for (String name : NameVsPointsCountMap.keySet()){
 			if (NameVsPointsCountMap.get(name)==0){
 				NameVsPointsCountMap.remove(name);
 				if(NameVsPointsCountMap.containsValue(0L)){
-					throw new IllegalArgumentException("No configured points available for "+name+" and some other controllers");
+					throw new IllegalArgumentException("No configured or subscribed points available for "+name+" and some other controllers");
 				}
 				else{
-					throw new IllegalArgumentException("No configured points available for the controller '"+name+"'");
+					throw new IllegalArgumentException("No configured or subscribed points available for the controller '"+name+"'");
 				}
 			}
 		}
 	}
+
 	private void addControllers(CommissioningLogContext log) throws Exception {
 		long logId = log.getId();
 		List<Map<String, Object>> props = log.getControllerIds().stream().map(controllerId -> {

@@ -545,7 +545,7 @@ public class ControllerApiV2 {
                 }
             }
             LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
-            if (controllerData != null) {
+            if (!controllerData.isEmpty()) {
                 try {
                     for (Map<String, Object> controllerDatum : controllerData) {
                         Controller controller = makeControllerFromMap(controllerDatum, controllerType);

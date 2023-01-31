@@ -244,6 +244,9 @@ public class DataProcessorV2 {
                 if (eventType == AgentEvent.CONTROLLERS_MISSING) {
                     return processControllerMissingEvent(payload, agent);
                 }
+                if (eventType == AgentEvent.TIMESERIES_DATA_COLLECTION_START) {
+                    return true;
+                }
                 if (eventType == AgentEvent.TIMESERIES_DATA_COLLECTION_END) {
                     return executeTriggers(agent);
                 }

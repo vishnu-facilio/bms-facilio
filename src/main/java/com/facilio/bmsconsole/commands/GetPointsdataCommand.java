@@ -147,6 +147,7 @@ public class GetPointsdataCommand extends FacilioCommand {
                 break;
             case UNCONFIRURED:
                 point.filterUnConfigurePoints();
+                point.filterUnSubscribePoints();
                 break;
             default:
                 throw new IllegalArgumentException("Point status is not satisfied");
