@@ -74,7 +74,7 @@ public class ShiftModule extends BaseModuleConfig{
         timeConfig.put("step", "00:30");
         JSONObject colorPickerConfig = new JSONObject();
         JSONArray predefineColors = new JSONArray();
-        String[] predefineColorsArr = {"#B1FFF4","#99D5FF", "#FFBDBD", "#CFC9FF", "#FDBCFF", "#FFADD8", "#BDFFBB", "#F1FFB9", "#FFD39F", "#FFB9A2", "#D0FFF8", "#B8E1FF", "#FFDFDF", "#DDD8FF", "#FED7FF", "#FFD4EB", "#DBFFDA", "#F8FFDA", "#FFECD5", "#FFE7DF", "#CCCCCC"};
+        String[] predefineColorsArr = {"#B1FFF4","#99D5FF", "#FFBDBD", "#CFC9FF", "#FDBCFF", "#FFADD8", "#BDFFBB", "#F1FFB9", "#FFD39F", "#FFB9A2", "#D0FFF8", "#B8E1FF", "#FFDFDF", "#DDD8FF", "#FED7FF", "#FFD4EB", "#DBFFDA", "#F8FFDA", "#FFECD5", "#FFE7DF"};
         for (String color:predefineColorsArr) {
             predefineColors.add(color);
         }
@@ -84,14 +84,18 @@ public class ShiftModule extends BaseModuleConfig{
         FormField colorCode = new FormField("colorCode", FacilioField.FieldDisplayType.COLOR_PICKER, "Color Code", FormField.Required.REQUIRED, 1, 2);
         colorCode.setConfig(colorPickerConfig);
         ShiftModuleFormFields.add(colorCode);
-        FormField startTime = new FormField("startTime", FacilioField.FieldDisplayType.TIME, "Start", FormField.Required.REQUIRED, 2, 2);
+
+        FormField descField = new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1);
+        ShiftModuleFormFields.add(descField);
+
+        FormField startTime = new FormField("startTime", FacilioField.FieldDisplayType.TIME, "Start", FormField.Required.REQUIRED, 3, 2);
         startTime.setConfig(timeConfig);
         ShiftModuleFormFields.add(startTime);
-        FormField endTime = new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End", FormField.Required.REQUIRED, 2, 2);
+        FormField endTime = new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End", FormField.Required.REQUIRED, 3, 2);
         endTime.setConfig(timeConfig);
         ShiftModuleFormFields.add(endTime);
-        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 3, 1 ));
 
+        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 4, 1 ));
         shiftModuleForm.setFields(ShiftModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, ShiftModuleFormFields, false);

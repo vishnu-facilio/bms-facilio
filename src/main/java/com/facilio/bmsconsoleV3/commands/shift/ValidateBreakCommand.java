@@ -5,8 +5,10 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,16 +23,16 @@ public class ValidateBreakCommand extends FacilioCommand {
         return br.getBreakTime() == null || br.getBreakTime() == 0;
     }
 
-    private boolean emptyShiftAssociationBreach(Break br) {
-        return br.getShifts() == null || br.getShifts().size() == 0;
+    private boolean emptyShiftAssociationBreach(Break br) throws Exception {
+        return CollectionUtils.isEmpty(br.getShifts());
     }
 
     private boolean emptyModeBreach(Break br) {
-        return br.getBreakMode() == -1;
+        return false;
     }
 
     private boolean emptyTypeBreach(Break br) {
-        return br.getBreakType() == -1;
+        return br.getBreakType() == null;
     }
 
     @Override
@@ -53,9 +55,6 @@ public class ValidateBreakCommand extends FacilioCommand {
             }
             if (emptyShiftAssociationBreach(br)) {
                 throw new IllegalArgumentException("Applicable shifts cannot be empty");
-            }
-            if (emptyModeBreach(br)) {
-                throw new IllegalArgumentException("Mode cannot be empty");
             }
             if (emptyTypeBreach(br)) {
                 throw new IllegalArgumentException("Type cannot be empty");

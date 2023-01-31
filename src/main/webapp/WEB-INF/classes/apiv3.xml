@@ -267,6 +267,15 @@
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="update">
         </action>
+        <action name="calendar"
+                class="com.facilio.bmsconsoleV3.actions.ShiftAction"
+                method="calendar">
+        </action>
+
+        <action name="export"
+                class="com.facilio.bmsconsoleV3.actions.ShiftAction"
+                method="export">
+        </action>
     </package>
 
 

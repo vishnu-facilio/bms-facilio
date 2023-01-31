@@ -11,14 +11,14 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -294,5 +294,55 @@ public class SignupUtil {
                         return FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
                 }
                 return FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+        }
+
+        /**
+         * Creates a FacilioStatus for Stateflow transitions
+         *
+         * @param module Facilio Module
+         * @param status Status name
+         * @param statusType Status type
+         * @param displayName Display Name of Status
+         * @return FacilioStatus state
+         * **/
+        public static FacilioStatus createUntimedFacilioStatus(FacilioModule module, String status, String displayName,
+                                                               FacilioStatus.StatusType statusType) throws Exception {
+                FacilioStatus statusObj = new FacilioStatus();
+                statusObj.setStatus(status);
+                statusObj.setDisplayName(displayName);
+                statusObj.setTypeCode(statusType.getIntVal());
+                statusObj.setTimerEnabled(false);
+                TicketAPI.addStatus(statusObj, module);
+                return statusObj;
+        }
+        /**
+         * Creates a Stateflow Transition without actions & criteria
+         *
+         * @param module Owning module
+         * @param name Name of transition
+         * @param sf Owning Stateflow
+         * @param from From State
+         * @param to To State
+         * @param transitionType  type of Transition
+         * @return StateflowTransition
+         * **/
+        public static StateflowTransitionContext createStateflowTransition(FacilioModule module, StateFlowRuleContext sf, String name, FacilioStatus from, FacilioStatus to, AbstractStateTransitionRuleContext.TransitionType transitionType) throws Exception {
+
+                StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
+                stateFlowTransitionContext.setName(name);
+                stateFlowTransitionContext.setModule(module);
+                stateFlowTransitionContext.setModuleId(module.getModuleId());
+                stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
+                stateFlowTransitionContext.setExecutionOrder(1);
+                stateFlowTransitionContext.setButtonType(1);
+                stateFlowTransitionContext.setFromStateId(from.getId());
+                stateFlowTransitionContext.setToStateId(to.getId());
+                stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
+                stateFlowTransitionContext.setType(transitionType);
+                stateFlowTransitionContext.setStateFlowId(sf.getId());
+
+                WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
+
+                return stateFlowTransitionContext;
         }
 }

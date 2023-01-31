@@ -493,7 +493,13 @@ public class PageWidget {
 		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails"),
 		NEW_RELATED_COUNT("newRelatedCount"),
 		WEATHER_CHART("weatherChart"),
-		WEATHER_TABLE("weatherTable");
+		WEATHER_TABLE("weatherTable"),
+		SHIFT_DESCRIPTION("shiftDescription"),
+		SHIFT_START_TIME("shiftStartTime"),
+		SHIFT_END_TIME("shiftEndTime"),
+		SHIFT_BREAKS("shiftBreaks"),
+		SHIFT_ASSOCIATED_EMPLOYEES("shiftAssociatedEmployees"),
+		SHIFT_WEEKLY_OFF("shiftWeeklyOff");
 
 		private String name;
 

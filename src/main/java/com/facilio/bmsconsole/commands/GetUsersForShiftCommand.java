@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsoleV3.context.Shift;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -37,16 +37,16 @@ public class GetUsersForShiftCommand extends FacilioCommand {
 		long shiftID = shift.getId();
 		boolean alignDate = false;
 
-		List<ShiftUserRelContext> mapping = ShiftAPI.getShiftUserMapping(startTime, endTime, userID, shiftID, alignDate);
+//		List<ShiftUserRelContext> mapping = ShiftAPI.getShiftUserMapping(startTime, endTime, userID, shiftID, alignDate);
 
-		List<Long> users = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(mapping)) {
-			for (ShiftUserRelContext shiftUserRelContext : mapping) {
-				users.add(shiftUserRelContext.getOuid());
-			}
-		}
+//		List<Long> users = new ArrayList<>();
+//		if (CollectionUtils.isNotEmpty(mapping)) {
+//			for (ShiftUserRelContext shiftUserRelContext : mapping) {
+//				users.add(shiftUserRelContext.getOuid());
+//			}
+//		}
 
-		context.put(FacilioConstants.ContextNames.USERS, users);
+//		context.put(FacilioConstants.ContextNames.USERS, users);
 		context.put(FacilioConstants.ContextNames.SHIFT, shift);
 		context.put(FacilioConstants.ContextNames.DATE, currentDay);
 		return false;

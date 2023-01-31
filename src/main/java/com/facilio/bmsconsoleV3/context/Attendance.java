@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BreakContext;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;

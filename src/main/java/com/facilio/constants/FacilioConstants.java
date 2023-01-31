@@ -47,6 +47,7 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
@@ -203,8 +204,9 @@ public class FacilioConstants {
 		public static final String READING_IMPORT_APP = "readingimport";
 		public static final String ORDER_TYPE="orderType";
 		public static final String ORDER_BY="orderBy";
+        public static final String SHIFT_BREAK_REL = "shiftbreakrel";
 
-		public static class HomePage {
+        public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
 			public static final String WIDGET_DATA = "widgetData";
@@ -1533,7 +1535,7 @@ public class FacilioConstants {
 		public static final String SHIFTS = "shifts";
 		public static final String SHIFT_USER_MAPPING = "shiftUserMapping";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
-		public static final String SHIFT_ID = "shiftId";
+		public static final String SHIFT_ID = "shiftID";
 
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";
@@ -1854,7 +1856,6 @@ public class FacilioConstants {
 		public static final String SHIFT_ROTATION = "shiftRotation";
 		public static final String SHIFT_ROTATION_DETAILS = "shiftRotationDetails";
 		public static final String SHIFT_ROTATION_APPLICABLE_FOR = "shiftRotationApplicableFor";
-
 		public static final String BEAN_CLASS_NAME = "beanClassName";
 
 		public static final String SERVICE_VENDOR = "serviceVendors";
@@ -2614,7 +2615,7 @@ public class FacilioConstants {
 			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
-			classMap.put(SHIFT, ShiftContext.class);
+			classMap.put(SHIFT, com.facilio.bmsconsoleV3.context.shift.Shift.class);
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
 			classMap.put(SHIFT_ROTATION, ShiftRotationContext.class);
@@ -3305,14 +3306,24 @@ public class FacilioConstants {
 
 	public static class Shift {
 		public static final String SHIFT = "shift";
-		public static final String TIMELINE_METRIC = "timelineMetric";
+
+		public static final String SHIFT_ACTIVITY = "shiftactivity";
+
+		public static final String SHIFT_RICH_TEXT = "shiftrichtext";
+		public static final String EMPLOYEES = "employees";
+		public static final String URL = "url";
+		public static final String EXPORT_LIST = "exportList";
+		public static final String FORMAT = "format";
+		public static final String RANGE = "range";
 		public static final String RANGE_FROM = "rangeFrom";
 		public static final String RANGE_TO = "rangeTo";
-		public static final String PEOPLE_ID = "peopleID";
+		public static final String EMPLOYEE_ID = "employeeID";
+		public static final String SHIFTS = "shifts";
 		public static final String SHIFT_ID = "shiftID";
 		public static final String SHIFT_START = "shiftStart";
 		public static final String SHIFT_END = "shiftEnd";
-	}
+        public static final String CREATING_DEFAULT_SHIFT = "creatingDefaultShift";
+    }
 
 
 	public static class Reports {
@@ -3718,7 +3729,8 @@ public class FacilioConstants {
 
 	public static class Break {
 		public static final String BREAK = "break";
-	}
+        public static final String BREAK_RICH_TEXT = "breakrichtext";
+    }
 
 	public static class ReadingKpi {
 		public static final String READING_KPI = "readingkpi";

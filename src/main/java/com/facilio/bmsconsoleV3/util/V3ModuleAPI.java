@@ -97,7 +97,8 @@ public class V3ModuleAPI {
         CLIENT(FacilioConstants.ContextNames.CLIENT,Arrays.asList()),
         JOB_PLAN(FacilioConstants.ContextNames.JOB_PLAN,Arrays.asList()),
         PLANNEDMAINTENANCE(ContextNames.PLANNEDMAINTENANCE,Arrays.asList()),
-        RULES(FacilioConstants.ReadingRules.NEW_READING_RULE, Arrays.asList());
+        RULES(FacilioConstants.ReadingRules.NEW_READING_RULE, Arrays.asList()),
+        SHIFT(FacilioConstants.Shift.SHIFT, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         private String moduleName;
         private List<String> applicationLinkNames;

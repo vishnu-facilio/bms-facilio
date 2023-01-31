@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands.shift;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.Break;
-import com.facilio.bmsconsoleV3.context.Shift;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

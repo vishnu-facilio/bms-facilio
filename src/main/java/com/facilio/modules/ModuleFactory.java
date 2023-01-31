@@ -1634,6 +1634,7 @@ public class ModuleFactory {
 	
 	public static FacilioModule getShiftModule() {
 		FacilioModule module = new FacilioModule();
+		module.setType(ModuleType.BASE_ENTITY);
 		module.setName("shift");
 		module.setDisplayName("Shift");
 		module.setTableName("Shift");
@@ -5405,7 +5406,7 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return module;
 	}
 
-	public static FacilioModule getShiftPeopleRelModule() {
+	public static FacilioModule getShiftPeopleRelPseudoModule() {
 		FacilioModule shiftUserRel = new FacilioModule();
 		shiftUserRel.setName("shiftPeopleRel");
 		shiftUserRel.setDisplayName("Shift People Rel");

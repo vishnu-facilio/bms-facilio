@@ -164,6 +164,7 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
@@ -2447,13 +2448,12 @@ public class APIv3Config {
         return () -> new V3Config(Break.class, null)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getBreakBeforeSaveChain())
-                .afterSave(TransactionChainFactoryV3.getBreakAfterSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getBreakBeforeUpdateChain())
-                .afterSave(TransactionChainFactoryV3.getBreakAfterUpdateChain())
                 .delete()
                 .beforeDelete(TransactionChainFactoryV3.getBreakBeforeDeleteChain())
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getBreakBeforeListChain())
                 .summary()
                 .build();
 
@@ -2461,7 +2461,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.Shift.SHIFT)
     public static Supplier<V3Config> getShift() {
-        return () -> new V3Config(Shift.class, null)
+        return () -> new V3Config(Shift.class, new ModuleCustomFieldCount15())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getShiftBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getShiftAfterSaveChain())
@@ -2472,7 +2472,9 @@ public class APIv3Config {
                 .beforeDelete(TransactionChainFactoryV3.getShiftBeforeDeleteChain())
                 .afterDelete(TransactionChainFactoryV3.getShiftAfterDeleteChain())
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getShiftBeforeListChain())
                 .summary()
+                .afterFetch(TransactionChainFactoryV3.getShiftAfterSummaryChain())
                 .build();
     }
 

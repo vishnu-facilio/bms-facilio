@@ -134,6 +134,7 @@ public class PeopleAPI {
 				RecordAPI.updateRecord( FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleContext), V3PeopleContext.class), people, modBean.getAllFields(people.getName()));
 			}
 		}
+		user.setPeopleId(pplId);
 		updatePeopleIdInOrgUsers(pplId, user.getOuid());
 		if (user.getGroups() != null) {
 			updatePeopleIdInGroupMembers(pplId, user.getOuid());

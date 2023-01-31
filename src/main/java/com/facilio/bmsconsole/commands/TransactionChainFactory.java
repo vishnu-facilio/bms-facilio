@@ -29,7 +29,6 @@ import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.GetCustomPageWidgetCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.FetchSpaceBookingCommand;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -37,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
+import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
@@ -61,14 +61,11 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
-import com.facilio.ns.command.AddNamespaceCommand;
-import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
-import com.facilio.readingrule.rca.command.FetchRuleRCACommand;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
@@ -105,6 +102,7 @@ public class TransactionChainFactory {
 			c.addCommand(addMaintenanceApplication());
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(addScopingChain());
+			c.addCommand(new AssignShiftToUserCommand());
 			return c;
 		}
 

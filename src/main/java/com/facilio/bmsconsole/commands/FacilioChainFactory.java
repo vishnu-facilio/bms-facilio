@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.GetScheduledWoCommandV3;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -136,6 +137,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddUserCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 		c.addCommand(new AddorUpdateUserScopingCommand());
+		c.addCommand(new AssignShiftToUserCommand());
 		return c;
 	}
 	public static Command getChangeTeamStatusCommand(){

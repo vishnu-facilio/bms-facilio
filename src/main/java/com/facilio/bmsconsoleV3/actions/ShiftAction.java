@@ -10,6 +10,8 @@ import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class ShiftAction extends V3Action {
@@ -17,43 +19,79 @@ public class ShiftAction extends V3Action {
 
     private Long rangeFrom;
     private Long rangeTo;
-    private Long peopleID;
+    private Long employeeID;
+    private List<Long> employees;
     private Long shiftID;
     private Long shiftStart;
     private Long shiftEnd;
-
+    private String format;
     public String list() throws Exception {
-        if (rangeFrom == null || rangeTo == null | peopleID == null) {
-            LOGGER.trace("rangeFrom, rangeTo & peopleID are mandatory");
-            return ERROR;
-        }
 
         FacilioChain chain = TransactionChainFactoryV3.getShiftPlannerListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.Shift.RANGE_FROM, rangeFrom);
         context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
-        context.put(FacilioConstants.Shift.PEOPLE_ID, peopleID);
+        context.put(FacilioConstants.Shift.EMPLOYEE_ID, employeeID);
         chain.execute();
 
         setData("shifts", context.get("shifts"));
         return SUCCESS;
     }
 
-    public String update() throws Exception {
-        if (shiftStart == null || shiftEnd == null || shiftID == null || peopleID == null) {
-            LOGGER.trace("shiftStart, shiftEnd, shiftID  & peopleID are mandatory");
-            return ERROR;
-        }
+    public String calendar() throws Exception {
 
+        FacilioChain chain = TransactionChainFactoryV3.getShiftPlannerCalendarChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.Shift.RANGE_FROM, rangeFrom);
+        context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
+        context.put(FacilioConstants.ContextNames.PAGE, getPage());
+        context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE, getOrderType());
+        context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+        context.put(FacilioConstants.ContextNames.REPORT_ORDER_BY, getOrderBy());
+        chain.execute();
+
+        setData(FacilioConstants.Shift.RANGE,
+                context.get(FacilioConstants.Shift.RANGE));
+        setData(FacilioConstants.ContextNames.EMPLOYEES,
+                context.get(FacilioConstants.ContextNames.EMPLOYEES));
+        setData(FacilioConstants.ContextNames.SHIFTS,
+                context.get(FacilioConstants.ContextNames.SHIFTS));
+        setData(FacilioConstants.ContextNames.COUNT,
+                context.get(FacilioConstants.ContextNames.COUNT));
+        return SUCCESS;
+    }
+
+    public String update() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getShiftPlannerUpdateChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.Shift.SHIFT_START, shiftStart);
         context.put(FacilioConstants.Shift.SHIFT_END, shiftEnd);
         context.put(FacilioConstants.Shift.SHIFT_ID, shiftID);
-        context.put(FacilioConstants.Shift.PEOPLE_ID, peopleID);
+        context.put(FacilioConstants.Shift.EMPLOYEES, employees);
         chain.execute();
 
         setData("shifts", context.get("shifts"));
+        return SUCCESS;
+    }
+
+    public String export() throws Exception {
+
+        FacilioChain chain = TransactionChainFactoryV3.getExportShiftPlannerChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.Shift.RANGE_FROM, rangeFrom);
+        context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
+        context.put(FacilioConstants.ContextNames.PAGE, getPage());
+        context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
+        context.put(FacilioConstants.Shift.EMPLOYEE_ID, employeeID);
+        context.put(FacilioConstants.Shift.FORMAT, format);
+        context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE, getOrderType());
+        context.put(FacilioConstants.ContextNames.REPORT_ORDER_BY, getOrderBy());
+        chain.execute();
+
+        setData(FacilioConstants.Shift.URL, context.get(FacilioConstants.Shift.URL));
+
         return SUCCESS;
     }
 }

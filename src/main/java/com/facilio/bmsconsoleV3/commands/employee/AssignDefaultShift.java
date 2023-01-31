@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.employee;
 
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -15,9 +14,9 @@ public class AssignDefaultShift extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3PeopleContext> people = recordMap.get(moduleName);
-        for (V3PeopleContext person : people) {
-            ShiftAPI.assignDefaultShiftToPeople(person.getId());
+        List<V3EmployeeContext> employees = recordMap.get(moduleName);
+        for (V3EmployeeContext emp : employees) {
+            ShiftAPI.assignDefaultShiftToEmployee(emp.getId());
         }
         return false;
     }

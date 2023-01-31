@@ -11,16 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
-import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.*;
-import com.facilio.delegate.context.DelegationType;
-import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
@@ -47,10 +42,8 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -62,7 +55,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
@@ -372,12 +364,6 @@ public class UserBeanImpl implements UserBean {
 		if(user.getAppDomain() != null && user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			if (user.getGroups() != null) {
 				addAccessibleTeam(user.getOuid(), user.getGroups());
-			}
-	
-			// add user in shift relation table
-			ShiftContext defaultShift = ShiftAPI.getDefaultShift();
-			if (defaultShift != null) {
-				ShiftAPI.insertShiftUserRel(defaultShift.getId(), user.getOuid());
 			}
 			if (user.getRoleId() == 0) {
 				throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.page.RelatedListContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -23,6 +21,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.relation.context.RelationRequestContext;
@@ -155,6 +154,8 @@ public class PageFactory {
 				return WorkpermitPageFactory.getWorkPermitPage((WorkPermitContext) record);
 			case ContextNames.VENDORS:
 				return VendorPageFactory.getVendorPage((VendorContext) record);
+			case ContextNames.SHIFT:
+				return ShiftPageFactory.getShiftPage((Shift) record);
 			case ContextNames.WORK_ORDER:
 				AppDomain domain = AccountUtil.getCurrentUser().getAppDomain();
 				if (domain != null &&

@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -163,11 +164,9 @@ import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHaz
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.shift.AddBreakShiftRelationshipCommand;
 import com.facilio.bmsconsoleV3.commands.shift.AddShiftAbsenceDetectionJobCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ListShiftPlannerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.MarkAsNonDefaultShiftCommand;
-import com.facilio.bmsconsoleV3.commands.shift.RemoveBreakShiftRelationshipCommand;
 import com.facilio.bmsconsoleV3.commands.shift.RemoveShiftAbsenceDetectionJobCommand;
 import com.facilio.bmsconsoleV3.commands.shift.UpdateShiftPlannerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.ValidateBreakCommand;
@@ -2158,7 +2157,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new DeleteReadingImportDataCommand());
         return c;
     }
-    public static FacilioChain getAutocadImportAppChain(){
+    public static FacilioChain getAutocadImportAppChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddAutoCadFileImportCommand());
         c.addCommand(new AddAutoCadLayerCommand());
@@ -2278,10 +2277,17 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static Command getShiftBeforeListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddShiftSupplementsCommand());
+        return chain;
+    }
+
     public static FacilioChain getShiftBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateShiftsCommand());
         chain.addCommand(new MarkAsNonDefaultShiftCommand());
+        chain.addCommand(new AddActivitiesCommand(FacilioConstants.Shift.SHIFT_ACTIVITY));
         return chain;
     }
 
@@ -2307,6 +2313,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateShiftsCommand());
         chain.addCommand(new MarkAsNonDefaultShiftCommand());
+        chain.addCommand(new AddActivitiesCommand(FacilioConstants.Shift.SHIFT_ACTIVITY));
         return chain;
     }
 
@@ -2314,6 +2321,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new RemoveShiftAbsenceDetectionJobCommand());
         chain.addCommand(new AddShiftAbsenceDetectionJobCommand());
+        return chain;
+    }
+
+    public static Command getShiftAfterSummaryChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddComputedPropertiesForShiftCommand());
         return chain;
     }
 
@@ -2335,34 +2348,29 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getBreakAfterSaveChain() {
+    public static Command getBreakBeforeListChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddBreakShiftRelationshipCommand());
+        c.addCommand(new AddBreakSupplementsCommand());
         return c;
     }
 
     public static FacilioChain getBreakBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateBreakCommand());
+        c.addCommand(new MarkBreakAsManualCommand());
         return c;
     }
 
     public static FacilioChain getBreakBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateBreakCommand());
-        return c;
-    }
-
-    public static FacilioChain getBreakAfterUpdateChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new RemoveBreakShiftRelationshipCommand());
-        c.addCommand(new AddBreakShiftRelationshipCommand());
+        c.addCommand(new MarkBreakAsManualCommand());
         return c;
     }
 
     public static FacilioChain getBreakBeforeDeleteChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new RemoveBreakShiftRelationshipCommand());
+//        c.addCommand(new RemoveBreakShiftRelationshipCommand());
         return c;
     }
 
@@ -2430,13 +2438,15 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PlansCostCommandV3());
         return c;
     }
-    public static FacilioChain getPlannedItemsUnSavedListChainV3(){
+
+    public static FacilioChain getPlannedItemsUnSavedListChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlannedItemsUnSavedListCommandV3());
         c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
-    public static FacilioChain getPlannedToolsUnSavedListChainV3(){
+
+    public static FacilioChain getPlannedToolsUnSavedListChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlannedToolsUnSavedListCommandV3());
         c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
@@ -2449,47 +2459,55 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
+
     public static FacilioChain getUnsavedWorkOrderItemsListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new WorkOrderItemUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedReservedWorkOrderItemsListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new WorkOrderReservedItemsUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedWorkOrderToolsListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new WorkOrderToolsUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedWorkOrderServiceListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new WorkOrderServiceUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedJobPlanItemsListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JobPlanItemsUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedSparePartsSelectionChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SparePartsSelectionCommand());
         return chain;
     }
+
     public static FacilioChain getUnsavedJobPlanToolsListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JobPlanToolsUnsavedListCommandV3());
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
+
     public static FacilioChain getUnsavedJobPlanServicesListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JobPlanServicesUnsavedListCommandV3());
@@ -2579,6 +2597,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
         return chain;
     }
+
     public static FacilioChain getReserveValidationChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReservationValidationCommandV3());
@@ -2637,6 +2656,22 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getShiftPlannerListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ListShiftPlannerCommand());
+        return c;
+    }
+
+    public static FacilioChain getExportShiftPlannerChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetShiftExportFlagsCommand());
+        c.addCommand(new GetPageEmployeesCommand());
+        c.addCommand(new ExportShiftPlannerCommand());
+        return c;
+    }
+
+    public static FacilioChain getShiftPlannerCalendarChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPageEmployeesCommand());
+        c.addCommand(new ComputeShiftPlannerRangeCommand());
+        c.addCommand(new ComposeShiftCalendarCommand());
         return c;
     }
 
@@ -2758,7 +2793,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain afterDeleteReadingRuleRcaChain(){
+    public static FacilioChain afterDeleteReadingRuleRcaChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteNamespaceReadingRuleCommand());
         c.addCommand(new DeleteReadingRuleRcaCommand());
@@ -2776,39 +2811,41 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddPolicyCriteriaCommand());
         return c;
     }
-    public static FacilioChain addOrUpdateFormRelationChain(){
+
+    public static FacilioChain addOrUpdateFormRelationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateFormRelationCommand());
         return c;
     }
 
-    public static FacilioChain moveWoInQueueForPreOpenToOpenChain(){
+    public static FacilioChain moveWoInQueueForPreOpenToOpenChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPMV2WorkordersToMoveInQueueForPreOpenToOpen());
         c.addCommand(new ScheduleWorkordersToMoveInQueueForPreOpenToOpen());
         return c;
     }
-    
-    public static FacilioChain getPMPlannerBeforeUpdateCommand(){
+
+    public static FacilioChain getPMPlannerBeforeUpdateCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateTriggerTypeForPMPlannerCommand());
         c.addCommand(new BeforeSavePMPlannerCommand());
         return c;
     }
-    public static FacilioChain BaseSchedulerSingleInstanceJobChain(){
+
+    public static FacilioChain BaseSchedulerSingleInstanceJobChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new BaseSchedulerSingleInstanceCommand());
         return c;
     }
-    
-    public static FacilioChain PMV2NightlyJobChain(){
+
+    public static FacilioChain PMV2NightlyJobChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateAndGetAllPMPlannersCommand());
         c.addCommand(new RunExecuterBaseForPMPlannersCommand());
         return c;
     }
-    
-    public static FacilioChain PMV2BeforeUpdateChain(){
+
+    public static FacilioChain PMV2BeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PMBeforeCreateCommand());
         c.addCommand(new AddPMDetailsBeforeUpdateCommand());
@@ -2816,7 +2853,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain PMPlannerAfterUpdateChain(){
+    public static FacilioChain PMPlannerAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTimelineViewCalenderTypeCommand());
         c.addCommand(new DeleteWorkOrdersGeneratedFromTriggerCommand());

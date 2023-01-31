@@ -287,3 +287,9 @@ enums:
   
   - name: JobPlanStatus
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPStatus
+
+  - name: BreakType
+    enumClassName: com.facilio.bmsconsoleV3.context.Break$Type
+
+  - name: BreakMode
+    enumClassName: com.facilio.bmsconsoleV3.context.Break$Mode

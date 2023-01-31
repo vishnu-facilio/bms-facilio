@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsoleV3.context.Shift;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
