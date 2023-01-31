@@ -128,7 +128,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
     }
 
     private boolean foreignSpaceBreach(V3WorkOrderContext wo, V3WorkOrderContext oldWo) throws Exception {
-        if (wo.getResource() == null) {
+        if (wo.getResource() == null || wo.getResource().isDeleted()) {
             return false;
         }
         ResourceContext resource = ResourceAPI.getResource(wo.getResource().getId());
@@ -146,7 +146,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
     }
 
     private boolean foreignAssetBreach(V3WorkOrderContext wo, V3WorkOrderContext oldWo) throws Exception {
-        if (wo.getResource() == null) {
+        if (wo.getResource() == null || wo.getResource().isDeleted()) {
             return false;
         }
         ResourceContext resource = ResourceAPI.getResource(wo.getResource().getId());

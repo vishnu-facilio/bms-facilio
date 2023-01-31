@@ -23,7 +23,7 @@ public class AddFailureClassFromResource extends FacilioCommand {
         List<V3WorkOrderContext> wos = recordMap.get(moduleName);
         for (V3WorkOrderContext wo : wos) {
             ResourceContext resource = wo.getResource();
-            if (resource == null) {
+            if (resource == null || resource.isDeleted()) {
                 continue;
             }
             resource = ResourceAPI.getResource(resource.getId());
