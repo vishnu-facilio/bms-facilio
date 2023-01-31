@@ -42,20 +42,6 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         }
 
         List<FilterFieldContext> filterFields = createFilterFields(moduleName, fields);
-        if (CollectionUtils.isNotEmpty(filterFields) && moduleName != null && moduleName.equals("workflowLog")) { // for temp... will remove it later
-            for (FilterFieldContext fieldContext : filterFields){
-                if(fieldContext.getName().equals("logType")){
-                    List<FieldOption> fieldOptions = fieldContext.getOptions();
-                    if(CollectionUtils.isNotEmpty(fieldOptions)) {
-                        for (int i=0;i<fieldOptions.size();i++){
-                            if(fieldOptions.get(i).getLabel().equals(WorkflowLogContext.WorkflowLogType.FORMULA.name()) || fieldOptions.get(i).getLabel().equals(WorkflowLogContext.WorkflowLogType.WORKFLOW_RULE_EVALUATION.name())){
-                                fieldOptions.remove(fieldOptions.get(i));
-                            }
-                        }
-                    }
-                }
-            }
-        }
         context.put(FacilioConstants.Filters.FILTER_FIELDS, filterFields);
         return false;
     }
