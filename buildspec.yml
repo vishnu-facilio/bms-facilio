@@ -26,6 +26,8 @@ artifacts:
     - scripts/move_hprof.sh
     - scripts/oom.sh
     - scripts/threaddump.sh
+    - scripts/start_hydra.sh
+    - scripts/stop_hydra.sh
     - scripts/monitor_server.sh
     - scripts/validate_health.sh
     - deployment-files/*
