@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.workflow.rule.SLAEntityContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -14,6 +16,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+
+import static com.facilio.db.criteria.CriteriaAPI.updateConditionField;
 
 public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
 
@@ -37,6 +41,8 @@ public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
             if (dueField == null) {
                 throw new IllegalArgumentException("Due field cannot be empty");
             }
+            updateConditionField(moduleName,slaEntity.getCriteria());
+
             if (slaEntity.getCriteria() != null) {
                 long criteriaId = CriteriaAPI.addCriteria(slaEntity.getCriteria());
                 slaEntity.setCriteriaId(criteriaId);
