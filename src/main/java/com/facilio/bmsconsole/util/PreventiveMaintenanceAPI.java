@@ -1063,7 +1063,7 @@ public class PreventiveMaintenanceAPI {
 			for (WorkOrderContext wo : workorders) {
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("id", wo.getId());
-				prop.put("nextExecutionTime", wo.getCreatedTime());
+				prop.put("nextExecutionTime", wo.getScheduledStart());
 				prop.put("orgId", wo.getOrgId());
 				prop.put("pmId", wo.getPm().getId());
 				prop.put("woSubject",wo.getSubject());

@@ -8,9 +8,7 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -21,6 +19,7 @@ import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.NumberQuestionContext;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.ScheduleOperation.EXTEND;
 import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.ScheduleOperation.REINIT;
-
+@Log4j
 public class PlannedMaintenanceAPI {
     public enum ScheduleOperation implements FacilioStringEnum {
         EXTEND(ScheduleExecutor.class),
@@ -244,7 +243,7 @@ public class PlannedMaintenanceAPI {
             for (V3WorkOrderContext wo : workorders) {
                 Map<String, Object> prop = new HashMap<>();
                 prop.put("id", wo.getId());
-                prop.put("nextExecutionTime", wo.getCreatedTime());
+                prop.put("nextExecutionTime", wo.getScheduledStart());
                 prop.put("orgId", wo.getOrgId());
                 prop.put("pmId", wo.getPmV2());
                 prop.put("woSubject",wo.getSubject());
@@ -324,6 +323,63 @@ public class PlannedMaintenanceAPI {
         int count = builder.markAsDelete();
         return count;
     }
-
-
+    public static void deleteWorkOrderFromPmId(List<Long> pmIdList) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Criteria criteria = new Criteria();
+        if(pmIdList == null || pmIdList.isEmpty()){
+            return;
+        }
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pmV2"), StringUtils.join(pmIdList,","), NumberOperators.EQUALS));
+        deleteWorkOrdersInBatch(criteria);
+        return;
+    }
+    public static void deleteWorkOrdersFromPlannerId(List<Long> plannerIdList) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Criteria criteria = new Criteria();
+        if(plannerIdList == null || plannerIdList.isEmpty()){
+            return;
+        }
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pmPlanner"), StringUtils.join(plannerIdList,","),NumberOperators.EQUALS));
+        deleteWorkOrdersInBatch(criteria);
+        return;
+    }
+    private static void deleteWorkOrdersInBatch(Criteria criteria) throws Exception {
+        if(criteria == null){
+            return;
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> workOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(workOrderFields);
+        SelectRecordsBuilder<V3WorkOrderContext> builder = new SelectRecordsBuilder<V3WorkOrderContext>()
+                .module(workOrderModule)
+                .select(workOrderFields)
+                .beanClass(V3WorkOrderContext.class)
+                .andCriteria(criteria)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"),String.valueOf(V3WorkOrderContext.JobsStatus.ACTIVE.getValue()),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"),CommonOperators.IS_EMPTY))
+                .skipModuleCriteria();
+        SelectRecordsBuilder.BatchResult<V3WorkOrderContext> batchResult = builder.getInBatches("WorkOrders.ID", 5000);
+        int i = 0;
+        List<List<Long>> workOrderIdsToBeDeleted = new ArrayList<>();
+        while (batchResult.hasNext()) {
+            List<V3WorkOrderContext> workOrderContextList = batchResult.get();
+            LOGGER.info("Batch ID == " + i++ + "Count of WorkOrder Records Fetched for this batch == " + workOrderContextList.size());
+            workOrderIdsToBeDeleted.add(workOrderContextList.stream().map(V3WorkOrderContext::getId).collect(Collectors.toList()));
+        }
+        for (List<Long> workOrderIds : workOrderIdsToBeDeleted) {
+            LOGGER.info("Pre open WorkOrder Id's to be deleted === " + workOrderIds);
+            DeleteRecordBuilder<V3WorkOrderContext> workOrderContextDeleteRecordBuilder = new DeleteRecordBuilder<V3WorkOrderContext>()
+                    .module(workOrderModule)
+                    .skipModuleCriteria();
+            int workOrderDeletedCount = workOrderContextDeleteRecordBuilder.batchDeleteById(workOrderIds);
+            LOGGER.info("COUNT OF DELETED PRE OPEN WORKORDERS ===  " + workOrderDeletedCount + " for template ID === ");
+        }
+    }
 }

@@ -3,13 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
-import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
@@ -25,10 +19,11 @@ public class PlannedMaintenanceV3Config {
         return () -> new V3Config(PlannedMaintenance.class, new ModuleCustomFieldCount50())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.PMV2BeforeUpdateChain())
-                .afterSave(new PMAfterPatchCommand())
+                .afterSave(TransactionChainFactoryV3.PPMAfterPatchChain())
                 .create()
                 .beforeSave(new PMBeforeCreateCommand(), new AddPMDetailsBeforeCreateCommand())
                 .delete()
+                .afterDelete(new DeletePPMPreOpenWorkorders())
                 .list()
                 .beforeFetch(new PMFetchSupplements())
                 .summary()
@@ -74,7 +69,7 @@ public class PlannedMaintenanceV3Config {
                 .create()
                 .afterSave(new AddTimelineViewForPMPlannerCommand())
                 .delete()
-                .afterDelete(new DeletePlannerTriggerCommand())
+                .afterDelete(TransactionChainFactoryV3.PMPlannerAfterDeleteChain())
                 .list()
                 .beforeFetch(new PMPlannerSupplementsCommand())
                 .summary()

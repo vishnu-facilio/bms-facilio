@@ -80,7 +80,7 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
                     .append(pmPlanner.getPmId()).append("_")
                     .append(pmPlanner.getId());
 
-            TimelineViewContext resourceTimelineView = getDefaultTimelineViewContext(stringBuilder.toString(),
+            TimelineViewContext resourceTimelineView = getResourceTimelineViewContext(stringBuilder.toString(),
                     "Asset",
                     app.getId(), module);
 
@@ -105,7 +105,7 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
                     .append(pmPlanner.getPmId()).append("_")
                     .append(pmPlanner.getId());
 
-            TimelineViewContext assignedToTimelineView = getDefaultTimelineViewContext(stringBuilder.toString(),
+            TimelineViewContext assignedToTimelineView = getAssignedToTimeLineViewContext(stringBuilder.toString(),
                     "Staff", app.getId(), module);
 
             assignedToTimelineView.setGroupByFieldId(fieldsMap.get("assignedTo").getFieldId());
@@ -167,7 +167,7 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
      * @param module
      * @return
      */
-    private TimelineViewContext getDefaultTimelineViewContext(String name, String displayName, Long appId, FacilioModule module) {
+    private TimelineViewContext getResourceTimelineViewContext(String name, String displayName, Long appId, FacilioModule module) {
         TimelineViewContext context = new TimelineViewContext();
         context.setName(name); // link name
         context.setDisplayName(displayName);
@@ -176,7 +176,26 @@ public class AddTimelineViewForPMPlannerCommand extends FacilioCommand {
         context.setModuleName(module.getName());
         context.setModuleId(module.getModuleId());
 
-        context.setAllowRescheduling(false);
+        context.setAllowRescheduling(true);
+        context.setAllowGroupAssignment(true);
+        context.setAllowReAssignment(false);
+        context.setAllowPastAssignment(true);
+        context.setViewType(FacilioView.ViewType.TIMELINE.getIntVal());
+        context.setType(FacilioView.ViewType.TIMELINE);
+        context.setDefault(false);
+        context.setExcludeModuleCriteria(true);
+        return context;
+    }
+    private TimelineViewContext getAssignedToTimeLineViewContext(String name, String displayName, Long appId, FacilioModule module ){
+        TimelineViewContext context = new TimelineViewContext();
+        context.setName(name); // link name
+        context.setDisplayName(displayName);
+        context.setHidden(true);
+        context.setAppId(appId);
+        context.setModuleName(module.getName());
+        context.setModuleId(module.getModuleId());
+
+        context.setAllowRescheduling(true);
         context.setAllowGroupAssignment(true);
         context.setAllowReAssignment(true);
         context.setAllowPastAssignment(true);

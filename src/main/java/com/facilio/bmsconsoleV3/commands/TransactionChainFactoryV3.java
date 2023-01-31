@@ -8,8 +8,10 @@ import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.*;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteWorkOrdersGeneratedFromTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -2259,6 +2261,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getDeactivatePM() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new MarkPMAsDeactivatedCommand());
+        c.addCommand(new DeletePPMPreOpenWorkorders());
         return c;
     }
 
@@ -2853,7 +2856,20 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain PMPlannerAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTimelineViewCalenderTypeCommand());
-        c.addCommand(new DeleteWorkOrdersGeneratedFromTriggerCommand());
+        c.addCommand(new DeletePMPlannerPreOpenWorkOrders());
+        return c;
+    }
+    public static FacilioChain PPMAfterPatchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PMAfterPatchCommand());
+        c.addCommand(new DeletePPMPreOpenWorkorders());
+        return c;
+    }
+
+    public static FacilioChain PMPlannerAfterDeleteChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeletePMPlannerPreOpenWorkOrders());
+        c.addCommand(new DeletePlannerTriggerCommand());
         return c;
     }
 }
