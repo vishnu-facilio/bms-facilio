@@ -30,12 +30,11 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
         String relationName = (String) context.get(ContextNames.RELATION_NAME);
         String relatedFieldName = (String) context.get(ContextNames.RELATED_FIELD_NAME);
         String relatedModuleName = (String) context.get(ContextNames.RELATED_MODULE_NAME);
-        String relationOperation = (String) context.get(ContextNames.RELATION_OPERATION);
+        String relationshipActionType = (String) context.get(ContextNames.RELATIONSHIP_ACTION_TYPE);
         boolean unAssociated = (boolean) context.getOrDefault("unAssociated", false);
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.getOrDefault(ContextNames.QUERY_PARAMS, new HashMap<>());
 
-        boolean isRelationOperation = StringUtils.isNotEmpty(relationOperation);
-        boolean isToManyRelation = true;
+        boolean isRelationshipAction = StringUtils.isNotEmpty(relationshipActionType);
         Criteria filterCriteria = null;
 
         switch (widgetType) {
@@ -48,9 +47,8 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
                     throw new IllegalArgumentException("Invalid relation");
                 }
 
-                if (!isRelationOperation && !unAssociated && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
-                        || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex())) {
-                    isToManyRelation = false;
+                if (!isRelationshipAction && !unAssociated && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
+                        || relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_MANY.getIndex())) {
                     constructRelationListQueryParams(queryParams, recordId, relationMapping);
 
                     RelationContext relationContext = RelationUtil.getRelation(relationMapping.getRelationId(), false);
@@ -59,20 +57,18 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
 
                     context.put(ContextNames.RELATION_MODULE_NAME, relationMappingModule.getName());                        // ModuleName for V3Util.fetchList()
                     context.put(ContextNames.RELATION_POSITION_TYPE, relationPosition);
-                    context.put(ContextNames.MODULE_NAME, fromModule.getName());                                            // ModuleName for V3Util.summary()
+                    context.put("fetchSummary", true);
+                } else {
+                    filterCriteria = getRelationshipFilterCriteria(relationName, recordId, unAssociated);                   // Many-to-One & Many-to-Many
+                    context.put(ContextNames.FILTER_SERVER_CRITERIA, filterCriteria);
                 }
 
-                if (isRelationOperation) {                                                                                  // Associate & Dissociate
+                if (isRelationshipAction) {                                                                                     // Associate & Dissociate
                     constructRelationshipDataQueryParams(queryParams, relationName, recordId);
                     context.put(ContextNames.QUERY_PARAMS, queryParams);
                 }
 
-                if (isToManyRelation || unAssociated) {                                                                                     // One-to-Many & Many-to-Many
-                    filterCriteria = getRelationshipFilterCriteria(relationName, recordId, unAssociated);
-                    context.put(ContextNames.FILTER_SERVER_CRITERIA, filterCriteria);
-
-                    context.put(ContextNames.MODULE_NAME, fromModule.getName());                                            // ModuleName for V3Util.fetchList()
-                }
+                context.put(ContextNames.MODULE_NAME, fromModule.getName());                                                // ModuleName for V3Util.fetchList() / V3Util.summary()
                 break;
 
                 case ContextNames.RELATED_LIST:

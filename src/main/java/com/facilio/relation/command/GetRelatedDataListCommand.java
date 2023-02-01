@@ -20,6 +20,7 @@ import java.util.*;
 public class GetRelatedDataListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean fetchSummary = (boolean) context.getOrDefault("fetchSummary", false);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         String relationModuleName = (String) context.get(FacilioConstants.ContextNames.RELATION_MODULE_NAME);
         String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
@@ -40,7 +41,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         FacilioContext listContext;
         JSONObject recordJSON = new JSONObject();
 
-        if (StringUtils.isNotEmpty(relationModuleName)) {
+        if (fetchSummary) {
             listContext = V3Util.fetchList(relationModuleName, true, viewName, filters, excludeParentFilter, clientCriteria,
                     orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons);
 

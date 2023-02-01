@@ -64,7 +64,7 @@ public class RelatedDataAction extends RESTAPIHandler {
 
                 FacilioContext associateChainContext = associateChain.getContext();
                 associateChainContext.put(FacilioConstants.ContextNames.WIDGET_TYPE, FacilioConstants.ContextNames.RELATIONSHIP);
-                associateChainContext.put(FacilioConstants.ContextNames.RELATION_OPERATION, "ASSOCIATE");
+                associateChainContext.put(FacilioConstants.ContextNames.RELATIONSHIP_ACTION_TYPE, "ASSOCIATE");
                 addDataAlterChainContext(associateChainContext);
                 associateChain.execute();
 
@@ -76,7 +76,7 @@ public class RelatedDataAction extends RESTAPIHandler {
 
                 FacilioContext dissociateChainContext = dissociateChain.getContext();
                 dissociateChainContext.put(FacilioConstants.ContextNames.WIDGET_TYPE, FacilioConstants.ContextNames.RELATIONSHIP);
-                dissociateChainContext.put(FacilioConstants.ContextNames.RELATION_OPERATION, "DISSOCIATE");
+                dissociateChainContext.put(FacilioConstants.ContextNames.RELATIONSHIP_ACTION_TYPE, "DISSOCIATE");
                 addDataAlterChainContext(dissociateChainContext);
                 dissociateChain.execute();
 
