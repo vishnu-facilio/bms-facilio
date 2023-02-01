@@ -4,10 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 public class BaseSpaceContext extends ResourceContext {
@@ -385,4 +388,7 @@ public class BaseSpaceContext extends ResourceContext {
 			return moduleMap;
 		}
 	}
+	@Getter
+	@Setter
+	private ClassificationContext classification;
 }

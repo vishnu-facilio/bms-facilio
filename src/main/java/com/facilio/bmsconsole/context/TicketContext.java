@@ -5,12 +5,15 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -516,4 +519,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 
 	private V3FailureClassContext failureClass;
+	@Getter
+	@Setter
+	private ClassificationContext classification;
 }

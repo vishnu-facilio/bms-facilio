@@ -8,8 +8,11 @@ import java.util.Map;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
+import com.facilio.classification.context.ClassificationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Getter;
+import lombok.Setter;
 
 public class AssetContext extends ResourceContext {
 	/**
@@ -459,7 +462,9 @@ public class AssetContext extends ResourceContext {
 	public void setHazardIds(List<Long> hazardIds) {
 		this.hazardIds = hazardIds;
 	}
-	
-	
+
+	@Getter
+	@Setter
+	private ClassificationContext classification;
 	
 }
