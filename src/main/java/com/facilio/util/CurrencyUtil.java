@@ -87,6 +87,10 @@ public class CurrencyUtil {
 		if (currencyContext.isBaseCurrency()) {
 			if (getBaseCurrency() == null) {
 				CommonCommandUtil.insertOrgInfo("baseCurrencyCode", currencyContext.getCurrencyCode());
+
+				Organization org = new Organization();
+				org.setCurrency(currencyContext.getCurrencyCode());
+				AccountUtil.getOrgBean().updateOrg(AccountUtil.getCurrentOrg().getOrgId(), org);
 			} else {
 				throw new IllegalArgumentException("Base Currency is already defined");
 			}
@@ -235,6 +239,6 @@ public class CurrencyUtil {
 	}
 
 	public static double getConvertedBaseCurrencyValue(double value, double exchangeRate) throws Exception  {
-		return value * exchangeRate;
+		return value / exchangeRate;
 	}
 }

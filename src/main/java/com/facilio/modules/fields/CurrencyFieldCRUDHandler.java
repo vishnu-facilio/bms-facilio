@@ -20,7 +20,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map<String, Object>>{
 
@@ -111,10 +110,9 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
             List<Map<String, Object>> rels = new ArrayList<>();
             for (Map<String, Object> record : records) {
                 Map<String, Object> props = (Map<String, Object>) record.get(getFieldName());
-                if (!isNull(props)) {
+                if (!isNull(props) && props.get("currencyValue") != null) {
                     long parentId = (long) record.get("id");
-                    Map<String, Object> relRecord = createRelRecord(parentId, props);
-                    rels.add(relRecord);
+                    rels.add(createRelRecord(parentId, props));
                 }
             }
             addData(rels);
@@ -126,18 +124,22 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (CollectionUtils.isNotEmpty(ids)) {
             Map<String, Object> relRecord = null;
             Map<String, Object> value = (Map<String, Object>) record.get(getFieldName());
-            // Not updating anything if value is null and ignore null is false
-            if (value != null) {
+            if (!isNull(value) && value.get("currencyValue") != null) {
                 List<Map<String, Object>> oldProps = getOldRelRecord(ids);
-                for (Map<String, Object> props : oldProps) {
-                    relRecord = updateRelRecord(props, value);
-                    editData(relRecord);
+                // if oldRecord is not found --> record is saved with currencyField value "null"
+                if (CollectionUtils.isNotEmpty(oldProps)) {
+                    for (Map<String, Object> props : oldProps) {
+                        relRecord = updateRelRecord(props, value);
+                        editData(relRecord);
+                    }
+                } else {
+                    long parentId = ((List<Long>) ids).get(0);
+                    addData(Collections.singletonList(createRelRecord(parentId, value)));
                 }
+            } else {
+                // deleting older data if value is null or currencyValue is null
+                deleteSupplements(ids);
             }
-        }
-        // Deleting older data if value is null and ignore null is true
-        else if (ignoreSplNullHandling) {
-            deleteSupplements(ids);
         }
     }
 
@@ -155,6 +157,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         ((CurrencyField) getField()).validateRecord(props);
 
         if (baseCurrency == null) {
+            props.put("baseCurrencyValue", props.get("currencyValue"));
             props.put("currencyCode", null);
             props.put("exchangeRate", 1);
             return props;
@@ -167,7 +170,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (currencyCode.equals(baseCurrency.getCurrencyCode())) {
             exchangeRate = 1;
         }
-        double currencyValue = Double.parseDouble((String) props.get("currencyValue"));
+        double currencyValue = Double.parseDouble(props.get("currencyValue") + "");
         double baseCurrencyValue = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, exchangeRate);
 
         props.put("exchangeRate", roundOff(exchangeRate, 10));
@@ -190,6 +193,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         if (baseCurrency == null) {
             oldProps.put("exchangeRate", 1);
             oldProps.put("currencyValue", newProps.get("currencyValue"));
+            oldProps.put("baseCurrencyValue", newProps.get("currencyValue"));
             return oldProps;
         }
 
@@ -199,7 +203,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
         int decimalPlaces = currency.getDecimalPlaces();
         int baseCurrencyDecimalPlaces = baseCurrency.getDecimalPlaces();
 
-        double currencyValue = Double.parseDouble((String) newProps.get("currencyValue"));
+        double currencyValue = Double.parseDouble(newProps.get("currencyValue") + "");
         double oldExchangeRate = (double) oldProps.get("exchangeRate");
         double newBaseCurrencyVale = currencyValue * oldExchangeRate;
 
@@ -267,11 +271,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
                 ;
 
         List<Map<String, Object>> props = relBuilder.getAsProps();
-        if (CollectionUtils.isNotEmpty(props)) {
-            return props;
-        } else {
-            throw new IllegalArgumentException("Currency Record not found");
-        }
+        return props;
     }
 
     public static double roundOff(double value, int decimalDigits)
