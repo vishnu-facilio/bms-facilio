@@ -211,6 +211,18 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 		}
 		AlarmOccurrenceContext alarmOccurrence = pointedList.isEmpty() ? null : pointedList.getCurrentRecord();
 		boolean mostRecent = pointedList.isCurrentLast();
+
+		try {
+			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L);
+			if(alarmOccurrence != null) {
+				if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
+					printPointedList(pointedList);
+				}
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		if (alarmOccurrence == null) {
 			// Only for newly creating alarm
 			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent, context);
@@ -299,6 +311,15 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				LOGGER.info("BaseEvent Context for Alarm id: " + baseEvent.getBaseAlarm().getId() + " after updating Alarm : " + baseEventFields);
 			}
 		}catch (Exception ex) {}
+	}
+
+	private void printPointedList(PointedList<AlarmOccurrenceContext> pointedList)throws Exception{
+		List<JSONObject> jsonObjectList = new ArrayList<>();
+		for (AlarmOccurrenceContext alarmOccurrenceContext : pointedList) {
+			JSONObject jsonObject = FieldUtil.getAsJSON(alarmOccurrenceContext);
+			jsonObjectList.add(jsonObject);
+		}
+		LOGGER.info("Pointed List: "+jsonObjectList);
 	}
 	public static class PointedList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = 1L;

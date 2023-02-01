@@ -475,7 +475,7 @@ public class NewAlarmAPI {
 		try {
 			List<Long> alarmIds = Arrays.asList(152666L, 286707L, 286708L, 286709L, 152662L);
 			if (alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
-				LOGGER.info("mostRecent for Alarm id: "+ alarmOccurrence.getAlarm().getId() + " in rollupAlarm function: "+mostRecent);
+				LOGGER.info("mostRecent for Alarm id: "+ alarmOccurrence.getAlarm().getId() + " in rollupAlarm function: "+mostRecent+ Arrays.toString(Thread.currentThread().getStackTrace()).replace( ',', '\n' ));
 			}
 		}catch (Exception ex) {}
 
