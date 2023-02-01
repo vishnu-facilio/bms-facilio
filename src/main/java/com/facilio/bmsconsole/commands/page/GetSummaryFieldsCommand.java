@@ -301,7 +301,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			try {
 				value = PropertyUtils.getProperty(record, field.getName());
 			} catch (Exception e) {
-				LOGGER.error("Exception while getting record data", e);
+				LOGGER.debug("Exception while getting record data", e);
 			}
 		} else {
 			value = record.getDatum(field.getName());
@@ -311,7 +311,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				try {
 					value = PropertyUtils.getProperty(record, field.getName() + "Id");
 				} catch (Exception e) {
-					LOGGER.error("Exception while getting record data", e);
+					LOGGER.debug("Exception while getting record data", e);
 				}
 			} else {
 				value = record.getDatum(field.getName() + "Id");
