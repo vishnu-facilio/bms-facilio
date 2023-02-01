@@ -202,7 +202,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             Thread.currentThread().setName(threadName);
             long startTime = System.currentTimeMillis();
             incomingMessage(message);
-            LOGGER.info("Time taken to process wms record "+threadName+" ::  "+(System.currentTimeMillis() - startTime));
+            LOGGER.debug("Time taken to process wms record "+threadName+" ::  "+(System.currentTimeMillis() - startTime));
         }
     }
 

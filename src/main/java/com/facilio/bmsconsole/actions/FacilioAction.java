@@ -10,6 +10,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
+import com.facilio.fw.FacilioException;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.opensymphony.xwork2.ActionSupport;
@@ -174,7 +175,12 @@ public class FacilioAction extends ActionSupport {
 	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			LOGGER.error("Exception occured: - ", e);
+			if (e instanceof FacilioException || e.getCause() instanceof FacilioException) {
+				LOGGER.debug("Exception occured: - ", e);
+			}
+			else {
+				LOGGER.error("Exception occured: - ", e);
+			}
 			if(getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
 				Throwable msg = e;
 				if (e instanceof InvocationTargetException) {

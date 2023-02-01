@@ -36,7 +36,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		if (moduleObj == null) {
 			moduleObj = super.getModule(moduleName);
 			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
-			LOGGER.info("getModule result from DB for module: " + String.valueOf(moduleName));
+			LOGGER.debug("getModule result from DB for module: " + String.valueOf(moduleName));
 		}
 		return handleInvalidModuleNull(moduleObj);
 	}
@@ -49,7 +49,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		if (moduleObj == null) {
 			moduleObj = super.getModule(moduleId);
 			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
-			LOGGER.info("getModule result from DB for module: " + moduleId);
+			LOGGER.debug("getModule result from DB for module: " + moduleId);
 		}
 		return handleInvalidModuleNull(moduleObj);
 	}
@@ -156,7 +156,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId, types), new ArrayList<>(modules));
 			
-			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
+			LOGGER.debug("getSubModules result from DB for module: "+moduleId);
 		}
 		else {
 			modules = Collections.unmodifiableList(modules);

@@ -75,7 +75,7 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                 }
             }
         } finally {
-            LOGGER.info("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
+            LOGGER.debug("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
         }
 
 

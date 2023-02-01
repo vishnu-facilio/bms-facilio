@@ -194,7 +194,7 @@ public class DataProcessorV2 {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ,", e);
         }
-        LOGGER.info(" process status " + processStatus);
+        LOGGER.debug(" process status " + processStatus);
         return processStatus;
     }
 
@@ -460,14 +460,14 @@ public class DataProcessorV2 {
             context.put(AgentConstants.DATA, payload);
             context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, isTimeSeries);
             if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
-                LOGGER.info(" timestamp long instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof Long));
-                LOGGER.info(" timestamp String instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof String));
+                LOGGER.debug(" timestamp long instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof Long));
+                LOGGER.debug(" timestamp String instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof String));
                 context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
             } else {
                 context.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
             }
             chain.execute();
-            LOGGER.info(" done processes data command ");
+            LOGGER.debug(" done processes data command ");
             /*for (Object key : context.keySet()) {
                 LOGGER.info(key+"->"+context.get(key));
             }*/

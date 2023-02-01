@@ -103,7 +103,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 				fieldMap.put(formField.getName(),formField);
 			}
 			else{
-				LOGGER.info("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
+				LOGGER.debug("formField "+ formField.getName()+ " duplicate for form id : "+ formId);
 				if((formField.getField() != null && formField.getField().getName() != null) && formField.getFieldId() != -1){
 					fieldMap.put(formField.getName(),formField);
 				}

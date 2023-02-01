@@ -72,7 +72,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
 			modules = readingMap.keySet();
 		}
-		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime) +", modules : "+modules);
+		LOGGER.debug("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime) +", modules : "+modules);
 
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);

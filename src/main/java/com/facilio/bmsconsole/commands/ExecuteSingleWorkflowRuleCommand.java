@@ -26,7 +26,7 @@ public class ExecuteSingleWorkflowRuleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-		LOGGER.info("Record Map : "+recordMap);
+		LOGGER.debug("Record Map : "+recordMap);
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 		
 		if (rule != null && recordMap != null && !recordMap.isEmpty()) {
