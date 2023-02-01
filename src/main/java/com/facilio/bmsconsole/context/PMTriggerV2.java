@@ -131,8 +131,8 @@ public class PMTriggerV2 extends V3Context {
         }
 
         public static PMTriggerFrequency valueOf(int index) {
-            if (index >= 1 && index <= values().length) {
-                return values()[index - 1];
+            if (index >= 0 && index < values().length) {
+                return values()[index];
             }
             return null;
         }
