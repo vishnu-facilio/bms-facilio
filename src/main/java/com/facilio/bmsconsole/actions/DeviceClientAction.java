@@ -84,17 +84,11 @@ public String validateCode() {
 	                HttpServletResponse response = ServletActionContext.getResponse();
 
 	                Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
-	                cookie.setMaxAge(60 * 60 * 24 * 30);
-	                cookie.setPath("/");
-	                cookie.setHttpOnly(true);
-	             //   cookie.setSecure(true);
+					setTempCookieProperties(cookie, false);
 	                response.addCookie(cookie);
 
 					Cookie cookie1 = new Cookie("fc.mobile.scheme", scheme);
-					cookie1.setMaxAge(60 * 60 * 24 * 30);
-					cookie1.setPath("/");
-					cookie1.setHttpOnly(true);
-					//   cookie.setSecure(true);
+					setTempCookieProperties(cookie1, false);
 					response.addCookie(cookie1);
 
 					FacilioAuthAction facilio = new FacilioAuthAction();
@@ -151,7 +145,7 @@ public String validateCode() {
 		ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
 		AccountUtil.setCurrentAccount(connectedDevice.getOrgId());
 		DeviceContext device= DevicesAPI.getDevice(connectedDevice.getDeviceId());
-		scheme = device.getDeviceTypeEnum().toString().toLowerCase();
+		scheme = device.getDeviceTypeEnum().toString().toLowerCase().replace("_","");
 
 		return scheme;
 	}
