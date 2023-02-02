@@ -2276,7 +2276,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 
-		LOGGER.info("No session cache entry for : " + uId);
+		LOGGER.debug("No session cache entry for : " + uId);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
@@ -2301,7 +2301,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 			Long endTime = (Long) props.get("endTime");
 			if (endTime != null && System.currentTimeMillis() > endTime) {
-				LOGGER.info("Session expired: " + (long) props.get("id"));
+				LOGGER.debug("Session expired: " + (long) props.get("id"));
 				return null;
 			}
 			

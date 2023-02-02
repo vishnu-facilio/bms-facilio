@@ -55,7 +55,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
                         points.add(point);
                     }
                 } else {
-                    LOGGER.info("Point name not found for " + pointName);
+                    LOGGER.debug("Point name not found for " + pointName);
                 }
             }
             PointsAPI.updatePointsValue(points, updatePointDataMissing);
@@ -64,7 +64,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
                 snapshot.remove(pointName);
             }
             if (!pointsToRemove.isEmpty()) {
-                LOGGER.info("Filtered points : " + pointsToRemove);
+                LOGGER.debug("Filtered points : " + pointsToRemove);
             }
             return snapshot.isEmpty();
         } else {

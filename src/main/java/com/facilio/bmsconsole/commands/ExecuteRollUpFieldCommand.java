@@ -13,6 +13,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 
@@ -20,9 +21,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Log4j
 public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTransactionCommand {
-	
-	private static final Logger LOGGER = Logger.getLogger(ExecuteRollUpFieldCommand.class.getName());
 	
 	private LinkedHashMap<RollUpField,LinkedHashSet<Long>> triggeringChildFieldVsChildGroupedIds = new LinkedHashMap<RollUpField,LinkedHashSet<Long>>();
 
@@ -41,7 +41,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 					String moduleName = entry.getKey();
 					List records = new LinkedList<>(entry.getValue());
 					if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-						LOGGER.log(Level.WARNING, "Module Name / Records is null/ empty while upating records in rollUpField ==> "+moduleName+"==>"+entry.getValue());
+						LOGGER.debug("Module Name / Records is null/ empty while upating records in rollUpField ==> "+moduleName+"==>"+entry.getValue());
 						continue;
 					}
 					
@@ -75,11 +75,11 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 					}			
 				}	
 			}	
-			LOGGER.info("Time taken for ExecuteRollUpFieldCommand for triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+  " is: "+(System.currentTimeMillis() - processStartTime));
+			LOGGER.debug("Time taken for ExecuteRollUpFieldCommand for triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+  " is: "+(System.currentTimeMillis() - processStartTime));
 
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+ 
+			LOGGER.error("Error in executeRollUpFieldCommand -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+
 					" Exception: " + e.getMessage() , e);
 		}
 			
@@ -108,7 +108,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 				}
 			}
 			catch(Exception e) {
-				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+ 
+				LOGGER.error("Error while updating ExecuteRollUpFieldCommand in Post Execute -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+
 						" Exception: " + e.getMessage() , e);
 			}	
 		}	

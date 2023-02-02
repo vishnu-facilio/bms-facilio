@@ -45,13 +45,13 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                             Object readingVal = readingEntry.getValue();
 
                             if (readingVal == null) {
-                                LOGGER.info("reading value is null while pushing reading to storm queue " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                                LOGGER.debug("reading value is null while pushing reading to storm queue " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
                                 continue;
                             }
 
                             FacilioField field = modBean.getField(fieldName, moduleName);
                             if (field == null) {//TODO: find the problem and delete this check.
-                                LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
+                                LOGGER.debug("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
                                 continue;
                             }
 

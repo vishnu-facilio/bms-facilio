@@ -100,7 +100,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 				intervals = Collections.singletonList(intervals.get(intervals.size() - 1));
 			}
 			List<ReadingContext> formulaReadings = FormulaFieldAPI.calculateFormulaReadings(reading.getParentId(), formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false,formula.getId());
-			LOGGER.info("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
+			LOGGER.debug("Time taken for formula calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+(System.currentTimeMillis() - startTime));
 			return formulaReadings;
 		}
 		return null;
