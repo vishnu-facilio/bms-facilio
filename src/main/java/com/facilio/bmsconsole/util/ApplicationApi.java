@@ -886,7 +886,7 @@ public class ApplicationApi {
                     Arrays.asList(modBean.getModule("agentAlarm").getModuleId()), layout.getApplicationId(), null));
             configJSON = new JSONObject();
             configJSON.put("type", "alarmrule");
-            webTabs.add(new WebTabContext("Alarm Notifications", "notification", WebTabContext.Type.CUSTOM, null,
+            webTabs.add(new WebTabContext("Alarm Automation", "automation", WebTabContext.Type.CUSTOM, null,
                     layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
             configJSON.put("type", "alarm_mapping");

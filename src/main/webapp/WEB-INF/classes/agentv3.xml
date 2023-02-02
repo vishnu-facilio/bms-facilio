@@ -53,5 +53,7 @@
         </action>
         <action name="count" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getCount">
         </action>
+        <action name="export" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPoints">
+        </action>
     </package>
 </struts>

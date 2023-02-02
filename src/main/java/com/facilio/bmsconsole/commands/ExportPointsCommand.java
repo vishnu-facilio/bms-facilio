@@ -4,15 +4,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.point.PointEnum;
+import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.bacnet.BACNetUtil;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +40,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
+import org.apache.kafka.common.protocol.types.Field;
 
 
 public class ExportPointsCommand extends FacilioCommand {
@@ -48,6 +50,10 @@ public class ExportPointsCommand extends FacilioCommand {
 	Map<Long, String> categories = new HashMap<>();
 	Map<Integer, String> unitMap = new HashMap<>();
 	boolean isNiagara = false;
+	String status;
+	List<Long>controllerIds;
+	int controllerType = -1;
+	Criteria criteria = new Criteria();
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -57,10 +63,22 @@ public class ExportPointsCommand extends FacilioCommand {
 		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
 		FacilioAgent agent = agentBean.getAgent(agentId);
 		isNiagara = agent.getAgentType() == AgentType.NIAGARA.getKey();
+		if(context.containsKey(AgentConstants.CONTROLLERIDS)){
+			controllerIds = (List<Long>) context.get(AgentConstants.CONTROLLERIDS);
+		}
+		if(context.containsKey(ContextNames.FILTER_CRITERIA)) {
+			criteria = (Criteria) context.get(ContextNames.FILTER_CRITERIA);
+		}
+		if(context.containsKey(ContextNames.STATUS)){
+			status = (String) context.get(ContextNames.STATUS);
+		}
+		if(context.containsKey(AgentConstants.CONTROLLER_TYPE)){
+			controllerType = (int)context.get(AgentConstants.CONTROLLER_TYPE);
+		}
 		
 		String fileUrl = null;
 		
-		List<Map<String, Object>> controllers = getControllers(agentId);
+		List<Map<String, Object>> controllers = getControllers(agentId,controllerType ,controllerIds);
 		if (controllers != null) {
 			fetchCategories();
 			File rootFolder = ExportUtil.getTempFolder("Points");
@@ -81,7 +99,7 @@ public class ExportPointsCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private List<Map<String, Object>> getControllers(long agentId) throws Exception {
+	private List<Map<String, Object>> 	getControllers(long agentId,int controllerType,List<Long> controllerIds) throws Exception {
 		FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
@@ -100,7 +118,12 @@ public class ExportPointsCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(resourceModule), String.valueOf(false), BooleanOperators.IS));
 				;
-		
+		if(controllerType !=-1){
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),String.valueOf(controllerType),NumberOperators.EQUALS));
+		}
+		if(CollectionUtils.isNotEmpty(controllerIds)){
+			builder.andCondition(CriteriaAPI.getIdCondition(controllerIds, resourceModule));
+		}
 		return builder.get();
 	}
 	
@@ -115,7 +138,12 @@ public class ExportPointsCommand extends FacilioCommand {
 				.limit(-1)
 				.withControllerId((long) controller.get("id"))
 				;
-		
+		if(status != null) {
+			PointsAPI.pointFilter(PointsAPI.PointStatus.valueOf(status),getPointRequest);
+		}
+		if(criteria != null && !criteria.isEmpty()){
+			getPointRequest.withCriteria(criteria);
+		}
 		return getPointRequest.getPointsData();
 	}
 	
@@ -154,64 +182,104 @@ public class ExportPointsCommand extends FacilioCommand {
 			if (!fieldIds.isEmpty()) {
 				 fields.putAll(CommissioningApi.getFields(fieldIds));
 			}
-			
 			return getTable(controllerType, points);
 		}
 		return null;
 	}
 	
 	private Map<String,Object> getTable(FacilioControllerType controllerType, List<Map<String, Object>> points) {
-		
+
 		List<String> headers = new ArrayList<String>();
 		List<Map<String,Object>> records = new ArrayList<>();
-		
+
 		boolean isBacnet = controllerType == FacilioControllerType.BACNET_IP || controllerType == FacilioControllerType.BACNET_MSTP;
-		
+
 		for (int i = 0; i < points.size(); i++) {
 			Map<String, Object> point = points.get(i);
 			Map<String,Object> record = new HashMap<>();
-			
+
 			String name = isNiagara ? (String) point.get(AgentConstants.DISPLAY_NAME) : (String) point.get(AgentConstants.NAME);
 			addRecord("Name", name, i, headers, record);
-			
+
+			addRecord("Controller",point.get(AgentConstants.DEVICE_NAME),i,headers,record);
+
 			if (isBacnet) {
 				addRecord("Instance", point.get(AgentConstants.INSTANCE_NUMBER), i, headers, record);
-				addRecord("Instance Type", point.get(AgentConstants.INSTANCE_TYPE), i, headers, record);
+				BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf((Integer) point.get(AgentConstants.INSTANCE_TYPE));
+				addRecord("Instance Type", instanceType, i, headers, record);
 			}
 			else if (isNiagara) {
-				addRecord("Handle", point.get(AgentConstants.NAME), i, headers, record);
+				addRecord("Link Name", point.get(AgentConstants.NAME), i, headers, record);
 			}
-			
-			String category = null;
-			if (point.get(AgentConstants.ASSET_CATEGORY_ID) != null) {
-				long categoryId = (long) point.get(AgentConstants.ASSET_CATEGORY_ID);
-				category = categories.get(categoryId);
+
+			if(point.get(AgentConstants.CONFIGURE_STATUS)==PointEnum.ConfigureStatus.CONFIGURED.getIndex()){
+				if(point.containsKey("interval")) {
+					addRecord("Interval", point.get(AgentConstants.DATA_INTERVAL), i, headers, record);
+				}
+				else{
+					addRecord("Interval","Agent Interval", i, headers, record);
+				}
 			}
-			addRecord("Category", category, i, headers, record);
-			
-			String asset = null;
-			if (point.get(AgentConstants.RESOURCE_ID) != null) {
-				long resourceId = (long) point.get(AgentConstants.RESOURCE_ID);
-				asset = resources.get(resourceId);
+
+			if(( point.get(AgentConstants.CONFIGURE_STATUS)==PointEnum.ConfigureStatus.CONFIGURED.getIndex()) ||(status != null && status.equals("COMMISSIONED"))){
+
+				String category = null;
+				if (point.get(AgentConstants.ASSET_CATEGORY_ID) != null) {
+					long categoryId = (long) point.get(AgentConstants.ASSET_CATEGORY_ID);
+					category = categories.get(categoryId);
+				}
+				addRecord("Category", category, i, headers, record);
+
+				String asset = null;
+				if (point.get(AgentConstants.RESOURCE_ID) != null) {
+					long resourceId = (long) point.get(AgentConstants.RESOURCE_ID);
+					asset = resources.get(resourceId);
+				}
+				addRecord("Asset", asset, i, headers, record);
+
+				Map<String, Object> field = null;
+				String reading = null;
+				if (point.get(AgentConstants.FIELD_ID) != null) {
+					long fieldId = (long) point.get(AgentConstants.FIELD_ID);
+					field = fields.get(fieldId);
+					reading = (String) field.get(AgentConstants.NAME);
+				}
+				addRecord("Reading", reading, i, headers, record);
+
+				String unit = null;
+				if (point.get("unitId") != null) {
+					int unitId = (int) point.get("unitId");
+					unit = unitMap.get(unitId);
+				}
+				addRecord("Unit", unit, i, headers, record);
+
+				String mappedTime = null;
+				if(point.get(AgentConstants.MAPPED_TIME)!=null){
+					mappedTime = DateTimeUtil.getFormattedTime((Long) point.get(AgentConstants.MAPPED_TIME));
+					addRecord("Mapped Time", mappedTime, i, headers, record);
+				}
 			}
-			addRecord("Asset", asset, i, headers, record);
-			
-			Map<String, Object> field =  null;
-			String reading = null;
-			if (point.get(AgentConstants.FIELD_ID) != null) {
-				long fieldId = (long) point.get(AgentConstants.FIELD_ID);
-				field = fields.get(fieldId);
-				reading = (String) field.get("name");
+			String createdTime = null;
+			if(point.get(AgentConstants.CREATED_TIME) != null ){
+				 createdTime = DateTimeUtil.getFormattedTime((Long) point.get(AgentConstants.CREATED_TIME));
 			}
-			addRecord("Reading", reading, i, headers, record);
-			
-			String unit = null;
-			if (point.get("unitId") != null) {
-				int unitId = (int) point.get("unitId");
-				unit = unitMap.get(unitId);
+			addRecord("Created Time",createdTime,i,headers,record);
+
+			if( point.get(AgentConstants.CONFIGURE_STATUS)==PointEnum.ConfigureStatus.CONFIGURED.getIndex()){
+
+				String lastRecordedTime = null;
+				if(point.containsKey(AgentConstants.LAST_RECORDED_TIME)) {
+					lastRecordedTime = DateTimeUtil.getFormattedTime((Long) point.get(AgentConstants.LAST_RECORDED_TIME));
+				}
+				addRecord("Last Recorded Time", lastRecordedTime, i, headers, record);
+				String value = null;
+				if (point.containsKey(AgentConstants.LAST_RECORDED_VALUE)) {
+					value = (String) point.get(AgentConstants.LAST_RECORDED_VALUE);
+				}
+				addRecord("Last Recorded Value",value, i, headers, record);
 			}
-			addRecord("Unit", unit, i, headers, record);
-			
+			addRecord("Writable", point.get(AgentConstants.WRITABLE), i, headers, record);
+
 			records.add(record);
 		}
 		
@@ -235,6 +303,5 @@ public class ExportPointsCommand extends FacilioCommand {
 		chain.execute();
 		categories = (Map<Long, String>)picklistContext.get(ContextNames.PICKLIST);
 	}
-	
-	
+
 }

@@ -9,6 +9,7 @@ import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -492,4 +493,5 @@ public class AgentUtilV2
         }
         FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
+
 }

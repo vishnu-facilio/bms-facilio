@@ -746,6 +746,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getExportPointsChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new GenerateCriteriaFromFilterCommand());
 			c.addCommand(new ExportPointsCommand());
 			return c;
 		}

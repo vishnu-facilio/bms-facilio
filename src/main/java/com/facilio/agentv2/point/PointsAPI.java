@@ -757,4 +757,30 @@ public class PointsAPI {
     	return getPointRequest.getPoints();
     }
 
+    public static void pointFilter(PointStatus status, GetPointRequest point) {
+        if(status == null) {
+            return;
+        }
+        switch (status) {
+            case SUBSCRIBED:
+                point.filterSubscribedPoints();
+                break;
+            case COMMISSIONED:
+                point.filterCommissionedPoints();
+                break;
+            case CONFIGURED:
+                point.filterConfigurePoints();
+                break;
+            case UNCONFIRURED:
+            case UNCONFIGURED:
+                point.filterUnConfigurePoints();
+                point.filterUnSubscribePoints();
+                break;
+            default:
+                throw new IllegalArgumentException("Point status is not satisfied");
+        }
+    }
+    public enum PointStatus {
+        UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED,UNCONFIGURED
+    }
 }

@@ -3,8 +3,8 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bacnet.BACNetUtil;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +18,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,8 +68,7 @@ public class GetPointsdataCommand extends FacilioCommand {
             point.withCriteria(filterCriteria);
         }
         sanityCheck(point);
-        pointFilter(PointStatus.valueOf(status), point);
-
+        PointsAPI.pointFilter(PointsAPI.PointStatus.valueOf(status), point);
         if (fetchCount){
             Long pointsCount = getPointCount(point);
             context.put("pointsCount",pointsCount);
@@ -130,30 +128,5 @@ public class GetPointsdataCommand extends FacilioCommand {
             }
         }
 
-    }
-    private void pointFilter(PointStatus status, GetPointRequest point) {
-        if(status == null) {
-            return;
-        }
-        switch (status) {
-            case SUBSCRIBED:
-                point.filterSubscribedPoints();
-                break;
-            case COMMISSIONED:
-                point.filterCommissionedPoints();
-                break;
-            case CONFIGURED:
-                point.filterConfigurePoints();
-                break;
-            case UNCONFIRURED:
-                point.filterUnConfigurePoints();
-                point.filterUnSubscribePoints();
-                break;
-            default:
-                throw new IllegalArgumentException("Point status is not satisfied");
-        }
-    }
-    public enum PointStatus {
-        UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED
     }
 }

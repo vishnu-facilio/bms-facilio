@@ -3,9 +3,12 @@ package com.facilio.agentv2.actions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.v3.V3Action;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,6 +39,7 @@ public class GetPointsActionV3 extends V3Action {
     private List<Long> controllerIds = new ArrayList<>();
     private Long agentId;
     private String filters;
+    private int type=-1;
     /**
      * Get the Point count.Based on the Point filter. e.g.UNCONFIGURED..etc.
      *
@@ -78,6 +82,21 @@ public class GetPointsActionV3 extends V3Action {
         setData("fieldMap",context.get("fieldMap"));
         setData("unitMap",context.get("unitMap"));
 
+        return SUCCESS;
+    }
+    public String exportPoints() throws Exception{
+        FacilioChain exportModule = TransactionChainFactory.getExportPointsChain();
+        FacilioContext context = exportModule.getContext();
+        constructContext(context);
+        context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileInfo.FileFormat.getFileFormat(type));
+        context.put(AgentConstants.AGENT_ID, agentId);
+        context.put(FacilioConstants.ContextNames.STATUS,status);
+        context.put(AgentConstants.CONTROLLER_TYPE,controllerType);
+        context.put(AgentConstants.CONTROLLERIDS,controllerIds);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+        exportModule.execute();
+        String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
+        setData("fileUrl", fileUrl);
         return SUCCESS;
     }
     //Getting all controllerIds for specific agentId
