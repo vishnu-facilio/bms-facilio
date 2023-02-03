@@ -642,6 +642,18 @@ public class ImportAPI {
 					fields.add("space3");
 					fields.add("asset");
 				}
+				else if (facilioModule.getName().equals(FacilioConstants.PM_V2.PM_V2_PLANNER)){
+					fields.add("Times");
+					fields.add("Runs Every");
+					fields.add("Skip Every");
+					fields.add("Execution days/dates/months");
+					fields.add("Week Frequency");
+					fields.add("Yearly Day Value");
+					fields.add("Month Value");
+					fields.add("Yearly Day of the Week Value");
+					fields.add("End Date");
+					fields.add("Start Date");
+				}
 		}
 			if (!fields.contains("site") && !facilioModule.instanceOf(FacilioConstants.ContextNames.SITE) && FieldUtil.isSiteIdFieldPresent(facilioModule)
 					&& AccountUtil.getCurrentSiteId() == -1) {

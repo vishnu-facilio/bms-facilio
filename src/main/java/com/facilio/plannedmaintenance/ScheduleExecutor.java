@@ -132,7 +132,9 @@ public class ScheduleExecutor extends ExecutorBase {
 		return true;
 	}
     @Override
-    public  void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
-        PlannedMaintenanceAPI.deletePreOpenworkOrder(plannerId,preOpenStatus);
+    public  void deletePreOpenworkOrder(long plannerId) throws Exception {
+        List<Long> plannerIdList = new ArrayList<>();
+        plannerIdList.add(plannerId);
+        PlannedMaintenanceAPI.deleteWorkOrdersFromPlannerId(plannerIdList);
     }
 }

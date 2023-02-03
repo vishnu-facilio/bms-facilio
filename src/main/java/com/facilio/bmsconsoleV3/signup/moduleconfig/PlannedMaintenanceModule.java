@@ -142,7 +142,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         defaultPlannedMaintenanceFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 5, 3));
         defaultPlannedMaintenanceFormFields.add(new FormField("dueDuration", FacilioField.FieldDisplayType.DURATION, "Due Duration", FormField.Required.OPTIONAL, "duration", 6, 1));
         defaultPlannedMaintenanceFormFields.add(new FormField("estimatedWorkDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.OPTIONAL, "duration", 7, 1));
-        FormField groups = new FormField("groups", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Team", FormField.Required.OPTIONAL, "groups", 8, 1);
+        FormField groups = new FormField("assignmentGroup", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Team", FormField.Required.OPTIONAL, "groups", 8, 1);
         groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field
         groups.addToConfig("lookupModuleName", "groups");
         defaultPlannedMaintenanceFormFields.add(groups);

@@ -12,10 +12,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureCauseAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.HandleFailureRemedyAfterImportCommand;
 import com.facilio.bmsconsoleV3.commands.failureclass.WhitelistSystemFields;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeleteAndCreateResourcePlanner;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.fillTriggerIdAfterImport;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.handlePmV2TriggerBeforeImport;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
 import com.facilio.bmsconsoleV3.context.SkillsContext;
@@ -86,14 +83,11 @@ public class ImportConfiguration {
         return () -> new ImportConfig.ImportConfigBuilder()
                 .uploadHandler()
                 .done()
-
                 .parseHandler()
                 .done()
-
-
                 .importHandler()
-                .beforeImportCommand(new handlePmV2TriggerBeforeImport())
-                .afterImportCommand(new fillTriggerIdAfterImport() )
+                .beforeImportCommand(new constructScheduleInfo() )
+                .afterImportCommand(new fillTriggerIdAfterImport())
                 .done()
                 .build();
     }

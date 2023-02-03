@@ -31,11 +31,11 @@ public class fillTriggerIdAfterImport extends FacilioCommand {
         ArrayList<LinkedHashMap<String,Object>> pmPlannerList = new ArrayList<>();
         List<PMTriggerV2> trigger = (List<PMTriggerV2>) context.get("trigger");
 
-        if(setting == 1 || setting == 2){
+        if(setting == 1 || setting == 2 || setting == 5){
             pmPlannerList = (ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.INSERT_RECORDS);
         }
-        else{
-            pmPlannerList = (ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.UPDATE_RECORDS);
+        if(setting == 3 || setting == 4 || setting == 5){
+            pmPlannerList.addAll((ArrayList<LinkedHashMap<String, Object>>) context.get(ImportAPI.ImportProcessConstants.UPDATE_RECORDS));
         }
         if(trigger != null) {
             int increment = 0;

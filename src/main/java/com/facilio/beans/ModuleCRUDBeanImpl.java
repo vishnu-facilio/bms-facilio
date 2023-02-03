@@ -1448,13 +1448,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 		Map<FacilioStatus.StatusType, FacilioStatus> statusMap = new HashMap<>();
 		getPreOpenStatus(statusMap);
-		FacilioStatus preOpenStatus = statusMap.get(FacilioStatus.StatusType.PRE_OPEN);
-
 		context.put(FacilioConstants.ContextNames.STATUS_MAP, statusMap);
 
 		ExecutorBase scheduleExecutor = operation.getExecutorClass();
 		
-		scheduleExecutor.deletePreOpenworkOrder(plannerId, preOpenStatus);
+		scheduleExecutor.deletePreOpenworkOrder(plannerId);
 		
 		pmPlanner.setResourcePlanners(pmResourcePlanners);
 		

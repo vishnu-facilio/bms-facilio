@@ -252,10 +252,15 @@ public class WorkOrderAction extends FacilioAction {
 		while (result.getLeft() < currentTime) {
 			result = schedule.nextExecutionTime(result);
 		}
+		long endDate = schedule.getEndDate();
 		this.nextExecutionTimes.add(result.getLeft());
 		for (int i = 0; i < 9; i++) {
 			result = schedule.nextExecutionTime(result);
-			this.nextExecutionTimes.add(result.getLeft());
+			long nextExecutionTime = result.getLeft();
+			if(endDate > 0 && nextExecutionTime * 1000 > endDate){
+				break;
+			}
+			this.nextExecutionTimes.add(nextExecutionTime);
 		}
 		return SUCCESS;
 	}

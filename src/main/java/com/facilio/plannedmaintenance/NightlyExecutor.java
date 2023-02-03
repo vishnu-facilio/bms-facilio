@@ -19,7 +19,7 @@ public class NightlyExecutor extends ExecutorBase {
 	@Override
 	protected FacilioStatus getStatus(Context context) throws Exception {
 		Map<FacilioStatus.StatusType, FacilioStatus> statusMap = (Map<FacilioStatus.StatusType, FacilioStatus>) context.get(FacilioConstants.ContextNames.STATUS_MAP);
-        return statusMap.get(FacilioStatus.StatusType.PRE_OPEN);
+		return statusMap.get(FacilioStatus.StatusType.PRE_OPEN);
 	}
 
 	@Override

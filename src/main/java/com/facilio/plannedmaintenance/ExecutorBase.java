@@ -133,7 +133,7 @@ public abstract class ExecutorBase implements Executor {
         return zonedEnd.toEpochSecond()*1000;
     }
 
-	public void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
+	public void deletePreOpenworkOrder(long plannerId) throws Exception {
 		
 		// do nothing in general
 	}

@@ -136,22 +136,6 @@ public class PlannedMaintenanceAPI {
         return records.get();
     }
 
-    public static void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule workorderModule = modBean.getModule("workorder");
-        FacilioField statusField = modBean.getField("status", "workorder");
-        FacilioField jobStatusField = modBean.getField("jobStatus", "workorder");
-        FacilioField pmPlannerField = modBean.getField("pmPlanner", "workorder");
-
-        DeleteRecordBuilder<V3WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
-        deleteRecordBuilder.module(workorderModule);
-        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(pmPlannerField, plannerId+"", NumberOperators.EQUALS));
-        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(statusField,preOpenStatus.getId()+"", NumberOperators.EQUALS));
-        deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(jobStatusField, V3WorkOrderContext.JobsStatus.ACTIVE.getValue()+"", NumberOperators.EQUALS));
-        deleteRecordBuilder.skipModuleCriteria();
-        deleteRecordBuilder.delete();
-    }
 
     public static PMPlanner getPlanner(Long pmId, String plannerName) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -357,12 +341,15 @@ public class PlannedMaintenanceAPI {
         FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         List<FacilioField> workOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(workOrderFields);
+        List<Integer> jobStatus = new ArrayList<>();
+        jobStatus.add(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
+        jobStatus.add(V3WorkOrderContext.JobsStatus.SCHEDULED.getValue());
         SelectRecordsBuilder<V3WorkOrderContext> builder = new SelectRecordsBuilder<V3WorkOrderContext>()
                 .module(workOrderModule)
                 .select(workOrderFields)
                 .beanClass(V3WorkOrderContext.class)
                 .andCriteria(criteria)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"),String.valueOf(V3WorkOrderContext.JobsStatus.ACTIVE.getValue()),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"),StringUtils.join(jobStatus,","),NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"),CommonOperators.IS_EMPTY))
                 .skipModuleCriteria();
         SelectRecordsBuilder.BatchResult<V3WorkOrderContext> batchResult = builder.getInBatches("WorkOrders.ID", 5000);
