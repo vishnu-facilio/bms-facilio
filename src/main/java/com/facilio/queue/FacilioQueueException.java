@@ -15,9 +15,9 @@ public class FacilioQueueException {
 	static FacilioQueueService getInstance() {
 		return INSTANCE;
 	}
-	public static boolean addException(String message) throws Exception {
+	public static boolean addException(String fromClass,String message) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return  FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().push(message,orgId));
+		return  FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().push(fromClass,message,orgId));
 	}
 
 	public static List<QueueMessage> pull(int limit) throws Exception{

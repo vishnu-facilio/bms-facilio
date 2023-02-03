@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.util.Collections;
@@ -18,8 +19,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.services.email.EmailFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
 public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInterface {
 
@@ -46,13 +50,19 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
 			
-			FacilioContext context = new FacilioContext();
-			
-			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.EMAIL_NOTIFICATION);
-			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachements);
-			
-			FacilioTimer.scheduleInstantJob("SendNotificationJob", context);
+//			FacilioContext context = new FacilioContext();
+//
+//			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.EMAIL_NOTIFICATION);
+//			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
+//			context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachements);
+
+			if (MapUtils.isNotEmpty(attachements)){
+				FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(WorkflowV2Util.getAsJSONObject(sendMailMap),attachements);
+			}else {
+				FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(WorkflowV2Util.getAsJSONObject(sendMailMap));
+			}
+
+//			FacilioTimer.scheduleInstantJob("SendNotificationJob", context);
 			
 			return null;
 		};

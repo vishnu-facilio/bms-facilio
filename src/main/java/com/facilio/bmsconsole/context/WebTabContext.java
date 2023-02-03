@@ -280,7 +280,9 @@ public class WebTabContext implements Serializable {
         PIVOT("Pivot",false,TabType.NORMAL),
         SCOPING("Scoping",false,TabType.SETUP),
         ORGANIZATION_SETTINGS("Organization Settings", false, TabType.SETUP),
-        CLASSIFICATIONS("Classifications",false,TabType.SETUP);
+        CLASSIFICATIONS("Classifications",false,TabType.SETUP),
+        SCRIPT_LOGS("Script Logs",false,TabType.SETUP);
+
 
 
 

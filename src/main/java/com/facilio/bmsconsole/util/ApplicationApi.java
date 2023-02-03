@@ -2724,6 +2724,7 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null));
             webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
+            webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 
