@@ -11099,12 +11099,75 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("domain", "DOMAIN_NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("subDomain", "DOMAIN_NAME", module, FieldType.STRING));
         fields.add(getField("sandboxOrgId", "SANDBOX_ORG_ID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
-        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
-        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getSandboxUpdatableFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSandboxModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getSandboxSharingFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSandboxSharingModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("userId", "ORG_USER_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("sharedBy", "SHARED_BY", module, FieldType.NUMBER));
+
+        return fields;
+
+    }
+
+    public static List<FacilioField> getPackageFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getPackageModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("uniqueName", "UNIQUE_NAME", module, FieldType.STRING));
+        fields.add(getField("version", "VERSION", module, FieldType.DECIMAL));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+    
+    public static List<FacilioField> getPackageChangesetsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getPackageChangesetsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("packageId", "PACKAGE_ID", module, FieldType.NUMBER));
+        fields.add(getField("componentType", "COMPONENT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("createdVersion", "CREATED_VERSION", module, FieldType.DECIMAL));
+        fields.add(getField("modifiedVersion", "MODIFIED_VERSION", module, FieldType.DECIMAL));
+        fields.add(getField("componentStatus", "COMPONENT_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("uniqueIdentifier", "UNIQUE_IDENTIFIER", module, FieldType.STRING));
+
         return fields;
     }
 

@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.modules.FieldFactory;
 import lombok.var;
@@ -37,8 +39,9 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
-	
-    private static final String DOMAIN_PATTERN = "[a-z0-9]+";
+
+	private static final String DOMAIN_PATTERN = "[a-z0-9]+";
+	private static final String SANDBOX_DOMAIN_PATTERN = "[a-z0-9-]+";
 
 	@Override
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
@@ -111,6 +114,11 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	@Override
 	public Organization getOrgv2(String orgDomain) throws Exception {
+		return getOrgv2(orgDomain, Organization.OrgType.PRODUCTION);
+	}
+
+	@Override
+	public Organization getOrgv2(String orgDomain, Organization.OrgType orgType) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgFields())
@@ -118,7 +126,16 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", orgDomain, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
+
+		if(orgType != null && orgType != Organization.OrgType.PRODUCTION) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_TYPE", "orgType", String.valueOf(orgType.getIndex()), StringOperators.IS));
+		} else {
+			Criteria orgTypeCriteria = new Criteria();
+			orgTypeCriteria.addAndCondition(CriteriaAPI.getCondition("ORG_TYPE", "orgType", String.valueOf(Organization.OrgType.PRODUCTION.getIndex()), StringOperators.IS));
+			orgTypeCriteria.addOrCondition(CriteriaAPI.getCondition("ORG_TYPE", "orgType", null, CommonOperators.IS_EMPTY));
+			selectBuilder.andCriteria(orgTypeCriteria);
+		}
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return IAMOrgUtil.createOrgFromProps(props.get(0));
@@ -198,7 +215,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
    	
 	@Override
 	public Organization createOrgv2(Organization org) throws Exception {
-		Organization existingOrg = getOrgv2(org.getDomain());
+		Organization existingOrg = getOrgv2(org.getDomain(), Organization.OrgType.valueOf(org.getOrgType()));
 		if (existingOrg != null) {
 			throw new AccountException(AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "The given domain already registered.");
 		}
@@ -267,11 +284,14 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	private Organization addOrg(org.json.simple.JSONObject signupInfo, Locale locale) throws Exception{
     	String companyName = (String) signupInfo.get("companyname");
 		String orgDomain = (String) signupInfo.get("domainname");
-		if(!orgDomain.matches(DOMAIN_PATTERN)) {
+		Organization.OrgType orgType = (signupInfo.get("orgType") != null) ?
+				(Organization.OrgType) signupInfo.get("orgType") : Organization.OrgType.PRODUCTION;
+		if((orgType == Organization.OrgType.SANDBOX && !orgDomain.matches(SANDBOX_DOMAIN_PATTERN))
+		   || (orgType != Organization.OrgType.SANDBOX && !orgDomain.matches(DOMAIN_PATTERN))) {
 			throw new AccountException(ErrorCode.INVALID_ORG_DOMAIN, "Org domain cannot contain capital letters,space or any special characters");
 		}
 		 
-        Organization orgObj = IAMUtil.getOrgBean().getOrgv2(orgDomain);
+        Organization orgObj = IAMUtil.getOrgBean().getOrgv2(orgDomain, (Organization.OrgType) signupInfo.get("orgType"));
         if(orgObj != null) {
             throw new AccountException(ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "Org Domain Name already exists");
         }
@@ -299,6 +319,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		org.setTimezone(timezone);
 		org.setCreatedTime(System.currentTimeMillis());
 		org.setLanguage((String) signupInfo.get("language"));
+		org.setOrgType((signupInfo.get("orgType") != null) ? (Organization.OrgType) signupInfo.get("orgType"):Organization.OrgType.PRODUCTION);
+		if(signupInfo.containsKey("productionOrgId")) {
+			org.setProductionOrgId((long) signupInfo.get("productionOrgId"));
+		}
 
 		String dataSource = (String) signupInfo.get("dataSource");
 		if (StringUtils.isNotEmpty(dataSource)) {
@@ -344,8 +368,13 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		}
 		user.setDefaultOrg(true);
 		user.setUserStatus(true);
-		user.setPassword(password);
-		if (FacilioProperties.isDevelopment()) {
+
+		Boolean isSandbox = (Organization.OrgType.SANDBOX).equals((signupInfo.get("orgType") != null) ? (Organization.OrgType) signupInfo.get("orgType") : Organization.OrgType.PRODUCTION);
+
+		if(!isSandbox) {
+			user.setPassword(password);
+		}
+		if (FacilioProperties.isDevelopment() || isSandbox) {
 			user.setUserVerified(true);
 		}
 	//	IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);

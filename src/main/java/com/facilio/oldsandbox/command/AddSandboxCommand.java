@@ -1,4 +1,4 @@
-package com.facilio.sandbox.command;
+package com.facilio.oldsandbox.command;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.sandbox.context.SandboxContext;
+import com.facilio.oldsandbox.context.SandboxContext;
 
 public class AddSandboxCommand extends FacilioCommand {
 

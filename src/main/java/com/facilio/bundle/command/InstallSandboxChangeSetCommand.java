@@ -8,7 +8,7 @@ import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.sandbox.context.SandboxContext;
+import com.facilio.oldsandbox.context.SandboxContext;
 
 public class InstallSandboxChangeSetCommand extends FacilioCommand {
 	

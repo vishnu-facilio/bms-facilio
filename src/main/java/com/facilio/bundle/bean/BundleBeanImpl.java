@@ -4,13 +4,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.RoleFactory;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.sandbox.context.SandboxContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Account;

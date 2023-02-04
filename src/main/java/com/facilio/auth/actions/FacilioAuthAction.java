@@ -359,6 +359,7 @@ public class FacilioAuthAction extends FacilioAction {
 		signupInfo.put("password", password);
 		signupInfo.put("dataSource", dataSource);
 		signupInfo.put("dbName", dbName);
+		signupInfo.put("orgType", Organization.OrgType.PRODUCTION);
 		FacilioContext signupContext = new FacilioContext();
 		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 		Locale locale = request.getLocale();

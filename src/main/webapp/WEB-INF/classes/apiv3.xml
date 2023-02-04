@@ -825,19 +825,19 @@
 
     <package name="sandbox" namespace="/api/v3/sandbox" extends="v3Api">
         <action name="add"
-                class="com.facilio.sandbox.action.SandboxAction"
+                class="com.facilio.oldsandbox.action.SandboxAction"
                 method="addSandbox">
         </action>
         <action name="update"
-                class="com.facilio.sandbox.action.SandboxAction"
+                class="com.facilio.oldsandbox.action.SandboxAction"
                 method="updateSandbox">
         </action>
         <action name="changeSet"
-                class="com.facilio.sandbox.action.SandboxAction"
+                class="com.facilio.oldsandbox.action.SandboxAction"
                 method="getSandboxChangeSet">
         </action>
         <action name="pullSandboxChanges"
-                class="com.facilio.sandbox.action.SandboxAction"
+                class="com.facilio.oldsandbox.action.SandboxAction"
                 method="pullSandboxChanges">
         </action>
     </package>

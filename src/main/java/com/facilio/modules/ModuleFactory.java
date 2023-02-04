@@ -5253,6 +5253,30 @@ public class ModuleFactory {
         return module;
     }
 
+	public static FacilioModule getSandboxSharingModule() {
+		FacilioModule sandboxSharing = new FacilioModule();
+		sandboxSharing.setName("sandboxSharing");
+		sandboxSharing.setDisplayName("Sandbox Sharing");
+		sandboxSharing.setTableName("Sandbox_Sharing");
+		return sandboxSharing;
+	}
+
+	public static FacilioModule getPackageModule() {
+		FacilioModule sandboxSharing = new FacilioModule();
+		sandboxSharing.setName("package");
+		sandboxSharing.setDisplayName("Package");
+		sandboxSharing.setTableName("Package");
+		return sandboxSharing;
+	}
+
+	public static FacilioModule getPackageChangesetsModule() {
+		FacilioModule sandboxSharing = new FacilioModule();
+		sandboxSharing.setName("packageChangeset");
+		sandboxSharing.setDisplayName("Package Changesets");
+		sandboxSharing.setTableName("Package_Changesets");
+		return sandboxSharing;
+	}
+
 	public static FacilioModule getRuleAlarmDetailsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("alarm_details");

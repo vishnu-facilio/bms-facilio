@@ -22,8 +22,10 @@ public interface IAMOrgBean {
 	public boolean deleteOrgv2(long orgId) throws Exception;
 	
 	public Organization getOrgv2(long orgId) throws Exception;
-	
+
 	public Organization getOrgv2(String orgDomain) throws Exception;
+
+	public Organization getOrgv2(String orgDomain, Organization.OrgType orgType) throws Exception;
 
 	public void updateLoggerLevel(int level, long orgId) throws Exception;
 

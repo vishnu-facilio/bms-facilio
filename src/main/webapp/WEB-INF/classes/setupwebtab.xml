@@ -59,6 +59,29 @@
         </global-exception-mappings>
     </package>
 
+    <package name="sandboxApi" namespace="/api/v1/setup/sandbox" extends="v2Api">
+        <action name="list"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="list">
+        </action>
+        <action name="get"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="get">
+        </action>
+        <action name="add"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="add">
+        </action>
+        <action name="update"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="update">
+        </action>
+        <action name="changeStatus"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="changeStatus">
+        </action>
+    </package>
+
     <package name="moduleSetupApi" namespace="/api/v1/setup/modules" extends="v2Api">
         <action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
                 method="v2AddModule"/>

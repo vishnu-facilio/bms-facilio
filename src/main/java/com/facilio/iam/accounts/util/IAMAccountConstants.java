@@ -361,6 +361,20 @@ public class IAMAccountConstants {
 			allowUserTimeZone.setModule(module);
 			fields.add(allowUserTimeZone);
 
+			FacilioField parentOrgIdField = new NumberField();
+			parentOrgIdField.setName("productionOrgId");
+			parentOrgIdField.setDataType(FieldType.NUMBER);
+			parentOrgIdField.setColumnName("PRODUCTION_ORG_ID");
+			parentOrgIdField.setModule(module);
+			fields.add(parentOrgIdField);
+
+			FacilioField orgTypeField = new NumberField();
+			orgTypeField.setName("orgType");
+			orgTypeField.setDataType(FieldType.NUMBER);
+			orgTypeField.setColumnName("ORG_TYPE");
+			orgTypeField.setModule(module);
+			fields.add(orgTypeField);
+
 			return fields;
 		}
 

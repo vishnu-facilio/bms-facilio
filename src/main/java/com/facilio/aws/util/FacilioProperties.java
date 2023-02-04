@@ -123,6 +123,7 @@ public class FacilioProperties {
     private static boolean facilioResponse;
     private static String clientVersion;
 
+    private static String baseDomain;
     private static String mainAppDomain;
     private static String tenantAppDomain;
     private static String clientAppDomain;
@@ -356,6 +357,7 @@ public class FacilioProperties {
             pythonPath = PROPERTIES.getProperty("pythonPath");
             facilioResponse = "true".equals(PROPERTIES.get("response.size"));
 
+            baseDomain = PROPERTIES.getProperty("base.domain");
             mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
             tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
             clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
@@ -866,6 +868,10 @@ public class FacilioProperties {
 
     public static String getMainAppDomain() {
         return mainAppDomain;
+    }
+
+    public static String getBaseDomain() {
+        return baseDomain;
     }
 
     public static String getTenantAppDomain() {
