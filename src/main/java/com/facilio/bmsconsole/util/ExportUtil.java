@@ -35,6 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.zeroturnaround.zip.ZipUtil;
@@ -743,6 +744,15 @@ public class ExportUtil {
 			case "alarmType": 
 				return AlarmType.getType((int)value).getStringVal();
 			case "sourceType":
+				return getValueForSourceTypeByModule(field,value);
+		}
+		return null;
+	}
+	private static String getValueForSourceTypeByModule(FacilioField field,Object value){
+		FacilioModule module=field.getModule();
+		String moduleName=module.getName();
+		switch (moduleName){
+			case "ticket":
 				return SourceType.getType((int)value).getValue();
 		}
 		return null;
@@ -852,8 +862,11 @@ public class ExportUtil {
 			ViewField serialNumber = new ViewField("serialNumber", "ID");
 			serialNumber.setField(modBean.getField("serialNumber", moduleName));
 			viewFields.add(serialNumber);
-		} else if (!moduleName.equals("asset") // Asset module has local Id
-				&& fieldsMap.containsKey("localId")) {
+		} else if (!moduleName.equals("asset") &&
+				   !moduleName.equals("tenant") &&
+				   !moduleName.equals("serviceRequest") &&  // Asset module has local Id
+				   fieldsMap.containsKey("localId")) {
+
 			ViewField localId = new ViewField("localId", "Id");
 			localId.setField(fieldsMap.get("localId"));
 			viewFields.add(localId);
