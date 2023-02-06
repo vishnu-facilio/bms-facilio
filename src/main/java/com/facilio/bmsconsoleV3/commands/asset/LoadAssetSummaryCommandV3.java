@@ -25,6 +25,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class LoadAssetSummaryCommandV3  extends FacilioCommand {
 
@@ -34,8 +36,9 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<V3AssetContext> assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("asset"));
         List<ModuleBaseWithCustomFields> recordList = new ArrayList<>();
+        Map<Long,V3AssetContext> assetContextMap;
         if(CollectionUtils.isNotEmpty(assetList)) {
-
+            assetContextMap = assetList.stream().collect(Collectors.toMap(V3AssetContext::getId, Function.identity()));
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             HashMap<Long, ArrayList<Long>> assetCat = new HashMap<>();
             for (V3AssetContext asset : assetList) {
@@ -87,6 +90,9 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
                             V3AssetContext assetRec = (V3AssetContext) assetContext;
                             LOGGER.info("Asset Summary Record ===>" + assetRec);
                             assetRec.setCategoryModuleName(moduleName);
+                            if (assetContextMap.get(assetRec.getId()) != null) {
+                                assetRec.setClassification(assetContextMap.get(assetRec.getId()).getClassification());
+                            }
                             this.getAssetLocation(assetRec);
                             recordList.add(assetRec);
                         }

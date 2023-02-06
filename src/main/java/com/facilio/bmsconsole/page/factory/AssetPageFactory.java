@@ -282,7 +282,7 @@ public class AssetPageFactory extends PageFactory {
 
 		}
 
-		
+
 		Tab tab9 = page.new Tab("history", "history");
 		page.addTab(tab9);
 		
@@ -293,7 +293,7 @@ public class AssetPageFactory extends PageFactory {
 		
 		return page;
 	}
-	
+
 	private static boolean isDemoOrg() {
 		return AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321; 
 	}
