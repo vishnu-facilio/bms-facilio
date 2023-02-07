@@ -92,7 +92,7 @@ public String validateCode() {
 					response.addCookie(cookie1);
 
 					FacilioAuthAction facilio = new FacilioAuthAction();
-					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", facilio.getDomain(), "baseUrl", getBaseUrl(connectedDevice));
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(connectedDevice));
 					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 					setTempCookieProperties(mobileTokenCookie, false);
 
