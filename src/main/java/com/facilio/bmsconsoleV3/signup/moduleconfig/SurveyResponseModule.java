@@ -34,7 +34,6 @@ public class SurveyResponseModule extends BaseModuleConfig{
         int order = 1;
         ArrayList<FacilioView> surveyResponse = new ArrayList<FacilioView>();
         surveyResponse.add(getAllSurveyResponseViews().setOrder(order++));
-        surveyResponse.add(getViewOne().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -45,37 +44,7 @@ public class SurveyResponseModule extends BaseModuleConfig{
 
         return groupVsViews;
     }
-    private static FacilioView getViewOne() {
 
-        FacilioField createdTime = new FacilioField();
-        createdTime.setName("createdTime");
-        createdTime.setDataType(FieldType.NUMBER);
-        createdTime.setColumnName("CREATED_TIME");
-        createdTime.setModule(ModuleFactory.getWorkOrdersModule());
-        SortField sortField = new SortField(createdTime, false);
-
-        FacilioView viewOne = new FacilioView();
-        viewOne.setName("viewOne");
-        viewOne.setDisplayName("View One");
-        viewOne.setFields(getViewOneColumns());
-        viewOne.setSortFields(Collections.singletonList(sortField));
-        viewOne.setAppLinkNames(Collections.singletonList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
-        return viewOne;
-    }
-
-    private static List<ViewField> getViewOneColumns() {
-        List<ViewField> columns = new ArrayList<ViewField>();
-
-        columns.add(new ViewField("id", "Id"));
-        columns.add(new ViewField("name", "Name"));
-        columns.add(new ViewField("resStatus", "Status"));
-        columns.add(new ViewField("assignedTo", "Assigned To"));
-        columns.add(new ViewField("totalScore", "Total Score"));
-        columns.add(new ViewField("fullScore", "Full Score"));
-        columns.add(new ViewField("createdTime", "Created Time"));
-
-        return columns;
-    }
 
     private static FacilioView getAllSurveyResponseViews() {
 

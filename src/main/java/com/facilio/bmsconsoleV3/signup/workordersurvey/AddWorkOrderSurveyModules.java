@@ -3,8 +3,12 @@ package com.facilio.bmsconsoleV3.signup.workordersurvey;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -18,10 +22,13 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class AddWorkOrderSurveyModules extends SignUpData {
+public class AddWorkOrderSurveyModules extends BaseModuleConfig {
+
+	public AddWorkOrderSurveyModules() throws Exception {
+		setModuleName(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+	}
 	@Override
 	public void addData () throws Exception {
 
@@ -130,4 +137,43 @@ public class AddWorkOrderSurveyModules extends SignUpData {
 
 		return module;
 	}
+	@Override
+	public List<Map<String, Object>> getViewsAndGroups() throws Exception {
+		List<Map<String, Object>> groupVsViews = new ArrayList<>();
+		Map<String, Object> groupDetails;
+
+		int order = 1;
+		ArrayList<FacilioView> surveyResponse = new ArrayList<FacilioView>();
+		surveyResponse.add(getViewOne().setOrder(order++));
+
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "systemviews");
+		groupDetails.put("displayName", "System Views");
+		groupDetails.put("moduleName", FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+		groupDetails.put("views", surveyResponse);
+		groupVsViews.add(groupDetails);
+
+		return groupVsViews;
+	}
+	private static FacilioView getViewOne() throws Exception{
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "WorkOrder_Survey_Responses.ID", FieldType.NUMBER), true));
+
+		FacilioView workOrderSurveyListView = new FacilioView();
+		workOrderSurveyListView.setName("workordersurveylist");
+
+		workOrderSurveyListView.setModuleName(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+		workOrderSurveyListView.setDisplayName("All Surveys");
+		workOrderSurveyListView.setSortFields(sortFields);
+
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Survey"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
+		columns.add(new ViewField("assignedTo", "Survey Respondent"));
+
+		workOrderSurveyListView.setFields(columns);
+		return workOrderSurveyListView;
+	}
+
 }

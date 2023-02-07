@@ -62,8 +62,9 @@ public class SupplySurveyCriteriaCommand extends FacilioCommand{
 				}
 			}
 		}
-
-		context.put(Constants.BEFORE_FETCH_CRITERIA, criteria);
+		if(!criteria.isEmpty()) {
+			context.put(Constants.BEFORE_FETCH_CRITERIA, criteria);
+		}
 		return false;
 	}
 }

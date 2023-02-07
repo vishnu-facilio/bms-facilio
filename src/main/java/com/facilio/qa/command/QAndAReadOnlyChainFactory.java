@@ -137,6 +137,7 @@ public class QAndAReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new SupplySurveyCriteriaCommand());
 		c.addCommand(new SurveySupplementSupplyCommand());
+        c.addCommand(new LoadSurveyExtraFieldsCommand());
 		return c;
 	}
 }
