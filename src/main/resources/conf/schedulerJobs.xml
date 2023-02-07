@@ -12,6 +12,8 @@
 	<job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='900000'/>
 	<!-- NEW PM NIGHTLY JOB -->
 	<job name='PMV2NightlyScheduler' classname='com.facilio.bmsconsole.jobs.PMV2NightlyScheduler' transactionTimeout='900000'/>
+	<!-- JOB TO DELETE "DELETED PRE-OPEN WORKORDERS"-->
+	<job name='RemoveDeletedPreOpenWorkOrdersJob' classname='com.facilio.bmsconsole.jobs.RemoveDeletedPreOpenWorkOrdersJob' transactionTimeout='3600000'/>
 	
 	<job name='PlannedMaintenanceScheduler' classname="com.facilio.bmsconsole.jobs.PlannedMaintenanceScheduler" transactionTimeout='900000'/>
 	<job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange'

@@ -713,7 +713,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkorderAfterUpdateChain(boolean sendNotification) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FillContextAfterWorkorderUpdateCommandV3());
-        c.addCommand(new VerifyQrCommand());
         c.addCommand(new SendNotificationCommandV3());
 //		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
 //		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));

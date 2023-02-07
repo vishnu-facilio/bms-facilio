@@ -482,7 +482,6 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateWorkOrderCommand());
 		c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 		c.addCommand(new ToVerifyStateFlowTransitionForStart());
-		c.addCommand(new VerifyQrCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new UpdateTransactionEventTypeCommand());
