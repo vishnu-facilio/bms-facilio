@@ -2451,6 +2451,14 @@ public class FacilioConstants {
 
 		}
 
+		public static class ControlGroup {
+			public static final String CONTROL_GROUP_V2 = "controlGroupv2";
+			public static final String CONTROL_GROUP_V2_TENANT_SHARING = "controlGroupv2TenantSharing";
+			public static final String CONTROL_SCHEDULE = "controlSchedule";
+			public static final String CONTROL_SCHEDULE_EXCEPTION = "controlScheduleException";
+			public static final String CONTROL_SCHEDULE_EXCEPTION_TENANT = "controlScheduleExceptionTenant";
+		}
+
 		public static class SpaceCategoryFormRelation {
 			public static final String SPACE_CATEGORY_FORM_RELATION = "spaceCategoryFormRelation";
 			public static final String MODULE_FORM_ID = "moduleFormId";

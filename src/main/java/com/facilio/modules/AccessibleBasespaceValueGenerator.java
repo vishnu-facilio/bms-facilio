@@ -47,12 +47,28 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
     public Object generateValueForCondition(int appType) {
         try {
             if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
+
+                //This is supported here for mobile - we can remove after all switch is supported in mobile
+                Long currentSiteId = (Long)AccountUtil.getSwitchScopingFieldValue("siteId");
+                if(AccountUtil.getShouldApplySwitchScope() && currentSiteId != null && currentSiteId > 0) {
+                    return String.valueOf(currentSiteId);
+                }
                 return getAccessibleSites();
             } else if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
                 V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (tenant != null) {
                     if (tenant.getSiteId() > 0) {
                         return String.valueOf(tenant.getSiteId());
+                    }
+                    else {
+                        List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
+                        if(CollectionUtils.isNotEmpty(tenantUnits)) {
+                            List<Long> siteIDs = new ArrayList<>();
+                            for (TenantUnitSpaceContext tu :tenantUnits) {
+                                siteIDs.add(tu.getSiteId());
+                            }
+                            return StringUtils.join(siteIDs, ",");
+                        }
                     }
                 }
             } else if (appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
