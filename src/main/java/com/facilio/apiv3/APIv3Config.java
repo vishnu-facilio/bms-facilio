@@ -2110,6 +2110,8 @@ public class APIv3Config {
 		return () -> new V3Config(MultiResourceContext.class, null)
 							 .create()
                              .beforeSave(new ValidateBeforeSaveCommandV3())
+                             .update()
+                             .beforeSave(new ValidateBeforeSaveCommandV3())
                              .summary()
                              .beforeFetch(new LoadMultiResourcesLookUpFieldsCommandV3())
 							 .list()
