@@ -200,9 +200,22 @@ public class ReportDrilldownCommand extends FacilioCommand {
 				else  if(groupBy.containsKey("colName") && groupBy.get("colName") != null)
 				{
 					ReportFactory.ReportFacilioField groupbyfield = (ReportFactory.ReportFacilioField)ReportFactory.getReportField((String)groupBy.get("colName"));
-					Map<String, Condition> condition_map = replaceSpecialFieldVals((String)groupBy.get("colName"), groupByValues, groupbyfield);
-					groupByCondition = !condition_map.isEmpty() && condition_map.containsKey(groupByValues) ? condition_map.get(groupByValues): null;
-					criteria.addAndCondition(groupByCondition);
+					if(groupbyfield.getName().equals("overdue_open") || groupbyfield.getName().equals("overdue_closed") ) {
+						if(groupByValues.equals("Ontime") && groupbyfield.getName().equals("overdue_open")){
+							groupByCondition = groupbyfield.getConditions().get("On Schedule");
+						}
+						else{
+							groupByCondition = groupbyfield.getConditions().get(groupByValues);
+
+						}
+						groupByCondition.setColumnName("Tickets.DUE_DATE");
+						criteria.addAndCondition(groupByCondition);
+					}
+					else{
+						Map<String, Condition> condition_map = replaceSpecialFieldVals((String) groupBy.get("colName"), groupByValues, groupbyfield);
+						groupByCondition = !condition_map.isEmpty() && condition_map.containsKey(groupByValues) ? condition_map.get(groupByValues) : null;
+						criteria.addAndCondition(groupByCondition);
+					}
 				}
 			}
 

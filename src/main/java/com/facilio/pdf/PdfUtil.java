@@ -104,7 +104,13 @@ public class PdfUtil {
 	private static String getToken() {
 		if(AccountUtil.getCurrentUser().isPortalUser()){
 			HttpServletRequest request = ServletActionContext.getRequest();
-			String Faciliotoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+			String Faciliotoken = null;
+			if(!FacilioProperties.isProduction()){
+				Faciliotoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			}
+			else {
+				Faciliotoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+			}
 			return Faciliotoken;
 		}
 		return IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);

@@ -210,6 +210,17 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 		public List widget_field_mapping;
 
+
+		public boolean isHideFilter() {
+			return hideFilter;
+		}
+
+		public void setHideFilter(boolean hideFilter) {
+			this.hideFilter = hideFilter;
+		}
+
+		public boolean hideFilter;
+
 	}
 	public static enum OptionType implements FacilioIntEnum {
 		ALL("All"), SOME("Some");
@@ -525,7 +536,10 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 	public String link_name;
 
-
-
-
+	public void setHideFilter(boolean hideFilter){
+		this.filterPojo.setHideFilter(hideFilter);
+	}
+	public boolean getHideFilter(){
+		return this.filterPojo.isHideFilter();
+	}
 }
