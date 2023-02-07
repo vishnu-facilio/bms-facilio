@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -228,6 +229,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent, context);
 			pointedList.add(alarmOccurrence);
 			baseEvent.setEventState(EventState.ALARM_CREATED);
+			CommonCommandUtil.addEventType(EventType.CREATE_OR_UPDATE_ALARM_SEVERITY,(FacilioContext)context);
 		}
 		else if (alarmOccurrence.getSeverity().equals(clearSeverity)) {
 			if (baseEvent.getSeverity().equals(clearSeverity)) {

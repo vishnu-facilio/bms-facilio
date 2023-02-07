@@ -6,7 +6,10 @@ public enum Group {
     SEND_MAIL_WORKER("send-mail", false),
     RECIEVE_MAIL_WORKER("receive-mail", false),
     SCRIPTLOG_WORKER("scriptlog", false),
-    PM_PLANNER_WORKER("pm-planner", false);
+    PM_PLANNER_WORKER("pm-planner", false),
+    ALARM_WORKFLOW_WORKER("alarm-wf",false);
+
+
 
     String name;
     boolean sendToAllWorker;

@@ -198,9 +198,9 @@ public class ReadingEventContext extends BaseEventContext {
         return isNewReadingRule;
     }
 
-    private double energyImpact;
+    private Double energyImpact;
 
-    private double costImpact;
+    private Double costImpact;
 
     private AssetCategoryContext getAssetCategory() throws Exception {
         if (readingAlarmAssetCategory == null) {

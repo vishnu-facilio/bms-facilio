@@ -26,6 +26,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -133,7 +135,11 @@ public class NewAlarmAPI {
 				throw new IllegalArgumentException("Invalid type");
 		}
 	}
-
+	public static List<BaseAlarmContext> getAlarms(List<Long> recordId,String moduleName) throws Exception {
+		FacilioContext summary = V3Util.getSummary(moduleName, recordId);
+		List<BaseAlarmContext> alarms= Constants.getRecordListFromContext(summary, moduleName);
+		return alarms;
+	}
 	public static String getOccurrenceModuleName(AlarmOccurrenceContext.Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException("Invalid type");

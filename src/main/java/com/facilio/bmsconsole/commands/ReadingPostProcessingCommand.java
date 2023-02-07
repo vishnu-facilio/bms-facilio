@@ -56,7 +56,7 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
         } catch (Exception e) {
             Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
             LOGGER.error("Error occurred during storm execution of readings. \n" + readingMap, e);
-            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during storm execution of readings.", e, String.valueOf(readingMap));
+//            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during storm execution of readings.", e, String.valueOf(readingMap));
         }
     }
 

@@ -254,6 +254,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
                         CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(), -1, AlarmActivityType.SEVERITY_CHANGE, info, (FacilioContext) context, alarmOccurrence.getId());
                     }
                     CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
+                    CommonCommandUtil.addEventType(EventType.CREATE_OR_UPDATE_ALARM_SEVERITY,(FacilioContext)context);
                     alarmOccurrence.setAcknowledged(false);
                     alarmOccurrence.setAcknowledgedBy(null);
                     alarmOccurrence.setAcknowledgedTime(-1l);

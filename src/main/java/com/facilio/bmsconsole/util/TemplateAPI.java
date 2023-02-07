@@ -84,7 +84,7 @@ public class TemplateAPI {
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DefaultTemplateWorkflowsConf.class);
-			DefaultTemplateWorkflowsConf workflowsConf = (DefaultTemplateWorkflowsConf) jaxbContext.createUnmarshaller().unmarshal(new File(classLoader.getResource(FacilioUtil.normalizePath("conf/templates/templateWorkflows.xml")).getFile()));
+			DefaultTemplateWorkflowsConf workflowsConf = (DefaultTemplateWorkflowsConf) jaxbContext.createUnmarshaller().unmarshal(FacilioUtil.getConfFilePath("conf/templates/templateWorkflows.xml"));
 			Map<Integer, WorkflowContext> defaultWorkflows = new HashMap<>();
 			for (TemplateWorkflowConf workflowConf : workflowsConf.getDefaultTemplatesWorkflows()) {
 				WorkflowContext workflow = new WorkflowContext();
@@ -121,7 +121,8 @@ public class TemplateAPI {
 		}
 	}
 	private static Map<Integer, DefaultTemplate> parseTemplateObject (String path, ClassLoader classLoader,DefaultTemplateType defaultTemplateType,Map<Integer, WorkflowContext> defaultWorkflows ) throws Exception {
-		try (FileReader fileReader = new FileReader(classLoader.getResource(path + ".json").getFile())) {
+		File f = FacilioUtil.getConfFilePath(path + ".json");
+		try (FileReader fileReader = new FileReader(f)) {
 			JSONParser parser = new JSONParser();
 			JSONObject templateJsons = (JSONObject) parser.parse(fileReader);
 			Map<Integer, DefaultTemplate> templates = new HashMap<>();
@@ -160,7 +161,7 @@ public class TemplateAPI {
 			if (key.endsWith(FTL_KEY_SUFFIX)) {
 				isFtl = true;
 				String fileName = (String) json.remove(key);
-				json.put(key.substring(0, key.length()-FTL_KEY_SUFFIX.length()), FileUtils.readFileToString(new File(classLoader.getResource(FTL_FILE_PATH+fileName+".ftl").getFile()), StandardCharsets.UTF_8));
+				json.put(key.substring(0, key.length()-FTL_KEY_SUFFIX.length()), FileUtils.readFileToString(FacilioUtil.getConfFilePath(FTL_FILE_PATH+fileName+".ftl"), StandardCharsets.UTF_8));
 			}
 		}
 		return isFtl;

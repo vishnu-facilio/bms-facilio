@@ -7,6 +7,7 @@ import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -18,23 +19,19 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.util.DBConf;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.v3.context.Constants;
 import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -42,9 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import sh.ory.hydra.JSON;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,6 +58,9 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
         List<BaseEventContext> eventList = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
         Map<String, BaseAlarmContext> alarmMap = (Map<String, BaseAlarmContext>) context.get("alarmMap");
         alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>) context.get("alarmOccurrenceMap");
+
+
+        Map<Long, List<UpdateChangeSet>> changes = new HashMap<>();
 
         Map<String, BaseEventContext> keyVsEvents = eventList.stream()
                 .filter(e -> e.getBaseAlarm() != null)
@@ -88,7 +86,11 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
                     if (baseAlarm instanceof AgentAlarmContext) {
                         builder.updateSupplement(getAgentAlarmToControllerMultiLookupField());
                     }
+                    builder.withChangeSet(V3RecordAPI.getRecordsList(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()),Collections.singletonList(baseAlarm.getId())));
                     builder.update(baseAlarm);
+                    Map<Long, List<UpdateChangeSet>> recordChanges = builder.getChangeSet();
+                    changes.put(baseAlarm.getId(), recordChanges.get(baseAlarm.getId()));
+
                 } else {
                     InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
@@ -260,10 +262,14 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
                 if (baseAlarmContexts == null) {
                     baseAlarmContexts = new ArrayList<>();
                     alarmModuleMap.put(alarmModuleName, baseAlarmContexts);
+                    context.put(FacilioConstants.ContextNames.MODULE_NAME,alarmModuleName);
+                    context.put(FacilioConstants.ContextNames.ALARM_ID,alarm.getId());
                 }
                 baseAlarmContexts.add(alarm);
             }
             context.put(FacilioConstants.ContextNames.RECORD_MAP, alarmModuleMap);
+            context.put (FacilioConstants.ContextNames.CHANGE_SET_MAP,changes);
+            constructEventType(context);
         }
         return false;
     }
@@ -405,4 +411,12 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
         LOGGER.info("controllersList field missing");
         return null;
     }
+    public void constructEventType(Context context){
+        Map<Long,Object> changeSet= (Map<Long,Object>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+        List<Object> eventTypes= (List<Object>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+        if(CollectionUtils.isEmpty(eventTypes) && (MapUtils.isNotEmpty(changeSet))){
+            CommonCommandUtil.addEventType(EventType.EDIT,(FacilioContext) context);
+        }
+    }
+
 }

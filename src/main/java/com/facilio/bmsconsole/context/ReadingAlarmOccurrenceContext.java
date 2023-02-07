@@ -82,9 +82,9 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         return Type.READING;
     }
 
-    private double energyImpact;
+    private Double energyImpact;
 
-    private double costImpact;
+    private Double costImpact;
 
     private AssetCategoryContext readingAlarmAssetCategory;
 
