@@ -197,9 +197,11 @@ public class PointsAPI {
     }
 
 
-    public static void configurePointsAndMakeController(List<Long> controllerIds, List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
+    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
-            if(controllerIds != null && controllerIds.size() != 1){
+            List<Point> dBPoints = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
+            int controllersCount = getControllerIdVsPointsMap(dBPoints).keySet().size();
+            if(controllersCount > 1) {
                 FacilioContext context = new FacilioContext();
                 context.put(AgentConstants.POINT_IDS, pointIds);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
@@ -278,15 +280,40 @@ public class PointsAPI {
         return false;
     }
 
-    public static boolean unConfigurePointsChain(List<Long> pointIds, FacilioControllerType type) throws Exception {
-        FacilioChain chain = TransactionChainFactory.unconfigurePointsChain();
-        FacilioContext context = chain.getContext();
-        context.put(AgentConstants.POINT_IDS, pointIds);
-        context.put(AgentConstants.CONTROLLER_TYPE, type);
-        chain.execute();
+    public static boolean unConfigurePointsChain(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
+        if ((pointIds != null) && (!pointIds.isEmpty())) {
+            List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
+            int controllersCount = getControllerIdVsPointsMap(points).keySet().size();
+            if(controllersCount > 1){
+                FacilioContext context = new FacilioContext();
+                context.put(AgentConstants.POINT_IDS, pointIds);
+                context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+                FacilioTimer.scheduleInstantJob("BulkUnConfigurePointsJob", context);
+            } else {
+                FacilioChain chain = TransactionChainFactory.unconfigurePointsChain();
+                FacilioContext context = chain.getContext();
+                context.put(AgentConstants.POINT_IDS, pointIds);
+                context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+                chain.execute();
+            }
+        }
         return true;
     }
 
+    private static Map<Long, List<Point>> getControllerIdVsPointsMap(List<Point> points) {
+        Map<Long, List<Point>> controllerIdVsPoints = new HashMap<>();
+        for (Point point : points) {
+            long controllerId = point.getControllerId();
+            if(controllerIdVsPoints.containsKey(controllerId)){
+                controllerIdVsPoints.get(controllerId).add(point);
+            } else {
+                List<Point> pointsList = new ArrayList<>();
+                pointsList.add(point);
+                controllerIdVsPoints.put(controllerId, pointsList);
+            }
+        }
+        return controllerIdVsPoints;
+    }
 
     public static boolean updatePointSubsctiptionComplete(List<Long> pointIds) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {

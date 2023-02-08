@@ -170,13 +170,10 @@ public class ControllerMessenger {
 	            	case ADD_CONTROLLER:
 	            		break;
 	            	case DISCOVER_POINTS:
-                        if(agent.getAgentTypeEnum() == AgentType.FACILIO && controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt()){
+                        if(agent.getAgentTypeEnum() == AgentType.FACILIO &&  (controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt() || controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
+                                controller.getControllerType() == ControllerType.OPC_DA.getKey())){
                             object.put(AgentConstants.TIMEOUT_SEC, 300); // 5 mins
-                        }
-	            		if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
-	            		controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
-	            			object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);
-	            		}else if(agent.getDiscoverPointsTimeOut()>0){
+                        } else if(agent.getDiscoverPointsTimeOut()>0){
                             object.put(AgentConstants.TIMEOUT,agent.getDiscoverPointsTimeOut());
                         }
 	            		break;

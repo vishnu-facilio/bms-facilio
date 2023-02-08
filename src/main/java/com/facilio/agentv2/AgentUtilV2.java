@@ -170,15 +170,15 @@ public class AgentUtilV2
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
-                    LOGGER.info(" LWT -- "+payload);
+                    LOGGER.info("Agent Connection Lost or Disconnected ");
                     agent.setConnected(false);
                     raiseAgentAlarm(agent);
-                    togglePointsDataMissingAlarmJob(agent);
+                    createOrDeletePointsDataMissingAlarmJob(agent, false);
                 } else if (status == Status.CONNECTED){
-                    LOGGER.info("CONNECTED");
+                    LOGGER.info("Agent Connected");
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
-                    togglePointsDataMissingAlarmJob(agent);
+                    createOrDeletePointsDataMissingAlarmJob(agent, true);
                 } else {
                     LOGGER.info("Unknown status type - "+ status);
                 }
@@ -191,6 +191,19 @@ public class AgentUtilV2
             return updateAgent(agent, payload);
         } else {
             throw new Exception("Agent can't be null");
+        }
+    }
+
+    private void createOrDeletePointsDataMissingAlarmJob(FacilioAgent agent, boolean createJob) throws Exception {
+        if(createJob){
+            if(FacilioTimer.getJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME) == null){
+                LOGGER.info("Creating Points Data Missing Alarm Job for agent - "+ agent.getDisplayName());
+                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                agentBean.schedulePointsDataMissingJob(agent);
+            }
+        } else {
+            LOGGER.info("Deleting Points Data Missing Alarm Job for agent - "+ agent.getDisplayName());
+            FacilioTimer.deleteJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
         }
     }
 
@@ -327,7 +340,7 @@ public class AgentUtilV2
             description = "Agent " + agent.getDisplayName()+ " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
             message = "Agent "+agent.getDisplayName() +" connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Agent " + agent.getDisplayName() + " has reestablished the connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
+            description = "Agent " + agent.getDisplayName() + " has reestablished the connection with the facilio cloud on " + DateTimeUtil.getFormattedTime(currentTime);
             message = "Agent "+agent.getDisplayName() +" connection reestablished";
         }
         event.setMessage(message);

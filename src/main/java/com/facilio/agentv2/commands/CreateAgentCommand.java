@@ -66,9 +66,8 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
             }
-            agentBean.schedulePointsDataMissingJob(agent);
-            if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
-                AgentUtilV2.togglePointsDataMissingAlarmJob(agent);
+            if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
+                agentBean.schedulePointsDataMissingJob(agent);
             }
             return false;
         } else {

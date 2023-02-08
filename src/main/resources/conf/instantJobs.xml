@@ -25,6 +25,7 @@
     <job name='PostTimeseriesWorkflowExecutionJob' classname='com.facilio.bmsconsole.instant.jobs.PostTimeseriesWorkflowExecutionJob' transactionTimeout='900'/>
     <job name='BulkPointDiscoverJob' classname='com.facilio.bmsconsole.instant.jobs.BulkPointDiscoverJob' transactionTimeout='900'/>
     <job name='BulkConfigurePointsJob' classname='com.facilio.bmsconsole.instant.jobs.BulkConfigurePointsJob' transactionTimeout='900'/>
+    <job name='BulkUnConfigurePointsJob' classname='com.facilio.bmsconsole.instant.jobs.BulkUnConfigurePointsJob' transactionTimeout='900'/>
     <job name="SendUserNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendUserNotificationJob' transactionTimeout='3600'/>
 
     <job name="V3InsertDataLogJob" classname='com.facilio.bmsconsole.imports.job.InsertDataLogJob' transactionTimeout= '3600' />

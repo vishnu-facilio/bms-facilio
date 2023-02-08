@@ -73,7 +73,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             List<Long> pointIds = getRecordIds();
             if (!pointIds.isEmpty()) {
-                PointsAPI.configurePointsAndMakeController(getControllerIds(), pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
+                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();

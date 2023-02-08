@@ -40,7 +40,6 @@ import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
-import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.classification.command.UpdateClassificationStatusCommand;
@@ -5100,7 +5099,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain unconfigurePointsChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new unconfigurePointsCommand());
+		chain.addCommand(new UnConfigurePointsCommand());
 		return chain;
 	}
 
