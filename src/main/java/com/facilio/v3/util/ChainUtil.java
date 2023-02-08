@@ -119,6 +119,7 @@ public class ChainUtil {
         
         addIfNotNull(nonTransactionChain, beforeCountCommand);
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new CountCommand(module));
         return nonTransactionChain;
@@ -158,9 +159,11 @@ public class ChainUtil {
 
         nonTransactionChain.addCommand(new GenerateCriteriaForV4Command());
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(false));
         nonTransactionChain.addCommand(new FetchSysFields());
+        nonTransactionChain.addCommand(new FetchOnlyViewGroupColumnFieldsCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
 
         if (listHandler != null && listHandler.isShowStateFlowList()) {

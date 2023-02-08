@@ -137,7 +137,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             }
         }
         FacilioContext listContext = V3Util.fetchList(moduleName, (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
-                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null, this.getWithoutCustomButtons());
+                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn());
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
         this.setData(recordJSON);

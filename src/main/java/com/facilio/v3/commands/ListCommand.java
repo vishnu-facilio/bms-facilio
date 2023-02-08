@@ -50,7 +50,11 @@ public class ListCommand extends FacilioCommand {
     private void fetchData(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = module.getName();
-        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        List<FacilioField> fields =(List<FacilioField>) context.get(FacilioConstants.ContextNames.SELECTABLE_FIELDS);
+        if(CollectionUtils.isEmpty(fields)){
+            fields=modBean.getAllFields(moduleName);
+        }
 
         SelectRecordsBuilder selectRecordsBuilder = getSelectRecordsBuilder(context);
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);

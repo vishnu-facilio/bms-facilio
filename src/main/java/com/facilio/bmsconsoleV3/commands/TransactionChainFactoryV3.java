@@ -1600,6 +1600,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadTicketLookupsCommand());
         c.addCommand(new SkipModuleCriteriaForUpcomingViewCommand());
+        c.addCommand(new LoadWorkOrderExtraFieldsCommand());
         return c;
     }
 

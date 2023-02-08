@@ -33,6 +33,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
         boolean withoutCustomButtons = (boolean) context.get(Constants.WITHOUT_CUSTOMBUTTONS);
         boolean excludeParentFilter = (boolean) context.get(Constants.EXCLUDE_PARENT_CRITERIA);
+        boolean fetchOnlyViewColumnFields=(boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,false);
         String clientCriteria = (String) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
         Criteria filterServerCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.get(FacilioConstants.ContextNames.QUERY_PARAMS);
@@ -43,14 +44,14 @@ public class GetRelatedDataListCommand extends FacilioCommand {
 
         if (fetchSummary) {
             listContext = V3Util.fetchList(relationModuleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons);
+                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields);
 
             JSONObject customRelation = Constants.getJsonRecordMap(listContext);
             ArrayList<Map<String, Object>> resultData = (ArrayList<Map<String, Object>>) customRelation.get(relationModuleName);
 
             if (CollectionUtils.isNotEmpty(resultData)) {
                 JSONObject moduleDataObj = (JSONObject) resultData.get(0).get(relationPosition.getFieldName());
-                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, true);
+                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, fetchOnlyViewColumnFields);
 
                 Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
                 List list = recordMap.get(moduleName);
@@ -61,7 +62,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
             }
         } else {
             listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons);
+                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields);
 
             recordJSON = Constants.getJsonRecordMap(listContext);
 

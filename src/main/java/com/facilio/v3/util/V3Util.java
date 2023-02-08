@@ -497,11 +497,11 @@ public class V3Util {
                                            Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception{
 
         return fetchList(moduleName,isV3,viewName,filters,excludeParentFilter,clientCriteria,
-                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false);
+                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false,false);
     }
 
     public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
-                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons) throws Exception {
+                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons,boolean fetchOnlyViewGroupColumn) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
 
@@ -509,6 +509,7 @@ public class V3Util {
             Constants.setIsV4(context, true);
         }
 
+        context.put(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,fetchOnlyViewGroupColumn);
         context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);

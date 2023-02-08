@@ -438,6 +438,9 @@ public class FacilioConstants {
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
 		public static final String FETCH_SUPPLEMENTS = "fetchSupplement";
+		public static final String SELECTABLE_FIELDS = "selectableFields";
+		public static final String EXTRA_SELECTABLE_FIELDS = "extraSelectableFields";
+
 
 		public static final String CONNECTEDAPP_SAML_LIST = "connectedAppSAMLList";
 
@@ -1211,6 +1214,7 @@ public class FacilioConstants {
 		public static final String IS_FETCH_CALL = "isFetchCall";
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
+		public static final String FETCH_ONLY_VIEW_GROUP_COLUMN="fetchOnlyViewGroupColumn";
 		public static final String NEW_CV = "newCV";
 		public static final String EXISTING_CV = "existingView";
 		public static final String FILTERS = "filters";

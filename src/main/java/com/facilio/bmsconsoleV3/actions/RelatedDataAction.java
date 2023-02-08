@@ -103,6 +103,7 @@ public class RelatedDataAction extends RESTAPIHandler {
         context.put(FacilioConstants.ContextNames.SEARCH, this.getSearch());
         context.put(Constants.EXCLUDE_PARENT_CRITERIA, this.getExcludeParentFilter());
         context.put(Constants.WITHOUT_CUSTOMBUTTONS, this.getWithoutCustomButtons());
+        context.put(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,this.getFetchOnlyViewGroupColumn());
         context.put(FacilioConstants.ContextNames.QUERY_PARAMS, this.getQueryParameters());
         context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, this.getClientCriteria());
     }
