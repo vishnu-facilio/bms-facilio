@@ -15,6 +15,7 @@ import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
 
@@ -193,39 +194,41 @@ public class ControlActionCommandContext extends V3Context {
 		}
 	}
 
-	public int getExecutedMode() {		
-		if(executedMode != null) {
+	public int getExecutedMode() {
+		if (executedMode != null) {
 			return executedMode.getIntVal();
 		}
 		return -1;
 	}
 
 	public void setExecutedMode(int executedMode) {
-		if(executedMode > 0) {
-			this.executedMode = Control_Action_Execute_Mode.getAllOptions().get(executedMode);
+		if (executedMode > 0) {
+			this.executedMode = Control_Action_Execute_Mode.valueOf(executedMode);
 		}
 	}
-	
+
 	public int getStatus() {
-		if(status != null) {
+		if (status != null){
 			return status.getIntVal();
 		}
 		return -1;
 	}
 
 	public void setStatus(int status) {
-		if(status > 0) {
-			this.status = Status.getAllOptions().get(status);
+		if (status > 0) {
+			this.status = Status.valueOf(status);
 		}
 	}
-	public enum Control_Action_Execute_Mode {
+
+
+	public enum Control_Action_Execute_Mode implements FacilioIntEnum{
 		
 		MANUAL(1, "Manual"),
 		CARD(2, "Card"),
 		SCHEDULE(3, "Schedule"),
 		ALARM_CONDITION(4, "Alarm Condition"),
 		RESERVATION_CONDITION(5, "Reservation Condition"),
-		SCRIPT(6, "SCRIPT"),
+		SCRIPT(6, "Script"),
 		;
 
 		int intVal;
@@ -239,67 +242,68 @@ public class ControlActionCommandContext extends V3Context {
 			return name;
 		}
 
-		private Control_Action_Execute_Mode(int intVal, String name) {
+		Control_Action_Execute_Mode(int intVal, String name) {
 			this.intVal = intVal;
 			this.name = name;
 		}
+		@Override
+		public Integer getIndex() {
+			return ordinal() + 1;
+		}
 
-		private static final Map<Integer, Control_Action_Execute_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());
-
-		private static Map<Integer, Control_Action_Execute_Mode> initTypeMap() {
-			Map<Integer, Control_Action_Execute_Mode> typeMap = new HashMap<>();
-
-			for (Control_Action_Execute_Mode type : values()) {
-				typeMap.put(type.getIntVal(), type);
+		public static Control_Action_Execute_Mode valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
 			}
-			return typeMap;
+			return null;
+		}
+		@Override
+		public String getValue() {
+			return getName();
 		}
 
-		public static Map<Integer, Control_Action_Execute_Mode> getAllOptions() {
-			return optionMap;
-		}
 	}
-	
-	public enum Status {
-		
-		SUCCESS(1, "Success"),
-		SENT(2, "Sent"),
-		ERROR(3, "Error"),
-		SCHEDULED(4, "Scheduled"),
-		SCHEDULED_WITH_NO_PERMISSION(5, "Scheduled without permission"),
+
+	public enum Status implements FacilioIntEnum {
+		SUCCESS( 1,"Success"),
+		SENT(2,"Sent"),
+		ERROR( 3,"Error"),
+		SCHEDULED(4,"Scheduled"),
+		SCHEDULED_WITH_NO_PERMISSION(5,"Scheduled without permission"),
 		FAILED(6,"Failed"),
-		RETRYING(7,"Retrying")
-		;
+		RETRYING(7,"Retrying");
 
-		int intVal;
-		String name;
+		private String name;
+		private int intVal;
 
-		public int getIntVal() {
-			return intVal;
+		Status(int intVal ,String name) {
+
+			this.name = name;
+			this.intVal=intVal;
+		}
+
+		@Override
+		public Integer getIndex() {
+			return ordinal() + 1;
 		}
 
 		public String getName() {
 			return name;
 		}
 
-		private Status(int intVal, String name) {
-			this.intVal = intVal;
-			this.name = name;
-		}
-
-		private static final Map<Integer, Status> optionMap = Collections.unmodifiableMap(initTypeMap());
-
-		private static Map<Integer, Status> initTypeMap() {
-			Map<Integer, Status> typeMap = new HashMap<>();
-
-			for (Status type : values()) {
-				typeMap.put(type.getIntVal(), type);
+		public static Status valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
 			}
-			return typeMap;
+			return null;
 		}
 
-		public static Map<Integer, Status> getAllOptions() {
-			return optionMap;
+		public int getIntVal() {
+			return intVal;
+		}
+		@Override
+		public String getValue() {
+			return getName();
 		}
 	}
 

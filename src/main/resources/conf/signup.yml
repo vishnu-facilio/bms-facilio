@@ -166,7 +166,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanToolsModule
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanServiceModule
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanLabourModule
- 
+
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanCraftModule
   - com.facilio.bmsconsoleV3.signup.labour.AddLabourModuleFields
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderLabourPlanModules
@@ -315,7 +315,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlGroupModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlGroupTenantSharingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlScheduleExceptionTenantSharingModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlActionCommandModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.IndoorFloorPlanModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DesksModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.RoomsModule
@@ -388,5 +387,7 @@ classes:
     #Adding Default Survey
   - com.facilio.bmsconsoleV3.signup.workordersurvey.AddDefaultSurveyConfig
 
+  # controlActionCommand Module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddControlActionCommandModule
 
 

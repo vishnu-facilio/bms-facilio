@@ -302,3 +302,9 @@ enums:
 
   - name: AttendanceTransactionSource
     enumClassName: com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction$Source
+
+  - name: CommandStatus
+    enumClassName: com.facilio.controlaction.context.ControlActionCommandContext$Status
+
+  - name: ControlActionExecuteMode
+    enumClassName: com.facilio.controlaction.context.ControlActionCommandContext$Control_Action_Execute_Mode

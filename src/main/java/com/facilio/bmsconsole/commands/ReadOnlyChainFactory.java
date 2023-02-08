@@ -1827,7 +1827,6 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getControlActionCommandsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetControlActionCommandsCommand());
 		return c;
 	}
