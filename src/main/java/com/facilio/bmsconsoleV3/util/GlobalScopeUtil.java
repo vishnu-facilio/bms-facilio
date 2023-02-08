@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
@@ -227,6 +228,17 @@ public class GlobalScopeUtil {
                 switchValues = ids;
             }
         }
+
+        //This is supported here for mobile - we can remove after all switch is supported in mobile
+        try {
+            Long currentSiteId = (Long) AccountUtil.getSwitchScopingFieldValue("siteId");
+            if (AccountUtil.getShouldApplySwitchScope() && currentSiteId != null && currentSiteId > 0) {
+                switchValues = getOldSwitchSiteId(scopeVariable, currentSiteId, switchValues);
+            }
+        } catch (Exception e) {
+            LOGGER.info(e);
+        }
+
         if (scopeVariable != null && scopeVariable.getTypeEnum() != null) {
             if (scopeVariable.getTypeEnum().getIndex() == GlobalScopeVariableContext.Type.SCOPED.getIndex()) {
                 ValueGeneratorContext valGen = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
@@ -313,5 +325,19 @@ public class GlobalScopeUtil {
             }
         }
         return null;
+    }
+
+    private static List<Long> getOldSwitchSiteId(GlobalScopeVariableContext scopeVariable,Long currentSiteId,List<Long> switchValue) throws Exception {
+        ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
+        if(scopeVariable != null && scopeVariable.getValueGeneratorId() != null) {
+            ValueGeneratorContext valueGeneratorContext = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
+            if(valueGeneratorContext != null && valueGeneratorContext.getLinkName() != null && valueGeneratorContext.getLinkName().equals("com.facilio.modules.AccessibleBasespaceValueGenerator")) {
+                FacilioModule module = getScopeVariableModule(scopeVariable);
+                if(module != null && module.getName() != null && module.getName().equals("site")) {
+                    return Collections.singletonList(currentSiteId);
+                }
+            }
+        }
+        return switchValue;
     }
 }
