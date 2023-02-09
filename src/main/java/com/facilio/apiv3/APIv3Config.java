@@ -86,6 +86,7 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSumm
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.LoadRequestForQuotationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRfqIdInPrCommandV3;
@@ -727,7 +728,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getAddPurchaseRequestBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain(), new ConstructUpdateCustomActivityCommandV3())
                 .list()
-                .beforeFetch(new LoadPoPrListLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchPRListChain())
                 .summary()
                 .beforeFetch(new LoadPurchaseRequestSummaryLookupCommandV3())
                 .afterFetch(new FetchPurchaseRequestDetailsCommandV3())
@@ -2266,7 +2267,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                .beforeFetch(new LoadReceivableLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getReceivablesBeforeFetchChain())
                 .summary()
                 .beforeFetch(new LoadReceivableLookupCommandV3())
                 .afterFetch(new SetPOLineItemCommandV3())

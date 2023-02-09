@@ -12,6 +12,9 @@ import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOp
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.people.SetPeopleTypeCommand;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -125,16 +128,6 @@ import com.facilio.bmsconsoleV3.commands.people.PeopleValidationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.AddOrUpdateItemTypeVendorCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.AddOrUpdateToolVendorCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.AddPurchasedItemsForBulkItemAddCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.BulkItemAdditionCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.BulkToolAdditionCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.GetPurchaseOrdersListOnInventoryTypeIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Command;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
@@ -1939,9 +1932,15 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadPoPrListLookupCommandV3());
         chain.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommandV3());
+        chain.addCommand(new LoadPurchaseExtraFields());
         return chain;
     }
-
+    public static FacilioChain getBeforeFetchPRListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadPoPrListLookupCommandV3());
+        chain.addCommand(new LoadPurchaseExtraFields());
+        return chain;
+    }
     public static FacilioChain getReceiptsBeforeFetchListChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadReceiptsListLookupCommandV3());
@@ -2042,6 +2041,12 @@ public class TransactionChainFactoryV3 {
         // c.addCommand(new CreateRfqFromPrCommandV3());
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
+        return c;
+    }
+    public static FacilioChain getReceivablesBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadReceivablesExtraFields());
+        c.addCommand(new LoadReceivableLookupCommandV3());
         return c;
     }
 
