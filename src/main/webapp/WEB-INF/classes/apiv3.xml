@@ -1359,6 +1359,10 @@
         </action>
     </package>
 
+    <package name="jobPlanLabours" namespace="/api/v3/jobPlanLabours" extends="v3Api">
+        <action name="plans" class="com.facilio.bmsconsoleV3.actions.FetchJobPlanLabourAction" method="jobPlanLabour">
+        </action>
+    </package>
     <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
              extends="v3Api">
         <action name="reserve"
@@ -1398,6 +1402,13 @@
     <package name="workflowApiV3" namespace="/api/v3/script" extends="v3Api">
         <action name="execute/*" class="com.facilio.bmsconsoleV3.actions.V3WorkflowAction" method="runWorkflow">
             <param name="workflowId">{1}</param>
+        </action>
+    </package>
+
+    <package name="workOrderLabourV3" namespace="/api/v3/workOrderLabour" extends="v3Api">
+        <action name="actuals" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction" method="actualLabour">
+        </action>
+        <action name="plans" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction" method="plannedLabour">
         </action>
     </package>
 

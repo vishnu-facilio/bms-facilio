@@ -12,6 +12,7 @@ import lombok.Setter;
 public class V3WorkOrderLabourContext extends V3Context {
 
     private double cost = -1;
+    private double rate = -1;
     private long startTime = -1;
     private long endTime = -1;
     private double duration = 0;

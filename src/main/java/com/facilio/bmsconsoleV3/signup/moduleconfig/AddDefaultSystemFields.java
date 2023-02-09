@@ -60,7 +60,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TRANSACTION));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
@@ -76,6 +75,7 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_TOOLS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_SERVICES));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_RESERVATION));
+
 
 
             FacilioChain addModuleChain = TransactionChainFactory.addDefaultSystemFields();

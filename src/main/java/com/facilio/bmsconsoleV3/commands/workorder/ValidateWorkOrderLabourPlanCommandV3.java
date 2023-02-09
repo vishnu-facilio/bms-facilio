@@ -42,7 +42,7 @@ public class ValidateWorkOrderLabourPlanCommandV3 extends FacilioCommand {
 
                 LabourContextV3 labour = workOrderLabour.getLabour();
 
-                Objects.requireNonNull(labour, "Labour Should not be Empty while adding Workorder labour");
+                Objects.requireNonNull(labour.getId(), "Labour Should not be Empty while adding Workorder labour");
 
                 FacilioUtil.throwIllegalArgumentException(isLabourAssignedJobForGivenDuration(workOrderLabour, labour.getId(), module,fields), "Job was assigned for this Labour for given Time.");
 

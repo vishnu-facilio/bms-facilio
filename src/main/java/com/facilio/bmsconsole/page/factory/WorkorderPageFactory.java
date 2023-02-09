@@ -318,6 +318,16 @@ public class WorkorderPageFactory extends PageFactory {
         actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         actualsSection.addWidget(actualsPageWidgetGroup);
 
+        PageWidget labourWidget = new PageWidget();
+        labourWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_LABOUR);
+        actualsPageWidgetGroup.addToWidget(labourWidget);
+        labourWidget.setName("Labours");
+        labourWidget.setTitle("Labour");
+        JSONObject labourRelatedList = new JSONObject();
+        labourRelatedList.put("summaryWidgetName","actualsLabourWidget");
+        labourWidget.setWidgetParams(labourRelatedList);
+        labourWidget.setRelatedList(labourRelatedList);
+
         PageWidget itemsWidget = new PageWidget();
         itemsWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_ITEMS);
         actualsPageWidgetGroup.addToWidget(itemsWidget);

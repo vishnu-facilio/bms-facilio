@@ -231,7 +231,7 @@ public class MultiResourceModule extends BaseModuleConfig{
             addRuleForSpace(defaultForm, fieldMap, formFieldMap);
             addRuleForAsset(defaultForm, fieldMap, formFieldMap);
         }
-
+        
     }
 
     public void addRuleForSpace(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {

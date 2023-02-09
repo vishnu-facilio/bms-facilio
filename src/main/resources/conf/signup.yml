@@ -165,11 +165,12 @@ classes:
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanItemModule
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanToolsModule
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanServiceModule
+  - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanLabourModule
  
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanCraftModule
   - com.facilio.bmsconsoleV3.signup.labour.AddLabourModuleFields
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderLabourPlanModules
-  - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderLabourFields
+  - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkorderActualsLabourModule
 
   #Add System Value Generators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators

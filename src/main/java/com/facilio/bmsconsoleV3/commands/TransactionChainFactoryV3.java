@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
@@ -37,8 +38,10 @@ import com.facilio.bmsconsoleV3.commands.userScoping.AddOrUpdateUserScopingComma
 import com.facilio.bmsconsoleV3.commands.userScoping.DeleteUserScopingCommand;
 import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingConfigCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
+import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -129,18 +132,6 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedItemIss
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedToolIssuedQuantityCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.DeleteJobPlanValidationCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.JobPlanItemsUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.JobPlanServicesUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.JobPlanToolsUnsavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.SortJobPlanTaskSectionCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
-import com.facilio.bmsconsoleV3.commands.jobplan.DeleteJobPlanSubModuleRecord;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -250,6 +241,13 @@ import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReserveItemsC
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetIsReservedCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ValidateWorkOrderPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
+import com.facilio.bmsconsoleV3.commands.workpermit.InsertWorkPermitActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.ValidationForDateCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.AddPolicyCriteriaCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.FetchPolicyCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingAvailability;
@@ -2521,6 +2519,35 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getWorkorderLabourPlanBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenericFetchLookUpFieldsCommandV3());
+        c.addCommand(new LoadWOLabourPlanExtraFieldsCommandV3());
+        return c;
+
+    }
+    public static FacilioChain getWorkorderLabourBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenericFetchLookUpFieldsCommandV3());
+        c.addCommand(new LoadWOLabourExtraFieldsCommandV3());
+        return c;
+
+    }
+    public static FacilioChain getJobPlanLabourBeforeFetchChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenericFetchLookUpFieldsCommandV3());
+        c.addCommand(new LoadJobPlanLabourExtraFieldsCommandV3());
+        return c;
+
+    }
+
+    public static FacilioChain getMultiResourceBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadMultiResourcesLookUpFieldsCommandV3());
+        c.addCommand(new LoadMultiResourceExtraFieldsCommandV3());
+        return c;
+
+    }
     public static FacilioChain getPlannedToolsUnSavedListChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlannedToolsUnSavedListCommandV3());
@@ -2582,7 +2609,11 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return chain;
     }
-
+    public static FacilioChain getJobPlanLabourChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new JobPlanPlannedLabourCommandV3());
+        return c;
+    }
     public static FacilioChain getUnsavedJobPlanServicesListChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JobPlanServicesUnsavedListCommandV3());
@@ -2614,6 +2645,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand());
         c.addCommand(new AddOrUpdateWorkorderCostCommandV3());
         c.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getAddOrUdpateWorkorderLabourChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddorUpdateWoActualsCostforLabourCommand());
+        c.addCommand(new UpdateWorkorderTotalCostLabourCommandV3());
         return c;
     }
 
@@ -2697,7 +2734,16 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecutedDashboardRuleCommand());
         return c;
     }
-
+    public static FacilioChain getWorkorderActualsLabourChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new WorkOrderActualsLabourCommandV3());
+        return c;
+    }
+    public static FacilioChain getWorkorderPlannedLabourChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new WorkOrderPlannedLabourCommandV3());
+        return c;
+    }
     public static FacilioChain getDashboardWidgetsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetDashboardWidgetsCommand());

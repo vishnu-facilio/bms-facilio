@@ -130,6 +130,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRec
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
+import com.facilio.bmsconsoleV3.commands.workorder.AddorUpdateWoActualsCostforLabourCommand;
 import com.facilio.bmsconsoleV3.commands.workorder.GenericFetchLookUpFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -717,6 +718,8 @@ public class APIv3Config {
                 .delete()
                 .beforeDelete(new FetchPeopleForAssociatedLabour())
                 .afterDelete(new UpdateStatusForDeletedLabour())
+                .summary()
+                .afterFetch(new FetchLabourCraftAndSkillCommandV3())
                 .build();
     }
 
@@ -2122,7 +2125,7 @@ public class APIv3Config {
                              .summary()
                              .beforeFetch(new LoadMultiResourcesLookUpFieldsCommandV3())
 							 .list()
-							 .beforeFetch(new LoadMultiResourcesLookUpFieldsCommandV3())
+                             .beforeFetch(TransactionChainFactoryV3.getMultiResourceBeforeFetchChain())
 				             .afterFetch(new SortMultiResourceDataCommandV3())
 							 .delete()
 							 .build();
@@ -2762,10 +2765,23 @@ public class APIv3Config {
             return () -> new V3Config(V3WorkOrderLabourPlanContext.class, new ModuleCustomFieldCount30())
                             .create()
                             .list()
-                            .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                            .beforeFetch(TransactionChainFactoryV3.getWorkorderLabourPlanBeforeFetchChain())
                             .update()
                             .delete()
+                            .summary()
                             .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.JOB_PLAN_LABOURS)
+    public static Supplier<V3Config> getJobPlanLabour() {
+        return () -> new V3Config(V3JobPlanLabourContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getJobPlanLabourBeforeFetchChainV3())
+                .update()
+                .delete()
+                .summary()
+                .build();
     }
     @Module(FacilioConstants.ContextNames.WORKORDER_HAZARD)
     public static Supplier<V3Config> getWorkOrderHazard() {
@@ -2784,10 +2800,13 @@ public class APIv3Config {
             return () -> new V3Config(V3WorkOrderLabourContext.class, new ModuleCustomFieldCount30())
                             .create()
                             .beforeSave(new ValidateWorkOrderLabourPlanCommandV3())
+                            .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderLabourChainV3())
                             .list()
-                            .beforeFetch(new GenericFetchLookUpFieldsCommandV3())
+                            .beforeFetch(TransactionChainFactoryV3.getWorkorderLabourBeforeFetchChain())
                             .update()
+                            .afterSave(TransactionChainFactoryV3.getAddOrUdpateWorkorderLabourChainV3())
                             .delete()
+                            .afterDelete(TransactionChainFactoryV3.getAddOrUdpateWorkorderLabourChainV3())
                             .build();
     }
     @Module(FacilioConstants.ContextNames.WORKORDER_HAZARD_PRECAUTION)

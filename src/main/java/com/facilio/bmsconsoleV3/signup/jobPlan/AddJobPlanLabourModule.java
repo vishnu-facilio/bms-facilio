@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.signup.workOrder;
+package com.facilio.bmsconsoleV3.signup.jobPlan;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -35,24 +34,24 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
+public class AddJobPlanLabourModule extends BaseModuleConfig {
 
-    public AddWorkOrderLabourPlanModules(){
-        setModuleName(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
+    public AddJobPlanLabourModule(){
+        setModuleName(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
     }
 
     @Override
     public void addData() throws Exception {
 
         ModuleBean bean = Constants.getModBean();
-        FacilioModule parentModule = bean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        FacilioModule parentModule = bean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
 
-        Objects.requireNonNull(parentModule,"WorkOrder module doesn't exists.");
+        Objects.requireNonNull(parentModule,"JobPlan module doesn't exists.");
 
-        FacilioModule workOrderJobPlanModule = constructWorkOrderJobPlanModule(parentModule,bean);
+        FacilioModule jobPlanLaboursModule = constructJobPlanLabourModule(parentModule,bean);
 
         List<FacilioModule> modules = new ArrayList<>();
-        modules.add(workOrderJobPlanModule);
+        modules.add(jobPlanLaboursModule);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -62,18 +61,16 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         addModuleChain.execute();
 
         addForms();
-        addSummaryWidget(workOrderJobPlanModule);
+        addSummaryWidget(jobPlanLaboursModule);
 
     }
-
-
-    private FacilioModule constructWorkOrderJobPlanModule(FacilioModule workOrderModule, ModuleBean bean) throws Exception {
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN, "WorkOrder Labour Plan", "WorkOrder_Labour_Plan", FacilioModule.ModuleType.SUB_ENTITY,true);
+    private FacilioModule constructJobPlanLabourModule(FacilioModule jobPlanModule, ModuleBean bean) throws Exception {
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.JOB_PLAN_LABOURS, "Job Plan Labours", "Job_Plan_Labours", FacilioModule.ModuleType.SUB_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
         LookupField parent = FieldFactory.getDefaultField("parent","Parent","PARENT_ID", FieldType.LOOKUP,true);
-        parent.setLookupModule(workOrderModule);
+        parent.setLookupModule(jobPlanModule);
         fields.add(parent);
 
         LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP);
@@ -93,21 +90,20 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
 
         return module;
     }
-    public void addSummaryWidget(FacilioModule workOrderJobPlanModule) throws Exception {
+    public void addSummaryWidget(FacilioModule jobPlanLaboursModule) throws Exception {
         ArrayList<String> apps = new ArrayList<>();
         if (!SignupUtil.maintenanceAppSignup()) {
             apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         }
         apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        apps.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
 
         for (String app : apps) {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-            FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-            FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-            FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
+            FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime",FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
 
 
             CustomPageWidget pageWidget1 = new CustomPageWidget();
@@ -117,6 +113,7 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField15 = new SummaryWidgetGroupFields();
 
             groupField11.setName(sysCreatedByField.getName());
             groupField11.setDisplayName(sysCreatedByField.getDisplayName());
@@ -162,9 +159,9 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
             widgetGroupList.add(widgetGroup1);
 
-            pageWidget1.setName("plansWidget");
-            pageWidget1.setDisplayName("Plans Widget");
-            pageWidget1.setModuleId(workOrderJobPlanModule.getModuleId());
+            pageWidget1.setName("jobPlanLaboursWidget");
+            pageWidget1.setDisplayName("JobPlanLabour Widget");
+            pageWidget1.setModuleId(jobPlanLaboursModule.getModuleId());
             pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(app));
             pageWidget1.setGroups(widgetGroupList);
 
@@ -178,16 +175,14 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         }
         apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        apps.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
-
         for (String app : apps) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule workOrderPlansLabourModule = modBean.getModule(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
+            FacilioModule jobPlanLaboursModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
 
             FacilioForm defaultForm = new FacilioForm();
-            defaultForm.setName("standard_" + app);
-            defaultForm.setModule(workOrderPlansLabourModule);
-            defaultForm.setDisplayName("Standard_" + app);
+            defaultForm.setName("standard");
+            defaultForm.setModule(jobPlanLaboursModule);
+            defaultForm.setDisplayName("Standard");
             defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
             defaultForm.setShowInWeb(true);
             defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));   //form needs to be created for multiple applications
@@ -195,10 +190,10 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             defaultForm.setType(FacilioForm.Type.FORM);
             defaultForm.setAppLinkName(app);
 
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(workOrderPlansLabourModule.getName()));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(jobPlanLaboursModule.getName()));
             List<FormSection> sections = new ArrayList<FormSection>();
             FormSection section = new FormSection();
-            section.setName("WorkOrder Labour Plans");
+            section.setName("JobPlan Labour");
             section.setSectionType(FormSection.SectionType.FIELDS);
             section.setShowLabel(false);
 
@@ -218,11 +213,11 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
 
             defaultForm.setSections(sections);
 
-            FormsAPI.createForm(defaultForm, workOrderPlansLabourModule);
+            FormsAPI.createForm(defaultForm, jobPlanLaboursModule);
             Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForSkillOnUpdate(defaultForm, fieldMap, formFieldMap);
-            addRuleForWorkOrderPlannedLabour(defaultForm, fieldMap, formFieldMap);
+            addRuleForJobPlanLabour(defaultForm, fieldMap, formFieldMap);
         }
     }
     public void addRuleForCraftOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
@@ -250,7 +245,7 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         String workflowString = "List getActions(Map formData) {\n" +
                 "resultList = [];\n" +
                 "if(formData.craft != null) {\n" +
-               " valueMap = {};\n" +
+                " valueMap = {};\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
                 "conditionMap.fieldName = \"parentId\";\n" +
@@ -340,10 +335,10 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
                 "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
                 "ratePerHour = craft.standardRate;\n" +
                 "actionMap1 = {};\n" +
-                        "actionMap1.value = ratePerHour;\n"+
-                        "actionMap1.actionName = \"set\" ;\n" +
-                        " result1 = {};\n" +
-                        "result1.action = actionMap1;\n" +
+                "actionMap1.value = ratePerHour;\n"+
+                "actionMap1.actionName = \"set\" ;\n" +
+                " result1 = {};\n" +
+                "result1.action = actionMap1;\n" +
                 "  result1.fieldId = "+rateFormFieldId+";\n" +
                 "resultList.add(result1);\n" +
                 "}\n" +
@@ -369,7 +364,9 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
 
 
     }
-    public void addRuleForWorkOrderPlannedLabour(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+
+
+    public void addRuleForJobPlanLabour(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 
         FormRuleContext singleRule = new FormRuleContext();
         singleRule.setName("Compute Cost");
@@ -390,9 +387,6 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         FormRuleTriggerFieldContext triggerField2 = new FormRuleTriggerFieldContext();
         triggerField2.setFieldId(formFieldMap.get(fieldMap.get("rate").getId()).getId());
         triggerFieldList.add(triggerField2);
-        FormRuleTriggerFieldContext triggerField3 = new FormRuleTriggerFieldContext();
-        triggerField3.setFieldId(formFieldMap.get(fieldMap.get("quantity").getId()).getId());
-        triggerFieldList.add(triggerField3);
 
         singleRule.setTriggerFields(triggerFieldList);
 
@@ -442,14 +436,14 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         Map<String, Object> groupDetails;
 
         int order = 1;
-        ArrayList<FacilioView> workOrderPlansLabourModule = new ArrayList<FacilioView>();
-        workOrderPlansLabourModule.add(getJobPlanCraftViews().setOrder(order++));
+        ArrayList<FacilioView> jobPlanLaboursModule = new ArrayList<FacilioView>();
+        jobPlanLaboursModule.add(getJobPlanCraftViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
-        groupDetails.put("moduleName", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-        groupDetails.put("views", workOrderPlansLabourModule);
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+        groupDetails.put("views", jobPlanLaboursModule);
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
@@ -457,26 +451,29 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
 
     private FacilioView getJobPlanCraftViews() {
 
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "workorderLabourPlan.ID", FieldType.NUMBER), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "jobPlanLabours.ID", FieldType.NUMBER), true));
 
-        FacilioView workorderPlanLabourView = new FacilioView();
-        workorderPlanLabourView.setName("all");
-        workorderPlanLabourView.setDisplayName("Job Plan Crafts");
+        FacilioView jobPlanLabourView = new FacilioView();
+        jobPlanLabourView.setName("all");
+        jobPlanLabourView.setDisplayName("Job Plan Crafts");
 
-        workorderPlanLabourView.setModuleName(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-        workorderPlanLabourView.setSortFields(sortFields);
+        jobPlanLabourView.setModuleName(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+        jobPlanLabourView.setSortFields(sortFields);
 
-        List<ViewField> workorderPlanLabourViewFields = new ArrayList<>();
+        List<ViewField> jobPlanLabourViewFields = new ArrayList<>();
 
-        workorderPlanLabourViewFields.add(new ViewField("craft","Craft"));
-        workorderPlanLabourViewFields.add(new ViewField("skill","Skill"));
-        workorderPlanLabourViewFields.add(new ViewField("quantity","Quantity"));
-        workorderPlanLabourViewFields.add(new ViewField("duration","Duration"));
-        workorderPlanLabourViewFields.add(new ViewField("rate","Rate per Hour"));
-        workorderPlanLabourViewFields.add(new ViewField("totalPrice","Total Amount"));
+        jobPlanLabourViewFields.add(new ViewField("craft","Craft"));
+        jobPlanLabourViewFields.add(new ViewField("skill","Skill"));
+        jobPlanLabourViewFields.add(new ViewField("quantity","Quantity"));
+        jobPlanLabourViewFields.add(new ViewField("duration","Duration"));
+        jobPlanLabourViewFields.add(new ViewField("rate","Rate per Hour"));
+        jobPlanLabourViewFields.add(new ViewField("totalPrice","Total Amount"));
 
-        workorderPlanLabourView.setFields(workorderPlanLabourViewFields);
+        jobPlanLabourView.setFields(jobPlanLabourViewFields);
 
-        return workorderPlanLabourView;
+        return jobPlanLabourView;
     }
 }
+
+
+

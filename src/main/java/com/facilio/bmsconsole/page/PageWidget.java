@@ -501,7 +501,13 @@ public class PageWidget {
 		SHIFT_END_TIME("shiftEndTime"),
 		SHIFT_BREAKS("shiftBreaks"),
 		SHIFT_ASSOCIATED_EMPLOYEES("shiftAssociatedEmployees"),
-		SHIFT_WEEKLY_OFF("shiftWeeklyOff");
+		SHIFT_WEEKLY_OFF("shiftWeeklyOff"),
+
+		WORK_ORDER_LABOUR("workorderlabour"),
+
+		WO_PLANNED_LABOUR("plannedLabour"),
+		JOB_PLAN_LABOURS("jobplanlabours");
+
 
 		private String name;
 
