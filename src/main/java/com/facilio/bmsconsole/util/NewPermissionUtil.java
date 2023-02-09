@@ -9,24 +9,25 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.Permission;
-import com.facilio.bmsconsole.context.PermissionGroup;
-import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.beans.WebTabBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+@Log4j
 public class NewPermissionUtil {
 
     private static Map<String, Integer> moduleTabType = Collections.unmodifiableMap(initModuleMap());
@@ -599,44 +600,62 @@ public class NewPermissionUtil {
     }
 
     public static boolean hasSetupPermission() throws Exception {
-        boolean hasSetupPermission = false;
-        List<Integer> setupTypes = new ArrayList<>();
-        for (WebTabContext.Type type : WebTabContext.Type.values()) {
-            if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
-                setupTypes.add(type.getIndex());
-            }
-        }
-        Map<String, FacilioField> webTabFieldsMap = FieldFactory.getAsMap(FieldFactory.getWebTabFields());
-        Map<String, FacilioField> newPermissionFieldsMap = FieldFactory.getAsMap(FieldFactory.getNewPermissionFields());
+        try {
+            boolean hasSetupPermission = false;
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SETUP)) {
+                List<Integer> setupTypes = new ArrayList<>();
+                for (WebTabContext.Type type : WebTabContext.Type.values()) {
+                    if (type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
+                        setupTypes.add(type.getIndex());
+                    }
+                }
+                Map<String, FacilioField> webTabFieldsMap = FieldFactory.getAsMap(FieldFactory.getWebTabFields());
+                Map<String, FacilioField> newPermissionFieldsMap = FieldFactory.getAsMap(FieldFactory.getNewPermissionFields());
+                ApplicationContext currentApplication = AccountUtil.getCurrentApp();
 
-        ApplicationContext currentApplication = AccountUtil.getCurrentApp();
-        Role currentUserRole = null;
-        if(AccountUtil.getCurrentUser() != null) {
-            currentUserRole = AccountUtil.getCurrentUser().getRole();
-            if(currentUserRole.isPrevileged()) {
-                return true;
-            }
-        }
+                if (currentApplication != null) {
+                    GenericSelectRecordBuilder layoutBuilder = new GenericSelectRecordBuilder()
+                            .select(FieldFactory.getCountField())
+                            .table(ModuleFactory.getApplicationLayoutModule().getTableName())
+                            .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(currentApplication.getId()), NumberOperators.EQUALS))
+                            .andCondition(CriteriaAPI.getCondition("DEVICE_TYPE", "deviceType", String.valueOf(ApplicationLayoutContext.LayoutDeviceType.SETUP.getIndex()), NumberOperators.EQUALS));
+                    List<Map<String, Object>> layoutResult = layoutBuilder.get();
+                    if (CollectionUtils.isNotEmpty(layoutResult)) {
+                        long layoutCount = ((Number) layoutResult.get(0).get("count")).longValue();
+                        if (!(layoutCount > 0)) {
+                            return false;
+                        }
+                    }
+                    Role currentUserRole = null;
+                    if (AccountUtil.getCurrentUser() != null) {
+                        currentUserRole = AccountUtil.getCurrentUser().getRole();
+                        if (currentUserRole.isPrevileged()) {
+                            return true;
+                        }
+                    }
+                    GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                            .table(ModuleFactory.getNewPermissionModule().getTableName())
+                            .innerJoin(ModuleFactory.getWebTabModule().getTableName())
+                            .on(ModuleFactory.getWebTabModule().getTableName() + ".ID = " + ModuleFactory.getNewPermissionModule().getTableName() + ".TAB_ID")
+                            .select(FieldFactory.getCountField())
+                            .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("applicationId"), String.valueOf(currentApplication.getId()), NumberOperators.EQUALS))
+                            .andCondition(CriteriaAPI.getCondition(newPermissionFieldsMap.get("roleId"), String.valueOf(currentUserRole.getId()), NumberOperators.EQUALS))
+                            .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("type"), StringUtils.join(setupTypes, ","), NumberOperators.EQUALS));
 
-        if(currentApplication != null && currentUserRole != null) {
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getNewPermissionModule().getTableName())
-                    .innerJoin(ModuleFactory.getWebTabModule().getTableName())
-                    .on(ModuleFactory.getWebTabModule().getTableName() + ".ID = " + ModuleFactory.getNewPermissionModule().getTableName() + ".TAB_ID")
-                    .select(FieldFactory.getCountField())
-                    .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("applicationId"), String.valueOf(currentApplication.getId()),NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(newPermissionFieldsMap.get("roleId"), String.valueOf(currentUserRole.getId()),NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(webTabFieldsMap.get("type"), StringUtils.join(setupTypes,","),NumberOperators.EQUALS));
-
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            if(CollectionUtils.isNotEmpty(result)) {
-                long count = ((Number) result.get(0).get("count")).longValue();
-                if(count > 0) {
-                    hasSetupPermission = true;
+                    List<Map<String, Object>> result = selectRecordBuilder.get();
+                    if (CollectionUtils.isNotEmpty(result)) {
+                        long count = ((Number) result.get(0).get("count")).longValue();
+                        if (count > 0) {
+                            hasSetupPermission = true;
+                        }
+                    }
                 }
             }
+            return hasSetupPermission;
+        } catch (Exception e) {
+            LOGGER.info(e);
         }
-        return hasSetupPermission;
+        return false;
     }
     public static Map<String, Long> getPermissions(int tabType) {
         WebTabContext.Type webTabType = WebTabContext.Type.valueOf(tabType);
