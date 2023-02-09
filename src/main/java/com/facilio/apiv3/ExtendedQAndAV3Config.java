@@ -57,7 +57,7 @@ public class ExtendedQAndAV3Config {
                 .beforeSave(QAndATransactionChainFactory.inspectionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inspectionAfterUpdateChain())
                 .list()
-                .beforeFetch(new InspectionSupplementSupplyCommand())
+                .beforeFetch( QAndATransactionChainFactory.inspectionTemplateBeforeFetchChain())
                 .delete().afterDelete(new DeleteInspectionTriggerCommand())
                 .summary()
                 .beforeFetch(new InspectionSupplementSupplyCommand())

@@ -23,6 +23,13 @@ public class QAndATransactionChainFactory {
         c.addCommand(new InspectionTemplateBeforeSaveCommand());
         return c;
     }
+
+    public static FacilioChain inspectionTemplateBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InspectionSupplementSupplyCommand());
+        c.addCommand(new LoadInspectionExtraFieldsCommand());
+        return c;
+    }
     
     public static FacilioChain surveyTemplateBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
