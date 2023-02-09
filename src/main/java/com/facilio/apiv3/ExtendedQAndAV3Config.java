@@ -174,7 +174,7 @@ public class ExtendedQAndAV3Config {
                 .update()
                 .afterSave(QAndATransactionChainFactory.inductionAfterUpdateChain())
                 .list()
-                .beforeFetch(new InductionSupplementSupplyCommand())
+                .beforeFetch(QAndATransactionChainFactory.inductionTemplateBeforeFetchChain())
                 .summary()
                 .beforeFetch(new InductionSupplementSupplyCommand())
                 .afterFetch(QAndAReadOnlyChainFactory.afterInductionTemplateFetch())

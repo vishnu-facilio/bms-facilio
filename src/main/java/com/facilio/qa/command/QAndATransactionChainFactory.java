@@ -27,7 +27,14 @@ public class QAndATransactionChainFactory {
     public static FacilioChain inspectionTemplateBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new InspectionSupplementSupplyCommand());
-        c.addCommand(new LoadInspectionExtraFieldsCommand());
+        c.addCommand(new LoadInspectionOrInductionExtraFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain inductionTemplateBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InductionSupplementSupplyCommand());
+        c.addCommand(new LoadInspectionOrInductionExtraFieldsCommand());
         return c;
     }
     
