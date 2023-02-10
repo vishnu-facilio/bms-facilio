@@ -2730,7 +2730,7 @@ public class APIv3Config {
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .delete()
                 .list()
-                .beforeFetch(new SpaceBookingSupplementsCommand())
+                .beforeFetch(TransactionChainFactoryV3.SpaceBookingSupplementsAndExtraFieldsChain())
                 .afterFetch(new ValidateBookingCancelCommand())
                 .summary()
                 .beforeFetch(new SpaceBookingSupplementsCommand())

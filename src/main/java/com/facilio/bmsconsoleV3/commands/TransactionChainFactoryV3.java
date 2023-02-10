@@ -20,6 +20,7 @@ import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
+import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -2882,6 +2883,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeletePMPlannerPreOpenWorkOrders());
         c.addCommand(new DeletePlannerTriggerCommand());
+        return c;
+    }
+    public static FacilioChain SpaceBookingSupplementsAndExtraFieldsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SpaceBookingExtraFieldsCommand());
+        c.addCommand(new SpaceBookingSupplementsCommand());
         return c;
     }
 }
