@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.receivable;
+package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class LoadReceivablesExtraFields extends FacilioCommand {
+public class LoadPurchaseRequestExtraFields extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -32,7 +32,7 @@ public class LoadReceivablesExtraFields extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
 
-            String[] extraFieldNames = new String[]{"poId", "sysCreatedTime"};
+            String[] extraFieldNames = new String[]{"localId", "sysCreatedTime"};
 
             if(CollectionUtils.isNotEmpty(view.getFields())){
                 viewFileds=view.getFields().stream().map(ViewField::getField).filter(viewFiled->viewFiled!=null).collect(Collectors.toList());
@@ -50,4 +50,5 @@ public class LoadReceivablesExtraFields extends FacilioCommand {
 
         return false;
     }
+
 }

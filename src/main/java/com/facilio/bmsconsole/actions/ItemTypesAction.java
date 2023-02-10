@@ -91,7 +91,7 @@ public class ItemTypesAction extends FacilioAction {
 	public String itemTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_types.LOCAL_ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_Types.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());

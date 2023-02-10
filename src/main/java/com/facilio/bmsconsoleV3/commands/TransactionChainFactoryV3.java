@@ -13,13 +13,13 @@ import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWork
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.people.SetPeopleTypeCommand;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -1926,13 +1926,13 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadPoPrListLookupCommandV3());
         chain.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommandV3());
-        chain.addCommand(new LoadPurchaseExtraFields());
+        chain.addCommand(new LoadPurchaseOrderExtraFields());
         return chain;
     }
     public static FacilioChain getBeforeFetchPRListChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadPoPrListLookupCommandV3());
-        chain.addCommand(new LoadPurchaseExtraFields());
+        chain.addCommand(new LoadPurchaseRequestExtraFields());
         return chain;
     }
     public static FacilioChain getReceiptsBeforeFetchListChain() {

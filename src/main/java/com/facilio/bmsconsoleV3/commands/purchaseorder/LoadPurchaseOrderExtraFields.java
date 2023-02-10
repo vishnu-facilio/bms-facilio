@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class LoadPurchaseExtraFields extends FacilioCommand {
+public class LoadPurchaseOrderExtraFields extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
         boolean fetchOnlyViewGroupColumn=(boolean)context.getOrDefault(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,false);
         FacilioView view=(FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
@@ -32,7 +31,7 @@ public class LoadPurchaseExtraFields extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
 
-            String[] extraFieldNames = new String[]{"localId"};
+            String[] extraFieldNames = new String[]{"localId", "sysCreatedTime", "receivableStatus", "completedTime"};
 
             if(CollectionUtils.isNotEmpty(view.getFields())){
                 viewFileds=view.getFields().stream().map(ViewField::getField).filter(viewFiled->viewFiled!=null).collect(Collectors.toList());
@@ -47,8 +46,6 @@ public class LoadPurchaseExtraFields extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraReceivableFields);
 
         }
-
         return false;
     }
-
 }

@@ -1229,6 +1229,7 @@ public class ColumnFactory {
 
 	private static List<ViewField> getDefaultTermsAndConditionColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("termType", "Term Type"));
 		columns.add(new ViewField("shortDesc", "Short Description"));
 		columns.add(new ViewField("longDesc", "Long Description"));
@@ -1276,7 +1277,6 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultInventoryRequestColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("localId", "ID"));
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("requestedTime", "Requested Time"));
 		columns.add(new ViewField("requiredTime", "Required Time"));
