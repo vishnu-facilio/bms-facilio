@@ -176,30 +176,30 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			
 			if(people != null && people.getPeopleTypeEnum() != null) {
 				List<AppDomain> appDomains = null;
-				switch(people.getPeopleTypeEnum()) {
-				case TENANT_CONTACT: {
-					appDomains = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, AccountUtil.getCurrentOrg().getId());
-					break;
-				}
-				case VENDOR_CONTACT: {
-					appDomains = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, AccountUtil.getCurrentOrg().getId());
-					break;
-				}
-				case OCCUPANT: {
-					appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getId());
-					break;
-				} 
-				case CLIENT_CONTACT: {
-					appDomains = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, AccountUtil.getCurrentOrg().getId());
-					break;
-				}
-				case EMPLOYEE: {
-					appDomains = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, AccountUtil.getCurrentOrg().getId());
-					break;
-				} 
 
-				default:
-					break;
+				if (people.isOccupantPortalAccess()){
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getId());
+				} else if (people.employeePortalAccess()) {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, AccountUtil.getCurrentOrg().getId());
+				}
+				else {
+					switch (people.getPeopleTypeEnum()) {
+						case TENANT_CONTACT: {
+							appDomains = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, AccountUtil.getCurrentOrg().getId());
+							break;
+						}
+						case VENDOR_CONTACT: {
+							appDomains = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, AccountUtil.getCurrentOrg().getId());
+							break;
+						}
+						case CLIENT_CONTACT: {
+							appDomains = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, AccountUtil.getCurrentOrg().getId());
+							break;
+						}
+
+						default:
+							break;
+					}
 				}
 				
 				if(appDomains != null && !appDomains.isEmpty()) {

@@ -307,7 +307,7 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public int deletePeopleForUser(User user) throws Exception {
-		return PeopleAPI.deletePeopleForUser(user.getOuid());
+		return PeopleAPI.deletePeopleForUser(user);
 	}
 	
 	private void sendInvitation(User user, boolean registration, boolean isInvitation) throws Exception {

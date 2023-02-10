@@ -47,6 +47,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PeopleAPI {
 	private static Logger log = LogManager.getLogger(PeopleAPI.class.getName());
@@ -122,39 +123,38 @@ public class PeopleAPI {
 			people.setPeopleType(PeopleType.EMPLOYEE);
 			people.setIsAppAccess(true);
 			people.setRoleId(user.getRoleId());
+			people.setUser(user.getUserStatus());
 
 			people.setLanguage(user.getLanguage());
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			if(isSignup) {
 				people.setLocalId(1);
 			}
-
-			if (isSignup || user.getInviteAcceptStatus()){
-				people.setUser(true);
-			}
 			RecordAPI.addRecord(!isSignup, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 			pplId = people.getId();
 		}
-		else {
+		else if(peopleExisiting.getPeopleTypeEnum() == PeopleType.EMPLOYEE || peopleExisiting.getPeopleTypeEnum() == PeopleType.OCCUPANT){
 
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsAppAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
 			pplId =emp.getId();
-			if (user.getInviteAcceptStatus()) {
+			if (user.getUserStatus() != null) {
 				FacilioModule people = Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE);
 				V3PeopleContext peopleContext = new V3PeopleContext();
 				peopleContext.setId(pplId);
-				peopleContext.setUser(true);
+				peopleContext.setUser(user.getUserStatus());
 				RecordAPI.updateRecord( FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleContext), V3PeopleContext.class), people, modBean.getAllFields(people.getName()));
 			}
+		}
+		else {
+			throw new RESTException(ErrorCode.VALIDATION_ERROR, "User with this email already exists as people type '"+ peopleExisiting.getPeopleTypeEnum().getValue() +"'");
 		}
 		user.setPeopleId(pplId);
 		updatePeopleIdInOrgUsers(pplId, user.getOuid());
 		if (user.getGroups() != null) {
 			updatePeopleIdInGroupMembers(pplId, user.getOuid());
 		}
-		
 	}
 
 	public static void updatePeopleOnUserUpdate(User user) throws Exception {
@@ -169,6 +169,19 @@ public class PeopleAPI {
 		RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
 	}
 
+	public static void updatePeopleOnUserStatusChange(User user,Boolean userStatus) throws Exception {
+		PeopleContext peopleExisting = getPeopleForId(user.getPeopleId());
+		if(peopleExisting == null && StringUtils.isNotEmpty(user.getEmail())){
+			peopleExisting = getPeople(user.getEmail());
+		}
+		if(peopleExisting != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+			peopleExisting.setUser(userStatus);
+			RecordAPI.updateRecord(peopleExisting, module, modBean.getAllFields(module.getName()));
+		}
+	}
+
 	public static PeopleContext getOrAddRequester(String email) throws Exception {  //used only for service Request Module
 
 		email = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(email);
@@ -178,8 +191,7 @@ public class PeopleAPI {
 		if(people == null) {
 			people = new PeopleContext();
 			people.setEmail(email);
-			people.setPeopleType(PeopleType.OCCUPANT);
-
+			people.setPeopleType(PeopleType.OTHERS);
 			people.setName(MailMessageUtil.getNameFromEmail.apply(people.getEmail()));
 
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
@@ -199,25 +211,25 @@ public class PeopleAPI {
 		try {
 			PeopleContext peopleExisiting = getPeople(user.getEmail());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
 			long pplId = -1;
 			if (peopleExisiting == null) {
-				PeopleContext people = new PeopleContext();
+				EmployeeContext emp = new EmployeeContext();
 				V3PeopleAPI.validatePeopleEmail(user.getEmail());
-				people.setEmail(user.getEmail());
-				people.setName(user.getName());
-				people.setActive(true);
-				people.setPhone(user.getMobile());
-				people.setPeopleType(PeopleType.OCCUPANT);
-				people.setIsOccupantPortalAccess(true);
-
-				people.setLanguage(user.getLanguage());
-
-				RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
-				pplId = people.getId();
-				updatePeopleIdInOrgUsers(pplId, user.getOuid());
-				if (user.getGroups() != null){
-					updatePeopleIdInGroupMembers(pplId,user.getOuid());
+				emp.setEmail(user.getEmail());
+				emp.setName(user.getName());
+				emp.setActive(true);
+				emp.setPhone(user.getMobile());
+				emp.setPeopleType(PeopleType.EMPLOYEE);
+				emp.setIsOccupantPortalAccess(true);
+				emp.setLanguage(user.getLanguage());
+				RecordAPI.addRecord(true, Collections.singletonList(emp), module, modBean.getAllFields(module.getName()));
+				if(emp.getId() > 0) {
+					pplId = emp.getId();
+					updatePeopleIdInOrgUsers(pplId, user.getOuid());
+					if (user.getGroups() != null) {
+						updatePeopleIdInGroupMembers(pplId, user.getOuid());
+					}
 				}
 
 			}
@@ -712,17 +724,27 @@ public class PeopleAPI {
 	}
 
 
-	public static int deletePeopleForUser(long ouId) throws Exception {
-		long peopleId = PeopleAPI.getPeopleIdForUser(ouId);
+	public static int deletePeopleForUser(User user) throws Exception {
+		long peopleId = user.getPeopleId();
+
+		if(peopleId < 0){
+			peopleId = PeopleAPI.getPeopleIdForUser(user.getOuid());
+		}
+
 		if(peopleId > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<Long> ouids = getUserIdForPeople(peopleId);
 
-			com.facilio.modules.DeleteRecordBuilder<PeopleContext> deleteBuilder = new com.facilio.modules.DeleteRecordBuilder<PeopleContext>()
-					.module(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
-			deleteBuilder.andCondition(CriteriaAPI.getIdCondition(peopleId, ModuleFactory.getPeopleModule()));
-			PeopleGroupUtils.markAsDeletePeopleGroupMember(Collections.singletonList(peopleId));
-			return deleteBuilder.markAsDelete();
+			if(ouids.size() == 1){
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+				com.facilio.modules.DeleteRecordBuilder<PeopleContext> deleteBuilder = new com.facilio.modules.DeleteRecordBuilder<PeopleContext>()
+						.module(modBean.getModule(FacilioConstants.ContextNames.PEOPLE))
+						.andCondition(CriteriaAPI.getIdCondition(peopleId, ModuleFactory.getPeopleModule()));
+
+				PeopleGroupUtils.markAsDeletePeopleGroupMember(Collections.singletonList(peopleId));
+
+				return deleteBuilder.markAsDelete();
+			}
 		}
 		return -1;
 	}
@@ -737,10 +759,7 @@ public class PeopleAPI {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
 		List<Map<String, Object>> mapList = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(mapList)) {
-			for(Map<String, Object> map : mapList) {
-				ouIds.add((long) map.get("ouid"));
-			}
-			return ouIds;
+			return mapList.stream().map(user-> (Long)user.get("ouid")).collect(Collectors.toList());
 		}
 		return null;
 	}

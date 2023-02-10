@@ -22,8 +22,8 @@ import javax.servlet.http.HttpSession;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
-import com.facilio.bmsconsole.actions.PeopleAction;
-import com.facilio.bmsconsole.actions.SettingsMfa;
+import com.facilio.bmsconsole.actions.*;
+import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -51,8 +51,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.aws.util.FederatedIdentityUtil;
-import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -1765,20 +1763,20 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private void createPortalUser(String emailaddress, String name, long orgId) throws Exception {
 		PeopleAction peopleAction = new PeopleAction();
+		EmployeeAction employeeAction = new EmployeeAction();
 		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress,true);
 		if (pplContext == null) {
-			pplContext = new PeopleContext();
-			pplContext.setEmail(emailaddress);
-			pplContext.setName(name);
-			pplContext.setPeopleType(5);
-			pplContext.setIsOccupantPortalAccess(true);
+			EmployeeContext empContext = new EmployeeContext();
+			empContext.setEmail(emailaddress);
+			empContext.setName(name);
+			empContext.setIsOccupantPortalAccess(true);
 			HashMap<String, Long> roleMap = new HashMap<>();
 			RoleBean roleBean = AccountUtil.getRoleBean();
 			Role role = roleBean.getRole(orgId, FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
 			roleMap.put(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, role.getId());
-			pplContext.setRolesMap(roleMap);
-			peopleAction.setPeopleList(Arrays.asList(pplContext));
-			peopleAction.addPeople(true);
+			empContext.setRolesMap(roleMap);
+			employeeAction.setEmployees(Arrays.asList(empContext));
+			employeeAction.addEmployees();
 		} else {
 			pplContext.setIsOccupantPortalAccess(true);
 			RoleBean roleBean = AccountUtil.getRoleBean();

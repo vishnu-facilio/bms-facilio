@@ -62,7 +62,19 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum PeopleType implements FacilioIntEnum {
-		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OCCUPANT, DEFAULT, OTHERS;
+		TENANT_CONTACT ("Tenant Contact"),
+		VENDOR_CONTACT ("Vendor Contact"),
+		EMPLOYEE ("Employee"),
+		CLIENT_CONTACT ("Client Contact"),
+		OCCUPANT ("Occupant"),
+		DEFAULT ("Default"),
+		OTHERS ("Others");
+
+		String name;
+
+		PeopleType(String name) {
+			this.name = name;
+		}
 
 		@Override
 		public Integer getIndex() {
@@ -71,7 +83,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 
 		@Override
 		public String getValue() {
-			return name();
+			return this.name;
 		}
 
 		public static PeopleType valueOf(int value) {

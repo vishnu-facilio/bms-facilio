@@ -42,6 +42,8 @@ public class ValidateUserCommand extends FacilioCommand {
         user.setUid(iamUser.getUid());
         user.setIdentifier(iamUser.getIdentifier());
         user.setUserName(iamUser.getUserName());
+        user.setEmail(iamUser.getEmail());
+        user.setPeopleId(iamUser.getPeopleId());
         return false;
     }
 }

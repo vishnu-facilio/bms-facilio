@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
@@ -20,6 +21,7 @@ public class UpdateUserStatusCommand extends FacilioCommand {
         else {
             result = AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid());
         }
+        PeopleAPI.updatePeopleOnUserStatusChange(user,userStatus);
         context.put(FacilioConstants.ContextNames.RESULT, result);
         return false;
     }

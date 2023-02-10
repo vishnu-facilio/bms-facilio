@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.commands.servicerequest;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.context.EmployeeContext;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.Account;
@@ -55,16 +57,20 @@ public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 						if(requester.getName() == null) {
 							requester.setName(MailMessageUtil.getNameFromEmail.apply(requester.getEmail()));
 						}
-						requester.setPeopleType(PeopleType.OCCUPANT);
+						EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(requester), EmployeeContext.class);
 
-						FacilioChain c = TransactionChainFactory.addPeopleChain();
+						FacilioChain c = TransactionChainFactory.addEmployeeChain();
 						c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
 						c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 						c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 						c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-						c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(requester));
+						c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(emp));
 						c.execute();
+						if(emp.getId() > 0){
+							requester= FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(emp), PeopleContext.class);
+							serviceRequestContext.setRequester(requester);
+						}
 					}
 				}
 				else {

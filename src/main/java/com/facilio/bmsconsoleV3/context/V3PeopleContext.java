@@ -63,7 +63,27 @@ public class V3PeopleContext extends V3Context {
     }
 
     public static enum PeopleType implements FacilioIntEnum {
-        TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OCCUPANT, DEFAULT, OTHERS;
+        TENANT_CONTACT ("Tenant Contact"),
+        VENDOR_CONTACT ("Vendor Contact"),
+        EMPLOYEE ("Employee"),
+        CLIENT_CONTACT ("Client Contact"),
+        OCCUPANT ("Occupant"),
+        DEFAULT ("Default"),
+        OTHERS ("Others");
+
+        String name;
+
+        PeopleType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
 
         @Override
         public Integer getIndex() {
@@ -72,7 +92,7 @@ public class V3PeopleContext extends V3Context {
 
         @Override
         public String getValue() {
-            return name();
+            return this.name;
         }
 
         public static V3PeopleContext.PeopleType valueOf(int value) {
