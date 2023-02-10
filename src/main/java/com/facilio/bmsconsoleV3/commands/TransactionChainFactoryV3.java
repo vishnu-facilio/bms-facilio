@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
+import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -239,13 +240,6 @@ import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReserveItemsC
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetIsReservedCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ValidateWorkOrderPlannedItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
-import com.facilio.bmsconsoleV3.commands.workpermit.InsertWorkPermitActivitiesCommand;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.ValidationForDateCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.AddPolicyCriteriaCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.FetchPolicyCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3ValidateSpaceBookingAvailability;
@@ -347,7 +341,12 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
-
+    public static FacilioChain getWorkPermitBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadWorkPermitLookUpsCommandV3());
+        c.addCommand(new LoadWorkPermitExtraFieldsCommandV3());
+        return c;
+    }
     public static FacilioChain getWorkPermitSummaryAfterFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadWorkPermitRecurringInfoCommandV3());

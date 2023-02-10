@@ -1264,7 +1264,7 @@ public class APIv3Config {
                         new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
 
                 .list()
-                .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getWorkPermitBeforeFetchChain())
 
                 .summary()
                 .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
