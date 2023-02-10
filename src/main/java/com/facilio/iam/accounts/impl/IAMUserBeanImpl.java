@@ -2901,7 +2901,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMUser user = getFacilioUserV3(emailaddress, identifier);
 
 		if (user == null) {
-			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, emailaddress+" is not exists or inactive.");
 		}
 
 		long uid = user.getUid();
@@ -2933,7 +2933,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMUser user = getFacilioUserV3(emailaddress, identifier);
 
 		if (user == null) {
-			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, emailaddress+" is not exists or inactive.");
 		}
 
 		long uid = user.getUid();
