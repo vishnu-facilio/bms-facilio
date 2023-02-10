@@ -8,9 +8,9 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
@@ -34,6 +34,7 @@ import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsC
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
 import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotificationCommand;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.LoadInvitesExtraFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.SetInviteStatusConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -58,6 +59,7 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetInviteStatusConditionForVisitsListCommandV3());
         c.addCommand(new LoadVisitorLoggingLookupCommandV3());
+        c.addCommand(new LoadInvitesExtraFieldsCommand());
         return c;
     }
     
@@ -407,6 +409,24 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new GetCustomkKioskButtonCommand());
         return c;
     }
+
+    public static FacilioChain getFacilityBeforeListFetchChain()
+    {
+        FacilioChain c= getDefaultChain();
+        c.addCommand(new LoadFacilityLookupCommandV3());
+        c.addCommand(new LoadFacilityExtraFieldsCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getFacilityBookingBeforeListFetchChain()
+    {
+        FacilioChain c= getDefaultChain();
+        c.addCommand(new LoadFacilityBookingLookupCommand());
+        c.addCommand(new LoadFacilityBookingExtraFieldsCommandV3());
+        return c;
+    }
+
+
 
 
 }
