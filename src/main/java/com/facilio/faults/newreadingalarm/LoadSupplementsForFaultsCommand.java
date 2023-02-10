@@ -40,8 +40,10 @@ public class LoadSupplementsForFaultsCommand extends FacilioCommand {
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
             List<FacilioField> extraReadingAlarmFields = new ArrayList<>();
             List<FacilioField> viewFields = view.getFields().stream().map(ViewField::getField).filter(viewField -> viewField != null).collect(Collectors.toList());
-            ;
             Map<String, FacilioField> viewFieldsMap = FieldFactory.getAsMap(viewFields);
+            if(viewFieldsMap.containsKey("acknowledgedBy")){
+                extraReadingAlarmFields.add(allFieldsAsMap.get("acknowledged"));
+            }
             if (!viewFieldsMap.containsKey("readingFieldId")) {
                 extraReadingAlarmFields.add(allFieldsAsMap.get("readingFieldId"));
             }
