@@ -2008,6 +2008,8 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
+			setCookieProperties(cookie,true);
+			response.addCookie(cookie);
 		}
 
 		setCookieProperties(cookie,true);
@@ -2026,15 +2028,19 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (FacilioProperties.isDevelopment()) {
 			if (FacilioProperties.isOnpremise()) {
-				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
-				response.addHeader("Set-Cookie", cookieString);
+				if(!isDeviceUser) {
+					var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly;";
+					response.addHeader("Set-Cookie", cookieString);
+				}
 				if (proxyCookie != null) {
 					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly;";
 					response.addHeader("Set-Cookie", proxyCookieString);
 				}
 			} else {
-				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
-				response.addHeader("Set-Cookie", cookieString);
+				if(!isDeviceUser) {
+					var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+					response.addHeader("Set-Cookie", cookieString);
+				}
 				if (proxyCookie != null) {
 					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 					response.addHeader("Set-Cookie", proxyCookieString);
@@ -2046,8 +2052,10 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) || "stage2".equals(FacilioProperties.getEnvironment())) {
 			LOGGER.log(Level.SEVERE, "Stage login");
-			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-			response.addHeader("Set-Cookie", cookieString);
+			if(!isDeviceUser) {
+				var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.addHeader("Set-Cookie", cookieString);
+			}
 			if (proxyCookie != null) {
 				var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.addHeader("Set-Cookie", proxyCookieString);
