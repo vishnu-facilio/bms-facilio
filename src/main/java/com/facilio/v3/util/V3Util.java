@@ -497,11 +497,11 @@ public class V3Util {
                                            Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception{
 
         return fetchList(moduleName,isV3,viewName,filters,excludeParentFilter,clientCriteria,
-                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false,false);
+                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false,false,null);
     }
 
     public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
-                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons,boolean fetchOnlyViewGroupColumn) throws Exception {
+                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons,boolean fetchOnlyViewGroupColumn,String quickFilter) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
 
@@ -521,6 +521,12 @@ public class V3Util {
                 context.put(Constants.FILTERS, json);
 
                 context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+            }
+
+            if(StringUtils.isNotEmpty(quickFilter)){
+                JSONParser parser = new JSONParser();
+                JSONObject json = (JSONObject) parser.parse(quickFilter);
+                context.put(Constants.QUICK_FILTER, json);
             }
 
             if(StringUtils.isNotEmpty(clientCriteria)){

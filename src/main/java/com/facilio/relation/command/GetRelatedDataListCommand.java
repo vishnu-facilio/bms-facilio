@@ -25,6 +25,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         String relationModuleName = (String) context.get(FacilioConstants.ContextNames.RELATION_MODULE_NAME);
         String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
         String filters = (String) context.get(FacilioConstants.ContextNames.FILTERS);
+        String quickFilter = (String) context.get(FacilioConstants.ContextNames.QUICK_FILTER);
         String orderBy = (String) context.get(FacilioConstants.ContextNames.ORDER_BY);
         String orderType = (String) context.get(FacilioConstants.ContextNames.ORDER_TYPE);
         boolean withCount = (boolean) context.get(Constants.WITH_COUNT);
@@ -44,7 +45,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
 
         if (fetchSummary) {
             listContext = V3Util.fetchList(relationModuleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields);
+                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter);
 
             JSONObject customRelation = Constants.getJsonRecordMap(listContext);
             ArrayList<Map<String, Object>> resultData = (ArrayList<Map<String, Object>>) customRelation.get(relationModuleName);
@@ -62,7 +63,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
             }
         } else {
             listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields);
+                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter);
 
             recordJSON = Constants.getJsonRecordMap(listContext);
 

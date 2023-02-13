@@ -27,6 +27,7 @@ import java.util.*;
 public class Constants {
     public static final String SITE_LIST = "siteIds";
     public static final String FILTERS = "filters";
+    public static final String QUICK_FILTER= "quickFilter";
     public static final String RECORD_MAP = "recordMap";
     public static final String EXCLUDE_PARENT_CRITERIA = "excludeParentCriteria";
     public static final String FILTER_CRITERIA = "filterCriteria";

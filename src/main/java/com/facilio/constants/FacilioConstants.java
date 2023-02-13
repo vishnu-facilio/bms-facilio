@@ -1257,6 +1257,7 @@ public class FacilioConstants {
 		public static final String NEW_CV = "newCV";
 		public static final String EXISTING_CV = "existingView";
 		public static final String FILTERS = "filters";
+		public static final String QUICK_FILTER = "quickFilter";
 		public static final String SPECIAL_FIELDS = "specialFields";
 		public static final String VIEW_LIMIT = "viewLimit";
 		public static final String IS_S3_VALUE = "isS3Value";

@@ -108,6 +108,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
         }
 
+        String quickFilter =this.getQuickFilter();
+        if(StringUtils.isNotEmpty(quickFilter)){
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(quickFilter);
+            context.put(Constants.QUICK_FILTER, json);
+        }
+
         String search=this.getSearch();
         if (search != null) {
             context.put(FacilioConstants.ContextNames.SEARCH, search);
@@ -135,7 +142,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
         }
         FacilioContext listContext = V3Util.fetchList(moduleName, (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
-                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn());
+                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn(),this.getQuickFilter());
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
         this.setData(recordJSON);

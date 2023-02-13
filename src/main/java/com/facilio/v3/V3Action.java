@@ -102,6 +102,16 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	public void setFilters(String filters) {
 		this.filters = filters;
 	}
+	private String quickFilter;
+
+	public String getQuickFilter() {
+		return quickFilter;
+	}
+
+	public void setQuickFilter(String quickFilter) {
+		this.quickFilter = quickFilter;
+	}
+
 	private String clientCriteria;
 
 	public void setClientCriteria(String clientCriteria) {
