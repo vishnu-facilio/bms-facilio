@@ -702,7 +702,13 @@ public class V3DashboardAPIHandler {
     {
         if (global_filter_widget_map != null && global_filter_widget_map.containsKey(widget_id))
         {
-            actionMeta.put("USER_FILTER", V3DashboardAPIHandler.constructUserFilterRepsonse((JSONObject) global_filter_widget_map.get(widget_id), placeHolders));
+            JSONObject user_filter_json = (JSONObject) global_filter_widget_map.get(widget_id);
+            if(user_filter_json != null && user_filter_json.isEmpty()){
+                actionMeta.put("USER_FILTER", new JSONObject());
+            }
+            else {
+                actionMeta.put("USER_FILTER", V3DashboardAPIHandler.constructUserFilterRepsonse(user_filter_json, placeHolders));
+            }
         }
     }
     public static JSONArray executeDashboardActions(Long dashboard_rule_id, Long trigger_widget_id , DashboardExecuteMetaContext dashboard_execute_meta, Integer triggerType)throws Exception
@@ -736,10 +742,7 @@ public class V3DashboardAPIHandler {
             {
                 HashMap selected_filter_map = (HashMap) placeHolders.get(String.valueOf(user_filter.getLink_name()));
                 List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
-                if(selected_filter_values != null && selected_filter_values.size() > 0 && !"".equals(selected_filter_values.get(0)))
-                {
-                    V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data, null);
-                }
+                V3DashboardAPIHandler.setUserFilterValues(user_filter, selected_filter_values, dashboard_executed_data, null);
             }
             else if (default_values != null && default_values.length > 0 && !( default_values[0].equals("all") || default_values[0].equals("ALL")|| default_values[0].equals("All")))
             {
@@ -771,30 +774,39 @@ public class V3DashboardAPIHandler {
         for (Map.Entry<Long, FacilioField> widget_and_field : widget_field_map.entrySet())
         {
             Long widget_id = widget_and_field.getKey();
-            FacilioField applied_widget_field = widget_and_field.getValue();
-            Operator operator = Operator.getOperator( operatorId != null && operatorId > 0 ? operatorId : 36);
-            Condition condition = new Condition();
-            condition.setField(applied_widget_field);
-            condition.setOperatorId(operator.getOperatorId());
+            if(selected_values != null && selected_values.size() > 0 && (!"".equals(selected_values.get(0)) && !"all".equals(selected_values.get(0))))
+            {
+                FacilioField applied_widget_field = widget_and_field.getValue();
+                Operator operator = Operator.getOperator(operatorId != null && operatorId > 0 ? operatorId : 36);
+                Condition condition = new Condition();
+                condition.setField(applied_widget_field);
+                condition.setOperatorId(operator.getOperatorId());
 
-            StringBuilder values = new StringBuilder();
-            for (String value : selected_values) {
-                values.append(value);
-                values.append(",");
-            }
-            String filter_value = values.toString();
-            if (filter_value != null && !"".equals(filter_value)) {
-                filter_value = filter_value.substring(0, filter_value.length() - 1);
-                condition.setValue(filter_value);
-            }
+                StringBuilder values = new StringBuilder();
+                for (String value : selected_values) {
+                    values.append(value);
+                    values.append(",");
+                }
+                String filter_value = values.toString();
+                if (filter_value != null && !"".equals(filter_value)) {
+                    filter_value = filter_value.substring(0, filter_value.length() - 1);
+                    condition.setValue(filter_value);
+                }
 
-            if (dashboard_executed_data.getGlobal_filter_widget_map().containsKey(widget_id)) {
-                JSONObject criteria_obj = (JSONObject) dashboard_executed_data.getGlobal_filter_widget_map().get(widget_id);
-                criteria_obj.put(user_filter.getId(), condition);
-            } else {
-                JSONObject criteria_obj = new JSONObject();
-                criteria_obj.put(user_filter.getId(), condition);
-                dashboard_executed_data.getGlobal_filter_widget_map().put(widget_id, criteria_obj);
+                if (dashboard_executed_data.getGlobal_filter_widget_map().containsKey(widget_id)) {
+                    JSONObject criteria_obj = (JSONObject) dashboard_executed_data.getGlobal_filter_widget_map().get(widget_id);
+                    criteria_obj.put(user_filter.getId(), condition);
+                } else {
+                    JSONObject criteria_obj = new JSONObject();
+                    criteria_obj.put(user_filter.getId(), condition);
+                    dashboard_executed_data.getGlobal_filter_widget_map().put(widget_id, criteria_obj);
+                }
+            }
+            else if((selected_values != null && selected_values.isEmpty() ) || (selected_values != null && selected_values.size() > 0 && ("".equals(selected_values.get(0))|| "all".equals(selected_values.get(0)))))
+            {
+                if(dashboard_executed_data.getGlobal_filter_widget_map() != null && !dashboard_executed_data.getGlobal_filter_widget_map().containsKey(widget_id)) {
+                    dashboard_executed_data.getGlobal_filter_widget_map().put(widget_id, new JSONObject());
+                }
             }
         }
     }

@@ -83,6 +83,7 @@ public class V3AnalyticsReportAction extends V3Action {
     private String scatterGraphValue;
     private FileInfo.FileFormat fileFormat;
     private String chartType;
+    private String url;
     private Map<String, Object> exportParams;
     private Map<String, Object> renderParams;
     private EMailTemplate emailTemplate;
@@ -101,6 +102,8 @@ public class V3AnalyticsReportAction extends V3Action {
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(templateJSON);
         this.template = FieldUtil.getAsBeanFromJson(jsonObject, ReportTemplateContext.class);
     }
+    public String getUrl() { return url;}
+    public void setUrl(String url) { this.url = url; }
     public int getxAggr() {
         return xAggr != null ? xAggr.getValue() : -1;
     }
@@ -582,6 +585,7 @@ public class V3AnalyticsReportAction extends V3Action {
             context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
         }
         setExportParamsInContext(context);
+        context.put("url",getUrl());
         exportChain.execute();
         setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
         return SUCCESS;

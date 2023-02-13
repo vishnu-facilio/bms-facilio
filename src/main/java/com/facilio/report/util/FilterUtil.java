@@ -64,7 +64,6 @@ public class FilterUtil {
 				else {
 					criteria.addAndCondition(getTimeFieldCondition(timeField, condition));
 				}
-				
 			}
 			criteria.andCriteria(intervalCriteria);
 		}
@@ -387,7 +386,7 @@ public class FilterUtil {
 	private static JSONArray changeAsSQLDays(JSONArray days){
 		JSONArray sqlDays = new JSONArray();
 		for(int i = 0; i < days.size(); i++) {
-			Long day = (Long)days.get(i)+1;
+			Long day = (Long)days.get(i);
 			sqlDays.add(day == 8 ? 1 : day);
 		}
 		return sqlDays;
