@@ -403,6 +403,11 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage,String searchQuery,List<Long> filteredSiteId) throws Exception {
+		return getOrgGroups(orgId,status,fetchMembers,offset,perPage,searchQuery,filteredSiteId, null, null);
+	}
+
+	@Override
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage, String searchQuery, List<Long> filteredSiteId, String orderBy, String orderType) throws Exception {
 
  		List<Group> groups = new ArrayList<>();
 		List<Long> siteIds = new ArrayList<>();
@@ -460,6 +465,9 @@ public class GroupBeanImpl implements GroupBean {
 			condition_name.setValue(searchQuery);
 			criteria.addOrCondition(condition_name);
 			selectBuilder.andCriteria(criteria);
+		}
+		if (StringUtils.isNotEmpty(orderBy)) {
+			selectBuilder.orderBy(orderBy + " " + orderType);
 		}
 		List<Group> props = selectBuilder.get();
 		List<Long> ouids = new ArrayList<>();

@@ -114,12 +114,22 @@ public class LookupSpecialTypeUtil {
 	}
 
 	private static List<FieldOption<Long>> getUserPickList (List<User> users) {
+		return getUserPickList(users, true);
+	}
+
+	private static List<FieldOption<Long>> getUserPickList (List<User> users, boolean returnSorted) {
 		List<FieldOption<Long>> userList = null;
 		if (CollectionUtils.isNotEmpty(users)) {
-			userList = users.stream()
+			if (returnSorted) {
+				userList = users.stream()
 						.map(usr -> new FieldOption<>(usr.getId(), usr.getName()))
 						.sorted(Comparator.comparing(FieldOption::getLabel))
 						.collect(Collectors.toList());
+			} else {
+				userList = users.stream()
+						.map(usr -> new FieldOption<>(usr.getId(), usr.getName()))
+						.collect(Collectors.toList());
+			}
 		}
 		return userList;
 	}
@@ -147,19 +157,22 @@ public class LookupSpecialTypeUtil {
 		public static List<FieldOption<Long>> getNewPickList(String specialType,Map<String,Object> paramsMap) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			List<User> users = ApplicationApi.getUsersList(paramsMap);
-			return getUserPickList(users);
+			boolean returnSorted = StringUtils.isEmpty(String.valueOf(paramsMap.get("orderBy")));
+			return getUserPickList(users, returnSorted);
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			List<User> users = null;
 			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 			if(appId > 0) {
-				users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appId);
+				users = ApplicationApi.getRequesterList(AccountUtil.getCurrentOrg().getOrgId(), appId, paramsMap);
 			}
-			return getUserPickList(users);
+			boolean returnSorted = StringUtils.isEmpty(String.valueOf(paramsMap.get("orderBy")));
+			return getUserPickList(users, returnSorted);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			int page = 0,perPage = 5000,offset = 0;
 			String search = null;
+			String orderBy = null, orderType = null;
 			List<Long> filteredSiteId = new ArrayList<>();
 			if(!paramsMap.isEmpty()){
 				page = (int) paramsMap.get("page");
@@ -181,8 +194,12 @@ public class LookupSpecialTypeUtil {
 					}
 				}
 			}
+			if (paramsMap.containsKey("orderBy")) {
+				orderBy = (String) paramsMap.get("orderBy");
+				orderType = (String) paramsMap.get("orderType");
+			}
 			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true,true,
-					offset,perPage,search,filteredSiteId);
+					offset,perPage,search,filteredSiteId,orderBy,orderType);
 			List<FieldOption<Long>> groupList = null;
 			if (CollectionUtils.isNotEmpty(groups)) {
 				groupList = groups.stream()
@@ -205,7 +222,23 @@ public class LookupSpecialTypeUtil {
 					}
 				}
 			}
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(appIds);
+			int page = 0, perPage = 5000, offset = 0;
+			String orderBy = null, orderType = null;
+			String search = null;
+			if(!paramsMap.isEmpty()){
+				page = (int) paramsMap.get("page");
+				perPage = (int) paramsMap.get("perPage");
+				search = (String) paramsMap.get("search");
+				offset = ((page - 1) * perPage);
+				if (offset < 0) {
+					offset = 0;
+				}
+			}
+			if (paramsMap.containsKey("orderBy")) {
+				orderBy = (String) paramsMap.get("orderBy");
+				orderType = (String) paramsMap.get("orderType");
+			}
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(appIds, perPage, offset, search, orderBy, orderType);
 			List<FieldOption<Long>> roleList = null;
 			if (CollectionUtils.isNotEmpty(roles)) {
 				roleList = roles.stream()

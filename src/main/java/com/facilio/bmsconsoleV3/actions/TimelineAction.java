@@ -11,11 +11,14 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.RESTAPIHandler;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.v3.util.V3Util;
@@ -24,13 +27,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter @Setter
 public class TimelineAction extends RESTAPIHandler {
-
+	private List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS, FacilioConstants.ContextNames.REQUESTER,
+			FacilioConstants.ContextNames.GROUPS, FacilioConstants.ContextNames.ROLE, FacilioConstants.ContextNames.READING_RULE_MODULE);
 	public String fetchTimelineGroupdata() throws Exception {
 		FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		FacilioContext context = getViewChain.getContext();
@@ -51,20 +53,26 @@ public class TimelineAction extends RESTAPIHandler {
 		if(groupByField instanceof LookupField) {
 			setModuleName(((LookupField) (((TimelineViewContext) viewObj).getGroupByField())).getLookupModule().getName());
 			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
-				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, ((TimelineViewContext) viewObj).getGroupCriteria()));
+				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil. getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, ((TimelineViewContext) viewObj).getGroupCriteria(), getOrderBy(), getOrderType()));
 				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
-				setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(getModuleName()));
+				setMeta("localSearch", !localSearchDisabled.contains(getModuleName()));
 			} else {
 				FacilioContext pickListContext = new FacilioContext();
 				PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
 				if (((TimelineViewContext) viewObj).getGroupCriteriaId() > 0) {
 					pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
 				}
+				if (getOrderBy() != null) {
+					JSONObject sorting = new JSONObject();
+					sorting.put("orderBy", getOrderBy());
+					sorting.put("orderType", getOrderType());
+					pickListContext.put(FacilioConstants.ContextNames.SORTING, sorting);
+				}
 				pickListContext = PickListUtil.fetchPickListData(pickListContext);
 
 				setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
 				setMeta("moduleType", ((FacilioModule) pickListContext.get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
-				setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
+				setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, false));
 			}
 		}
 		else if(groupByField instanceof EnumField) {
@@ -74,9 +82,19 @@ public class TimelineAction extends RESTAPIHandler {
 			pickListContext.put(FacilioConstants.ContextNames.PAGE, getPage());
 			pickListContext.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
 			pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
+			if (getSearch() != null) {
+				pickListContext.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+			}
+			if (getOrderBy() != null) {
+				JSONObject sorting = new JSONObject();
+				FacilioField valueField = FieldFactory.getStringField("value", "VAL", ModuleFactory.getEnumFieldValuesModule());
+				sorting.put("orderBy", valueField.getCompleteColumnName());
+				sorting.put("orderType", getOrderType());
+				pickListContext.put(FacilioConstants.ContextNames.SORTING, sorting);
+			}
 			pickListChain.execute();
 			setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
-			setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
+			setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, false));
 		}
 
 		return SUCCESS;

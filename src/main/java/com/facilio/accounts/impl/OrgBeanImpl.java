@@ -129,7 +129,12 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception {
-		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds,defaultIds, criteria);
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,teamId,applicationIds,defaultIds,criteria, null, null);
+	}
+
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage, String searchQuery, Boolean inviteAcceptStatus, boolean status, List<Long> teamId, List<Long> applicationIds, List<Long> defaultIds, Criteria criteria, String orderBy, String orderType) throws Exception {
+		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds,defaultIds, criteria, orderBy, orderType);
 		List<User> finalList = new ArrayList<>();
 		int recordsAdded = 0,actualRecordsSkipped = 0;
 		if(CollectionUtils.isNotEmpty(users)) {
@@ -160,6 +165,10 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception {
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds, defaultIds, criteria, null, null);
+	}
+
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage, String searchQuery, Boolean inviteAcceptStatus, List<Long> teamId, List<Long> applicationIds, List<Long> defaultIds, Criteria criteria, String orderBy, String orderType) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -180,10 +189,19 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("People")
 				.on("People.ID = ORG_Users.PEOPLE_ID");
 
-		if(CollectionUtils.isNotEmpty(defaultIds)){
-			String defaultIdAndOrderBy = MessageFormat.format("FIELD ( ORG_Users.ORG_USERID, {0} ) DESC",StringUtils.join(defaultIds,","));
-			selectBuilder.orderBy(defaultIdAndOrderBy);
+		String sortBy = null, sortType = null;
+		if(CollectionUtils.isNotEmpty(defaultIds)){																					// defaultIdAndOrderBy
+			sortBy = MessageFormat.format("FIELD ( ORG_Users.ORG_USERID, {0} ) DESC",StringUtils.join(defaultIds,","));
 		}
+		if(StringUtils.isNotEmpty(orderBy)) {
+			sortBy = StringUtils.isNotEmpty(sortBy) ? sortBy + ", " + orderBy : orderBy;											// customSortBy
+			sortType = StringUtils.isNotEmpty(orderType) ? orderType : "ASC";														// customSortType
+			sortBy = sortBy + " " + sortType;
+		}
+		if(StringUtils.isNotEmpty(sortBy)) {
+			selectBuilder.orderBy(sortBy);
+		}
+
 		if(CollectionUtils.isNotEmpty(teamId)){
 			selectBuilder.innerJoin("FacilioGroupMembers").on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID");
 			selectBuilder.andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.GROUPID", "groupId", StringUtils.join(teamId, ','), NumberOperators.EQUALS));

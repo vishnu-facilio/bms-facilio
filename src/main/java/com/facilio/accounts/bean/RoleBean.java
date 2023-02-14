@@ -32,7 +32,9 @@ public interface RoleBean {
 	public List<Role> getRoles(Collection<Long> ids) throws Exception;
 	
 	public List<Role> getRolesForApps(Collection<Long> appIds) throws Exception;
-	
+
+	public List<Role> getRolesForApps(Collection<Long> appIds, int perPage, int offset, String searchQuery, String orderBy, String orderType) throws Exception;
+
 	public Map<String, Role> getRoleMap() throws Exception;
 	
 	public List<Permissions> getPermissions (long roleId) throws Exception;

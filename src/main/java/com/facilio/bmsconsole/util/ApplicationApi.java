@@ -22,6 +22,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2921,6 +2922,8 @@ public class ApplicationApi {
         List<Long> teamIds = new ArrayList<>();
         List<Long> applicationIds = new ArrayList<>();
         String search = null;
+        String orderBy = null;
+        String orderType = null;
         Long _default = null;
         List<Long> defaultIdList = new ArrayList<>();
         Criteria serverCriteria = null;
@@ -2957,6 +2960,11 @@ public class ApplicationApi {
             if (paramsMap.containsKey("serverCriteria")) {
             	serverCriteria = (Criteria) paramsMap.get("serverCriteria");
             }
+            if (paramsMap.containsKey("orderBy")) {
+                FacilioField nameField = Constants.getModBean().getField("name", FacilioConstants.ContextNames.PEOPLE);
+                orderBy = nameField.getCompleteColumnName();
+                orderType = (String) paramsMap.get("orderType");
+            }
         }
         if (CollectionUtils.isEmpty(applicationIds)) {
             ApplicationContext maintenanceApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -2970,13 +2978,39 @@ public class ApplicationApi {
         }
         //TODO - Send criteria object here to filter users in picklist api
         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false,
-                false, offset, perPage, search, true, true, teamIds, applicationIds, defaultIdList, serverCriteria);
+                false, offset, perPage, search, true, true, teamIds, applicationIds, defaultIdList, serverCriteria, orderBy, orderType);
         if (CollectionUtils.isNotEmpty(users)) {
             return users;
         }
         return null;
     }
 
+    public static List<User> getRequesterList(long orgId, long appId, Map<String, Object> paramsMap) throws Exception {
+        int page = 0, perPage = 5000, offset = 0;
+        String search = null;
+        String orderBy = null;
+        String orderType = null;
+        if (!paramsMap.isEmpty()) {
+            page = (int) paramsMap.get("page");
+            perPage = (int) paramsMap.get("perPage");
+            search = (String) paramsMap.get("search");
+            offset = ((page - 1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+            if (paramsMap.containsKey("orderBy")) {
+                orderBy = (String) paramsMap.get("orderBy");
+                orderType = (String) paramsMap.get("orderType");
+            }
+        }
+
+        List<User> users = AccountUtil.getOrgBean().getAppUsers(orgId,  appId,  -1,  false,  false,  offset, perPage, search,
+                null, null, null, null, null, orderBy, orderType);
+        if (CollectionUtils.isNotEmpty(users)) {
+            return users;
+        }
+        return null;
+    }
 
     public static User addSuperAdminToNewApp(long orgId, long appId, Role kioskAdmin) throws Exception {
         User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(orgId);

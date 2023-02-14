@@ -144,10 +144,18 @@ public class NewReadingRuleAPI {
     public static List<NewReadingRuleContext> getAllRules(Map<String, Object> paramsMap) throws Exception {
         String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
         String search = null;
+        int page = 0, perPage = 50;
+        String orderBy = null, orderType = null;
         if(paramsMap != null){
-             search = (String) paramsMap.get("search");
+            page = (int) paramsMap.get("page");
+            perPage = (int) paramsMap.get("perPage");
+            search = (String) paramsMap.get("search");
+            if (paramsMap.containsKey("orderBy")) {
+                orderBy = (String) paramsMap.get("orderBy");
+                orderType = (String) paramsMap.get("orderType");
+            }
         }
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, null, null, search, 0, 50, false, null, null);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);

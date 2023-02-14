@@ -18,6 +18,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -247,6 +248,11 @@ public class RoleBeanImpl implements RoleBean {
 
 	@Override
 	public List<Role> getRolesForApps(Collection<Long> appIds) throws Exception {
+		return getRolesForApps(appIds, -1, -1, null,null, null);
+	}
+
+	@Override
+	public List<Role> getRolesForApps(Collection<Long> appIds, int perPage, int offset, String searchQuery, String orderBy, String orderType) throws Exception {
 
 		List<Long> roleIds = getRolesForApp(appIds);
 		if(CollectionUtils.isNotEmpty(roleIds)) {
@@ -254,6 +260,17 @@ public class RoleBeanImpl implements RoleBean {
 					.select(AccountConstants.getRoleFields())
 					.table(AccountConstants.getRoleModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleID", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
+
+			if(perPage > 0 && offset >= 0) {
+				selectBuilder.offset(offset);
+				selectBuilder.limit(perPage);
+			}
+			if(StringUtils.isNotEmpty(searchQuery)) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchQuery, StringOperators.CONTAINS));
+			}
+			if (StringUtils.isNotEmpty(orderBy)) {
+				selectBuilder.orderBy(orderBy + " " + orderType);
+			}
 
 			return getRolesFromProps(selectBuilder.get(), false);
 		}

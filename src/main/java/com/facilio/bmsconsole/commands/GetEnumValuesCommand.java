@@ -6,12 +6,15 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FieldOption;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +39,23 @@ public class GetEnumValuesCommand extends FacilioCommand {
                 .select(FieldFactory.getEnumFieldValuesFields())
                 .table(module.getTableName())
                 .andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", String.valueOf(id), NumberOperators.EQUALS))
-                .orderBy("SEQUENCE_NUMBER, IDX")
                 ;
         selectBuilder.offset(offset);
         selectBuilder.limit(perPage);
         if(serverCriteria != null) {
             selectBuilder.andCriteria(serverCriteria);
+        }
+        String searchString  = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+        if (StringUtils.isNotEmpty(searchString)) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition("VAL", "value", searchString, StringOperators.CONTAINS));
+        }
+        JSONObject sorting = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+        if (sorting != null && !sorting.isEmpty()) {
+            String sortBy = (String) sorting.get("orderBy");
+            String sortType = (String) sorting.get("orderType");
+            selectBuilder.orderBy(sortBy + " " + sortType);
+        } else {
+            selectBuilder.orderBy("SEQUENCE_NUMBER, IDX");
         }
         List<Map<String, Object>> props = selectBuilder.get();
         context.put(FacilioConstants.ContextNames.RECORD_LIST, props);
