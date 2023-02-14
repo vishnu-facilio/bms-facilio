@@ -90,8 +90,16 @@ public class WmsApi
 		return WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
 	}
 	
-	public static String getNewWebsocketEndpoint(long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
-		return NEW_WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
+	public static String getNewWebsocketEndpoint(String domain, long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
+		String wsURL = NEW_WEBSOCKET_URL;
+		if(!FacilioProperties.isDevelopment()) {
+			wsURL = "wss://" + domain;
+		}
+		wsURL += "/websocket/connect/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
+		if (AccountUtil.getCurrentApp() != null) {
+			wsURL += "&app=" + AccountUtil.getCurrentApp().getLinkName();
+		}
+		return wsURL;
 	}
 	
 	public static void sendEvent(long to, WmsEvent event) throws IOException, EncodeException
