@@ -223,7 +223,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                     long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
                                     switch (pm.getTriggerTypeEnum()) {
                                         case ONLY_SCHEDULE_TRIGGER:
-                                            LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM() - 1");
+                                            LOGGER.debug("createBulkWoContextsFromPM() - 1");
                                             BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, endTime, minTime, workorderTemplate);
                                             bulkWorkOrderContexts.add(bulkWoContextsFromPM);
                                             nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
@@ -325,7 +325,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                     long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
                                     switch (pm.getTriggerTypeEnum()) {
                                         case ONLY_SCHEDULE_TRIGGER:
-                                            LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM() - 2");
+                                            LOGGER.debug("createBulkWoContextsFromPM() - 2");
                                             BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, endTime, minTime, workorderTemplate);
                                             bulkWorkOrderContexts.add(bulkWoContextsFromPM);
                                             nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
@@ -360,7 +360,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                         // PMJobsContext pmJob = null;
                         switch (pm.getTriggerTypeEnum()) {
                             case ONLY_SCHEDULE_TRIGGER:
-                                LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM() - 3");
+                                LOGGER.debug("createBulkWoContextsFromPM() - 3");
                                 BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, endTime, minTime, workorderTemplate);
                                 bulkWorkOrderContexts.add(bulkWoContextsFromPM);
                                 nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());

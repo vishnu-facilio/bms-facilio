@@ -602,7 +602,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, long minTime, WorkorderTemplate woTemplate) throws Exception {
-		LOGGER.log(Level.ERROR, "createBulkWoContextsFromPM()");
+		LOGGER.debug("createBulkWoContextsFromPM()");
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis();
