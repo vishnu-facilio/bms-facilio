@@ -130,6 +130,9 @@ public class ResourceAPI {
 				}
 			}
 		}
+		returnFields = returnFields.stream()
+                .sorted(Comparator.comparingLong(FacilioField::getId))
+                .collect(Collectors.toList());
 		return returnFields;
 	}
 

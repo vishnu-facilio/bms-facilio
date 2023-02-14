@@ -297,7 +297,7 @@ function showLicense() {
 				</div>
 				<%
 					String currentUserEmail = AccountUtil.getCurrentUser().getEmail();
-					List<String> allowedUserToUpdateLicence = Arrays.asList("vandhana@facilio.com","shivaraj@facilio.com","yoge@facilio.com");
+					List<String> allowedUserToUpdateLicence = Arrays.asList("vandhana@facilio.com","shivaraj@facilio.com","yoge@facilio.com","rupal@facilio.com");
 					if(!FacilioProperties.isProduction() || (allowedUserToUpdateLicence.contains(currentUserEmail))) {
   				%>
 						<input type="submit" name="addLicense" value="Update" />

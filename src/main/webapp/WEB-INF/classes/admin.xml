@@ -24,6 +24,11 @@
 				<param name="location">buildInfo?showcache=true</param>
 			</result>
 		</action>
+		<action name="pmMetaRefresh" class="com.facilio.bmsconsole.actions.AdminAction" method="pmMetaRefresh">
+			<result name="success" type="redirect">
+				<param name="location">pmv2monitoring</param>
+			</result>
+		</action>
 		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
 			<result name="success" type="redirect">
 				<param name="location">buildInfo</param>
@@ -72,6 +77,9 @@
 		</action>
 		<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/closewo.jsp</result>
+		</action>
+		<action name="pmv2monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/pmv2Monitoring.jsp</result>
 		</action>
 		<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/userlicense.jsp</result>

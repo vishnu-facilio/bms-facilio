@@ -276,6 +276,12 @@ public class AdminAction extends ActionSupport {
 
 		return SUCCESS;
 	}
+	
+	
+	public String pmMetaRefresh() throws IOException {
+		
+		return SUCCESS;
+	}
 
 	public  String reloadBrowser() throws IOException {
 		Message message = new Message(MessageType.BROADCAST);

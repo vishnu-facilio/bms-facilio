@@ -20,4 +20,11 @@ public class PMPlanner extends V3Context {
     private Long staffTimelineViewId;
     private FacilioView resourceTimelineView;
     private FacilioView staffTimelineView;
+    
+    public Long getTriggerId() {
+    	if(trigger != null) {
+    		return trigger.getId();
+    	}
+    	return null;
+    }
 }

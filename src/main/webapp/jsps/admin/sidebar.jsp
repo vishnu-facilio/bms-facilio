@@ -97,10 +97,10 @@ if (buildinfo == null) {
            </li>
            
            <li>
-               <a href="closewo">
+               <a href="pmv2monitoring">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">Close WorkOrder</span>
+               <span class="nav-title">PM V2</span>
                </a>
            </li>
              <li>

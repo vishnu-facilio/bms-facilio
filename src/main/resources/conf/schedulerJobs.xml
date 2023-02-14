@@ -7,19 +7,28 @@
 	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' /> -->
 	<job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser'
 		 transactionTimeout='300000'/>
+		 
+	<!-- PM RELATED JOBS STARTS  -->
 	
-	<!-- OLD PM NIGHTLY JOB -->
-	<job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='900000'/>
-	<!-- NEW PM NIGHTLY JOB -->
-	<job name='PMV2NightlyScheduler' classname='com.facilio.bmsconsole.jobs.PMV2NightlyScheduler' transactionTimeout='900000'/>
-	<!-- JOB TO DELETE "DELETED PRE-OPEN WORKORDERS"-->
-	<job name='RemoveDeletedPreOpenWorkOrdersJob' classname='com.facilio.bmsconsole.jobs.RemoveDeletedPreOpenWorkOrdersJob' transactionTimeout='3600000'/>
+		<!-- OLD PM NIGHTLY JOB -->
+		<job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='900000'/>
+		<!-- NEW PM NIGHTLY JOB -->
+		<job name='PMV2NightlyScheduler' classname='com.facilio.bmsconsole.jobs.PMV2NightlyScheduler' transactionTimeout='900000'/>
+		<!-- JOB TO DELETE "DELETED PRE-OPEN WORKORDERS"-->
+		<job name='RemoveDeletedPreOpenWorkOrdersJob' classname='com.facilio.bmsconsole.jobs.RemoveDeletedPreOpenWorkOrdersJob' transactionTimeout='3600000'/>
+		<!-- NOT BEIING USED SHOULD CHECK AND REMOVE-->
+		<job name='PlannedMaintenanceScheduler' classname="com.facilio.bmsconsole.jobs.PlannedMaintenanceScheduler" transactionTimeout='900000'/>
+		<!-- 30 mins job to schedule open WO-->
+		<job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange' transactionTimeout='900000'/>
+		<!-- PRE OPEN TO OPEN v1-->
+		<job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>
+		<!-- PRE OPEN TO OPEN v2-->
+		<job name='OpenScheduleWOV2' classname='com.facilio.bmsconsole.jobs.OpenScheduleWOV2' transactionTimeout='300000'/>
+		<!-- PM V2 Monitoring tool-->
+		<job name='pmV2MonitoringToolJob' classname='com.facilio.bmsconsole.jobs.PMV2MonitoringToolJob' transactionTimeout='300000'/>
 	
-	<job name='PlannedMaintenanceScheduler' classname="com.facilio.bmsconsole.jobs.PlannedMaintenanceScheduler" transactionTimeout='900000'/>
-	<job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange'
-		 transactionTimeout='900000'/>
-	<job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>
-	<job name='OpenScheduleWOV2' classname='com.facilio.bmsconsole.jobs.OpenScheduleWOV2' transactionTimeout='300000'/>
+	<!-- PM RELATED JOBS ENDS  -->
+	
 	<job name='VirtualMeterCalculation' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator'
 		 transactionTimeout='300000'/>
 	<job name='HistoricalVMCalculation' classname='com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob'
