@@ -2881,7 +2881,9 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new AddCustomDeviceCommand())
                 .list()
+                .beforeFetch(new AddAssociateResourceCommand())
                 .summary()
+                .beforeFetch(new AddAssociateResourceCommand())
                 .afterFetch(new GetCustomkKioskButtonCommand())
                 .delete()
                 .build();

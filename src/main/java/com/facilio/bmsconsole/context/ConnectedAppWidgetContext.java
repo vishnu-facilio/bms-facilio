@@ -23,6 +23,7 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private String sandBoxBaseUrl;
 
 	private String productionBaseUrl;
+	private String connectedAppName;
 
 
 	public String getLinkName() {

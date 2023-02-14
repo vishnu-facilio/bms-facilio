@@ -59,6 +59,7 @@ public class GetKioskConnectedCommand extends FacilioCommand {
                     widgetDetails.setConnectedAppLinkName(app.getLinkName());
                     widgetDetails.setProductionBaseUrl(app.getProductionBaseUrl());
                     widgetDetails.setSandBoxBaseUrl(app.getSandBoxBaseUrl());
+                    widgetDetails.setConnectedAppName(app.getName());
                 }
 
             }

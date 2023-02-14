@@ -12,6 +12,7 @@ public class V3DeviceContext extends V3AssetContext {
 
     private String deviceInfo;
     private long deviceType;
+    private long site;
     private DeviceType deviceTypeEnum;
     private KioskType kioskType;
     private V3ResourceContext associatedResource;
