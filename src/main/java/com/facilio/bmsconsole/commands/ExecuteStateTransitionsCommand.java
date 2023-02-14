@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FacilioModule;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -25,6 +26,7 @@ public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	}
 
 	@Override
+	@WithSpan
 	public boolean executeCommand(Context context) throws Exception {
 		context.put(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK, true);
 		UpdateEventListForStateFlowCommand.updateEventListForStateTransition(context);

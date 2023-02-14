@@ -13,6 +13,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
+import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
@@ -27,6 +28,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 	private LinkedHashMap<RollUpField,LinkedHashSet<Long>> triggeringChildFieldVsChildGroupedIds = new LinkedHashMap<RollUpField,LinkedHashSet<Long>>();
 
 	@Override
+	@WithSpan
 	public boolean executeCommand(Context context) throws Exception {
 		
 		try {

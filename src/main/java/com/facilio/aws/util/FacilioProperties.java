@@ -194,9 +194,6 @@ public class FacilioProperties {
     private static Integer malwareScannerPort;
 
     @Getter
-    private static boolean isOrderByCleaningEnabled;
-
-    @Getter
     private static String facilioIosURL;
     @Getter
     private static String facilioAndroidURL;
@@ -430,7 +427,6 @@ public class FacilioProperties {
                 malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
                 malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
             }
-            isOrderByCleaningEnabled = Boolean.valueOf(PROPERTIES.getProperty("sanitizeOrderBy.enabled"));
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
         } catch (IOException e) {

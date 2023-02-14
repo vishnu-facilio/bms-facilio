@@ -64,11 +64,7 @@ public class LoadViewCommand extends FacilioCommand {
 			String tempOrderBy = (String) tempSortObj.get("orderBy");
 			String tempOrderType = (String) tempSortObj.get("orderType");
 			if (!SecurityUtil.isClean(tempOrderBy, tempOrderType)) {
-				if(FacilioProperties.isOrderByCleaningEnabled()) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
-				}else{
-					LOGGER.error("Invalid order clause passed: "+tempOrderBy+" "+tempOrderType);
-				}
+				throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
 			}
 		}
 

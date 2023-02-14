@@ -13,6 +13,7 @@ import java.util.StringJoiner;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -64,6 +65,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	}
 
 	@Override
+	@WithSpan
 	public boolean executeCommand(Context context) throws Exception {
 		try {
 			long startTime = System.currentTimeMillis();

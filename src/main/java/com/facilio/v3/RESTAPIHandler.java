@@ -130,11 +130,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         api currentApi = currentApi();
         if(!SecurityUtil.isClean(this.getOrderBy(),this.getOrderType())){
-            if(FacilioProperties.isOrderByCleaningEnabled()) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
-            }else{
-                LOGGER.log(Level.SEVERE,"Invalid order clause passed: "+this.getOrderBy()+" "+this.getOrderType());
-            }
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
         }
         FacilioContext listContext = V3Util.fetchList(moduleName, (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
                 this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn());

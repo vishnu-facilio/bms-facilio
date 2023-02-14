@@ -21,6 +21,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +41,7 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
     }
 
     @Override
+    @WithSpan
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
         if (MapUtils.isNotEmpty(recordMap)) {

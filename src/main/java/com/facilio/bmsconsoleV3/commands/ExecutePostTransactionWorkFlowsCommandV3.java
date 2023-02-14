@@ -5,6 +5,7 @@ import com.facilio.command.PostTransactionCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -26,6 +27,7 @@ public class ExecutePostTransactionWorkFlowsCommandV3 extends FacilioCommand imp
     }
 
     @Override
+    @WithSpan
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
         this.context = context;
