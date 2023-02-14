@@ -47,6 +47,15 @@ public class BMSEventContext extends BaseEventContext {
 	public void setAgentId(long agentId) {
 		this.agentId = agentId;
 	}
+
+    private String alarmClass;
+    public String getAlarmClass() {
+        return alarmClass;
+    }
+    public void setAlarmClass(String alarmClass) {
+        this.alarmClass = alarmClass;
+    }
+
 	@Override
     public boolean shouldIgnore() {
         if (StringUtils.isEmpty(condition) || StringUtils.isEmpty(source)) {
@@ -74,6 +83,7 @@ public class BMSEventContext extends BaseEventContext {
         alarm.setCondition(getCondition());
         alarm.setSource(getSource());
         alarm.setController(getController());
+        alarm.setAlarmClass(getAlarmClass());
 
         return baseAlarm;
     }
@@ -88,6 +98,7 @@ public class BMSEventContext extends BaseEventContext {
         bmsOccurrence.setCondition(getCondition());
         bmsOccurrence.setSource(getSource());
         bmsOccurrence.setController(getController());
+        bmsOccurrence.setAlarmClass(getAlarmClass());
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 

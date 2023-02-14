@@ -57,6 +57,8 @@ public class AgentConstants
     public static final String NETWORK_NUMBER = "networkNumber";
     public static final String URL = "url";
     public static final String INSTANCE_TYPE = "instanceType";
+    public static final String ACTUAL_UNIT = "actualUnit";
+    public static final String POINT_UNIT = "pointUnit";
     public static final String VENDOR_ID = "vendorId";
     public static final String RANGE = "range";
     public static final String BACNET_PORT = "port";

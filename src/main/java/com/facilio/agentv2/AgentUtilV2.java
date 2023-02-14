@@ -9,10 +9,12 @@ import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
-import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -20,14 +22,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
@@ -46,6 +48,7 @@ import org.json.simple.JSONObject;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AgentUtilV2
 {
@@ -205,6 +208,97 @@ public class AgentUtilV2
             LOGGER.info("Deleting Points Data Missing Alarm Job for agent - "+ agent.getDisplayName());
             FacilioTimer.deleteJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
         }
+    }
+
+    public static boolean clearPointsDataMissingAlarm(FacilioAgent agent) {
+        try {
+            long pointsMissingCount = checkDataMissingIsFalse(agent);
+
+            if (pointsMissingCount == 0) {
+                LOGGER.info("Data arriving for all the commissioned points in agent " + agent.getDisplayName());
+                long activeAlarms = getActiveAlarms(agent);
+                if (activeAlarms > 0) {
+                    AgentUtilV2.clearPointAlarm(agent);
+                    return true;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while clearing PointsDataMissingAlarmJob " + agent.getDisplayName(), e);
+        }
+        return false;
+    }
+
+    private static long checkDataMissingIsFalse(FacilioAgent agent) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .select(new ArrayList<>())
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DATA_MISSING), String.valueOf(1), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agent.getId()), StringOperators.IS));
+
+        List<Map<String, Object>> rows = select.get();
+        return (long) rows.get(0).get(AgentConstants.ID);
+    }
+
+    public static int getActiveAlarms(FacilioAgent agent) throws Exception {
+        List<String> messageKeys = Collections.singletonList("AgentAlarm_" + AgentAlarmContext.AgentAlarmType.POINT.getIndex() + "_" + agent.getId());
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule baseAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+
+        Criteria severityCriteria = new Criteria();
+        severityCriteria.addAndCondition(CriteriaAPI.getCondition("SEVERITY", "severity", FacilioConstants.Alarm.CLEAR_SEVERITY, StringOperators.ISN_T));
+
+        LookupField severityField = new LookupField();
+        severityField.setName("severity");
+        severityField.setColumnName("SEVERITY_ID");
+        severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+        severityField.setModule(baseAlarmModule);
+        severityField.setDataType(FieldType.LOOKUP);
+
+        SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
+                .beanClass(BaseAlarmContext.class)
+                .module(baseAlarmModule)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM))
+                .andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(messageKeys, ','), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(severityField, severityCriteria, LookupOperator.LOOKUP));
+
+        List<BaseAlarmContext> activeAlarms = selectBuilder.get();
+
+        return activeAlarms.size();
+
+    }
+
+    public static Collection<Long> getPointsDataMissing(FacilioAgent agent) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .select(FieldFactory.getPointFields())
+                .andCriteria(getPointsDataMissingCriteria(fieldMap, agent.getId(), agent));
+
+        List<Map<String, Object>> rows = select.get();
+
+        return rows.stream().map(row -> (Long) row.get(AgentConstants.ID)).collect(Collectors.toList());
+    }
+
+    private static Criteria getPointsDataMissingCriteria(Map<String, FacilioField> fieldMap, long jobId, FacilioAgent agent) {
+        long currentTime = System.currentTimeMillis();
+
+        String diffInMinutes = "(" + currentTime + "-" + fieldMap.get(AgentConstants.LAST_RECORDED_TIME).getCompleteColumnName() + ") / (" + 60 * 1000 + ")";
+        FacilioField difference = FieldFactory.getField("difference", diffInMinutes, FieldType.NUMBER);
+
+        String interval = "2 * COALESCE(" + fieldMap.get(AgentConstants.DATA_INTERVAL).getCompleteColumnName() + "," + agent.getInterval() + ")";
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(jobId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(PointEnum.ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.FIELD_ID), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(difference, interval, NumberOperators.GREATER_THAN));
+        return criteria;
     }
 
     public static void togglePointsDataMissingAlarmJob(FacilioAgent agent) throws Exception {

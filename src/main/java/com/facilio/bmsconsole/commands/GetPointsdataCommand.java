@@ -46,6 +46,8 @@ public class GetPointsdataCommand extends FacilioCommand {
         FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_INPUT.ordinal());//13
         FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_OUTPUT.ordinal());
         FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
+        FILTER_INSTANCES.add(BACNetUtil.InstanceType.ACCUMULATOR.ordinal());//23
+        FILTER_INSTANCES.add(BACNetUtil.InstanceType.PULSE_CONVERTER.ordinal());//24
     }
 
     private static final String FILETR_JOIN = StringUtils.join(FILTER_INSTANCES, ",");

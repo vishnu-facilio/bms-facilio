@@ -29,4 +29,12 @@ public class BMSAlarmContext extends BaseAlarmContext {
     public void setController(long controller) {
         this.controller = controller;
     }
+
+    private String alarmClass;
+    public String getAlarmClass() {
+        return alarmClass;
+    }
+    public void setAlarmClass(String alarmClass) {
+        this.alarmClass = alarmClass;
+    }
 }

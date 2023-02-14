@@ -17,6 +17,7 @@ public class BMSAlarmOccurrenceContext extends AlarmOccurrenceContext{
 
     private long controller;
 
+    private String alarmClass;
 
     @Override
     public Type getTypeEnum() {

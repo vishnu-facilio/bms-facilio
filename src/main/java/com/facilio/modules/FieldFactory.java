@@ -7556,6 +7556,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.INSTANCE_TYPE, "INSTANCE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.ACTUAL_UNIT, "ACTUAL_UNIT", module, FieldType.STRING));
         return fields;
     }
 

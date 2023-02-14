@@ -18,6 +18,15 @@ public class BacnetIpPointContext extends Point  implements Serializable {
 
     private long instanceNumber = -1;
     private int instanceType = -1;
+    private String actualUnit;
+
+    public String getActualUnit() {
+        return actualUnit;
+    }
+
+    public void setActualUnit(String actualUnit) {
+        this.actualUnit = actualUnit;
+    }
 
     @Deprecated
     public BacnetIpPointContext() {
@@ -64,6 +73,9 @@ public class BacnetIpPointContext extends Point  implements Serializable {
         }
         if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, pointMap) && containsValueCheck(AgentConstants.INSTANCE_TYPE, pointMap)) {
           JSONObject jsonObject = new JSONObject();
+          if(pointMap.containsKey(AgentConstants.POINT_UNIT)){
+              pointMap.put(AgentConstants.ACTUAL_UNIT, pointMap.remove(AgentConstants.POINT_UNIT));
+          }
           jsonObject.putAll(pointMap);
             BacnetIpPointContext point = FieldUtil.getAsBeanFromJson(jsonObject, BacnetIpPointContext.class);
           return point;
@@ -73,13 +85,15 @@ public class BacnetIpPointContext extends Point  implements Serializable {
 
 
 
-        @Override
+    @Override
     public JSONObject getChildJSON() {
         JSONObject bacnetPointJSON = new JSONObject();
         bacnetPointJSON.put(AgentConstants.ID,getId());
-            bacnetPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
+        bacnetPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
         bacnetPointJSON.put(AgentConstants.INSTANCE_NUMBER,instanceNumber);
         bacnetPointJSON.put(AgentConstants.INSTANCE_TYPE,instanceType);
+        bacnetPointJSON.put(AgentConstants.ACTUAL_UNIT, actualUnit);
+
         return bacnetPointJSON;
     }
 

@@ -72,25 +72,10 @@ public class RdmControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        FacilioField userNameField = fieldsMap.get(AgentConstants.USERNAME);
         FacilioField deviceField = fieldsMap.get(AgentConstants.DEVICE);
-        FacilioField urlField = fieldsMap.get(AgentConstants.URL);
-        FacilioField passwordField = fieldsMap.get(AgentConstants.PASSWORD);
 
-        conditions.add(CriteriaAPI.getCondition(urlField, getUrl(), StringOperators.IS));
         conditions.add(CriteriaAPI.getCondition(deviceField, getDevice(), StringOperators.IS));
 
-        LOGGER.info(" fields : " + urlField + "-----" + deviceField + "-----" + userNameField + "-----" + passwordField);
-        if (username == null) {
-            conditions.add(CriteriaAPI.getCondition(userNameField, "NULL", CommonOperators.IS_EMPTY));
-        } else {
-            conditions.add(CriteriaAPI.getCondition(userNameField, getUsername(), StringOperators.IS));
-        }
-        if (password == null) {
-            conditions.add(CriteriaAPI.getCondition(passwordField, "NULL", CommonOperators.IS_EMPTY));
-        } else {
-            conditions.add(CriteriaAPI.getCondition(passwordField, getPassword(), StringOperators.IS));
-        }
         return conditions;
     }
 
