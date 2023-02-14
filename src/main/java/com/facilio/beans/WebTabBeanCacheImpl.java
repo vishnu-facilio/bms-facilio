@@ -90,7 +90,7 @@ public class WebTabBeanCacheImpl extends WebTabBeanImpl implements WebTabBean {
         FacilioCache<String, List<WebTabCacheContext>> tabsCache = LRUCache.getWebTabsCache();
         FacilioCache<String, WebTabCacheContext> tabCache = LRUCache.getWebTabCache();
         FacilioCache<String, List<TabIdAppIdMappingCacheContext>> tabAppModuleCache = LRUCache.getTabAppModuleCache();
-        super.deleteTabMappingEntriesForTab(tabId);
+        super.deleteTab(tabId);
 
         tabsCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
         tabCache.remove(CacheUtil.ORG_TAB_KEY(AccountUtil.getCurrentOrg().getId(), webTabContext.getId()));
