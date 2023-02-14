@@ -77,14 +77,14 @@ public class AddReadingRuleModules extends SignUpData {
         BooleanField autoClear = FieldFactory.getDefaultField("autoClear", "AutoClear", "AUTO_CLEAR", FieldType.BOOLEAN);
         fields.add(autoClear);
 
-        NumberField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
+        DateField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME);
         fields.add(sysCreatedTime);
 
         LookupField sysCreatedBy = FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", ModuleFactory.getUsersModule(), FieldType.LOOKUP);
         sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
         fields.add(sysCreatedBy);
 
-        NumberField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
+        DateField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME);
         fields.add(sysModifiedTime);
 
         LookupField sysModifiedBy = FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", ModuleFactory.getUsersModule(), FieldType.LOOKUP);
