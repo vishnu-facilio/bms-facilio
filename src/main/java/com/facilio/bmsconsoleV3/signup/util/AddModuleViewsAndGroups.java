@@ -82,7 +82,7 @@ public class AddModuleViewsAndGroups {
                 for (String groupAppLinkName : groupAppLinkNames) {
                     long appId = allApplicationMap.get(groupAppLinkName).getId();
                     long groupId = addViewGroup(orgId, appId, moduleName, group);
-                    allViewGroupsMap.get(appId).put(groupName, ViewAPI.getGroup(groupId));
+                    allViewGroupsMap.get(appId).put(groupName, ViewAPI.getViewGroup(groupId));
                 }
 
                 for (FacilioView view : views) {
@@ -105,7 +105,7 @@ public class AddModuleViewsAndGroups {
                             groupId = allViewGroupsMap.get(appId).get(groupName).getId();
                         } else {
                             groupId = addViewGroup(orgId, appId, moduleName, group);
-                            allViewGroupsMap.get(appId).put(groupName, ViewAPI.getGroup(groupId));
+                            allViewGroupsMap.get(appId).put(groupName, ViewAPI.getViewGroup(groupId));
                         }
 
                         //Add Views

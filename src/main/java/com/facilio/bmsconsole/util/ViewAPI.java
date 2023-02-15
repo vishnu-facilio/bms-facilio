@@ -30,7 +30,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
-import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.weekends.WeekendUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -982,7 +981,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		}
 	}
 
-	public static ViewGroups getGroup(Long groupId) throws Exception{
+	public static ViewGroups getViewGroup(Long groupId) throws Exception{
 		ViewGroups viewGroup = null;
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getViewGroupsModule().getTableName())
@@ -990,6 +989,33 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				.andCondition(CriteriaAPI.getIdCondition(groupId, ModuleFactory.getViewGroupsModule()));
 
 		List<Map<String, Object>> groupRecord = genericSelectRecordBuilder.get();
+
+		if (groupRecord != null && groupRecord.size() > 0) {
+			viewGroup = FieldUtil.getAsBeanFromMap(groupRecord.get(0), ViewGroups.class);
+		}
+
+		return viewGroup;
+	}
+
+	public static ViewGroups getViewGroup(String name, long moduleId, long appId) throws Exception{
+		ViewGroups viewGroup = null;
+		List<FacilioField> allFields = FieldFactory.getViewGroupFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(allFields)
+				.table(ModuleFactory.getViewGroupsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), name, StringOperators.IS));
+
+		if (appId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(appId), NumberOperators.EQUALS));
+		}
+
+		if (moduleId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+		}
+
+		List<Map<String, Object>> groupRecord = builder.get();
 
 		if (groupRecord != null && groupRecord.size() > 0) {
 			viewGroup = FieldUtil.getAsBeanFromMap(groupRecord.get(0), ViewGroups.class);
