@@ -26,9 +26,11 @@ public class FetchResourceNamesForKpiLogger extends FacilioCommand {
             for (KpiResourceLoggerContext resourceLogger : resourceLoggers) {
                 Map<String, String> resourcesVsStatusMap = new HashMap<>();
                 AssetContext asset = AssetsAPI.getAssetInfo(resourceLogger.getResourceId());
-                resourcesVsStatusMap.put("name", asset.getName()) ;
-                resourcesVsStatusMap.put("status", getStatus(resourceLogger));
-                resourceList.add(resourcesVsStatusMap);
+                if(asset!=null) {
+                    resourcesVsStatusMap.put("name", asset.getName());
+                    resourcesVsStatusMap.put("status", getStatus(resourceLogger));
+                    resourceList.add(resourcesVsStatusMap);
+                }
             }
             logger.setResourceList(resourceList);
         }
