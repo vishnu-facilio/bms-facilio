@@ -67,7 +67,7 @@ public class PeopleValidationCommandV3 extends FacilioCommand {
                     if (StringUtils.isNotEmpty(peoples.getEmail())) {
                         if (V3PeopleAPI.checkForEmailMisMatch(peoples.getEmail(), peoples.getId())) {
                             LOGGER.warning("PEOPLE_EMAIL_CHANGED. ID: "+peoples.getId());
-//                          throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email cannot be updated as the contact is already an active portal use");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email cannot be updated as the contact is already an active portal use");
                         }
                     }
                 }
