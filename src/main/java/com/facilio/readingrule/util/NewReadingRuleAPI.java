@@ -34,6 +34,7 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -140,9 +141,13 @@ public class NewReadingRuleAPI {
         return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
 
-    public static List<NewReadingRuleContext> getAllRules() throws Exception {
+    public static List<NewReadingRuleContext> getAllRules(Map<String, Object> paramsMap) throws Exception {
         String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, null, null, null, 0, 50, false, null, null);
+        String search = null;
+        if(paramsMap != null){
+             search = (String) paramsMap.get("search");
+        }
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, null, null, search, 0, 50, false, null, null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);

@@ -217,7 +217,7 @@ public class LookupSpecialTypeUtil {
 
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getAllRules();
+				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getAllRules(paramsMap);
 				return getNewRulePickList(readingRules);
 			}else{
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
@@ -436,7 +436,7 @@ public class LookupSpecialTypeUtil {
 		}
         else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                return NewReadingRuleAPI.getAllRules();
+                return NewReadingRuleAPI.getAllRules(null);
             }else{
                 return ReadingRuleAPI.getReadingRules(criteria);
             }

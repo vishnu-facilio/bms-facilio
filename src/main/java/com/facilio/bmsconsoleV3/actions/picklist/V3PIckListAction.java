@@ -8,17 +8,21 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.V3Action;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 public class V3PIckListAction extends V3Action {
 
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+            List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
             
             setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, page, perPage, search, filters, _default));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 
             //supported api search for users module
-            setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(moduleName));
+            setMeta("localSearch", !localSearchDisabled.contains(moduleName));
         }
         else {
             if(AccountUtil.getCurrentOrg().getOrgId() == 396 && "custom_activities_1".equals(moduleName)) { // Temp fix for CIT org custom_activities_1 module Picklist limit
