@@ -1968,8 +1968,12 @@ public class FacilioAuthAction extends FacilioAction {
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isDevice) && isDevice.contentEquals("true")) {
 			isDeviceUser = true;
 		}
-		
-		addAuthCookies(authtoken, isPotalUser, isDeviceUser, request);
+		if (isDeviceUser) {
+			addDeviceAuthCookies(authtoken, request);
+		}
+		else {
+			addAuthCookies(authtoken, isPotalUser, isDeviceUser, request);
+		}
 		
 		if (org.apache.commons.lang3.StringUtils.isNotEmpty(currentOrg)) {
 			FacilioCookie.addOrgDomainCookie(currentOrg, response);
@@ -2008,8 +2012,6 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
-			setCookieProperties(cookie,true);
-			response.addCookie(cookie);
 		}
 
 		setCookieProperties(cookie,true);
@@ -2028,36 +2030,31 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (FacilioProperties.isDevelopment()) {
 			if (FacilioProperties.isOnpremise()) {
-				if(!isDeviceUser) {
-					var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly;";
-					response.addHeader("Set-Cookie", cookieString);
-				}
+
+				var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly;";
+				response.addHeader("Set-Cookie", cookieString);
 				if (proxyCookie != null) {
-					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly;";
+					var proxyCookieString = "fc.idToken.proxy=" + proxyToken + "; Max-Age=604800; Path=/; HttpOnly;";
 					response.addHeader("Set-Cookie", proxyCookieString);
 				}
 			} else {
-				if(!isDeviceUser) {
-					var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
-					response.addHeader("Set-Cookie", cookieString);
-				}
+				var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+				response.addHeader("Set-Cookie", cookieString);
 				if (proxyCookie != null) {
-					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+					var proxyCookieString = "fc.idToken.proxy=" + proxyToken + "; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 					response.addHeader("Set-Cookie", proxyCookieString);
 				}
-				if(portalUser) {
-					var portalCookie = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+				if (portalUser) {
+					var portalCookie = "fc.idToken.facilioportal=" + authtoken + "; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 					response.addHeader("Set-Cookie", portalCookie);
 				}
 			}
-		} else if("stage".equals(FacilioProperties.getEnvironment()) || "stage2".equals(FacilioProperties.getEnvironment())) {
+		} else if ("stage".equals(FacilioProperties.getEnvironment()) || "stage2".equals(FacilioProperties.getEnvironment())) {
 			LOGGER.log(Level.SEVERE, "Stage login");
-			if(!isDeviceUser) {
-				var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-				response.addHeader("Set-Cookie", cookieString);
-			}
+			var cookieString = "fc.idToken.facilio=" + authtoken + "; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+			response.addHeader("Set-Cookie", cookieString);
 			if (proxyCookie != null) {
-				var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				var proxyCookieString = "fc.idToken.proxy=" + proxyToken + "; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.addHeader("Set-Cookie", proxyCookieString);
 			}
 		} else {
@@ -2066,14 +2063,15 @@ public class FacilioAuthAction extends FacilioAction {
 				response.addCookie(proxyCookie);
 			}
 
-			//Can be removed once service portal file api is not used.
-			if(portalUser) {
+				//Can be removed once service portal file api is not used.
+			if (portalUser) {
 				Cookie portalCookie = new Cookie("fc.idToken.facilioportal", authtoken);
 				setCookieProperties(portalCookie, true);
 				response.addCookie(portalCookie);
 			}
 		}
 	}
+
 
 	private JSONObject getMobileAuthJSON(String token, String authtoken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
 		JSONObject jsonObject = new JSONObject();
@@ -2864,5 +2862,11 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		setResult("domainlink", domainLink);
 		return SUCCESS;
+	}
+	private void addDeviceAuthCookies(String authtoken, HttpServletRequest request) throws Exception {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		Cookie cookie = new Cookie("fc.deviceTokenNew", authtoken);
+		setCookieProperties(cookie,true);
+		response.addCookie(cookie);
 	}
 }
