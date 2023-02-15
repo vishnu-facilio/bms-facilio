@@ -17,7 +17,6 @@ public class V3CustomKioskContext extends V3DeviceContext {
     private ConnectedAppWidgetContext connectedAppWidget;
     private List<V3CustomDeviceButtonMappingContext> customDeviceButton;
     private List<V3CustomKioskButtonContext> connectedAppWidgetList;
-    private long siteId;
 
 
 
