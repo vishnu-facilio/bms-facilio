@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -106,16 +108,17 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 					.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0))
 					.skipModuleCriteria();
 			List<Map<String, Object>> pmProps = selectRecordsBuilder.getAsProps();
-
-			Integer woCreationOffset = ((Integer) pmProps.get(0).get("woCreationOffset"));
-			long scheduledStart = pmJob.getNextExecutionTime();
-			long createdTime = scheduledStart;
-			if (woCreationOffset != null && woCreationOffset > -1) {
-				createdTime = createdTime - (woCreationOffset * 1000);
+			if(pmProps == null){
+				return false;
 			}
+			Map<String,Object> pmProp = pmProps.get(0);
+			if((long)pmProp.get("scheduledStart") > pmJob.getNextExecutionTime()){
+				throw new RESTException(ErrorCode.VALIDATION_ERROR,"Cannot Schedule a WorkOrder before it's Scheduled Start Time");
+			}
+			long scheduledStart = pmJob.getNextExecutionTime();
+
 
 			pmProps.get(0).put("assignedTo", resourceId);
-			pmProps.get(0).put("createdTime", createdTime);
 			pmProps.get(0).put("scheduledStart", scheduledStart);
 			FacilioModule ticketModule = ModuleFactory.getTicketsModule();
 
@@ -129,12 +132,6 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 			}
 
 			if (pmJob != null && pmJob.getNextExecutionTime() > 0) {
-				GenericUpdateRecordBuilder updateTicketBuilder = new GenericUpdateRecordBuilder()
-						.table(module.getTableName())
-						.fields(Arrays.asList(FieldFactory.getAsMap(fields).get("createdTime")))
-						.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), module))
-						.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-				updateTicketBuilder.update(pmProps.get(0));
 
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(ticketModule.getTableName())

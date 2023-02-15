@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMPlanner;
@@ -40,7 +42,7 @@ public class ValidateAndGetAllPMPlannersCommand extends FacilioCommand {
 				.select(fields)
 				.beanClass(PMPlanner.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("trigger"), "", CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("isActive"), String.valueOf(true), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("pmStatus"), String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()), BooleanOperators.IS))
 				;
 		
 		List<PMPlanner> planners = select.get();

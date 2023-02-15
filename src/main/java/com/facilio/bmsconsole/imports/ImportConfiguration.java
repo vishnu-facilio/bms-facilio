@@ -158,6 +158,7 @@ public class ImportConfiguration {
                         return null;
                     }
                 })
+                .afterInsertCommand(new PmPlannerAfterInsertCommand())
                 .done()
                 .build();
     }

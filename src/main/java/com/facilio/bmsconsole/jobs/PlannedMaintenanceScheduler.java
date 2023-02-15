@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -33,7 +34,7 @@ public class PlannedMaintenanceScheduler extends FacilioJob {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
         FacilioModule plannerModule = modBean.getModule(FacilioConstants.ContextNames.PMPLANNER);
-        FacilioField isActive = modBean.getField(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, "isActive");
+        FacilioField pmStatus = modBean.getField(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, "pmStatus");
         FacilioField idField = FieldFactory.getIdField(module);
         FacilioField plannerId = FieldFactory.getIdField(plannerModule);
         plannerId.setName("plannerId");
@@ -42,7 +43,7 @@ public class PlannedMaintenanceScheduler extends FacilioJob {
         selectRecordsBuilder.innerJoin("PM_Planner")
                         .on("PM_Planner.PM_ID = PM_V2.ID");
         selectRecordsBuilder.module(module);
-        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(isActive, "true", BooleanOperators.IS));
+        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(pmStatus, String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()), BooleanOperators.IS));
         return selectRecordsBuilder.getAsPropsInBatches("NULL", 5000);
     }
 }
