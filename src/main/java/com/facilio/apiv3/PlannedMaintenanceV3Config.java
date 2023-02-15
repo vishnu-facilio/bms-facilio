@@ -25,7 +25,7 @@ public class PlannedMaintenanceV3Config {
                 .delete()
                 .afterDelete(new DeletePPMPreOpenWorkorders())
                 .list()
-                .beforeFetch(new PMFetchSupplements())
+                .beforeFetch(ReadOnlyChainFactoryV3.getPPMBeforeListFetchChain())
                 .summary()
                 .beforeFetch(new PMFetchSupplements())
                 .build();

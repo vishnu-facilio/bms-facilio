@@ -15,6 +15,8 @@ import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.FetchExtraFieldsForJobPlanCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddSupplementForJobPlanSectionCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskBeforeFetchCommand;
@@ -22,6 +24,7 @@ import com.facilio.bmsconsoleV3.commands.jobplanTask.AddSupplementForJobPlanTask
 import com.facilio.bmsconsoleV3.commands.jobplanTask.FillReadingObjForJobPlanTaskCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.V3FetchPeopleGroupCommand;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.FetchExtraFieldsForPPMCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchMyReadingImportDataList;
@@ -425,8 +428,16 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new LoadFacilityBookingExtraFieldsCommandV3());
         return c;
     }
-
-
-
-
+    public static FacilioChain getPPMBeforeListFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PMFetchSupplements());
+        c.addCommand(new FetchExtraFieldsForPPMCommand());
+        return c;
+    }
+    public static FacilioChain getJobPlanBeforeListFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchJobPlanLookupCommand());
+        c.addCommand(new FetchExtraFieldsForJobPlanCommand());
+        return c;
+    }
 }

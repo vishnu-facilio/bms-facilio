@@ -1605,7 +1605,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getUpdateJobPlanBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanAfterSaveChain())
                 .list()
-                .beforeFetch(new FetchJobPlanLookupCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getJobPlanBeforeListFetchChain())
                 .summary()
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .afterFetch(TransactionChainFactoryV3.getJobPlanSummaryAfterFetchChain())
