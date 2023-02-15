@@ -404,12 +404,16 @@ public class NewAlarmAPI {
 
 	public static List<AlarmOccurrenceContext> getLatestAlarmOccurance(List<String> messageKeys) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<String> sanitizedKeys = new ArrayList<>();
+		for(String messageKey : messageKeys){
+			String sanitizedKey = messageKey.replace(",", StringOperators.DELIMITED_COMMA);
+			sanitizedKeys.add(sanitizedKey);
+		}
 		SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
 				.beanClass(BaseAlarmContext.class)
 				.moduleName(FacilioConstants.ContextNames.BASE_ALARM)
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM))
-				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(messageKeys, ','),
-						StringOperators.IS));
+				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(sanitizedKeys, ","), StringOperators.IS));
 		List<BaseAlarmContext> baseAlarmContexts = selectBuilder.get();
 
 		List<Long> latestOccurrenceId = new ArrayList<>();
