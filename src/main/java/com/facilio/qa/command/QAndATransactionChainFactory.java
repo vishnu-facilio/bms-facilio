@@ -160,6 +160,7 @@ public class QAndATransactionChainFactory {
 
     public static FacilioChain beforeQuestionSave() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidatePageCapacity());
         c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.BEFORE_SAVE));
         c.addCommand(new ValidateQuestionAddAndUpdatePos());
         return c;

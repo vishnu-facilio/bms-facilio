@@ -1873,40 +1873,43 @@ public enum ActionType {
 	CREATE_SATISFACTION_SURVEY(36){
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			try {
+				Long woId = -1L;
+				Map<String, Object> props = new HashMap<>();
+				if (currentRecord instanceof V3WorkOrderContext) {
+					V3WorkOrderContext v3wo = (V3WorkOrderContext) currentRecord;
+					woId = v3wo.getId();
+					props = FieldUtil.getAsProperties(v3wo);
+				} else if (currentRecord instanceof WorkOrderContext) {    // temp handling
+					WorkOrderContext workOrderContext = (WorkOrderContext) currentRecord;
+					woId = workOrderContext.getId();
+					props = FieldUtil.getAsProperties(workOrderContext);
+				}
 
-			Long woId=-1L;
-			Map<String, Object> props = new HashMap<>();
-			if(currentRecord instanceof V3WorkOrderContext){
-				V3WorkOrderContext v3wo = (V3WorkOrderContext) currentRecord;
-				woId = v3wo.getId();
-				props = FieldUtil.getAsProperties(v3wo);
-			}else if(currentRecord instanceof WorkOrderContext){    // temp handling
-				WorkOrderContext workOrderContext = (WorkOrderContext) currentRecord;
-				woId = workOrderContext.getId();
-				props = FieldUtil.getAsProperties(workOrderContext);
-			}
+				obj.put("parentId", woId);
 
-			obj.put("parentId",woId);
-
-			Long userId = (Long) obj.get("userId");
-			Long fieldId = (Long) obj.get("fieldId");
-			if(userId != null){
-				Long peopleId = PeopleAPI.getPeopleForId(userId).getId();
-				obj.put("assignedTo", peopleId);
-			}else if(fieldId != null){
-				ModuleBean bean = Constants.getModBean();
-				List<FacilioField> fields = bean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-				FacilioField field = fields.stream().filter(p -> p.getFieldId() == fieldId).collect(Collectors.toList()).get(0);
-				Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
-				if(userObject !=null && !userObject.isEmpty()){
-					Long pplId = PeopleAPI.getPeopleIdForUser((Long) userObject.get("id"));
-					if(pplId != null) {
-						obj.put("assignedTo", pplId);
+				Long userId = (Long) obj.get("userId");
+				Long fieldId = (Long) obj.get("fieldId");
+				if (userId != null) {
+					Long peopleId = PeopleAPI.getPeopleForId(userId).getId();
+					obj.put("assignedTo", peopleId);
+				} else if (fieldId != null) {
+					ModuleBean bean = Constants.getModBean();
+					List<FacilioField> fields = bean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+					FacilioField field = fields.stream().filter(p -> p.getFieldId() == fieldId).collect(Collectors.toList()).get(0);
+					Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
+					if (userObject != null && !userObject.isEmpty()) {
+						Long pplId = PeopleAPI.getPeopleIdForUser((Long) userObject.get("id"));
+						if (pplId != null) {
+							obj.put("assignedTo", pplId);
+						}
 					}
 				}
-			}
 
-			QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
+				QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred while creating survey for records : ", e);
+			}
 		}
 	},
 	CREATE_RECORD(37,true){
