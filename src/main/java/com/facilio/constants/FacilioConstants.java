@@ -47,6 +47,7 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
@@ -526,7 +527,6 @@ public class FacilioConstants {
 		public static final String TEMPLATE_NAME = "templateName";
 		public static final Object TEMPLATE_LIST = "templateList";
 		public static final Object TEMPLATE = "template";
-		public static final String FORM_SHARING = "formSharing";
 		public static final String DEFAULT_TEMPLATE = "default_template";
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
@@ -1565,7 +1565,7 @@ public class FacilioConstants {
 		public static final String HIDE_IN_LIST = "hideInList";
 		public static final String FORM_SECTION = "formSection";
 		public static final String FORM_SOURCE = "formSource";
-		public static final String SKIP_TEMPLATE_PERMISSION = "skipTemplatePermission";
+
 		public static final String FOR_CREATE = "forCreate";
 		public static final String QR_VALUE = "qrValue";
 		public static final String MAP_QR = "mapqr";
@@ -3291,7 +3291,6 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_SUPER_ADMIN = "CAFM Super Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Administrator";
-		public static final String CAFM_ADMIN = "CAFM Admin";
 		public static final String KIOSK_ADMIN = "Kiosk Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";

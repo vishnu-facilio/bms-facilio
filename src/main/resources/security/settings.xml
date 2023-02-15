@@ -1213,17 +1213,4 @@
             <property name="filters" type="string"/>
         </requestbody>
     </request>
-    <request path="/api/v2/forms/formSharing/addOrUpdate">
-        <requestbody type="object">
-            <property name="form" type="object">
-                <property name="id" type="number" mandatory="true"/>
-                <property name="formSharing" type="array"/>
-            </property>
-        </requestbody>
-    </request>
-    <request path="/api/v2/forms/formSharing/getSharingList">
-        <requestbody type="object">
-            <property name="formId" type="number" mandatory="true"/>
-        </requestbody>
-    </request>
 </config>

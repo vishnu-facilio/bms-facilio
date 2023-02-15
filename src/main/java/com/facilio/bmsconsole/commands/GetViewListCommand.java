@@ -19,18 +19,11 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -101,7 +94,17 @@ public class GetViewListCommand extends FacilioCommand {
 				addMobilelarmViews(appId, modBean, dbViews, factoryViewsMap, viewGroups,viewType,groupType, getOnlyBasicViewDetails);
 			}
 		}
+		
+		
+		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
 
+		if (!dbViews.isEmpty() && dbViews != null) {
+			for(FacilioView view: dbViews) {
+				if (sharingMap != null && sharingMap.containsKey(view.getId())) {
+					view.setViewSharing(sharingMap.get(view.getId()));
+				}
+			}
+		}
 			factoryViewsMap.entrySet().removeIf(enrty -> {
 				try {
 					return (enrty.getValue().isHidden() ||
@@ -113,9 +116,7 @@ public class GetViewListCommand extends FacilioCommand {
 				return false;
 			});
 
-		if (CollectionUtils.isNotEmpty(dbViews)) {
-			dbViews = filterAccessibleViews(appId, dbViews);
-		}
+		dbViews = filterAccessibleViews(appId, dbViews);
 
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
@@ -405,12 +406,13 @@ public class GetViewListCommand extends FacilioCommand {
 		
 	}
 
-	private void addEditableAccess(List<FacilioView> dbViews, Boolean isPrivilegedAccess, Long currentUserId, Long superAdminUserId) {
-		for (FacilioView view : dbViews) {
-			boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
-			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
-			view.setEditable(isPrivilegedAccess || !isLocked || (isLocked && (ownerId.equals(currentUserId))));
-		}
+	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Boolean isPrivileged, Long currentUserId, Long ownerId, Long adminRoleId, Long currentUserRoleId) {
+
+		Boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
+
+		view.setEditable(isSuperAdmin || isPrivileged || !isLocked || (isLocked && (ownerId.equals(currentUserId) || adminRoleId.equals(currentUserRoleId))));
+
+		return view;
 	}
 
 	public List<FacilioView> filterAccessibleViews(long currAppId, List<FacilioView> dbViews) throws Exception {
@@ -426,44 +428,23 @@ public class GetViewListCommand extends FacilioCommand {
 		Long currentUserRoleId = currentUser.getRoleId();
 		Boolean isSuperAdmin = currentUser.isSuperAdmin();
 		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
-		// Admin/CAFMAdmin Role has equal privileges as SuperAdmin Role
-		Criteria roleNameCriteria = new Criteria();
-		String[] roleNames = { FacilioConstants.DefaultRoleNames.ADMIN, FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN, FacilioConstants.DefaultRoleNames.CAFM_ADMIN };
-		roleNameCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", StringUtils.join(roleNames, ","), StringOperators.IS));
+		Boolean isPrivileged = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
 
-		List<Role> adminRoles = AccountUtil.getRoleBean().getRoles(roleNameCriteria);
-		List<Long> adminRoleIds = CollectionUtils.isNotEmpty(adminRoles) ? adminRoles.stream().map(Role::getId).collect(Collectors.toList()) : new ArrayList<>();
+		Role adminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
+		Long adminRoleId = adminRole.getId();
 
-		boolean isPrivilegedRole = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
-		boolean isAdmin = adminRoleIds.contains(currentUserRoleId);
-		boolean isPrivilegedAccess = isSuperAdmin || isAdmin || isPrivilegedRole;
-
-		if (!isPrivilegedAccess) {
-			List<Long> viewIds = new ArrayList<>();
-			viewIds = dbViews.stream().map(FacilioView::getId).collect(Collectors.toList());
-
-			Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharing(viewIds, ModuleFactory.getViewSharingModule(), SingleSharingContext.class,
-					FieldFactory.getSharingFields(ModuleFactory.getViewSharingModule()));
-
-			List<Long> viewIdsWithPermission = new ArrayList<>();
-			if (MapUtils.isNotEmpty(sharingMap)) {
-				viewIdsWithPermission = SharingAPI.getAllowedParentIds(sharingMap, DelegationType.LIST_VIEWS);
+		for (FacilioView view : dbViews){
+			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+			if (view.isHidden()){
+				continue;
+			} else if (isSuperAdmin || isPrivileged || (ownerId.equals(currentUserId)) || (adminRoleId.equals(currentUserRoleId))){
+				resultViews.add(addEditableAccess(view, isSuperAdmin, isPrivileged, currentUserId, ownerId, adminRoleId, currentUserRoleId));
+			} else if (view.getViewSharing() != null && !view.getViewSharing().isAllowed(currentUser, DelegationType.LIST_VIEWS)) {
+				continue;
+			} else {
+				resultViews.add(addEditableAccess(view, isSuperAdmin, isPrivileged, currentUserId, ownerId, adminRoleId, currentUserRoleId));
 			}
-
-			for (FacilioView view : dbViews) {
-				if (!view.isHidden()) {
-					Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
-					if (ownerId.equals(currentUserId) || !sharingMap.containsKey(view.getId()) || viewIdsWithPermission.contains(view.getId())) {
-						resultViews.add(view);
-					}
-				}
-			}
-		} else {
-			resultViews = dbViews.stream().filter(facilioView -> !facilioView.isHidden()).collect(Collectors.toList());
 		}
-
-		addEditableAccess(dbViews, isPrivilegedAccess, currentUserId, superAdminUserId);
-
 		return resultViews;
 	}
 	

@@ -40,7 +40,7 @@ public class ModuleAPI {
                 .select(FieldFactory.getCountField())
                 .innerJoin(moduleModule.getTableName())
                 .on(relModule.getTableName() + ".CHILD_MODULE_ID = " + moduleModule.getTableName() + ".MODULEID")
-                .andCondition(CriteriaAPI.getCondition(relModFieldsMap.get("parentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(relModFieldsMap.get("parentModuleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(modFieldsMap.get("type"), getTypes(FacilioModule.ModuleType.valueOf(moduleType)), StringOperators.IS));
 
         if (StringUtils.isNotEmpty(searchString)) {

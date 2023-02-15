@@ -2214,12 +2214,6 @@
 			<param name="translationImpl">FormFieldTranslation</param>
 		</action>
 	</package>
-	<package name="formSharing" namespace="/api/v2/forms/formSharing" extends="v2Api">
-		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FormAction" method="addOrUpdateFormSharingRoles">
-		</action>
-		<action name="getSharingList" class="com.facilio.bmsconsole.actions.FormAction" method="getFormSharingRolesForForms">
-		</action>
-	</package>
 	<package name="formFieldApiv2" namespace="/api/v2/forms/fields"
 		extends="v2Api">
 		<action name="update"
