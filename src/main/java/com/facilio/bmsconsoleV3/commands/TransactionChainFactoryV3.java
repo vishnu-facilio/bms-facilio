@@ -8,6 +8,8 @@ import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
+import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
@@ -21,6 +23,8 @@ import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsAndConditionsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
+import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
@@ -1944,6 +1948,18 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadPoPrListLookupCommandV3());
         chain.addCommand(new LoadPurchaseRequestExtraFields());
+        return chain;
+    }
+    public static FacilioChain getBeforeFetchItemTypesListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadItemTypesLookUpCommandV3());
+        chain.addCommand(new LoadItemTypesExtraFields());
+        return chain;
+    }
+    public static FacilioChain getBeforeFetchToolTypesListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadToolTypesLookUpCommandV3());
+        chain.addCommand(new LoadToolTypesExtraFields());
         return chain;
     }
     public static FacilioChain getReceiptsBeforeFetchListChain() {
