@@ -183,7 +183,8 @@ public class WeatherUtil {
 	}
 
 	public static Map<String, Object> getWeatherData(double lat, double lng, Long time) throws Exception {
-		if(FacilioProperties.getConfig("weather.url").contains("darksky")) {   // temp fix for darkSky
+		String weatherUrl = FacilioProperties.getConfig("weather.url");
+		if(StringUtils.isNotEmpty(weatherUrl) && weatherUrl.contains("darksky")) {   // temp fix for darkSky
 			String url = getDarkSkyForecastURL(lat, lng, time);
 			return getDarkSkyWeatherData(url);
 		}

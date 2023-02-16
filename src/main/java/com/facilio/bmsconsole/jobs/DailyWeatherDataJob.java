@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -22,8 +23,8 @@ public class DailyWeatherDataJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
-		
-			if (!WeatherAPI.allow())
+
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SITE_SUMMARY) || !WeatherAPI.allow())
 			{
 				return;
 			}

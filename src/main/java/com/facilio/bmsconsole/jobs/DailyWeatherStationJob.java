@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.weather.util.WeatherAPI;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -25,7 +26,7 @@ public class DailyWeatherStationJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 
 		try {
-			if (!WeatherAPI.allow()) {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SITE_SUMMARY) || !WeatherAPI.allow()) {
 				return;
 			}
 			List<WeatherStationContext> weatherStations = WeatherUtil.getAllWeatherStations();

@@ -192,7 +192,7 @@ public class PsychrometricUtil {
 	public static Double getSaturatedVapourPressure(Double dryBulbTemperature) {
 		
 		Double lnPws;
-		if (!(dryBulbTemperature >= -100. && dryBulbTemperature <= 200.)) {
+		if (dryBulbTemperature == null || !(dryBulbTemperature >= -100. && dryBulbTemperature <= 200.)) {
 			return new Double(0);             // TDryBulb is out of range [-100, 200]
 		}
 		Double temperature = getKelvinFromCelsius(dryBulbTemperature);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.weather.util.WeatherAPI;
 import org.json.simple.JSONObject;
 
@@ -26,7 +27,7 @@ public class WeatherDataJob extends FacilioJob {
 		long startTime = System.currentTimeMillis();
 		try {
 			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
-			if (!WeatherAPI.allow()) {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SITE_SUMMARY) || !WeatherAPI.allow()) {
 				return;
 			}
 			List<SiteContext> sites = WeatherUtil.getAllSites(true);

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import lombok.extern.log4j.Log4j;
 import org.apache.http.client.methods.HttpPost;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,7 +42,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.CryptoUtils;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.time.DateTimeUtil;
-
+@Log4j
 public class ConnectionUtil {
 
 
@@ -128,7 +129,8 @@ public class ConnectionUtil {
 		System.out.println("result --- "+result);
 		JSONParser parser = new JSONParser();
 		JSONObject resultJson = (JSONObject) parser.parse(result);
-		
+		LOGGER.info("connection result : "+ resultJson);
+
 		if(resultJson.containsKey(ConnectionUtil.ACCESS_TOKEN_STRING)) {
 			connectionContext.setAccessToken((String)resultJson.get(ConnectionUtil.ACCESS_TOKEN_STRING));
 			

@@ -2,13 +2,13 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
-import com.facilio.v3.util.V3Util;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
 import com.facilio.weather.util.WeatherAPI;
@@ -35,7 +35,7 @@ public class FacilioWeatherDataJob extends FacilioJob {
 			Map<Long,List<ReadingContext>> stationCurrentReadings = new HashMap<>();
 
 			V3WeatherServiceContext weatherServiceContext =
-					(V3WeatherServiceContext) V3Util.getRecord(FacilioConstants.ModuleNames.WEATHER_SERVICE, jc.getJobId(), null);
+					(V3WeatherServiceContext) RecordAPI.getRecord(FacilioConstants.ModuleNames.WEATHER_SERVICE, jc.getJobId());
 			WeatherService weatherService = WeatherServiceType.getWeatherService(weatherServiceContext.getName());
 
 			for(V3WeatherStationContext station : stations) {

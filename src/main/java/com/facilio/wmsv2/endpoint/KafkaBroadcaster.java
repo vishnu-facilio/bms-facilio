@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.source.KafkaMessageSource;
@@ -13,6 +14,7 @@ import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -153,6 +155,8 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             final JSONParser parser = new JSONParser();
             int partition;
             long offset;
+            int timeout = 0;
+            String recordThreadName = null;
             for (ConsumerRecord<String, String> record : records) {
                 partition = record.partition();
                 offset = record.offset();
@@ -160,13 +164,16 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                 try {
                     Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(record.value()), Message.class);
                     BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-                    executor.submit(new KafkaRecordThread(message, getRecordThreadName(record))).get(handler.getRecordTimeout(), TimeUnit.SECONDS);
+                    timeout = handler.getRecordTimeout();
+                    recordThreadName = getRecordThreadName(record);
+                    executor.submit(new KafkaRecordThread(message, recordThreadName, record.key())).get(timeout, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     if(e instanceof TimeoutException) {
-                        LOGGER.error("Time limit exceeded. Possible rogue record");
+                        LOGGER.error("Time limit exceeded. Possible rogue record ("+recordThreadName+"). " +
+                                "Process killed after "+timeout+" seconds");
                         executor.shutdownNow();
                     }
-                    LOGGER.error("Exception while processing record on <partition="+partition+", offset="+offset+">", e);
+                    LOGGER.error("Exception while processing record ("+recordThreadName+")", e);
                 }
                 finally {
                     consumer.commitSync(Collections.singletonMap(new TopicPartition(kafkaTopicName, partition), new OffsetAndMetadata(offset + 1)));
@@ -191,18 +198,29 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         private Message message;
         private String threadName;
+        private String key; //wmsTopicName
 
-        KafkaRecordThread(Message message, String recordThreadName) {
+        KafkaRecordThread(Message message, String recordThreadName, String key) {
             this.message = message;
             this.threadName = recordThreadName;
+            this.key = key;
         }
 
+        @SneakyThrows
         @Override
         public void run()  {
-            Thread.currentThread().setName(threadName);
             long startTime = System.currentTimeMillis();
-            incomingMessage(message);
-            LOGGER.debug("Time taken to process wms record "+threadName+" ::  "+(System.currentTimeMillis() - startTime));
+            try {
+                Thread.currentThread().setName(threadName);
+                if (message.getOrgId() != null && message.getOrgId()!=-1) {
+                    AccountUtil.setCurrentAccount(message.getOrgId());
+                }
+                incomingMessage(message);
+            }
+            finally {
+                LOGGER.info("Time taken to process wms record ["+ threadName + ", "+key+ "] is " + (System.currentTimeMillis() - startTime) + " ms");
+                AccountUtil.cleanCurrentAccount();
+            }
         }
     }
 
