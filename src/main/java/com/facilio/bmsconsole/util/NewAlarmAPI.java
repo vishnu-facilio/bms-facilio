@@ -415,6 +415,9 @@ public class NewAlarmAPI {
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM))
 				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(sanitizedKeys, ","), StringOperators.IS));
 		List<BaseAlarmContext> baseAlarmContexts = selectBuilder.get();
+        if (CollectionUtils.isEmpty(baseAlarmContexts) || (CollectionUtils.isNotEmpty(baseAlarmContexts) && baseAlarmContexts.size() > 1)) {
+            LOGGER.info("Latest Alarm Occurrence qry" + selectBuilder + " BaseAlarmContext: " + baseAlarmContexts);
+        }
 
 		List<Long> latestOccurrenceId = new ArrayList<>();
 		for (BaseAlarmContext baseAlarmContext : baseAlarmContexts) {
@@ -589,6 +592,10 @@ public class NewAlarmAPI {
 				.fetchSupplements(fetchLookupFields)
 				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 		List<AlarmOccurrenceContext> occurrenceContexts = builder.get();
+
+        if(recordIds.size()>1){
+            LOGGER.info("getAlarmOccurrences method qry" + builder + " recordIDs: " + recordIds);
+        }
 		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
 		updateAlarmObject(occurrenceContexts);
 		return occurrenceContexts;
