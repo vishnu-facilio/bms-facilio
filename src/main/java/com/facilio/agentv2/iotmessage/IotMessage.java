@@ -36,7 +36,6 @@ public class IotMessage
     private List<Long> controlIds;
     private long agentId = -1;
 
-
     public int getCommand() {
         return command;
     }

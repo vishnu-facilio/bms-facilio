@@ -35,6 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -77,7 +78,7 @@ public class ExportUtil {
 	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(name, table, isS3Url);
+			fileUrl=ExportUtil.exportDataAsXLS(WorkbookUtil.createSafeSheetName(name,'_'), table, isS3Url);
 		}
 		else if(fileFormat == FileFormat.CSV){
 			fileUrl=ExportUtil.exportDataAsCSV(name, table, isS3Url);
@@ -87,7 +88,7 @@ public class ExportUtil {
 	
 	public static void writeToFile(FileFormat fileFormat,String name, Map<String,Object> table, boolean isS3Url, String rootPath) throws Exception {
 		if(fileFormat == FileFormat.XLS){
-			writeAsXls(name, table, isS3Url, rootPath);
+			writeAsXls(WorkbookUtil.createSafeSheetName(name,'_'), table, isS3Url, rootPath);
 		}
 		else if(fileFormat == FileFormat.CSV){
 			writeAsCSV(name, table, isS3Url, rootPath);

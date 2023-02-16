@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
@@ -203,11 +206,11 @@ public class CommissioningLogContext {
 	}
 
 	private List<Map<String, Object>> controllers;
-	@JsonIgnore
+
 	public List<Map<String, Object>> getControllers() {
 		return controllers;
 	}
-	@JsonIgnore
+
 	public void setControllers(List<Map<String, Object>> controllers) {
 		this.controllers = controllers;
 		if (controllers != null && controllerIds == null && !isLogical()) {

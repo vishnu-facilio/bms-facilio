@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
@@ -91,7 +92,6 @@ public class CommissionAction extends FacilioAction{
 		this.filters = filters;
 	}
 	private String filters;
-
 
 	public String logList() throws Exception {
 			FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();

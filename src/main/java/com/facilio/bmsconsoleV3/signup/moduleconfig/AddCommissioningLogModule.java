@@ -1,11 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -19,14 +21,57 @@ public class AddCommissioningLogModule extends SignUpData {
 
     @Override
     public void addData() throws Exception {
-        FacilioModule commissioningModule = addCommissioningModule();
-
-        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(commissioningModule));
-        addModuleChain.execute();
+        addCommissioningModule();
+        addCommissioningLogControllerModule();
+        addControllerListField();
     }
 
-    private FacilioModule addCommissioningModule() throws Exception{
+    private void addControllerListField() throws Exception{
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        List<FacilioField>fields = new ArrayList<>();
+        MultiLookupField multiLookupControllerField = (MultiLookupField) FieldFactory.getDefaultField("controllers", "Controller", null, FieldType.MULTI_LOOKUP);
+        multiLookupControllerField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        multiLookupControllerField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupControllerField.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.CONTROLLER));
+        multiLookupControllerField.setRelModule(moduleBean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER));
+        multiLookupControllerField.setRelModuleId(moduleBean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER).getModuleId());
+        multiLookupControllerField.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
+        fields.add(multiLookupControllerField);
+
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.COMMISSIONING_LOG);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+        chain.execute();
+    }
+
+    public static void addCommissioningLogControllerModule() throws Exception {
+        FacilioModule module = new FacilioModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER,
+                "Commissioning Log Controller",
+                "CommissioningLogController",
+                FacilioModule.ModuleType.SUB_ENTITY
+        );
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        LookupField commissioningLogId = (LookupField) FieldFactory.getDefaultField("left", "Commissioning Log", "COMMISSIONING_LOG_ID", FieldType.LOOKUP);
+        commissioningLogId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.COMMISSIONING_LOG));
+        fields.add(commissioningLogId);
+
+        LookupField controllerId = (LookupField) FieldFactory.getDefaultField("right", "Controller", "CONTROLLER_ID", FieldType.LOOKUP);
+        controllerId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.CONTROLLER));
+        fields.add(controllerId);
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.execute();
+
+    }
+
+    private void addCommissioningModule() throws Exception{
         // TODO Auto-generated method stub
         FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.COMMISSIONING_LOG,
                 "Commissioning Log",
@@ -90,8 +135,13 @@ public class AddCommissioningLogModule extends SignUpData {
         fields.add(modifiedBy);
 
         module.setFields(fields);
-        return module;
+
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.execute();
+
     }
+
     private long calculateAccessType(FacilioField.AccessType... accessTypes) {
         long result = 0;
         for (FacilioField.AccessType accessType : accessTypes) {

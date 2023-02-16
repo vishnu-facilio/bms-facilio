@@ -2,10 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,6 +16,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.math.BigDecimal;
@@ -27,47 +32,47 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		validateLog(log);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
-		Map<String,Object> prop;
-		if(module != null){
-			List<FacilioField>fields = modBean.getAllFields(module.getName());
-			prop = FieldUtil.getAsProperties(log);
-			InsertRecordBuilder builder = new InsertRecordBuilder()
-					.module(module)
-					.fields(fields)
-					.addRecordProps(Collections.singletonList(prop));
-
-			builder.save();
-			long logId = (long) prop.get("id");
-			log.setId(logId);
-
-			if (!log.isLogical()) {
-				addControllers(log);
-			}
+		FacilioModule commissioningLogControllerModule = modBean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER);
+		if(log.getControllers() == null){
+			List<Map<String,Object>> controllers =  log.getControllerIds().stream().map(controllerId -> {
+				Map<String,Object>c = new HashMap<>();
+				c.put("id",controllerId);
+				return c;
+			}).collect(Collectors.toList());
+			log.setControllers(controllers);
 		}
-		else{
-			module = ModuleFactory.getCommissioningLogModule();
-			List<FacilioField>fields = FieldFactory.getCommissioningLogFields();
-			log.setSysCreatedTime(System.currentTimeMillis());
-			log.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
-			prop = FieldUtil.getAsProperties(log);
-			prop.put("sysCreatedBy",log.getSysCreatedBy());
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.table(module.getTableName())
-					.fields(fields)
-					.addRecord(prop);
+		Map<String,Object> prop = FieldUtil.getAsProperties(log);
+		List<FacilioField>fields = modBean.getAllFields(module.getName());
+		InsertRecordBuilder builder = new InsertRecordBuilder()
+				.module(module)
+				.fields(fields)
+				.addRecordProps(Collections.singletonList(prop));
 
-			builder.save();
-			long logId = (long) prop.get("id");
-			log.setId(logId);
-
-			if (!log.isLogical()) {
-				addControllers(log);
-			}
+		if (!log.isLogical() && commissioningLogControllerModule != null){
+			builder.insertSupplement(getCommisisoningLogMultiLookupField());
 		}
+		builder.save();
+		long logId = (long) prop.get("id");
+		log.setId(logId);
+
+		if (!log.isLogical() && commissioningLogControllerModule == null) {
+			addControllers(log);
+		}
+
 
 		return false;
 	}
-	
+	public static MultiLookupField getCommisisoningLogMultiLookupField() throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> map = FieldFactory.getAsMap(moduleBean.getAllFields(ContextNames.COMMISSIONING_LOG));
+
+		if (map.containsKey("controllers")) {
+			return (MultiLookupField) map.get("controllers");
+		}
+
+		return null;
+	}
+
 	private void validateLog(CommissioningLogContext log) throws Exception {
 		if (log.getControllerTypeEnum() == null) {
 			throw new IllegalArgumentException("Please select controller type");
@@ -128,20 +133,18 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 
 	private void addControllers(CommissioningLogContext log) throws Exception {
 		long logId = log.getId();
-		List<Map<String, Object>> props = log.getControllerIds().stream().map(controllerId -> {
+
+		List<Map<String, Object>>props = log.getControllerIds().stream().map(controllerId -> {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("commissioningLogId", logId);
 			prop.put("controllerId", controllerId);
 			return prop;
 		}).collect(Collectors.toList());
-		
-		FacilioModule module = ModuleFactory.getCommissioningLogControllerModule();
+
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(module.getTableName())
+				.table(ModuleFactory.getCommissioningLogControllerModule().getTableName())
 				.fields(FieldFactory.getCommissioningLogControllerFields())
 				.addRecords(props);
-		
 		builder.save();
 	}
-
-}
+ }

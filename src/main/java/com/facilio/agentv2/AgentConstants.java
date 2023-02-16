@@ -316,4 +316,6 @@ public class AgentConstants
 
     public static final String RECORDS = "records";
     public static final String CONTROLLERIDS = "controllerIds";
+    public static final String COMMISSIONINGLOG_CONTROLLER = "commissioninglogcontroller";
+
 }

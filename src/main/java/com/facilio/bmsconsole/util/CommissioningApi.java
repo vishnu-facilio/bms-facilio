@@ -8,7 +8,13 @@ import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Get;
@@ -57,46 +63,26 @@ public class CommissioningApi {
 		return commissioniongList(ids,fetchControllers,pagination,null,null);
 	}
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status,Criteria criteria) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
+
 		List<Map<String,Object>>props = new ArrayList<>();
-		if(module != null){
-			SelectRecordsBuilder builder = getLogsBuilder(ids,status,criteria);
-			if (pagination != null) {
-				int page = (int) pagination.get("page");
-				int perPage = (int) pagination.get("perPage");
+		SelectRecordsBuilder builder = getLogsBuilder(ids,status,criteria);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
 
-				if (perPage != -1) {
-					int offset = ((page-1) * perPage);
-					if (offset < 0) {
-						offset = 0;
-					}
-
-					builder.offset(offset);
-					builder.limit(perPage);
+			if (perPage != -1) {
+				int offset = ((page-1) * perPage);
+				if (offset < 0) {
+					offset = 0;
 				}
-			}
-			props = builder.getAsProps();
-
-		}
-		else {
-			GenericSelectRecordBuilder builder = getLogsFromGenericBuilder(ids,status);
-			if (pagination != null) {
-				int page = (int) pagination.get("page");
-				int perPage = (int) pagination.get("perPage");
-
-				if (perPage != -1) {
-					int offset = ((page-1) * perPage);
-					if (offset < 0) {
-						offset = 0;
-					}
 
 				builder.offset(offset);
 				builder.limit(perPage);
 			}
 		}
-			props = builder.get();
-		}
+		props = builder.getAsProps();
+
+
 		if (CollectionUtils.isNotEmpty(props)) {
 			List<CommissioningLogContext> logs = FieldUtil.getAsBeanListFromMapList(props, CommissioningLogContext.class);
 			if (fetchControllers) {
@@ -138,56 +124,74 @@ public class CommissioningApi {
 	}
 	
 	private static Map<Long, List<Map<String, Object>>> getCommissionedControllers(List<Long> logIds) throws Exception {
-		FacilioModule module = ModuleFactory.getCommissioningLogControllerModule();
-		List<FacilioField> fields = FieldFactory.getCommissioningLogControllerFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		Map<Long, List<Map<String, Object>>> logControllerMap = new HashMap<>();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("commissioningLogId"), logIds, NumberOperators.EQUALS));
-		List<Map<String, Object>> props = builder.get();
-		if (props != null) {
-			List<Long> controllerIds = props.stream().map(prop -> (long) prop.get("controllerId")).collect(Collectors.toList());
-			Map<Long, Map<String, Object>> controllersMap = ResourceAPI.getResourceMapFromIds(controllerIds, true);
-			
-			for(Map<String, Object> prop: props) {
-				long logId = (long) prop.get("commissioningLogId");
-				List<Map<String, Object>> controllers = logControllerMap.get(logId);
-				if (controllers == null) {
-					controllers = new ArrayList<>();
-					logControllerMap.put(logId, controllers);
+
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (modbean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER)!= null){
+			FacilioModule module = modbean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER);
+			List<FacilioField>fields = modbean.getAllFields(AgentConstants.COMMISSIONINGLOG_CONTROLLER);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			Map<Long, List<Map<String, Object>>> logControllerMap = new HashMap<>();
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("left"), logIds, NumberOperators.EQUALS));
+			List<Map<String, Object>> props = builder.get();
+			if (props != null) {
+				List<Long> controllerIds = props.stream().map(prop -> (long) prop.get("right")).collect(Collectors.toList());
+				Map<Long, Map<String, Object>> controllersMap = ResourceAPI.getResourceMapFromIds(controllerIds, true);
+
+				for(Map<String, Object> prop: props) {
+					long logId = (long) prop.get("left");
+					List<Map<String, Object>> controllers = logControllerMap.get(logId);
+					if (controllers == null) {
+						controllers = new ArrayList<>();
+						logControllerMap.put(logId, controllers);
+					}
+					controllers.add(controllersMap.get((Long) prop.get("right")));
 				}
-				controllers.add(controllersMap.get((Long) prop.get("controllerId")));
 			}
+			return logControllerMap;
 		}
-		return logControllerMap;
+		else{
+			FacilioModule module = ModuleFactory.getCommissioningLogControllerModule();
+			List<FacilioField> fields = FieldFactory.getCommissioningLogControllerFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			Map<Long, List<Map<String, Object>>> logControllerMap = new HashMap<>();
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("commissioningLogId"), logIds, NumberOperators.EQUALS));
+			List<Map<String, Object>> props = builder.get();
+			if (props != null) {
+				List<Long> controllerIds = props.stream().map(prop -> (long) prop.get("controllerId")).collect(Collectors.toList());
+				Map<Long, Map<String, Object>> controllersMap = ResourceAPI.getResourceMapFromIds(controllerIds, true);
+
+				for(Map<String, Object> prop: props) {
+					long logId = (long) prop.get("commissioningLogId");
+					List<Map<String, Object>> controllers = logControllerMap.get(logId);
+					if (controllers == null) {
+						controllers = new ArrayList<>();
+						logControllerMap.put(logId, controllers);
+					}
+					controllers.add(controllersMap.get((Long) prop.get("controllerId")));
+				}
+			}
+			return logControllerMap;
+		}
 	}
 	
 	public static void updateLog(CommissioningLogContext log) throws Exception {
 //		log.setAgentId(-1);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
-		if(module != null){
-			List<FacilioField>fields = modBean.getAllFields(module.getName());
-			UpdateRecordBuilder updateBuilder = new UpdateRecordBuilder()
-					.module(module)
-					.fields(fields)
-					.andCondition(CriteriaAPI.getIdCondition(log.getId(), module));
-			Map<String,Object>map = FieldUtil.getAsProperties(log);
-			updateBuilder.updateViaMap(map);
-		}
-		else{
-			module = ModuleFactory.getCommissioningLogModule();
-			List<FacilioField>fields = FieldFactory.getCommissioningLogFields();
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder();
-			updateBuilder.table(module.getTableName())
-					.fields(fields)
-					.andCondition(CriteriaAPI.getIdCondition(log.getId(), module));
-			Map<String, Object> prop = FieldUtil.getAsProperties(log);
-			prop.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
-			updateBuilder.update(prop);
-		}
+
+		List<FacilioField>fields = modBean.getAllFields(module.getName());
+		UpdateRecordBuilder updateBuilder = new UpdateRecordBuilder()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(log.getId(), module));
+		Map<String,Object>map = FieldUtil.getAsProperties(log);
+		updateBuilder.updateViaMap(map);
 	}
 
 	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
@@ -219,11 +223,36 @@ public class CommissioningApi {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
 
-		if(module != null) {
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			fields.add(FieldFactory.getIdField());
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		if(modBean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER) != null) {
+			FacilioModule controllerModule = modBean.getModule(AgentConstants.COMMISSIONINGLOG_CONTROLLER);
+			Map<String, FacilioField> controllerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(AgentConstants.COMMISSIONINGLOG_CONTROLLER));
+
+			SelectRecordsBuilder builder = new SelectRecordsBuilder()
+					.beanClass(CommissioningLogContext.class)
+					.module(module)
+					.select(Collections.singletonList(fieldMap.get("id")))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
+
+			if (CollectionUtils.isNotEmpty(controllerIds)) {
+				builder.innerJoin(controllerModule.getTableName())
+						.on(fieldMap.get("id").getCompleteColumnName() + "=" + controllerFieldMap.get("left").getCompleteColumnName())
+						.andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("right"), controllerIds, NumberOperators.EQUALS));
+			} else {
+				builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition(fieldMap.get("logical"), String.valueOf(true), BooleanOperators.IS));
+			}
+			List<CommissioningLogContext>props = builder.get();
+			if (props != null  && !props.isEmpty()) {
+				return (long)props.get(0).getId();
+			}
+		}
+		else {
 			FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();
+
 			Map<String, FacilioField> controllerFieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogControllerFields());
 
 			SelectRecordsBuilder builder = new SelectRecordsBuilder()
@@ -243,31 +272,6 @@ public class CommissioningApi {
 			List<CommissioningLogContext>props = builder.get();
 			if (props != null  && !props.isEmpty()) {
 				return (long)props.get(0).getId();
-			}
-		}
-		else {
-			module = ModuleFactory.getCommissioningLogModule();
-			List<FacilioField>fields = FieldFactory.getCommissioningLogFields();
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-			FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();
-			Map<String, FacilioField> controllerFieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogControllerFields());
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.select(Collections.singletonList(fieldMap.get("id")))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
-
-			if (CollectionUtils.isNotEmpty(controllerIds)) {
-				builder.innerJoin(controllerModule.getTableName())
-						.on(fieldMap.get("id").getCompleteColumnName() + "=" + controllerFieldMap.get("commissioningLogId").getCompleteColumnName())
-						.andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("controllerId"), controllerIds, NumberOperators.EQUALS));
-			} else {
-				builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("logical"), String.valueOf(true), BooleanOperators.IS));
-			}
-
-			Map<String, Object> props = builder.fetchFirst();
-			if (props != null && !props.isEmpty()) {
-				return (long) props.get("id");
 			}
 		}
 		return null;
@@ -385,23 +389,13 @@ public class CommissioningApi {
 	public static Long getCommissioningListCount(List<Long> ids,String status,Criteria criteria)throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.COMMISSIONING_LOG);
-		Long count;
-		if(module != null){
-			SelectRecordsBuilder builder = getLogsBuilder(ids, status,criteria);
-//			FacilioModule module = ModuleFactory.getCommissioningLogModule();
-			builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
-			builder.select(new ArrayList<>());
-			List<Map<String, Object>> result = builder.getAsProps();
-			count = (long) result.get(0).get(AgentConstants.ID);
-		}
-		else {
-			GenericSelectRecordBuilder builder = getLogsFromGenericBuilder(ids, status);
-			module = ModuleFactory.getCommissioningLogModule();
-			builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
-			builder.select(new ArrayList<>());
-			List<Map<String, Object>> result = builder.get();
-			count = (long) result.get(0).get(AgentConstants.ID);
-		}
+
+		SelectRecordsBuilder builder = getLogsBuilder(ids, status,criteria);
+		builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+		builder.select(new ArrayList<>());
+		List<Map<String, Object>> result = builder.getAsProps();
+		Long count = (long) result.get(0).get(AgentConstants.ID);
+
 		return count;
 	}
 	public static SelectRecordsBuilder getLogsBuilder(List<Long> ids,String status,Criteria criteria) throws Exception {
@@ -436,31 +430,4 @@ public class CommissioningApi {
 		}
 		return builder;
 	}
-	public static GenericSelectRecordBuilder getLogsFromGenericBuilder(List<Long>ids,String status) throws Exception{
-
-		FacilioModule module = ModuleFactory.getCommissioningLogModule();
-		List<FacilioField>fields = FieldFactory.getCommissioningLogFields();
-		if (ids == null || ids.size() > 1) {
-			fields.removeIf(field -> field.getName().equals("pointJsonStr") || field.getName().equals("clientMetaStr"));
-		}
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
-
-		builder.table(module.getTableName())
-				.select(fields)
-				.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
-		if (status != null) {
-			if (status.equals("draft")) {
-				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
-			} else if (status.equals("published")) {
-				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_NOT_EMPTY));
-			}
-		}
-		if (ids != null) {
-			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		}
-		return builder;
-	}
-	
 }
