@@ -374,6 +374,17 @@ public class WorkorderPageFactory extends PageFactory {
         historyWidget.addToLayoutParams(historySection, 24, 18);
         historySection.addWidget(historyWidget);
     }
+    private static void addClassificationTab(Page page){
+        Page.Tab tab = page.new Tab("Specification");
+        page.addTab(tab);
+        Page.Section tab1Sec1 = page.new Section();
+        tab.addSection(tab1Sec1);
+        PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
+        classificationWidget.setName("Classification");
+        classificationWidget.addToLayoutParams(tab1Sec1, 24, 8);
+        classificationWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+        tab1Sec1.addWidget(classificationWidget);
+    }
 
     private static void addRelatedRecordsTab(Page page, long workorderModuleID) throws Exception {
         Page.Tab relatedRecordsTab = page.new Tab("Related");
@@ -562,6 +573,9 @@ public class WorkorderPageFactory extends PageFactory {
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES) &&
                 workorder.getFailureClass() != null) {
             addFailureReportTab(page);
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+            addClassificationTab(page);
         }
         addHistoryTab(page);
         return page;

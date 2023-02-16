@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
+import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -21,6 +22,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
@@ -327,5 +329,11 @@ public class AssetModule extends BaseModuleConfig{
 
         scopeConfigList = Arrays.asList(maintenanceApp);
         return scopeConfigList;
+    }
+
+    @Override
+    public void addClassificationDataModule() throws Exception {
+        String tableName="Assets_Classification_Data";
+        ClassificationUtil.addClassificationDataModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.ASSET), tableName);
     }
 }

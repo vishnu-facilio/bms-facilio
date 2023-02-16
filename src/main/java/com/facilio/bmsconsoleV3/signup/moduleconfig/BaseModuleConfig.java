@@ -62,6 +62,8 @@ public abstract class BaseModuleConfig extends SignUpData {
         addTriggers();
         addMisc();
     }
+    public void addClassificationDataModule() throws Exception{};
+
     protected void addModuleAndFields() throws Exception {};
     public void addForms(List<ApplicationContext> allApplications) throws Exception {
         List<FacilioForm> forms = getModuleForms();

@@ -15,10 +15,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
@@ -108,11 +112,26 @@ public class ClassificationUtil {
             List<ClassificationAttributeContext> classificationAttributes = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(classificationRelatedAttributeIds)) {
                 classificationAttributes = getClassificationAttributesByIds(classificationRelatedAttributeIds);
-
+                fillMetricAndUnitNamesForAttribute(classificationAttributes);
             }
             collectionModuleMap.put(classificationId, classificationAttributes);
         }
         return collectionModuleMap;
+    }
+    public static void fillMetricAndUnitNamesForAttribute(List<ClassificationAttributeContext>  classificationAttributes){
+       if(CollectionUtils.isEmpty(classificationAttributes)){
+           return;
+       }
+       for(ClassificationAttributeContext attribute:classificationAttributes){
+           int metricId= attribute.getMetric();
+           int unitId=attribute.getUnitId();
+           Unit unit=Unit.valueOf(unitId);
+           Metric metric=Metric.valueOf(metricId);
+           if(unit!=null && metric!=null){
+              attribute.setMetricName(metric.getName());
+              attribute.setUnit(unit);
+           }
+       }
     }
 
     public static Map<Long, List<ClassificationAttributeContext>> getAttributeMapVsClassificationId(Set<Long> classificationIds) throws Exception {

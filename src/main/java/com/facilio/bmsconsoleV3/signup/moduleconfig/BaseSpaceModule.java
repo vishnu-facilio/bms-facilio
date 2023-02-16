@@ -2,9 +2,11 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
@@ -30,6 +32,12 @@ public class BaseSpaceModule extends BaseModuleConfig{
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
+    }
+
+    @Override
+    public void addClassificationDataModule() throws Exception {
+        String tableName="BaseSpace_Classification_Data";
+        ClassificationUtil.addClassificationDataModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE),tableName);
     }
 
     private static FacilioView getAllBasespaces() {

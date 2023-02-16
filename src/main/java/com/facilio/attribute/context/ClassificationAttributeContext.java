@@ -2,8 +2,6 @@ package com.facilio.attribute.context;
 
 import com.facilio.classification.context.ClassificationDataContext;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,7 +14,18 @@ public class ClassificationAttributeContext extends V3Context {
     private String description;
     private FieldType fieldType;
     private int metric;
+    private String metricName;
+    private Object unit;
+
+    public Object getUnit() {
+        return unit;
+    }
+    public void setUnit(Object unit) {
+        this.unit = unit;
+    }
+
     private int unitId;
+
     private Object value;
     public void setFieldType(int fieldType) {
         this.fieldType = FieldType.getCFType(fieldType);

@@ -384,4 +384,3 @@ classes:
 
     #Adding Vendor Quote stateflow
   - com.facilio.bmsconsoleV3.signup.requestForQuotation.VendorQuoteDefaultStateflow
-  

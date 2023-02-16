@@ -58,6 +58,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
 
+				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+					addClassificationTab(page,ContextNames.SITE_ACTIVITY);
+				}
 				Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
 			    Page.Section tab2Sec1 = page.new Section();
@@ -96,6 +99,10 @@ public class SpaceManagementPageFactory extends PageFactory {
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 				addSafetyPlanTab(page);
 			}
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+				addClassificationTab(page,ContextNames.SITE_ACTIVITY);
+			}
+
 
 			Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
@@ -138,6 +145,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			addSafetyPlanTab(page);
 		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+			addClassificationTab(page,ContextNames.BUILDING_ACTIVITY);
+		}
 
 		Page.Tab tab2 = page.new Tab("History");
 	    page.addTab(tab2);
@@ -178,6 +188,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			addSafetyPlanTab(page);
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+			addClassificationTab(page,ContextNames.FLOOR_ACTIVITY);
 		}
 
 		Page.Tab tab3 = page.new Tab("History");
@@ -243,6 +256,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			addSafetyPlanTab(page);
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+			addClassificationTab(page,ContextNames.SPACE_ACTIVITY);
 		}
 
 		Page.Tab tab3 = page.new Tab("History");;
@@ -371,5 +387,16 @@ public class SpaceManagementPageFactory extends PageFactory {
 		PageWidget readingsWidget = new PageWidget(WidgetType.LIST, "spaceReadings");
 		readingsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(readingsWidget);
+	}
+	private static void addClassificationTab(Page page,String activityModuleName){
+		Page.Tab tab = page.new Tab("Specification");
+		page.addTab(tab);
+		Page.Section tab1Sec1 = page.new Section();
+		tab.addSection(tab1Sec1);
+		PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
+		classificationWidget.setName("Classification");
+		classificationWidget.addToLayoutParams(tab1Sec1, 24, 8);
+		classificationWidget.addToWidgetParams("activityModuleName", activityModuleName);
+		tab1Sec1.addWidget(classificationWidget);
 	}
  }

@@ -50,7 +50,9 @@ public class NewSpaceManagementPageFactory extends PageFactory {
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
             addSafetyPlanTab(page);
         }
-
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+            addClassificationTab(page);
+        }
         Page.Tab tab5 = page.new Tab("History");
         page.addTab(tab5);
         Page.Section tab5Sec1 = page.new Section();
@@ -60,17 +62,6 @@ public class NewSpaceManagementPageFactory extends PageFactory {
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
         tab5Sec1.addWidget(activityWidget);
 
-        if(AccountUtil.getCurrentUser().getOrgId()==173){
-            Page.Tab tab6 = page.new Tab("Specification");
-            page.addTab(tab6);
-            Page.Section tab6Sec1 = page.new Section();
-            tab3.addSection(tab6Sec1);
-            PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
-            classificationWidget.setName("Classification");
-            classificationWidget.addToLayoutParams(tab6Sec1, 24, 3);
-            classificationWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
-            tab6Sec1.addWidget(classificationWidget);
-        }
         return page;
     }
     private static void addSecondaryDetailsWidget(Page.Section section) {
@@ -151,5 +142,15 @@ public class NewSpaceManagementPageFactory extends PageFactory {
 
         return safetyPlanSection;
     }
-
+    private static void addClassificationTab(Page page){
+        Page.Tab tab = page.new Tab("Specification");
+        page.addTab(tab);
+        Page.Section tab1Sec1 = page.new Section();
+        tab.addSection(tab1Sec1);
+        PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
+        classificationWidget.setName("Classification");
+        classificationWidget.addToLayoutParams(tab1Sec1, 24, 8);
+        classificationWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
+        tab1Sec1.addWidget(classificationWidget);
+    }
 }

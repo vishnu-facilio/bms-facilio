@@ -48,9 +48,14 @@ public class ResolveClassificationPathCommand extends FacilioCommand {
         }
         classification = cache.getFromCache(classification.getId());
         path = classification.getName();
-        if (classification.getParentClassification() != null && level < 2) {
+        if (classification.getParentClassification() != null && level < 3) {
 //            ClassificationContext parentClassification = getFromCache(classification.getParentClassification());
-            path = constructPath(classification.getParentClassification(), level + 1) + " / " + path;
+            if(level==2){
+                path="... / ".concat(path);
+            }else{
+                path = constructPath(classification.getParentClassification(), level + 1) + " / " + path;
+            }
+
         }
 
         return path;

@@ -281,15 +281,17 @@ public class AssetPageFactory extends PageFactory {
 			}
 
 		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
+			addClassificationTab(page);
+		}
 
-
-		Tab tab9 = page.new Tab("history", "history");
-		page.addTab(tab9);
+		Tab tab10 = page.new Tab("history", "history");
+		page.addTab(tab10);
 		
-		Section tab9Sec1 = page.new Section();
-		tab9.addSection(tab9Sec1);
+		Section tab10Sec1 = page.new Section();
+		tab10.addSection(tab10Sec1);
 		
-		addHistoryWidget(tab9Sec1);
+		addHistoryWidget(tab10Sec1);
 		
 		return page;
 	}
@@ -648,4 +650,16 @@ public class AssetPageFactory extends PageFactory {
 
 		return safetyPlanSection;
 	}
+	private static void addClassificationTab(Page page){
+		Page.Tab tab = page.new Tab("Specification");
+		page.addTab(tab);
+		Page.Section tab1Sec1 = page.new Section();
+		tab.addSection(tab1Sec1);
+		PageWidget classificationWidget = new PageWidget(PageWidget.WidgetType.CLASSIFICATION);
+		classificationWidget.setName("Classification");
+		classificationWidget.addToLayoutParams(tab1Sec1, 24, 8);
+		classificationWidget.addToWidgetParams("activityModuleName", ContextNames.ASSET_ACTIVITY);
+		tab1Sec1.addWidget(classificationWidget);
+	}
 }
+
