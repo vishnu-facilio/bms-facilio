@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.purchaserequest;
+package com.facilio.bmsconsoleV3.commands.termsandconditions;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
@@ -17,10 +17,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class LoadPurchaseRequestExtraFields extends FacilioCommand {
+public class LoadTermsAndConditionsExtraFieldsCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
         boolean fetchOnlyViewGroupColumn=(boolean)context.getOrDefault(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,false);
         FacilioView view=(FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
@@ -31,13 +30,12 @@ public class LoadPurchaseRequestExtraFields extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
             extraSelectableFields.add(allFieldsAsMap.get("localId"));
+            extraSelectableFields.add(allFieldsAsMap.get("isPublished"));
             extraSelectableFields.add(allFieldsAsMap.get("sysCreatedTime"));
+            extraSelectableFields.add(allFieldsAsMap.get("longDesc"));
             extraSelectableFields = extraSelectableFields.stream().filter(Objects::nonNull).collect(Collectors.toList());
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraSelectableFields);
-
         }
-
         return false;
     }
-
 }

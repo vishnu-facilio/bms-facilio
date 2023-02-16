@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LoadReceivablesExtraFields extends FacilioCommand {
@@ -24,27 +25,15 @@ public class LoadReceivablesExtraFields extends FacilioCommand {
         FacilioView view=(FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
         if(fetchOnlyViewGroupColumn && view!=null){
-            List<FacilioField> extraReceivableFields = new ArrayList<>();
-            List<FacilioField> viewFileds=null;
-
+            List<FacilioField> extraSelectableFields = new ArrayList<>();
             String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
-
-            String[] extraFieldNames = new String[]{"poId", "sysCreatedTime"};
-
-            if(CollectionUtils.isNotEmpty(view.getFields())){
-                viewFileds=view.getFields().stream().map(ViewField::getField).filter(viewFiled->viewFiled!=null).collect(Collectors.toList());
-                Map<String,FacilioField> viewFieldsMap = FieldFactory.getAsMap(viewFileds);
-
-                for (String fieldName :extraFieldNames) {
-                    if(!viewFieldsMap.containsKey(fieldName)){
-                        extraReceivableFields.add((allFieldsAsMap.get(fieldName)));
-                    }
-                }
-            }
-            context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraReceivableFields);
+            extraSelectableFields.add(allFieldsAsMap.get("poId"));
+            extraSelectableFields.add(allFieldsAsMap.get("sysCreatedTime"));
+            extraSelectableFields = extraSelectableFields.stream().filter(Objects::nonNull).collect(Collectors.toList());
+            context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraSelectableFields);
 
         }
 

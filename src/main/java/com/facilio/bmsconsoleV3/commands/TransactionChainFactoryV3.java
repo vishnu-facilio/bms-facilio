@@ -19,7 +19,11 @@ import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsAndConditionsExtraFieldsCommandV3;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -549,8 +553,16 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getTermsBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new ReviseTandCCommand());
         return c;
+    }
+
+    public static FacilioChain getTermsAndConditionsBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadTermsLookupCommandV3());
+        chain.addCommand(new LoadTermsAndConditionsExtraFieldsCommandV3());
+        return chain;
     }
 
     public static FacilioChain getVendorsAfterSaveChain() {
@@ -2029,6 +2041,13 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getRequestForQuotationBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadRequestForQuotationExtraFieldsCommandV3());
+        chain.addCommand(new LoadRequestForQuotationLookupCommandV3());
+        return chain;
+    }
+
     public static FacilioChain getRfqBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         // c.addCommand(new CreateRfqFromPrCommandV3());
@@ -2072,6 +2091,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateRequestForQuotationCommandV3());
         c.addCommand(new UpdateRequestForQuotationLineItemsCommandV3());
         return c;
+    }
+
+    public static FacilioChain getVendorQuotesBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadVendorQuotesExtraFieldsCommandV3());
+        chain.addCommand(new LoadVendorQuotesLookupCommandV3());
+        return chain;
     }
     public static FacilioChain getVendorQuotesAfterFetchChain() {
         FacilioChain c = getDefaultChain();
