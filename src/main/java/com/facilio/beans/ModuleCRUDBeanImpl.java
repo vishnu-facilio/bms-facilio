@@ -1434,11 +1434,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void schedulePM(long plannerId,PlannedMaintenanceAPI.ScheduleOperation operation) throws Exception {
 		// TODO(2):
 		PMPlanner pmPlanner = getPmPlanners(plannerId);
-
 		PlannedMaintenance plannedmaintenance = V3RecordAPI.getRecord("plannedmaintenance", pmPlanner.getPmId());
-
 		List<PMResourcePlanner> pmResourcePlanners = getPMResourcePlanner(plannerId);
-
+		if(pmResourcePlanners != null){
+			for(PMResourcePlanner resourcePlanner : pmResourcePlanners){
+				LOGGER.debug(resourcePlanner.toString());
+			}
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workOrderModule = modBean.getModule("workorder");
 
@@ -1459,7 +1461,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(FacilioConstants.PM_V2.PM_V2_MODULE_NAME, plannedmaintenance);
 		context.put(FacilioConstants.PM_V2.PM_V2_PLANNER, pmPlanner);
 		
-		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context); //  scheduleExecutor.execute returns no WOs
+		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context);//  scheduleExecutor.execute returns no WOs
 		List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrders.stream().map(i-> (ModuleBaseWithCustomFields)i).collect(Collectors.toList());
 
 		for(ModuleBaseWithCustomFields object: moduleBaseWithCustomFields){

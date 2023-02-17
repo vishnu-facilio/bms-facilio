@@ -11,6 +11,7 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -21,15 +22,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import java.util.logging.Logger;
+@Log4j
 public abstract class ExecutorBase implements Executor {
     @Override
     public List<V3WorkOrderContext> execute(Context context) throws Exception {
-    	
+
     	PlannedMaintenance plannedMaintenance = (PlannedMaintenance) context.get(FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
     	PMPlanner pmPlanner = (PMPlanner) context.get(FacilioConstants.PM_V2.PM_V2_PLANNER);
+        if(pmPlanner != null) {
+            LOGGER.debug("pmPlanner - " + pmPlanner.toString());
+        }
 		
         List<Long> nextExecutionTimes = getNextExecutionTimes(context);
+        if(nextExecutionTimes != null) {
+            LOGGER.debug("nextExecutionTimes - " + nextExecutionTimes.toString());
+        }
         FacilioStatus status = getStatus(context);
         List<V3WorkOrderContext> result = new ArrayList<>();
 
@@ -42,11 +50,11 @@ public abstract class ExecutorBase implements Executor {
         	for (long nextExecutionTime: nextExecutionTimes) {	// in seconds
             	
             	Long computedCreatedTime = getComputedNextExecutionTime(nextExecutionTime, plannedMaintenance);
+                LOGGER.debug("computedCreatedTime - "+computedCreatedTime);
             	
             	if(!canProceedWithCreatedTime(computedCreatedTime)) {
             		continue;
             	}
-            	
                 for (PMResourcePlanner pmResourcePlanner: pmPlanner.getResourcePlanners()) {
                     //Cloning workorder
                     Map<String, Object> asProperties = FieldUtil.getAsProperties(plannedMaintenance);
