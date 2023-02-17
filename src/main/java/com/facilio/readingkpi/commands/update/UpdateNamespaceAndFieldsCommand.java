@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
@@ -12,6 +13,8 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.List;
+import java.util.Map;
 
 public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
     ReadingKPIContext readingKpi;
@@ -22,6 +25,7 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
 
         updateNamespace();
         updateFields(context);
+        updateReadingModuleName(context);
         return false;
     }
 
@@ -58,6 +62,20 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
 
         field.setId(this.readingKpi.getReadingFieldId());
         modBean.updateField(field);
+    }
+    private void updateReadingModuleName(Context context) throws Exception {
+        List<ReadingKPIContext> kpis = (List<ReadingKPIContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ReadingKpi.READING_KPI));
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        for(ReadingKPIContext kpi : kpis) {
+            FacilioModule module = new FacilioModule();
+            module.setModuleId(kpi.getReadingModuleId());
+            module.setDisplayName(kpi.getName());
+            modBean.updateModule(module);
+            FacilioField field = new FacilioField();
+            field.setFieldId(kpi.getReadingFieldId());
+            field.setDisplayName(kpi.getName());
+            modBean.updateField(field);
+        }
     }
 }
 
