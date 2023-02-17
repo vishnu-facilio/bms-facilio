@@ -1,16 +1,23 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
+import java.util.function.Function;
+import org.json.simple.JSONArray;
 
 import java.util.List;
 
@@ -58,6 +65,26 @@ public class CustomButtonAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+
+        String type=rule.getCreatedTime()==rule.getModifiedTime() ? "created":"updated";
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("CustomButton {%s} has been %s for %s module", rule.getName(),type, rule.getModule().getDisplayName()),
+                rule.getDescription(),
+                AuditLogHandler.RecordType.SETTING,
+                "CustomButton",rule.getId())
+                .setActionType(rule.getCreatedTime()==rule.getModifiedTime() ? AuditLogHandler.ActionType.ADD:AuditLogHandler.ActionType.UPDATE)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                                json.put("id", rule.getId());
+                                json.put("moduleName", moduleName);
+                                json.put("ruleType", WorkflowRuleContext.RuleType.CUSTOM_BUTTON.getIntVal());
+                                json.put("navigateTo", "CustomButton");
+                                array.add(json);
+                                return array.toJSONString();
+                            }).apply(null))
+                        );
+
+
         return SUCCESS;
     }
 
@@ -87,6 +114,16 @@ public class CustomButtonAction extends FacilioAction {
 
         context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
         chain.execute();
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        WorkflowRuleContext workflowRule= (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+        if(workflowRule != null) {
+            FacilioModule module = modBean.getModule(workflowRule.getModuleId());
+            sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("CustomButton %s has been deleted for %s module", workflowRule.getName(), module.getDisplayName()), workflowRule.getDescription(),
+                    AuditLogHandler.RecordType.SETTING,
+                    "CustomButton", workflowRule.getId())
+                    .setActionType(AuditLogHandler.ActionType.DELETE));
+        }
 
         return SUCCESS;
     }
