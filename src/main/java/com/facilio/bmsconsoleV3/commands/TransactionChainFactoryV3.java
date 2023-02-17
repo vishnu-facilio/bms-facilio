@@ -2894,4 +2894,10 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SpaceBookingSupplementsCommand());
         return c;
     }
+
+    public static FacilioChain getWorkflowExportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new WorkflowExportCommand());
+        return c;
+    }
 }

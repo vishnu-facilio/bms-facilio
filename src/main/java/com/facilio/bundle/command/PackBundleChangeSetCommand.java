@@ -132,7 +132,7 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 			
 			rootFolder.addFile(BundleConstants.BUNDLE_FILE_NAME+"."+BundleConstants.XML_FILE_EXTN, bundleFile);
 			
-			long fileId = saveAsZipFile(rootFolder);
+			long fileId = BundleUtil.saveAsZipFile(rootFolder);
 			
 			String downloadUrl = FacilioFactory.getFileStore().getDownloadUrl(fileId);
 			
@@ -156,73 +156,6 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 		
 		update.update(FieldUtil.getAsProperties(bundle));
 		
-	}
-
-	private long saveAsZipFile(BundleFolderContext rootFolder) throws Exception {
-
-		String rootPath = PackBundleChangeSetCommand.class.getClassLoader().getResource("").getFile() + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "bundles"+File.separator + rootFolder.getName();
-
-		File rootFile = new File(rootPath);
-		if (!(rootFile.exists() && rootFile.isDirectory())) {
-			rootFile.mkdirs();
-		}
-		
-		rootFolder.setPath(rootPath);
-		
-		Queue<BundleFolderContext> foldersQueue = new LinkedList<BundleFolderContext>();
-		
-		foldersQueue.add(rootFolder);
-		
-		while(!foldersQueue.isEmpty()) {
-			BundleFolderContext folder = foldersQueue.poll();
-			
-			if(!folder.getFolders().isEmpty()) {
-				
-				for(String folderName : folder.getFolders().keySet()) {
-					
-					String subFolderPath = folder.getPath() + File.separator + folderName;
-					
-					File subFolder = new File(subFolderPath);
-					subFolder.mkdirs();
-					
-					BundleFolderContext subFolderContext = folder.getFolders().get(folderName);
-					subFolderContext.setPath(subFolderPath);
-					foldersQueue.add(subFolderContext);
-				}
-			}
-			
-			if(!folder.getFiles().isEmpty()) {
-				
-				for(String fileName : folder.getFiles().keySet()) {
-					
-					BundleFileContext fileContext = folder.getFiles().get(fileName);
-					
-					String content = fileContext.isXMLFile() ? fileContext.getXmlContent().getAsXMLString() : fileContext.getFileContent();  
-			       
-					try(FileWriter fWriter = new FileWriter(folder.getPath() + File.separator + fileContext.getName() + "." + fileContext.getExtension())) {
-			            fWriter.write(content);
-			        }
-			        catch (IOException e) {
-			            LOGGER.log(Priority.ERROR, e.getMessage(), e);
-			            throw e;
-			        }
-					
-				}
-			}
-		}
-		
-		File zipFile = new File(rootPath+".zip");
-		
-		ZipUtil.pack(rootFile, zipFile);
-		
-		FileStore fs = FacilioFactory.getFileStore();
-		
-		long fileId = fs.addFile(rootFolder.getName()+".zip", zipFile, "application/zip");
-		
-		FileUtils.deleteDirectory(rootFile);
-		zipFile.delete();
-		
-		return fileId;
 	}
 
 }

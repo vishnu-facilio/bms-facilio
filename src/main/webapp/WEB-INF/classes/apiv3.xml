@@ -1356,4 +1356,8 @@
     <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
         <action name="getPpmJobs" class="com/facilio/bmsconsoleV3/actions/WorkorderAction" method="getPpmJobs"/>
     </package>
+
+    <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
+        <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>
+    </package>
 </struts>
