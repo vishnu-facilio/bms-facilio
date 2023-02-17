@@ -181,4 +181,10 @@
         </action>
     </package>
 
+    <package name="womodulesetting" namespace="/api/v1/setup/womodulesetting" extends="v3Api">
+        <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetch"/>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>
+    </package>
+
 </struts>

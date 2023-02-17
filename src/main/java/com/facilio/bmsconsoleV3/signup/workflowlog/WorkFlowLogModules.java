@@ -130,7 +130,7 @@ public class WorkFlowLogModules extends SignUpData{
 
 		fields.add((FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME));
 
-		fields.add(FieldFactory.getDefaultField("recordModuleId","Record ModuleId","RECORD_MODULE_ID",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("recordModuleId","Module ID","RECORD_MODULE_ID",FieldType.NUMBER));
 
 		module.setFields(fields);
 		return module;

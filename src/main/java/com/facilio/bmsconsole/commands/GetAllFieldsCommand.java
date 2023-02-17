@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -209,9 +209,21 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		meta.put("fields", fields);
 		meta.put("operators", operators);
 		meta.put("reportOperators", reportOperators);
+		fetchModuleSetting(moduleName, meta);
+
 		context.put(FacilioConstants.ContextNames.META, meta);
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	private static void fetchModuleSetting(String moduleName, JSONObject meta) throws Exception {
+		try {
+			if (moduleName.equals(ContextNames.WORK_ORDER)){
+				meta.put("moduleSetting", V3WorkOrderModuleSettingAPI.fetchWorkOrderModuleSettings());
+			}
+		}catch (Exception e){
+
+		}
 	}
 
 }

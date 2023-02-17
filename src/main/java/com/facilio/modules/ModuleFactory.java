@@ -5451,4 +5451,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		calendarView.setDisplayName("Calendar View");
 		return calendarView;
 	}
+
+	public static FacilioModule getWoSettingModule() {
+		FacilioModule woSettingModule = new FacilioModule();
+		woSettingModule.setName("workordermodulesetting");
+		woSettingModule.setTableName("WorkOrder_Module_Setting");
+		woSettingModule.setDisplayName("WorkOrder Module Setting");
+		return woSettingModule;
+	}
 }

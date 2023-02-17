@@ -9,6 +9,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
+import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
@@ -511,6 +512,8 @@ public class FieldFactory extends BaseFieldFactory {
         }));
 
         public static final List<String> WORKFLOW_LOG_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
+                "recordId",
+                "recordModuleId",
                 "status",
                 "logType"
         }).collect(Collectors.toList()));
@@ -11224,6 +11227,13 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("startDateFieldId", "START_DATE_FIELDID", module));
         list.add(getNumberField("endDateFieldId", "END_DATE_FIELDID", module));
         list.add(getNumberField("defaultCalendarView", "DEFAULT_CALENDAR_VIEW", module));
+        return list;
+    }
+
+    public static List<FacilioField> getWorkorderModuleSettingFields(FacilioModule module) {
+        List<FacilioField> list = new ArrayList<>();
+        list.add(getIdField(module));
+        list.add(getBooleanField(V3WorkOrderModuleSettingAPI.HIDE_GALLERY, "IS_HIDE_GALLERY", module));
         return list;
     }
 

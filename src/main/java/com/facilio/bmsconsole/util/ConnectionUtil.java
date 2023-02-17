@@ -125,11 +125,12 @@ public class ConnectionUtil {
 	}
 	
 	public static void parseJsonAndUpdateConnection(String result,ConnectionContext connectionContext) throws Exception {
-		
-		System.out.println("result --- "+result);
+
 		JSONParser parser = new JSONParser();
 		JSONObject resultJson = (JSONObject) parser.parse(result);
-		LOGGER.info("connection result : "+ resultJson);
+
+		LOGGER.debug("old refresh token : "+ connectionContext.getRefreshToken());
+		LOGGER.debug("Connection result : "+ result);
 
 		if(resultJson.containsKey(ConnectionUtil.ACCESS_TOKEN_STRING)) {
 			connectionContext.setAccessToken((String)resultJson.get(ConnectionUtil.ACCESS_TOKEN_STRING));
@@ -168,7 +169,9 @@ public class ConnectionUtil {
 					connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
 				}
 			}
-			
+
+			LOGGER.debug("update refresh token : "+connectionContext.getRefreshToken());
+
 			ConnectionUtil.updateConnectionContext(connectionContext);
 		}
 		else {
@@ -179,18 +182,31 @@ public class ConnectionUtil {
 	public static void updateAuthTokenByRefreshToken(ConnectionContext connectionContext) throws Exception {
 		
 		String url = connectionContext.getRefreshTokenUrl();
+		String refreshToken = connectionContext.getRefreshToken();
 
 		Map<String,String> params = new HashMap<>();
 
-		params.put(ConnectionUtil.REFRESH_TOKEN_STRING, connectionContext.getRefreshToken());
+		params.put(ConnectionUtil.REFRESH_TOKEN_STRING, refreshToken);
 		params.put(ConnectionUtil.CLIENT_ID_STRING, connectionContext.getClientId());
 		params.put(ConnectionUtil.CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 		params.put(ConnectionUtil.GRANT_TYPE_STRING, ConnectionUtil.REFRESH_TOKEN_STRING);
 		params.put(ConnectionUtil.SECRET_STATE, connectionContext.getSecretStateKey());
 
 		String res = ConnectionUtil.getUrlResult(url, params, HttpMethod.POST,null,null,null);
-		
+		if (res != null) {
+			try {
+				JSONParser parser = new JSONParser();
+				JSONObject result = (JSONObject) parser.parse(res);
+
+				if (result != null && !result.isEmpty() && result.containsKey("error_description") && result.get("error_description").equals("access_denied")) {
+					res = ConnectionUtil.getUrlResult(url, params, HttpMethod.POST, null, null, null);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Error while getting connection response : ", e);
+			}
+		}
 		ConnectionUtil.parseJsonAndUpdateConnection(res, connectionContext);
+
 	}
 
 	

@@ -1389,4 +1389,5 @@
     <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>
     </package>
+
 </struts>
