@@ -2,7 +2,7 @@
 <executors>
 	<global>
 <!--		<include>339,12</include>-->
-		<exclude>426</exclude>
+		<exclude>17,426</exclude>
 	</global>
 	<executor name="facilio" period="300" threads="25" /> <!-- Period in seconds -->
 	<executor name="priority" period="60" threads="25" />
