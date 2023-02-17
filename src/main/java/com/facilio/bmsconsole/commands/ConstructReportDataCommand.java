@@ -2,15 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.TreeSet;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.MultiEnumField;
@@ -41,7 +36,7 @@ import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
 
 public class ConstructReportDataCommand extends FacilioCommand {
-
+    public JSONObject dayOfWeek = new JSONObject();
     protected Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
         if (isTimeSeries) {
             return new TreeSet<Map<String, Object>>((data1, data2) -> Long.compare((long) data1.get(sortAlias), (Long) data2.get(sortAlias)));
@@ -77,6 +72,12 @@ public class ConstructReportDataCommand extends FacilioCommand {
             Map<String, List<Map<String, Object>>> reportProps = data.getProps();
             if (reportProps != null && !reportProps.isEmpty()) {
                 for (ReportDataPointContext dataPoint : data.getDataPoints()) {
+                    if(dataPoint.getGroupByFields() != null && report != null && report.getType() == ReportContext.ReportType.WORKORDER_REPORT.getValue() &&
+                            report.getxAggrEnum() == DateAggregateOperator.WEEKDAY &&
+                            report.getDateRange() != null && report.getDateRange().getStartTime() > 0)
+                    {
+                        getWeeklyMapFromRange(report.getDateRange().getStartTime());
+                    }
                     for (Map.Entry<String, List<Map<String, Object>>> entry : reportProps.entrySet()) {
                         List<Map<String, Object>> props = entry.getValue();
                         if (FacilioConstants.Reports.ACTUAL_DATA.equals(entry.getKey())) {
@@ -109,6 +110,8 @@ public class ConstructReportDataCommand extends FacilioCommand {
             }
             transformedData = groupedData;
         }
+
+
         JSONObject data = new JSONObject();
         data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
 //		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
@@ -264,7 +267,14 @@ public class ConstructReportDataCommand extends FacilioCommand {
             case DATE_TIME:
                 if (aggr != null && aggr instanceof DateAggregateOperator) {
                     val = ((DateAggregateOperator) aggr).getAdjustedTimestamp((long) val);
+                    if(((DateAggregateOperator) aggr) == DateAggregateOperator.WEEKDAY && (long) val > 0 ){
+                        ZonedDateTime dateTime = DateTimeUtil.getDateTime((long)val);
+                        if(dateTime != null && dayOfWeek != null && dayOfWeek.containsKey(dateTime.getDayOfWeek())){
+                            val = dayOfWeek.get(dateTime.getDayOfWeek());
+                        }
+                    }
                 }
+
                 break;
             case NUMBER:
                 if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {
@@ -440,6 +450,16 @@ public class ConstructReportDataCommand extends FacilioCommand {
         catch (Exception e)
         {
             return false;
+        }
+    }
+    private void getWeeklyMapFromRange(long startTime)throws Exception
+    {
+        dayOfWeek = new JSONObject();
+        ZonedDateTime dateTime =DateTimeUtil.getDateTime(startTime);
+        for(int i=0 ;i < 7 ; i++)
+        {
+            dayOfWeek.put(dateTime.getDayOfWeek(), DateTimeUtil.getDayStartTimeOf(dateTime.toEpochSecond() * 1000));
+            dateTime = dateTime.plusDays(1);
         }
     }
 }
