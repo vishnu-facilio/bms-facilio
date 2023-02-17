@@ -55,7 +55,8 @@ public class ExecuteSurveyTemplateCommand extends FacilioCommand{
 			long assignedTo = (long) context.get("assignedTo");
 			response.setRuleId(ruleId);
 			response.setIsRetakeAllowed(isRetake);
-			response.setExpiryDate(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(expiryDay));
+			if(expiryDay!=null) {response.setExpiryDate(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(expiryDay));}
+			if(retakeExpiryDuration!=null) {response.setRetakeExpiry(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(retakeExpiryDuration));}
 			response.setRetakeExpiryDuration(retakeExpiryDuration);
 			response.setParentId(WorkOrderAPI.getWorkOrder(parentId));
 			response.setSiteId(response.getParentId().getSiteId());
