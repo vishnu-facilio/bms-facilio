@@ -9,6 +9,11 @@
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="addJob">
 		</action>
+		<action name="runDataMigration" class="com.facilio.datamigration.action.DataMigrationAction">
+		</action>
+		<action name="dataMigration" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/datamigration.jsp</result>
+		</action>
 		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="deleteJob">
 		</action>

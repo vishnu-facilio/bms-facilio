@@ -5449,6 +5449,22 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return currencyModule;
 	}
 
+	public static FacilioModule getDataMigrationStatusModule() {
+		FacilioModule currencyModule = new FacilioModule();
+		currencyModule.setName("dataMigrationStatus");
+		currencyModule.setDisplayName("Data Migration Status");
+		currencyModule.setTableName("Data_Migration_Status");
+		return currencyModule;
+	}
+
+	public static FacilioModule getDataMigrationMappingModule() {
+		FacilioModule currencyModule = new FacilioModule();
+		currencyModule.setName("dataMigrationMapping");
+		currencyModule.setDisplayName("Data Migration Mapping");
+		currencyModule.setTableName("Data_Migration_Mapping");
+		return currencyModule;
+	}
+
 	public static FacilioModule getConnectedAppDeploymentsModule() {
 		FacilioModule connectedAppDeployments = new FacilioModule();
 		connectedAppDeployments.setName("connectedAppDeployments");

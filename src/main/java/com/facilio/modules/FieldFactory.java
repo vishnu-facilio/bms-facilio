@@ -11258,6 +11258,31 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getDataMigrationStatusFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getDataMigrationStatusModule();
+        fields.add(getIdField(module));
+        fields.add(getField("sourceOrgId", "SOURCE_ORGID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("lastModuleId", "LAST_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("migratedCount", "MIGRATED_COUNT", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getDataMigrationMappingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getDataMigrationMappingModule();
+        fields.add(getIdField(module));
+        fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("migrationId", "MIGRATIONID", module, FieldType.NUMBER));
+        fields.add(getField("oldId", "OLDID", module, FieldType.NUMBER));
+        fields.add(getField("newId", "NEWID", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getConnectedAppDeploymentsFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getConnectedAppDeploymentsModule();

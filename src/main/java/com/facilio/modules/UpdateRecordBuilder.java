@@ -56,6 +56,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private boolean ignoreSplNullHandling;
 	private boolean skipModuleCriteria = false;
 	private StringJoiner sql = new StringJoiner(",");
+	private boolean allowSysModifiedFieldsProps = false;
 
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -82,6 +83,11 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	public UpdateRecordBuilder<E> useExternalConnection (Connection conn) {
 		builder.useExternalConnection(conn);
 		selectBuilder.useExternalConnection(conn);
+		return this;
+	}
+
+	public UpdateRecordBuilder<E> allowSysModifiedFieldsProps() {
+		this.allowSysModifiedFieldsProps = true;
 		return this;
 	}
 
@@ -252,21 +258,28 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		long currentTime = System.currentTimeMillis();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		prop.put("orgId", orgId);
-		prop.put("sysModifiedTime", currentTime);
+		if(!allowSysModifiedFieldsProps || (allowSysModifiedFieldsProps &&
+				(!prop.containsKey("sysModifiedTime") || ((prop.containsKey("sysModifiedTime") && (long)prop.get("sysModifiedTime") <= 0))))) {
+			prop.put("sysModifiedTime", currentTime);
+		}
 
 		if (this.bean != null) {
 			this.bean.setOrgId(orgId);
-			this.bean.setSysModifiedTime(currentTime);
+			if(!allowSysModifiedFieldsProps || (allowSysModifiedFieldsProps && bean.getSysModifiedTime() <= 0)) {
+				this.bean.setSysModifiedTime(currentTime);
+			}
 		}
 	}
 
 	private void setSysUser  (Map<String, Object> prop) {
 		User currentUser = AccountUtil.getCurrentUser();
 		if (currentUser != null && currentUser.getId() > 0) {
-			prop.put("sysModifiedBy", currentUser.getId());
+			if(!allowSysModifiedFieldsProps || (allowSysModifiedFieldsProps && prop.get("sysModifiedBy") == null)) {
+				prop.put("sysModifiedBy", currentUser.getId());
 
-			if (this.bean != null) {
-				this.bean.setSysModifiedBy(currentUser);
+				if (this.bean != null && (!allowSysModifiedFieldsProps || (allowSysModifiedFieldsProps && bean.getSysModifiedBy() == null))) {
+					this.bean.setSysModifiedBy(currentUser);
+				}
 			}
 		}
 	}

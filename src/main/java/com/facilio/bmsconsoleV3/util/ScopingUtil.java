@@ -6,6 +6,7 @@ import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.beans.ValueGeneratorBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -405,6 +406,47 @@ public class ScopingUtil {
             return false;
         }
         return true;
+    }
+
+    public static ScopeHandler.ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) throws Exception{
+        long currentSiteId = AccountUtil.getCurrentSiteId();
+        return constructSiteFieldsAndCriteria(module, isUpdate, Collections.singletonList(currentSiteId));
+    }
+
+    public static ScopeHandler.ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate, List<Long> siteIds) throws Exception{
+        FacilioField siteIdField = FieldFactory.getSiteIdField(module);
+
+        Criteria criteria = new Criteria();
+        if (CollectionUtils.isNotEmpty(siteIds)) {// Currently we are handling site id criteria only for the module and not for all parent modules
+            Condition siteCondition = CriteriaAPI.getCondition(siteIdField, StringUtils.join(siteIds, ","), NumberOperators.EQUALS);
+            criteria.addAndCondition(siteCondition);
+        }
+        else {
+            List<Long> mySitIds = CommonCommandUtil.getMySiteIds();
+            if(CollectionUtils.isNotEmpty(mySitIds)) {
+                Condition siteCondition = CriteriaAPI.getCondition(siteIdField, StringUtils.join(mySitIds, ","), NumberOperators.EQUALS);
+                criteria.addAndCondition(siteCondition);
+            }
+        }
+        List<FacilioField> fields = null;
+        if (isUpdate) { //Will allow site id to be updated only if current site is -1. Also site fields of all parent modules needs to be added in fields because those have to be updated too
+            if (CollectionUtils.isEmpty(siteIds)) {
+                fields = new ArrayList<>();
+                criteria = new Criteria();
+                fields.add(siteIdField);
+                FacilioModule extendedModule = module.getExtendModule();
+                while(extendedModule != null) {
+                    if (FieldUtil.isSiteIdFieldPresent(extendedModule)) {
+                        fields.add(FieldFactory.getSiteIdField(extendedModule));
+                    }
+                    extendedModule = extendedModule.getExtendModule();
+                }
+            }
+        }
+        else {
+            fields = Collections.singletonList(siteIdField);
+        }
+        return ScopeHandler.ScopeFieldsAndCriteria.of(fields, criteria);
     }
 
     private static String getAlternateLinkNameForMultiLookupHandling(String linkName, FacilioField field) {

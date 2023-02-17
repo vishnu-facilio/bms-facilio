@@ -41,6 +41,8 @@
 	
 	<bean name="TabBean" class="com.facilio.beans.WebTabBeanCacheImpl"></bean>
 
+	<bean name="DataMigrationBean" class="com.facilio.datamigration.beans.DataMigrationBeanImpl"></bean>
+
 	<bean name="NamespaceBean" class="com.facilio.beans.NamespaceBeanCacheImpl"></bean>
 
 </beans>

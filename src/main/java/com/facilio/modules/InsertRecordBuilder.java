@@ -38,6 +38,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private int recordsPerBatch = -1;
 	private List<SupplementRecord> insertSupplements;
 	private boolean ignore = false;
+	private boolean allowSysCreatedFieldsProps = false;
 
 	// TODO to be removed after everything is moved to v3
 	private boolean ignoreSplNullHandling = false;
@@ -55,7 +56,13 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		this.module = module;
 		return this;
 	}
-	
+
+	public InsertRecordBuilder<E> allowSysCreatedFieldsProps() {
+		this.allowSysCreatedFieldsProps = true;
+		return this;
+	}
+
+
 	@Override
 	public InsertRecordBuilder<E> table(String tableName) {
 		return this;
@@ -429,23 +436,30 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		long currentTime = System.currentTimeMillis();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		prop.put("orgId", orgId);
-		prop.put("sysCreatedTime", currentTime);
-		prop.put("sysModifiedTime", currentTime);
+		if(!allowSysCreatedFieldsProps || (allowSysCreatedFieldsProps &&
+				(!prop.containsKey("sysCreatedTime") || ((prop.containsKey("sysCreatedTime") && (long)prop.get("sysCreatedTime") <= 0))))) {
+			prop.put("sysCreatedTime", currentTime);
+			prop.put("sysModifiedTime", currentTime);
+		}
 
 		if (bean != null) {
 			bean.setOrgId(orgId);
-			bean.setSysCreatedTime(currentTime);
-			bean.setSysModifiedTime(currentTime);
+			if(!allowSysCreatedFieldsProps || (allowSysCreatedFieldsProps && bean.getSysCreatedTime() <= 0)) {
+				bean.setSysCreatedTime(currentTime);
+				bean.setSysModifiedTime(currentTime);
+			}
 		}
 	}
 
 	private void setSysUser  (Map<String, Object> prop, E bean) {
 		User currentUser = AccountUtil.getCurrentUser();
 		if (currentUser != null && currentUser.getId() > 0) {
-			prop.put("sysCreatedBy", currentUser.getId());
-			prop.put("sysModifiedBy", currentUser.getId());
+			if(!allowSysCreatedFieldsProps || (allowSysCreatedFieldsProps && prop.get("sysCreatedBy") == null)) {
+				prop.put("sysCreatedBy", currentUser.getId());
+				prop.put("sysModifiedBy", currentUser.getId());
+			}
 
-			if (bean != null) {
+			if (bean != null && (!allowSysCreatedFieldsProps || (allowSysCreatedFieldsProps && bean.getSysCreatedBy() == null))) {
 				bean.setSysCreatedBy(currentUser);
 				bean.setSysModifiedBy(currentUser);
 			}

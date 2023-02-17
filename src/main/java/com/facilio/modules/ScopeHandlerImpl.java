@@ -147,7 +147,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
         return null;
     }
     
-    private ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) throws Exception{
+    public ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) throws Exception{
         FacilioField siteIdField = FieldFactory.getSiteIdField(module);
         long currentSiteId = AccountUtil.getCurrentSiteId();
         Criteria criteria = new Criteria();

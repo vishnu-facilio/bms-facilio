@@ -36,6 +36,7 @@ import java.sql.*;
 import java.text.MessageFormat;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -2087,7 +2088,14 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
-
+		Map<Long, FacilioModule> moduleIdVsObj = moduleList.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity()));
+		int index = 0;
+		for (Map<String, Object> prop : props) {
+			if(prop.containsKey("extendsId") && prop.get("extendsId") != null) {
+				moduleList.get(index).setExtendModule(moduleIdVsObj.get((Long)prop.get("extendsId")));
+			}
+			index++;
+		}
 		return moduleList;
 	}
 
