@@ -285,14 +285,10 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	}
 
 	public static FacilioView getViewDetails(List<Map<String, Object>> viewProps, long orgId) throws Exception{
-		List<FacilioView> allViewDetails = getAllViewDetails(viewProps, orgId);
+		List<FacilioView> allViewDetails = getAllViewDetails(viewProps, orgId, false);
 		return (allViewDetails != null && allViewDetails.size() > 0) ? allViewDetails.get(0) : null;
 	}
 
-	public static List<FacilioView> getAllViewDetails(List<Map<String, Object>> viewPropList, long orgId) throws Exception
-	{
-		return getAllViewDetails(viewPropList, orgId, false);
-	}
 	public static List<FacilioView> getAllViewDetails(List<Map<String, Object>> viewPropList, long orgId, boolean getOnlyBasicValues) throws Exception
 	{
 		if(viewPropList != null && !viewPropList.isEmpty()) {
@@ -344,11 +340,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					}
 				}
 				view.setViewType(view.getType());
-				if (view.getCriteriaId() != -1) {
+
+				if ((!getOnlyBasicValues || AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DISABLE_VIEWLIST_OPTIMIZATION)) && (view.getCriteriaId() != -1)) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
 					setCriteriaValue(criteria);
 					view.setCriteria(criteria);
 				}
+
 				views.add(view);
 			}
 			return views;
@@ -603,10 +601,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		try {
 			FacilioView oldView = getView(viewId);
 			Criteria criteria = view.getCriteria();
+			long criteriaId = -99;
 			if(criteria != null) {
-				long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
-				view.setCriteriaId(criteriaId);
+				criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
 			}
+			view.setCriteriaId(criteriaId);
 
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
 			FacilioModule viewModule = ModuleFactory.getViewsModule();
@@ -618,10 +617,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			int count = updateBuilder.update(viewProp);
 			
 			addOrUpdateExtendedViewDetails(view, viewProp, false, oldView);
-			
-			if(criteria != null) {
+			// delete old criteria
+			if (oldView.getCriteriaId() != -1) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
 			}
+
 			if (view.getFields() != null) {
 			customizeViewColumns(view.getId(), view.getFields());
 			}
