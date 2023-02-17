@@ -42,6 +42,7 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		}
 		else {
 			updateRule(rule, oldRule);
+			rule.setRuleType(oldRule.getRuleType());
 		}
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		context.put(FacilioConstants.ContextNames.RESULT, "success");

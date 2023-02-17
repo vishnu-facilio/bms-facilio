@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
 import com.facilio.chain.FacilioChain;
@@ -11,6 +13,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
 import lombok.Setter;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import java.util.List;
+import java.util.function.Function;
 
 public class ModuleWorkflowRuleAction extends FacilioAction {
 
@@ -90,6 +99,7 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
         chain.execute();
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
+        sendAuditLog(workflowRule);
         return SUCCESS;
     }
 
@@ -101,6 +111,7 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
+        sendAuditLog(workflowRule);
         return SUCCESS;
     }
 
@@ -117,7 +128,42 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, ids);
         chain.execute();
+        List<WorkflowRuleContext> workflowRules = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULES);
+        if(workflowRules != null) {
+            long moduleID = workflowRules.get(0).getModuleId();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleID);
+            String subject = ids.size() > 1 ? String.format("%d AutomationRules has been deleted for %s module", ids.size(), module.getDisplayName()) : String.format("AutomationRule %s has been deleted for %s module", workflowRules.get(0).getName(), module.getDisplayName());
+            sendAuditLogs(new AuditLogHandler.AuditLogContext(subject,
+                    workflowRules.get(0).getDescription(),
+                    AuditLogHandler.RecordType.SETTING,
+                    "AutomationRule", 0)
+                    .setActionType(AuditLogHandler.ActionType.DELETE));
+        }
+
 
         return SUCCESS;
+    }
+
+    public void sendAuditLog(WorkflowRuleContext workflowRule) throws Exception {
+
+        String type=workflowRule.getCreatedTime()==workflowRule.getModifiedTime() ? "created":"updated";
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("AutomationRule {%s} has been %s for %s module", workflowRule.getName(),type, workflowRule.getModule().getDisplayName()),
+                workflowRule.getDescription(),
+                AuditLogHandler.RecordType.SETTING,
+                "AutomationRule",workflowRule.getId())
+                .setActionType(workflowRule.getCreatedTime()==workflowRule.getModifiedTime() ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("id", workflowRule.getId());
+                    json.put("moduleName", moduleName);
+                    json.put("ruleType",workflowRule.getRuleType());
+                    json.put("navigateTo", "AutomationRule");
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null))
+        );
+
     }
 }
