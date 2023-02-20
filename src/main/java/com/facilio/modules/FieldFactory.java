@@ -348,7 +348,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "subject",
                 "description",
                 "sysCreatedTime",
-                "sites"
+                "sites",
+                "assignmentGroup"
         }));
 
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
