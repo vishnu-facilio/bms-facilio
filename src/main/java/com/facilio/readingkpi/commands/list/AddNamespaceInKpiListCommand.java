@@ -24,13 +24,12 @@ public class AddNamespaceInKpiListCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(list)) {
             for (ReadingKPIContext kpi : list) {
                 NameSpaceContext namespaceContext = NamespaceAPI.getNameSpaceByRuleId(kpi.getId(), NSType.KPI_RULE);
-                List<Long> resourceIds = NamespaceAPI.fetchResourceIdsFromNamespaceInclusions(namespaceContext.getId());
+                List<Long> resourceIds = namespaceContext.getIncludedAssetIds();
                 if(CollectionUtils.isNotEmpty(resourceIds)) {
                     kpi.setAssets(resourceIds);
                     String firstAssetName = getResourceName(resourceIds.get(0));
                     kpi.setFirstAssetName(firstAssetName);
                 }
-                namespaceContext.setIncludedAssetIds(resourceIds);
                 kpi.setNs(namespaceContext);
             }
         }

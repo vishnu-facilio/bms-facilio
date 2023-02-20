@@ -2,12 +2,12 @@ package com.facilio.ns;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -24,6 +24,7 @@ import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -73,6 +74,7 @@ public class NamespaceAPI {
                 ns = FieldUtil.getAsBeanFromMap(m, NameSpaceContext.class);
                 nsMap.put(nsId, ns);
                 updateWorkflow(ns);
+                ns.setIncludedAssetIds(fetchResourceIdsFromNamespaceInclusions(nsId));
             }
 
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
@@ -93,21 +95,20 @@ public class NamespaceAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .select(Collections.singletonList(FieldFactory.getIdField(NamespaceModuleAndFieldFactory.getNamespaceModule())))
                 .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName() + ".PARENT_RULE_ID", "parentRuleId", ruleId.toString(), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(type.getIndex()), NumberOperators.EQUALS));
 
         List<Map<String, Object>> maps = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(maps)) {
-            List<NameSpaceContext> nameSpaceContexts = constructNamespaceAndFields(maps);
-            if (nameSpaceContexts.size() > 0) {
-                List<Long> resourceIds = NamespaceAPI.fetchResourceIdsFromNamespaceInclusions(nameSpaceContexts.get(0).getId());
-                nameSpaceContexts.get(0).setIncludedAssetIds(resourceIds);
-                return nameSpaceContexts.get(0);
+            for (Map<String, Object> map : maps) {
+                Long nsId = (Long) map.get("id");
+                NamespaceBean nsBean = Constants.getNsBean();
+                return new NameSpaceContext(nsBean.getNamespace(nsId));
             }
         }
 
-        return null;
+        throw new Exception("Invalid ruleId, No Namespace Found!");
     }
 
     private static void updateWorkflow(NameSpaceContext namespaceContext) throws Exception {
@@ -128,7 +129,7 @@ public class NamespaceAPI {
     public static List<Long> getMatchedResources(NameSpaceContext ns, V3Context fddContext) throws Exception {
         Set<Long> resourceIds = new HashSet<>();
 
-        List<Long> inclusions = fetchResourceIdsFromNamespaceInclusions(ns.getId());
+        List<Long> inclusions = CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? fetchResourceIdsFromNamespaceInclusions(ns.getId()) : ns.getIncludedAssetIds();
         if (CollectionUtils.isNotEmpty(inclusions)) {
             return inclusions;
         }

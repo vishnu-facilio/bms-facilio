@@ -38,8 +38,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getIdCondition(nsId, NamespaceModuleAndFieldFactory.getNamespaceModule()))
-                .andCondition(CriteriaAPI.getCondition("Namespace.STATUS", "status", String.valueOf(true), BooleanOperators.IS));
+                .andCondition(CriteriaAPI.getIdCondition(nsId, NamespaceModuleAndFieldFactory.getNamespaceModule()));
 
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
