@@ -39,7 +39,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -358,7 +357,7 @@ public class ReadingRuleRcaAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(alarmId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
                 .aggregate(BmsAggregateOperators.NumberAggregateOperator.AVERAGE, score)
-                .groupBy(fieldsMap.get("rcaRule").getCompleteColumnName())
+                .groupBy(fieldsMap.get("rcaFault").getCompleteColumnName())
                 .orderBy("score desc")
                 .offset(offset)
                 .limit(perPage);
@@ -380,23 +379,20 @@ public class ReadingRuleRcaAPI {
         FacilioModule rcaReadingsModule = moduleBean.getModule(FacilioConstants.ReadingRules.RCA.RCA_SCORE_READINGS_MODULE);
         List<FacilioField> fields = moduleBean.getModuleFields(FacilioConstants.ReadingRules.RCA.RCA_SCORE_READINGS_MODULE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-        SelectRecordsBuilder<RCAScoreReadingContext> builder = new SelectRecordsBuilder<RCAScoreReadingContext>()
-                .module(rcaReadingsModule)
+        FacilioField distinctRcaFaultField = FieldFactory.getField("rcaFault", "DISTINCT RCA_FAULT_ID", FieldType.NUMBER);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(rcaReadingsModule.getTableName())
                 .select(new ArrayList<>())
-                .beanClass(RCAScoreReadingContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(alarmId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
-                .groupBy(fieldsMap.get("rcaRule").getCompleteColumnName())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(rcaReadingsModule));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, distinctRcaFaultField);
 
         if (filterCriteria != null)
             builder.andCriteria(filterCriteria);
 
-        RCAScoreReadingContext rcaScoreReadingContext = builder.fetchFirst();
-        Long count = 0L;
-        if (rcaScoreReadingContext != null)
-            count = rcaScoreReadingContext.getId();
-        return count;
+        Map<String, Object> props = builder.fetchFirst();
+        return (Long) props.get("rcaFault");
     }
 
     public static DateRange getDateRange(Context context) {

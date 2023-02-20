@@ -953,6 +953,7 @@
     
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
         <action name="run" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical"/>
+        <action name="fetchAssetDetails" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetDetails"/>
     </package>
 
     <package name="licensinginfo" namespace="/api/v3/licensinginfo" extends="v3Api">

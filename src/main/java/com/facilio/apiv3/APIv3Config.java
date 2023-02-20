@@ -2556,7 +2556,6 @@ public class APIv3Config {
         return () -> new V3Config(KpiLoggerContext.class, null)
                 .list()
                 .beforeFetch(new LoadSupplementsForKpiLogger())
-                .afterFetch(new FetchResourceNamesForKpiLogger())
                 .build();
     }
 

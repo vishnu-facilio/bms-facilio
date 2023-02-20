@@ -2,6 +2,8 @@ package com.facilio.readingkpi;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -53,6 +55,30 @@ public class ReadingKpiAPI {
         FacilioContext summary = V3Util.getSummary(moduleName, Collections.singletonList(recordId));
         List<ReadingKPIContext> readingKpis = Constants.getRecordListFromContext(summary, moduleName);
         return CollectionUtils.isNotEmpty(readingKpis) ? readingKpis.get(0) : null;
+    }
+
+    public static Double getCurrentValueOfKpi(Long kpiId, Long resourceId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule kpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.READING_KPI);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<ReadingKPIContext> builder = new SelectRecordsBuilder<ReadingKPIContext>()
+                .select(Arrays.asList(fieldMap.get("readingFieldId")))
+                .module(kpiModule)
+                .beanClass(ReadingKPIContext.class)
+                .andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(kpiId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+
+        List<ReadingKPIContext> kpis = builder.get();
+        if (CollectionUtils.isEmpty(kpis)) {
+            throw new Exception("Invalid kpi ID");
+        }
+        for(ReadingKPIContext kpi: kpis){
+            ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, modBean.getField(kpi.getReadingFieldId()));
+            return (Double) rdm.getValue();
+        }
+        return null;
     }
 
     public static List<ReadingKPIContext> getReadingKpi(List<Long> recordIds) throws Exception {

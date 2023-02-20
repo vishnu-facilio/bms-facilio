@@ -122,7 +122,7 @@ public class ReadingKpiLoggerAPI {
 
         SelectRecordsBuilder<KpiResourceLoggerContext> builder = new SelectRecordsBuilder<KpiResourceLoggerContext>()
                 .module(kpiResourceLoggerModule)
-                .select(Arrays.asList(fieldsMap.get("resourceId"), fieldsMap.get("status")))
+                .select(Arrays.asList(fieldsMap.get("resourceId"), fieldsMap.get("status"), fieldsMap.get("message")))
                 .beanClass(KpiResourceLoggerContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentLoggerId"), Collections.singleton(parentLoggerId), NumberOperators.EQUALS));
         return builder.get();

@@ -1,5 +1,6 @@
 package com.facilio.readingkpi;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -25,6 +26,7 @@ public class ReadingKpiAction extends V3Action {
     private Long startTime;
     private Long endTime;
     private List<Long> assets;
+    private Long parentLoggerId;
 
     public String runHistorical() throws Exception {
         ReadingKPIContext kpi = validatePayload();
@@ -72,5 +74,14 @@ public class ReadingKpiAction extends V3Action {
             throw new IllegalArgumentException("Invalid formula ID for historical formula calculation");
         }
         return kpi;
+    }
+
+    public String fetchAssetDetails() throws Exception {
+        FacilioChain runStormHistorical = ReadOnlyChainFactory.getAssetNamesForKpiHistory();
+        FacilioContext context = runStormHistorical.getContext();
+        context.put("parentLoggerId", getParentLoggerId());
+        runStormHistorical.execute();
+        setData("assetList", context.get("assetList"));
+        return SUCCESS;
     }
 }
