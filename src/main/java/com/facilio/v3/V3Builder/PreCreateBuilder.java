@@ -11,5 +11,6 @@ public interface PreCreateBuilder {
     DeleteBuilder delete();
     ListBuilder list();
     SummaryBuilder summary();
+    PickListBuilder pickList();
     V3Config build();
 }

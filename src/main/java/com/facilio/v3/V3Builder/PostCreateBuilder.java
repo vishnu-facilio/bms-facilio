@@ -11,5 +11,6 @@ public interface PostCreateBuilder {
     DeleteBuilder delete();
     ListBuilder list();
     SummaryBuilder summary();
+    PickListBuilder pickList();
     V3Config build();
 }

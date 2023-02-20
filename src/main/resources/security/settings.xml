@@ -1196,6 +1196,21 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/pickList/modules/:moduleName/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="withCount" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
 
     <request path="/api/v3/action/:moduleName/:id/:actionType" method="PATCH">
         <urlparams>

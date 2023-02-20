@@ -1,6 +1,7 @@
 package com.facilio.v3.action;
 
 import com.amazonaws.http.HttpMethodName;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -51,12 +52,13 @@ public class RestAPIHandlerV3 extends RESTAPIHandler {
                 if (getId() > 0) {
                     return summary();
                 }
-                else if(getViewName()!=null && (getType()!=null && getType().equals("count"))){
+                else if(getViewName()!=null && (getType()!=null && getType().equals("count"))) {
                     return count();
                 }
                 else{
                     return list();
                 }
+
             case PATCH:
                 if(getId()>0){
                     return patch();

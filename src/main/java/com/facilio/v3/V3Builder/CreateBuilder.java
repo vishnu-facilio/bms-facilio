@@ -20,6 +20,9 @@ public interface CreateBuilder {
     ListBuilder list();
 
     SummaryBuilder summary();
+    PreCreateBuilder preCreate();
+    PostCreateBuilder postCreate();
+    PickListBuilder pickList();
 
     V3Config build();
 }

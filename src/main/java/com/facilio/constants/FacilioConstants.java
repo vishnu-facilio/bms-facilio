@@ -178,6 +178,7 @@ public class FacilioConstants {
 		public static final String LOOKUP_LABELS = "lookupLabels";
 		public static final String DEFAULT_ID_LIST = "defaultIdList";
 		public static final String SECONDARY_FIELD = "secondaryField";
+		public static final String SUBMODULE_FIELD ="subModuleField";
 		public static final String LOCAL_SEARCH = "localSearch";
 	}
 

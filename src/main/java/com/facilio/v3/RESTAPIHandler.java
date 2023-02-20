@@ -4,6 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.actions.picklist.PickListUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -144,6 +146,26 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
 
+    private void handlePickListRequest(String moduleName) throws Exception {
+
+        if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+            List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
+
+            this.setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, this.getPage(), this.getPerPage(), this.getSearch(), this.getFilters(), this.getDefault()));
+            this.setMeta(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.PICK_LIST.name());
+            this.setMeta(FacilioConstants.PickList.LOCAL_SEARCH, !localSearchDisabled.contains(moduleName));
+        }
+
+        else {
+
+            FacilioContext pickListContext = V3Util.fetchPickList(getModuleName(), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(), this.getDefault(), this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), this.getQueryParameters(), null);
+            this.setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
+            if (pickListContext.containsKey(FacilioConstants.ContextNames.META)) {
+                this.setMeta((JSONObject) pickListContext.get(FacilioConstants.ContextNames.META));
+            }
+        }
+    }
+
     private void bulkPatchHandler(Map<String, Object> dataMap, String moduleName, Map<String, Object> bodyParams) throws Exception{
         List<Map<String, Object>> rawRecords = (List<Map<String, Object>>) dataMap.get(moduleName);
         List<Long> ids = new ArrayList<>();
@@ -228,6 +250,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
     public String list() throws Exception {
     	 	handleListRequest(this.getModuleName());
+        return SUCCESS;
+    }
+
+    public String pickList() throws Exception {
+        handlePickListRequest(this.getModuleName());
         return SUCCESS;
     }
 
@@ -467,5 +494,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             }
         }
     }
+    private String _default;
+    public String getDefault() {
+        return _default;
+    }
+    public void setDefault(String _default) {
+        this._default = _default;
+    }
+
 
 }

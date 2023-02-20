@@ -24,6 +24,7 @@ public interface ListBuilder {
     DeleteBuilder delete();
 
     SummaryBuilder summary();
+    PickListBuilder pickList();
 
     V3Config build();
 }

@@ -22,6 +22,7 @@ public interface UpdateBuilder {
     ListBuilder list();
 
     SummaryBuilder summary();
+    PickListBuilder pickList();
 
     V3Config build();
 }

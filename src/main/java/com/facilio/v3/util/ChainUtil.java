@@ -6,6 +6,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
+import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
@@ -22,6 +24,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -184,6 +187,64 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new TransformResponseForV4());
 
         return nonTransactionChain;
+    }
+
+    public  static FacilioChain getPickListChain(String moduleName)throws Exception {
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+
+        Command beforeFetchCommand = null;
+        Command afterFetchCommand = null;
+        FacilioField mainField = null;
+        FacilioField secondaryField = null;
+        FacilioField subModuleField = null;
+
+        FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
+        FacilioContext context = nonTransactionChain.getContext();
+       
+        V3Config.PickListHandler pickListHandler = null;
+        if (v3Config != null) {
+            pickListHandler = v3Config.getPickListHandler();
+            if (pickListHandler != null) {
+                beforeFetchCommand = pickListHandler.getBeforeFetchCommand();
+                afterFetchCommand = pickListHandler.getAfterFetchCommand();
+                mainField = pickListHandler.getMainField();
+                secondaryField = pickListHandler.getSecondaryField();
+                subModuleField = pickListHandler.getSubModuleField();
+            }
+        }
+
+        if (mainField != null) {
+            context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, mainField);
+        }
+
+        if (secondaryField != null) {
+            context.put(FacilioConstants.PickList.SECONDARY_FIELD, secondaryField);
+        }
+
+        if (subModuleField != null) {
+            context.put(FacilioConstants.PickList.SUBMODULE_FIELD, subModuleField);
+        }
+
+        nonTransactionChain.addCommand(new LoadViewCommand());
+        nonTransactionChain.addCommand(new LoadMainFieldCommand());
+
+        addIfNotNull(nonTransactionChain, beforeFetchCommand);
+
+        nonTransactionChain.addCommand(new HandleDefaultIdAndOrderByForPicklist());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
+        nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
+
+        nonTransactionChain.addCommand(new ListCommand(module));
+
+        addIfNotNull(nonTransactionChain, afterFetchCommand);
+
+        nonTransactionChain.addCommand(new ConstructPickListOptionCommand());
+
+        return nonTransactionChain;
+
     }
 
     public static FacilioChain getCreateChain(String moduleName) throws Exception {

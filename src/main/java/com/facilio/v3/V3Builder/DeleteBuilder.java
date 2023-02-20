@@ -20,6 +20,7 @@ public interface DeleteBuilder {
     ListBuilder list();
 
     SummaryBuilder summary();
+    PickListBuilder pickList();
 
     V3Config build();
 

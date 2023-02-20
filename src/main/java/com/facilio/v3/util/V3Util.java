@@ -670,6 +670,92 @@ public class V3Util {
         return context;
     }
 
+    public static FacilioContext fetchPickList(String moduleName, String viewName, String filters, boolean excludeParentFilter, String clientCriteria, String defaultIds,
+                                               Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria)throws Exception{
+        FacilioChain pickListChain = ChainUtil.getPickListChain(moduleName);
+        FacilioContext context = pickListChain.getContext();
+
+        context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
+
+        if (filters != null && !filters.isEmpty()) {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(filters);
+            if(json.containsKey("drillDownPattern") && json.get("drillDownPattern") != null) {
+                String drillDownPattern = json.get("drillDownPattern").toString();
+                context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN, drillDownPattern);
+                json.remove("drillDownPattern");
+            }
+            context.put(Constants.FILTERS, json);
+
+            context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+        }
+
+        if(StringUtils.isNotEmpty(clientCriteria)){
+            JSONObject json = FacilioUtil.parseJson(clientCriteria);
+            Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+            context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+        }
+
+        if (StringUtils.isNotEmpty(defaultIds)) {
+            String[] ids = FacilioUtil.splitByComma(defaultIds);
+            List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
+            context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIdList);
+        }
+
+        if (orderBy != null) {
+            JSONObject sorting = new JSONObject();
+            sorting.put("orderBy", orderBy);
+            sorting.put("orderType", orderByType);
+            context.put(FacilioConstants.ContextNames.SORTING, sorting);
+            context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+        }
+
+        if (search != null) {
+            context.put(FacilioConstants.ContextNames.SEARCH, search);
+        }
+
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", page);
+        pagination.put("perPage", perPage);
+
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(Constants.WITH_COUNT, withCount);
+        context.put(Constants.QUERY_PARAMS, queryParameters);
+
+
+        if(serverCriteria != null) {
+            context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, serverCriteria);
+        }
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        Constants.setV3config(context, v3Config);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        pickListChain.execute();
+
+        Map<String, Object> meta = new HashMap<>();
+
+        if (withCount) {
+            Map<String, Object> paging = new HashMap<>();
+            paging.put("totalCount", context.get(Constants.COUNT));
+            meta.put("pagination", paging);
+        }
+
+        meta.put(FacilioConstants.ContextNames.MODULE_TYPE,((FacilioModule)context.get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
+        meta.put(FacilioConstants.PickList.LOCAL_SEARCH,context.get(FacilioConstants.PickList.LOCAL_SEARCH));
+
+        if (MapUtils.isNotEmpty(meta)) {
+            context.put(FacilioConstants.ContextNames.META, FieldUtil.getAsJSON(meta));
+        }
+
+        return context;
+
+    }
+
 
     public static Boolean isIdPresentForModule(long id, FacilioModule module) throws Exception{
         return (getCountFromIds(Collections.singletonList(id), module) > 0);

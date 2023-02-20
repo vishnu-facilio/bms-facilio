@@ -1366,6 +1366,17 @@
         <action name="getPpmJobs" class="com/facilio/bmsconsoleV3/actions/WorkorderAction" method="getPpmJobs"/>
     </package>
 
+    <package name="pickList" namespace="/api/v3/pickList/modules" extends="v3Api">
+        <action name="*/view/*" class="com.facilio.v3.action.PickListActionV3">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
+
+
+
     <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>
     </package>

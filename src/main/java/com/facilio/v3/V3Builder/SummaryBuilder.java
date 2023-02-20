@@ -16,6 +16,7 @@ public interface SummaryBuilder {
     DeleteBuilder delete();
 
     ListBuilder list();
+    PickListBuilder pickList();
 
     V3Config build();
 }

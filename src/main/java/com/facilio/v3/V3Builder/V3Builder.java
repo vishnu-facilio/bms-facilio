@@ -9,5 +9,6 @@ public interface V3Builder {
     DeleteBuilder delete();
     SummaryBuilder summary();
     ListBuilder list();
+    PickListBuilder pickList();
     V3Config build();
 }

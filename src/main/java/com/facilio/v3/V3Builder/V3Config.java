@@ -24,6 +24,8 @@ public class V3Config implements V3Builder {
     private ModuleCustomFieldsCount customFieldsCount;
     private PreCreateHandler preCreateHandler;
     private PostCreateHandler postCreateHandler;
+
+    private PickListHandler pickListHandler;
     private boolean dontUseInScript = false;
 
     public V3Config dontUseInScript() {
@@ -85,6 +87,14 @@ public class V3Config implements V3Builder {
         this.postCreateHandler=postCreateHandler;
     }
 
+    public PickListHandler getPickListHandler(){
+        return pickListHandler;
+    }
+
+    public void setPickListHandler(PickListHandler pickListHandler) {
+        this.pickListHandler = pickListHandler;
+    }
+
     public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount) {
         this (bean, customFieldsCount, null);
     }
@@ -100,6 +110,7 @@ public class V3Config implements V3Builder {
             this.summaryHandler = config.summaryHandler;
             this.preCreateHandler=config.preCreateHandler;
             this.postCreateHandler= config.postCreateHandler;
+            this.pickListHandler= config.pickListHandler;
         }
     }
 
@@ -150,6 +161,13 @@ public class V3Config implements V3Builder {
             this.listHandler = new ListHandler(this);
         }
         return this.listHandler;
+    }
+
+    public PickListHandler pickList(){
+        if(this.pickListHandler == null){
+            this.pickListHandler = new PickListHandler(this);
+        }
+        return this.pickListHandler;
     }
 
     public V3Config build() {
@@ -245,6 +263,10 @@ public class V3Config implements V3Builder {
         public SummaryBuilder summary() {
             return this.parent.summary();
         }
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
+        }
 
         @Override
         public V3Config build() {
@@ -333,6 +355,11 @@ public class V3Config implements V3Builder {
             return this.parent.build();
         }
 
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
+        }
+
 
         public Command getInitCommand(){return initCommand;}
         public void setInitCommand(Command initCommand){
@@ -399,6 +426,11 @@ public class V3Config implements V3Builder {
             return this.parent.build();
         }
 
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
+        }
+
         public Command getAfterSaveCommand(){ return afterSaveCommand;}
         public void setAfterSaveCommand(Command afterSaveCommand){
             this.afterSaveCommand=afterSaveCommand;
@@ -463,9 +495,11 @@ public class V3Config implements V3Builder {
         public CreateBuilder create() {
             return this.parent.create();
         }
+        @Override
         public PreCreateBuilder preCreate(){
             return this.parent.preCreate();
         }
+        @Override
         public  PostCreateBuilder postCreate(){
             return this.parent.postCreate();
         }
@@ -483,6 +517,11 @@ public class V3Config implements V3Builder {
         @Override
         public SummaryBuilder summary() {
             return this.parent.summary();
+        }
+
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
         }
 
         @Override
@@ -587,6 +626,10 @@ public class V3Config implements V3Builder {
         }
         public  PostCreateBuilder postCreate(){
             return this.parent.postCreate();
+        }
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
         }
 
         @Override
@@ -728,6 +771,11 @@ public class V3Config implements V3Builder {
         }
 
         @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
+        }
+
+        @Override
         public V3Config build() {
             return this.parent.build();
         }
@@ -766,6 +814,133 @@ public class V3Config implements V3Builder {
 
         public Command getBeforeCountCommand() {
             return beforeCountCommand;
+        }
+    }
+
+    public class PickListHandler implements PickListBuilder{
+
+        private FacilioField mainField;
+        private FacilioField secondaryField;
+        private FacilioField subModuleField;
+        private Command beforeFetchCommand;
+        private Command afterFetchCommand;
+        private V3Builder parent;
+
+        private PickListHandler(V3Builder parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public PickListBuilder beforeFetch(Command criteriaCommand) {
+            this.beforeFetchCommand = criteriaCommand;
+            return this;
+        }
+        @Override
+        public PickListHandler afterFetch(Command afterFetchCommand) {
+            this.afterFetchCommand = afterFetchCommand;
+            return this;
+        }
+
+        @Override
+        public PickListBuilder setMainField(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                mainField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
+        @Override
+        public PickListBuilder setSecondaryField(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                secondaryField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
+        @Override
+        public PickListBuilder setSubmoduleType(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                subModuleField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
+        @Override
+        public UpdateBuilder update() {
+            return this.parent.update();
+        }
+
+        @Override
+        public CreateBuilder create() {
+            return this.parent.create();
+        }
+        public PreCreateBuilder preCreate(){
+            return this.parent.preCreate();
+        }
+        public  PostCreateBuilder postCreate(){
+            return this.parent.postCreate();
+        }
+
+
+        @Override
+        public DeleteBuilder delete() {
+            return this.parent.delete();
+        }
+
+        @Override
+        public SummaryBuilder summary() {
+            return this.parent.summary();
+        }
+
+        @Override
+        public V3Config build() {
+            return this.parent.build();
+        }
+        @Override
+        public ListBuilder list() {
+            return this.parent.list();
+        }
+
+        public Command getBeforeFetchCommand() {
+            return beforeFetchCommand;
+        }
+
+        public void setBeforeFetchCommand(Command beforeFetchCommand) {
+            this.beforeFetchCommand = beforeFetchCommand;
+        }
+
+        public Command getAfterFetchCommand() {
+            return afterFetchCommand;
+        }
+
+
+        public void setAfterFetchCommand(Command afterFetchCommand) {
+            this.afterFetchCommand = afterFetchCommand;
+        }
+
+        public FacilioField getMainField() {
+            return mainField;
+        }
+        public FacilioField getSecondaryField(){
+            return secondaryField;
+        }
+        public FacilioField getSubModuleField(){
+            return subModuleField;
+        }
+
+        public void setSecondaryField(FacilioField secondaryField) {
+            this.secondaryField = secondaryField;
+        }
+
+        public void setSubModuleField(FacilioField subModuleField) {
+            this.subModuleField = subModuleField;
+        }
+
+        public void setMainField(FacilioField mainField) {
+            this.mainField = mainField;
         }
     }
 
@@ -819,9 +994,11 @@ public class V3Config implements V3Builder {
         public CreateBuilder create() {
             return this.parent.create();
         }
+        @Override
         public PreCreateBuilder preCreate(){
             return this.parent.preCreate();
         }
+        @Override
         public  PostCreateBuilder postCreate(){
             return this.parent.postCreate();
         }
@@ -843,6 +1020,11 @@ public class V3Config implements V3Builder {
         @Override
         public V3Config build() {
             return this.parent.build();
+        }
+
+        @Override
+        public PickListBuilder pickList(){
+            return this.parent.pickList();
         }
 
         public Command getBeforeFetchCommand() {

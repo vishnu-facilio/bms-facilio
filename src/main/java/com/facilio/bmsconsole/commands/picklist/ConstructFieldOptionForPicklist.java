@@ -1,22 +1,21 @@
 package com.facilio.bmsconsole.commands.picklist;
 
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FieldOption;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 public class ConstructFieldOptionForPicklist extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
         List<Map<String, Object>> records = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
         List<FieldOption<Long>> pickList = null;
         if(CollectionUtils.isNotEmpty(records)) {
