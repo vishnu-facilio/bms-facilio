@@ -183,9 +183,11 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> commonBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(woModule)
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS))
 				.skipModuleCriteria();
-				;
+		if(siteId > 0){
+			commonBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS));
+		}
+
 		Criteria criteria = new Criteria();
 		for(String metric: selectedMetrics) {
 			FacilioField field = woFieldMap.get(metricFieldMap.get(metric));
@@ -236,7 +238,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		}
 
 		StringBuilder groupBy = new StringBuilder();
-		groupBy.append(plannerResourceIdField.getCompleteColumnName());
+		groupBy.append(FieldFactory.getSiteIdField(woModule).getCompleteColumnName());
+		groupBy.append(",").append(plannerResourceIdField.getCompleteColumnName());
 		if (showFrequency) {
 			groupBy.append(",").append(frequencyField.getColumnName());
 		}
