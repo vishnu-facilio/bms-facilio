@@ -691,7 +691,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateWorkorderFieldsForUpdateCommandV3());
         c.addCommand(new FillTasksAndPrerequisitesCommand());
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
-        c.addCommand(new ToVerifyStateFlowtransitionForStartCommandV3());
         c.addCommand(new AddFailureClassFromResource());
         c.addCommand(new TrimWorkOrderDescriptionCommandV3());
 
