@@ -120,6 +120,7 @@ public class constructScheduleInfo extends FacilioCommand {
                     triggerV2.setStartTime(startDate);
                     triggerV2.setFrequencyEnum(pmTriggerFrequency);
                     triggerV2.setType(1);
+                    triggerV2.setFrequency(frequencyType);
                     triggerV2.setPmId(colval.getLong("PmId"));
                     List<ModuleBaseWithCustomFields> createTriggerRecords = new ArrayList<>();
                     createTriggerRecords.add(triggerV2);
