@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.db.criteria.operators.NumberOperators;
 import org.apache.commons.chain.Context;
@@ -557,4 +560,23 @@ public class AddJobPlanModule extends BaseModuleConfig{
         
         //addFormRulesForJP(jobPlanModuleForm, jobPlanModule);
     }
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("assetCategory");
+        fieldNames.add("spaceCategory");
+        fieldNames.add("jobPlanCategory");
+        fieldNames.add("jpStatus");
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
+    }
+
 }

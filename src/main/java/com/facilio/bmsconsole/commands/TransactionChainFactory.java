@@ -15,6 +15,7 @@ import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
+import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigurationCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -23,6 +24,8 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
+import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
+import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
@@ -1257,9 +1260,15 @@ public class TransactionChainFactory {
 		public static FacilioChain getModuleSettingChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetModuleSettingCommand());
+			c.addCommand(new GetModuleSettingConfigDetailsCommand());
 			return c;
 		}
 
+		public static FacilioChain getModuleSettingConfigurationChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetModuleSettingConfigurationCommand());
+			return c;
+		}
 		public static FacilioChain getUpdateModuleSettingChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateModuleSettingCommand());
@@ -2938,6 +2947,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultFormRuleSignupCommand());
 			return c;
 		}
+
+		public static FacilioChain getAddGlimpseChain(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddGlimpseCommand());
+			return c;
+		}
+
 		public static FacilioChain getAddSubformChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidateSubFormRequestCommand());

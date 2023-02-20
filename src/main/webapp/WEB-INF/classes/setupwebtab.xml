@@ -82,7 +82,7 @@
         <action name="summary" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="getSummary"/>
         <action name="setting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
-                method="getSetting"/>
+                method="getSettingsList"/>
         <action name="updateSetting" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="updateSetting"/>
 
@@ -100,6 +100,12 @@
                 method="getRelationsCount" />
         <action name="customButton/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="getCustomButtonsCount" />
+        <action name="*/setting/*"
+                class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getSettingConfigDetails">
+            <param name="moduleName">{1}</param>
+            <param name="settingName">{2}</param>
+        </action>
     </package>
 
     <package name="connectedAppsHostSettingsApi" namespace="/api/v1/setup/connectedapps/hosting/settings" extends="v2Api">
@@ -267,6 +273,11 @@
             <param name="moduleName">{1}</param>
             <param name="permission">ALL</param>
             <param name="setupTab">STATEFLOWS</param>
+        </action>
+    </package>
+    <package name="glimpse" namespace="/api/v1/setup/glimpse" extends="v2Api">
+        <action name="addOrUpdate"
+                class="com.facilio.bmsconsole.actions.ModuleSetupAction" method="addGlimpse">
         </action>
     </package>
 

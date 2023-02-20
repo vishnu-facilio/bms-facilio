@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -1325,5 +1327,23 @@ public class WorkOrderModule extends BaseModuleConfig {
 
         scopeConfigList = Arrays.asList(maintenanceApp,tenantApp,vendorApp);
         return scopeConfigList;
+    }
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("site");
+        fieldNames.add("resource");
+        fieldNames.add("dueDate");
+        fieldNames.add("assignedTo");
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
     }
 }

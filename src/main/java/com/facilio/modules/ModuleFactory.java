@@ -162,6 +162,10 @@ public class ModuleFactory {
 
 		moduleMap.put(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION,getSpaceBookingFormRelationModule());
 		moduleMap.put(ContextNames.FORM_SHARING, getFormSharingModule());
+		moduleMap.put(ContextNames.GLIMPSE, getGlimpseModule());
+		moduleMap.put(ContextNames.MODULE_CONFIGURATION, getModuleConfigurationModule());
+		moduleMap.put(ContextNames.GLIMPSE_FIELDS, getGlimpseFieldsModule());
+
 		return moduleMap;
 	}
 	
@@ -198,6 +202,33 @@ public class ModuleFactory {
 		formSharing.setTableName("Form_Sharing");
 		return formSharing;
 	}
+
+	public static FacilioModule getGlimpseModule() {
+
+		FacilioModule glimpse = new FacilioModule();
+		glimpse.setName("glimpse");
+		glimpse.setDisplayName("Glimpse");
+		glimpse.setTableName("Glimpse");
+		return glimpse;
+	}
+
+	public static FacilioModule getModuleConfigurationModule() {
+		FacilioModule moduleConfiguration = new FacilioModule();
+		moduleConfiguration.setName("moduleConfiguration");
+		moduleConfiguration.setDisplayName("Module Configuration");
+		moduleConfiguration.setTableName("Module_Configuration");
+		return moduleConfiguration;
+	}
+
+	public static FacilioModule getGlimpseFieldsModule(){
+
+		FacilioModule glimpseFields = new FacilioModule();
+		glimpseFields.setName("glimpseFields");
+		glimpseFields.setDisplayName("Glimpse Fields");
+		glimpseFields.setTableName("Glimpse_Fields");
+		return glimpseFields;
+	}
+
 	public static FacilioModule getReadingToolsModule() {
 		FacilioModule formModule = new FacilioModule();
 		formModule.setName("readingTools");

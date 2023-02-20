@@ -110,8 +110,8 @@ public class ModuleAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FORM, context.get(FacilioConstants.ContextNames.FORM));
 		return SUCCESS;
 	}
-	
-	
+
+
 	public String v2AddModule() throws Exception {
 		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		FacilioContext context = addModulesChain.getContext();
@@ -481,7 +481,7 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String v2getFieldsList() throws Exception {
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put("handleStateField", true);
@@ -513,6 +513,7 @@ public class ModuleAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
 
 	private String moduleName;
 	public String getModuleName() {

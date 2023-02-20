@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -157,5 +160,27 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
 
         return Collections.singletonList(defaultPlannedMaintenanceForm);
     }
+
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("assetCategory");
+        fieldNames.add("spaceCategory");
+        fieldNames.add("category");
+        fieldNames.add("pmStatus");
+
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
+    }
+
+
 }
 

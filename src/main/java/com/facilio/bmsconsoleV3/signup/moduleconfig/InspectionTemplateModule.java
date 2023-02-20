@@ -1,11 +1,17 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -49,4 +55,23 @@ public class InspectionTemplateModule extends BaseModuleConfig{
 
         return allView;
     }
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("creationType");
+        fieldNames.add("resource");
+        fieldNames.add("name");
+        fieldNames.add("siteId");
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
+    }
+
 }

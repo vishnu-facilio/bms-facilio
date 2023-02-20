@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -126,4 +129,26 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
 
         return Collections.singletonList(tenantUnitSpaceForm);
     }
+
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("tenant");
+        fieldNames.add("space");
+        fieldNames.add("building");
+        fieldNames.add("floor");
+        fieldNames.add("site");
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
+    }
+
+
 }

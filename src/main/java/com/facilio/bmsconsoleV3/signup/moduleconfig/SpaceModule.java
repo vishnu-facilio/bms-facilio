@@ -2,6 +2,9 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -319,4 +322,24 @@ public class SpaceModule extends BaseModuleConfig {
         scopeConfigList = Arrays.asList(maintenanceApp);
         return scopeConfigList;
     }
+
+    @Override
+    public List<GlimpseContext> getModuleGlimpse() throws Exception{
+
+        List<String> fieldNames = new ArrayList<>();
+        fieldNames.add("site");
+        fieldNames.add("building");
+        fieldNames.add("floor");
+        fieldNames.add("sysCreatedTime");
+        fieldNames.add("sysCreatedBy");
+
+        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+
+        List<GlimpseContext> glimpseList = new ArrayList<>();
+        glimpseList.add(glimpse);
+
+        return glimpseList;
+
+    }
+
 }

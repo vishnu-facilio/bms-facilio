@@ -589,6 +589,38 @@ public class FieldFactory extends BaseFieldFactory {
 
     }
 
+    public static List<FacilioField> getModuleConfigurationFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getModuleConfigurationModule();
+        fields.add(getIdField(module));
+        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("configurationName", "CONFIGURATION_NAME", module, FieldType.STRING));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        return fields;
+    }
+    public static List<FacilioField> getGlimpseFieldsFields(){
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getGlimpseFieldsModule();
+        fields.add(getIdField(module));
+        fields.add(getField("glimpseId", "GLIMPSE_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldName","FIELD_NAME",module,FieldType.STRING));
+        fields.add(getField("lookupFieldId", "LOOKUP_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("sequenceNumber","SEQUENCE_NUMBER", module,FieldType.NUMBER));
+        return fields;
+    }
+    public static List<FacilioField> getGlimpseFields(){
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getGlimpseModule();
+        fields.add(getField("glimpseId", "ID", module, FieldType.ID));
+        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
+        return fields;
+    }
+
     public static List<FacilioField> getFormRuleFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFormRuleModule();

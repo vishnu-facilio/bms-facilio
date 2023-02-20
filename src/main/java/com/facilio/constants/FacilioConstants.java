@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.context.sensor.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
-import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
@@ -230,6 +229,10 @@ public class FacilioConstants {
 		public static final String PLACEHOLDER_FIELDS = "placeHolderFields";
 	}
 
+	public static class SettingConfigurationContextNames {
+		public static final String STATE_FLOW = "stateflow";
+	}
+
 	public static class ContextNames {
 		public static final String CURRENCY = "currency";
 		public static final String OLD_CURRENCY = "oldCurrency";
@@ -263,6 +266,12 @@ public class FacilioConstants {
 		}
 
 		public static final String SUMMARY = "summary";
+		public static final String GLIMPSE = "glimpse";
+		public static final String GLIMPSE_META_DATA = "glimpseMetaData";
+		public static final String GLIMPSE_CONTEXT = "glimpseContext";
+		public static final String GLIMPSE_FIELDS = "glimpseFields";
+		public static final String MODULE_CONFIGURATION = "ModuleConfiguration";
+
 		public static final String CUSTOMIZATION = "customization";
 
 		public static final String VERIFY_USER = "verifyUser";
@@ -729,6 +738,7 @@ public class FacilioConstants {
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
 		public static final String FILE_RESPONSE_STATUS = "fileResponseStatus";
+		public static final String RESPONSE_STATUS = "responseStatus";
 		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
 
 		public static final String EXPIRY_ON = "expiryOn";
@@ -750,6 +760,7 @@ public class FacilioConstants {
 		public static final String DATA_MODULE_NAME = "dataModuleName";
 		public static final String SUMMARY_MODULE_NAME = "summaryModuleName";
 		public static final String MODULE_SETTING = "setting";
+		public static final String MODULE_SETTING_NAME = "settingName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String DUPLICATE_OBJECT = "duplicateObj";
@@ -1836,6 +1847,7 @@ public class FacilioConstants {
 		public static final String SANDBOX_MODE = "sandboxMode";
 
 		public static final String STATE_FLOW = "stateFlow";
+		public static final String SETTING_STATE_FLOW = "stateflow";
 		public static final String STATE_FLOW_LIST = "stateFlows";
 		public static final String STATE_FLOW_ID = "stateFlowId";
 		public static final String TRANSITION_ID = "transition_id";
@@ -1909,6 +1921,7 @@ public class FacilioConstants {
 		public static final String DEVICE_DETAILS = "deviceDetails";
 		public static final String CONNECTED_DEVICE_ID = "connectedDeviceId";
 		public static final String DEVICE_ID = "deviceId";
+		public static final String DEVICE_TYPE = "deviceType";
 
 		public static final String ATTENDANCE = "attendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";

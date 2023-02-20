@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ModuleSettingContext;
@@ -17,10 +18,13 @@ import java.util.List;
 public class ModuleSetupAction extends FacilioAction {
 
     private int moduleType;
+    private GlimpseContext glimpse;
     private String tabName;
     private String moduleName;
     private Boolean defaultModules;
     private List<ModuleSettingContext> settings;
+
+    private String settingName;
 
     public void addPagination(FacilioContext context) {
         if (getPage() != 0 ) {
@@ -118,26 +122,54 @@ public class ModuleSetupAction extends FacilioAction {
         return SUCCESS;
     }
 
-    public String getSetting() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getModuleSettingChain();
+    public String getSettingsList() throws Exception {
 
+        FacilioChain chain = TransactionChainFactory.getModuleSettingChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         chain.execute();
 
-        setResult("setting", context.get(FacilioConstants.ContextNames.MODULE_SETTING));
+        setResult(FacilioConstants.ContextNames.MODULE_SETTING, context.get(FacilioConstants.ContextNames.MODULE_SETTING));
+
         return SUCCESS;
     }
 
     public String updateSetting() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getUpdateModuleSettingChain();
 
+        FacilioChain chain = TransactionChainFactory.getUpdateModuleSettingChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.MODULE_SETTING, settings);
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.MODULE, settings);
+        return SUCCESS;
+    }
+
+    public String getSettingConfigDetails() throws Exception{
+
+        FacilioChain chain = TransactionChainFactory.getModuleSettingConfigurationChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.MODULE_SETTING_NAME,settingName);
+        chain.execute();
+
+        setResult(settingName,context.get(settingName));
+
+        return SUCCESS;
+
+    }
+
+    public String addGlimpse() throws Exception {
+
+        FacilioChain addGlimpseChain = TransactionChainFactory.getAddGlimpseChain();
+        FacilioContext context = addGlimpseChain.getContext();
+        context.put(FacilioConstants.ContextNames.GLIMPSE_CONTEXT, getGlimpse());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
+        addGlimpseChain.execute();
+
+        setResult(FacilioConstants.ContextNames.GLIMPSE,context.get(FacilioConstants.ContextNames.GLIMPSE));
+
         return SUCCESS;
     }
 

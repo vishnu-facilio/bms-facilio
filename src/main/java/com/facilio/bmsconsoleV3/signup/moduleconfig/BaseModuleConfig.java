@@ -4,7 +4,11 @@ import java.util.*;
 
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ModuleSettingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -111,4 +115,11 @@ public abstract class BaseModuleConfig extends SignUpData {
         }
     }
 
+    @Override
+    public void addGlimpse() throws Exception {
+        List<GlimpseContext> glimpse = getModuleGlimpse();
+        if (CollectionUtils.isNotEmpty(glimpse)) {
+            GlimpseUtil.insertGlimpseForDefaultModules(getModuleName(),glimpse);
+        }
+    }
 }

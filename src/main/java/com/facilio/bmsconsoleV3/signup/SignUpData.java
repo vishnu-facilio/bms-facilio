@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.signup;
 
 import java.util.*;
+
+import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
@@ -24,5 +26,11 @@ public abstract class SignUpData {
     }
 
     public void addGlobalScopeConfig() throws Exception {}
+
+    public void addGlimpse() throws Exception{}
+
+    public List<GlimpseContext> getModuleGlimpse() throws Exception {
+        return new ArrayList<>();
+    }
 
 }

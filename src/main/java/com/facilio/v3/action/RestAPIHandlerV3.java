@@ -1,12 +1,12 @@
 package com.facilio.v3.action;
 
 import com.amazonaws.http.HttpMethodName;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -49,7 +49,10 @@ public class RestAPIHandlerV3 extends RESTAPIHandler {
                     return throwValidationException("Data Object cannot be empty");
                 }
             case GET:
-                if (getId() > 0) {
+                if (getId() > 0 && (StringUtils.isNotEmpty(getType()) && getType().equals("glimpse"))) {
+                    return glimpse();
+                }
+                else if (getId() > 0) {
                     return summary();
                 }
                 else if(getViewName()!=null && (getType()!=null && getType().equals("count"))) {

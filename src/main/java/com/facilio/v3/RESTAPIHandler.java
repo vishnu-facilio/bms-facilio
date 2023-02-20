@@ -1,8 +1,8 @@
 package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.actions.picklist.PickListUtil;
@@ -39,7 +39,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //TODO remove static methods, instantiate as object, better when testing
@@ -255,6 +254,21 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return SUCCESS;
     }
 
+    public String glimpse() throws Exception{
+
+        handleSummaryRequest(this.getModuleName(), this.getId());
+
+        if(isFetchGlimpseMetaFields()) {
+            FacilioChain chain = TransactionChainFactory.getModuleSettingConfigurationChain();
+            FacilioContext context = chain.getContext();
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+            context.put(FacilioConstants.ContextNames.MODULE_SETTING_NAME, FacilioConstants.ContextNames.GLIMPSE);
+            chain.execute();
+
+            this.setData(FacilioConstants.ContextNames.GLIMPSE_META_DATA, context.get(FacilioConstants.ContextNames.GLIMPSE));
+        }
+        return SUCCESS;
+    }
     public String list() throws Exception {
     	 	handleListRequest(this.getModuleName());
         return SUCCESS;
