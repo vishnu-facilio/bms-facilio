@@ -77,7 +77,7 @@ public class CustomButtonAction extends FacilioAction {
                     JSONObject json = new JSONObject();
                                 json.put("id", rule.getId());
                                 json.put("moduleName", moduleName);
-                                json.put("ruleType", WorkflowRuleContext.RuleType.CUSTOM_BUTTON.getIntVal());
+                                json.put("ruleType", rule.getRuleType());
                                 json.put("navigateTo", "CustomButton");
                                 array.add(json);
                                 return array.toJSONString();
