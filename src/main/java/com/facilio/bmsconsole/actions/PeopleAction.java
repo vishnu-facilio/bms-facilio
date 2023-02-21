@@ -2,8 +2,17 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -253,5 +262,17 @@ public class PeopleAction extends FacilioAction{
 		return SUCCESS;
 		  
 	}
-	
+
+	public String getUserForPeopleId() throws Exception {
+		if(CollectionUtils.isNotEmpty(peopleIds)){
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId",StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+			List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
+			if (CollectionUtils.isNotEmpty(users)) {
+				Map<Long, User> userMap =  users.stream().collect(Collectors.toMap(User::getPeopleId, Function.identity()));
+				setResult(FacilioConstants.ContextNames.USERS, userMap);
+			}
+		}
+		return SUCCESS;
+	}
 }

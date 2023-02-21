@@ -6885,6 +6885,7 @@
 			<param name="permission">ALL</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
+		<action name="getUser" class="com.facilio.bmsconsole.actions.PeopleAction" method="getUserForPeopleId" />
 	</package>
 	<package name="vendorContactViews" namespace="/api/v2/vendorcontact/views"
 		extends="v2Api">

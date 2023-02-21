@@ -227,6 +227,15 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/people/getUser">
+        <requestbody type="object">
+            <property name="peopleIds" type="array">
+                <items type="number">
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
     <request path="/api/v2/application/users/add">
         <requestbody type="object">
             <property name="appId" type="number"/>
