@@ -48,9 +48,13 @@ public class ReportExportUtil {
 		StringBuilder url = new StringBuilder();
 		if (FacilioProperties.isDevelopment()) {
 			url.append("http://"+ FacilioProperties.getAppDomain());
-		}
-		else {
-			url.append(FacilioProperties.getClientAppUrl());
+		}else {
+			if(AccountUtil.getCurrentUser().isPortalUser()){
+				url.append("https://"+ AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			}
+			else {
+				url.append(FacilioProperties.getClientAppUrl());
+			}
 		}
 		String name = AccountUtil.getCurrentApp().getLinkName();
 		if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
