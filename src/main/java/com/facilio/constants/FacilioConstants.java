@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.context.sensor.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
@@ -140,6 +141,39 @@ public class FacilioConstants {
 		public static final String SYS_FIELDS_NEEDED = "sysFieldsNeeded";
 		public static final String IGNORE_MODIFIED_SYS_FIELDS = "ignoreModifiedSysFields";
 		public static final String SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK = "skipExistingModuleWithSameNameCheck";
+	}
+
+	public static class ViewConstants {
+		public static final String PARENT_VIEW_OBJECT = "parentViewObject";
+
+		public static enum CalendarViewType {
+			DAY(1),
+			WEEK(2),
+			MONTH(3),
+			YEAR(4);
+
+			private int intVal;
+
+			private CalendarViewType(int val) {
+				// TODO Auto-generated constructor stub
+				this.intVal = val;
+			}
+			public static CalendarViewType getCalendarViewType(int val){
+				return TYPE_MAP.get(val);
+			}
+			public int getIntVal() {
+				return intVal;
+			}
+
+			public static final Map<Integer, CalendarViewType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+			private static Map<Integer, CalendarViewType> initTypeMap() {
+				Map<Integer, CalendarViewType> typeMap = new HashMap<>();
+				for(CalendarViewType type : values()) {
+					typeMap.put(type.getIntVal(), type);
+				}
+				return typeMap;
+			}
+		}
 	}
 
 	public static class ModuleNames {

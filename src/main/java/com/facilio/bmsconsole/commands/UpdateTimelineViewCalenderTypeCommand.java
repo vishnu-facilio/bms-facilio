@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants.ViewConstants;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
@@ -36,7 +37,7 @@ public class UpdateTimelineViewCalenderTypeCommand extends FacilioCommand {
             if(trigger == null){
                 continue;
             }
-            TimelineViewContext.CalendarViewType calendarViewType = getCalendarViewType(getScheduleInfo(trigger));
+            ViewConstants.CalendarViewType calendarViewType = getCalendarViewType(getScheduleInfo(trigger));
 
             TimelineViewContext timelineViewContext = (TimelineViewContext) pmPlanner.getResourceTimelineView();
             if(timelineViewContext == null){
@@ -75,25 +76,25 @@ public class UpdateTimelineViewCalenderTypeCommand extends FacilioCommand {
      * @param scheduleInfo
      * @return
      */
-    private TimelineViewContext.CalendarViewType getCalendarViewType(ScheduleInfo scheduleInfo){
+    private ViewConstants.CalendarViewType getCalendarViewType(ScheduleInfo scheduleInfo){
         switch (scheduleInfo.getFrequencyTypeEnum()){
             case DAILY:
-                return TimelineViewContext.CalendarViewType.DAY;
+                return ViewConstants.CalendarViewType.DAY;
             case WEEKLY:
-                return TimelineViewContext.CalendarViewType.WEEK;
+                return ViewConstants.CalendarViewType.WEEK;
             case MONTHLY_DAY:
             case MONTHLY_WEEK:
             case QUARTERLY_WEEK:
             case QUARTERLY_DAY:
             case HALF_YEARLY_DAY:
             case HALF_YEARLY_WEEK:
-                return TimelineViewContext.CalendarViewType.MONTH;
+                return ViewConstants.CalendarViewType.MONTH;
             case YEARLY:
             case YEARLY_WEEK:
-                return TimelineViewContext.CalendarViewType.YEAR;
+                return ViewConstants.CalendarViewType.YEAR;
             case DO_NOT_REPEAT:
             default:
-                return TimelineViewContext.CalendarViewType.DAY;
+                return ViewConstants.CalendarViewType.DAY;
         }
     }
 }

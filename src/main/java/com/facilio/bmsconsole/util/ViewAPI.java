@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.calendarview.CalendarViewContext;
+import com.facilio.bmsconsole.calendarview.CalendarViewUtil;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
@@ -30,9 +32,11 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.weekends.WeekendUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -293,7 +297,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	{
 		if(viewPropList != null && !viewPropList.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			List<Long> viewIds = new ArrayList<>();
+			List<Long> calendarViewIds = new ArrayList<>();
 
 			Map<ViewType, List<Long>> viewTypeMap = new HashMap<>();
 			for(Map viewDetail : viewPropList){
@@ -308,8 +312,15 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				}
 				viewIds.add(viewId);
 				viewTypeMap.put(viewType, viewIds);
+				// calendarView enabled
+				boolean isCalendarView = viewDetail.containsKey("isCalendarView") && (boolean) viewDetail.get("isCalendarView");
+				if (isCalendarView) {
+					calendarViewIds.add(viewId);
+				}
 			}
 			List<FacilioView> views = new ArrayList<>();
+			Map<Long, CalendarViewContext> calendarViewContextMap = CollectionUtils.isNotEmpty(calendarViewIds)
+																? CalendarViewUtil.getAllCalendarViews(calendarViewIds) : new HashMap<>();
 			Map<ViewType, Map<Long, Map<String, Object>>> typeBasedValues = (getOnlyBasicValues) ? null : getDependentTableValues(viewTypeMap);
 			for(Map viewDetail : viewPropList){
 				int viewTypeInt = (int) viewDetail.get("type");
@@ -333,9 +344,19 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 						default:
 							view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
 							//sortFields are available only for table list view
+							view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
+							//TODO fetch View Columns only when view.isListView()
 							List<ViewField> columns = getViewColumns(view.getId());
 							view.setFields(columns);
-							view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
+
+							// add calendar view context
+							if (view.isCalendarView()) {
+								if (MapUtils.isNotEmpty(calendarViewContextMap) && calendarViewContextMap.containsKey(viewId)) {
+									CalendarViewContext calendarViewContext = calendarViewContextMap.get(viewId);
+									view.setCalendarViewContext(calendarViewContext);
+								}
+							}
+
 							break;
 					}
 				}
@@ -470,8 +491,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			insertBuilder.save();
 			long viewId = (long) viewProp.get("id");
 			view.setId(viewId);
+
 			addOrUpdateExtendedViewDetails(view, viewProp, true);
-			
+
+			if (CollectionUtils.isNotEmpty(view.getFields())) {
+				customizeViewColumns(viewId, view.getFields());
+			}
+
 			addViewSharing(view);
 			
 			return viewId;
@@ -550,8 +576,39 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 						customizeViewSortColumns((long) viewProp.get("id"), defaultSortFields);
 					}
 				}
+
+				if (view.isCalendarView()) {
+					validateCalendarView(view.getCalendarViewContext());
+					Map<String, Object> calendarViewProps = getCalendarViewProps(viewProp);
+					FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(calendarViewProps), "CalendarView props is not defined");
+
+					FacilioModule calendarModule = ModuleFactory.getCalendarViewModule();
+					List<FacilioField> calendarModuleFields = FieldFactory.getCalendarViewFields(calendarModule);
+					if(isNew) {
+						addDependentTables(calendarModule, calendarModuleFields, calendarViewProps);
+					} else {
+						updateDependentTables(calendarModule, calendarModuleFields, calendarViewProps);
+					}
+				}
+
+//				if (view.isListView()){
+//					List<ViewField> columns = view.getFields();
+//					FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(columns), "View Columns cannot be empty");
+//				}
+
 				break;
 		}
+	}
+
+	public static Map<String, Object> getCalendarViewProps(Map<String, Object> viewProps) {
+		Map<String,Object> calendarViewContext = (Map<String, Object>) viewProps.get("calendarViewContext");
+		if (MapUtils.isNotEmpty(calendarViewContext)) {
+			Map<String, Object> calendarViewProps = new HashMap<>(calendarViewContext);
+			calendarViewProps.put("orgId", viewProps.get("orgId"));
+			calendarViewProps.put("id", viewProps.get("id"));
+			return calendarViewProps;
+		}
+		return null;
 	}
 	
 	private static void addDependentTables(FacilioModule module, List<FacilioField> fields, Map<String, Object> viewProperties) throws Exception {
@@ -594,8 +651,22 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			throw new Exception("Field type doesn't match");
 		}
 	}
-	
-	
+
+	public static void validateCalendarView(CalendarViewContext view) throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
+		checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
+		FacilioUtil.throwIllegalArgumentException(startDateField == null, "Start Date Field cannot be null");
+
+		if (view.getEndDateFieldId() > 0) {
+			if(view.getStartDateFieldId() == view.getEndDateFieldId()){
+				throw new Exception("Start Date field and End Date field cannot be same");
+			}
+			FacilioField endDateField = moduleBean.getField(view.getEndDateFieldId());
+			checkFieldType(endDateField,Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
+		}
+	}
 	
 	public static long updateView(long viewId, FacilioView view) throws Exception {
 		try {
@@ -625,6 +696,8 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if (view.getFields() != null) {
 			customizeViewColumns(view.getId(), view.getFields());
 			}
+
+			addViewSharing(view);
 
 			// TODO update sort fields and view columns
 			

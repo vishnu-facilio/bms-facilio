@@ -24,6 +24,11 @@ public class GetDBViewCommand extends FacilioCommand {
             throw new IllegalArgumentException("View not found");
         }
 
+        if (requestView!= null && requestView.getIncludeParentCriteria()) {
+            FacilioView customView = new FacilioView(view);
+            context.put(FacilioConstants.ViewConstants.PARENT_VIEW_OBJECT, customView);
+        }
+
         context.put(FacilioConstants.ContextNames.EXISTING_CV, view);
 
         return false;

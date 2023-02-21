@@ -801,7 +801,6 @@ public class TransactionChainFactory {
 			c.addCommand(new CheckEditAccessCommand());
 			c.addCommand(new GenerateCriteriaFromFilterCommand());
 			c.addCommand(new AddCVCommand());
-			c.addCommand(new CustomizeViewColumnCommand());
 			return c;
 		}
 		public static FacilioChain deleteViewChain() {
@@ -1233,7 +1232,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultFormForCustomModuleCommand());
 			c.addCommand(new AddDefaultStateFlowCommand());
 			c.addCommand(new AddSubModulesSystemFieldsCommad());
-			c.addCommand(new CreateDefaultViewCommad());
+			c.addCommand(new CreateDefaultViewCommand());
 			c.addCommand(commonAddModuleChain());
 //			c.addCommand(new CreateCustomModuleDefaultSubModuleCommand());
 			return c;

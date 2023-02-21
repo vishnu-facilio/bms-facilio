@@ -20,6 +20,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -233,17 +235,23 @@ public class LoadViewCommand extends FacilioCommand {
 		Long currentUserRoleId = currentUser.getRoleId();
 		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
 		Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
-		Long adminRoleId = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultSuperAdmin.ADMINISTRATOR).getId();
 
-		// Role Check
-		boolean isSuperAdmin = currentUser.isSuperAdmin();
-		boolean isAdmin = adminRoleId.equals(currentUserRoleId);
-		boolean isPrivileged = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
-		// Owner Check
-		boolean isOwner = ownerId.equals(currentUserId);
+		// Admin/CAFMAdmin Role has equal privileges as SuperAdmin Role
+		Criteria roleNameCriteria = new Criteria();
+		String[] roleNames = { FacilioConstants.DefaultRoleNames.ADMIN, FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN, FacilioConstants.DefaultRoleNames.CAFM_ADMIN };
+		roleNameCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", org.apache.commons.lang.StringUtils.join(roleNames, ","), StringOperators.IS));
+
+		List<Role> adminRoles = AccountUtil.getRoleBean().getRoles(roleNameCriteria);
+		List<Long> adminRoleIds = CollectionUtils.isNotEmpty(adminRoles) ? adminRoles.stream().map(Role::getId).collect(Collectors.toList()) : new ArrayList<>();
+
+		Boolean isSuperAdmin = currentUser.isSuperAdmin();
+		boolean isAdmin = adminRoleIds.contains(currentUserRoleId);
+		boolean isPrivilegedRole = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
+		boolean isPrivilegedAccess = isSuperAdmin || isAdmin || isPrivilegedRole;
+
 		boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
 
-		view.setEditable(isSuperAdmin || isPrivileged || !isLocked || (isLocked && (isOwner || isAdmin)));
+		view.setEditable(isPrivilegedAccess || !isLocked || (isLocked && (ownerId.equals(currentUserId))));
 	}
 	
 	private String getOrderClauseForLookupTable(SortField field, String moduleName) throws Exception {

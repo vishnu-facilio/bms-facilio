@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
+import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.db.criteria.Criteria;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -62,8 +63,48 @@ public class FacilioView {
 		this.ownerId = view.ownerId;
 		this.isLocked = view.isLocked;
 		this.isEditable = view.isEditable;
+		this.isListView = view.isListView;
+		this.isCalendarView = view.isCalendarView;
+		this.calendarViewContext = view.calendarViewContext;
 		this.excludeModuleCriteria=view.excludeModuleCriteria;
 		this.appLinkNames = view.appLinkNames;
+	}
+
+	private Boolean isListView;
+	public void setIsListView(Boolean listView) {
+		this.isListView = listView;
+	}
+	public boolean isListView() {
+		if (isListView != null) {
+			return isListView;
+		}
+		return false;
+	}
+	public Boolean getIsListView() {
+		return isListView;
+	}
+
+	private Boolean isCalendarView;
+	public void setIsCalendarView(Boolean isCalendarView) {
+		this.isCalendarView = isCalendarView;
+	}
+	public boolean isCalendarView() {
+		if (isCalendarView != null) {
+			return isCalendarView;
+		}
+		return false;
+	}
+	public Boolean getIsCalendarView() {
+		return isCalendarView;
+	}
+
+	private CalendarViewContext calendarViewContext;
+	public CalendarViewContext getCalendarViewContext() {
+		return calendarViewContext;
+	}
+
+	public void setCalendarViewContext(CalendarViewContext calendarViewContext) {
+		this.calendarViewContext = calendarViewContext;
 	}
 	private List<String> appLinkNames;
 
@@ -375,7 +416,7 @@ public class FacilioView {
 	public int getViewType() {
 		return viewType;
 	}
-
+	
 	public static enum ViewType {
 		TABLE_LIST(1),
 		TIMELINE(2);

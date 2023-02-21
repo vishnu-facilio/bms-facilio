@@ -4249,7 +4249,8 @@ public class FieldFactory extends BaseFieldFactory {
         excludeModuleCriteria.setModule(module);
         fields.add(excludeModuleCriteria);
 
-
+        fields.add(getBooleanField("isListView", "IS_LIST_VIEW", module));
+        fields.add(getBooleanField("isCalendarView", "IS_CALENDAR_VIEW", module));
         return fields;
 
     }
@@ -11215,6 +11216,15 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sysDeletedBy", "SYS_DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysDeletedTime", "SYS_DELETED_TIME", module, FieldType.NUMBER));
         return fields;
+    }
+
+    public static List<FacilioField> getCalendarViewFields(FacilioModule module) {
+        List<FacilioField> list = new ArrayList<>();
+        list.add(getNumberField("id", "ID", module));
+        list.add(getNumberField("startDateFieldId", "START_DATE_FIELDID", module));
+        list.add(getNumberField("endDateFieldId", "END_DATE_FIELDID", module));
+        list.add(getNumberField("defaultCalendarView", "DEFAULT_CALENDAR_VIEW", module));
+        return list;
     }
 
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {

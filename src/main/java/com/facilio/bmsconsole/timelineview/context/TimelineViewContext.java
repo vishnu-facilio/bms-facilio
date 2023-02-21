@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.timelineview.context;
 
 
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.constants.FacilioConstants.ViewConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
@@ -165,17 +166,17 @@ public class TimelineViewContext extends FacilioView implements Serializable {
         this.recordCustomization = recordCustomization;
     }
 
-    private CalendarViewType defaultCalendarView;
+    private ViewConstants.CalendarViewType defaultCalendarView;
     public int getDefaultCalendarView() {
         if(defaultCalendarView != null) {
             return defaultCalendarView.getIntVal();
         }
-        return CalendarViewType.DAY.getIntVal();
+        return ViewConstants.CalendarViewType.DAY.getIntVal();
     }
     public void setDefaultCalendarView(int defaultCalendarView) {
-        this.defaultCalendarView = CalendarViewType.TYPE_MAP.get(defaultCalendarView);
+        this.defaultCalendarView = ViewConstants.CalendarViewType.TYPE_MAP.get(defaultCalendarView);
     }
-    public void setDefaultCalendarView(CalendarViewType defaultCalendarView) {
+    public void setDefaultCalendarView(ViewConstants.CalendarViewType defaultCalendarView) {
         this.defaultCalendarView = defaultCalendarView;
     }
 
@@ -211,34 +212,5 @@ public class TimelineViewContext extends FacilioView implements Serializable {
     }
     public void setGroupCriteria(Criteria groupCriteria) {
         this.groupCriteria = groupCriteria;
-    }
-
-    public static enum CalendarViewType {
-        DAY(1),
-        WEEK(2),
-        MONTH(3),
-        YEAR(4);
-
-        private int intVal;
-
-        private CalendarViewType(int val) {
-            // TODO Auto-generated constructor stub
-            this.intVal = val;
-        }
-        public static CalendarViewType getCalendarViewType(int val){
-            return TYPE_MAP.get(val);
-        }
-        public int getIntVal() {
-            return intVal;
-        }
-
-        private static final Map<Integer, CalendarViewType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
-        private static Map<Integer, CalendarViewType> initTypeMap() {
-            Map<Integer, CalendarViewType> typeMap = new HashMap<>();
-            for(CalendarViewType type : values()) {
-                typeMap.put(type.getIntVal(), type);
-            }
-            return typeMap;
-        }
     }
 }

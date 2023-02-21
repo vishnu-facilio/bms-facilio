@@ -67,7 +67,7 @@ public class AddCVCommand extends FacilioCommand {
 			}
 
 			if(view.getIncludeParentCriteria()) {
-				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ViewConstants.PARENT_VIEW_OBJECT);
 				if (criteria == null && parentView != null) {
 					criteria = parentView.getCriteria();
 				}
@@ -105,9 +105,7 @@ public class AddCVCommand extends FacilioCommand {
 				long viewId1 = ViewAPI.updateView(viewId,view);	
 			}
 			view.setId(viewId);
-			
-			ViewAPI.addViewSharing(view);
-			
+
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			
 		}
