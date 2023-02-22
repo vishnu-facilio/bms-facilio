@@ -37,8 +37,7 @@ import com.facilio.v3.util.V3Util;
 
 public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements QuestionHandler<MultiQuestionContext> {
 
-	public static final int SHORT_STRING_MAX_LENGTH = 255;
-	public static final int PICKLIST_STRING_MAX_LENGTH = 100;
+	public static final int MAX_STRING_LENGTH = 255;
 
 	@Override
 	public void validateSave(List<MultiQuestionContext> questions) throws Exception {
@@ -164,7 +163,7 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 
 				int maxLen = question.length();
 
-				V3Util.throwRestException(maxLen > SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, SHORT_STRING_MAX_LENGTH));
+				V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, MAX_STRING_LENGTH));
 
 				List<MatrixQuestionColumn> columns = q.getColumns();
 
@@ -191,9 +190,9 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 										if (StringUtils.isNotEmpty(pickListQuestion)) {
 
 											int pickListMaxLen = pickListQuestion.length();
-											V3Util.throwRestException(pickListMaxLen > PICKLIST_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Question Length ({0}) cannot be greater than ({1})", pickListMaxLen, PICKLIST_STRING_MAX_LENGTH));
+											V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Label Length ({0}) cannot be greater than ({1})", pickListMaxLen, MAX_STRING_LENGTH));
 										}
-									}
+										}
 								}
 							}
 						}
