@@ -191,8 +191,7 @@ public class GroupBeanImpl implements GroupBean {
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		fields.add(AccountConstants.getRoleIdField());
-		// removed app scope check for Team/staff
-		 long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		long applicationId = AccountUtil.getCurrentApp().getId();
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

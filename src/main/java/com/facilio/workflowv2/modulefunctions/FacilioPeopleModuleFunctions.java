@@ -44,4 +44,9 @@ public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
+    public void add(Map<String,Object> globalParams, List<Object> objects) throws Exception {
+        v3Add(globalParams, objects);
+    }
+
 }
