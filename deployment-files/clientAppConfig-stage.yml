@@ -15,3 +15,6 @@ clientapps:
   - name: setup
     baseUrl: https://static.facilio.in/setup
     stageBaseUrl: https://static.facilio.in/dev
+  - name: forms
+    baseUrl: https://static.facilio.in/forms
+    stageBaseUrl: https://static.facilio.in/dev
