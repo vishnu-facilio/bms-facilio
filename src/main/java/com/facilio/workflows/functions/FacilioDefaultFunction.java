@@ -3,14 +3,8 @@ package com.facilio.workflows.functions;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.facilio.bmsconsole.util.*;
@@ -30,7 +24,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -929,9 +922,20 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			Map<String,Object> record = (Map<String,Object>) objects[0];
 			String moduleName = (String) objects[1];
 			String statusName = (String) objects[2];
-			FacilioStatus status = TicketAPI.getStatus(modBean.getModule(moduleName), statusName);
+			FacilioModule module = modBean.getModule(moduleName);
+			FacilioStatus status = TicketAPI.getStatus(module, statusName);
+
+			FacilioChain chain = TransactionChainFactory.getHistoryUpdateChain();
+			FacilioContext facilioContext = chain.getContext();
+			facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+
+			if (module.isCustom()) {
+				String activityContext = FacilioConstants.ContextNames.CUSTOM_ACTIVITY;
+				Constants.setActivityContext(facilioContext, activityContext);
+			}
 			
-			StateFlowRulesAPI.updateState(FieldUtil.getAsBeanFromMap(record, ModuleBaseWithCustomFields.class), modBean.getModule(moduleName), status, false, new FacilioContext());
+			StateFlowRulesAPI.updateState(FieldUtil.getAsBeanFromMap(record, ModuleBaseWithCustomFields.class), modBean.getModule(moduleName), status, false, facilioContext);
+			chain.execute();
 			return null;
 		}
 		

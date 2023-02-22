@@ -17,6 +17,7 @@ import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
+import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.people.UpdateScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
@@ -70,6 +71,7 @@ import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.storm.command.StormInstructionPublishCommand;
 import com.facilio.trigger.context.TriggerType;
+import com.facilio.v3.commands.AddActivityForModuleDataCommand;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
@@ -6721,6 +6723,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getFormSharingRolesChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetFormSharingRolesCommand());
+		return c;
+	}
+
+	public static FacilioChain getHistoryUpdateChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddActivitiesCommandV3());
 		return c;
 	}
 }
