@@ -1092,6 +1092,12 @@
         <action name="sitestationid"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAssociatedStationId"/>
+        <action name="buildingSpecificWeatherFields"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getBuildingSpecificWeatherFields"/>
+        <action name="allWeatherFields"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getAllWeatherFields"/>
     </package>
 
 

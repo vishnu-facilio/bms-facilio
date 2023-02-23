@@ -30,8 +30,8 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long stationId = (long) context.get("STATION_ID");
-        long siteId = (long) context.get("SITE_ID");
+        long stationId = (long) context.get("stationId");
+        long siteId = (long) context.get("siteId");
 
         V3Util.throwRestException(stationId == 0 && siteId == 0, ErrorCode.VALIDATION_ERROR,
                 "either stationId or siteId has to be given");
@@ -42,8 +42,8 @@ public class GetCurrentWeatherDataCommand extends FacilioCommand {
             if(stationId == 0) {
                 String errMsg = "given siteId is not associated with any weather station, siteId :: "+siteId;
                 LOGGER.error(errMsg);
-                context.put("CODE", -1);
-                context.put("MESSAGE", errMsg);
+                context.put("code", -1);
+                context.put("message", errMsg);
             }
         }
         List<ReadingContext> records = getTodayWeatherRecords(stationId);

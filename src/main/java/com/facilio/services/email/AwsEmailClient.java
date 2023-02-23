@@ -39,7 +39,7 @@ class AwsEmailClient extends EmailClient {
     }
 
     private String sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
-        logEmail(mailJson);
+//        logEmail(mailJson);
         if(canSendEmail(mailJson)) {
             try {
                 boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;

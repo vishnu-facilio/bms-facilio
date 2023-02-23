@@ -10,14 +10,14 @@ public class GetSiteStationCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long siteId = (long) context.get("SITE_ID");
+        long siteId = (long) context.get("siteId");
         V3Util.throwRestException(siteId == 0, ErrorCode.VALIDATION_ERROR, "siteId is needed");
         long stationId =  WeatherAPI.getStationIdForSiteId(siteId);
         if(stationId == 0) {
             stationId = -1;
-            context.put("MESSAGE", "given siteId is not associated with any weather station");
+            context.put("message", "given siteId is not associated with any weather station");
         }
-        context.put("STATION_ID", stationId);
+        context.put("stationId", stationId);
         return false;
     }
 }

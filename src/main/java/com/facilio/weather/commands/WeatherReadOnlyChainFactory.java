@@ -25,4 +25,19 @@ public class WeatherReadOnlyChainFactory {
         c.addCommand(new GetSiteStationCommand());
         return c;
     }
+
+    public static FacilioChain getBuildingWeatherFieldsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSiteIdForGivenBuildingIdCommand());
+        c.addCommand(new GetSiteStationCommand());
+        c.addCommand(new GetWeatherReadingFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain getAllWeatherFieldsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAllStationDetailsCommand());
+        c.addCommand(new GetWeatherReadingFieldsCommand());
+        return c;
+    }
 }

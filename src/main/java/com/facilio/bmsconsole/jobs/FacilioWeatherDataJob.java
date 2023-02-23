@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -66,7 +68,12 @@ public class FacilioWeatherDataJob extends FacilioJob {
 			WeatherUtil.addReading(FacilioConstants.ContextNames.NEW_PSYCHROMETRIC_READING ,psychrometricReadings);
 
 			stationCurrentReadings = WeatherUtil.getWeatherReading(FacilioConstants.ContextNames.NEW_WEATHER_READING, stationCurrentReadings);
-			WeatherUtil.addReading(FacilioConstants.ContextNames.NEW_WEATHER_READING,WeatherUtil.getReadingList(stationCurrentReadings));
+			List<ReadingContext> newWeatherReadings = WeatherUtil.getReadingList(stationCurrentReadings);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 486L && FacilioProperties.getRegionCountryCode().equals("EU")) {  // remove it
+				LOGGER.info("WEATHER_LOG :: No of stations :: "+stationCurrentReadings.size());
+				LOGGER.info("WEATHER_LOG :: No of points going to be updated :: "+newWeatherReadings.size());
+			}
+			WeatherUtil.addReading(FacilioConstants.ContextNames.NEW_WEATHER_READING,newWeatherReadings);
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

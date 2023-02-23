@@ -979,7 +979,14 @@ public class ReadingsAPI {
 		fieldNames.add("sysCreatedTime");
 		return fieldNames;
 	}
-	
+
+	public static final List<FacilioField> filterSystemFields(List<FacilioField> fields) {
+		List<String> defaultReadingNames = getDefaultReadingFieldNames();
+		return fields.stream()
+				.filter(row ->  !defaultReadingNames.contains(row.getName()))
+				.collect(Collectors.toList());
+	}
+
 	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId, String filter, Boolean excludeEmptyFields,boolean fetchControllableFields) throws Exception {
 		if (CollectionUtils.isEmpty(fields)) {
 			return Collections.EMPTY_LIST;

@@ -2,6 +2,7 @@ package com.facilio.mailtracking.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailEnums;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
@@ -15,9 +16,10 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 @Log4j
-public class PushOutgoingMailToQueueCommand extends FacilioCommand {
+public class PushOutgoingMailToQueueCommand extends FacilioCommand implements PostTransactionCommand {
 
     private String message;
+    private JSONObject mailJson;
     
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -27,21 +29,12 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
                 ErrorCode.VALIDATION_ERROR,
                 "OG_MAIL_ERROR :: MailStatus is flagged as INVALID for LOGGER_ID :: "+mailLogContext.getId() + ".. So, email not sent"); // its invalid, so throwing e
 
-        JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
+        mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         mailJson.put(MailConstants.Params.FILES, context.get(MailConstants.Params.FILES));
         mailJson.put(MailConstants.Params.LOGGER_ID, context.get(MailConstants.Params.LOGGER_ID));
         mailJson.put(MailConstants.Params.ID, context.get(MailConstants.Params.LOGGER_ID));
         this.removeContent(mailJson);
 
-        long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
-
-        String topicIdentifier = this.getTopicIdentifier(mailJson, orgId);
-        SessionManager.getInstance().sendMessage(new Message()
-                .setTopic(Topics.Mail.outgoingMail+"/"+topicIdentifier)
-                .setOrgId(orgId)
-                .setContent(mailJson));
-        LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms for LOGGER_ID ::"+mailJson.get(MailConstants.Params.ID));
-        mailJson.put(MailConstants.Email.MESSAGE, this.message);
         return false;
     }
 
@@ -69,5 +62,16 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         return sb.toString();
     }
 
-
+    @Override
+    public boolean postExecute() throws Exception {
+        long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
+        String topicIdentifier = this.getTopicIdentifier(mailJson, orgId);
+        SessionManager.getInstance().sendMessage(new Message()
+                .setTopic(Topics.Mail.outgoingMail+"/"+topicIdentifier)
+                .setOrgId(orgId)
+                .setContent(mailJson));
+        LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms for LOGGER_ID ::"+mailJson.get(MailConstants.Params.ID));
+        mailJson.put(MailConstants.Email.MESSAGE, this.message);
+        return false;
+    }
 }

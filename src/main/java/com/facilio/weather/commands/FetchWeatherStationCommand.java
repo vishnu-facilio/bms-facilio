@@ -8,14 +8,14 @@ import org.json.simple.JSONObject;
 public class FetchWeatherStationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Double lat = (Double) context.get("LAT");
-        Double lng = (Double) context.get("LNG");
+        Double lat = (Double) context.get("lat");
+        Double lng = (Double) context.get("lng");
 
         if(!WeatherAPI.allow()) {
             return getRandomStationCode(lat, lng, context);
         }
         JSONObject stationData = WeatherAPI.getStationCode(lat, lng);
-        context.put("STATION_DATA", stationData);
+        context.put("stationData", stationData);
         return false;
     }
 
@@ -27,7 +27,7 @@ public class FetchWeatherStationCommand extends FacilioCommand {
         stationData.put("lng", lng);
         stationData.put("identifier", "Area "+stationCode);
         stationData.put("country", "DC");
-        context.put("STATION_DATA", stationData);
+        context.put("stationData", stationData);
         return false;
     }
 }

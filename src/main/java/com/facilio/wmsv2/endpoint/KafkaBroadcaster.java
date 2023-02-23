@@ -10,6 +10,7 @@ import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
+import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Group;
@@ -218,7 +219,9 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                 incomingMessage(message);
             }
             finally {
-                LOGGER.info("Time taken to process wms record ["+ threadName + ", "+key+ "] is " + (System.currentTimeMillis() - startTime) + " ms");
+                if(!Topics.System.ping.equals(key)) {
+                    LOGGER.info("Time taken to process wms record ["+ threadName + ", "+key+ "] is " + (System.currentTimeMillis() - startTime) + " ms");
+                }
                 AccountUtil.cleanCurrentAccount();
             }
         }

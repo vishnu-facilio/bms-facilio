@@ -14,27 +14,28 @@ public class WeatherAction extends V3Action {
     private Double lng;
     private long stationId;
     private long siteId;
+    private long buildingId;
 
     public String getStationCode() throws Exception {
         FacilioChain chain = WeatherReadOnlyChainFactory.getWeatherStationChain();
         FacilioContext context = chain.getContext();
-        context.put("LAT", lat);
-        context.put("LNG", lng);
+        context.put("lat", lat);
+        context.put("lng", lng);
         chain.execute();
-        setData((JSONObject) context.get("STATION_DATA"));
+        setData((JSONObject) context.get("stationData"));
         return V3Action.SUCCESS;
     }
 
     public String getCurrentWeather() throws Exception {
         FacilioChain chain = WeatherReadOnlyChainFactory.getCurrentWeatherChain();
         FacilioContext context = chain.getContext();
-        context.put("STATION_ID", stationId);
-        context.put("SITE_ID", siteId);
+        context.put("stationId", stationId);
+        context.put("siteId", siteId);
         chain.execute();
         setData((JSONObject) context.get("data"));
-        if(context.get("CODE")!=null) {
-            setCode((Integer) context.get("CODE"));
-            setMessage((String) context.get("MESSAGE"));
+        if(context.get("code")!=null) {
+            setCode((Integer) context.get("code"));
+            setMessage((String) context.get("message"));
         }
         return V3Action.SUCCESS;
     }
@@ -42,12 +43,39 @@ public class WeatherAction extends V3Action {
     public String getAssociatedStationId() throws Exception {
         FacilioChain chain = WeatherReadOnlyChainFactory.getSiteWeatherStationChain();
         FacilioContext context = chain.getContext();
-        context.put("SITE_ID", siteId);
+        context.put("siteId", siteId);
         chain.execute();
-        setData("stationId", context.get("STATION_ID"));
-        if(context.get("MESSAGE")!=null) {
-            setMessage((String) context.get("MESSAGE"));
+        setData("stationId", context.get("stationId"));
+        if(context.get("message")!=null) {
+            setMessage((String) context.get("message"));
         }
         return V3Action.SUCCESS;
     }
+
+    public String getBuildingSpecificWeatherFields() throws Exception {
+        FacilioChain chain = WeatherReadOnlyChainFactory.getBuildingWeatherFieldsChain();
+        FacilioContext context = chain.getContext();
+        context.put("buildingId", buildingId);
+        chain.execute();
+        if(context.get("message") == null) {
+            setData("buildingId", context.get("buildingId"));
+            setData("stationId", context.get("stationId"));
+            setData("siteId", context.get("siteId"));
+            setData("fields", context.get("fields"));
+        } else {
+            setCode(-1);
+            setMessage((String) context.get("message"));
+        }
+        return V3Action.SUCCESS;
+    }
+
+    public String getAllWeatherFields() throws Exception {
+        FacilioChain chain = WeatherReadOnlyChainFactory.getAllWeatherFieldsChain();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+        setData("fields", context.get("fields"));
+        setData("stationMap", context.get("stationMap"));
+        return V3Action.SUCCESS;
+    }
+
 }

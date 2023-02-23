@@ -197,7 +197,7 @@ public class WeatherAPI {
 			}
 			List<Long> allowedStageOrgs = new ArrayList() {{
 				add(905L);
-				add(907L);
+				add(1280L);
 			}};
 			return FacilioProperties.getEnvironment().equals("stage")
 					&& allowedStageOrgs.contains(AccountUtil.getCurrentOrg().getOrgId());
