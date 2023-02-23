@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -300,6 +301,33 @@ public class ConnectedAppAPI {
 		Map<String, Object> props = selectBuilder.fetchFirst();
 		if (props != null && !props.isEmpty()) {
 			VariableContext variable = FieldUtil.getAsBeanFromMap(props, VariableContext.class);
+			return variable;
+		}
+		return null;
+	}
+
+	public static VariableContext setVariable(String connectedAppLinkName, String variableName, String value) throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVariablesFields())
+				.table(ModuleFactory.getVariablesModule().getTableName())
+				.innerJoin("ConnectedApps")
+				.on("Variables.CONNECTEDAPP_ID=ConnectedApps.ID")
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Variables.NAME","name", variableName, StringOperators.IS));
+
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (props != null && !props.isEmpty()) {
+			VariableContext variable = FieldUtil.getAsBeanFromMap(props, VariableContext.class);
+			variable.setValue(value);
+
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getVariablesModule().getTableName())
+					.fields(FieldFactory.getVariablesFields())
+					.andCondition(CriteriaAPI.getIdCondition(variable.getId(), ModuleFactory.getVariablesModule()));
+
+			Map<String, Object> updateProps = FieldUtil.getAsProperties(variable);
+			updateBuilder.update(updateProps);
 			return variable;
 		}
 		return null;

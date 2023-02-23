@@ -45,6 +45,12 @@
 	
 	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="v2Api">
 		<action name="create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf"></action>
+
+		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf"></action>
+	</package>
+
+	<package name="screenshotApiV2" namespace="/api/v2/integ/screenshot" extends="v2Api">
+		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generateScreenshot"></action>
 	</package>
 
 </struts>

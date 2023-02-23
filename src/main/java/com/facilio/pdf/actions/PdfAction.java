@@ -2,6 +2,9 @@ package com.facilio.pdf.actions;
 
 import java.io.InputStream;
 
+import com.facilio.modules.FieldUtil;
+import com.facilio.services.filestore.FileStoreFactory;
+import com.facilio.services.pdf.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -71,5 +74,63 @@ public class PdfAction extends FacilioAction {
 	}
 	public void setAdditionalInfo(JSONObject additionalInfo) {
 		this.additionalInfo = additionalInfo;
+	}
+
+	private JSONObject options;
+	private String fileName;
+
+	public JSONObject getOptions() {
+		return options;
+	}
+
+	public void setOptions(JSONObject options) {
+		this.options = options;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String generatePdf() throws Exception {
+
+		if (fileName == null) {
+			fileName = "download-" + System.currentTimeMillis() + ".pdf";
+		}
+		if (options == null) {
+			options = new JSONObject();
+		}
+		PDFOptions pdfOptions = (PDFOptions) FieldUtil.getAsBeanFromJson(options, PDFOptions.class);
+		long fileId = PDFServiceFactory.getPDFService().exportAppURL(fileName, getUrl(), PDFService.ExportType.PDF, pdfOptions);
+
+		String fileUrl = null;
+		if (fileId > 0) {
+			fileUrl = FileStoreFactory.getInstance().getFileStore().getDownloadUrl(fileId);
+		}
+		setResult("fileUrl", fileUrl);
+		return SUCCESS;
+	}
+
+	public String generateScreenshot() throws Exception {
+
+		if (options == null) {
+			options = new JSONObject();
+		}
+		ScreenshotOptions screenshotOptions = (ScreenshotOptions) FieldUtil.getAsBeanFromJson(options, ScreenshotOptions.class);
+		if (fileName == null) {
+			fileName = "download-" + System.currentTimeMillis() + "." + (screenshotOptions.getFormat() != null ? screenshotOptions.getFormat() : "png");
+		}
+
+		long fileId = PDFServiceFactory.getPDFService().exportAppURL(fileName, getUrl(), PDFService.ExportType.SCREENSHOT, screenshotOptions);
+
+		String fileUrl = null;
+		if (fileId > 0) {
+			fileUrl = FileStoreFactory.getInstance().getFileStore().getDownloadUrl(fileId);
+		}
+		setResult("fileUrl", fileUrl);
+		return SUCCESS;
 	}
 }

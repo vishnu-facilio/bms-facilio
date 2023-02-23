@@ -605,8 +605,20 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setRecordId(Long recordId) {
 		this.recordId = recordId;
 	}
-	
+
+	private boolean sandbox;
+	public boolean isSandbox() {
+		return sandbox;
+	}
+
+	public void setSandbox(boolean sandbox) {
+		this.sandbox = sandbox;
+	}
+
 	private boolean isSandboxMode() {
+		if (isSandbox()) {
+			return true;
+		}
 		HttpServletRequest req = ServletActionContext.getRequest();
 		String value = FacilioCookie.getUserCookie(req, "fc.sandbox");
 		if (value != null && "true".equals(value)) {
