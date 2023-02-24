@@ -1509,6 +1509,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		int i = 1;
 		int maxIndex = 1;
 		for (EnumFieldValue<Integer> enumVal : field.getValues()) {
+			if(enumVal.getValue().length()>100){
+				throw new IllegalArgumentException("You have exceeded the maximum number of 100 characters");
+			}
 			if (enumVal.getIndex() != null && enumVal.getIndex() > maxIndex) {
 				maxIndex = enumVal.getIndex();
 			}
