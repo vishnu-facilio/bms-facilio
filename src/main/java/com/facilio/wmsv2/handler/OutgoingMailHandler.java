@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.handler;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
@@ -36,7 +37,6 @@ public class OutgoingMailHandler extends BaseHandler {
         try {
             if(orgId != null && orgId > 0) {
                 JSONObject mailJson = message.getContent();
-
                 mapperId = NewTransactionService.newTransactionWithReturn(() -> registerOutgoingMailMapper(orgId));
                 LOGGER.info("OG_MAIL_LOG :: MAPPER_ID inserted :: "+mapperId +" for LOGGER_ID :: "+mailJson.get(MailConstants.Params.ID));
                 mailJson.put(MailConstants.Params.MAPPER_ID, mapperId);
@@ -52,6 +52,7 @@ public class OutgoingMailHandler extends BaseHandler {
     }
 
     private Long registerOutgoingMailMapper(long orgId) throws Exception {
+        AccountUtil.cleanCurrentAccount();
         Map<String, Object> row = new HashMap<>();
         row.put("orgId", orgId);
         row.put("sysCreatedTime", System.currentTimeMillis());
