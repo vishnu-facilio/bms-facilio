@@ -174,7 +174,7 @@ public class V2ReportAction extends FacilioAction {
     public String fetchReportFolders() throws Exception {
 
         List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null,
-                isPivot);
+                isPivot, null);
         setResult("reportFolders", reportFolders);
         setResult("moduleName", moduleName);
         return SUCCESS;
@@ -2616,7 +2616,7 @@ public class V2ReportAction extends FacilioAction {
     public String searchReportAndFolders() throws Exception {
 
         List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch(),
-                isPivot);
+                isPivot, null);
         List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
         setResult("reportFolders", reportFolders);
         setResult("reports", reports);

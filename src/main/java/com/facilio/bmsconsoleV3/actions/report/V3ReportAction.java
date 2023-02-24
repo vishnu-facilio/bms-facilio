@@ -67,6 +67,7 @@ public class V3ReportAction extends V3Action {
     long alarmId = -1;
     FacilioContext resultContext;
     private Boolean isPivot = false;
+    private Long webTabId;
     private ReportFolderContext reportFolder;
     private long folderId = -1;
     private FileInfo.FileFormat fileFormat;
@@ -442,6 +443,7 @@ public class V3ReportAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getFoldersListChain();
         FacilioContext context = chain.getContext();
         context.put("isWithReport", getIsWithReport());
+        context.put("webTabId", webTabId);
         context.put("isCustomModule", false);
         if(moduleName != null && moduleName.equals("custommodule")){
             context.put("isCustomModule", true);

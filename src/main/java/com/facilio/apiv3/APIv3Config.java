@@ -885,7 +885,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemTypesListChain())
+                .beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .summary()
                 .beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .build();
@@ -937,7 +937,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchToolTypesListChain())
+                .beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .summary()
                 .beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .build();

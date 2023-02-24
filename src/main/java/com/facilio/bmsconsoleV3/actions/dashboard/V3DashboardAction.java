@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.dashboard.DashboardListPropsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +32,22 @@ public class V3DashboardAction extends V3Action {
     private JSONObject dashboard_meta;
     private String linkName;
     private Long dashboardTabId;
+
+    /**
+        variables for recieving props for dashboard list api starts here
+     */
+    private Long appId;
+    private boolean withSharing;
+    private boolean withFilters;
+    private boolean withEmptyFolders;
+    private boolean onlyPublished;
+    private boolean onlyMobile;
+    private boolean onlySelected;
+    private boolean onlyFolders;
+    private boolean withTabs;
+    /**
+     variables for recieving props for dashboard list api ends here
+     */
     public String clone_dashboard() throws Exception
     {
         try
@@ -289,5 +306,27 @@ public class V3DashboardAction extends V3Action {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tab data"+e);
         }
         return SUCCESS;
+    }
+
+    public String list()throws Exception
+    {
+        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs);
+        if(dashboard_list_prop == null || dashboard_list_prop.getAppId() == null || dashboard_list_prop.getAppId() <= 0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please pass at least appId in api");
+        }
+        try
+        {
+            FacilioChain chain = TransactionChainFactoryV3.getDashboardListChain();
+            FacilioContext context = chain.getContext();
+            context.put("dashboard_list_prop", dashboard_list_prop);
+            chain.execute();
+            setData("dashboardFolders", dashboard_list_prop.getFolders());
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard list" +e);
+        }
+        return V3Action.SUCCESS;
     }
 }

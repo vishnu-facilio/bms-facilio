@@ -32,7 +32,7 @@ public class GetReportFolderTranslationFields implements TranslationTypeInterfac
         if(CollectionUtils.isNotEmpty(moduleIds)) {
             for (long moduleId : moduleIds) {
                 FacilioModule module = moduleBean.getModule(moduleId);
-                List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(module.getName(),true,null,false);
+                List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(module.getName(),true,null,false, null);
                 if(CollectionUtils.isNotEmpty(reportFolders)) {
                     for (ReportFolderContext reportFolder : reportFolders) {
                         String reportFolderId = String.valueOf(reportFolder.getId());

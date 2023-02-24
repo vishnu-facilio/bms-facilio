@@ -352,5 +352,18 @@
             <property name="dashboard_rule_id" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/list" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true"/>
+            <property name="withFilters" type="boolean"/>
+            <property name="withEmptyFolders" type="boolean" />
+            <property name="onlyMobile" type="boolean" />
+            <property name="onlyPublished" type="boolean" />
+            <property name="withSharing" type="boolean" />
+            <property name="onlySelected" type="boolean" />
+            <property name="onlyFolders" type="boolean" />
+            <property name="withTabs" type="boolean" />
+        </urlparams>
+    </request>
 
 </config>

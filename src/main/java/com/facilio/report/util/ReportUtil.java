@@ -1,16 +1,11 @@
 package com.facilio.report.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
 import com.amazonaws.services.dynamodbv2.xspec.NULL;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -301,7 +296,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? field.getName() : field.getName()+"_"+aggr.getStringValue();
 	}
 	
-	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText, Boolean isPivot) throws Exception {
+	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText, Boolean isPivot, Long webTabId) throws Exception {
 		ApplicationContext app = ApplicationApi.getApplicationForId(AccountUtil.getCurrentUser().getApplicationId());
 		boolean isMainApp = (app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 		long appId = (long) AccountUtil.getCurrentUser().getApplicationId();
@@ -315,12 +310,49 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		{
 			Boolean isAnalyticsReport = false;
 			List<Long> moduleIds = new ArrayList<>();
-			if( appId != 0) {
+			if(webTabId != null && webTabId > 0)
+			{
+				WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+				WebTabContext webTabContext = tabBean.getWebTab(webTabId);
+				JSONObject config = webTabContext.getConfigJSON();
+				if(config != null && config.containsKey("type") && config.get("type").equals("module_reports"))
+				{
+					List<Long> webtab_moduleIds = ApplicationApi.getModuleIdsForTab(webTabContext.getId());
+					if(webtab_moduleIds != null && webtab_moduleIds.size() > 0)
+					{
+						for(Long moduleId : webtab_moduleIds)
+						{
+							FacilioModule module = modBean.getModule(moduleId);
+							if(!module.isCustom())
+							{
+								Set<FacilioModule> subModules = ReportFactoryFields.getSubModulesList(module.getName());
+								if(subModules != null){
+									moduleIds.addAll(subModules.stream().map(m -> m.getModuleId()).collect(Collectors.toList()));
+								}
+							}
+							moduleIds.add(moduleId);
+						}
+					}
+				}
+				else if((config != null && config.containsKey("type") && config.get("type").equals("analytics_reports")) || isPivot){
+					FacilioModule energyData = modBean.getModule("energydata");
+					moduleIds.add(energyData.getModuleId());
+					isAnalyticsReport = true;
+				}
+			}
+			else if(isPivot)
+			{
+				FacilioModule energyData = modBean.getModule("energydata");
+				moduleIds.add(energyData.getModuleId());
+			}
+			else if( appId != 0 )
+			{
 				List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
 				for (WebTabContext webtab : webtabs) {
 					if (webtab.getTypeEnum() == WebTabContext.Type.MODULE ) {
 						moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
-					}else if(webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
+					}
+					else if(!isPivot && webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
 							webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("analytics_reports"))){
 						isAnalyticsReport = true;
 					}
@@ -338,8 +370,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				}
 				if(isPivot || isAnalyticsReport)
 				{
-					FacilioModule energyData = modBean.getModule("energyData");
-					moduleIds.add(energyData.getModuleId());
+					FacilioModule energyData = modBean.getModule("energydata");
 					moduleIds_list.add(energyData.getModuleId());
 				}
 				List<Long> newList = moduleIds.stream().distinct().collect(Collectors.toList());
@@ -883,7 +914,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 	}
 	
 	public static long addReport(ReportContext reportContext, Context context) throws Exception {
-		
+
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getReportModule().getTableName())
 													.fields(FieldFactory.getReport1Fields());
@@ -1268,8 +1299,54 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		addReport(reportContext, newcontext);
 	}
 	public static void cloneAnalyticsReport(FacilioContext newcontext) throws Exception{
-		ReportContext reportContext = (ReportContext) newcontext.get(FacilioConstants.ContextNames.REPORT);
-		addReport(reportContext, newcontext);
+		ReportContext report = (ReportContext) newcontext.get(FacilioConstants.ContextNames.REPORT);
+		report.setWorkflowId(null);
+		if (report.getTransformWorkflow() != null) {
+			long workflowId = WorkflowUtil.addWorkflow(report.getTransformWorkflow());
+			report.setWorkflowId(workflowId);
+		}
+		addReport(report, newcontext);
+		Set<ReportFieldContext> reportFields = new HashSet<>();
+		for(ReportDataPointContext dataPoint : report.getDataPoints()) {
+			if (dataPoint.getTypeEnum() == ReportDataPointContext.DataPointType.DERIVATION) {
+				continue;
+			}
+
+			if(dataPoint.getxAxis() != null)  {
+				reportFields.add(constructReportField(dataPoint.getxAxis().getModule(), dataPoint.getxAxis().getField(), report.getId()));
+			}
+
+			if(dataPoint.getyAxis() != null) {
+				reportFields.add(constructReportField(dataPoint.getyAxis().getModule(), dataPoint.getyAxis().getField(), report.getId()));
+			}
+
+			if(dataPoint.getDateField() != null) {
+				reportFields.add(constructReportField(dataPoint.getDateField().getModule(), dataPoint.getDateField().getField(), report.getId()));
+			}
+		}
+		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
+			for (ReportFilterContext filter : report.getFilters()) {
+				reportFields.add(constructReportField(filter.getModule(), filter.getField(), report.getId()));
+			}
+		}
+
+		ReportUtil.addReportFields(reportFields);
+	}
+	public static ReportFieldContext constructReportField (FacilioModule module, FacilioField field, long reportId) {
+		ReportFieldContext reportFieldContext = new ReportFieldContext();
+		reportFieldContext.setReportId(reportId);
+
+		if (field.getFieldId() > 0) {
+			reportFieldContext.setFieldId(field.getFieldId());
+		}
+		else if (field.getModule() != null && field.getModule().getName() != null && !field.getModule().getName().isEmpty() && field.getName() != null && !field.getName().isEmpty()){
+//			reportFieldContext.setModuleName(field.getModule().getName());
+			reportFieldContext.setField(module, field);
+		}
+		else {
+			throw new IllegalArgumentException("Invalid field object for ReportFields addition");
+		}
+		return reportFieldContext;
 	}
 	public static String getAlias(String previous){
 		String alias = "A";

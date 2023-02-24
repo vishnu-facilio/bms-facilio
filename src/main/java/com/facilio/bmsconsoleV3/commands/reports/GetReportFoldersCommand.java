@@ -14,6 +14,7 @@ public class GetReportFoldersCommand extends FacilioCommand {
 
         boolean isCustomModule = (boolean) context.get("isCustomModule");
         Boolean isWithReport = (Boolean) context.get("isWithReport");
+        Long webTabId = (Long) context.get("webTabId");
         if(isCustomModule) {
             List<ReportFolderContext> reportFolders = ReportUtil.getAllCustomModuleReportFolder(isWithReport, null);
             context.put("folders", reportFolders);
@@ -22,7 +23,7 @@ public class GetReportFoldersCommand extends FacilioCommand {
         {
             String moduleName = (String) context.get("moduleName");
             Boolean isPivot = (Boolean) context.get("isPivot");
-            List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, isWithReport, null, isPivot);
+            List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, isWithReport, null, isPivot, webTabId);
             context.put("folders", reportFolders);
         }
         return false;

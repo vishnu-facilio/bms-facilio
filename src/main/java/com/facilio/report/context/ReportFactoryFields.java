@@ -45,7 +45,8 @@ public class ReportFactoryFields {
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
 				if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
+				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && lookupField.getLookupModule() != null && lookupField.getLookupModule().getName() != null
+					&& !lookupField.getLookupModule().getName().equals("preventivemaintenance")) {
 					lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
 				}
 				}
