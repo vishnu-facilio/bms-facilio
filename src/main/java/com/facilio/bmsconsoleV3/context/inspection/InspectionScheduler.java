@@ -22,6 +22,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.ResponseContext;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
@@ -35,7 +36,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 	
 	@Override
 	public List<? extends ModuleBaseWithCustomFields> createRecords(BaseScheduleContext baseScheduleContext,boolean isUpdate, List<Map<String, Object>> parentRecordProps, boolean isManualOrScheduleTrigger) throws Exception {
-		
+
 		Long inspectionId = (Long)parentRecordProps.get(0).get("id");
 
 		LOGGER.info("Generating Inspection Response for Template ID : "+inspectionId);
@@ -46,7 +47,10 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		if(template.getStatus().equals(Boolean.FALSE)) {
 			return null;
 		}
-		
+
+		if(baseScheduleContext != null && baseScheduleContext.getScheduleInfo() != null  && baseScheduleContext.getScheduleInfo().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
+			return null;
+		}
 		long generatedUpto = baseScheduleContext.getGeneratedUptoTime() != null ? baseScheduleContext.getGeneratedUptoTime() : DateTimeUtil.getCurrenTime();
 		
 		long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));
