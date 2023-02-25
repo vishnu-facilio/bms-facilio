@@ -6730,6 +6730,12 @@ public class TransactionChainFactory {
 		c.addCommand(new AddActivitiesCommandV3());
 		return c;
 	}
+	
+	public static FacilioChain getKioskVendorCheckoutChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new KioskVendorCheckOutCommand());
+		return c;
+	}
 }
 
 

@@ -7002,4 +7002,11 @@
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getCurrenciesCount">
 		</action>
 	</package>
+
+	<package name="vendorkiosk" namespace="/api/v2/customkiosk/vendor" extends="v2Api">
+		<action name="checkout"
+				class="com.facilio.bmsconsole.actions.VendorCustomKioskAction"
+				method="vendorCheckout">
+		</action>
+	</package>
 </struts>
