@@ -31,4 +31,7 @@ public interface Topics {
         String outgoingMail = "__sendmail__/org";
         String mailResponse = "__mailresponse__";
     }
+    interface PushNotification {
+        String pushNotification = "__pushnotification__";
+    }
 }

@@ -1,6 +1,7 @@
 package com.facilio.v3.util;
 
 import com.amazonaws.regions.Regions;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
@@ -685,7 +686,7 @@ public class ChainUtil {
         }
     }
 
-    public static void addWorkflowChain(Chain chain) {
+    public static void addWorkflowChain(Chain chain) throws Exception {
         chain.addCommand(new ExecuteStateFlowCommand());
 		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
 		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
@@ -696,9 +697,14 @@ public class ChainUtil {
             chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
         }
         else {
-            chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                    .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-            );
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS)) {
+                chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+            }
+            else {
+                chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                        .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+                );
+            }
         }
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new ExecuteSLAWorkFlowsCommand());
@@ -706,15 +712,21 @@ public class ChainUtil {
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 
-    public static void updateWorkflowChain(Chain chain){
+    public static void updateWorkflowChain(Chain chain) throws Exception {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-        );
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS))
+        {
+            chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+        }
+        else {
+            chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                    .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+            );
+        }
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
