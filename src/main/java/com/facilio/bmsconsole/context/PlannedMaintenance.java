@@ -26,6 +26,7 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     private PMStatus pmStatus; 
     private Long leadTime = 0l;
 
+    private String name;
     public Integer getAssignmentType() {
         if (assignmentType == null) {
             return null;
