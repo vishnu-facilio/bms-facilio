@@ -338,6 +338,7 @@ public class PageWidget {
 		RFQ_PREVIEW("rfqPreview"),
 		RFQ_VENDOR("rfqVendor"),
 		VENDOR_QUOTES_LINE_ITEMS("vendorQuotesLineItems"),
+		VENDOR_QUOTES_RFQ_SUMMARY_WIDGET("vendorQuotesRfqSummaryWidget"),
 
 		// Facility Module Widgets
 		FACILITY_PHOTOS("facilityPhotos"),

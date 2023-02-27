@@ -20,10 +20,18 @@ public class VendorQuotesPageFactory extends PageFactory{
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
         Page.Section tab1Sec1 = page.new Section();
+        PageWidget rfqDetailsWidget = new PageWidget(PageWidget.WidgetType.VENDOR_QUOTES_RFQ_SUMMARY_WIDGET);
+        rfqDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        tab1Sec1.addWidget(rfqDetailsWidget);
         tab1.addSection(tab1Sec1);
-        addSecondaryDetailsWidget(tab1Sec1);
         addVendorQuotesLineItemsWidget(tab1Sec1);
-        addNotesAttachmentsModule(tab1Sec1);
+
+        Page.Tab tab2 = page.new Tab("Notes & Information");
+        page.addTab(tab2);
+        Page.Section tab2Sec1 = page.new Section();
+        tab2.addSection(tab2Sec1);
+        addSecondaryDetailsWidget(tab2Sec1);
+        addNotesAttachmentsModule(tab2Sec1);
 
         Page.Tab tab3 = page.new Tab("History");
         page.addTab(tab3);

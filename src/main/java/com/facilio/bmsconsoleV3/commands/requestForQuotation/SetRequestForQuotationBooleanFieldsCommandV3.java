@@ -91,7 +91,7 @@ public class SetRequestForQuotationBooleanFieldsCommandV3 extends FacilioCommand
         if(CollectionUtils.isNotEmpty(vendorQuotes)) {
             List<V3VendorQuotesContext> finalizedVendorQuotes = vendorQuotes.stream().filter(V3VendorQuotesContext::getIsFinalized).collect(Collectors.toList());
             if (finalizedVendorQuotes.isEmpty()) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Vendor(s) not finalized their Quote");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unable to close quote submission for this RFQ. Please ensure that all line items have a response from at least one vendor before closing the submission!");
             }
             Criteria rfqLineItemCriteria = new Criteria();
             rfqLineItemCriteria.addAndCondition(CriteriaAPI.getCondition("RFQ_ID", "requestForQuotation", String.valueOf(rfqId), NumberOperators.EQUALS));

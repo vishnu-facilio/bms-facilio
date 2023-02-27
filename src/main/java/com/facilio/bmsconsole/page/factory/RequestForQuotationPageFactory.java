@@ -32,7 +32,7 @@ public class RequestForQuotationPageFactory extends PageFactory{
         previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
         tab1Sec1.addWidget(previewWidget);
 
-        Page.Tab tab2 = page.new Tab("Vendor");
+        Page.Tab tab2 = page.new Tab("Vendors");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);

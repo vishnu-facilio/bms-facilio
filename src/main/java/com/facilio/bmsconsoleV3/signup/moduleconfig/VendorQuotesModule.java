@@ -3,10 +3,11 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
@@ -21,6 +22,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.util.SummaryWidgetUtil;
 
 import java.util.*;
 
@@ -34,8 +36,115 @@ public class VendorQuotesModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule vendorQuotesModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
         addVendorQuotesActivityModuleChain(vendorQuotesModule);
+        addRfqDetailsSummaryWidget();
     }
 
+    private void addRfqDetailsSummaryWidget() throws Exception {
+        List<String> appLinkNamesForSummaryWidget = new ArrayList<>();
+        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule vendorQuotesModule = moduleBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
+        for(String appLinkName : appLinkNamesForSummaryWidget) {
+            if (vendorQuotesModule != null && vendorQuotesModule.getModuleId() > 0) {
+                boolean skipCheck = appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                ApplicationContext app = ApplicationApi.getApplicationForLinkName(appLinkName, skipCheck);
+                if(app != null) {
+                    CustomPageWidget widget = SummaryWidgetUtil.getAllWidgets(app.getId(), vendorQuotesModule.getModuleId());
+                    if(widget == null) {
+                        FacilioField rfqField = moduleBean.getField("requestForQuotation", FacilioConstants.ContextNames.VENDOR_QUOTES);
+                        FacilioField nameField = moduleBean.getField("name", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                        FacilioField descriptionField = moduleBean.getField("description", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                        FacilioField storeRoomField = moduleBean.getField("storeRoom", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                        FacilioField expectedReplyDateField = moduleBean.getField("expectedReplyDate", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                        FacilioField requiredDateField = moduleBean.getField("requiredDate", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                        FacilioField vendorField = moduleBean.getField("vendor", FacilioConstants.ContextNames.VENDOR_QUOTES);
+
+                        CustomPageWidget pageWidget = new CustomPageWidget();
+                        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+                        SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
+                        SummaryWidgetGroupFields groupField21 = new SummaryWidgetGroupFields();
+                        SummaryWidgetGroupFields groupField31 = new SummaryWidgetGroupFields();
+                        SummaryWidgetGroupFields groupField32 = new SummaryWidgetGroupFields();
+                        SummaryWidgetGroupFields groupField33 = new SummaryWidgetGroupFields();
+                        SummaryWidgetGroupFields groupField34 = new SummaryWidgetGroupFields();
+
+                        groupField11.setName(nameField.getName());
+                        groupField11.setDisplayName(nameField.getDisplayName());
+                        groupField11.setFieldId(nameField.getId());
+                        groupField11.setParentLookupFieldId(rfqField.getId());
+                        groupField11.setRowIndex(1);
+                        groupField11.setColIndex(1);
+                        groupField11.setColSpan(4);
+
+                        groupField21.setName(descriptionField.getName());
+                        groupField21.setDisplayName(descriptionField.getDisplayName());
+                        groupField21.setFieldId(descriptionField.getId());
+                        groupField21.setParentLookupFieldId(rfqField.getId());
+                        groupField21.setRowIndex(2);
+                        groupField21.setColIndex(1);
+                        groupField21.setColSpan(4);
+
+                        groupField31.setName(storeRoomField.getName());
+                        groupField31.setDisplayName(storeRoomField.getDisplayName());
+                        groupField31.setFieldId(storeRoomField.getId());
+                        groupField31.setParentLookupFieldId(rfqField.getId());
+                        groupField31.setRowIndex(3);
+                        groupField31.setColIndex(1);
+                        groupField31.setColSpan(1);
+
+                        groupField32.setName(expectedReplyDateField.getName());
+                        groupField32.setDisplayName(expectedReplyDateField.getDisplayName());
+                        groupField32.setFieldId(expectedReplyDateField.getId());
+                        groupField32.setParentLookupFieldId(rfqField.getId());
+                        groupField32.setRowIndex(3);
+                        groupField32.setColIndex(2);
+                        groupField32.setColSpan(1);
+
+                        groupField33.setName(requiredDateField.getName());
+                        groupField33.setDisplayName("Need By Date");
+                        groupField33.setFieldId(requiredDateField.getId());
+                        groupField33.setParentLookupFieldId(rfqField.getId());
+                        groupField33.setRowIndex(3);
+                        groupField33.setColIndex(3);
+                        groupField33.setColSpan(1);
+
+                        groupField34.setName(vendorField.getName());
+                        groupField34.setDisplayName(vendorField.getDisplayName());
+                        groupField34.setFieldId(vendorField.getId());
+                        groupField34.setRowIndex(3);
+                        groupField34.setColIndex(4);
+                        groupField34.setColSpan(1);
+
+                        List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
+                        groupOneFields.add(groupField11);
+                        groupOneFields.add(groupField21);
+                        groupOneFields.add(groupField31);
+                        groupOneFields.add(groupField32);
+                        groupOneFields.add(groupField33);
+                        groupOneFields.add(groupField34);
+
+                        widgetGroup.setName("rfqDetails");
+                        widgetGroup.setDisplayName("Request For Quotation Details");
+                        widgetGroup.setColumns(4);
+                        widgetGroup.setFields(groupOneFields);
+
+                        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+                        widgetGroupList.add(widgetGroup);
+
+                        pageWidget.setName("vendorQuotesRfqDetailsWidget");
+                        pageWidget.setDisplayName("Request For Quotation Details Widget");
+                        pageWidget.setModuleId(vendorQuotesModule.getModuleId());
+                        pageWidget.setAppId(app.getId());
+                        pageWidget.setGroups(widgetGroupList);
+
+                        SummaryWidgetUtil.addPageWidget(pageWidget);
+                    }
+                }
+            }
+        }
+    }
     private void addVendorQuotesActivityModuleChain(FacilioModule vendorQuotesModule) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule vendorQuotesActivityModule = new FacilioModule(
