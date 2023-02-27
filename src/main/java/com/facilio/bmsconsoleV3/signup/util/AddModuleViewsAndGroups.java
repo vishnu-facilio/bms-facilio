@@ -119,7 +119,7 @@ public class AddModuleViewsAndGroups {
                         view.setModuleId(module.getModuleId());
                         view.setType(FacilioView.ViewType.TABLE_LIST);
 
-                        long viewId = ViewAPI.addView(view, orgId);
+                        long viewId = addView(view, orgId);
                         view.setId(viewId);
 
                         //Add Columns And SortFields
@@ -267,6 +267,9 @@ public class AddModuleViewsAndGroups {
             long viewId = (long) viewProp.get("id");
             view.setId(viewId);
             ViewAPI.addOrUpdateExtendedViewDetails(view, viewProp, true);
+            if (view.getViewSharing() != null) {
+                ViewAPI.addViewSharing(view);
+            }
 
             return viewId;
         } catch (Exception e) {
