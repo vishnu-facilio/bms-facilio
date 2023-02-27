@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.util.AccountUtil;
@@ -42,6 +43,15 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				if(addLayout != null && addLayout) {
 					ApplicationLayoutContext layout = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, app.getLinkName());
 					ApplicationApi.addApplicationLayout(layout);
+
+					ApplicationLayoutContext customAppLayoutMobile = new ApplicationLayoutContext(app.getId(),
+							ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE,app.getLinkName());
+					ApplicationApi.addApplicationLayout(customAppLayoutMobile);
+				}
+
+				if(app.getAppCategory() == ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex() &&  !app.getIsDefault() &&
+						app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex() && !app.getLinkName().equals("newapp")){
+					addCustomSetupLayout(app);
 				}
 				addAdminRoleForApp(app);
 				ApplicationApi.addDefaultScoping(app.getId());
@@ -79,6 +89,12 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				.fields(fields).andCondition(
 						CriteriaAPI.getIdCondition(id, module));
 		builder.update(map);
+	}
+
+	public static void addCustomSetupLayout(ApplicationContext app) throws Exception{
+		ApplicationLayoutContext customAppLayoutSetup = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, app.getLinkName());
+		ApplicationApi.addApplicationLayout(customAppLayoutSetup);
+		ApplicationApi.addCustomAppSetupLayoutWebGroups(customAppLayoutSetup);
 	}
 
 }
