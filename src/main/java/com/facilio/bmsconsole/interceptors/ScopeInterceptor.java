@@ -215,6 +215,15 @@ public class ScopeInterceptor extends AbstractInterceptor {
             }
         }
 
+
+        try {
+            if(request != null) {
+                AccountUtil.setReqUri(request.getRequestURI());
+            }
+        } catch (Exception e) {
+            LOGGER.info("Setting Request URI error");
+        }
+
         HttpServletResponse response = ServletActionContext.getResponse();
         try {
             Account currentAccount = AccountUtil.getCurrentAccount();
@@ -509,9 +518,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 if (currentTab != null && !currentTab.isEmpty()) {
                     long tabId = Long.parseLong(currentTab);
                     boolean hasPerm = WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId);
-                    if(!hasPerm) {
+                    if(!hasPerm && (isV3Permission || isSetupPermission)) {
                         permissionLogsForTabs(tabId,moduleName,role.getName(),action);
                     }
+                } else {
+                    LOGGER.info("scope interceptor tab permission - Tab id is empty " + getReferrerUri());
                 }
             } catch (Exception e) {
                 LOGGER.info("scope interceptor error occured tab");
@@ -520,7 +531,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         } else {
             try{
                 boolean hasPerm = WebTabUtil.checkModulePermission(action,moduleName,isV3Permission);
-                if(!hasPerm) {
+                if(!hasPerm && (isV3Permission || isSetupPermission)) {
                     permissionLogsForModule(moduleName,role.getName(),action);
                 }
                 if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403)) {
@@ -595,7 +606,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
         String referrer = request.getHeader(HttpHeaders.REFERER);
         if (referrer != null && !"".equals(referrer.trim())) {
             URL url = new URL(referrer);
-            return url.getPath();
+            if(url != null) {
+                return url.getPath();
+            }
         }
         return "";
     }

@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -20,10 +21,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class V3PermissionUtil {
 
@@ -155,5 +158,15 @@ public class V3PermissionUtil {
             }
         }
         return 0;
+    }
+
+    private static final List<String> WHITE_LIST_MODULE_NAMES_LIST = Arrays.asList(
+            FacilioConstants.ContextNames.USER_NOTIFICATION
+    );
+    public static boolean isWhitelistedModule(String moduleName) {
+        if(StringUtils.isNotEmpty(moduleName) && WHITE_LIST_MODULE_NAMES_LIST.contains(moduleName)) {
+            return true;
+        }
+        return false;
     }
 }

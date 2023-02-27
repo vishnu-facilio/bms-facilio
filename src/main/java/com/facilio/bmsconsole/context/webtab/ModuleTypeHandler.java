@@ -22,10 +22,11 @@ public class ModuleTypeHandler implements WebTabHandler {
         if(parentModuleName != null) {
             moduleName = parentModuleName;
         }
-        if(PermissionUtil.permCheckSysModules().contains(moduleName)) {
+        if(V3PermissionUtil.isWhitelistedModule(moduleName)){
+            return true;
+        } else {
             return currentUserHasPermission(webtab,moduleName,action, AccountUtil.getCurrentUser().getRole());
         }
-        return true;
     }
 
     @Override
