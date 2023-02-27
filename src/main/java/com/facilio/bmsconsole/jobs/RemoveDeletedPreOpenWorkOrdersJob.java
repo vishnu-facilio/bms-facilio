@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
@@ -33,23 +32,15 @@ import java.util.stream.Collectors;
 public class RemoveDeletedPreOpenWorkOrdersJob extends FacilioJob {
 
     private static final Logger LOGGER = LogManager.getLogger(RemoveDeletedPreOpenWorkOrdersJob.class.getName());
-    private long orgID = -1L;
-    private static final int batchSize = 5000;
+    private static final int batchSize = 3000;
 
     @Override
     public void execute(JobContext jobContext) throws Exception {
+        Long orgID = jobContext.getOrgId();
         try {
-
-            List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
-            if (CollectionUtils.isNotEmpty(orgs)) {
-                for (Organization org : orgs) {
-                    if (org.getOrgId() > 0) {
-                        orgID = org.getOrgId();
-                        AccountUtil.setCurrentAccount(orgID);
-                        batchDeletePreOpenWorkOrders();
-                    }
-                }
-            }
+            long startTime = System.currentTimeMillis();
+            batchDeletePreOpenWorkOrders(orgID);
+            LOGGER.info("Time taken to delete pre-open workorders = " + (System.currentTimeMillis() - startTime));
         } catch (Exception e) {
             LOGGER.error("Error occurred when ORGID = " + orgID, e);
         }
@@ -60,10 +51,15 @@ public class RemoveDeletedPreOpenWorkOrdersJob extends FacilioJob {
      *
      * @throws Exception
      */
-    private void batchDeletePreOpenWorkOrders() throws Exception {
+    private void batchDeletePreOpenWorkOrders(Long orgID) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        if (module == null) {
+            LOGGER.info("No WORK_ORDER Module in ORGID = " + orgID);
+            LOGGER.info("AccountUtil.getCurrentOrg(): " + AccountUtil.getCurrentOrg());
+            return;
+        }
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
@@ -88,16 +84,17 @@ public class RemoveDeletedPreOpenWorkOrdersJob extends FacilioJob {
             workOrderIdsToBeDeleted.add(workOrderContextList.stream().map(V3WorkOrderContext::getId).collect(Collectors.toList()));
         }
 
+        i = 1;
         for (List<Long> workOrderIds : workOrderIdsToBeDeleted) {
             LOGGER.info("PreOpen WorkOrder Ids to be deleted = " + workOrderIds);
             DeleteRecordBuilder<V3WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<V3WorkOrderContext>()
                     .module(module)
                     .skipModuleCriteria();
             int workOrderDeletedCount = deleteRecordBuilder.batchDeleteById(workOrderIds);
-            LOGGER.info("Count of PreOpen WorkOrders deleted = " + workOrderDeletedCount);
+            LOGGER.info("Batch ID = " + i++ + ". Count of PreOpen WorkOrders deleted = " + workOrderDeletedCount);
         }
 
-        if(CollectionUtils.isEmpty(workOrderIdsToBeDeleted)){
+        if (CollectionUtils.isEmpty(workOrderIdsToBeDeleted)) {
             LOGGER.info("No PreOpen WorkOrders to be deleted. ORGID = " + orgID);
         }
     }

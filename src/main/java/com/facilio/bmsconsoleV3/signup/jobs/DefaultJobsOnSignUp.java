@@ -122,5 +122,8 @@ public class DefaultJobsOnSignUp extends SignUpData {
 
 		//Delete Unanswered Expired Survey
 		FacilioTimer.scheduleCalendarJob(orgId, "DeleteUnAnsweredSurvey", System.currentTimeMillis(), constructDailyScheduleInfoWithOneTime("00:00"), "facilio");
+
+        // JOB TO DELETE "DELETED PRE-OPEN WORKORDERS"
+        FacilioTimer.scheduleCalendarJob(orgId, "RemoveDeletedPreOpenWorkOrdersJob", System.currentTimeMillis(), constructDailyScheduleInfoWithOneTime("03:00"), "facilio");
     }
 }
