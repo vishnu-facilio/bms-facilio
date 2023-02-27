@@ -174,7 +174,7 @@ public class IotMessageApiV2 {
         return id;
     }
 
-    public static void addIotMessage(long parentId, List<IotMessage> messages) throws Exception {
+    public static void addIotMessage(IotData data, List<IotMessage> messages) throws Exception {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getIotMessageModule().getTableName())
                 .fields(FieldFactory.getIotMessageFields());
@@ -182,9 +182,10 @@ public class IotMessageApiV2 {
         Map<Long, List<Long>> messageVsControls = new HashMap<>();
         for (IotMessage iotMessage : messages) {
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-            iotMessage.setParentId(parentId);
+            iotMessage.setParentId(data.getId());
             iotMessage.setStatus(Status.MESSAGE_SENT.asInt());
             iotMessage.setSentTime(createdTime);
+            iotMessage.setAgentId(data.getAgentId());
             builder.addRecord(FieldUtil.getAsProperties(iotMessage));
         }
         builder.save();

@@ -674,7 +674,7 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getNewAgentIdField(FacilioModule module) {
-        return getField(AgentConstants.AGENT_ID, "AGENT_ID", FieldType.NUMBER);
+        return getField(AgentConstants.AGENT_ID, "AGENT_ID",module, FieldType.NUMBER);
     }
 
     public static FacilioField getAgentLogTimeField(FacilioModule module) {
@@ -927,6 +927,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.STATUS, "STATUS", FieldType.NUMBER));
         fields.add(getField(AgentConstants.COMPLETED_TIME, "COMPLETED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField(AgentConstants.MSG_DATA, "MSG_DATA", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.AGENT_ID,"AGENTID",module,FieldType.NUMBER));
         return fields;
     }
 

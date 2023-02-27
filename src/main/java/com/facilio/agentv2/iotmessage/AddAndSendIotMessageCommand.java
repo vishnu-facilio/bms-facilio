@@ -54,7 +54,7 @@ public class AddAndSendIotMessageCommand extends FacilioCommand implements PostT
         
         if (data.getMessages() != null) {
         	IotMessageApiV2.addIotData(data);
-        	IotMessageApiV2.addIotMessage(data.getId(), data.getMessages());        	
+			IotMessageApiV2.addIotMessage(data, data.getMessages());
         }
         
         return false;

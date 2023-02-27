@@ -34,6 +34,7 @@ public class IotMessage
     private int command = -1;
     @Getter @Setter
     private List<Long> controlIds;
+    private long agentId = -1;
 
 
     public int getCommand() {
@@ -108,5 +109,6 @@ public class IotMessage
     public JSONObject getMessageData() { return messageData; }
     public void setMessageData(JSONObject messageData) { this.messageData = messageData; }
 
-
+    public long getAgentId() { return agentId; }
+    public void setAgentId(long agentId) { this.agentId = agentId; }
 }
