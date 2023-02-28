@@ -1,6 +1,7 @@
 package com.facilio.accounts.impl;
 
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.cache.CacheUtil;
@@ -82,5 +83,17 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
         metricUnitMap.keySet().forEach(metric ->{
             LRUCache.getOrgUnitCachePs().remove(CacheUtil.METRIC_KEY(orgId,(Integer)metricUnitMap.get(metric)));
         });
+    }
+
+    @Override
+    public User getSuperAdmin(long orgId) throws Exception {
+        FacilioCache<String, Object> superAdminCache = LRUCache.getSuperAdminCache();
+        String key = CacheUtil.ORG_KEY(orgId);
+        User user = (User) superAdminCache.get(key);
+        if(user == null) {
+            user = super.getSuperAdmin(orgId);
+            superAdminCache.put(key,user);
+        }
+        return user;
     }
 }

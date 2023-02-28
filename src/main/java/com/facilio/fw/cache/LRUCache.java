@@ -51,7 +51,7 @@ public class LRUCache {
 	private static FacilioCache<String, ValueGeneratorCacheContext> valueGeneratorCache = new PubSubLRUCache<>("valueGeneratorCache", 2000);
 	private static FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = new PubSubLRUCache<>("nameSpaceCache", 2000);
 	private static FacilioCache<String, List<Long>> nameSpaceIdsCache = new PubSubLRUCache("nameSpaceIdsCache", 2000);
-
+	private static FacilioCache<String, Object> superAdminCache = new PubSubLRUCache("superAdminCache", 2000);
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
 	}
@@ -143,7 +143,9 @@ public class LRUCache {
 	public static FacilioCache<String, List<Long>> getNameSpaceIdCache() {
 		return nameSpaceIdsCache;
 	}
-
+	public static FacilioCache<String, Object> getSuperAdminCache(){
+		return superAdminCache;
+	}
 
 
 }
