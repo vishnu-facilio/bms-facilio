@@ -7,7 +7,6 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
@@ -1891,7 +1890,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAssetBeforeFetchChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AssetSupplementsSupplyCommand());
-        chain.addCommand(new AddAssetRequiredFieldsCommand());
         chain.addCommand(new AddPlannerIdFilterCriteriaCommand());
         return chain;
     }
