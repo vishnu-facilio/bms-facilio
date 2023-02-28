@@ -118,7 +118,7 @@ public class EmailMessageParser {
 		if (fragment != null) {
 			fragment.finish();
 			if (!foundVisible) {
-				if (fragment.isQuoted() || fragment.isSignature() || isStringEmpty(fragment.getContent())) {
+				if (fragment.isQuoted() || isStringEmpty(fragment.getContent())) {
 					fragment.setHidden(true);
 				} else {
 					foundVisible = true;
