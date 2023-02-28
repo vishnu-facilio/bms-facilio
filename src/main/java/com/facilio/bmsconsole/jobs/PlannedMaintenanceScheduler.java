@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -43,7 +44,7 @@ public class PlannedMaintenanceScheduler extends FacilioJob {
         selectRecordsBuilder.innerJoin("PM_Planner")
                         .on("PM_Planner.PM_ID = PM_V2.ID");
         selectRecordsBuilder.module(module);
-        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(pmStatus, String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()), BooleanOperators.IS));
+        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(pmStatus, String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()), NumberOperators.EQUALS));
         return selectRecordsBuilder.getAsPropsInBatches("NULL", 5000);
     }
 }

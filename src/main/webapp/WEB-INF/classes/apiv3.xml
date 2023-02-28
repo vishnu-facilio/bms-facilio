@@ -714,6 +714,15 @@
         </action>
     </package>
 
+    <package name="resources" namespace="/api/v3/resource" extends="v3Api">
+        <action name="qr"
+                class="com.facilio.bmsconsoleV3.actions.V3ResourceAction"
+                method="getResourceFromQR" />
+        <action name="generateQr"
+                class="com.facilio.bmsconsoleV3.actions.V3ResourceAction"
+                method="generateQr" />
+    </package>
+
     <package name="accessiblespaces" namespace="/api/v3/accessiblespace" extends="v3Api">
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"

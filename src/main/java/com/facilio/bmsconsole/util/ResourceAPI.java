@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.util;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.db.criteria.operators.StringOperators;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -73,6 +76,61 @@ public class ResourceAPI {
 			selectBuilder.fetchDeleted();
 		}
 		return selectBuilder.get();
+	}
+
+	public static ResourceContext getResource(String qrValue) throws Exception {
+
+		if (qrValue == null || qrValue.isEmpty()) {
+			return null;
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField qrValField = modBean.getField("qrVal", FacilioConstants.ContextNames.RESOURCE);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+
+		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+				.module(module)
+				.beanClass(ResourceContext.class)
+				.andCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS));
+				;
+
+		ResourceContext resource = selectBuilder.fetchFirst();
+		if(resource != null) {
+			if(resource.getResourceTypeEnum() == ResourceContext.ResourceType.ASSET) {
+				resource = AssetsAPI.getAssetInfo(resource.getId());
+			}
+			else if(resource.getResourceTypeEnum() == ResourceType.SPACE) {
+				resource = SpaceAPI.getBaseSpace(resource.getId());
+			}
+		}
+		return resource;
+	}
+
+	public static List<FacilioField> getQRSearchFields(ResourceContext resource,String moduleName) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+		List<String> lookupModuleList = new ArrayList<>();
+		lookupModuleList.add(FacilioConstants.ContextNames.RESOURCE);
+
+		if(resource instanceof AssetContext) {
+			lookupModuleList.add(FacilioConstants.ContextNames.ASSET);
+		}
+		else if (resource instanceof BaseSpaceContext) {
+			lookupModuleList.add(((BaseSpaceContext)resource).getSpaceTypeEnum().getModuleName());
+		}
+		List<FacilioField> returnFields = new ArrayList<>();
+		for(FacilioField field : fields) {
+			if(field instanceof LookupField) {
+				LookupField lookupField = (LookupField) field;
+				if(lookupModuleList.contains(lookupField.getLookupModule().getName())) {
+					returnFields.add(lookupField);
+				}
+			}
+		}
+		return returnFields;
 	}
 
 	public static ResourceContext getExtendedResource(long id) throws Exception {

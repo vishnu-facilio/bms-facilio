@@ -269,6 +269,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 						updateBuilder.update(ticket);
 					}
 					StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
+					log.info("Status update done through task update");
 				}
 			}
 		}
