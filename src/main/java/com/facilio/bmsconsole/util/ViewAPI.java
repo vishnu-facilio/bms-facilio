@@ -676,7 +676,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if(criteria != null) {
 				criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
 			}
-			view.setCriteriaId(criteriaId);
+			if(!oldView.isDefault()) {
+				view.setCriteriaId(criteriaId);
+			}
 
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
 			FacilioModule viewModule = ModuleFactory.getViewsModule();
@@ -689,7 +691,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			
 			addOrUpdateExtendedViewDetails(view, viewProp, false, oldView);
 			// delete old criteria
-			if (oldView.getCriteriaId() != -1) {
+			if (!oldView.isDefault() && oldView.getCriteriaId() != -1) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
 			}
 
