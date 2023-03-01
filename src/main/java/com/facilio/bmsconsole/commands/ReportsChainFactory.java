@@ -104,6 +104,12 @@ public class ReportsChainFactory {
 		c.addCommand(new DeleteWoScheduledViewCommand());
 		return c;
 	}
+
+	public static FacilioChain getScheduledViewChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetScheduledViewCommand());
+		return c;
+	}
 	
 	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();

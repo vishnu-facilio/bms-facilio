@@ -1076,6 +1076,7 @@
 		<action name="get" class="com.facilio.weekends.WeekendAction" method="getWeekendData">
 		</action>
 	</package>
+
 	<package name="viewApiV2" namespace="/api/v2/views"
 		extends="v2Api">
 		<action name="viewList"
@@ -1113,6 +1114,24 @@
 		</action>
 		<action name="customizeViewGroups"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeViewGroups">
+		</action>
+	</package>
+	
+	<package name="woScheduledViewV2" namespace="/api/v2/scheduledViews" extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2AddScheduleView">
+		</action>
+		<action name="edit"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2EditScheduledView">
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteScheduledView">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2GetScheduledView">
+		</action>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2ScheduledViewList">
 		</action>
 	</package>
 

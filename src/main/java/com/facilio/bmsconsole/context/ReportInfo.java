@@ -10,6 +10,8 @@ import com.facilio.services.email.EmailClient;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 
+import java.util.Map;
+
 public class ReportInfo {
 	
 	public static final String PARENT_VIEW_NAME = "report";
@@ -90,6 +92,15 @@ public class ReportInfo {
 	}
 	public void setView(FacilioView facilioView) {
 		this.view = facilioView;
+	}
+
+	private Map<String, Object> viewObj;
+	public Map<String, Object> getViewObj() {
+		return viewObj;
+	}
+
+	public void setViewObj(Map<String, Object> viewObj) {
+		this.viewObj = viewObj;
 	}
 
 	String dateFilter;

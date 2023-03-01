@@ -173,6 +173,80 @@ public class ViewAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String v2ScheduledViewList() throws Exception {
+		FacilioChain mailReportChain = ReportsChainFactory.getWoScheduledViewListChain();
+
+		FacilioContext context = mailReportChain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		mailReportChain.execute();
+
+		setResult(FacilioConstants.ContextNames.REPORT_LIST, context.get(FacilioConstants.ContextNames.REPORT_LIST));
+		return SUCCESS;
+	}
+
+	public String v2GetScheduledView() throws Exception {
+		FacilioChain scheduledViewChain = ReportsChainFactory.getScheduledViewChain();
+
+		FacilioContext scheduledViewContext = scheduledViewChain.getContext();
+		scheduledViewContext.put(FacilioConstants.ContextNames.ID, id);
+		scheduledViewChain.execute();
+
+		setResult(FacilioConstants.ViewConstants.SCHEDULED_VIEW, scheduledViewContext.get(FacilioConstants.ViewConstants.SCHEDULED_VIEW));
+		return SUCCESS;
+	}
+
+	public String v2AddScheduleView() throws Exception {
+		FacilioChain mailReportChain = ReportsChainFactory.getWoViewScheduleChain();
+
+		FacilioContext context = mailReportChain.getContext();
+		emailTemplate.setName("Report");
+		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
+		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
+		mailReportChain.execute();
+
+		return SUCCESS;
+	}
+
+	public String v2EditScheduledView() throws Exception {
+		FacilioChain mailReportChain = ReportsChainFactory.updateWoScheduledViewChain();
+
+		FacilioContext context = mailReportChain.getContext();
+		emailTemplate.setName("Report");
+		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		mailReportChain.execute();
+
+		setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		return SUCCESS;
+	}
+
+	public String v2DeleteScheduledView() throws Exception {
+		FacilioChain mailReportChain = ReportsChainFactory.deleteWoScheduledViewChain();
+
+		FacilioContext context = mailReportChain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		mailReportChain.execute();
+
+		setResult("rowsDeleted", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		return SUCCESS;
+	}
 	
 	private long appId = -1;
 	

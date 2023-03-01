@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -43,19 +48,39 @@ public class GetWoScheduledViewList extends FacilioCommand {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 				.andCustomWhere("ORGID = ? AND MODULEID = ?", AccountUtil.getCurrentOrg().getOrgId(), moduleId);
 
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		Map<Long, ReportInfo> woReportsMap = new HashMap<>();
 
+		List<Long> viewIds = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(props)) {
+			viewIds = props.stream().filter(prop -> prop.containsKey("viewId")).map(prop -> (long) prop.get("viewId")).collect(Collectors.toList());
+		}
+		List<FacilioView> viewList = CollectionUtils.isNotEmpty(viewIds) ? ViewAPI.getViewsFromIds(viewIds, true) : new ArrayList<>();
+		Map<Long, Map<String, Object>> viewsListMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(viewList)) {
+			for (FacilioView view : viewList) {
+				Map<String, Object> resultView = new HashMap<>();
+				resultView.put("viewId", view.getId());
+				resultView.put("name", view.getName());
+				resultView.put("displayName", view.getDisplayName());
+
+				viewsListMap.put(view.getId(), resultView);
+			}
+		}
+
+		Map<Long, ReportInfo> woReportsMap = new HashMap<>();
 		List<Long> reportIds = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
+				long viewId = (long) prop.get("viewId");
+				Map<String, Object> viewObj = viewsListMap.get(viewId);
+				FacilioUtil.throwIllegalArgumentException(viewObj == null, "View not found");
 				ReportInfo report = FieldUtil.getAsBeanFromMap(prop, ReportInfo.class);
 				report.setReportContext(FieldUtil.getAsBeanFromMap(prop, ReportContext.class));
 				report.setEmailTemplate((EMailTemplate) TemplateAPI.getTemplate(report.getTemplateId()));
+				report.setViewObj(viewObj);
 				reportIds.add(report.getId());
 				woReportsMap.put(report.getId(), report);
 			}

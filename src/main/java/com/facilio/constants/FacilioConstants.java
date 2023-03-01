@@ -145,6 +145,7 @@ public class FacilioConstants {
 
 	public static class ViewConstants {
 		public static final String PARENT_VIEW_OBJECT = "parentViewObject";
+		public static final String SCHEDULED_VIEW = "scheduledView";
 
 		public static enum CalendarViewType {
 			DAY(1),

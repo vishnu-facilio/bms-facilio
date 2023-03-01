@@ -439,6 +439,24 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			throw e;
 		}
 	}
+
+	public static List<FacilioView> getViewsFromIds(List<Long> viewIds, boolean getOnlyBasicValues) throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		FacilioModule module = ModuleFactory.getViewsModule();
+		List<FacilioField> fields = FieldFactory.getViewFields();
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(viewIds, module));
+
+		List<Map<String, Object>> viewProps = builder.get();
+		if (CollectionUtils.isNotEmpty(viewProps)) {
+			return getAllViewDetails(viewProps, orgId, getOnlyBasicValues);
+
+		}
+		return null;
+	}
 	
 	public static int getViewTypeById(long viewId) throws Exception {
 		try {
