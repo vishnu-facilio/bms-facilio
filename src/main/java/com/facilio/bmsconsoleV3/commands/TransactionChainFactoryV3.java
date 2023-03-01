@@ -1275,6 +1275,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddJobPlanTasksCommand());
         chain.addCommand(new AddJobPlanTaskInputOptions());
         // chain.addCommand(new AddJobPlanPMsInContextCommand());
+        chain.addCommand(new AddJobPlanGroupCommand());
         chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
         chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         chain.addCommand(new DeleteJobPlanSubModuleRecord());
@@ -2246,6 +2247,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddJobPlanSectionInputOptions());
         c.addCommand(new AddJobPlanTasksCommand());
         c.addCommand(new AddJobPlanTaskInputOptions());
+        c.addCommand(new AddJobPlanGroupCommand());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         return c;
@@ -3073,6 +3075,37 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPlannerDetails());
         c.addCommand(new PreCreateWorkOrderRecord());
+        return c;
+    }
+    public static FacilioChain reviseJobPlan(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchJobPlanDetails());
+        c.addCommand(new AddJobPlanGroupCommand());
+        c.addCommand(new JobPlanContextCloningCommand());
+        c.addCommand(new SetJobPlanStatusCommand());
+        c.addCommand(new CreateJobPlanAfterCloning());
+        return c;
+    }
+    public static FacilioChain getPublishJobPlanChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchJobPlanDetails());
+        c.addCommand(new AddJobPlanGroupCommand());
+        c.addCommand(new SwapJobPlanDetailsCommand());
+        c.addCommand(new PublishJobPlanCommand());
+        return c;
+    }
+    public static FacilioChain fetchJobPlanVersionHistoryChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchJobPlanDetails());
+        c.addCommand(new FetchVersionHistoryCommand());
+        return c;
+    }
+    public static FacilioChain getJobPlanCloneChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchJobPlanDetails());
+        c.addCommand(new JobPlanContextCloningCommand());
+        c.addCommand(new SetJobPlanStatusCommand());
+        c.addCommand(new CreateJobPlanAfterCloning());
         return c;
     }
 }

@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
@@ -17,6 +18,7 @@ import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.NumberQuestionContext;
+import com.facilio.qa.rules.Constants;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
@@ -368,5 +370,39 @@ public class PlannedMaintenanceAPI {
             int workOrderDeletedCount = workOrderContextDeleteRecordBuilder.batchDeleteById(workOrderIds);
             LOGGER.info("COUNT OF DELETED PRE OPEN WORKORDERS ===  " + workOrderDeletedCount + " for template ID === ");
         }
+    }
+    public static List<PMResourcePlanner> getPMResourcePlannerListFromJobPlanId(long jobPlanId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmResourcePlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        List<FacilioField> resourcePlannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(resourcePlannerFields);
+
+        SelectRecordsBuilder<PMResourcePlanner> builder = new SelectRecordsBuilder<PMResourcePlanner>()
+                .module(pmResourcePlannerModule)
+                .select(resourcePlannerFields)
+                .beanClass(PMResourcePlanner.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"),String.valueOf(jobPlanId),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<Map<String,Object>> getPPmDetailsAssociatedWithJobPlan(long jobPlanId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pmResourcePlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        List<FacilioField> resourcePlannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        FacilioModule plannedMaintenacenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioField pmName = modBean.getField("name",FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        FacilioField pmId = modBean.getField("pmId",FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        FacilioField jobPlan = modBean.getField("jobPlan",FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        fields.add(pmName);
+        fields.add(pmId);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(pmResourcePlannerModule.getTableName())
+                .select(fields)
+                .innerJoin(plannedMaintenacenanceModule.getTableName())
+                .on(pmResourcePlannerModule.getTableName()+".PM_ID = "+plannedMaintenacenanceModule.getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(jobPlan,String.valueOf(jobPlanId),NumberOperators.EQUALS));
+        return builder.get();
     }
 }

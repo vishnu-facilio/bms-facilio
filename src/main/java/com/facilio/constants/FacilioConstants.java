@@ -129,6 +129,11 @@ public class FacilioConstants {
 		public static final String PLANNER_LIST = "pmPlannerList";
 		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
 	}
+	public static class JOB_PLAN {
+		public static final String JOB_PLAN_ID = "jobPlanId";
+		public static final String JOB_PLAN_STATUS = "jobPlanStatus";
+		public static final String IS_CLONING = "isCloning";
+	}
 
 	public static class TicketActivity {
 		public static final String TICKET_ACTIVITIES = "ticketActivities";

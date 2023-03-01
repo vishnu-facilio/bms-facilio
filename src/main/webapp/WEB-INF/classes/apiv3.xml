@@ -1443,6 +1443,14 @@
         </action>
     </package>
 
+    <package name="jobPlan" namespace="/api/v3/jobPlan" extends="v3Api">
+        <action name="revise" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="reviseJobPlan"></action>
+        <action name="publish" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="publishJobPlan"></action>
+        <action name="bulkPublish" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="bulkPublishJobPlan"></action>
+        <action name="versionHistory" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchVersionHistory"></action>
+        <action name="cloneJobPlan" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="cloneJobPlan"></action>
+        <action name="fetchAssociatedRecords" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchAssociatedRecords"></action>
+    </package>
     <package name="jobPlanItems" namespace="/api/v3/jobPlanItems"
              extends="v3Api">
         <action name="list"

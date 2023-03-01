@@ -72,10 +72,22 @@ public class JobPlanContext extends V3Context {
     public void setSpaceCategory(V3SpaceCategoryContext spaceCategory) {
         this.spaceCategory = spaceCategory;
     }
-
-
+    private JobPlanContext group;
+    public JobPlanContext getGroup() {
+        return group;
+    }
+    public void setGroup(JobPlanContext group) {
+        this.group = group;
+    }
+    private Double jobPlanVersion;
+    public void setJobPlanVersion(Double jobPlanVersion){
+        this.jobPlanVersion = jobPlanVersion;
+    }
+    public Double getJobPlanVersion(){
+        return jobPlanVersion;
+    }
     private JPStatus jpStatus;
-    
+
     public Integer getJpStatus() {
         if (jpStatus == null) {
             return null;
@@ -97,32 +109,34 @@ public class JobPlanContext extends V3Context {
     public JPStatus getJpStatusEnum() {
         return jpStatus;
     }
-    
+
     @AllArgsConstructor
     @Getter
     public static enum JPStatus implements FacilioIntEnum {
-		
-		IN_ACTIVE("In Active"), 
-		ACTIVE("Active"),
-		DISABLED("Disabled"),
-		;
-    	
-		public int getVal() {
-			return ordinal() + 1;
-		}
-		String name;
-		@Override
-		public String getValue() {
-			// TODO Auto-generated method stub
-			return this.name;
-		}
-		private static final JPStatus[] CREATION_TYPES = JPStatus.values();
-		public static JPStatus valueOf(int type) {
-			if (type > 0 && type <= CREATION_TYPES.length) {
-				return CREATION_TYPES[type - 1];
-			}
-			return null;
-		}
-	}
-    
+
+        IN_ACTIVE("In Active"),
+        ACTIVE("Active"),
+        DISABLED("Disabled"),
+        PENDING_REVISION("Pending Revision"),
+        REVISED("Revised")
+        ;
+
+        public int getVal() {
+            return ordinal() + 1;
+        }
+        String name;
+        @Override
+        public String getValue() {
+            // TODO Auto-generated method stub
+            return this.name;
+        }
+        private static final JPStatus[] CREATION_TYPES = JPStatus.values();
+        public static JPStatus valueOf(int type) {
+            if (type > 0 && type <= CREATION_TYPES.length) {
+                return CREATION_TYPES[type - 1];
+            }
+            return null;
+        }
+    }
+
 }

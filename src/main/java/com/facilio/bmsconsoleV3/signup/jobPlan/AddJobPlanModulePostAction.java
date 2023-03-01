@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -66,6 +67,7 @@ public class AddJobPlanModulePostAction extends BaseModuleConfig {
             addAssetCategoryHideRule(form, fieldMap, formFieldMap);
             addSpaceCategoryShowRule(form, fieldMap, formFieldMap);
             addSpaceCategoryHideRule(form, fieldMap, formFieldMap);
+			addScopeSectionDisableRule(form, fieldMap, formFieldMap);
     	}
     	
     }
@@ -236,6 +238,55 @@ public class AddJobPlanModulePostAction extends BaseModuleConfig {
 		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
 			
 		  chain.execute();
+	}
+	private void addScopeSectionDisableRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception{
+		FormRuleContext singleRule = new FormRuleContext();
+		singleRule.setName("Scope Section Disable");
+		singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+		singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+		singleRule.setFormId(defaultForm.getId());
+		singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus", JobPlanContext.JPStatus.PENDING_REVISION.getVal()+"",EnumOperators.IS));
+		criteria.addOrCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",JobPlanContext.JPStatus.REVISED.getVal()+"",EnumOperators.IS));
+		criteria.setPattern("(1 or 2)");
+		singleRule.setCriteria(criteria);
+
+		List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+		FormRuleActionContext disableAction = new FormRuleActionContext();
+		disableAction.setActionType(FormActionType.DISABLE_FIELD.getVal());
+
+		List<FormRuleActionFieldsContext> fieldList = new ArrayList<>();
+
+		FormRuleActionFieldsContext nameField = new FormRuleActionFieldsContext();
+		nameField.setFormFieldId(formFieldMap.get(fieldMap.get("name").getId()).getId());
+		fieldList.add(nameField);
+
+		FormRuleActionFieldsContext jobPlanCategoryField = new FormRuleActionFieldsContext();
+		jobPlanCategoryField.setFormFieldId(formFieldMap.get(fieldMap.get("jobPlanCategory").getId()).getId());
+		fieldList.add(jobPlanCategoryField);
+
+		FormRuleActionFieldsContext spaceCategory = new FormRuleActionFieldsContext();
+		spaceCategory.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
+		fieldList.add(spaceCategory);
+
+		FormRuleActionFieldsContext assetCategory = new FormRuleActionFieldsContext();
+		assetCategory.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
+		fieldList.add(assetCategory);
+
+		disableAction.setFormRuleActionFieldsContext(fieldList);
+
+		actions.add(disableAction);
+
+		singleRule.setActions(actions);
+
+		FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		Context context = chain.getContext();
+
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+
+		chain.execute();
 	}
 	
 }
