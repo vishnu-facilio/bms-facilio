@@ -1532,6 +1532,10 @@
         <action name="filter" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchActivePeoples"/>
     </package>
 
+    <package name="group" namespace="/api/v3/group" extends="v3Api">
+        <action name="scopeBySite" class="com.facilio.bmsconsole.actions.GroupAction" method="ScopeTeamUser">
+        </action>
+    </package>
     <package name="workflowApiV3" namespace="/api/v3/script" extends="v3Api">
         <action name="execute/*" class="com.facilio.bmsconsoleV3.actions.V3WorkflowAction" method="runWorkflow">
             <param name="workflowId">{1}</param>

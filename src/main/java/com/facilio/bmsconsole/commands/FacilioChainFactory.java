@@ -2534,4 +2534,10 @@ public class FacilioChainFactory {
 		c.addCommand(new GetScheduledWoCommandV3());
 		return c;
 	}
+
+	public static FacilioChain getScopedTeamAndUsersChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetScopedTeamAndUsersCommand());
+		return c;
+	}
 }

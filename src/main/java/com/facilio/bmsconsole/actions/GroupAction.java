@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.v3.V3Action;
 import org.apache.commons.chain.Command;
 
@@ -13,6 +14,8 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 public class GroupAction extends V3Action {
 	
@@ -155,6 +158,21 @@ public class GroupAction extends V3Action {
 		Command addGroup = FacilioChainFactory.getChangeTeamStatusCommand();
 		addGroup.execute(context);
 		
+		return SUCCESS;
+	}
+
+	private long siteId;
+
+	public long getSiteId() { return this.siteId; }
+
+	public void setSiteId(long siteId){ this.siteId = siteId; }
+
+	public String ScopeTeamUser() throws Exception {
+		FacilioContext context =  new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SITE_ID,siteId);
+		FacilioChain chain = FacilioChainFactory.getScopedTeamAndUsersChain();
+		chain.execute(context);
+		setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
 		return SUCCESS;
 	}
 }

@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.RoleApp;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
@@ -11,6 +9,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.PermissionSetBean;
+import com.facilio.bmsconsole.actions.GroupAction;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
@@ -29,13 +28,16 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.context.PermissionSetContext;
@@ -47,6 +49,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1233,4 +1236,122 @@ public class PeopleAPI {
 			permissionSetBean.updateUserPermissionSets(peopleId,permissionSets);
 		}
 	}
+
+	public static List<User> getScopedUsers(List<Long> appIds, long siteId) throws Exception {
+		List<User> users = new ArrayList<>();
+
+		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users");
+
+		if(CollectionUtils.isNotEmpty(appIds)) {
+			selectBuilder
+					.innerJoin("ORG_User_Apps")
+					.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+					.andCondition(CriteriaAPI.getCondition(AccountConstants.getApplicationIdField(), StringUtils.join(appIds,","), NumberOperators.EQUALS))
+					.groupBy("ORG_Users.ORG_USERID");
+		}
+
+		if (siteId > 0) {
+			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(siteId) + ")))");
+		}
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getId(), false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				for (Map<String, Object> prop : props) {
+					User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+					user.setId((long)prop.get("ouid"));
+					if( user.isActive() ) {
+						users.add(user);
+					}
+				}
+			}
+		}
+		return users;
+	}
+
+	public static List<Group> getScopedTeams(List<Long> appIds, long siteId) throws Exception {
+		JSONObject resultObject = new JSONObject();
+		List<Group> groups = new ArrayList<>();
+
+		FacilioModule groupModule = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);;
+		FacilioField groupSiteIdField = FieldFactory.getSiteIdField(groupModule);
+
+		Criteria siteCriteria = new Criteria();
+		siteCriteria.addAndCondition(CriteriaAPI.getCondition(groupSiteIdField, CommonOperators.IS_EMPTY));
+		siteCriteria.addOrCondition(CriteriaAPI.getCondition(groupSiteIdField,String.valueOf(siteId),NumberOperators.EQUALS));
+
+		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
+		fields.addAll(AccountConstants.getGroupMemberFields());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				.innerJoin("FacilioGroupMembers")
+				.on("FacilioGroupMembers.PEOPLE_ID = ORG_Users.PEOPLE_ID")
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(AccountConstants.getGroupMemberModule()),CommonOperators.IS_EMPTY));
+
+		if(CollectionUtils.isNotEmpty(appIds)){
+			selectBuilder
+					.innerJoin("ORG_User_Apps")
+					.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+					.andCondition(CriteriaAPI.getCondition(AccountConstants.getApplicationIdField(), StringUtils.join(appIds,","), NumberOperators.EQUALS))
+					.groupBy("ORG_Users.ORG_USERID, FacilioGroupMembers.ID");
+		}
+
+		if (siteId > 0) {
+			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(siteId) + ")))")
+					.innerJoin(groupModule.getTableName())
+					.on("FacilioGroupMembers.GROUPID = FacilioGroups.ID")
+					.andCriteria(siteCriteria);
+		}
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getId(), false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				List<GroupMember> members = new ArrayList<>();
+				for(Map<String, Object> prop : props) {
+					if (prop.get("peopleId") != null){
+						prop.put("people",PeopleAPI.getPeopleForId((long) prop.get("peopleId")));
+					}
+					prop.put("id", prop.get("ouid"));
+					GroupMember member = FieldUtil.getAsBeanFromMap(prop, GroupMember.class);
+					if(member.isActive()) {
+						members.add(member);
+					}
+				}
+				if(CollectionUtils.isNotEmpty(members)) {
+					Map<Long, List<GroupMember>> groupMemberMap = CollectionUtils.isEmpty(members) ? Collections.emptyMap() : members.stream().collect(Collectors.groupingBy(gm -> gm.getGroupId()));
+
+					SelectRecordsBuilder<Group> groupBuilder = new SelectRecordsBuilder<Group>()
+							.module(groupModule)
+							.select(Constants.getModBean().getAllFields(groupModule.getName()))
+							.beanClass(Group.class)
+							.andCondition(CriteriaAPI.getIdCondition(StringUtils.join(groupMemberMap.keySet(), ","), groupModule));
+
+					if (siteId > 0) {
+						groupBuilder.andCriteria(siteCriteria);
+					}
+
+					groups = groupBuilder.get();
+
+					for (Group group : groups) {
+						group.setMembers(groupMemberMap.get(group.getId()));
+					}
+				}
+			}
+		}
+		return groups;
+	}
+
 }
