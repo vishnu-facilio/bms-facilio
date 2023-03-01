@@ -86,7 +86,9 @@ public class NotesAPI {
 
 		if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
 			selectBuilder.leftJoin(commentsSharingModule.getTableName())
-					.on(module.getTableName() + ".ID=" + commentsSharingModule.getTableName() + ".PARENT_ID AND " + module.getTableName() + ".MODULEID=" + commentsSharingModule.getTableName() + ".PARENT_MODULE_ID");
+					.on(module.getTableName() + ".ID=" + commentsSharingModule.getTableName() + ".PARENT_ID AND "
+							+ module.getTableName() + ".MODULEID=" + commentsSharingModule.getTableName() + ".PARENT_MODULE_ID"
+					+" AND " +module.getTableName() + ".ORGID=" + commentsSharingModule.getTableName() + ".ORGID");
 		}
 
 		if (parentId > 0) {
