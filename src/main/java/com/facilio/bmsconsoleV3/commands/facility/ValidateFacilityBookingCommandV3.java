@@ -99,7 +99,7 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                     if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && (MapUtils.isEmpty(relations) || !relations.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE) || CollectionUtils.isEmpty(relations.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE).get(0).getData())))) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee list cannot be empty");
                     }
-                    if (facility.getMaxAttendeeCountPerBooking() != null && booking.getNoOfAttendees() > facility.getMaxAttendeeCountPerBooking()) {
+                    if (booking.getNoOfAttendees() != null && facility.getMaxAttendeeCountPerBooking() != null && booking.getNoOfAttendees() > facility.getMaxAttendeeCountPerBooking()) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Maximum number of attendees per booking reached");
                     }
                     int bookingAttendeesCount = 0;

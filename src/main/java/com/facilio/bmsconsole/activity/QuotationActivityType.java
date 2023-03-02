@@ -11,14 +11,18 @@ public enum QuotationActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Created quotation for " + QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
+            if (json.containsKey(FacilioConstants.ContextNames.TOTAL_COST) && json.get(FacilioConstants.ContextNames.TOTAL_COST)!= null) {
+                return " Created quotation for " + QuotationAPI.formatDecimal(Math.round((Double) json.get(FacilioConstants.ContextNames.TOTAL_COST) * 100.0) / 100.0);
+            } else {
+                return " Created quotation.";
+            }
         }
     },
     UPDATE(64) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            if (json.containsKey(FacilioConstants.ContextNames.TOTAL_COST)) {
+            if (json.containsKey(FacilioConstants.ContextNames.TOTAL_COST ) && json.get(FacilioConstants.ContextNames.TOTAL_COST)!= null) {
                 return " Updated Quotation. Amount changed to " +  QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
             } else {
                 return " Updated Quotation.";
