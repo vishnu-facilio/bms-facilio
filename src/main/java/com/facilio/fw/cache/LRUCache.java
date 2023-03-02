@@ -58,6 +58,8 @@ public class LRUCache {
 	private static FacilioCache<String, List<PermissionSetContext>> peoplePermissionSets = new PubSubLRUCache("peoplePermissionSets", 2000);
 	private static FacilioCache<String, List<Map<String,Object>>> permissionSetsTypePermissionCache = new PubSubLRUCache("permissionSetsTypePermissionCache", 2000);
 
+	private static FacilioCache<String, Object> controllerCache = new PubSubLRUCache<>("controllerCache", 1000);
+
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
 	}
@@ -163,5 +165,6 @@ public class LRUCache {
 	public static FacilioCache<String, List<Map<String,Object>>> getPermissionSetsTypePermissionCache(){
 		return permissionSetsTypePermissionCache;
 	}
+	public static FacilioCache<String, Object> getControllerCache() {return controllerCache;}
 
 }

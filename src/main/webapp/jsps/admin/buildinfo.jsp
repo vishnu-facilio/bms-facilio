@@ -106,6 +106,9 @@ function init() {
     <br>SuperAdmin Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
     out.println(LRUCache.getSuperAdminCache());
 %></textarea>
+    <br>Controller Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(LRUCache.getControllerCache());
+%></textarea>
 
 
 </div>

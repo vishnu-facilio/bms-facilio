@@ -1,15 +1,16 @@
-package com.facilio.agentv2.controller;
+package com.facilio.agentv2.cacheimpl;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.E2.E2ControllerContext;
-import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.rdm.RdmControllerContext;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
@@ -23,7 +24,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
@@ -53,9 +53,44 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
-@Deprecated
-public class ControllerApiV2 {
-    private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
+public class ControllerBeanImpl implements ControllerBean {
+
+    private final Logger LOGGER = LogManager.getLogger(ControllerBeanImpl.class.getName());
+
+    private final FacilioModule CONTROLLER_MODULE = ModuleFactory.getNewControllerModule();
+    private final FacilioModule RESOURCE_MODULE = ModuleFactory.getResourceModule();
+
+    @Override
+    public Controller getController(JSONObject payload, long agentId) throws Exception {
+        Controller controller = null;
+        JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+        FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+        try {
+            if (controllerType != null) {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withAgentId(agentId)
+                        .withControllerProperties(controllerJson, controllerType);
+                controller = getControllerRequest.getController();
+            }
+        } catch (Exception e){
+            LOGGER.info("Exception while fetching controller ",e);
+        }
+        if(controller != null){
+            return controller;
+        } else {
+            FacilioAgent agent = AgentConstants.getAgentBean().getAgent(agentId);
+            if (agent.getAgentTypeEnum().allowAutoAddition()) {
+                LOGGER.info("Adding Controller for agent "+ agent.getDisplayName());
+                MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
+                miscControllerContext.setName(controllerJson.get(AgentConstants.NAME).toString());
+                miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);
+                AgentConstants.getControllerBean().addController(miscControllerContext);
+                return miscControllerContext;
+            }
+        }
+        LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
+        return null;
+    }
 
 
     /**
@@ -67,13 +102,13 @@ public class ControllerApiV2 {
      * @return controllerId
      **/
 
-    private static final FacilioModule CONTROLLER_MODULE = ModuleFactory.getNewControllerModule();
-    private static final FacilioModule RESOURCE_MODULE = ModuleFactory.getResourceModule();
-
-    public static long addController(Controller controller) {
+    @Override
+    public long addController(Controller controller) {
         return addController(controller, true);
     }
-    public static long addController(Controller controller, boolean fromAgent) {
+
+    @Override
+    public long addController(Controller controller, boolean fromAgent) {
         try {
             long agentId = controller.getAgentId();
             if (agentId > 0) {
@@ -93,7 +128,8 @@ public class ControllerApiV2 {
         return -1;
     }
 
-    public static long addController(Controller controller, FacilioAgent agent, boolean fromAgent) throws Exception {
+    @Override
+    public  long addController(Controller controller, FacilioAgent agent, boolean fromAgent) throws Exception {
         if (controller != null) {
             if (agent != null) {
                 FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain(fromAgent);
@@ -106,7 +142,7 @@ public class ControllerApiV2 {
                     rtuNetworkContext.setAgentId(agent.getId());
                     context.put(FacilioConstants.ContextNames.RTU_NETWORK, rtuNetworkContext);
                 }
-                String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
+                String assetCategoryName = AgentConstants.getControllerBean().getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);
                 if (controller.getCreatedTime() < 100) {
@@ -136,8 +172,8 @@ public class ControllerApiV2 {
         }
     }
 
-
-    public static Controller getControllerFromDb(long controllerId) throws Exception {
+    @Override
+    public Controller getControllerFromDb(long controllerId) throws Exception {
         Controller controller = null;
         if (controllerId > 0) {
             GetControllerRequest getControllerRequest = new GetControllerRequest()
@@ -164,15 +200,16 @@ public class ControllerApiV2 {
      * @return
      * @throws Exception
      */
-    public static List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
+    @Override
+    public List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Controller controller = makeControllerFromMap(childJson, controllerType);
         conditions.addAll(controller.getControllerConditions());
         return conditions;
     }
 
-
-    public static <T extends Controller> T makeControllerFromMap(Map<String, Object> map, FacilioControllerType controllerType) throws Exception {
+    @Override
+    public <T extends Controller> T makeControllerFromMap(Map<String, Object> map, FacilioControllerType controllerType) throws Exception {
         Controller controller;
         switch (controllerType) {
             case BACNET_IP:
@@ -233,8 +270,8 @@ public class ControllerApiV2 {
         }
     }
 
-
-    public static String getControllerModuleName(FacilioControllerType controllerType) {
+    @Override
+    public String getControllerModuleName(FacilioControllerType controllerType) {
         switch (controllerType) {
             case MODBUS_IP:
                 return ModbusTcpControllerContext.ASSETCATEGORY;
@@ -257,7 +294,7 @@ public class ControllerApiV2 {
             case SYSTEM:
                 return FacilioConstants.ContextNames.SYSTEM_CONTROLLER_MODULE_NAME;
             case LON_WORKS:
-            	return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
+                return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
             case RDM:
                 return FacilioConstants.ContextNames.RDM_CONTROLLER_MODULE_NAME;
             case E2:
@@ -267,8 +304,8 @@ public class ControllerApiV2 {
         }
     }
 
-
-    public static boolean editController(long controllerId, JSONObject controllerData) throws Exception {
+    @Override
+    public boolean editController(long controllerId, JSONObject controllerData) throws Exception {
         LOGGER.info(" editing controller");
         Controller controller = getControllerFromDb(controllerId);
         if (controller != null) {
@@ -281,10 +318,10 @@ public class ControllerApiV2 {
             jsonObject.put(AgentConstants.CONTROLLER, toUpdate);
             AgentMessenger.publishNewIotAgentMessage(controller, FacilioCommand.EDIT_CONTROLLER, jsonObject);
             if (containsCheck(AgentConstants.WRITABLE, controllerData)){
-            	FacilioChain chain = TransactionChainFactory.getEditPointChain();
-            	chain.getContext().put(AgentConstants.WRITABLE, (Boolean) controllerData.get(AgentConstants.WRITABLE));
-            	chain.getContext().put(AgentConstants.CONTROLLER_ID, controllerId);
-            	chain.execute();
+                FacilioChain chain = TransactionChainFactory.getEditPointChain();
+                chain.getContext().put(AgentConstants.WRITABLE, (Boolean) controllerData.get(AgentConstants.WRITABLE));
+                chain.getContext().put(AgentConstants.CONTROLLER_ID, controllerId);
+                chain.execute();
             }
             return true;
         } else {
@@ -292,8 +329,7 @@ public class ControllerApiV2 {
         }
     }
 
-
-    private static JSONObject alterController(Controller controller, JSONObject controllerData) {
+    private JSONObject alterController(Controller controller, JSONObject controllerData) {
         JSONObject toUpdate = new JSONObject();
         if (containsCheck(AgentConstants.DATA_INTERVAL, controllerData)) {
             controller.setDataInterval(((Number) controllerData.get(AgentConstants.DATA_INTERVAL)).longValue());
@@ -306,14 +342,14 @@ public class ControllerApiV2 {
         return toUpdate;
     }
 
-    public static boolean containsCheck(String key, Map map) {
+    public boolean containsCheck(String key, Map map) {
         if ((key != null) && (!key.isEmpty()) && (map != null) && (!map.isEmpty()) && (map.containsKey(key)) && (map.get(key) != null)) {
             return true;
         }
         return false;
     }
 
-    static void updateController(Controller controller) {
+    void updateController(Controller controller) {
         controller.setLastDataRecievedTime(System.currentTimeMillis());
         controller.setLastModifiedTime(controller.getLastDataRecievedTime());
         FacilioChain updateControllerChain = TransactionChainFactory.getUpdateControllerChain();
@@ -332,7 +368,7 @@ public class ControllerApiV2 {
         }
     }
 
-    public static long getCountForOrg() {
+    public long getCountForOrg() {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0) {
@@ -346,7 +382,7 @@ public class ControllerApiV2 {
         return 0;
     }
 
-    public static long getCountForAgent(List<Long> agentIds) {
+    public long getCountForAgent(List<Long> agentIds) {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0 && (agentIds != null) && (!agentIds.isEmpty())) {
@@ -359,14 +395,15 @@ public class ControllerApiV2 {
         }
         return 0;
     }
-    
-    public static long getControllersCount(FacilioContext context) {
-    	Long agentIds = (Long) context.get(AgentConstants.AGENT_ID);
-    	Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
-    	return getCount(Collections.singletonList(agentIds), controllerType,(String)context.get(AgentConstants.SEARCH_KEY));
+
+    @Override
+    public long getControllersCount(FacilioContext context) {
+        Long agentIds = (Long) context.get(AgentConstants.AGENT_ID);
+        Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
+        return getCount(Collections.singletonList(agentIds), controllerType,(String)context.get(AgentConstants.SEARCH_KEY));
     }
 
-    private static long getCount(List<Long> agentIds,Integer controllerType , String querySearch) {
+    private long getCount(List<Long> agentIds,Integer controllerType , String querySearch) {
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(CONTROLLER_MODULE.getTableName())
@@ -378,10 +415,10 @@ public class ControllerApiV2 {
                 builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(CONTROLLER_MODULE), agentIds, NumberOperators.EQUALS));
             }
             if(controllerType != null) {
-            	builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(CONTROLLER_MODULE), String.valueOf(controllerType), NumberOperators.EQUALS));
+                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(CONTROLLER_MODULE), String.valueOf(controllerType), NumberOperators.EQUALS));
             }
             if(querySearch != null && !querySearch.trim().isEmpty()) {
-            	builder.andCustomWhere(RESOURCE_MODULE.getTableName()+".NAME = ?  OR  "+RESOURCE_MODULE.getTableName()+".NAME LIKE ?",querySearch,"%"+querySearch+"%");
+                builder.andCustomWhere(RESOURCE_MODULE.getTableName()+".NAME = ?  OR  "+RESOURCE_MODULE.getTableName()+".NAME LIKE ?",querySearch,"%"+querySearch+"%");
             }
             return (long) builder.fetchFirst().getOrDefault(AgentConstants.ID, 0L);
         } catch (Exception e) {
@@ -390,11 +427,13 @@ public class ControllerApiV2 {
         return 0L;
     }
 
-    public static boolean deleteControllerApi(Long id) throws Exception {
+    @Override
+    public boolean deleteControllerApi(Long id) throws Exception {
         return deleteControllerApi(Collections.singletonList(id));
     }
 
-    public static boolean deleteControllerApi(List<Long> ids) throws Exception {
+    @Override
+    public boolean deleteControllerApi(List<Long> ids) throws Exception {
         if ((ids != null) && (!ids.isEmpty())) {
             FacilioChain deleteChain = TransactionChainFactory.deleteControllerChain();
             FacilioContext context = deleteChain.getContext();
@@ -419,7 +458,8 @@ public class ControllerApiV2 {
         return false;
     }
 
-    public static boolean resetController(Long controllerId) throws Exception {
+    @Override
+    public boolean resetController(Long controllerId) throws Exception {
         FacilioChain chain = TransactionChainFactory.resetControllerChain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.CONTROLLER_ID, controllerId);
@@ -427,7 +467,7 @@ public class ControllerApiV2 {
         return true;
     }
 
-    public static boolean checkForController(long controllerId) throws Exception {
+    public boolean checkForController(long controllerId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(CONTROLLER_MODULE.getTableName())
                 .select(new ArrayList<>())
@@ -439,14 +479,15 @@ public class ControllerApiV2 {
         return false;
     }
 
-    public static void resetConfiguredPoints(Long controllerId) throws Exception {
+    @Override
+    public void resetConfiguredPoints(Long controllerId) throws Exception {
         if (checkForController(controllerId)) {
             PointsAPI.resetConfiguredPoints(controllerId);
         }
 
     }
 
-    public static Map<Long, FacilioControllerType> getControllerIdsType(Long agentId) throws Exception {
+    public Map<Long, FacilioControllerType> getControllerIdsType(Long agentId) throws Exception {
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         List<FacilioField> idTypefields = new ArrayList<>();
         idTypefields.add(FieldFactory.getIdField(controllerModule));
@@ -469,7 +510,8 @@ public class ControllerApiV2 {
         return new HashMap<>();
     }
 
-    public static Set<Long> getControllerIds(List<Long> agentId) throws Exception {
+    @Override
+    public Set<Long> getControllerIds(List<Long> agentId) throws Exception {
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         List<FacilioField> idTypefields = new ArrayList<>();
         idTypefields.add(FieldFactory.getIdField(controllerModule));
@@ -492,127 +534,77 @@ public class ControllerApiV2 {
         return new HashSet<>();
     }
 
-    public static JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
+    @Override
+    public JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
         JSONObject controlleCountData = new JSONObject();
         controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null));
         return controlleCountData;
     }
 
-    public static JSONObject getControllerCountData(Long agentId) throws Exception {
+    @Override
+    public JSONObject getControllerCountData(Long agentId) throws Exception {
         return getControllerCountData(Arrays.asList(agentId));
     }
 
-    public static List<Map<String, Object>> getControllerDataForAgent(FacilioContext contextProps) throws Exception {
-    	Long agentId = (Long) contextProps.get(AgentConstants.AGENT_ID);
-    	Integer controllerType = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
+    @Override
+    public List<Map<String, Object>> getControllerDataForAgent(FacilioContext contextProps) throws Exception {
+        Long agentId = (Long) contextProps.get(AgentConstants.AGENT_ID);
+        Integer controllerType = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
         if(controllerType != null){
             return getControllerData(agentId, null, contextProps);
         }
         return null;
     }
-    
-    public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
-    	List<Map<String, Object>> controllers = new ArrayList<>();
-    	List<Map<String, Object>> controllerData = new ArrayList<>();
-    	Integer controllerTypeValue = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
-    	if(controllerTypeValue == null) {
-    		throw new IllegalArgumentException("ControllerType should not be null : "+controllerTypeValue);
-    	}
-    	FacilioControllerType controllerType = FacilioControllerType.valueOf(controllerTypeValue);
-    	FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
-    	String moduleName = getControllerModuleName(controllerType);
-    	if (moduleName == null) {
-    		throw new IllegalArgumentException(" module name is null for " + controllerType.asString());
-    	}
-    	FacilioContext context = getControllerChain.getContext();
-    	context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
-    	context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
-    	context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-    	context.put(AgentConstants.AGENT_ID, agentId);
-    	context.put(AgentConstants.CONTROLLER_ID, controllerId);
-    	context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+
+    @Override
+    public List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
+        List<Map<String, Object>> controllers = new ArrayList<>();
+        List<Map<String, Object>> controllerData = new ArrayList<>();
+        Integer controllerTypeValue = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
+        if(controllerTypeValue == null) {
+            throw new IllegalArgumentException("ControllerType should not be null : "+controllerTypeValue);
+        }
+        FacilioControllerType controllerType = FacilioControllerType.valueOf(controllerTypeValue);
+        FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
+        String moduleName = getControllerModuleName(controllerType);
+        if (moduleName == null) {
+            throw new IllegalArgumentException(" module name is null for " + controllerType.asString());
+        }
+        FacilioContext context = getControllerChain.getContext();
+        context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
+        context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(AgentConstants.AGENT_ID, agentId);
+        context.put(AgentConstants.CONTROLLER_ID, controllerId);
+        context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+        try {
+            getControllerChain.execute();
+            controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+        }catch (Exception e){
+            if(controllerType == FacilioControllerType.SYSTEM){
+                LOGGER.info("Exception while fetching system controller "+e.getMessage());
+            }else {
+                LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+            }
+        }
+        LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
+        if (!controllerData.isEmpty()) {
             try {
-                getControllerChain.execute();
-                controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-            }catch (Exception e){
-                if(controllerType == FacilioControllerType.SYSTEM){
-                    LOGGER.info("Exception while fetching system controller "+e.getMessage());
-                }else {
-                    LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+                for (Map<String, Object> controllerDatum : controllerData) {
+                    Controller controller = makeControllerFromMap(controllerDatum, controllerType);
+                    controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
                 }
+                addLogicalController(agentId,controllerData);
+                controllers.addAll(controllerData);
+            } catch (Exception e) {
+                LOGGER.info(" exception while object mapping ", e);
             }
-            LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
-            if (!controllerData.isEmpty()) {
-                try {
-                    for (Map<String, Object> controllerDatum : controllerData) {
-                        Controller controller = makeControllerFromMap(controllerDatum, controllerType);
-                        controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
-                    }
-                    addLogicalController(agentId,controllerData);
-                    controllers.addAll(controllerData);
-                } catch (Exception e) {
-                    LOGGER.info(" exception while object mapping ", e);
-                }
-            }
-        
+        }
+
         return controllers;
     }
 
-    // temp and need to remove future..
-//    public static List<Map<String, Object>> getControllersData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
-//        List<Map<String, Object>> controllers = new ArrayList<>();
-//        List<Map<String, Object>> controllerData = new ArrayList<>();
-//        List<Map<String, Object>> filterTypes = FieldDeviceApi.getDeviceFilterData(agentId);
-//        Set<FacilioControllerType> controllerTypes = new HashSet<>();
-//        for(Map<String, Object> prop:filterTypes) {
-//        	Integer value = (Integer) prop.get(AgentConstants.CONTROLLER_TYPE);
-////        	if((Long)prop.get("id") == 0 && value == 0) { temp comment out , because of need to handle in commissioning log add controllerId problem
-////        		controllers.add(prop);
-////        	}
-//        	controllerTypes.add(FacilioControllerType.valueOf(value));
-//        }
-//        for (FacilioControllerType controllerType : controllerTypes) {
-//            FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
-//            String moduleName = getControllerModuleName(controllerType);
-//            if (moduleName == null) {
-//                LOGGER.info(" module name is null for " + controllerType.asString());
-//                continue;
-//            }
-//            FacilioContext context = getControllerChain.getContext();
-//            context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
-//            context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
-//            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-//            context.put(AgentConstants.AGENT_ID, agentId);
-//            context.put(AgentConstants.CONTROLLER_ID, controllerId);
-//            context.put(AgentConstants.CONTROLLER_TYPE, controllerType.asInt());
-//            try {
-//                getControllerChain.execute();
-//                controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-//            }catch (Exception e){
-//                if(controllerType == FacilioControllerType.SYSTEM){
-//                    LOGGER.info("Exception while fetching system controller "+e.getMessage());
-//                }else {
-//                    LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
-//                }
-//            }
-//            LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
-//            if (controllerData != null) {
-//                try {
-//                    for (Map<String, Object> controllerDatum : controllerData) {
-//                        Controller controller = makeControllerFromMap(controllerDatum, controllerType);
-//                        controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
-//                    }
-//                    addLogicalController(agentId,controllerData);
-//                    controllers.addAll(controllerData);
-//                } catch (Exception e) {
-//                    LOGGER.info(" exception while object mapping ", e);
-//                }
-//            }
-//        }
-//        return controllers;
-//    }
-
-    private static void addLogicalController(long agentId , List<Map<String,Object>> controllerData) throws Exception {
+    private void addLogicalController(long agentId , List<Map<String,Object>> controllerData) throws Exception {
         if(isVirtualPointExist(agentId)) {
             Map<String,Object> prop = new HashMap<String, Object>();
             prop.put("id", 0L);
@@ -622,7 +614,7 @@ public class ControllerApiV2 {
         }
     }
 
-    public static List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception {
+    public List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getControllerTypeField(CONTROLLER_MODULE));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -633,11 +625,11 @@ public class ControllerApiV2 {
         return builder.get();
     }
 
-    public static List<Map<String, Object>> getControllerFilterData(Long agentId, Integer controllerType) throws Exception {
+    public List<Map<String, Object>> getControllerFilterData(Long agentId, Integer controllerType) throws Exception {
         return getAgentControllerFilterData(agentId , controllerType);
     }
 
-    private static List<Map<String, Object>> getAgentControllerFilterData(Long agentId,Integer controllerType) throws Exception {
+    private List<Map<String, Object>> getAgentControllerFilterData(Long agentId,Integer controllerType) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getNameField(RESOURCE_MODULE));
         fields.add(FieldFactory.getIdField(CONTROLLER_MODULE));
@@ -654,80 +646,72 @@ public class ControllerApiV2 {
         if (agentId != null) {
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(CONTROLLER_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
             List<Map<String, Object>> props = builder.get();
-//            boolean isMiscType=false;
-//    		for (Map<String, Object> prop : props) {
-//    			Integer val = (Integer) prop.get("controllerType");
-//    			if (val != null && val == 0) {
-//    				isMiscType = true;
-//    				break;
-//    			}
-//    		}
             if( CollectionUtils.isNotEmpty(props) && isVirtualPointExist(agentId)) {
-            	Map<String,Object> prop = new HashMap<String, Object>();
-            	prop.put("id", 0L);
-            	prop.put("controllerType",0);
-            	prop.put("name", "Logical");
-            	props.add(prop);
+                Map<String,Object> prop = new HashMap<String, Object>();
+                prop.put("id", 0L);
+                prop.put("controllerType",0);
+                prop.put("name", "Logical");
+                props.add(prop);
             }
             return props;
         }else {
-        	return  builder.get();
+            return  builder.get();
         }
     }
 
-    public static List<Controller> getControllersUsingAgentId(long agentId) throws Exception {
-    	return getControllersList(Collections.singletonList(agentId));
+    public List<Controller> getControllersUsingAgentId(long agentId) throws Exception {
+        return getControllersList(Collections.singletonList(agentId));
     }
 
-    private static List<Controller> getControllersList(List<Long> agentIds) throws Exception {
+    private List<Controller> getControllersList(List<Long> agentIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
         builder.table(modBean.getModule(AgentConstants.CONTROLLER).getTableName());
         builder.select(modBean.getModule(AgentConstants.CONTROLLER).getFields())
-    	.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getNewControllerModule()), String.valueOf(agentIds), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getNewControllerModule()), String.valueOf(agentIds), NumberOperators.EQUALS));
         List<Map<String, Object>> props = builder.get();
         return FieldUtil.getAsBeanListFromMapList(props, Controller.class);
     }
 
-    public static Controller getControllerByName(Long agentId,String deviceName) throws Exception {
+    public Controller getControllerByName(Long agentId,String deviceName) throws Exception {
         Set<String> names = new HashSet<>();
         names.add(deviceName);
         return getControllerRequestWithNames(agentId, names).getController();
     }
 
-    public static List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames, FacilioControllerType controllerType) throws Exception {
+    public List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames, FacilioControllerType controllerType) throws Exception {
         GetControllerRequest request = getControllerRequestWithNames(agentId, deviceNames).ofType(controllerType);
         return request.getControllers();
     }
 
-    public static List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames) throws Exception {
+    public List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames) throws Exception {
         GetControllerRequest request = getControllerRequestWithNames(agentId, deviceNames);
         return request.getControllers();
     }
 
-    private static GetControllerRequest getControllerRequestWithNames(Long agentId, Set<String> deviceNames) throws Exception {
+    private GetControllerRequest getControllerRequestWithNames(Long agentId, Set<String> deviceNames) throws Exception {
         return new GetControllerRequest().withAgentId(agentId).withNames(deviceNames);
     }
 
-    public static List<Map<String, Object>> getControllers(Collection<Long> ids) throws Exception {
-    		return (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
+    public List<Map<String, Object>> getControllers(Collection<Long> ids) throws Exception {
+        return (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
     }
 
-    public static Map<String, Object> getController(Collection<Long> ids) throws Exception {
+    public Map<String, Object> getController(Collection<Long> ids) throws Exception {
         List<Map<String, Object>>ControllerList=  (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
         return (Map<String, Object>) ControllerList.get(0);
     }
-    
-    public static Map<Long, Map<String, Object>> getControllerMap(Collection<Long> ids) throws Exception {
-    		List<Map<String, Object>> controllers = getControllers(ids);
-    	 	if (CollectionUtils.isNotEmpty(controllers)) {
-    	 		return controllers.stream()
-                .collect(Collectors.toMap(controller -> (long) controller.get("id"), controller -> controller));
-    	 	}
-		return null;
+
+    public Map<Long, Map<String, Object>> getControllerMap(Collection<Long> ids) throws Exception {
+        List<Map<String, Object>> controllers = getControllers(ids);
+        if (CollectionUtils.isNotEmpty(controllers)) {
+            return controllers.stream()
+                    .collect(Collectors.toMap(controller -> (long) controller.get("id"), controller -> controller));
+        }
+        return null;
     }
 
-    public static FacilioControllerType getControllerType(long controllerId) throws Exception {
+    public FacilioControllerType getControllerType(long controllerId) throws Exception {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -744,7 +728,7 @@ public class ControllerApiV2 {
     }
 
 
-//    public static boolean discoverPoint(List<Long> controllerIds) throws Exception {
+//    public boolean discoverPoint(List<Long> controllerIds) throws Exception {
 //        try {
 //            Controller controller = getControllers(controllerIds,null).get(0);
 //            Objects.requireNonNull(controller,"Controller doesn't exist");
@@ -756,7 +740,7 @@ public class ControllerApiV2 {
 //        }
 //    }
 
-    public static boolean discoverPoint(long controllerId) throws Exception {
+    public boolean discoverPoint(long controllerId) throws Exception {
         try {
             Controller controller = getController(controllerId,null);
             Objects.requireNonNull(controller,"Controller doesn't exist");
@@ -767,13 +751,13 @@ public class ControllerApiV2 {
             throw e;
         }
     }
-    public static Controller getController(Long controllerId, Long agentId) throws Exception {
+    public Controller getController(Long controllerId, Long agentId) throws Exception {
         GenericSelectRecordBuilder builder = getSelectControllersBuilder(Collections.singletonList(controllerId), agentId);
 
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
             FacilioControllerType ctype = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
-            Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, controllerId),ctype);
+            Controller controller = makeControllerFromMap(getControllerProps(ctype, controllerId),ctype);
             controller.setAgentId((long)props.get(AgentConstants.AGENT_ID));
             controller.setName((String)props.get(AgentConstants.NAME));
             controller.setId((Long)props.get(AgentConstants.ID));
@@ -782,7 +766,7 @@ public class ControllerApiV2 {
         return null;
     }
 
-    public static List<Controller> getControllers(List<Long> controllerIds,Long agentId) throws Exception {
+    public List<Controller> getControllers(List<Long> controllerIds,Long agentId) throws Exception {
 
         List<Controller> controllers = new ArrayList<>();
 
@@ -793,7 +777,7 @@ public class ControllerApiV2 {
             if (row != null && !row.isEmpty()) {
                 FacilioControllerType ctype = FacilioControllerType.valueOf((Integer) row.get(AgentConstants.CONTROLLER_TYPE));
                 Long id = (Long) row.get(AgentConstants.ID);
-                Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, id), ctype);
+                Controller controller = AgentConstants.getControllerBean().makeControllerFromMap(getControllerProps(ctype, id), ctype);
                 controller.setAgentId((long) row.get(AgentConstants.AGENT_ID));
                 controller.setName((String) row.get(AgentConstants.NAME));
                 controller.setId((Long) row.get(AgentConstants.ID));
@@ -805,9 +789,9 @@ public class ControllerApiV2 {
 
     }
 
-    private static Map<String,Object> getControllerProps(FacilioControllerType type,Long controllerId) throws Exception{
+    private Map<String,Object> getControllerProps(FacilioControllerType type,Long controllerId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = ControllerApiV2.getControllerModuleName(type);
+        String moduleName = AgentConstants.getControllerBean().getControllerModuleName(type);
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = new ArrayList<FacilioField>();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -823,7 +807,7 @@ public class ControllerApiV2 {
         }
         return  builder.fetchFirst();
     }
-    private static GenericSelectRecordBuilder getSelectControllersBuilder(List<Long> controllerIds, Long agentId) {
+    private GenericSelectRecordBuilder getSelectControllersBuilder(List<Long> controllerIds, Long agentId) {
         FacilioModule module = ModuleFactory.getNewControllerModule();
         FacilioModule resourceModule = ModuleFactory.getResourceModule();
         List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -843,9 +827,9 @@ public class ControllerApiV2 {
         return builder;
     }
 
-    public static List<?extends Controller> getControllersToAdd(long agentId, FacilioControllerType controllerType, List<? extends Controller> controllerList) throws Exception {
+    public List<?extends Controller> getControllersToAdd(long agentId, FacilioControllerType controllerType, List<? extends Controller> controllerList) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = ControllerApiV2.getControllerModuleName(controllerType);
+        String moduleName = AgentConstants.getControllerBean().getControllerModuleName(controllerType);
         List<FacilioField> moduleFields = modBean.getAllFields(moduleName);
         FacilioModule module = modBean.getModule(moduleName);
         Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
@@ -870,7 +854,7 @@ public class ControllerApiV2 {
         return controllerList;
     }
 
-    public static Criteria getControllerCriteria(List<? extends Controller> controllerList) throws Exception {
+    public Criteria getControllerCriteria(List<? extends Controller> controllerList) throws Exception {
         Criteria criteriaList = new Criteria();
 
         for (Controller controller : controllerList){
@@ -881,7 +865,7 @@ public class ControllerApiV2 {
         }
         return criteriaList;
     }
-    public static boolean isVirtualPointExist(Long agentId) throws Exception {
+    public boolean isVirtualPointExist(Long agentId) throws Exception {
         GetPointRequest point = new GetPointRequest();
         point.ofType(FacilioControllerType.valueOf(0));
         point.withLogicalControllers(agentId);
@@ -890,3 +874,4 @@ public class ControllerApiV2 {
         return pointCount > 0;
     }
 }
+

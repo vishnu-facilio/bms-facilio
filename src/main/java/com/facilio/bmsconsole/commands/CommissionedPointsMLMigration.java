@@ -2,22 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.commands.AgentV2Command;
-import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
-import com.facilio.agentv2.point.PointEnum.ConfigureStatus;
-import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import java.util.*;

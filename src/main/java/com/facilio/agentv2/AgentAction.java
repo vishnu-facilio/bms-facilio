@@ -48,7 +48,6 @@ import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
@@ -346,7 +345,7 @@ public class AgentAction extends AgentActionV2 {
 
     public String getControllerUsingId() {
         try {
-            Controller controllers = ControllerApiV2.getControllerFromDb(getControllerId());
+            Controller controllers = AgentConstants.getControllerBean().getControllerFromDb(getControllerId());
             setResult(AgentConstants.DATA, controllers.toJSON());
             ok();
         } catch (Exception e) {
@@ -591,7 +590,7 @@ public class AgentAction extends AgentActionV2 {
                 controllerContext.setSiteId(agent.getSiteId());
                 controllerContext.setName(controllerContext.getIdentifier());
                 FieldDeviceApi.addControllerAsDevice(controllerContext);
-                ControllerApiV2.addController(controllerContext);
+                AgentConstants.getControllerBean().addController(controllerContext);
                 for (int i = 0; i < 20; i++) {
                     ModbusTcpPointContext modbusTcpPointContext = new ModbusTcpPointContext(agentId,controllerContext.getId());
                     modbusTcpPointContext.setName("point"+i);
@@ -610,7 +609,7 @@ public class AgentAction extends AgentActionV2 {
                 bc.setAgentId(agentId);
                 bc.setSiteId(agent.getSiteId());
                 FieldDeviceApi.addControllerAsDevice(bc);
-                ControllerApiV2.addController(bc);
+                AgentConstants.getControllerBean().addController(bc);
                 for (int i = 0; i < 10; i++) {
                     BacnetIpPointContext bp = new BacnetIpPointContext();
                     bp.setInstanceNumber(i);

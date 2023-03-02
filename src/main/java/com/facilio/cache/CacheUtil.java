@@ -58,6 +58,13 @@ public class CacheUtil {
 
 	public static final String PERMISSION_SET_PROP_KEY = "permissionSetPropKey";
 
+
+	public static final String AGENT_ID = "agentId";
+
+	public static final String CONTROLLER_TYPE = "controllerType";
+
+	public static final String CONTROLLER_IDENTIFIER = "controllerIdentifier";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -210,6 +217,11 @@ public class CacheUtil {
 	public static String PERMISSION_SET_PERMISSION_KEY(long orgId, String propKey, long permissionSetId, String fieldEnum) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + PERMISSION_SET_PROP_KEY + propKey + KEY_SEPARATOR + permissionSetId + KEY_SEPARATOR + fieldEnum;
 	}
+
+	public static String CONTROLLER_KEY(long orgId, long agentId, int controllerType , String controllerIdentifier){
+		return ORG_KEY(orgId) + KEY_SEPARATOR + AGENT_ID + KEY_SEPARATOR + agentId + KEY_SEPARATOR + CONTROLLER_TYPE + KEY_SEPARATOR + controllerType + KEY_SEPARATOR + CONTROLLER_IDENTIFIER + KEY_SEPARATOR + controllerIdentifier;
+	}
+
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();
         return false;

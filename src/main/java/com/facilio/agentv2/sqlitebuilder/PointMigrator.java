@@ -25,7 +25,7 @@ public class PointMigrator {
 
     public static boolean migratePoints(long agentId, Map<Long, FacilioControllerType> controllerIdsType) throws Exception {
         *//*try {*//*
-        // List<Long> controllerIds = ControllerApiV2.getControllerIds(agentId,controllerType);
+        // List<Long> controllerIds = AgentConstants.getControllerBean().getControllerIds(agentId,controllerType);
         LOGGER.info(" controller ids are " + controllerIdsType.keySet());
         for (Long controllerId : controllerIdsType.keySet()) {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);

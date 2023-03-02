@@ -4,7 +4,6 @@ import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsUtil;
@@ -69,7 +68,7 @@ public class AgentMigrationBeanImpl implements AgentMigrationBean{
     @Override
     public void updateController(FacilioControllerType type, long sourceAgentId, long targetAgentId) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = ControllerApiV2.getControllerModuleName(type);
+        String moduleName = AgentConstants.getControllerBean().getControllerModuleName(type);
         FacilioField agentField = moduleBean.getField(AgentConstants.AGENT_ID, moduleName);
 
         UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder()

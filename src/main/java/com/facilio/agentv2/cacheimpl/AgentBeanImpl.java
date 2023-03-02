@@ -7,7 +7,6 @@ import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -161,14 +160,6 @@ public class AgentBeanImpl implements AgentBean {
             if (agent.getWritable() != currWriteble) {
                 agent.setWritable(currWriteble);
                 agent.setLastModifiedTime(currTime);
-                List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
-                controllers.forEach(controller -> {
-                    try {
-                        ControllerApiV2.editController(controller.getControllerId(), jsonObject);
-                    } catch (Exception e) {
-                        LOGGER.error("Exception occurred while Controller writable updating....");
-                    }
-                });
             }
         }
 

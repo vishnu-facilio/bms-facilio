@@ -9,7 +9,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.fw.BeanFactory;
@@ -167,7 +166,7 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
                     }
                     if (payload.containsKey(deviceId)) {
                         JSONObject points = (JSONObject) payload.get(deviceId);
-                        Controller controller = ControllerApiV2.getControllerByName(agent.getId(), deviceId);
+                        Controller controller = AgentConstants.getControllerBean().getControllerByName(agent.getId(), deviceId);
                         if (controller != null){
                             FacilioControllerType controllerType = FacilioControllerType.valueOf(controller.getControllerType());
                             msg.put(AgentConstants.CONTROLLER_TYPE,controllerType.asInt());

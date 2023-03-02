@@ -1,13 +1,6 @@
 package com.facilio.agentv2.sqlitebuilder;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.commands.AgentV2Command;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
-//import com.facilio.sqlUtils.sqllite.SQLiteUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -26,7 +19,7 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
             SqliteBridge bridge = new SqliteBridge();
             File file = bridge.getSqliteFile(agentId);
             LOGGER.info("---------------SQLITE FILE LOADED-----------------");
-            Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIdsType(agentId);
+            Map<Long, FacilioControllerType> controllerIdsType = AgentConstants.getControllerBean().getControllerIdsType(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
             if (!controllerIdsType.isEmpty()) {

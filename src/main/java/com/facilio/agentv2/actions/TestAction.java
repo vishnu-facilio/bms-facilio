@@ -35,7 +35,7 @@ public class TestAction extends AgentAction {
                 controllerRequest.withPagination(context);
             }
             Map<String, Controller> controllers = controllerRequest.getControllersMap();
-            //Map<String, Controller> controllersForAgent = ControllerApiV2.getControllersForAgent(getAgentId(), constructListContext(new FacilioContext()));
+            //Map<String, Controller> controllersForAgent = AgentConstants.getControllerBean().getControllersForAgent(getAgentId(), constructListContext(new FacilioContext()));
             setResult(AgentConstants.DATA,controllers);
         } catch (Exception e) {
             LOGGER.info(" Exception while getting controller using agentId ");
@@ -93,7 +93,7 @@ public class TestAction extends AgentAction {
                     .withControllerId(getControllerId());
             List<Controller> controllers = controllerRequest.getControllers();
             setResult("controller",controllers.get(0));
-            //ControllerApiV2.getControllerUsingControllerJSON();
+            //AgentConstants.getControllerBean().getControllerUsingControllerJSON();
         }catch (Exception e){
             LOGGER.info("Exception while getting ts controller ",e);
         }

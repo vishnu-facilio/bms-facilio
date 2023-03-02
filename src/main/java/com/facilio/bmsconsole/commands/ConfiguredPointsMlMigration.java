@@ -6,10 +6,8 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -51,7 +49,7 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
         List<HashMap<String, Object>> finalMapList = new ArrayList<>();
         for (Map.Entry<Long, List<String>> controllervsPointMap : controllerIdVsPointNamesMap.entrySet()) {
             HashMap<String, Object> pointMap = new HashMap<>();
-            Controller controller = ControllerApiV2.getControllerFromDb(controllervsPointMap.getKey());
+            Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllervsPointMap.getKey());
             pointMap.put("pointName", controllervsPointMap.getValue());
             pointMap.put("controller", controller.getName());
             pointMap.put("agentName", agent.getName());

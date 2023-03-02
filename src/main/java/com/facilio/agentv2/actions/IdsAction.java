@@ -2,7 +2,6 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
@@ -31,7 +30,7 @@ public class IdsAction extends AgentActionV2
     public String deleteControllers(){
         try {
             List<Long> controllerIds = getRecordIds();
-            if (ControllerApiV2.deleteControllerApi(controllerIds)) {
+            if (AgentConstants.getControllerBean().deleteControllerApi(controllerIds)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             } else {
@@ -49,20 +48,23 @@ public class IdsAction extends AgentActionV2
 
 
     public String discoverDevicePoints(){
-        try{
-            LOGGER.info(" discovering points for device " + getRecordIds());
+        try {
+            LOGGER.info("Discovering points for device " + getRecordIds());
             List<Long> controllerIds = getRecordIds();
-            if( !controllerIds.isEmpty() ){
-                FacilioContext context = new FacilioContext();
-                context.put(AgentConstants.RECORD_IDS,recordIds);
-                FacilioTimer.scheduleInstantJob("BulkPointDiscoverJob",context);
+            if(!controllerIds.isEmpty()){
+                if(controllerIds.size() == 1){
+                    AgentConstants.getControllerBean().discoverPoint(controllerIds.get(0));
+                } else {
+                    FacilioContext context = new FacilioContext();
+                    context.put(AgentConstants.RECORD_IDS, recordIds);
+                    FacilioTimer.scheduleInstantJob("BulkPointDiscoverJob", context);
+                }
                 setResult(AgentConstants.RESULT,SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
-
-            }else {
+            } else {
                 setResult(AgentConstants.RESULT,ERROR);
-                setResult(AgentConstants.EXCEPTION," Ids can't be empty ");
+                setResult(AgentConstants.EXCEPTION,"Controller Ids can't be empty ");
                 setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
             }
         }catch (Exception e){

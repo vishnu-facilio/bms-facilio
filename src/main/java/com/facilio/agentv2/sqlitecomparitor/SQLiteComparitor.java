@@ -5,7 +5,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
@@ -94,7 +93,7 @@ public class SQLiteComparitor {
             while (sqliteControllerMap.size() > 0) {
                 Set<String> sqliteControllersName = new HashSet<>();
                 sqliteControllerMap.values().forEach(controller -> sqliteControllersName.add(controller.getName()));
-                List<Controller> controllersFromDb = ControllerApiV2.getControllersByNames(agent.getId(), sqliteControllersName, FacilioControllerType.BACNET_IP);
+                List<Controller> controllersFromDb = AgentConstants.getControllerBean().getControllersByNames(agent.getId(), sqliteControllersName, FacilioControllerType.BACNET_IP);
                 Map<String, Controller> controllersFromDbMap = new HashMap<>();
                 controllersFromDb.forEach(controller -> controllersFromDbMap.put(controller.getName(), controller));
                 if (controllersFromDbMap.values().size() < sqliteControllerMap.values().size()) {

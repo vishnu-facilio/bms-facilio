@@ -10,7 +10,6 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.misc.MiscPoint;
@@ -334,7 +333,7 @@ public class PointsAPI {
     private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
         FacilioChain chain = TransactionChainFactory.pointsConfigurationComplete();
         FacilioContext context = chain.getContext();
-        Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
+        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
         context.put(AgentConstants.POINT_NAMES,pointNames);
         context.put(AgentConstants.CONTROLLER,controller);
         chain.execute();
@@ -618,7 +617,7 @@ public class PointsAPI {
     public static List<MiscPoint> getAgentPointsSuperficial(List<Long> agentIds) throws Exception {
         Set<Long> controllerIds;
         if ((agentIds != null) && ( ! agentIds.isEmpty())) {
-            controllerIds = ControllerApiV2.getControllerIds(agentIds);
+            controllerIds = AgentConstants.getControllerBean().getControllerIds(agentIds);
             LOGGER.info(" controller ids "+controllerIds);
             if ( ! controllerIds.isEmpty()) {
                 return getControllerPointsSuperficial(new ArrayList<>(controllerIds));

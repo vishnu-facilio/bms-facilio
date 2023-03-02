@@ -20,7 +20,6 @@ import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.point.Point;
@@ -50,7 +49,7 @@ public class ControllerMessenger {
         }
         long controllerId = (long) points.get(0).getControllerId();
         LOGGER.info("Point Context value :"+points);
-        return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
+        return constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), command, points, null);
     }
 
     private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command, Controller controller, int interval) throws Exception {
@@ -252,7 +251,7 @@ public class ControllerMessenger {
     }
 
 public static boolean discoverPoints(long controllerId) throws Exception {
-            IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
+            IotData iotData = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
 }
@@ -280,7 +279,7 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void resetController(long controllerId) throws Exception {
-        IotData iotDat = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.RESET);
+        IotData iotDat = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.RESET);
         MessengerUtil.addAndPublishNewAgentData(iotDat);
     }
 
@@ -309,7 +308,7 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void sendAddModbusTcpPoint(ModbusTcpPointContext tcpPointContext, int interval) throws Exception {
-        Controller controller = ControllerApiV2.getControllerFromDb(tcpPointContext.getControllerId());
+        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(tcpPointContext.getControllerId());
         IotData iotData;
         if (interval > 0) {
             iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.ADD_POINTS, controller, interval);

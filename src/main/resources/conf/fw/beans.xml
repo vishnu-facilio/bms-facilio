@@ -3,7 +3,6 @@
 
 	<bean name="ModuleBean" class="com.facilio.beans.ModuleBeanCacheImpl"></bean>
 	<bean name="ModuleCRUD" class="com.facilio.beans.ModuleCRUDBeanImpl"></bean>
-	<bean name="AgentBean" class="com.facilio.agentv2.cacheimpl.AgentBeanCacheImpl"></bean>
 
 	<bean name="UserBean" class="com.facilio.accounts.impl.UserBeanImpl"></bean>
 	<bean name="OrgBean" class="com.facilio.accounts.impl.OrgBeanCacheImpl"></bean>
@@ -48,5 +47,9 @@
 	<bean name="AgentMigrationBean" class="com.facilio.agentv2.migration.beans.AgentMigrationBeanImpl"></bean>
 
 	<bean name="PermissionSetBean" class="com.facilio.beans.PermissionSetBeanCacheImpl"></bean>
+
+	<!-- Agent and Controller -->
+	<bean name="AgentBean" class="com.facilio.agentv2.cacheimpl.AgentBeanCacheImpl"/>
+	<bean name="ControllerBean" class="com.facilio.agentv2.cacheimpl.ControllerBeanCacheImpl"/>
 
 </beans>

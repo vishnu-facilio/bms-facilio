@@ -1,6 +1,9 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.cacheimpl.ControllerBean;
+import com.facilio.fw.BeanFactory;
 
 public class AgentConstants
 {
@@ -320,4 +323,11 @@ public class AgentConstants
     public static final String CONTROLLERIDS = "controllerIds";
     public static final String COMMISSIONINGLOG_CONTROLLER = "commissioninglogcontroller";
 
+
+    public static AgentBean getAgentBean() throws Exception {
+        return (AgentBean) BeanFactory.lookup("AgentBean");
+    }
+    public static ControllerBean getControllerBean() throws Exception {
+        return (ControllerBean) BeanFactory.lookup("ControllerBean");
+    }
 }

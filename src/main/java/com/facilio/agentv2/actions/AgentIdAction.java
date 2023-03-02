@@ -15,7 +15,6 @@ import org.json.simple.JSONObject;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
@@ -121,7 +120,7 @@ public class AgentIdAction extends AgentActionV2 {
 				long count = -1;
 				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
 					if ((configured != null && configured == Boolean.TRUE)) {
-						count = ControllerApiV2.getControllersCount(context);
+						count = AgentConstants.getControllerBean().getControllersCount(context);
 					} else if (configured != null && configured == Boolean.FALSE) {
 						//data = FieldDeviceApi.getDevices(context);
 						if (CollectionUtils.isNotEmpty(data)) {
@@ -131,7 +130,7 @@ public class AgentIdAction extends AgentActionV2 {
 				setResult(AgentConstants.DATA, count);
 			} else {
 				if ((configured != null && configured == Boolean.TRUE)) {
-					data = ControllerApiV2.getControllerDataForAgent(context);
+					data = AgentConstants.getControllerBean().getControllerDataForAgent(context);
 				}
 				setResult(AgentConstants.DATA, data);
 			}
@@ -157,9 +156,9 @@ public class AgentIdAction extends AgentActionV2 {
 
 			if (count != null && count) {
 				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-				setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(context));
+				setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllersCount(context));
 			} else {
-				setResult(AgentConstants.DATA, ControllerApiV2.getControllerDataForAgent(context));
+				setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllerDataForAgent(context));
 			}
 			ok();
 		} catch (Exception e) {
@@ -177,7 +176,7 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.SEARCH_KEY, getName());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(context));
+            setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllersCount(context));
             ok();
             return SUCCESS;
         } catch (Exception e) {
@@ -194,7 +193,7 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.AGENT_ID, getAgentId());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(context);
+			List<Map<String, Object>> controllers = AgentConstants.getControllerBean().getControllerDataForAgent(context);
             setResult(AgentConstants.DATA, controllers);
             ok();
         } catch (Exception e) {
@@ -249,8 +248,8 @@ public class AgentIdAction extends AgentActionV2 {
         JSONArray controllerArray = new JSONArray();
         try {
             LOGGER.info(" getting controller for agentId "+agentId);
-                //Map<String, Controller> controllerData = ControllerApiV2.getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
-                Map<String, Controller> controllerData = ControllerApiV2.getControllerDataForAgent(getAgentId(),constructListContext(new FacilioContext()));
+                //Map<String, Controller> controllerData = AgentConstants.getControllerBean().getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
+                Map<String, Controller> controllerData = AgentConstants.getControllerBean().getControllerDataForAgent(getAgentId(),constructListContext(new FacilioContext()));
                 if ((controllerData != null) && (!controllerData.isEmpty())) {
                     JSONObject object = new JSONObject();
                     for (Controller controller : controllerData.values()) {
@@ -494,7 +493,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getControllerFilter() {
         try {
-            List<Map<String, Object>> agentControllerFilterData = ControllerApiV2.getControllerFilterData(getAgentId() , getControllerType());
+            List<Map<String, Object>> agentControllerFilterData = AgentConstants.getControllerBean().getControllerFilterData(getAgentId() , getControllerType());
             setResult(AgentConstants.DATA, agentControllerFilterData);
             ok();
             return SUCCESS;
@@ -507,7 +506,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getControllerTypeFilter() {
         try {
-            setResult(AgentConstants.DATA, ControllerApiV2.getControllerTypes(getAgentId()));
+            setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllerTypes(getAgentId()));
             ok();
             return SUCCESS;
         } catch (Exception e) {

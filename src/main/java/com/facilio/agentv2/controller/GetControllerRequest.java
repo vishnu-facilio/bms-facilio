@@ -29,7 +29,7 @@ public class GetControllerRequest
     private FacilioContext context = new FacilioContext();
     private Criteria criteria = new Criteria();
 
-    private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(GetControllerRequest.class.getName());
 
     private ModuleBean modBean;
     private final List<FacilioField> fields ;
@@ -56,7 +56,7 @@ public class GetControllerRequest
         }
 
         FacilioContext context = getControllerChain.getContext();
-        String moduleName = ControllerApiV2.getControllerModuleName(controllerType);
+        String moduleName = AgentConstants.getControllerBean().getControllerModuleName(controllerType);
         if (moduleName == null || moduleName.isEmpty()) {
             throw new Exception("Exception Occurred, Module name is null or empty " + moduleName + "   for ");
         }
@@ -119,7 +119,7 @@ public class GetControllerRequest
                 }
             }
             if (controllerType != FacilioControllerType.MODBUS_RTU) {
-                List<Condition> conditions = ControllerApiV2.getControllerCondition(controllerProperties, controllerType);
+                List<Condition> conditions = AgentConstants.getControllerBean().getControllerCondition(controllerProperties, controllerType);
                 if (!conditions.isEmpty()) {
                     criteria.addAndConditions(conditions);
                     context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);

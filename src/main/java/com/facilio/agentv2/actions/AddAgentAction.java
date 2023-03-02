@@ -80,7 +80,6 @@ public class AddAgentAction extends AgentActionV2
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
             agent.setProcessorVersion(2);
-//            agent.setPartitionId(partitionId);
             agent.setMessageSourceId(getMessageSourceId());
             agent.setSubscribeTopics(getSubscribeTopics());
             switch (AgentType.valueOf(agentType)){
@@ -101,6 +100,10 @@ public class AddAgentAction extends AgentActionV2
                     agent.setPort(getPort());
                     agent.setIpAddress(getIpAddress());
                     break;
+            }
+
+            if(AgentType.valueOf(agentType) != AgentType.NIAGARA && AgentType.valueOf(agentType) != AgentType.FACILIO){
+                agent.setWritable(true);
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();

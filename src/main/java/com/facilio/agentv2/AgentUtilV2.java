@@ -7,7 +7,6 @@ import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
@@ -99,7 +98,7 @@ public class AgentUtilV2
                 if( ! agentIds.isEmpty()){
                     try {
                         LOGGER.info(" controller data ");
-                        overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(agentIds));
+                        overiewData.put(AgentConstants.CONTROLLER,AgentConstants.getControllerBean().getControllerCountData(agentIds));
                     } catch (Exception e) {
                         LOGGER.info("Exception while getting controllerCountdata",e);
                     }
@@ -126,7 +125,7 @@ public class AgentUtilV2
             FacilioAgent agent = agentBean.getAgent(agentId);
             if(agent != null) {
                 overiewData.putAll(FieldUtil.getAsJSON(agent));
-                overiewData.put(AgentConstants.CONTROLLER, ControllerApiV2.getControllerCountData(agentId));
+                overiewData.put(AgentConstants.CONTROLLER, AgentConstants.getControllerBean().getControllerCountData(agentId));
                 overiewData.put(AgentConstants.POINTS, PointsAPI.getPointsCountData(agentId));
             }
         } catch (Exception e) {
@@ -407,17 +406,16 @@ public class AgentUtilV2
 
     private AgentEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, List<Controller> controllers) {
         AgentEventContext event = new AgentEventContext();
+        event.setMessage("Controllers are unresponsive in agent " + agent.getDisplayName());
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
-            event.setMessage("Data missing for "+controllers.size()+" controllers in agent "+agent.getDisplayName());
             StringBuilder descBuilder = new StringBuilder();
-            for (Controller c :
-                    controllers) {
-                descBuilder.append(c.getName()).append(",");
+            descBuilder.append("Count : " + controllers.size());
+            descBuilder.append(", Controller Names: ");
+            for (Controller c : controllers) {
+                descBuilder.append(c.getName()).append(", ");
             }
             event.setDescription(descBuilder.toString());
             event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
-        }else{
-            event.setMessage("Data arriving for all controllers in agent "+agent.getDisplayName());
         }
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
@@ -431,17 +429,13 @@ public class AgentUtilV2
     private static AgentEventContext getAgentEventContext(FacilioAgent agent, long currentTime, String severity) {
         AgentEventContext event = new AgentEventContext();
         String description = null;
-        String message = null;
+        event.setMessage("Agent "+agent.getDisplayName() +" connection lost");
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            description = "Agent " + agent.getDisplayName()+ " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
-            message = "Agent "+agent.getDisplayName() +" connection lost ";
+            description = "Agent " + agent.getDisplayName()+ " has lost connection with the facilio cloud on " + DateTimeUtil.getFormattedTime(currentTime);
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
             description = "Agent " + agent.getDisplayName() + " has reestablished the connection with the facilio cloud on " + DateTimeUtil.getFormattedTime(currentTime);
-            message = "Agent "+agent.getDisplayName() +" connection reestablished";
         }
-        event.setMessage(message);
         event.setDescription(description);
-        //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
         event.setSiteId(AccountUtil.getCurrentSiteId());
@@ -512,7 +506,7 @@ public class AgentUtilV2
 
     private static boolean isConfiguredPointExist(long agentId) throws Exception {
         AgentBean agentBean = getAgentBean();
-        Set<Long> controllerIds = ControllerApiV2.getControllerIds(Collections.singletonList(agentId));
+        Set<Long> controllerIds = AgentConstants.getControllerBean().getControllerIds(Collections.singletonList(agentId));
         if(controllerIds.isEmpty()){
             return false;
         }
