@@ -51,6 +51,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-team.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-iot.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-stage2.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-user.properties
