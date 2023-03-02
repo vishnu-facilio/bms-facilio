@@ -184,8 +184,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
     }
 
 	private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
+		boolean isSuperAdmin = false;
 		if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isSuperAdmin()) {
-			return ScopeFieldsAndCriteria.of(new ArrayList<>(), null);
+			isSuperAdmin = true;
 		}
 		if(joinModules == null) {
 			joinModules = Collections.singletonList(primaryModule);
@@ -200,7 +201,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 
 		for(FacilioModule module : joinModules) {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-				Pair<List<FacilioField>, Criteria> fieldsAndCriteriaForSubquery = constructScopeVariableCriteria(module);
+				Pair<List<FacilioField>, Criteria> fieldsAndCriteriaForSubquery = constructScopeVariableCriteria(module,isSuperAdmin);
 				if (fieldsAndCriteriaForSubquery != null) {
 					if(!isInsert) {
 						if (CollectionUtils.isNotEmpty(fieldsAndCriteriaForSubquery.getLeft())) {
@@ -215,7 +216,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			}
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
 			ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
-			if(moduleScoping != null) {
+			if(moduleScoping != null && !isSuperAdmin) {
 				if(!isInsert) {
 					fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 					if (criteria == null) {
@@ -228,13 +229,14 @@ public class ScopeHandlerImpl extends ScopeHandler {
 				break;
 			}
 		}
+
 		return ScopeFieldsAndCriteria.of(fields, criteria);
 	}
 
-	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module) throws Exception {
+	private Pair<List<FacilioField>, Criteria> constructScopeVariableCriteria(FacilioModule module,boolean isSuperAdmin) throws Exception {
 		if(module != null && (module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE))){
 			if(AccountUtil.getCurrentApp() != null) {
-				return getDefaultCriteriaForModules(module);
+				return getDefaultCriteriaForModules(module,isSuperAdmin);
 			}
 			return null;
 		}
@@ -246,7 +248,10 @@ public class ScopeHandlerImpl extends ScopeHandler {
 
 
 	//only for induction template and inspection template - need to remove this once sites are moved to single field in module
-	private Pair<List<FacilioField>, Criteria> getDefaultCriteriaForModules(FacilioModule module) throws Exception {
+	private Pair<List<FacilioField>, Criteria> getDefaultCriteriaForModules(FacilioModule module,boolean isSuperAdmin) throws Exception {
+		if(isSuperAdmin) {
+			return null;
+		}
 		List<FacilioField> fieldList = new ArrayList<>();
 		Criteria criteria = new Criteria();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

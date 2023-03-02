@@ -1,10 +1,13 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
@@ -39,12 +42,13 @@ import java.util.*;
 
 @Log4j
 public class GlobalScopeUtil {
-    public static DAG constructAndGetGraph(long appId,int maxGraphSize) throws Exception {
+    public static DAG constructAndGetGraph(long appId, int maxGraphSize) throws Exception {
         GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
         List<GlobalScopeVariableContext> globalScopeVariableList = scopeBean.getAllScopeVariable(appId, -1, -1, null, false);
-        return constructAndGetGraph(globalScopeVariableList,maxGraphSize,false);
+        return constructAndGetGraph(globalScopeVariableList, maxGraphSize, false);
     }
-    public static DAG constructAndGetGraph(List<GlobalScopeVariableContext> globalScopeVariableList,int maxGraphSize,boolean checkInactive) throws Exception {
+
+    public static DAG constructAndGetGraph(List<GlobalScopeVariableContext> globalScopeVariableList, int maxGraphSize, boolean checkInactive) throws Exception {
         Node defaultNode = new Node(null);
         DAG scopeGraph = new DAG(maxGraphSize); //Maximum of two levels chaining allowed in global scope
         if (CollectionUtils.isNotEmpty(globalScopeVariableList)) {
@@ -105,7 +109,7 @@ public class GlobalScopeUtil {
                 FacilioModule currentModule = modBean.getModule(moduleField.getModuleId());
                 if (currentModule.getModuleId() == module.getModuleId()) {
                     FacilioField field = modBean.getField(moduleField.getFieldName(), currentModule.getName());
-                    Pair<Criteria,Criteria> criterias = getScopeCriteriaForNode(edge, field, new Criteria(), new ArrayList<>(),new Criteria());
+                    Pair<Criteria, Criteria> criterias = getScopeCriteriaForNode(edge, field, new Criteria(), new ArrayList<>(), new Criteria());
                     if (!field.getDataTypeEnum().isRelRecordField()) {
                         allFields.add(field);
                     }
@@ -138,7 +142,7 @@ public class GlobalScopeUtil {
         return criteria;
     }
 
-    public static Pair<Criteria,Criteria> getScopeCriteriaForNode(Edge currentEdge, FacilioField scopeField, Criteria nodeCriteria, List<FacilioField> fields,Criteria intermediateCriteria) throws Exception {
+    public static Pair<Criteria, Criteria> getScopeCriteriaForNode(Edge currentEdge, FacilioField scopeField, Criteria nodeCriteria, List<FacilioField> fields, Criteria intermediateCriteria) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         GlobalScopeVariableContext scopeVariable = (GlobalScopeVariableContext) currentEdge.getEndNode().retriveObject();
         List<Edge> forwardingEdges = currentEdge.getEndNode().getForwardingEdges();
@@ -151,7 +155,7 @@ public class GlobalScopeUtil {
                 ScopeVariableModulesFields moduleField = (ScopeVariableModulesFields) edge.retriveObject();
                 FacilioField field = modBean.getField(moduleField.getFieldName(), modBean.getModule(moduleField.getModuleId()).getName());
                 intermediateCriteria = new Criteria();
-                Pair<Criteria,Criteria> criteriaPair = getScopeCriteriaForNode(edge, field, nodeCriteria, fields, intermediateCriteria);
+                Pair<Criteria, Criteria> criteriaPair = getScopeCriteriaForNode(edge, field, nodeCriteria, fields, intermediateCriteria);
                 c.andCriteria(criteriaPair.getRight());
             }
             intermediateCriteria.andCriteria(c);
@@ -159,19 +163,64 @@ public class GlobalScopeUtil {
         }
         Criteria subQueryCriteria = new Criteria();
         Criteria valGenCriteria = getValueGeneratorCriteria(scopeVariable, scopeField);
-        if (valGenCriteria != null) {
-            subQueryCriteria.andCriteria(valGenCriteria);
+        boolean isbuildingOperatorSpecialHandling = buildingOperatorSpecialHandling(subQueryCriteria,scopeVariable,scopeField, nodeCriteria);
+        if(!isbuildingOperatorSpecialHandling) {
+            if (valGenCriteria != null) {
+                subQueryCriteria.andCriteria(valGenCriteria);
+            }
+            if (nodeCriteria != null && !nodeCriteria.isEmpty()) {
+                subQueryCriteria.andCriteria(nodeCriteria);
+            }
         }
-        if (nodeCriteria != null && !nodeCriteria.isEmpty()) {
-            subQueryCriteria.andCriteria(nodeCriteria);
-        }
+
         Condition condition = getSubQueryCondition(scopeField, subQueryCriteria);
         Criteria finalCriteria = new Criteria();
         if (condition != null) {
             finalCriteria.addAndCondition(condition);
         }
-        return Pair.of(intermediateCriteria,finalCriteria);
+        return Pair.of(intermediateCriteria, finalCriteria);
     }
+
+    private static boolean buildingOperatorSpecialHandling(Criteria subQueryCriteria, GlobalScopeVariableContext scopeVariable, FacilioField scopeField,Criteria nodeCriteria) throws Exception {
+        boolean isbuildingOperatorSpecialHandling = false;
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Criteria resCriteria = new Criteria();
+        if (scopeVariable != null && isBaseSpaceScopeModule(scopeVariable) && scopeField != null && scopeField instanceof BaseLookupField) {
+            BaseLookupField scopeLookup = (BaseLookupField) scopeField;
+            if (scopeLookup.getLookupModule() != null && scopeLookup.getLookupModule().getName() != null && scopeLookup.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+                isbuildingOperatorSpecialHandling = true;
+                if (scopeVariable.getTypeEnum() == GlobalScopeVariableContext.Type.SCOPED) {
+                    List<Long> evaluatedIds = getEvaluatedValuesForGlobalScopeVariable(scopeVariable.getLinkName());
+                    if (CollectionUtils.isNotEmpty(evaluatedIds)) {
+                        List<Long> ids = AccountUtil.getCurrentUser().getAccessibleSpace();
+                        if (CollectionUtils.isNotEmpty(ids)) {
+                            evaluatedIds.retainAll(ids);
+                        }
+                        resCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)), StringUtils.join(evaluatedIds, ","), BuildingOperator.BUILDING_IS));
+                    }
+                }
+                if(!nodeCriteria.isEmpty()) {
+                    resCriteria.andCriteria(nodeCriteria);
+                }
+                subQueryCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)), StringUtils.join(V3RecordAPI.getRecordsMap(getScopeVariableModule(scopeVariable).getName(), null, resCriteria).keySet(), ","), BuildingOperator.BUILDING_IS));
+            }
+        }
+        return isbuildingOperatorSpecialHandling;
+    }
+
+    private static boolean isBaseSpaceScopeModule(GlobalScopeVariableContext scopeVariable) throws Exception{
+        FacilioModule scopeModule = getScopeVariableModule(scopeVariable);
+        if(scopeModule != null && scopeModule.getName() != null) {
+            while (scopeModule != null) {
+                if (scopeModule.getName() != null && scopeModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+                    return true;
+                }
+                scopeModule = scopeModule.getExtendModule();
+            }
+        }
+        return false;
+    }
+
 
     private static Condition getSubQueryCondition(FacilioField scopeField, Criteria subQueryCriteria) {
         Condition condition = null;
@@ -192,12 +241,12 @@ public class GlobalScopeUtil {
     }
 
     private static boolean isUserOrRequesterField(FacilioField scopeField) {
-        List<String> mods = Arrays.asList("users","requester");
-        if(scopeField instanceof BaseLookupField) {
+        List<String> mods = Arrays.asList("users", "requester");
+        if (scopeField instanceof BaseLookupField) {
             BaseLookupField lookupField = (BaseLookupField) scopeField;
-            if(lookupField != null && lookupField.getLookupModule() != null) {
+            if (lookupField != null && lookupField.getLookupModule() != null) {
                 FacilioModule lookupModule = lookupField.getLookupModule();
-                if(lookupModule != null && lookupModule.getName() != null && mods.contains(lookupModule.getName())) {
+                if (lookupModule != null && lookupModule.getName() != null && mods.contains(lookupModule.getName())) {
                     return true;
                 }
             }
@@ -231,8 +280,8 @@ public class GlobalScopeUtil {
 
         //This is supported here for mobile - we can remove after all switch is supported in mobile
         try {
-            Long currentSiteId = (Long) AccountUtil.getSwitchScopingFieldValue("siteId");
-            if (AccountUtil.getShouldApplySwitchScope() && currentSiteId != null && currentSiteId > 0) {
+            long currentSiteId = AccountUtil.getCurrentSiteId();
+            if (currentSiteId > 0) {
                 switchValues = getOldSwitchSiteId(scopeVariable, currentSiteId, switchValues);
             }
         } catch (Exception e) {
@@ -240,7 +289,11 @@ public class GlobalScopeUtil {
         }
 
         if (scopeVariable != null && scopeVariable.getTypeEnum() != null) {
-            if (scopeVariable.getTypeEnum().getIndex() == GlobalScopeVariableContext.Type.SCOPED.getIndex()) {
+            boolean isSuperAdmin = false;
+            if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isSuperAdmin()) {
+                isSuperAdmin = true;
+            }
+            if (scopeVariable.getTypeEnum().getIndex() == GlobalScopeVariableContext.Type.SCOPED.getIndex() && !isSuperAdmin) {
                 ValueGeneratorContext valGen = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
                 if (valGen != null) {
                     ValueGenerator valueGenerator = ValueGeneratorUtil.getValueGeneratorObjectForLinkName(valGen.getLinkName());
@@ -257,10 +310,10 @@ public class GlobalScopeUtil {
                             crit = new Criteria();
                         }
                         List<Long> ids = getEvaluatedValuesForGlobalScopeVariable(scopeVariable.getLinkName());
-                        if(ids != null) {
+                        if (ids != null) {
                             String val = StringUtils.join(ids, ",");
-                            if(scopeVariable.getApplicableModuleName() != null && scopeVariable.getApplicableModuleName().equals("users")) {
-                                crit.addAndCondition(CriteriaAPI.getCondition("ORG_USERID","orgUserId", val, NumberOperators.EQUALS));
+                            if (scopeVariable.getApplicableModuleName() != null && scopeVariable.getApplicableModuleName().equals("users")) {
+                                crit.addAndCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", val, NumberOperators.EQUALS));
                             } else {
                                 crit.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(scopeVariable.getApplicableModuleId())), val, NumberOperators.EQUALS));
                             }
@@ -274,8 +327,28 @@ public class GlobalScopeUtil {
                 }
                 crit.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(modBean.getModule(scopeVariable.getApplicableModuleId())), StringUtils.join(switchValues, ","), NumberOperators.EQUALS));
             }
+
+            if(!isSuperAdmin) {
+                if (crit == null) {
+                    crit = new Criteria();
+                }
+                applyUserScopingCriteriaForScopeModule(crit, scopeVariable);
+            }
         }
         return crit;
+    }
+
+    private static void applyUserScopingCriteriaForScopeModule(Criteria criteria,GlobalScopeVariableContext scopeVariableContext) throws Exception {
+        //Global scoping chaining from user scoping
+        FacilioModule currentApplicableModule = getScopeVariableModule(scopeVariableContext);
+        if(currentApplicableModule != null) {
+            ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(currentApplicableModule.getModuleId());
+            ScopingConfigContext moduleUserScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
+            if(moduleUserScoping != null) {
+                ApplicationApi.computeValueForScopingField(moduleUserScoping,currentApplicableModule);
+                criteria.andCriteria(moduleUserScoping.getCriteria());
+            }
+        }
     }
 
     public static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
@@ -315,11 +388,11 @@ public class GlobalScopeUtil {
 
     private static List<Long> getEvaluatedValuesForGlobalScopeVariable(String linkName) {
         Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationMap = AccountUtil.getGlobalScopeVariableValues();
-        if(MapUtils.isNotEmpty(variableEvaluationMap)){
+        if (MapUtils.isNotEmpty(variableEvaluationMap)) {
             GlobalScopeVariableEvaluationContext scopeVariableEvaluationContext = variableEvaluationMap.get(linkName);
-            if(scopeVariableEvaluationContext != null) {
+            if (scopeVariableEvaluationContext != null) {
                 List<Long> values = scopeVariableEvaluationContext.getValues();
-                if(values != null) {
+                if (values != null) {
                     return values;
                 }
             }
@@ -327,13 +400,13 @@ public class GlobalScopeUtil {
         return null;
     }
 
-    private static List<Long> getOldSwitchSiteId(GlobalScopeVariableContext scopeVariable,Long currentSiteId,List<Long> switchValue) throws Exception {
+    private static List<Long> getOldSwitchSiteId(GlobalScopeVariableContext scopeVariable, Long currentSiteId, List<Long> switchValue) throws Exception {
         ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
-        if(scopeVariable != null && scopeVariable.getValueGeneratorId() != null) {
+        if (scopeVariable != null && scopeVariable.getValueGeneratorId() != null) {
             ValueGeneratorContext valueGeneratorContext = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
-            if(valueGeneratorContext != null && valueGeneratorContext.getLinkName() != null && valueGeneratorContext.getLinkName().equals("com.facilio.modules.AccessibleBasespaceValueGenerator")) {
+            if (valueGeneratorContext != null && valueGeneratorContext.getLinkName() != null && valueGeneratorContext.getLinkName().equals("com.facilio.modules.AccessibleBasespaceValueGenerator")) {
                 FacilioModule module = getScopeVariableModule(scopeVariable);
-                if(module != null && module.getName() != null && module.getName().equals("site")) {
+                if (module != null && module.getName() != null && module.getName().equals("site")) {
                     return Collections.singletonList(currentSiteId);
                 }
             }

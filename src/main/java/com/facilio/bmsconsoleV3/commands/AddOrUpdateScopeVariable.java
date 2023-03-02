@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.GlobalScopeBean;
+import com.facilio.bmsconsole.exception.AllowedLevelExceededException;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
@@ -23,6 +24,7 @@ public class AddOrUpdateScopeVariable extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         try {
+            int maxAllowedScopeVariable = 5;
             GlobalScopeVariableContext scopeVariable = (GlobalScopeVariableContext) context.get(FacilioConstants.ContextNames.RECORD);
             Long scopeVariableId = -1l;
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -31,11 +33,16 @@ public class AddOrUpdateScopeVariable extends FacilioCommand {
                 if(scopeVariable.getAppId() == null){
                     throw new IllegalArgumentException("Appid cannot be null");
                 }
+                List<GlobalScopeVariableContext> globalScopeVariableList = scopeBean.getAllScopeVariable(scopeVariable.getAppId(),-1,-1,null,false);
                 ScopingUtil.checkUserSwitchAndThrowError(scopeVariable);
                 if (scopeVariable.getId() > 0) {
                     scopeVariableId = scopeBean.updateScopeVariable(scopeVariable);
                 } else {
+                    maxAllowedScopeVariable--;
                     scopeVariableId = scopeBean.addScopeVariable(scopeVariable);
+                }
+                if(CollectionUtils.isNotEmpty(globalScopeVariableList) && globalScopeVariableList.size() > maxAllowedScopeVariable) {
+                    throw new AllowedLevelExceededException("The maximum limit for creating scopes in the given app has been exceeded");
                 }
                 scopeBean.deleteScopeVariableModulesFieldsByScopeVariableId(scopeVariable.getId());
                 if (CollectionUtils.isNotEmpty(scopeVariable.getScopeVariableModulesFieldsList())) {
@@ -60,6 +67,7 @@ public class AddOrUpdateScopeVariable extends FacilioCommand {
             if(e instanceof InvocationTargetException){
                 throw new RESTException(ErrorCode.VALIDATION_ERROR,((InvocationTargetException) e).getTargetException().getMessage());
             }
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,e.getMessage());
         }
         return false;
     }
