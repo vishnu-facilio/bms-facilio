@@ -21,7 +21,7 @@ public class PlannedMaintenanceV3Config {
                 .beforeSave(TransactionChainFactoryV3.PMV2BeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.PPMAfterPatchChain())
                 .create()
-                .beforeSave(new PMBeforeCreateCommand(), new AddPMDetailsBeforeCreateCommand())
+                .beforeSave(TransactionChainFactoryV3.PMV2BeforeSaveChain())
                 .delete()
                 .afterDelete(new DeletePPMPreOpenWorkorders())
                 .list()

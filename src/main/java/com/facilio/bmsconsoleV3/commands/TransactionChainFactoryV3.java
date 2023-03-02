@@ -16,6 +16,7 @@ import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOp
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
 import com.facilio.bmsconsoleV3.commands.people.SetPeopleTypeCommand;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.RemoveDuplicateSites;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
@@ -2917,6 +2918,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain PMV2BeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new RemoveDuplicateSites());
         c.addCommand(new PMBeforeCreateCommand());
         c.addCommand(new AddPMDetailsBeforeUpdateCommand());
         c.addCommand(new UpdateResourcePlannerOnPMSitesUpdateCommand());
@@ -2952,6 +2954,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkflowExportChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new WorkflowExportCommand());
+        return c;
+    }
+    public static FacilioChain PMV2BeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RemoveDuplicateSites());
+        c.addCommand(new PMBeforeCreateCommand());
+        c.addCommand(new AddPMDetailsBeforeCreateCommand());
         return c;
     }
 }
