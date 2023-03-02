@@ -179,10 +179,16 @@ public class OutgoingMailAPI {
         if(mailJson.get(MailConstants.Email.MESSAGE) != null){
             return;
         }
+        mailJson.put(MailConstants.Email.MESSAGE, getMailMessage(mailJson));
+    }
+
+    private static Object getMailMessage(JSONObject mailJson) {
         if(mailJson.get(MailConstants.Email.HTML_CONTENT) != null) {
-            mailJson.put(MailConstants.Email.MESSAGE, mailJson.remove(MailConstants.Email.HTML_CONTENT));
+            return mailJson.remove(MailConstants.Email.HTML_CONTENT);
         } else if(mailJson.get(MailConstants.Email.TEXT_CONTENT) != null) {
-            mailJson.put(MailConstants.Email.MESSAGE, mailJson.remove(MailConstants.Email.TEXT_CONTENT));
+            return mailJson.remove(MailConstants.Email.TEXT_CONTENT);
+        } else { // if there is no content has been set. setting dummy content
+            return "";
         }
     }
 

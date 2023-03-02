@@ -26,6 +26,8 @@ public class FacilioWeatherDataJob extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) {
+		int noOfStations = 0;  // remove these later
+		int noOfReadings = 0;
 		try {
 			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			if (!WeatherAPI.allow()) {
@@ -69,15 +71,18 @@ public class FacilioWeatherDataJob extends FacilioJob {
 
 			stationCurrentReadings = WeatherUtil.getWeatherReading(FacilioConstants.ContextNames.NEW_WEATHER_READING, stationCurrentReadings);
 			List<ReadingContext> newWeatherReadings = WeatherUtil.getReadingList(stationCurrentReadings);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 486L && FacilioProperties.getRegionCountryCode().equals("EU")) {  // remove it
-				LOGGER.info("WEATHER_LOG :: No of stations :: "+stationCurrentReadings.size());
-				LOGGER.info("WEATHER_LOG :: No of points going to be updated :: "+newWeatherReadings.size());
-			}
+			noOfStations = stationCurrentReadings.size();
+			noOfReadings = newWeatherReadings.size();
 			WeatherUtil.addReading(FacilioConstants.ContextNames.NEW_WEATHER_READING,newWeatherReadings);
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			CommonCommandUtil.emailException("FacilioWeatherDataJob", "Exception in Facilio Weather Data job ", e);
+		} finally {
+			if(noOfStations != 0) {
+				LOGGER.info("WEATHER_LOG :: No of weather stations :: "+noOfStations);
+				LOGGER.info("WEATHER_LOG :: No of weather points going to be updated :: "+noOfReadings);
+			}
 		}
 	}
 }

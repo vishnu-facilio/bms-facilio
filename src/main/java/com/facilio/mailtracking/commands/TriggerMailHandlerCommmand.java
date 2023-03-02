@@ -79,6 +79,9 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
         }
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(recordModuleId);
+        if(module == null) {
+            return false;
+        }
         OutgoingMailData mailData = MAIL_DATA_MAP.get(module.getName());
         if(mailData != null) {
             mailData.loadMailData(mailLogContext);

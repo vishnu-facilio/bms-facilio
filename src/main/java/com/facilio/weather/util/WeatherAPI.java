@@ -161,6 +161,14 @@ public class WeatherAPI {
 	}
 
 	public static void associateSiteWithWeatherStation(long siteId, long stationId) throws Exception {
+		relationBetweenSiteAndWeatherStation(siteId, stationId, true);
+	}
+
+	public static void dissociateSiteWithWeatherStation(long siteId, long stationId) throws Exception {
+		relationBetweenSiteAndWeatherStation(siteId, stationId, false);
+	}
+
+	public static void relationBetweenSiteAndWeatherStation(long siteId, long stationId, boolean enable) throws Exception {
 		Map<String, List<Object>> queryParameters = new HashMap<>();
 		queryParameters.put("relationName", new ArrayList(){{
 			add("belongsto");
@@ -172,13 +180,31 @@ public class WeatherAPI {
 		List<Long> idlist = new ArrayList();
 		idlist.add(stationId);
 		relationValue.put("weatherstation", idlist);
-		RelationshipDataUtil.associateRelation("site", FieldUtil.getAsJSON(relationValue), queryParameters, null);
+		if(enable) {
+			RelationshipDataUtil.associateRelation("site", FieldUtil.getAsJSON(relationValue), queryParameters, null);
+		} else {
+			RelationshipDataUtil.dissociateRelation("site", FieldUtil.getAsJSON(relationValue), queryParameters, null);
+		}
 	}
 
 	public static long getStationIdForSiteId(Long siteId) throws Exception {
 		String revLinkName = "beingusedby";
 		String requiredModuleName = "weatherstation";
 		JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(revLinkName, requiredModuleName, siteId, -1, -1);
+		JSONObject data = (JSONObject) recordsWithRelationship.get("data");
+		if(data != null) {
+			List<Map> resources = (ArrayList<Map>) data.get(requiredModuleName);
+			if(!resources.isEmpty()) {
+				return (long) resources.get(0).get("id");
+			}
+		}
+		return 0;
+	}
+
+	public static long getSiteIdForStationId(Long stationId) throws Exception {
+		String revLinkName = "belongsto";
+		String requiredModuleName = "site";
+		JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(revLinkName, requiredModuleName, stationId, -1, -1);
 		JSONObject data = (JSONObject) recordsWithRelationship.get("data");
 		if(data != null) {
 			List<Map> resources = (ArrayList<Map>) data.get(requiredModuleName);

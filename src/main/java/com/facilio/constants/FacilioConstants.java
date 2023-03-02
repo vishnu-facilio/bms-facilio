@@ -1496,6 +1496,7 @@ public class FacilioConstants {
 		public static final String SKIP_VALIDATION = "skipValidation";
 		public static final String DELTA_RESETTED = "deltaResetted";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
+		public static final String SKIP_PREV_READING_DATA_META = "skipPrevReadingMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_ID = "readingDataMetaId";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";

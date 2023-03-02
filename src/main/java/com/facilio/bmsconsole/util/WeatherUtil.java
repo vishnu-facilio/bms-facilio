@@ -394,6 +394,7 @@ public class WeatherUtil {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+		context.put(FacilioConstants.ContextNames.SKIP_PREV_READING_DATA_META, true);
 		FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addReading.execute(context);
 	}

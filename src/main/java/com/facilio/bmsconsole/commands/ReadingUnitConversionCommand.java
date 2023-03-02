@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -23,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ReadingUnitConversionCommand extends FacilioCommand {
 
@@ -34,6 +31,9 @@ public class ReadingUnitConversionCommand extends FacilioCommand {
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+		if(metaMap == null || metaMap.isEmpty()) {
+			return false;
+		}
 		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 
 		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {

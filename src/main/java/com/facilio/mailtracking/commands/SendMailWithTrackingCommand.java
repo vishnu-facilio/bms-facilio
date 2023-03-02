@@ -27,11 +27,11 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
             context.put(MailConstants.Params.MESSAGE_ID, messageId);
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.SENT);
             context.put(MailConstants.Params.RECIPIENT_STATUS, RecipientStatus.SENT);
+            LOGGER.info("OG_MAIL_LOG :: email sent successfully"+logMeta);
         } catch (Exception e) {
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.FAILED);
             LOGGER.error("OG_MAIL_ERROR :: SendMailFailed "+logMeta+" with exception :: ", e);
         }
-        LOGGER.info("OG_MAIL_LOG :: email sent successfully"+logMeta);
         return false;
     }
 

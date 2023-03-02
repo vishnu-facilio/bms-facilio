@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,11 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		boolean skipRDM = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_PREV_READING_DATA_META, false);
+		if(skipRDM) {
+			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, new HashMap<String, ReadingDataMeta>());
+			return false;
+		}
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Long startTime = System.currentTimeMillis();
 		if (readingMap != null && !readingMap.isEmpty()) {
