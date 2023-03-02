@@ -53,6 +53,9 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                     if (MapUtils.isEmpty(subformMap) || !subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time slot cannot be empty");
                     }
+                    if(booking.getBookingDate()==null){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Date cannot be null");
+                    }
                     FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
                     List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
                     if(CollectionUtils.isEmpty(slotList)){

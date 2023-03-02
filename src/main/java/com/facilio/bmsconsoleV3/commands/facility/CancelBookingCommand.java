@@ -58,7 +58,7 @@ public class CancelBookingCommand extends FacilioCommand {
                    if(CollectionUtils.isNotEmpty(bookingSlots)) {
                        for(BookingSlotsContext bookingSlot : bookingSlots) {
                            SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
-                           if (slot != null) {
+                           if (slot != null && slot.getBookingCount() !=null && booking.getNoOfAttendees()!=null) {
                                //reverting booking count in slot
                                slot.setBookingCount(slot.getBookingCount() - booking.getNoOfAttendees());
                                V3RecordAPI.updateRecord(slot, slotModule, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
