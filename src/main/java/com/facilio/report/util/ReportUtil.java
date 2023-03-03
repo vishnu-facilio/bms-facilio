@@ -347,14 +347,21 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 			else if( appId != 0 )
 			{
-				List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
-				for (WebTabContext webtab : webtabs) {
-					if (webtab.getTypeEnum() == WebTabContext.Type.MODULE ) {
-						moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
-					}
-					else if(!isPivot && webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
-							webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("analytics_reports"))){
-						isAnalyticsReport = true;
+				if(moduleName != null && (moduleName.equals("energydata") || moduleName.equals("energyData"))){
+					FacilioModule energyData = modBean.getModule("energydata");
+					moduleIds.add(energyData.getModuleId());
+					isAnalyticsReport = true;
+				}
+				else
+				{
+					List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
+					for (WebTabContext webtab : webtabs) {
+						if (webtab.getTypeEnum() == WebTabContext.Type.MODULE) {
+							moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
+						} else if (!isPivot && webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
+								webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("analytics_reports"))) {
+							isAnalyticsReport = true;
+						}
 					}
 				}
 			}
