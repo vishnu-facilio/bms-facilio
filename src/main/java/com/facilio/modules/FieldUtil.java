@@ -713,21 +713,79 @@ public class FieldUtil {
 	}
 
     public static Object getValue(ModuleBaseWithCustomFields record, FacilioField field) throws Exception {
-		Object value;
+		Object value=null;
 		if (field.isDefault()) {
-			value = PropertyUtils.getProperty(record, field.getName());
+			try{
+				if(PropertyUtils.isReadable(record,field.getName())){
+					value = PropertyUtils.getProperty(record, field.getName());
+				}else{
+					LOGGER.info("No getter method available for field name "+field.getName());
+				}
+			}
+			catch (Exception e){
+				LOGGER.info("Exception occured while calling getValue method for field name "+field.getName());
+			}
+
 		} else {
 			value = record.getDatum(field.getName());
 		}
 		return value;
 	}
+	public static Object getProperty(Object bean,String name){
+		Object value=null;
+		try{
+			if(PropertyUtils.isReadable(bean,name)){
+				value=PropertyUtils.getProperty(bean, name);
+			}else{
+				LOGGER.info("No getter method available for field name "+name);
+			}
+		}catch (Exception e){
+			LOGGER.info("Exception occured while calling getProperty method for field name "+name);
+		}
+		return value;
+	}
+	public static void setProperty(Object bean,String name,Object value){
+
+		try{
+			if(PropertyUtils.isWriteable(bean,name)){
+				PropertyUtils.setProperty(bean, name,value);
+			}else{
+				LOGGER.info("No settrt method available for field name "+name);
+			}
+		}catch (Exception e){
+			LOGGER.info("Exception occured while calling setProperty method for field name "+name);
+		}
+
+	}
 
 	public static void setValue(ModuleBaseWithCustomFields record, FacilioField field, Object value) throws Exception {
 		if (field.isDefault()) {
-			PropertyUtils.setProperty(record, field.getName(), value);
+			try{
+				if(PropertyUtils.isWriteable(record,field.getName())){
+					PropertyUtils.setProperty(record, field.getName(), value);
+				}else{
+					LOGGER.info("No setter method available for field name"+field.getName());
+				}
+			}
+			catch (Exception e){
+				LOGGER.info("Exception occured while calling setValue method for field name "+field.getName());
+			}
 		} else {
 			record.setDatum(field.getName(), value);
 		}
+	}
+	public static void setPrimaryValue(ModuleBaseWithCustomFields record,Object value){
+		try{
+			if(PropertyUtils.isWriteable(record,"primaryValue")){
+				PropertyUtils.setProperty(record, "primaryValue", value);
+			}else{
+				LOGGER.info("No setter method available for field name primaryValue");
+			}
+
+		}catch (Exception e){
+			LOGGER.info("Exception occured while calling setPrimaryValue method");
+		}
+
 	}
 
 	public static List<FacilioField> removeMultiRecordFields(Collection<FacilioField> fields) {

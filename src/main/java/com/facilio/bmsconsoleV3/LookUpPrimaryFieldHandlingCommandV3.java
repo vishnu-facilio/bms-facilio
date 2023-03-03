@@ -6,11 +6,11 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -63,13 +63,14 @@ public class LookUpPrimaryFieldHandlingCommandV3 extends FacilioCommand {
                             continue;
                         }
                         LookupField lookupField = (LookupField) field;
-                        ModuleBaseWithCustomFields lookupRecord;
-                        if (lookupField.isDefault()) {
-                            lookupRecord = (ModuleBaseWithCustomFields) PropertyUtils.getProperty(record, lookupField.getName());
+
+                        ModuleBaseWithCustomFields lookupRecord=null;
+                        Object lookupRecordObject = FieldUtil.getValue(record,lookupField);
+
+                        if(lookupRecordObject instanceof ModuleBaseWithCustomFields){
+                            lookupRecord=(ModuleBaseWithCustomFields)lookupRecordObject;
                         }
-                        else {
-                            lookupRecord = (ModuleBaseWithCustomFields) record.getDatum(lookupField.getName());
-                        }
+
                         if (lookupRecord == null) {
                             continue;
                         }
@@ -77,7 +78,7 @@ public class LookUpPrimaryFieldHandlingCommandV3 extends FacilioCommand {
                         if (property == null) {
                             continue;
                         }
-                        PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
+                        FieldUtil.setPrimaryValue(record,property);
                     }
                 }
             }

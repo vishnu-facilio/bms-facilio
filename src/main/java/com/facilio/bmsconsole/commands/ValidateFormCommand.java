@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 
@@ -67,7 +68,7 @@ public class ValidateFormCommand extends FacilioCommand {
 			} 
 			
 			if (!customFieldPresent) {
-				value = PropertyUtils.getProperty(formObject, f.getName());
+				value= FieldUtil.getProperty(formObject,f.getName());
 			}
 			
 			if (f.isRequired()){

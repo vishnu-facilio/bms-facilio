@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,18 +58,22 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 						continue;
 					}
 					LookupField lookupField = (LookupField) field;
-					ModuleBaseWithCustomFields lookupRecord;
-					if (lookupField.isDefault()) {
-						lookupRecord = (ModuleBaseWithCustomFields) PropertyUtils.getProperty(record, lookupField.getName());
+					ModuleBaseWithCustomFields lookupRecord=null;
+					Object lookupRecordObject = FieldUtil.getValue(record,lookupField);
+
+					if(lookupRecordObject instanceof ModuleBaseWithCustomFields){
+						lookupRecord=(ModuleBaseWithCustomFields)lookupRecordObject;
 					}
-					else {
-						lookupRecord = (ModuleBaseWithCustomFields) record.getDatum(lookupField.getName());
+
+					if (lookupRecord == null) {
+						continue;
 					}
+
 					Object property = getMainFieldProperty(lookupRecord, primaryFieldMap.get(field.getName()), modBean);
 					if (property == null) {
 						continue;
 					}
-					PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
+					FieldUtil.setPrimaryValue(lookupRecord,property);
 				}
 			}
 		}

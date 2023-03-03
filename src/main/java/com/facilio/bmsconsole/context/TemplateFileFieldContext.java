@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -30,7 +31,7 @@ public class TemplateFileFieldContext extends TemplateAttachment {
 			String key = field.getName()+"Id";
 			if (field.isDefault()) {
 				if (PropertyUtils.getPropertyDescriptor(bean, key) != null) {
-					prop = PropertyUtils.getProperty(record, key);
+					prop = FieldUtil.getProperty(record, key);
 				}
 			}
 			else {

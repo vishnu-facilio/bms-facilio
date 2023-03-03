@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -10,6 +9,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,11 +18,11 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import io.opentelemetry.extension.annotations.WithSpan;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -67,11 +67,7 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                             long dueFieldId = entity.getDueFieldId();
                             FacilioField field = modBean.getField(dueFieldId, moduleName);
                             Object value;
-                            if (field.isDefault()) {
-                                value = PropertyUtils.getProperty(record, field.getName());
-                            } else {
-                                value = record.getDatum(field.getName());
-                            }
+                            value=FieldUtil.getValue(record,field);
                             if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value) && ((Long) value) > System.currentTimeMillis()) {
                                 addSLAEntityBreachJob(entity.getName() + "_" + record.getId() + "_Breach", module, record, entity.getCriteria(),
                                         field, entity);

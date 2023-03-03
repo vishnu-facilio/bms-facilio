@@ -452,7 +452,7 @@ public class WorkflowRuleContext implements Serializable {
 	private long fetchDateVal(Object record) throws Exception {
 		Long timeVal = (Long) ((ModuleBaseWithCustomFields) record).getDatum(dateField.getName());
 		if (timeVal == null) {
-			timeVal = (Long) PropertyUtils.getProperty(record, dateField.getName());
+			timeVal = (Long) FieldUtil.getProperty(record, dateField.getName());
 		}
 		return timeVal == null ? -1 : timeVal;
 	}
