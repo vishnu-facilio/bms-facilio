@@ -999,7 +999,14 @@ public class IAMAccountConstants {
 			isProxySession.setColumnName("IS_PROXY_SESSION");
 			isProxySession.setModule(module);
 			fields.add(isProxySession);
-		
+
+			FacilioField lastActivityTime = new FacilioField();
+			lastActivityTime.setName("lastActivityTime");
+			lastActivityTime.setDataType(FieldType.NUMBER);
+			lastActivityTime.setColumnName("LAST_ACTIVITY_TIME");
+			lastActivityTime.setModule(module);
+			fields.add(lastActivityTime);
+
 			return fields;
 		}
 		

@@ -59,6 +59,9 @@
 			<result name="sessionexpired" type="httpheader">
 				<param name="status">440</param>
 			</result>
+			<result name="sessiontimeout" type="httpheader">
+				<param name="status">408</param>
+			</result>
 			</global-results>
 
 	<action name="lookup" class="com.facilio.auth.actions.FacilioAuthAction" method="lookup">

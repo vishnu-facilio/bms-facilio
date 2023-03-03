@@ -112,8 +112,11 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId(), appdomainObj);
-			if (sessionExpired) {
+			String sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId(), appdomainObj);
+			if(sessionExpired.equals("sessiontimeout")){
+				return "sessiontimeout";
+			}
+			if (sessionExpired.equals("sessionexpired")) {
 				LOGGER.error("[session expiry] " +iamAccount.getOrg().getOrgId()+"_"+iamAccount.getUser().getUid());
 				if(request.getRequestURI().endsWith("application/fetchDetails")) {
 					return "login";

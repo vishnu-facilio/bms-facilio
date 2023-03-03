@@ -21,6 +21,9 @@
 			<result name="sessionexpired" type="httpheader">
 				<param name="status">440</param>
 			</result>
+			<result name="sessiontimeout" type="httpheader">
+				<param name="status">408</param>
+			</result>
 			<result name="invalid" type="httpheader">
 				<param name="status">400</param>
 			</result>

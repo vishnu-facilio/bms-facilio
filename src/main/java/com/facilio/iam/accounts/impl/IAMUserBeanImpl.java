@@ -98,6 +98,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private static final Logger LOGGER = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 	public static final String JWT_DELIMITER = "#";
 	public static int YEAR_IN_SECONDS = 365 * 24 * 3600;
+	public static int MINUTE_IN_SECONDS = 60;
 
 	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
 		return updateUserEntryv2(user, fields);
@@ -1059,6 +1060,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			props.put("userAgent", userAgent);
 			props.put("userType", userType);
 			props.put("isProxySession", isProxySession);
+			props.put("lastActivityTime",System.currentTimeMillis());
 
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
@@ -1195,11 +1197,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return -1L;
 	}
 	@Override
-	public boolean isSessionExpired(long uid, long sessionId) throws Exception {
+	public String isSessionExpired(long uid, long sessionId) throws Exception {
 		return isSessionExpired( uid, sessionId,null);
 	}
 	@Override
-	public boolean isSessionExpired(long uid, long sessionId, AppDomain appdomainObj) throws Exception {
+	public String isSessionExpired(long uid, long sessionId, AppDomain appdomainObj) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
@@ -1211,16 +1213,37 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		if (prop == null) {
-			return false;
+			return "false";
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid,appdomainObj);
 
 		if (userSecurityPolicy == null){
-				return false;
+				return "false";
 		}
 
-		boolean isWebSessManagementEnabled = BooleanUtils.isTrue(userSecurityPolicy.getIsWebSessManagementEnabled());
+		Long currentTime = System.currentTimeMillis();
+		boolean isWebSessionTimeOutEnabled = BooleanUtils.isTrue(userSecurityPolicy.getIdleSessionTimeOut() != null && userSecurityPolicy.getIdleSessionTimeOut() > 0);
+
+		if (userSecurityPolicy != null && isWebSessionTimeOutEnabled) {
+			Duration duration = Duration.ofSeconds(userSecurityPolicy.getIdleSessionTimeOut());
+			Long lastActivityTime = (Long) prop.get("lastActivityTime");
+			if (lastActivityTime != null) {
+				Instant activityInstant = Instant.ofEpochMilli(lastActivityTime);
+				Instant currentInstant = Instant.ofEpochMilli(currentTime);
+				Duration durationBetween = Duration.between(activityInstant, currentInstant);
+				if (durationBetween.compareTo(duration) >= 0) {
+					return "sessiontimeout";
+				}else{
+					Duration oneMinute = Duration.ofSeconds(MINUTE_IN_SECONDS);
+					if(durationBetween.compareTo(oneMinute) >= 0) {
+						updateUserSessionsLastActivityTime(sessionId,uid,currentTime);
+					}
+				}
+			}
+		}
+
+		boolean isWebSessManagementEnabled =  isWebSessManagementEnabled(userSecurityPolicy);
 
 		if (userSecurityPolicy != null && isWebSessManagementEnabled) {
 			Duration duration = null;
@@ -1238,15 +1261,49 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				Instant currentInstant = Instant.ofEpochMilli(System.currentTimeMillis());
 				Duration durationBetween = Duration.between(startInstant, currentInstant);
 				if (durationBetween.compareTo(duration) >= 0) {
-					return true;
+					return "sessionexpired";
 				}
 			}
 		}
+		return "false";
+	}
 
+    public boolean isWebSessManagementEnabled(SecurityPolicy userSecurityPolicy){
+		if(userSecurityPolicy.getWebSessLifeTime() != null && userSecurityPolicy.getWebSessLifeTime() > 0){
+			return true;
+		}
+		if(userSecurityPolicy.getWebSessLifeTimesec() !=null && userSecurityPolicy.getWebSessLifeTimesec() > 0){
+			return true;
+		}
 		return false;
 	}
 
+	public void updateUserSessionsLastActivityTime(long sessionId , long uid ,Long currentTime) throws Exception {
+		FacilioField lastActivityTime = new FacilioField();
+		lastActivityTime.setName("lastActivityTime");
+		lastActivityTime.setDataType(FieldType.NUMBER);
+		lastActivityTime.setColumnName("LAST_ACTIVITY_TIME");
+		lastActivityTime.setModule(IAMAccountConstants.getUserSessionModule());
 
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(lastActivityTime);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getUserSessionModule().getTableName())
+				.fields(fields);
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("SESSIONID", "sessionId",String.valueOf(sessionId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE","isActive","1",NumberOperators.EQUALS));
+		Map<String, Object> props = new HashMap<>();
+		props.put("lastActivityTime", currentTime);
+
+		updateBuilder.update(props);
+
+		LOGGER.info("Last Activity Time updated for sessionId: "+sessionId);
+
+		LRUCache.getUserSessionCache().removeStartsWith(uid+"");
+	}
 	@Override
 	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception
 	{
@@ -3066,6 +3123,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 			if(securityPolicy.getWebSessLifeTimesec() > YEAR_IN_SECONDS){
 				throw new IllegalArgumentException("Session Life Time should be less than 365 days");
+			}}
+		if(securityPolicy.getIdleSessionTimeOut() != null){
+			if(securityPolicy.getIdleSessionTimeOut() < 300){
+				throw new IllegalArgumentException("Minimum Session Idle Timeout Period should be 5 minutes");
+			}
+			if(securityPolicy.getIdleSessionTimeOut() > YEAR_IN_SECONDS){
+				throw new IllegalArgumentException("Session Idle Timeout Period should be less than 365 days");
 			}
 		}
 	}

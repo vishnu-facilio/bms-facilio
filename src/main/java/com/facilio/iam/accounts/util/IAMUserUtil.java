@@ -79,11 +79,11 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().cryptWithMD5(password));
 	}
 
-	public static boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
+	public static String isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().isSessionExpired(uid, sessionId));
 	}
 
-	public static boolean isSessionExpired(long uid, long orgId, long sessionId,AppDomain appdomainObj) throws Exception {
+	public static String isSessionExpired(long uid, long orgId, long sessionId,AppDomain appdomainObj) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().isSessionExpired(uid, sessionId,appdomainObj));
 	}
 	public static long getSessionExpiry(long uid, long sessionId) throws Exception {

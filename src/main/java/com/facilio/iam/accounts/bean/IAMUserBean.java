@@ -120,9 +120,10 @@ public interface IAMUserBean {
 
     IAMAccount fetchAccountByOauth2ClientId(String token) throws Exception;
 
-	public boolean isSessionExpired(long uid, long sessionId) throws Exception;
+	public String isSessionExpired(long uid, long sessionId) throws Exception;
 
-	public boolean isSessionExpired(long uid, long sessionId,AppDomain appdomainObj) throws Exception;
+	public String isSessionExpired(long uid, long sessionId,AppDomain appdomainObj) throws Exception;
+
 	public long getSessionExpiry(long uid, long sessionId) throws Exception;
     
     public IAMAccount getAccountv3(long userId) throws Exception;
