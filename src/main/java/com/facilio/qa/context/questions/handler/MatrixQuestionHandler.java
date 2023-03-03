@@ -37,13 +37,14 @@ public class MatrixQuestionHandler extends BaseMatrixQuestionHandler implements 
 	@Override
 	public void validateSave(List<MatrixQuestionContext> questions) throws Exception {
 		// TODO Auto-generated method stub
+		commonValidate(questions);
+
 		for(MatrixQuestionContext question : questions) {
-			
 			createAnswerModuleAndSetField(question);
 	         
 	         if(question.getRows() != null) {
 	        	 for(MatrixQuestionRow row : question.getRows()) {
-	        		 V3Util.throwRestException(row.getName() == null, ErrorCode.VALIDATION_ERROR, "Row name cannot be empty");
+	        		 V3Util.throwRestException(row.getName() == null || row.getName().isEmpty(), ErrorCode.VALIDATION_ERROR, "Row name cannot be empty");
 	        	 }
 	         }
 		}

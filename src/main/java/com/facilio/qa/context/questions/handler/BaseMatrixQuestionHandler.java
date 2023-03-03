@@ -1,5 +1,6 @@
 package com.facilio.qa.context.questions.handler;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +23,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.qa.context.questions.BaseMatrixQuestionContext;
@@ -31,9 +34,63 @@ import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.qa.context.questions.MultiQuestionContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class BaseMatrixQuestionHandler {
+
+	public static final int MAX_STRING_LENGTH = 255;
+	public static final int MAX_COLUMN_LABEL_LENGTH = 150;
+
+	protected static <E extends BaseMatrixQuestionContext> void commonValidate(List<E> questions) throws RESTException {
+
+		for (BaseMatrixQuestionContext q : questions) {
+			String question = q.getQuestion();
+
+			if (StringUtils.isNotEmpty(question)) {
+
+				int maxLen = question.length();
+
+				V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, MAX_STRING_LENGTH));
+
+				List<MatrixQuestionColumn> columns = q.getColumns();
+
+				if (CollectionUtils.isNotEmpty(columns)) {
+
+					for (MatrixQuestionColumn column : columns) {
+
+						int colLength = column.getName().length();
+						V3Util.throwRestException(colLength > MAX_COLUMN_LABEL_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Column label Length ({0}) cannot be greater than ({1})", colLength, MAX_COLUMN_LABEL_LENGTH));
+
+						FacilioField field = column.getField();
+
+						if (field != null && field instanceof EnumField) {
+							
+								EnumField enumField = (EnumField) field;
+
+								if (CollectionUtils.isNotEmpty(enumField.getValues())) {
+
+									List<EnumFieldValue<Integer>> values = enumField.getValues();
+
+									for (EnumFieldValue<Integer> value : values) {
+
+										String pickListQuestion = value.getValue();
+
+										if (StringUtils.isNotEmpty(pickListQuestion)) {
+
+											int pickListMaxLen = pickListQuestion.length();
+											V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Label Length ({0}) cannot be greater than ({1})", pickListMaxLen, MAX_STRING_LENGTH));
+										}
+									}
+								}
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	public List<Map<String, Object>> getColumnRecordList (BaseMatrixQuestionContext question) throws Exception {
 

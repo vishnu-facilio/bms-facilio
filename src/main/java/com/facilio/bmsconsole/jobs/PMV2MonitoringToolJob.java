@@ -204,7 +204,7 @@ public class PMV2MonitoringToolJob extends FacilioJob {
 		 StringBuilder res = new StringBuilder();
         if (CollectionUtils.isNotEmpty(orgs)) {
             for (Organization org : orgs) {
-                if (org.getOrgId() > 0 && org.getOrgId() == 28l) {
+                if (org.getOrgId() > 0) {
 
                     AccountUtil.setCurrentAccount(org.getOrgId());
                     FacilioChain c = FacilioChain.getTransactionChain();

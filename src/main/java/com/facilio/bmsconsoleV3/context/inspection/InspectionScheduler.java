@@ -151,7 +151,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		return responses;
 	}
 	
-	private List<ResourceContext> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
+	public List<ResourceContext> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<Long> baseSpaceIds = null;

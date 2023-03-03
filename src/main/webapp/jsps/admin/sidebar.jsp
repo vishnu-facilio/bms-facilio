@@ -103,6 +103,13 @@ if (buildinfo == null) {
                <span class="nav-title">PM V2</span>
                </a>
            </li>
+           <li>
+               <a href="inspectionmonitoring">
+                   <span class="nav-icon">
+                       <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                   <span class="nav-title">Inspection Monitoring</span>
+               </a>
+           </li>
              <li>
                <a href="userlicense">
                <span class="nav-icon">

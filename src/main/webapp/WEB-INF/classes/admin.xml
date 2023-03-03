@@ -81,6 +81,9 @@
 		<action name="pmv2monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/pmv2Monitoring.jsp</result>
 		</action>
+		<action name="inspectionmonitoring" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/inspectionMonitoring.jsp</result>
+		</action>
 		<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/userlicense.jsp</result>
 		</action>

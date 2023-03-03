@@ -13,6 +13,7 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.client.answers.handler.MultiQuestionAnswerHandler;
+import com.facilio.qa.context.questions.*;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,18 +27,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
-import com.facilio.qa.context.questions.MatrixQuestionColumn;
-import com.facilio.qa.context.questions.MatrixQuestionContext;
-import com.facilio.qa.context.questions.MatrixQuestionRow;
-import com.facilio.qa.context.questions.MultiQuestionContext;
 import com.facilio.qa.displaylogic.context.DisplayLogicContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
 public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements QuestionHandler<MultiQuestionContext> {
-
-	public static final int MAX_STRING_LENGTH = 255;
 
 	@Override
 	public void validateSave(List<MultiQuestionContext> questions) throws Exception {
@@ -54,9 +49,6 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 				row.setName("dummy row");
 				question.setRow(row);
 			}
-	         if(question.getRow() != null) {
-	        	 V3Util.throwRestException(question.getRow().getName() == null, ErrorCode.VALIDATION_ERROR, "Row name cannot be empty");
-	         }
 		}
 	}
 	
@@ -152,53 +144,4 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 			column.setDisplayLogicMeta(displayLogicMeta);
 		}
     }
-
-	private void commonValidate(List<MultiQuestionContext> questions) throws RESTException {
-
-		for (MultiQuestionContext q : questions) {
-
-			String question = q.getQuestion();
-
-			if (StringUtils.isNotEmpty(question)) {
-
-				int maxLen = question.length();
-
-				V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, MAX_STRING_LENGTH));
-
-				List<MatrixQuestionColumn> columns = q.getColumns();
-
-				if (CollectionUtils.isNotEmpty(columns)) {
-
-					for (MatrixQuestionColumn column : columns) {
-
-						FacilioField field = column.getField();
-
-						if (field != null && field.getDisplayType().equals(FacilioField.FieldDisplayType.SELECTBOX)) {
-
-							if (field instanceof EnumField) {
-
-								EnumField enumField = (EnumField) field;
-
-								if (CollectionUtils.isNotEmpty(enumField.getValues())) {
-
-									List<EnumFieldValue<Integer>> values = enumField.getValues();
-
-									for (EnumFieldValue<Integer> value : values) {
-
-										String pickListQuestion = value.getValue();
-
-										if (StringUtils.isNotEmpty(pickListQuestion)) {
-
-											int pickListMaxLen = pickListQuestion.length();
-											V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Label Length ({0}) cannot be greater than ({1})", pickListMaxLen, MAX_STRING_LENGTH));
-										}
-										}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 }

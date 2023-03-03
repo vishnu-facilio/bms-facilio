@@ -236,11 +236,12 @@
 	<!--Delete Job Records	-->
 	<job name="DeleteJobRecords" classname="com.facilio.bmsconsole.jobs.DeleteJobRecords" transactionTimeout="600000"/>
 
+	<!--Inspection, Induction and Survey Related Jobs-->
 	<job name='ScheduleInspectionStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleInspectionStatusChangeJob' transactionTimeout='900000'/>
 	<job name='OpenScheduledInspection' classname='com.facilio.bmsconsole.jobs.OpenScheduledInspection' transactionTimeout='900000'/>
-
+	<job name="DeleteUnAnsweredSurvey" classname="com.facilio.bmsconsole.jobs.DeleteUnAnsweredSurveyJob" transactionTimeout="300000"/>
+	<job name="inspectionMonitoringToolJob" classname="com.facilio.bmsconsole.jobs.InspectionMonitoringToolJob" transactionTimeout="300000"/>
 
 	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
 
-    <job name="DeleteUnAnsweredSurvey" classname="com.facilio.bmsconsole.jobs.DeleteUnAnsweredSurveyJob" transactionTimeout="300000"/>
 </scheduler>

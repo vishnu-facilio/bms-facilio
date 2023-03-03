@@ -284,10 +284,15 @@ public class AddInspectionModules extends BaseModuleConfig {
 		scheduleInfo.setTimes(Collections.singletonList("00:00"));
 		scheduleInfo.setFrequencyType(FrequencyType.DAILY);
 		FacilioTimer.scheduleCalendarJob((long)BaseScheduleContext.ScheduleType.INSPECTION.getIndex(), "BaseSchedulerJob", DateTimeUtil.getCurrenTime(), scheduleInfo, "facilio");
-		
+
 		JSONObject props = new JSONObject();
-		props.put("saveAsV3", Boolean.TRUE);
+		props.put("saveAsV3PreCreate", Boolean.TRUE);
 		BmsJobUtil.addJobProps((long)BaseScheduleContext.ScheduleType.INSPECTION.getIndex(), "BaseSchedulerJob", props);
+
+		ScheduleInfo scheduleInfo2 = new ScheduleInfo();
+		scheduleInfo2.setTimes(Collections.singletonList("08:00"));
+		scheduleInfo2.setFrequencyType(FrequencyType.DAILY);
+		FacilioTimer.scheduleCalendarJob((long)BaseScheduleContext.ScheduleType.INSPECTION.getIndex(), "inspectionMonitoringToolJob", DateTimeUtil.getCurrenTime(), scheduleInfo2, "facilio");
 	}
 
 

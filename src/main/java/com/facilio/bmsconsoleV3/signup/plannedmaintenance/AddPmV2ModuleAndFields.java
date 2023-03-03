@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.plannedmaintenance;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -101,6 +102,11 @@ public class AddPmV2ModuleAndFields extends SignUpData {
     	si.setTimes(Collections.singletonList("00:01"));
     	
     	FacilioTimer.scheduleCalendarJob(AccountUtil.getCurrentOrg().getId(), "PMV2NightlyScheduler", DateTimeUtil.getCurrenTime(), si, "facilio");
+
+        ScheduleInfo scheduleInfo2 = new ScheduleInfo();
+        scheduleInfo2.setTimes(Collections.singletonList("09:00"));
+        scheduleInfo2.setFrequencyType(FrequencyType.DAILY);
+        FacilioTimer.scheduleCalendarJob((long) BaseScheduleContext.ScheduleType.PM.getIndex(), "pmV2MonitoringToolJob", DateTimeUtil.getCurrenTime(), scheduleInfo2, "facilio");
 	}
 
 	private void addWorkOrderFieldsForPM(ModuleBean modBean,  long orgId) throws Exception {
