@@ -146,7 +146,11 @@ public class FacilioConstants {
 	public static class ViewConstants {
 		public static final String PARENT_VIEW_OBJECT = "parentViewObject";
 		public static final String SCHEDULED_VIEW = "scheduledView";
-
+		public static final String CALENDAR_VIEW_AGGREGATE_DATA = "calendarViewAggregateData";
+		public static final String CALENDAR_VIEW_V3_DATAMAP = "calendarViewV3DataMap";
+		public static final String CALENDAR_VIEW_CUSTOMIZATON_DATAMAP = "calendarViewCustomizationDataMap";
+		public static final String CALENDAR_VIEW_REQUEST = "calendarViewRequest";
+		public static final String CALENDAR_VIEW_DATA = "calendarViewData";
 		public static enum CalendarViewType {
 			DAY(1),
 			WEEK(2),

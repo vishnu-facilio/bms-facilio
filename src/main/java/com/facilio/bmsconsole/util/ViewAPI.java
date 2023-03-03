@@ -353,6 +353,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							if (view.isCalendarView()) {
 								if (MapUtils.isNotEmpty(calendarViewContextMap) && calendarViewContextMap.containsKey(viewId)) {
 									CalendarViewContext calendarViewContext = calendarViewContextMap.get(viewId);
+									setCalendarViewFieldObjects(calendarViewContext, modBean);
 									view.setCalendarViewContext(calendarViewContext);
 								}
 							}
@@ -373,6 +374,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			return views;
 		}
 		return null;
+	}
+
+	public static void setCalendarViewFieldObjects(CalendarViewContext calendarView, ModuleBean moduleBean) throws Exception{
+		calendarView.setStartDateField(moduleBean.getField(calendarView.getStartDateFieldId()));
+		if (calendarView.getEndDateFieldId() > 0) {
+			calendarView.setEndDateField(moduleBean.getField(calendarView.getEndDateFieldId()));
+		}
 	}
 
 	public static void setTimelineFieldObjects(TimelineViewContext record,ModuleBean moduleBean, long orgId) throws Exception{

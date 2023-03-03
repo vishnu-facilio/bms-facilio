@@ -7,7 +7,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -785,5 +784,66 @@ public class ChainUtil {
         chain.addCommand(new GetTimeLineListCommand());
         chain.addCommand(new AddCustomizationToRecordMap());
         return chain;
+    }
+
+    public static FacilioChain getCalendarViewChain(String moduleName, boolean getSingleCellData) throws Exception {
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+
+        Command beforeFetchCommand = null;
+        Command afterFetchCommand = null;
+        V3Config.ListHandler listHandler = null;
+        List<SupplementRecord> supplementFields = null;
+
+        if (v3Config != null) {
+            listHandler = v3Config.getListHandler();
+            if (listHandler != null) {
+                beforeFetchCommand = listHandler.getBeforeFetchCommand();
+                afterFetchCommand = listHandler.getAfterFetchCommand();
+                supplementFields = listHandler.getSupplementFields();
+            }
+        }
+
+        FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
+        nonTransactionChain.addCommand(new LoadViewCommand());
+
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            FacilioContext context = nonTransactionChain.getContext();
+            List<SupplementRecord> list = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+            if (list == null) {
+                list = new ArrayList<>();
+                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, list);
+            }
+            list.addAll(supplementFields);
+        }
+
+        addIfNotNull(nonTransactionChain, beforeFetchCommand);
+
+        nonTransactionChain.addCommand(new GenerateCriteriaForV4Command());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
+        nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
+        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(false));
+        nonTransactionChain.addCommand(new FetchSysFields());
+        nonTransactionChain.addCommand(new GetSelectiveFieldsCommand());
+
+        if (getSingleCellData) {
+            nonTransactionChain.addCommand(new CalendarViewListCommand());
+        } else {
+            nonTransactionChain.addCommand(new CalendarViewDataAggregationCommand());
+            nonTransactionChain.addCommand(new CalendarViewDataCommand());
+        }
+
+        addIfNotNull(nonTransactionChain, afterFetchCommand);
+
+        nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
+        nonTransactionChain.addCommand(new SupplementsCommand());
+
+        nonTransactionChain.addCommand(new AddCalendarViewCustomizationCommand());
+        if (!getSingleCellData) {
+            nonTransactionChain.addCommand(new ConstructCalendarViewResponseCommand());
+        }
+
+        return nonTransactionChain;
     }
 }

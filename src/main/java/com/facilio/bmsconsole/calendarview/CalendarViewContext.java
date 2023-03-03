@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.calendarview;
 
 import com.facilio.constants.FacilioConstants.ViewConstants;
+import com.facilio.modules.fields.FacilioField;
 
 import java.io.Serializable;
 
@@ -21,12 +22,28 @@ public class CalendarViewContext implements Serializable {
         return startDateFieldId;
     }
 
+    private FacilioField startDateField;
+    public FacilioField getStartDateField() {
+        return startDateField;
+    }
+    public void setStartDateField(FacilioField startDateField) {
+        this.startDateField = startDateField;
+    }
+
     private long endDateFieldId;
     public void setEndDateFieldId(long endDateFieldId) {
         this.endDateFieldId = endDateFieldId;
     }
     public long getEndDateFieldId() {
         return endDateFieldId;
+    }
+
+    private FacilioField endDateField;
+    public FacilioField getEndDateField() {
+        return endDateField;
+    }
+    public void setEndDateField(FacilioField endDateField) {
+        this.endDateField = endDateField;
     }
 
     private ViewConstants.CalendarViewType defaultCalendarView;

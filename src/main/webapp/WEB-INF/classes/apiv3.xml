@@ -250,6 +250,16 @@
                 method="timelineUnScheduledList"/>
     </package>
 
+    <package name="calendarV3Api" namespace="/api/v3/modules/data/calendarView" extends="v3Api">
+        <action name="get"
+                class="com.facilio.bmsconsoleV3.actions.CalendarViewAction"
+                method="calendarData" />
+
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.CalendarViewAction"
+                method="calendarList" />
+    </package>
+
     <package name="workorderV3Api" namespace="/api/v3/workorders" extends="v3Api">
         <action name="close"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
