@@ -147,6 +147,9 @@ public class GetApplicationDetails extends FacilioCommand {
 											: (webTabContext -> webTabContext.getType() == Type.ORGANIZATION_SETTINGS.getIndex()));
 								}
 							}
+							if(layout != null && layout.getLayoutDeviceTypeEnum() != null && layout.getLayoutDeviceTypeEnum() == ApplicationLayoutContext.LayoutDeviceType.SETUP) {
+								webTabs.removeIf(t -> !hasLicense(t));
+							}
 							if(!fetchAllLayouts && CollectionUtils.isNotEmpty(webTabs)) {
 								webTabs.removeIf(t -> !hasLicense(t));
 							}
