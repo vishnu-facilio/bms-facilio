@@ -35,57 +35,59 @@ public class UpdateOccurrenceCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-        AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-        Map<String, Object> rawInput = (Map<String, Object>) context.get("rawInput");
-        alarmOccurrence.setAcknowledged((Boolean) rawInput.get("acknowledged"));
-        Long severityId = (Long) ((HashMap) rawInput.get("severity")).get("id");
-        String severityName = AlarmAPI.getAlarmSeverity(severityId).getSeverity();
-        ObjectMapper mapper = new ObjectMapper();
-        AlarmSeverityContext alarmSeverityContext = mapper.convertValue(rawInput.get("severity"), AlarmSeverityContext.class);
-        alarmOccurrence.setSeverity(alarmSeverityContext);
+        List<Map<String, Object>> bulkRawInput = (List<Map<String, Object>>) context.get("bulkRawInput");
+        for (Map<String, Object> rawInput : bulkRawInput) {
+            AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
+            alarmOccurrence.setAcknowledged((Boolean) rawInput.get("acknowledged"));
+            Long severityId = (Long) ((HashMap) rawInput.get("severity")).get("id");
+            String severityName = AlarmAPI.getAlarmSeverity(severityId).getSeverity();
+            ObjectMapper mapper = new ObjectMapper();
+            AlarmSeverityContext alarmSeverityContext = mapper.convertValue(rawInput.get("severity"), AlarmSeverityContext.class);
+            alarmOccurrence.setSeverity(alarmSeverityContext);
 
-        if (CollectionUtils.isNotEmpty(recordIds) && alarmOccurrence != null) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            if (CollectionUtils.isNotEmpty(recordIds) && alarmOccurrence != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-            FacilioModule occurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-            List<FacilioField> occurrenceFields = modBean.getAllFields(occurrenceModule.getName());
-            Map<String, FacilioField> occurrenceFieldMap = FieldFactory.getAsMap(occurrenceFields);
-            List<FacilioField> updateOnlyOccurrenceFields = new ArrayList<>();
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("severity"));
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledged"));
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedBy"));
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedTime"));
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("clearedTime"));
-            updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("duration"));
+                FacilioModule occurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+                List<FacilioField> occurrenceFields = modBean.getAllFields(occurrenceModule.getName());
+                Map<String, FacilioField> occurrenceFieldMap = FieldFactory.getAsMap(occurrenceFields);
+                List<FacilioField> updateOnlyOccurrenceFields = new ArrayList<>();
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("severity"));
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledged"));
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedBy"));
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedTime"));
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("clearedTime"));
+                updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("duration"));
 
-            long currentTimeMillis = System.currentTimeMillis();
-            JSONObject info = new JSONObject();
+                long currentTimeMillis = System.currentTimeMillis();
+                JSONObject info = new JSONObject();
 
-            if (alarmOccurrence.isAcknowledged()) {
-                alarmOccurrence.setAcknowledgedTime(currentTimeMillis);
-                alarmOccurrence.setAcknowledgedBy(AccountUtil.getCurrentUser());
-                info.put("field", "Acknowledge");
-                info.put("newValue", "true");
-                info.put("acknowledgedBy", alarmOccurrence.getAcknowledgedBy().getId());
-                info.put("acknowledgedTime", alarmOccurrence.getAcknowledgedTime());
+                if (alarmOccurrence.isAcknowledged()) {
+                    alarmOccurrence.setAcknowledgedTime(currentTimeMillis);
+                    alarmOccurrence.setAcknowledgedBy(AccountUtil.getCurrentUser());
+                    info.put("field", "Acknowledge");
+                    info.put("newValue", "true");
+                    info.put("acknowledgedBy", alarmOccurrence.getAcknowledgedBy().getId());
+                    info.put("acknowledgedTime", alarmOccurrence.getAcknowledgedTime());
+                }
+                if (severityName.equals("Clear")) {
+                    alarmOccurrence.setClearedTime(currentTimeMillis);
+                    info.put("field", "Severity");
+                    info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+                    info.put("clearedBy", AccountUtil.getCurrentUser().getId());
+                    CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
+                }
+
+                Condition alarmCondition = CriteriaAPI.getCondition("ALARM_ID", "alarm", StringUtils.join(recordIds, ","), NumberOperators.EQUALS);
+                UpdateRecordBuilder<AlarmOccurrenceContext> occurrenceUpdateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
+                        .module(occurrenceModule)
+                        .fields(updateOnlyOccurrenceFields)
+                        .andCondition(alarmCondition);
+                occurrenceUpdateBuilder.update(alarmOccurrence);
             }
-            if (severityName.equals("Clear")) {
-                alarmOccurrence.setClearedTime(currentTimeMillis);
-                info.put("field", "Severity");
-                info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
-                info.put("clearedBy", AccountUtil.getCurrentUser().getId());
-                CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
-            }
-
-            Condition alarmCondition = CriteriaAPI.getCondition("ALARM_ID","alarm", StringUtils.join(recordIds,","), NumberOperators.EQUALS);
-            UpdateRecordBuilder<AlarmOccurrenceContext> occurrenceUpdateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
-                    .module(occurrenceModule)
-                    .fields(updateOnlyOccurrenceFields)
-                    .andCondition(alarmCondition);
-            occurrenceUpdateBuilder.update(alarmOccurrence);
+            FacilioChain c = TransactionChainFactory.getV2UpdateAlarmChain();
+            c.execute(context);
         }
-        FacilioChain c = TransactionChainFactory.getV2UpdateAlarmChain();
-        c.execute(context);
         return false;
     }
 
