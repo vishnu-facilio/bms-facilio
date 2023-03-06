@@ -28,8 +28,12 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.SecondsChronoUnit;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class SingleRecordRuleAPI extends WorkflowRuleAPI{
+
+	public static Logger LOGGER = LogManager.getLogger(SingleRecordRuleAPI.class.getName());
 
 	protected static void validateRecordSpecificScheduledRule(WorkflowRuleContext rule, boolean isUpdate) throws Exception {
 		
@@ -114,6 +118,10 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 			Long fieldVal = getDateFieldVal(rule.getParentId(), rule.getModule(), rule.getDateFieldId());
 
 			if (fieldVal == null) {
+				try{
+					LOGGER.info("Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentId());
+				}catch (Exception e){
+				}
 				return;
 			}
 
@@ -134,6 +142,11 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 					nextExecutionTime = fieldVal ; 
 				}
 			   FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
+			}else{
+				try{
+					LOGGER.info("Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentRule());
+				}catch (Exception e){
+				}
 			}
 		}
 		else {
