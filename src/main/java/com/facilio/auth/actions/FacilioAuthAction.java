@@ -533,9 +533,16 @@ public class FacilioAuthAction extends FacilioAction {
 
 		String clientPath = "/auth/proxyuser";
 		String isPortalProxy = FacilioCookie.getUserCookie(request, "fc.portalproxy");
+		String isMobilePortalProxy = FacilioCookie.getUserCookie(request, "fc.mobileportalproxy");
+		String isMobileproxy = FacilioCookie.getUserCookie(request,"fc.ismobileproxy");
 		if ("true".equals(isPortalProxy)) {
 			clientPath = "/auth/portalproxyuser";
+		} else if ("true".equals(isMobilePortalProxy)) {
+			clientPath = "/auth/mobile/portalproxyuser";
+		} else if ("true".equals(isMobileproxy)){
+			clientPath = "/auth/mobile/proxyuser";
 		}
+
 		if (FacilioProperties.isOnpremise()) {
 			response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath +"?message="+"Not allowed");
 		}
@@ -600,13 +607,42 @@ public class FacilioAuthAction extends FacilioAction {
 
 		String servername = request.getServerName();
 		boolean isPortalProxy = "true".equals(FacilioCookie.getUserCookie(request, "fc.portalproxy"));
+		boolean isMobileProxy = "true".equals(FacilioCookie.getUserCookie(request,"fc.isWebView"));
+		boolean isMobilePortalProxy = "true".equals(FacilioCookie.getUserCookie(request,"fc.mobileportalproxy"));
 
-		if (!isPortalProxy) {
+
+		if (isMobileProxy) {
+			String appDomain = request.getServerName();
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+			setLookupTypeForMobileProxy(appdomainObj);
+			if (StringUtils.isNotEmpty(getLookUpType())) {
+					setPortalWebViewCookies(getLookUpType());
+			} else {
+					setWebViewCookies();
+				}
+		}
+		if (isMobilePortalProxy) {
+			AppDomain appDomain = IAMAppUtil.getAppDomain(portalUrl);
+			String clientPath = "/auth/mobile/portalproxyuser";
+			if (appDomain == null) {
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"Invalid portal url");
+				return ERROR;
+			}
+			clientPath = "/auth/mobile/proxyuser";
+			setLookupTypeForMobileProxy(appDomain);
+			setServicePortalWebViewCookies();
+			setJsonresponse("redirectUrl", SSOUtil.getProtocol() + "://" + portalUrl + clientPath + "?token="+token);
+
+		}
+		 else if (!isPortalProxy) {
 			String userAgent = request.getHeader("User-Agent");
 			userAgent = userAgent != null ? userAgent : "";
 			String ipAddress = request.getHeader("X-Forwarded-For");
 			ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
 			String userType = "web";
+			if (isMobileProxy) {
+				userType = "mobile";
+			}
 
 			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
@@ -616,8 +652,13 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> proxyProps = IAMUserUtil.generatePropsForWithoutPassword(proxiedUserName, userAgent, userType, ipAddress, servername, true);
 
 			String proxyToken = IAMUserUtil.addProxySession(email, proxiedUserName, (long) proxyProps.get("sessionId"));
-
-			addAuthCookies((String) proxyProps.get("token"), false, false, request, false, proxyToken);
+			String appDomain = request.getServerName();
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+			List<Map<String, Object>> userData = IAMUserUtil.getUserData(proxiedUserName, appdomainObj.getGroupTypeEnum());
+			Map<String, Object> userMap = userData.get(0);
+			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
+			setDomain(defaultOrg.getDomain());
+			addAuthCookies((String) proxyProps.get("token"), false, false, request, isMobileProxy, proxyToken);
 		} else {
 			AppDomain appDomain = IAMAppUtil.getAppDomain(portalUrl);
 			String clientPath = "/auth/portalproxyuser";
@@ -2021,8 +2062,14 @@ public class FacilioAuthAction extends FacilioAction {
 
 		FacilioCookie.addOrgDomainCookie(getDomain(), response);
 
-		if (isMobile) {
-			JSONObject jsonObject = getMobileAuthJSON("token", authtoken, "homePath", "/app/mobile/login", "domain", getDomain(), "baseUrl", getBaseUrl());
+		if (isMobile && StringUtils.isNotEmpty(proxyToken)) {
+			JSONObject jsonObject = getMobileProxyAuthJSON("token", authtoken, "proxyToken",proxyToken, "homePath", "/app/mobile/login", "domain", getDomain(), "baseUrl", getBaseUrl());
+			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
+			setTempCookieProperties(mobileTokenCookie, false);
+			response.addCookie(mobileTokenCookie);
+		}
+		else if(isMobile){
+			JSONObject jsonObject = getMobileAuthJSON("token", authtoken,  "homePath", "/app/mobile/login", "domain", getDomain(), "baseUrl", getBaseUrl());
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -2076,6 +2123,15 @@ public class FacilioAuthAction extends FacilioAction {
 	private JSONObject getMobileAuthJSON(String token, String authtoken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put(token, authtoken);
+		jsonObject.put(homePath, value);
+		jsonObject.put(domain, Domain);
+		jsonObject.put(baseUrl, BaseUrl);
+		return jsonObject;
+	}
+	private JSONObject getMobileProxyAuthJSON(String token, String authtoken, String proxyToken, String proxyUserToken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(token, authtoken);
+		jsonObject.put(proxyToken,proxyUserToken);
 		jsonObject.put(homePath, value);
 		jsonObject.put(domain, Domain);
 		jsonObject.put(baseUrl, BaseUrl);
@@ -2868,5 +2924,17 @@ public class FacilioAuthAction extends FacilioAction {
 		Cookie cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		setCookieProperties(cookie,true);
 		response.addCookie(cookie);
+	}
+
+	private void setLookupTypeForMobileProxy(AppDomain appdomainObj)throws Exception {
+		if (appdomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			setLookUpType("workq");
+		} else if (appdomainObj.getAppDomainTypeEnum() == AppDomainType.SERVICE_PORTAL) {
+			setLookUpType("service");
+		} else if (appdomainObj.getAppDomainTypeEnum() == AppDomainType.TENANT_PORTAL) {
+			setLookUpType("tenant");
+		} else if (appdomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
+			setLookUpType("vendor");
+		}
 	}
 }

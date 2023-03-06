@@ -61,7 +61,11 @@ public class AuthenticationUtil {
 			}
 
 			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, userType);
-            String proxySessionToken = FacilioCookie.getUserCookie(request,"fc.idToken.proxy");
+            String proxySessionToken = FacilioCookie.getUserCookie(request, "fc.idToken.proxy");
+            String proxyUserToken = request.getHeader("X-Proxy-Token");
+            if(proxyUserToken!=null && proxyUserToken.trim().length() > 0){
+                proxySessionToken = request.getHeader("X-Proxy-Token").replace("Bearer ", "");
+            } 
             if (StringUtils.isNotEmpty(proxySessionToken)) {
                 Long userSessionId = iamAccount.getUserSessionId();
                 if (userSessionId == null || userSessionId <= 0) {
