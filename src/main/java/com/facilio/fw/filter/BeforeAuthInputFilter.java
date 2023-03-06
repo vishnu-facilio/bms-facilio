@@ -77,11 +77,11 @@ public class BeforeAuthInputFilter implements Filter {
             return;
         }
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
+        RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
+        String matchedPattern = matcher.getMatchedPattern();
+        RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
+        Executor executor = new Executor(requestConfig, requestContext);
         try {
-            RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
-            String matchedPattern = matcher.getMatchedPattern();
-            RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
-            Executor executor = new Executor(requestConfig, requestContext);
             NodeError nodeError = executor.validatePreAuth();
             if (nodeError != null) {
                 if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
