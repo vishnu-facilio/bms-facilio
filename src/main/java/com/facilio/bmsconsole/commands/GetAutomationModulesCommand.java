@@ -113,6 +113,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         	 modules.add(modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN));
         	 modules.add(modBean.getModule(ContextNames.PLANNEDMAINTENANCE));
         }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS)) {
+            modules.add(modBean.getModule(ContextNames.Floorplan.DESKS));
+        }
         
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
