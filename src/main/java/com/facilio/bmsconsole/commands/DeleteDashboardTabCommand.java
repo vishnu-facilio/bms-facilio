@@ -36,12 +36,13 @@ public class DeleteDashboardTabCommand extends FacilioCommand {
 					if(widgetContext.getDashboardId() == null) {
 						deleteWidgetsList.add(widgetContext.getId());
 					}
-					widgetContext.setDashboardTabId(null);
 					GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getWidgetModule().getTableName())
 							.fields(FieldFactory.getWidgetFields())
-							.andCondition(CriteriaAPI.getIdCondition(widgetContext.getId(), ModuleFactory.getWidgetModule()));
+							.andCondition(CriteriaAPI.getIdCondition(widgetContext.getId(), ModuleFactory.getWidgetModule()))
+							.ignoreSplNullHandling();
 					Map<String, Object> props1 = FieldUtil.getAsProperties(widgetContext);
+					props1.put("dashboardTabId",null);
 					updateBuilder.update(props1);
 				}
 				if(deleteWidgetsList.size()>0)

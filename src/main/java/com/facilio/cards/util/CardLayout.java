@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.readingkpi.ReadingKpiAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -131,6 +132,7 @@ public enum CardLayout {
 			Long kpiId;
 			Long parentId;
 			String yAggr;
+			Boolean isNewKpi = null;
 		
 				
 				if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof JSONObject) {
@@ -143,6 +145,7 @@ public enum CardLayout {
 					kpiId = (Long) kpiConfig.get("kpiId");
 					parentId = (Long) kpiConfig.get("parentId");
 					yAggr = (String) kpiConfig.get("yAggr");
+					isNewKpi = kpiConfig.containsKey("isNewKpi") ? (boolean) kpiConfig.get("isNewKpi") : false;
 				} else {
 					FacilioUtil.throwIllegalArgumentException(true,"KPI should not be empty");
 					throw new IllegalStateException();
@@ -221,7 +224,13 @@ public enum CardLayout {
 				}
 			} else if ("reading".equalsIgnoreCase(kpiType)) {
 				try {
-					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+					if (isNewKpi) {
+						cardValue = ReadingKpiAPI.getCurrentValueOfKpi(kpiId, parentId);
+
+					} else {
+						cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
@@ -967,7 +976,12 @@ public enum CardLayout {
 			}
 		} else if ("reading".equalsIgnoreCase(kpiType)) {
 			try {
-				cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+				if(kpi2.containsKey("isNewKpi") && (boolean) kpi2.get("isNewKpi")){
+					cardValue = ReadingKpiAPI.getCurrentValueOfKpi(kpiId, parentId);
+				}
+				else{
+					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
