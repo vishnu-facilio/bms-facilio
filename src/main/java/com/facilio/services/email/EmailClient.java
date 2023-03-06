@@ -15,6 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.db.util.DBConf;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
@@ -91,7 +92,7 @@ public abstract class EmailClient extends BaseEmailClient {
             if(!isActive) {
                 preserveOriginalEmailAddress(mailJson);
             }
-            return pushEmailToQueue(mailJson, files);
+            return NewTransactionService.newTransactionWithReturn(() -> pushEmailToQueue(mailJson, files));
         }
         return sendMailWithoutTracking(mailJson, files);
     }
