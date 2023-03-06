@@ -132,6 +132,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                     List<FilterOperator> operators = new ArrayList<>();
                     operators.add(new FilterOperator(operator, "Next 2 Days", "within next 2 days", false, "2"));
                     operators.add(new FilterOperator(operator, "Next 7 Days", "within next 7 days", false, "7"));
+                    operators.add(new FilterOperator(operator));
                     return operators;
                 }
                 case CURRENT_WEEK: { // Have to check with Krishna if operator name itself can be changed if they are not used in Scripts
