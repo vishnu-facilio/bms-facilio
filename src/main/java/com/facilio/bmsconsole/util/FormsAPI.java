@@ -1104,7 +1104,7 @@ public class FormsAPI {
 							fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
 						}
 					}
-					fields.add(new FormField("route", FieldDisplayType.LOOKUP_SIMPLE, "Route", Required.OPTIONAL, "route", 1, 1));
+				fields.add(new FormField("route", FieldDisplayType.LOOKUP_SIMPLE, "Route", Required.OPTIONAL, "routes", 1, 1));
 				
 				break;
 			case ContextNames.WorkPermit.WORKPERMIT:
