@@ -132,7 +132,7 @@ public enum CardLayout {
 			Long kpiId;
 			Long parentId;
 			String yAggr;
-			Boolean isNewKpi = null;
+			boolean isNewKpi = false;
 		
 				
 				if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof JSONObject) {
@@ -140,6 +140,7 @@ public enum CardLayout {
 					kpiId = (Long) kpiConfig.get("kpiId");
 					parentId = (Long) kpiConfig.get("parentId");
 					yAggr = (String) kpiConfig.get("yAggr");
+					isNewKpi = kpiConfig.containsKey("isNewKpi") ? (boolean) kpiConfig.get("isNewKpi") : false;
 				} else if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof Map) {
 					Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
 					kpiId = (Long) kpiConfig.get("kpiId");
