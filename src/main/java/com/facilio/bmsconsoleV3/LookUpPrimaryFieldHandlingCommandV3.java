@@ -78,7 +78,7 @@ public class LookUpPrimaryFieldHandlingCommandV3 extends FacilioCommand {
                         if (property == null) {
                             continue;
                         }
-                        FieldUtil.setPrimaryValue(record,property);
+                        FieldUtil.setPrimaryValue(lookupRecord,property);
                     }
                 }
             }
