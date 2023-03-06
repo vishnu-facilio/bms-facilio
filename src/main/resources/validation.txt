@@ -774,6 +774,7 @@
 /api/v3/iot/data/push
 /api/v3/agent/:fetchAgent
 /api/v3/agent/connections
+/api/v3/modules/:ModuleName
 /api/controller/processEvent
 /api/v4/:moduleName/:moduleName
 /api/v4/:moduleName
@@ -2736,3 +2737,8 @@
 /api/v2/publicFile/deletePublicFile
 /api/v3/modules/:moduleName/view/:viewName/count
 /api/v2/template/email/testMail
+/api/v3/switchVariable/getSwitchVariable
+/api/v2/custombutton/getAvailableButtonsForRecords
+/api/v3/workorder/calender/getPpmJobs
+/api/v3/timelineGroupData/fetch
+/api/v3/scopeVariable/list
