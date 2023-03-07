@@ -261,7 +261,7 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Update", updateGroup));
         permissions.add(new Permission("UPDATE_CHANGE_OWNERSHIP", "Change Ownership", moduleTabType.get("UPDATE_CHANGE_OWNERSHIP"), null));
         permissions.add(new Permission("UPDATE_CLOSE_WORKORDER", "Close Workorder", moduleTabType.get("UPDATE_CLOSE_WORKORDER"), null));
-        permissions.add(new Permission("UPDATE_TASK", "Update Task", moduleTabType.get("UPDATE_TASK"), null));
+        permissions.add(new Permission("UPDATE_TASK", "Add Task", moduleTabType.get("UPDATE_TASK"), null));
         List<Permission> deleteGroup = new ArrayList<>();
         deleteGroup.add(new Permission("DELETE", "All", moduleTabType.get("DELETE"), null));
         deleteGroup.add(new Permission("DELETE_TEAM", "Team", moduleTabType.get("DELETE_TEAM"), null));
