@@ -287,7 +287,7 @@ public class WebTabContext implements Serializable {
         MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()),
         ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler()),
         SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler());
-
+        RULES("ReadingRule",false,TabType.NORMAL);//85
 
         public void setName(String name) {
             this.name = name;

@@ -40,6 +40,7 @@ public class ReadingRuleModule extends BaseModuleConfig{
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.ContextNames.READING_RULE_MODULE);
         groupDetails.put("views", readingRule);
+        groupDetails.put("appLinkNames",Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
@@ -62,6 +63,7 @@ public class ReadingRuleModule extends BaseModuleConfig{
         view.setDisplayName(displayName);
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
+        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         return view;
     }
@@ -89,6 +91,7 @@ public class ReadingRuleModule extends BaseModuleConfig{
 
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         return allView;
     }
