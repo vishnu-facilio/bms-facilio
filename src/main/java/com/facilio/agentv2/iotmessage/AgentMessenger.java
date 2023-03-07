@@ -83,7 +83,7 @@ public class AgentMessenger {
                         messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverPointsTimeOut());
                     }
                     break;
-                case SHUTDOWN:
+                case RESTART:
                 case DISCOVER_ALARM_SOURCE:
                     break;
                 case CONTROLLER_STATUS:
@@ -155,7 +155,7 @@ public class AgentMessenger {
     }
 
     private static IotData constructAgentRestart(long agentId) throws Exception {
-        return constructNewIotAgentMessage(agentId, FacilioCommand.SHUTDOWN, (FacilioContext) null, (FacilioControllerType) null);
+        return constructNewIotAgentMessage(agentId, FacilioCommand.RESTART, (FacilioContext) null, (FacilioControllerType) null);
     }
 
     public static boolean getJVMStatus(Long agentId) {

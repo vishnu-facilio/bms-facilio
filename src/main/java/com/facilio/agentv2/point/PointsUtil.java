@@ -6,6 +6,8 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
+import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -188,6 +190,13 @@ public class PointsUtil
         if(point.getControllerType() == FacilioControllerType.BACNET_IP){
             BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
             if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
+                point.setWritable(true);
+                point.setAgentWritable(true);
+            }
+        }
+        if(point.getControllerType() == FacilioControllerType.MODBUS_IP){
+            ModbusTcpPointContext modbusTcpPoint = (ModbusTcpPointContext) point;
+            if(ModbusUtils.RegisterType.valueOf(Math.toIntExact(modbusTcpPoint.getRegisterType()) - 1 ).isWritable()){
                 point.setWritable(true);
                 point.setAgentWritable(true);
             }

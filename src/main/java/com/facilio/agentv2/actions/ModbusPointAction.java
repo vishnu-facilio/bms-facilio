@@ -11,7 +11,6 @@ import org.apache.log4j.LogManager;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
-import java.util.Collections;
 import java.util.Objects;
 
 public class ModbusPointAction extends DeviceIdActions {
@@ -37,7 +36,17 @@ public class ModbusPointAction extends DeviceIdActions {
 
     private Long controllerId;
 
-    private Long agentId;
+    private Long agentId = -1L;
+
+    private int interval = 0;
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
 
     public Long getAgentId () {
         return agentId;
@@ -101,12 +110,12 @@ public class ModbusPointAction extends DeviceIdActions {
                 Controller controller = ControllerApiV2.getController(controllerId,getAgentId());
                 Objects.requireNonNull(controller, "controller can't be null");
                 if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
-                    ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(-1, controller.getId());
+                    ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(getAgentId(), controller.getId());
                     tcpPointContext.setRegisterType(registerType);
                     tcpPointContext.setModbusDataType(modbusDataType);
                     tcpPointContext.setRegisterNumber(registerNumber);
                     tcpPointContext.setName(name);
-                    ControllerMessenger.sendConfigureModbusTcpPoint(tcpPointContext);
+                    ControllerMessenger.sendAddModbusTcpPoint(tcpPointContext, interval);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {

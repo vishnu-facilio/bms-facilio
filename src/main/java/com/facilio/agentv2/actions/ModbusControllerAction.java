@@ -32,7 +32,17 @@ public class ModbusControllerAction extends AgentIdAction {
     private RtuNetworkContext rtuNetwork;
 
     private Long netwokId;
-    
+
+    private int port;
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     public Long getSlaveId() {
         return slaveId;
     }
@@ -88,6 +98,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 ModbusTcpControllerContext controllerContext = new ModbusTcpControllerContext();
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setIpAddress(getIp());
+                controllerContext.setPort(getPort());
                 controllerContext.setSlaveId(slaveId.intValue());
                 controllerContext.setName(getName());
                 if (AgentMessenger.sendAddModbusIpControllerCommand(controllerContext)) {

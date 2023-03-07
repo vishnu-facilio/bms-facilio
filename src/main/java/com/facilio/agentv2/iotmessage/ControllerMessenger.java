@@ -150,6 +150,7 @@ public class ControllerMessenger {
 	            	case REMOVE:
 	            	case UNSUBSCRIBE:
 	            	case GET:
+                    case ADD_POINTS:
 	            		JSONArray pointsArray = MessengerUtil.getPointsData(points);
                         LOGGER.info("JSON Array: " + pointsArray);
                         if (context != null && context.containsKey(AgentConstants.DATA_INTERVAL)) {
@@ -158,7 +159,7 @@ public class ControllerMessenger {
 	            		object.put(AgentConstants.POINTS, pointsArray);
 	            		break;
 	            		//
-	            	case SHUTDOWN:
+                    case RESTART:
 	            		break;
 	            	case PROPERTY:
 	            		object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
@@ -307,8 +308,14 @@ public static boolean discoverPoints(long controllerId) throws Exception {
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
-    public static void sendConfigureModbusTcpPoint(ModbusTcpPointContext tcpPointContext) throws Exception {
-        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.CONFIGURE);
+    public static void sendAddModbusTcpPoint(ModbusTcpPointContext tcpPointContext, int interval) throws Exception {
+        Controller controller = ControllerApiV2.getControllerFromDb(tcpPointContext.getControllerId());
+        IotData iotData;
+        if (interval > 0) {
+            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.ADD_POINTS, controller, interval);
+        } else {
+            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.ADD_POINTS, controller);
+        }
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 

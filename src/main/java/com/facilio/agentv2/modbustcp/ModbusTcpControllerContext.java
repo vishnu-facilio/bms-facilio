@@ -47,6 +47,23 @@ public class ModbusTcpControllerContext extends Controller {
     @NotNull
     private int slaveId = -1;
 
+    @JsonInclude
+    @NotNull
+    private int port = 502;
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+
     public static ModbusTcpControllerContext getModbusTcpControllerFromMap(Map<String, Object> controllerMap) throws Exception {
         LOGGER.info(" controller map for modbus ip controller " + controllerMap);
         if (controllerMap == null || controllerMap.isEmpty()) {
@@ -94,7 +111,7 @@ public class ModbusTcpControllerContext extends Controller {
         jsonObject.put(AgentConstants.ID, getId());
         jsonObject.put(AgentConstants.SLAVE_ID, getSlaveId());
         jsonObject.put(AgentConstants.IP_ADDRESS, ipAddress);
-        jsonObject.put(AgentConstants.NETWORK_ID, 0);
+        jsonObject.put(AgentConstants.PORT, getPort());
         return jsonObject;
     }
 
@@ -105,24 +122,25 @@ public class ModbusTcpControllerContext extends Controller {
         LOGGER.info("ModuleName : "+getModuleName());
         LOGGER.info("Fields : "+fieldsMap);
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PORT), String.valueOf(getPort()), NumberOperators.EQUALS));
         if (ipAddress != null) {
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
-        }else {
-            throw new Exception(" ip address for Modbus TCP controller cant be null");
+        } else {
+            throw new Exception("Ip address for Modbus TCP controller cant be null");
         }
         return conditions;
     }
 
     @Override
     public String getIdentifier() {
-        return slaveId+IDENTIFIER_SEPERATER+ipAddress;
+        return slaveId+IDENTIFIER_SEPERATER+ipAddress+IDENTIFIER_SEPERATER+port;
     }
 
     @Override
     public boolean equals(Object o){
         if(o instanceof ModbusTcpControllerContext){
             ModbusTcpControllerContext obj = (ModbusTcpControllerContext) o;
-            return this.getSlaveId()==obj.getSlaveId() && this.getIpAddress().equals(obj.getIpAddress()) && super.equals(obj);
+            return this.getPort()==obj.getPort() && this.getSlaveId()==obj.getSlaveId() && this.getIpAddress().equals(obj.getIpAddress()) && super.equals(obj);
         }else{
             return false;
         }

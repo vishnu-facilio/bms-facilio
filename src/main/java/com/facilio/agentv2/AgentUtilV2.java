@@ -167,7 +167,7 @@ public class AgentUtilV2
                         break;
                     case PING:
                         break;
-                    case SHUTDOWN:
+                    case RESTART:
                         break;
                 }
             }

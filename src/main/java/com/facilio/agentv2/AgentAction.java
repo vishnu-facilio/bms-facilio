@@ -525,6 +525,9 @@ public class AgentAction extends AgentActionV2 {
                     .append("isBacnetIpEnabled=true").append(System.lineSeparator())
                     .append("isValidateJsonSchemaEnabled=false");
         }
+        if (type == AgentType.NIAGARA) {
+            builder.append("caFile=root.crt");
+        }
         return builder.toString();
     }
 
