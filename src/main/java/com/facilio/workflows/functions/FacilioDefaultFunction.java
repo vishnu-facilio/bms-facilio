@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
+import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
@@ -1291,6 +1292,64 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 				}
 			}
 			return "No People";
+		};
+
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+
+	GET_PORTAL_DOMAIN_URL(38,"getPortalDomainUrl") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			checkParam(objects);
+
+			Integer id= Integer.parseInt((objects[0])+"");
+			AppDomain.AppDomainType type=AppDomain.AppDomainType.valueOf(id);
+
+			List<AppDomain> appDomains = null;
+
+			switch (type) {
+				case TENANT_PORTAL: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.TENANT_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case VENDOR_PORTAL: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.VENDOR_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case CLIENT_PORTAL: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.CLIENT_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case SERVICE_PORTAL:{
+					appDomains = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case EMPLOYEE_PORTAL:{
+					appDomains = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.EMPLOYEE_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			StringBuilder appUrl;
+			if(appDomains!=null && !appDomains.isEmpty()){
+				appUrl = new StringBuilder(SSOUtil.getProtocol())
+						.append("://")
+						.append(appDomains.get(0).getDomain());
+			}
+			else{
+				appUrl=new StringBuilder(SSOUtil.getProtocol())
+						.append("://")
+						.append("maintenance");
+			}
+			return appUrl;
 		};
 
 		public void checkParam(Object... objects) throws Exception {

@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
@@ -34,7 +35,9 @@ import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -1897,14 +1900,31 @@ public enum ActionType {
 					ModuleBean bean = Constants.getModBean();
 					List<FacilioField> fields = bean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
 					FacilioField field = fields.stream().filter(p -> p.getFieldId() == fieldId).collect(Collectors.toList()).get(0);
-					Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
-					if (userObject != null && !userObject.isEmpty()) {
-						Long pplId = PeopleAPI.getPeopleIdForUser((Long) userObject.get("id"));
+					Long pplId = null;
+					if (field.getName().equals(FacilioConstants.ContextNames.TENANT) || field.getName().equals(FacilioConstants.ContextNames.VENDOR)) {
+						pplId = getPeopleIdFromPrimaryContact(field, props);
 						if (pplId != null) {
 							obj.put("assignedTo", pplId);
 						}
 					}
+					else if(field.getDataTypeEnum() == FieldType.LOOKUP){
+							LookupField lookup = (LookupField) field;
+							Map<String, Object> respondent = (Map<String, Object>) props.get(field.getName());
+							if (respondent != null && !respondent.isEmpty()) {
+								FacilioModule lookupModule = lookup.getLookupModule();
+								FacilioModule extModule = lookupModule.getExtendModule();
+								if(lookupModule.getName().equals(FacilioConstants.ContextNames.PEOPLE) || extModule.getName().equals(FacilioConstants.ContextNames.PEOPLE)){
+									obj.put("assignedTo",respondent.get("id"));
+								} else {
+									pplId = PeopleAPI.getPeopleIdForUser((Long) respondent.get("id"));
+									if (pplId != null) {
+										obj.put("assignedTo", pplId);
+									}
+								}
+							}
+						}
 				}
+
 
 				QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
 			} catch (Exception e) {
@@ -1926,8 +1946,28 @@ public enum ActionType {
 	},
 
 	;
-	
-	
+
+	public static Long getPeopleIdFromPrimaryContact(FacilioField field,Map<String,Object> props) throws Exception{
+			Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
+			Long id = (Long) userObject.get("id");
+			Long contactId=null;
+			if(field.getName().equals(FacilioConstants.ContextNames.TENANT)){
+				List<V3TenantContactContext> obj = V3PeopleAPI.getTenantContacts(id, true, false);
+				if(obj!=null && !obj.isEmpty()) {
+					contactId = FacilioUtil.parseLong(obj.get(0).getId());
+				}
+			}
+			else if(field.getName().equals(FacilioConstants.ContextNames.VENDOR)){
+				List<V3VendorContactContext> obj = V3PeopleAPI.getVendorContacts(id, true, false);
+				if(obj!=null && !obj.isEmpty()){
+					contactId = FacilioUtil.parseLong(obj.get(0).getId());
+				}
+			}
+
+			return contactId;
+
+	}
+
 	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
 		AlarmOccurrenceContext lastOccurrence = NewAlarmAPI.getAlarmOccurrence(baseAlarm.getLastOccurrenceId());
 		baseAlarm.setLastOccurrence(lastOccurrence);
