@@ -106,6 +106,7 @@ public class MultiResourceModule extends BaseModuleConfig{
             apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         }
         apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        apps.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
 
         for (String app : apps) {
             ModuleBean moduleBean = Constants.getModBean();
@@ -183,43 +184,53 @@ public class MultiResourceModule extends BaseModuleConfig{
 
 
     public void addForm() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule multiResourceModule = modBean.getModule(FacilioConstants.MultiResource.NAME);
+        ArrayList<String> apps = new ArrayList<>();
+        if (!SignupUtil.maintenanceAppSignup()) {
+            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        }
+        apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        apps.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
 
-        FacilioForm defaultForm = new FacilioForm();
-        defaultForm.setName("standard");
-        defaultForm.setModule(multiResourceModule);
-        defaultForm.setDisplayName("Standard");
-        defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        defaultForm.setShowInWeb(true);
-        defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
-        defaultForm.setIsSystemForm(true);
-        defaultForm.setType(FacilioForm.Type.FORM);
+        for (String app : apps) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule multiResourceModule = modBean.getModule(FacilioConstants.MultiResource.NAME);
 
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(multiResourceModule.getName()));
-        List<FormSection> sections = new ArrayList<FormSection>();
-        FormSection section = new FormSection();
-        section.setName("Add Associated Asset / Space ");
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        section.setShowLabel(false);
+            FacilioForm defaultForm = new FacilioForm();
+            defaultForm.setName("standard_" + app);
+            defaultForm.setModule(multiResourceModule);
+            defaultForm.setDisplayName("Standard_" + app);
+            defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+            defaultForm.setShowInWeb(true);
+            defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP));
+            defaultForm.setIsSystemForm(true);
+            defaultForm.setType(FacilioForm.Type.FORM);
+            defaultForm.setAppLinkName(app);
 
-        List<FormField> fields = new ArrayList<>();
-        int seq = 0;
-        fields.add(new FormField(fieldMap.get("sequence").getFieldId(), "sequence", FacilioField.FieldDisplayType.NUMBER, "Sequence", FormField.Required.OPTIONAL, ++seq, 1));
-        fields.add(new FormField(fieldMap.get("asset").getFieldId(), "asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.OPTIONAL, ++seq, 1));
-        fields.add(new FormField(fieldMap.get("space").getFieldId(), "space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space", FormField.Required.OPTIONAL, ++seq, 1));
-        fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(multiResourceModule.getName()));
+            List<FormSection> sections = new ArrayList<FormSection>();
+            FormSection section = new FormSection();
+            section.setName("Add Associated Asset / Space ");
+            section.setSectionType(FormSection.SectionType.FIELDS);
+            section.setShowLabel(false);
 
-        section.setFields(fields);
-        section.setSequenceNumber(1);
-        sections.add(section);
+            List<FormField> fields = new ArrayList<>();
+            int seq = 0;
+            fields.add(new FormField(fieldMap.get("sequence").getFieldId(), "sequence", FacilioField.FieldDisplayType.NUMBER, "Sequence", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("asset").getFieldId(), "asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("space").getFieldId(), "space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
 
-        defaultForm.setSections(sections);
+            section.setFields(fields);
+            section.setSequenceNumber(1);
+            sections.add(section);
 
-        FormsAPI.createForm(defaultForm, multiResourceModule);
-        Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
-        addRuleForSpace(defaultForm,fieldMap,formFieldMap);
-        addRuleForAsset(defaultForm,fieldMap,formFieldMap);
+            defaultForm.setSections(sections);
+
+            FormsAPI.createForm(defaultForm, multiResourceModule);
+            Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
+            addRuleForSpace(defaultForm, fieldMap, formFieldMap);
+            addRuleForAsset(defaultForm, fieldMap, formFieldMap);
+        }
 
     }
 
