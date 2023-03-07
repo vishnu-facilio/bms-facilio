@@ -47,6 +47,12 @@ public class LoadSupplementsForFaultsCommand extends FacilioCommand {
             if (!viewFieldsMap.containsKey("readingFieldId")) {
                 extraReadingAlarmFields.add(allFieldsAsMap.get("readingFieldId"));
             }
+            if (!viewFieldsMap.containsKey("resource")) {
+                extraReadingAlarmFields.add(allFieldsAsMap.get("resource"));
+            }
+            if (!viewFieldsMap.containsKey("severity")) {
+                extraReadingAlarmFields.add(allFieldsAsMap.get("severity"));
+            }
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS, extraReadingAlarmFields);
         }
     }

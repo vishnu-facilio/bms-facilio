@@ -43,6 +43,12 @@ public class LoadSupplementsForBMSAlarmCommand extends FacilioCommand {
             if(viewFieldsMap.containsKey("acknowledgedBy")){
                 extraBMSAlarmFields.add(allFieldsAsMap.get("acknowledged"));
             }
+            if (!viewFieldsMap.containsKey("resource")) {
+                extraBMSAlarmFields.add(allFieldsAsMap.get("resource"));
+            }
+            if (!viewFieldsMap.containsKey("severity")) {
+                extraBMSAlarmFields.add(allFieldsAsMap.get("severity"));
+            }
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS, extraBMSAlarmFields);
         }
     }

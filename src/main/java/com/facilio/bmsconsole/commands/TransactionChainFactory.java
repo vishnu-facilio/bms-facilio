@@ -854,6 +854,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain fetchRootCause() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchRuleRootCauseCommand());
+			return c;
+		}
+
 		public static FacilioChain addControlGroupChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddControlGroupCommand());

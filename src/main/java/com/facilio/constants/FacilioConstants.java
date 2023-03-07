@@ -3832,6 +3832,7 @@ public class FacilioConstants {
 			public static final String RCA_SCORE_READINGS_MODULE = "readingrulerca_score_readings";
 			public static final String RCA_GROUP = "rcagroups";
 			public static final String RCA_SCORE_READINGS = "rcaScoreReadings";
+			public static final String RCA_RULE_DETAILS = "rcaRuleDetails";
 		}
 	}
 

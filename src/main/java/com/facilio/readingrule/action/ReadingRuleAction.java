@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Log4j
@@ -85,6 +86,23 @@ public class ReadingRuleAction extends V3Action {
 
         setData("success", "Instruction Processing has begun");
 
+        return SUCCESS;
+    }
+
+    private Long ruleId;
+
+    public String rootCauseFetch() throws Exception {
+        FacilioChain chain = TransactionChainFactory.fetchRootCause();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID, getRuleId());
+        context.put(FacilioConstants.ContextNames.PAGE, getPage());
+        context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
+        chain.execute();
+        List<Map<String,Object>> ruleDetails = (List<Map<String,Object>>) context.get(FacilioConstants.ReadingRules.RCA.RCA_RULE_DETAILS);
+        JSONObject result = new JSONObject();
+        result.put(FacilioConstants.ContextNames.RECORD_LIST, ruleDetails);
+        result.put(FacilioConstants.ContextNames.RECORD_COUNT, context.get(FacilioConstants.ContextNames.COUNT));
+        setData("result",result);
         return SUCCESS;
     }
 }
