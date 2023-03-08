@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.util.DBConf;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -119,7 +121,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 
 			if (fieldVal == null) {
 				try{
-					LOGGER.info("Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentId());
+					LOGGER.info("Field value is null => Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentId());
 				}catch (Exception e){
 				}
 				return;
@@ -144,7 +146,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 			   FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
 			}else{
 				try{
-					LOGGER.info("Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentRule());
+					LOGGER.info("Field value is -1 => Rule name : " + rule.getName() + " Rule id : " + rule.getId() + " Module Name : " + rule.getModuleName() + " Record Id :" + rule.getParentRule());
 				}catch (Exception e){
 				}
 			}
@@ -176,10 +178,14 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(recordId, module));
 		
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
+		LOGGER.info("Query for SLA record fetch => "+selectBuilder.toString());
 		// LOGGER.info(selectBuilder.toString());
 		if(CollectionUtils.isNotEmpty(records)) {
 			ModuleBaseWithCustomFields record = records.get(0);
 			Map<String,Object> map = FieldUtil.getAsProperties(record);
+
+			LOGGER.info("Record value while adding SLA jobs => \n"+map);
+
 			FacilioField field = modBean.getField(dateFieldId, module.getName());
 			fieldVal = (Long)map.get(field.getName());
 		}
