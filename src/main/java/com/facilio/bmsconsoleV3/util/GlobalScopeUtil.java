@@ -346,11 +346,34 @@ public class GlobalScopeUtil {
             ScopingConfigContext moduleUserScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
             if(moduleUserScoping != null) {
                 ApplicationApi.computeValueForScopingField(moduleUserScoping,currentApplicableModule);
-                criteria.andCriteria(moduleUserScoping.getCriteria());
+                Criteria userScopeCriteria = moduleUserScoping.getCriteria();
+
+                //Have to remove this entire value generator code once value generators are removed from user scope criteria
+                boolean isOnlyValGenConditions = true;
+                try {
+                    isOnlyValGenConditions = isOnlyValueGeneratorInConditions(userScopeCriteria);
+                } catch(Exception e) {
+                    LOGGER.info("Error at value generator condition checking");
+                }
+                if(userScopeCriteria != null && !isOnlyValGenConditions) {
+                    criteria.andCriteria(moduleUserScoping.getCriteria());
+                }
             }
         }
     }
 
+    private static boolean isOnlyValueGeneratorInConditions(Criteria userScopeCriteria) {
+        if(userScopeCriteria != null && !userScopeCriteria.isEmpty()) {
+            Map<String, Condition> conditionsMap = userScopeCriteria.getConditions();
+            if(MapUtils.isNotEmpty(conditionsMap) && conditionsMap.size() == 1) {
+                Condition condition = conditionsMap.values().stream().findFirst().get();
+                if(condition != null && condition.getOperatorId() == 113) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         String switchVariable = request.getHeader("X-Switch-Value");
