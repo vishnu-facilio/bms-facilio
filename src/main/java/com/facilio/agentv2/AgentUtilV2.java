@@ -39,6 +39,7 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -46,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -448,6 +450,30 @@ public class AgentUtilV2
         return event;
     }
 
+    public static void processCommandDelayAlarm(FacilioAgent agent, JSONObject data) throws Exception {
+        long currentTime = System.currentTimeMillis();
+
+        AgentEventContext event = new AgentEventContext();
+        String description = null;
+        String message = MessageFormat.format("Command sent to agent {0} is executing in delay", agent.getDisplayName()) ;
+        String severity = (String) data.get("status");
+        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
+            description = MessageFormat.format("Command is executing in delay of {0} minutes", FacilioUtil.parseInt(data.get("delay").toString())) ;
+        } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+            description = "Command execution is normal";
+        }
+        event.setMessage(message);
+        event.setDescription(description);
+        event.setSeverityString(severity);
+        event.setCreatedTime(currentTime);
+        event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setAgent(agent);
+        event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.COMMAND_DELAY.getIndex());
+
+        addEventToDB(event);
+        LOGGER.info("Command Delay Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId() + "), status - " + severity);
+
+    }
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
     	refreshAgent(agent);

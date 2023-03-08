@@ -11,7 +11,9 @@ public enum AgentEvent {
     TIMESERIES_DATA_COLLECTION_START("timeseriesDataCollectionStart",1),
     CONTROLLERS_MISSING("controllersMissing",3),
     POINTS_MISSING("pointsMissing",5),
-    TIMESERIES_DATA_COLLECTION_END("timeseriesDataCollectionEnd",10);
+    TIMESERIES_DATA_COLLECTION_END("timeseriesDataCollectionEnd",10),
+    COMMAND_DELAY("commandDelay", 11)
+    ;
 
 
     private int key;

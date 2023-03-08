@@ -248,6 +248,9 @@ public class DataProcessorV2 {
                 if (eventType == AgentEvent.TIMESERIES_DATA_COLLECTION_END) {
                     return executeTriggers(agent);
                 }
+                if (eventType == AgentEvent.COMMAND_DELAY) {
+                    return processCommandDelayAlarm(payload, agent);
+                }
             }
         }catch (Exception e){
             LOGGER.info("Exception occurred while processing event ",e);
@@ -309,6 +312,13 @@ public class DataProcessorV2 {
         }else{
             return false;
         }
+    }
+
+    private boolean processCommandDelayAlarm(JSONObject payload, FacilioAgent agent) throws Exception {
+        JSONArray dataArr = (JSONArray) payload.get(AgentConstants.DATA);
+        JSONObject data = (JSONObject) dataArr.get(0);
+        agentUtil.processCommandDelayAlarm(agent, data);
+        return true;
     }
 
     private AgentEvent getEventType(JSONObject payload) {

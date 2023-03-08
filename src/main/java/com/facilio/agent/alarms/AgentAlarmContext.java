@@ -67,7 +67,9 @@ public class AgentAlarmContext extends BaseAlarmContext {
     public static enum AgentAlarmType implements FacilioIntEnum {
         AGENT("Agent"),
         CONTROLLER("Controller"),
-        POINT("Point");
+        POINT("Point"),
+        COMMAND_DELAY("Command Delay")
+        ;
 
         private String name;
         AgentAlarmType(String name) {
