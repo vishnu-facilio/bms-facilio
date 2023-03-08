@@ -183,10 +183,8 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 		if(CollectionUtils.isNotEmpty(records)) {
 			ModuleBaseWithCustomFields record = records.get(0);
 			Map<String,Object> map = FieldUtil.getAsProperties(record);
-
-			LOGGER.info("Record value while adding SLA jobs => \n"+map);
-
 			FacilioField field = modBean.getField(dateFieldId, module.getName());
+			LOGGER.info("Record value while adding SLA jobs for date field ("+field+") => \n"+map);
 			fieldVal = (Long)map.get(field.getName());
 		}
 		return fieldVal;

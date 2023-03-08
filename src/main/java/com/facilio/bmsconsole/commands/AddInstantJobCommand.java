@@ -34,8 +34,8 @@ public class AddInstantJobCommand extends FacilioCommand implements PostTransact
         if (context != null) {
             if (DBConf.getInstance().getCurrentOrgId() == 592) {
                 try {
-                    LOGGER.info("Current transaction => " + FacilioTransactionManager.INSTANCE.getTransactionManager().getTransaction());
-                    LOGGER.info("Adding sla jobs for TL " + jobName);
+                    LOGGER.info("Current transaction while adding post transaction instant => " + FacilioTransactionManager.INSTANCE.getTransactionManager().getTransaction());
+                    LOGGER.info("Adding post transaction instant jobs for TL " + jobName);
                 }
                 catch (Exception e) {
 

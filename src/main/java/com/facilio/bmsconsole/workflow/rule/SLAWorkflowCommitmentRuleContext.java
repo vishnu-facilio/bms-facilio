@@ -11,6 +11,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -131,6 +133,14 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                         .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
                 update.update(moduleRecord);
 
+                if (DBConf.getInstance().getCurrentOrgId() == 592) {
+                    try {
+                        LOGGER.info("Current transaction while updating due (target) date => " + FacilioTransactionManager.INSTANCE.getTransactionManager().getTransaction());
+                    }
+                    catch (Exception e) {
+
+                    }
+                }
                 LOGGER.info("Updating Date field '"+dueField.getName()+"' to "+FieldUtil.getAsProperties(moduleRecord)+"\nQuery => "+update);
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
