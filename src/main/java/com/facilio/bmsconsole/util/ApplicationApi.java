@@ -2079,6 +2079,10 @@ public class ApplicationApi {
 
         selectBuilder.orderBy("ID asc");
 
+        if(isRequestFromMobile()) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,StringOperators.ISN_T));
+        }
+
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List<ApplicationContext> appsList = FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
@@ -2089,6 +2093,10 @@ public class ApplicationApi {
         }
         return null;
 
+    }
+
+    private static boolean isRequestFromMobile() {
+        return AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile() != null && AccountUtil.getCurrentAccount().isFromMobile();
     }
 
     public static List<ApplicationContext> getAllApplicationsWithOutFilter() throws Exception {
@@ -2468,7 +2476,22 @@ public class ApplicationApi {
         if(finalDefaultApplication != null){
             return finalDefaultApplication;
         }
-        return applications.get(0);
+        return checkForMobileMaintenanceApp(applications);
+    }
+
+    //backward compatible for default app as maintenance for workQ mobile when there is no default app - can be removed after removing facilio main app from all orgs
+    public static ApplicationContext checkForMobileMaintenanceApp(List<ApplicationContext> applications) {
+        if(CollectionUtils.isNotEmpty(applications)) {
+            if(isRequestFromMobile()) {
+                for (ApplicationContext app : applications) {
+                    if (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)) {
+                        return app;
+                    }
+                }
+            }
+            return applications.get(0);
+        }
+        return null;
     }
     public static ApplicationContext getUserDefaultApp(List<ApplicationContext> permissibleApplications,long ouid) throws Exception {
         if(CollectionUtils.isNotEmpty(permissibleApplications) && ouid > -1){
