@@ -564,7 +564,7 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 				
 				
 				
-				if (valuesForFilter != null
+				if (valuesForFilter != null && valuesForFilter.size() > 0 &&  valuesForFilter.get(0) != null && !valuesForFilter.get(0).equals("")
 						&& (!valuesForFilter.get(0).equals("all") && !valuesForFilter.get(0).equals("others"))) {
 					// skip adding any criteria for filter when it's dropdown is 'all'
 					// to . generate valuelist for userFilter.optionType==SOME ,all and others cases

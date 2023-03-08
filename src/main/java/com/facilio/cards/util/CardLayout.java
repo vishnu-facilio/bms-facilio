@@ -946,7 +946,7 @@ public enum CardLayout {
 							kpiContext.getCriteria().andCriteria(filterCriteria);
 						}
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE,
+						LOGGER.log(Level.INFO,
 								"Error applying custom script filters for widget" + cardContext.getId(), e);
 					}
 

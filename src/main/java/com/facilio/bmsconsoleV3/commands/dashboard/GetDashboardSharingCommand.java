@@ -34,7 +34,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
         if(dashboard_list_prop.isWithSharing()) {
             List<DashboardContext> dashboards = new ArrayList<>();
-            if(dashboard_list_prop.getDashboards() != null) {
+            if(dashboard_list_prop.getDashboards() != null && dashboard_list_prop.getDashboards().size() > 0) {
                 getDashboardWithSharing(dashboard_list_prop.getDashboards(), dashboards);
             }
             if (dashboards != null) {

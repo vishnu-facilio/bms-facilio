@@ -689,12 +689,16 @@ public class V3DashboardAPIHandler {
     public static void setTimeLineFilterResp(JSONObject actionMeta , Long widget_id, Map<Long, Map<String, String>> timeline_widget_field_map, JSONObject global_timeline_filter_widget_map)throws Exception
     {
         if (global_timeline_filter_widget_map != null && timeline_widget_field_map != null && timeline_widget_field_map.containsKey(widget_id)) {
-            JSONObject timeline_filter = (JSONObject) global_timeline_filter_widget_map.get("TIMELINE_FILTER");
-            HashMap dateField = (HashMap) timeline_widget_field_map.get(widget_id);
-            if(dateField != null && timeline_filter != null && dateField.containsKey("dateField")){
-                timeline_filter.put("dateField", dateField.get("dateField"));
+            JSONObject timeline_filter_original = (JSONObject) global_timeline_filter_widget_map.get("TIMELINE_FILTER");
+            if(timeline_filter_original != null && !timeline_filter_original.isEmpty())
+            {
+                JSONObject timeline_filter = (JSONObject) timeline_filter_original.clone();
+                HashMap dateField = (HashMap) timeline_widget_field_map.get(widget_id);
+                if (dateField != null && timeline_filter != null && dateField.containsKey("dateField")) {
+                    timeline_filter.put("dateField", dateField.get("dateField"));
+                }
+                actionMeta.put("TIMELINE_FILTER", timeline_filter);
             }
-            actionMeta.put("TIMELINE_FILTER", timeline_filter);
         }
     }
 

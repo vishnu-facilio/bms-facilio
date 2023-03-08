@@ -1,10 +1,7 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.DashboardFilterContext;
-import com.facilio.bmsconsole.context.DashboardUserFilterContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
@@ -54,7 +51,8 @@ public enum DashboardRuleActionType {
                 DashboardWidgetContext trigger_widget  = DashboardUtil.getWidget(trigger_widget_id);
                 Criteria target_widget_criteria = null;
                 Long criteriaId = target_widget.getCriteriaId();
-                if(criteriaId != null  && criteriaId > 0)
+                DashboardWidgetContext widget  = DashboardUtil.getWidget(target_widget_id);
+                if(DashboardWidgetContext.WidgetType.getWidgetType(widget.getType()) != DashboardWidgetContext.WidgetType.CARD && criteriaId != null  && criteriaId > 0)
                 {
                     target_widget_criteria = CriteriaAPI.getCriteria(criteriaId);
                     if (target_widget_criteria != null)
@@ -100,7 +98,27 @@ public enum DashboardRuleActionType {
 
                     }
                 }
-                DashboardWidgetContext widget  = DashboardUtil.getWidget(target_widget_id);
+                else if( DashboardWidgetContext.WidgetType.getWidgetType(widget.getType()) == DashboardWidgetContext.WidgetType.CARD )
+                {
+                    WidgetCardContext target_card_widget= (WidgetCardContext) widget;
+                    JSONObject cardParams = target_card_widget.getCardParams();
+                    if(cardParams != null && cardParams.containsKey("reading") )
+                    {
+                        JSONObject reading = (JSONObject) cardParams.get("reading");
+                        if (reading != null && reading.containsKey("parentId") && reading.get("parentId") != null && placeHolders.containsKey(trigger_widget.getLinkName()))
+                        {
+                            HashMap widget_value = (HashMap) placeHolders.get(trigger_widget.getLinkName());
+                            if (widget_value != null && (widget_value.containsKey("value"))) {
+                                ArrayList value_arr = widget_value.containsKey("value") ? (ArrayList) widget_value.get("value") : (ArrayList) widget_value.get("dimension");
+                                if (value_arr.size() > 0) {
+                                    String value = (String) value_arr.get(0);
+                                    setCardResult(result_json, DashboardWidgetContext.WidgetType.CARD, target_widget_id, dashboard_execute_meta, value);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 DashboardWidgetContext.WidgetType widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.getType());
                 if(widgetType != null && widgetType == DashboardWidgetContext.WidgetType.FILTER)
                 {
@@ -180,7 +198,15 @@ public enum DashboardRuleActionType {
             }
 
         }
-
+        private void setCardResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, DashboardExecuteMetaContext dashboard_execute_data, String value)throws Exception
+        {
+            result_json.put("widgetType" , widgetType);
+            result_json.put("widget_id", target_widget_id);
+            JSONObject actionData = new JSONObject();
+            V3DashboardAPIHandler.setTimeLineFilterResp(actionData, target_widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
+            actionData.put("card_parent_id", value);
+            result_json.put("actionMeta" , actionData);
+        }
         private void setResult(JSONObject result_json , DashboardWidgetContext.WidgetType widgetType, Long target_widget_id, Criteria criteria, DashboardExecuteMetaContext dashboard_execute_data, String trigger_widget_link_name, DashboardTriggerAndTargetWidgetContext dashboard_widget)throws Exception
         {
             result_json.put("widgetType" , widgetType);

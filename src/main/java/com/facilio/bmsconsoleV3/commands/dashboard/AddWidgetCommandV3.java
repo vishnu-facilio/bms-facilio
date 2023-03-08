@@ -320,6 +320,12 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                                 FacilioView view = ViewAPI.getView(name, moduleId, orgId, appId);
                                 view.setId(-1l);
                                 view.setAppId(targetId);
+                                if(view.getFields() != null){
+                                    for(ViewField field : view.getFields())
+                                    {
+                                        field.setId(-1);
+                                    }
+                                }
                                 ViewAPI.addView(view, orgId);
                             }
                         }
