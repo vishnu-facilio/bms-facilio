@@ -131,6 +131,8 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                         .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
                 update.update(moduleRecord);
 
+                LOGGER.info("Updating Date field '"+dueField.getName()+"' to "+FieldUtil.getAsProperties(moduleRecord)+"\nQuery => "+update);
+
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
                     if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {

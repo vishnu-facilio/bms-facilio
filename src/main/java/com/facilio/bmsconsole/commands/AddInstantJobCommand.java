@@ -4,10 +4,16 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.FTransactionManager;
+import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.db.util.DBConf;
 import com.facilio.tasker.FacilioTimer;
+import jdk.nashorn.internal.runtime.logging.Logger;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+@Log4j
 public class AddInstantJobCommand extends FacilioCommand implements PostTransactionCommand {
 
     private Context context;
@@ -26,6 +32,15 @@ public class AddInstantJobCommand extends FacilioCommand implements PostTransact
     @Override
     public boolean postExecute() throws Exception {
         if (context != null) {
+            if (DBConf.getInstance().getCurrentOrgId() == 592) {
+                try {
+                    LOGGER.info("Current transaction => " + FacilioTransactionManager.INSTANCE.getTransactionManager().getTransaction());
+                    LOGGER.info("Adding sla jobs for TL " + jobName);
+                }
+                catch (Exception e) {
+
+                }
+            }
             FacilioTimer.scheduleInstantJob(jobName, (FacilioContext) context);
         }
         return false;
