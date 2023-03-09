@@ -7,7 +7,7 @@
     <job name='ParallelModuleBasedWorkflowRuleExecutionJob' classname= 'com.facilio.bmsconsole.instant.jobs.ParallelModuleBasedWorkflowRuleExecutionJob' transactionTimeout='900'/>
     <job name='ExecuteBulkRollUpFieldJob' classname= 'com.facilio.bmsconsole.instant.jobs.ExecuteBulkRollUpFieldJob' transactionTimeout='900'/>
     <job name='FormulaFieldCalculatorJob' classname = 'com.facilio.bmsconsole.instant.jobs.FormulaFieldCalculatorJob' transactionTimeout='900'/>
-    <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='300'/>
+    <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='900'/>
     <job name='ControllerActivityWatcher' classname= 'com.facilio.bmsconsole.instant.jobs.ControllerActivityWatcherJob' transactionTimeout='900'/>
     <job name='PublishedDataChecker' classname= 'com.facilio.bmsconsole.instant.jobs.PublishedDataCheckerJob' transactionTimeout='300'/>
     <job name='MigrateReadingData' classname= 'com.facilio.bmsconsole.instant.jobs.MigrateReadingDataJob' transactionTimeout='300'/>

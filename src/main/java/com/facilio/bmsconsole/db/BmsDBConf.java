@@ -131,6 +131,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public long getDefaultransactionTimeout() {
+        return FacilioProperties.getDefaultTransactionTimeout();
+    }
+
+    @Override
     public boolean isProduction() {
         return FacilioProperties.isProduction();
     }

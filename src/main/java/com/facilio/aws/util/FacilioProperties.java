@@ -210,6 +210,9 @@ public class FacilioProperties {
     @Getter
     private static String vendorPortalAndroidURL;
 
+    @Getter
+    private static long defaultTransactionTimeout = -1;
+
 
     static {
         loadProperties();
@@ -251,6 +254,18 @@ public class FacilioProperties {
             messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
             maxProcessorThreads = Integer.parseInt(PROPERTIES.getOrDefault("processor.max.threads", 50).toString().trim());
             userServer = !scheduleServer;
+
+            String defaultTimeout = PROPERTIES.getProperty("default.transaction.timeout");
+            if (StringUtils.isNotEmpty(defaultTimeout)) {
+                try {
+                    defaultTransactionTimeout = Long.parseLong(defaultTimeout);
+                }
+                catch (Exception e) {
+                    LOGGER.error("Error occurred while parsing default.transaction.timeout", e);
+                    defaultTransactionTimeout = -1;
+                }
+            }
+
             db = PROPERTIES.getProperty("db.name");
             dbClass = PROPERTIES.getProperty("db.class");
             appDomain = PROPERTIES.getProperty("app.domain");
