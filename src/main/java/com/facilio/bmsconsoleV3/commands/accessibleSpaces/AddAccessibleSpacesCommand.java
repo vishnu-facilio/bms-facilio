@@ -7,12 +7,16 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil.getAccessibleSpaceCount;
 
 public class AddAccessibleSpacesCommand extends FacilioCommand {
     @Override
@@ -27,6 +31,11 @@ public class AddAccessibleSpacesCommand extends FacilioCommand {
     }
 
     private void addAccessibleSpace(long uid, List<Long> accessibleSpace) throws Exception {
+
+        Long existingSpaces = getAccessibleSpaceCount(uid,null);
+        if(existingSpaces != null && accessibleSpace.size() > (100L - existingSpaces)){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Accessible spaces addition cancelled - breach of max limit");
+        }
 
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getAccessibleSpaceModule().getTableName())
