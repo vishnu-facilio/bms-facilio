@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.instant.jobs.AddSLAEscalationJob;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -20,6 +23,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -27,8 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -172,15 +178,21 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations,
                                          FacilioModule module, FacilioField dueField, Criteria criteria,
                                          ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
-        FacilioContext instantJobContext = new FacilioContext();
-        instantJobContext.put(FacilioConstants.ContextNames.PARENT_RULE_ID, parentRuleId);
-        instantJobContext.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
-        instantJobContext.put(FacilioConstants.ContextNames.MODULE, module);
-        instantJobContext.put(FacilioConstants.ContextNames.DATE_FIELD, dueField);
-        instantJobContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-        instantJobContext.put(FacilioConstants.ContextNames.MODULE_DATA, moduleRecord);
-        instantJobContext.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
-        FacilioTimer.scheduleInstantJobInPostTransaction("AddSLAEscalation", instantJobContext);
+        if (FacilioProperties.getRegion().equals(Regions.US_WEST_2.getName()) && DBConf.getInstance().getCurrentOrgId() == 592 && !isUserRequestThread()) {
+            LOGGER.info("Adding Escalation job directly");
+            AddSLAEscalationJob.addSLAEscalationJobs(parentRuleId, escalations, module, dueField, criteria, moduleRecord, slaEntity);
+        }
+        else {
+            FacilioContext instantJobContext = new FacilioContext();
+            instantJobContext.put(FacilioConstants.ContextNames.PARENT_RULE_ID, parentRuleId);
+            instantJobContext.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
+            instantJobContext.put(FacilioConstants.ContextNames.MODULE, module);
+            instantJobContext.put(FacilioConstants.ContextNames.DATE_FIELD, dueField);
+            instantJobContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+            instantJobContext.put(FacilioConstants.ContextNames.MODULE_DATA, moduleRecord);
+            instantJobContext.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
+            FacilioTimer.scheduleInstantJobInPostTransaction("AddSLAEscalation", instantJobContext);
+        }
     }
 
     private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate, SLAEntityContext slaEntity) throws Exception {
@@ -249,6 +261,16 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 return 1;
             }
             return type;
+        }
+    }
+
+    private static boolean isUserRequestThread() {
+        try {
+            HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+            return request != null;
+        }
+        catch (Exception e) {
+            return false;
         }
     }
 }

@@ -31,6 +31,12 @@ public class AddSLAEscalationJob extends InstantJob {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.MODULE_DATA);
         SLAEntityContext slaEntity = (SLAEntityContext) context.get(FacilioConstants.ContextNames.SLA_ENTITY);
 
+        addSLAEscalationJobs(parentRuleId, escalations, module, dueField, criteria, moduleRecord, slaEntity);
+    }
+
+    public static void addSLAEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations,
+                                            FacilioModule module, FacilioField dueField, Criteria criteria,
+                                            ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
             int count = 0;
