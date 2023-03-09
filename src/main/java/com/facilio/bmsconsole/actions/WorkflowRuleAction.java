@@ -698,6 +698,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.REPLACED_STRING, context.get(FacilioConstants.ContextNames.REPLACED_STRING));
+		setResult(FacilioConstants.ContextNames.REPLACED_JSON,context.get(FacilioConstants.ContextNames.REPLACED_JSON));
 		setResult(FacilioConstants.ContextNames.MODULE_DATA, context.get(FacilioConstants.ContextNames.MODULE_DATA));
 		setResult(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS));
 		return SUCCESS;
