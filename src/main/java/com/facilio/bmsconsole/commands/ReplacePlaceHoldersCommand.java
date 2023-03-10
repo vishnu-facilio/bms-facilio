@@ -15,8 +15,6 @@ import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.List;
 import java.util.Map;
@@ -50,13 +48,7 @@ public class ReplacePlaceHoldersCommand extends FacilioCommand {
             Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
             String replacedString = StringSubstitutor.replace(formattedString, params);
 
-            JSONParser parser = new JSONParser();
-            JSONObject replacedJsonObj = (JSONObject) parser.parse(replacedString);
-            String formatedDataJson = replacedJsonObj.get("formDataJson").toString();
-            replacedJsonObj.replace("formDataJson",parser.parse(formatedDataJson));
-
             context.put(FacilioConstants.ContextNames.REPLACED_STRING, replacedString);
-            context.put(FacilioConstants.ContextNames.REPLACED_JSON,replacedJsonObj);
             context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
             context.put(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
         }
