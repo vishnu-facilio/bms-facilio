@@ -29,9 +29,11 @@ import java.util.Map;
 @Log4j
 public class QAndAAction extends RESTAPIHandler {
     public String addOrUpdateAnswers() throws Exception {
+//        boolean isDisplayLogic = false;
         FacilioChain addOrUpdateAnswersChain = QAndATransactionChainFactory.addOrUpdateAnswersChain();
         FacilioContext context = addOrUpdateAnswersChain.getContext();
         context.put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
+//        context.put("isDisplayLogic", false);
         addOrUpdateAnswersChain.execute();
 
         List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST);
@@ -40,20 +42,31 @@ public class QAndAAction extends RESTAPIHandler {
         if (CollectionUtils.isNotEmpty(errors)) {
             this.setData("errors", errors);
         }
-        else {		// IF THERE IS SOME ERROR DURING SAVE THEN DISPLAYLOGIC WILL NOT GET EXECTED
-        	
-        	try {
-        		FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
-          		 
-        		addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
-        	
-        		addChain.execute();
-        		 
-        		setData("displayLogicResult", addChain.getContext().get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON));
-        	}
-        	catch (Exception e) {
-        		LOGGER.error(e.getMessage(), e);
-			}
+        else {
+            try {
+                FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
+
+                addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
+
+                addChain.execute();
+
+                setData("displayLogicResult", addChain.getContext().get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON));
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+        return SUCCESS;
+    }
+
+    public String executeDisplayLogic() throws Exception{
+        try {
+            FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
+            addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
+            addChain.getContext().put("isDisplayLogic", true);
+            addChain.execute();
+            setData("displayLogicResult", addChain.getContext().get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON));
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
         return SUCCESS;
     }

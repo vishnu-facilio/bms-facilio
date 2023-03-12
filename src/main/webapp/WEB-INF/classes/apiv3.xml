@@ -586,6 +586,10 @@
                 class="com.facilio.qa.actions.QAndAAction"
                 method="validateAnswers">
         </action>
+        <action name="executeDisplayLogic"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="executeDisplayLogic">
+        </action>
     </package>
 
     <package name="qandaDisplayLogic" namespace="/api/v3/qandaDisplayLogic" extends="v3Api">

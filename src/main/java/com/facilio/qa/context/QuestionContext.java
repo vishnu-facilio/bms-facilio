@@ -61,6 +61,7 @@ public class QuestionContext extends V3Context {
     private Object summary;
     private Double fullScore, score;
     private Float scorePercent;
+    private Boolean isDisplayLogic;
     
     private JSONArray displayLogicMeta;
     

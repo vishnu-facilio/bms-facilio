@@ -206,6 +206,7 @@ public class QAndATransactionChainFactory {
         c.addCommand(new UpdateAnswersCommand());
         c.addCommand(new ConstructAnswerResponseCommand());
         c.addCommand(new SetResponseForStatusChange());
+        c.addCommand(new AddOrUpdateAnswerAttachment());
         c.addCommand(new UpdateResponseStateToPartialAnswered());
         c.addCommand(new ConstructActivityForAddOrUpdateAnswerCommand());
         c.addCommand(new AddActivitiesCommandV3());

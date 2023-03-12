@@ -59,6 +59,13 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
                 } else {
                     answer.setComments(null); // To handle response
                 }
+                if (StringUtils.isNotEmpty(question.getAttachmentLabel())) { // Adding attachments only if it's enabled
+                    answerContext.setAttachmentFileIds(answer.getAttachmentFileIds());
+                    answerContext.setDeletedAttachmentFileIds(answer.getDeletedAttachmentFileIds());
+                } else {
+                    answer.setAttachmentFileIds(null); // To handle response
+                    answer.setDeletedAttachmentFileIds(null);
+                }
 
                 if (!onlyValidate) {
                     answerContext.setResponse(response);
@@ -87,6 +94,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         }
         if (CollectionUtils.isNotEmpty(errors)) {
             context.put(FacilioConstants.QAndA.Command.ANSWER_ERRORS, errors);
+            return true;
         }
         context.put(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST, answerContextList);
         context.put(FacilioConstants.QAndA.Command.QUESTION_VS_ANSWER, questionVsAnswer);

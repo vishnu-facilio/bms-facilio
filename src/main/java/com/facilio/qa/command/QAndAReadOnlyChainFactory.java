@@ -20,6 +20,7 @@ public class QAndAReadOnlyChainFactory {
     public static FacilioChain afterPagesFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchQuestionsFromPagesCommand());
+        c.addCommand(new SetIsDisplayLogicPresentForQuestion());
         c.addCommand(new FetchAnswersForQuestionsCommand());
         c.addCommand(new FetchAnswerSummaryForQuestionsCommand());
     	c.addCommand(new PrepareDataForDisplayLogicExecutionCommand());
@@ -132,7 +133,12 @@ public class QAndAReadOnlyChainFactory {
 
         return c;
     }
+    public static FacilioChain constructAnswersForDisplayLogicChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructAnswerPOJOsCommand(false));
 
+        return c;
+    }
 	public static FacilioChain fetchSurveyListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new SupplySurveyCriteriaCommand());

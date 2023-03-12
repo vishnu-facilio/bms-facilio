@@ -25,6 +25,8 @@ public class AnswerContext extends V3Context {
     private QuestionContext question;
     private String comments;
     private List<AttachmentContext> attachmentList;
+    private List<Long> attachmentFileIds;
+    private List<Long> deletedAttachmentFileIds;
 
     private Long enumAnswer;
     private String enumOtherAnswer;

@@ -19,6 +19,8 @@ public abstract class ClientAnswerContext<A> extends V3Context {
     private ResponseContext response;
     private Long responseId;
     private List<AttachmentContext> attachmentList;
+    private List<Long> attachmentFileIds;
+    private List<Long> deletedAttachmentFileIds;
 
     private Double fullScore, score;
     private Float scorePercent;

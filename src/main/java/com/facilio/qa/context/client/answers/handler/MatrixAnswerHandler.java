@@ -64,6 +64,9 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 					case NUMBER:
 						V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, "Not a valid number format");
 						break;
+					case BIG_STRING:
+						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length 2000 allowed",columnAnswer.getAnswer().toString().length()));
+						break;
 					default:
 						break;
 				}
