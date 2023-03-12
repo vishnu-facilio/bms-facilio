@@ -23,7 +23,8 @@ public class V3ResourceAction extends V3Action {
     List<Long> ids;
 
     public String getResourceFromQR () throws Exception {
-        ResourceContext resource = ResourceAPI.getResource(qrValue);
+
+        ResourceContext resource = ResourceAPI.getResource(qrValue,getFilters());
         setData(FacilioConstants.ContextNames.RESOURCE, resource);
         if(resource != null) {
             List<FacilioField> fields = ResourceAPI.getQRSearchFields(resource, moduleName);

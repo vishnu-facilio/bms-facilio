@@ -26,6 +26,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -496,6 +497,43 @@ public class SpaceAPI {
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
 		}
+		return null;
+	}
+
+	public static BaseSpaceContext getBaseSpaceWithAccessibleSpace(long id) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		List<Long> ids = AccountUtil.getUserBean().getAccessibleSpaceList(AccountUtil.getCurrentUser().getOuid());
+
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id,module));
+
+			if(CollectionUtils.isNotEmpty(ids))	{
+				Criteria siteCriteria = new Criteria();
+				siteCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(modBean.getModule(ContextNames.BASE_SPACE)), StringUtils.join(ids, ","), BuildingOperator.BUILDING_IS));
+
+				Criteria buildingCriteria = new Criteria();
+
+				buildingCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("building"), StringUtils.join(ids, ","), BuildingOperator.BUILDING_IS));
+				selectBuilder.andCriteria(siteCriteria);
+				selectBuilder.orCriteria(buildingCriteria);
+			}
+
+
+
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+
 		return null;
 	}
 

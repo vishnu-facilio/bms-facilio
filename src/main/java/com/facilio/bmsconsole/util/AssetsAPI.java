@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.db.criteria.operators.*;
@@ -198,6 +199,33 @@ public class AssetsAPI {
 			selectBuilder.fetchDeleted();
 		}
 		
+		List<AssetContext> assets = selectBuilder.get();
+		if(assets != null && !assets.isEmpty()) {
+			return assets.get(0);
+		}
+		return null;
+	}
+
+	public static AssetContext getAssetInfoForAccessibleSite(long assetId) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
+		List<Long> ids = AccountUtil.getUserBean().getAccessibleSpaceList(AccountUtil.getCurrentUser().getOuid());
+
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.moduleName(module.getName())
+				.beanClass(AssetContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(assetId, module));
+
+		if (CollectionUtils.isNotEmpty(ids)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), StringUtils.join(ids, ","), BuildingOperator.BUILDING_IS));
+		}
+
+
 		List<AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
 			return assets.get(0);

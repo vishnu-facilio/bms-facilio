@@ -129,6 +129,7 @@ public class BuildingModule extends BaseModuleConfig {
         defaultBuildingFormfields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Built Area", FormField.Required.OPTIONAL, 5, 3));
         defaultBuildingFormfields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 6, 2));
         defaultBuildingFormfields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",7, 2));
+
 //        defaultBuildingForm.setFields(defaultBuildingFormfields);
 
         FormSection Section = new FormSection("Default", 1, defaultBuildingFormfields, false);

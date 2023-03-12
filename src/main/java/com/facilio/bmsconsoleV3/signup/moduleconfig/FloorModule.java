@@ -166,6 +166,7 @@ public class FloorModule extends BaseModuleConfig {
         defaultFloorFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 4, 3));
         defaultFloorFormFields.add(new FormField("floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 5, 2));
         defaultFloorFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",7, 2));
+
 //        defaultFloorForm.setFields(defaultFloorFormFields);
 
         FormSection section = new FormSection("Default", 1, defaultFloorFormFields, false);

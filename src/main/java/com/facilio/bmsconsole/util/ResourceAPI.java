@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.util;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.StringOperators;
-import org.apache.commons.lang3.StringUtils;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -78,7 +81,7 @@ public class ResourceAPI {
 		return selectBuilder.get();
 	}
 
-	public static ResourceContext getResource(String qrValue) throws Exception {
+	public static ResourceContext getResource(String qrValue , String filters) throws Exception {
 
 		if (qrValue == null || qrValue.isEmpty()) {
 			return null;
@@ -88,22 +91,29 @@ public class ResourceAPI {
 		FacilioField qrValField = modBean.getField("qrVal", FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 
-		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
-				.module(module)
-				.beanClass(ResourceContext.class)
-				.andCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS));
-				;
+		Criteria criteria = new Criteria();
 
-		ResourceContext resource = selectBuilder.fetchFirst();
+		criteria.addAndCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS));
+
+		FacilioContext context = V3Util.fetchList(module.getName(),true,null,filters,false,null,null,null,null,1,1,false,null,criteria);
+
+		List<ModuleBaseWithCustomFields> props = Constants.getRecordList(context);
+
+		if (CollectionUtils.isEmpty(props)) {
+			 return null;
+		}
+
+		ResourceContext resource = (ResourceContext) props.get(0);
+
 		if(resource != null) {
 			if(resource.getResourceTypeEnum() == ResourceContext.ResourceType.ASSET) {
-				resource = AssetsAPI.getAssetInfo(resource.getId());
+				resource = AssetsAPI.getAssetInfoForAccessibleSite(resource.getId());
 			}
 			else if(resource.getResourceTypeEnum() == ResourceType.SPACE) {
-				resource = SpaceAPI.getBaseSpace(resource.getId());
+				resource = SpaceAPI.getBaseSpaceWithAccessibleSpace(resource.getId());
 			}
 		}
+
 		return resource;
 	}
 

@@ -34,11 +34,12 @@ public class AddAssetCategoryModuleCommandV3 extends FacilioCommand {
         FacilioModule assetModule = modBean.getModule("asset");
 
         String name = assetCategory.getName();
+        String displayName = assetCategory.getDisplayName();
 
         // Create a new module for the new Asset Category
         FacilioModule module = new FacilioModule();
         module.setName("custom_" + name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
-        module.setDisplayName(name);
+        module.setDisplayName(displayName != null && !displayName.trim().isEmpty() ? displayName : name);
         module.setTableName("AssetCustomModuleData");
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);
         module.setExtendModule(assetModule);

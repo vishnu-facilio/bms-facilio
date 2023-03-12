@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,6 +21,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.log4j.LogManager;
 
@@ -85,4 +87,21 @@ private static org.apache.log4j.Logger log = LogManager.getLogger(QRCodeGenerato
         }
         return null;
     }
+    public static BufferedImage generateQRCodeImage(String barcodeText) throws Exception {
+
+        QRCodeWriter barcodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = barcodeWriter.encode(barcodeText, BarcodeFormat.QR_CODE, 200, 200,getQRCodeHints());
+
+        return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
+
+    private static java.util.Map<EncodeHintType, Object> getQRCodeHints() {
+
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+        return hints;
+    }
+
 }

@@ -184,6 +184,7 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteFormFields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 8, 3));
         defaultSiteFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 9, 2));
         defaultSiteFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
+
 //        defaultSiteForm.setFields(defaultSiteFormFields);
 
         FormSection section = new FormSection("Default", 1, defaultSiteFormFields, false);

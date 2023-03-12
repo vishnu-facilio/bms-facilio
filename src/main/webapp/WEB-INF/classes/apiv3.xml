@@ -1456,4 +1456,8 @@
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>
     </package>
 
+    <package name="siteqrdownload" namespace="/api/v3/site/qr" extends="v3Api">
+        <action name="download" class="com.facilio.bmsconsoleV3.actions.V3SiteQRDownloadAction" method="siteQrDownloadUrl"/>
+    </package>
+
 </struts>

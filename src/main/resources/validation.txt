@@ -2742,3 +2742,6 @@
 /api/v3/workorder/calender/getPpmJobs
 /api/v3/timelineGroupData/fetch
 /api/v3/scopeVariable/list
+/api/v3/site/qr/download
+/api/v3/resource/qr
+
