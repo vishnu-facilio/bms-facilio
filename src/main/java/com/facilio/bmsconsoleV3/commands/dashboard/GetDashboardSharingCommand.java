@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -32,6 +34,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception
     {
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
+//        Map<String, Object>  keymap = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getId() , "DASHBOARD_PUBLISHING_MIG");
         if(dashboard_list_prop.isWithSharing()) {
             List<DashboardContext> dashboards = new ArrayList<>();
             if(dashboard_list_prop.getDashboards() != null && dashboard_list_prop.getDashboards().size() > 0) {
@@ -46,7 +49,8 @@ public class GetDashboardSharingCommand extends FacilioCommand {
 
     private void getDashboardWithSharing(List<DashboardContext> dashboard_list, List<DashboardContext> dashboards)throws Exception
     {
-        if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
+        Role currnt_user_role = AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getRole() : null;
+        if (currnt_user_role != null && ( currnt_user_role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || (currnt_user_role.getIsPrevileged() != null && currnt_user_role.getIsPrevileged()))) {
             dashboards.addAll(dashboard_list);
             return ;
         }
@@ -126,6 +130,12 @@ public class GetDashboardSharingCommand extends FacilioCommand {
                 if(dashboardList.contains(dashboard.getId())){
                     dashboards.add(dashboard);
                 }
+            }
+        }
+        else
+        {
+            if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+                dashboards.addAll(dashboard_list);
             }
         }
     }

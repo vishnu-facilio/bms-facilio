@@ -68,6 +68,7 @@ public class FetchReportDataCommand extends FacilioCommand {
     private List<Map<String, Object>> pivotFieldsList = new ArrayList<>();
     private Boolean isReportExport=false;
     private List<String> cm_pivot_joins= new ArrayList<>();
+    private List<String> sm_pivot_reading_joins = new ArrayList<>();
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -323,7 +324,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             pivotFieldsList = pivotFieldsList.stream().distinct().collect(Collectors.toList());
 //            filterDuplicateItems(pivotFieldsList);
             for (Map<String, Object> pivotField : pivotFieldsList) {
-                handlePivotJoin(pivotField, selectBuilder);
+                handlePivotJoin(pivotField, selectBuilder, dp);
             }
         }
 
@@ -1511,7 +1512,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         return null;
     }
 
-    private void handlePivotJoin(Map<String, Object> pivotField, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
+    private void handlePivotJoin(Map<String, Object> pivotField, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportDataPointContext dp) throws Exception {
         handleExtendedModuleJoin(selectBuilder);
         FacilioModule module = (FacilioModule) pivotField.get("module");
         if ((Boolean) pivotField.get("isLookupField")) {
@@ -1616,9 +1617,14 @@ public class FetchReportDataCommand extends FacilioCommand {
             String joinString = joinField.getCompleteColumnName() + " = " + resourceModule.getTableName() + ".ID";
             String tableName = facilioModule.getTableName()+ " " + tableAlias;
 //            selectBuilder.addJoinModules(Collections.singletonList(facilioModule));
-
-            selectBuilder.innerJoin(tableName)
-                    .on(joinString);
+            if(dp.getOtherCriteria() == null && !sm_pivot_reading_joins.contains(tableName))
+            {
+                selectBuilder.innerJoin(tableName).on(joinString);
+                sm_pivot_reading_joins.add(tableName);
+            }
+            else if(dp.getOtherCriteria() != null){
+                selectBuilder.innerJoin(tableName).on(joinString);
+            }
         }
     }
 

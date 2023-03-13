@@ -276,7 +276,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                 showTimelineFilter = (boolean) globalContext.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER);
 
             if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
-                if(data.getBaselineLabel() != null && data.getDateFieldId() > 0 && data.getDatePeriod() > 0){
+                if(data.getBaselineLabel() != null && ((data.getDateFieldId() > 0 && data.getDatePeriod() > 0) || (data.getReadingField() != null && data.getModuleType() != null && data.getModuleType().equals("2")))){
                     FacilioField dateField = null;
                     if(yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING)
                         dateField = FieldFactory.getDateField("ttime", "TTIME", yField.getModule()).clone();
@@ -297,7 +297,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, baselineDateRange.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (dateFieldId > 0 && startTime > 0 && endTime > 0 && isTimeLineFilterApplied && !data.isExcludeFromTimelineFilter()) {
+                } else if (dateFieldId > 0 && startTime > 0 && endTime > 0 && isTimeLineFilterApplied && !data.isExcludeFromTimelineFilter() && data.getReadingField() == null) {
                     FacilioField dateField = modBean.getField(dateFieldId).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(startTime, endTime);
@@ -305,7 +305,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                }  else if (dateFieldId > 0 && dateOperatorInt > 0 && showTimelineFilter && !data.isExcludeFromTimelineFilter()) {
+                }  else if (dateFieldId > 0 && dateOperatorInt > 0 && showTimelineFilter && !data.isExcludeFromTimelineFilter() && data.getReadingField() == null) {
                     FacilioField dateField = modBean.getField(dateFieldId, yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(dateOperatorInt);
@@ -336,7 +336,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                         otherCrit.addAndCondition(newCond);
                     }
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20){
+                } else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20 && data.getReadingField() == null){
                     FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(data.getStartTime(), data.getEndTime());
@@ -344,7 +344,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (data.getDateFieldId() > 0 && data.getDatePeriod() > 0) {
+                } else if (data.getDateFieldId() > 0 && data.getDatePeriod() > 0 && data.getReadingField() == null) {
                     FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(data.getDatePeriod());
