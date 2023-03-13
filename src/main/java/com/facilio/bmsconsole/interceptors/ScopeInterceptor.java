@@ -246,7 +246,29 @@ public class ScopeInterceptor extends AbstractInterceptor {
 //									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
 //								}
                             } else {
-                                String currentSite = request.getHeader("X-current-site");
+                                String currentSite = null;
+                                boolean setSiteValue = true;
+                                try {
+                                    setSiteValue = false;
+                                    if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.SCOPE_VARIABLE)) {
+                                        if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
+                                            setSiteValue = true;
+                                        } else {
+                                            if(StringUtils.isNotEmpty(request.getHeader("X-current-site"))) {
+                                                FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+                                            }
+                                        }
+                                    } else {
+                                        setSiteValue = true;
+                                    }
+                                }
+                                catch (Exception e) {
+                                    LOGGER.info("Error at site header value");
+                                    setSiteValue = true;
+                                }
+                                if(setSiteValue) {
+                                    currentSite = request.getHeader("X-current-site");
+                                }
                                 long currentSiteId = -1;
                                 if (currentSite != null && !currentSite.isEmpty()) {
                                     try {
