@@ -2754,6 +2754,13 @@ public class ApplicationApi {
             groupNameVsWebTabsMap.put("logs", webTabs);
 
 
+            webTabGroups.add(new WebTabGroupContext( "Energy Analytics","energyanalytics", layout.getId(),2, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Kpi Templates","kpi", WebTabContext.Type.NEW_KPI_TEMPLATES,null,appId,null,AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
+
+            groupNameVsWebTabsMap.put("energyanalytics", webTabs);
+
+
 //            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
 //            webTabs = new ArrayList<>();
 //            webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null));

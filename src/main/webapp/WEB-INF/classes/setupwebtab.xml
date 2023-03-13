@@ -225,4 +225,39 @@
         </action>
     </package>
 
+    <package name="readingkpi" namespace="/api/v1/setup/readingkpi" extends="v3Api">
+        <action name="crud" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">readingkpi</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+        <action name="summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">readingkpi</param>
+            <param name="id">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+        <action name="view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">readingkpi</param>
+            <param name="viewName">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+        <action name="view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">readingkpi</param>
+            <param name="viewName">{1}</param>
+            <param name="type">count</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+
+    </package>
+    <package name="kpiLogger" namespace="/api/v1/setup/kpiLogger" extends="v3Api">
+        <action name="crud" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">kpiLogger</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+    </package>
+
 </struts>

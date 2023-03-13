@@ -199,6 +199,10 @@ public class AppModulePermissionUtil {
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
         modulePermissionGroupMap.put(WebTabContext.Type.KPI.name(), new ModuleAppPermission(permissionTypes));
 
+        //NEW_KPI
+        permissionTypes = Arrays.asList(permissionMap.get("VIEW"));
+        modulePermissionGroupMap.put(WebTabContext.Type.NEW_KPI.name(), new ModuleAppPermission(permissionTypes));
+
         //readingrule
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
         modulePermissionGroupMap.put(WebTabContext.Type.RULES.name(), new ModuleAppPermission(permissionTypes));

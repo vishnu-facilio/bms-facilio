@@ -4,6 +4,10 @@ import com.facilio.accounts.dto.NewPermission;
 import com.facilio.annotations.AnnotationEnums;
 import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsole.context.webtab.*;
+import com.facilio.bmsconsole.context.webtab.ModuleTypeHandler;
+import com.facilio.bmsconsole.context.webtab.ReadingKpiTypeHandler;
+import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
+import com.facilio.bmsconsole.context.webtab.WebTabHandler;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
@@ -286,8 +290,9 @@ public class WebTabContext implements Serializable {
         SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()),
         MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()),
         ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler()),
-        SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler());
-        RULES("ReadingRule",false,TabType.NORMAL);//85
+        SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()),
+        NEW_KPI ("New Kpi", false,TabType.NORMAL), // 85
+        RULES("ReadingRule",false,TabType.NORMAL); // 86
 
         public void setName(String name) {
             this.name = name;

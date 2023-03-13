@@ -25,7 +25,7 @@ public class ModuleTypeHandler implements WebTabHandler {
         if(V3PermissionUtil.isWhitelistedModule(moduleName)){
             return true;
         } else {
-            return currentUserHasPermission(webtab,moduleName,action, AccountUtil.getCurrentUser().getRole());
+            return V3PermissionUtil.currentUserHasPermission(webtab,moduleName,action, AccountUtil.getCurrentUser().getRole());
         }
     }
 
@@ -38,34 +38,5 @@ public class ModuleTypeHandler implements WebTabHandler {
         return false;
     }
 
-    public static boolean currentUserHasPermission(WebTabContext tab, String moduleName, String action, Role role) {
 
-        try {
-            long tabId = tab.getId();
-            if (moduleName.equalsIgnoreCase("planned"))
-                moduleName = FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
-            if (V3PermissionUtil.isFeatureEnabled()) {
-                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-                if (!moduleNames.isEmpty()) {
-                    if (moduleNames.contains(moduleName)) {
-                        boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);
-                        return hasPerm;
-                    }
-                }
-            } else {
-                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-                if (!moduleNames.isEmpty()) {
-                    if (moduleNames.contains(moduleName)) {
-                        boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
-                        return hasPerm;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 }

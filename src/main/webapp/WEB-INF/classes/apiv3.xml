@@ -1050,8 +1050,8 @@
                 method="deleteRuleAction"/>
 
         <action name="update"
-                class="com.facilio.readingrule.action.NewRuleAction"
-                method="updateRuleAction"/>
+				class="com.facilio.readingrule.action.NewRuleAction"
+				method="updateRuleAction" />
 
     </package>
 
@@ -1069,12 +1069,21 @@
     </package>
 
     <package name="KpiReadingsList" namespace="/api/v3/readingKpi" extends="v3Api">
-        <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
-                method="fetchReadings"/>
-        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
-                method="fetchAssetNames"/>
-        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
-                method="fetchKpiNames"/>
+        <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchReadings">
+            <param name="permission">GET:VIEW</param>
+            <param name="checkPermission">true</param>
+            <param name="moduleName">readingkpi</param>
+        </action>
+        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames">
+            <param name="permission">GET:VIEW</param>
+            <param name="checkPermission">true</param>
+            <param name="moduleName">readingkpi</param>
+        </action>
+        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames">
+            <param name="permission">GET:VIEW</param>
+            <param name="checkPermission">true</param>
+            <param name="moduleName">readingkpi</param>
+        </action>
     </package>
 
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">

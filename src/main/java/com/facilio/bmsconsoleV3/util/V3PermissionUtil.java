@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
@@ -166,6 +168,37 @@ public class V3PermissionUtil {
     public static boolean isWhitelistedModule(String moduleName) {
         if(StringUtils.isNotEmpty(moduleName) && WHITE_LIST_MODULE_NAMES_LIST.contains(moduleName)) {
             return true;
+        }
+        return false;
+    }
+
+    public static boolean currentUserHasPermission(WebTabContext tab, String moduleName, String action, Role role) {
+
+        try {
+            long tabId = tab.getId();
+            if (moduleName.equalsIgnoreCase("planned"))
+                moduleName = FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
+            if (V3PermissionUtil.isFeatureEnabled()) {
+                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
+                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
+                if (!moduleNames.isEmpty()) {
+                    if (moduleNames.contains(moduleName)) {
+                        boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);
+                        return hasPerm;
+                    }
+                }
+            } else {
+                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
+                if (!moduleNames.isEmpty()) {
+                    if (moduleNames.contains(moduleName)) {
+                        boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
+                        return hasPerm;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }

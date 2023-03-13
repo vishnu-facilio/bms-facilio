@@ -36,6 +36,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> reportTabType = Collections.unmodifiableMap(initReportMap());
     private static Map<String, Integer> analyticsTabType = Collections.unmodifiableMap(initAnalyticsMap());
     private static Map<String, Integer> kpiTabType = Collections.unmodifiableMap(initKpiMap());
+    private static Map<String, Integer> newKpiTabType = Collections.unmodifiableMap(initNewKpiMap());
 
     private static Map<String, Integer> shiftPlannerTabType = Collections.unmodifiableMap(initShiftPlannerMap());
     private static Map<String, Integer> myAttendanceTabType = Collections.unmodifiableMap(initMyAttendanceMap());
@@ -111,6 +112,13 @@ public class NewPermissionUtil {
         kpiTabType.put("DELETE", 8);
         return kpiTabType;
     }
+
+    private static Map<String, Integer> initNewKpiMap() {
+        newKpiTabType = new HashMap<>();
+        newKpiTabType.put("VIEW", 1);
+        return newKpiTabType;
+    }
+
 
     private static Map<String, Integer> initShiftPlannerMap() {
         shiftPlannerTabType = new HashMap<>();
@@ -359,6 +367,12 @@ public class NewPermissionUtil {
         permissions.add(new Permission("DELETE", "Delete", kpiTabType.get("DELETE"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.KPI.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("VIEW", "View", newKpiTabType.get("VIEW"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.NEW_KPI.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
@@ -640,6 +654,8 @@ public class NewPermissionUtil {
                 return homepageTabType.getOrDefault(action, -1);
             case 16:
                 return serviceCatalogTabType.getOrDefault(action, -1);
+            case 85:
+                return newKpiTabType.getOrDefault(action, -1);
             case 83:
                 return shiftPlannerTabType.getOrDefault(action, -1);
             case 84:
