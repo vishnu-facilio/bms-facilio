@@ -406,7 +406,7 @@ public class LoginAction extends FacilioAction {
 			data.put("sites", CommonCommandUtil.getMySites());
 		}
 		else {
-		data.put("sites", SpaceAPI.getAllSites());
+		data.put("sites", new ArrayList<>());
 		}
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		data.put("orgPrefs", PreferenceAPI.getAllOrgPreferences());
