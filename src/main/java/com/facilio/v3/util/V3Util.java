@@ -676,12 +676,11 @@ public class V3Util {
         return context;
     }
 
-    public static FacilioContext fetchPickList(String moduleName, String viewName, String filters, boolean excludeParentFilter, String clientCriteria, String defaultIds,
+    public static FacilioContext fetchPickList(String moduleName, String filters, boolean excludeParentFilter, String clientCriteria, String defaultIds,
                                                Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria)throws Exception{
         FacilioChain pickListChain = ChainUtil.getPickListChain(moduleName);
         FacilioContext context = pickListChain.getContext();
 
-        context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
 

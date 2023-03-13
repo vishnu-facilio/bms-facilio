@@ -227,7 +227,6 @@ public class ChainUtil {
             context.put(FacilioConstants.PickList.SUBMODULE_FIELD, subModuleField);
         }
 
-        nonTransactionChain.addCommand(new LoadViewCommand());
         nonTransactionChain.addCommand(new LoadMainFieldCommand());
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);

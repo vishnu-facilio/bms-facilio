@@ -183,6 +183,11 @@
             <param name="setupTab">CONNECTED_APPS</param>
         </action>
     </package>
+    <package name="automationSetup" namespace="/api/v1/setup/automation" extends="v2Api">
+        <action name="slaModule"
+                class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules">
+        </action>
+    </package>
 
     <package name="womodulesetting" namespace="/api/v1/setup/womodulesetting" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>

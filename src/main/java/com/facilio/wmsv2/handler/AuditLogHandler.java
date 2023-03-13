@@ -39,7 +39,6 @@ public class AuditLogHandler extends BaseHandler {
     @Override
     public Message processOutgoingMessage(Message message) {
         try {
-            LOGGER.error(message.toString());
             JSONObject content = message.getContent();
             AuditLogContext auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
             ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());

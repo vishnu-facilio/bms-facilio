@@ -165,7 +165,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         else {
 
-            FacilioContext pickListContext = V3Util.fetchPickList(getModuleName(), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(), this.getDefault(), this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), this.getQueryParameters(), null);
+            FacilioContext pickListContext = V3Util.fetchPickList(this.getModuleName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(), this.getDefault(), this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), this.getQueryParameters(), null);
             this.setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
             if (pickListContext.containsKey(FacilioConstants.ContextNames.META)) {
                 this.setMeta((JSONObject) pickListContext.get(FacilioConstants.ContextNames.META));

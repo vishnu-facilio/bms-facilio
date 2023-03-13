@@ -127,9 +127,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 		if (facilioStatus == null) {
 			LOGGER.error("Status cannot be empty");
-			if (record != null) {
-				LOGGER.error(FieldUtil.getAsJSON(record));
-			}
 			return;
 		}
 

@@ -106,23 +106,23 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 					}
 					
 					// For 1st level lookup
-					Map moduleMap = (Map) placeHolders.get("moduleFields");
-					if (!moduleMap.containsKey(lookupModuleName)) {
-						if (lookupModule.getTypeEnum() == ModuleType.BASE_ENTITY) {
-							Map<String, Object> placeHolder = createPlaceHolder(field, placeHolderFields, null);
-							placeHolder.put("module", lookupModuleName);
-							
+					if (lookupModule.getTypeEnum() == ModuleType.BASE_ENTITY) {
+						Map<String, Object> placeHolder = createPlaceHolder(field, placeHolderFields, null);
+						placeHolder.put("module", lookupModuleName);
+						Map moduleMap = (Map) placeHolders.get("moduleFields");
+
+						if (!moduleMap.containsKey(lookupModuleName)) {
 							List<Map<String, Object>> lookupPlaceholderFields = new ArrayList<>();
 							moduleMap.put(lookupModuleName, lookupPlaceholderFields);
 							List<FacilioField> lookupFilterFields = getFilterFields(lookupModuleName);
 							// Fetching fields for lookup module
 							handleFields(lookupModuleName, lookupFilterFields, lookupPlaceholderFields, false);
-							continue;
+
 						}
+						continue;
 					}
 				}
-				
-				createLookupPlaceholder(lookupModuleName, field, placeHolderFields);
+					createLookupPlaceholder(lookupModuleName, field, placeHolderFields);
 			}
 			else {
 				createPlaceHolder(field, placeHolderFields, null);

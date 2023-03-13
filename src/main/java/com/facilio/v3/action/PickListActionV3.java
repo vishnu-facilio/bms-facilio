@@ -29,9 +29,7 @@ public class PickListActionV3 extends RESTAPIHandler {
         HttpMethodName httpMethod = HttpMethodName.fromValue(getHttpServletRequest().getMethod());
         switch (httpMethod){
             case GET:
-                if(getViewName() != null){
                     return pickList();
-                }
             default:
                 return throwValidationException("Unsupported Method");
         }
