@@ -1609,7 +1609,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getTicketBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadTicketLookupsCommand());
-        c.addCommand(new SkipModuleCriteriaForUpcomingViewCommand());
         c.addCommand(new LoadWorkOrderExtraFieldsCommand());
         return c;
     }
