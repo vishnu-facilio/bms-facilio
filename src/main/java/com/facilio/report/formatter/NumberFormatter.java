@@ -7,10 +7,12 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import org.json.simple.JSONObject;
 
-import javax.validation.constraints.NotNull;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class NumberFormatter extends Formatter {
 
@@ -20,7 +22,8 @@ public class NumberFormatter extends Formatter {
     private Boolean prefix = false;
     private Boolean applyLocaleSeparator = true;
     private Character thousandSeparator;
-
+    private static List<Long> timesList = Arrays.asList(TimeUnit.DAYS.toMillis(365L), TimeUnit.DAYS.toMillis(30L), TimeUnit.DAYS.toMillis(1L), TimeUnit.HOURS.toMillis(1L), TimeUnit.MINUTES.toMillis(1L), TimeUnit.SECONDS.toMillis(1L));
+    private static List<String> timesString = Arrays.asList("year", "month", "day", "hour", "minute", "second");
     public NumberFormatter(FacilioField field) {
         super(field);
     }
@@ -88,7 +91,11 @@ public class NumberFormatter extends Formatter {
         String unit = null;
 
         NumberField numberField = (NumberField) getField();
-        if (!isNullOrEmpty(numberField.getUnitId(), getDisplayUnit())) {
+        if(!isNullOrEmpty(numberField) && numberField.getDisplayType() == FacilioField.FieldDisplayType.DURATION)
+        {
+            return relativeTime(Long.parseLong((((Long)value)*1000)+""));
+        }
+        else if (!isNullOrEmpty(numberField.getUnitId(), getDisplayUnit())) {
             result = UnitsUtil.convert(value, numberField.getUnitId(), getDisplayUnit());
             unit = Unit.valueOf(getDisplayUnit()).getSymbol();
         }
@@ -148,5 +155,19 @@ public class NumberFormatter extends Formatter {
         this.appendUnit = (Boolean) format.getOrDefault("appendUnit", this.appendUnit);
         this.prefix = (Boolean) format.getOrDefault("prefix", this.prefix);
         this.applyLocaleSeparator = (Boolean) format.getOrDefault("applyLocaleSeparator", this.applyLocaleSeparator);
+    }
+    public static String relativeTime(long duration) {
+        List<Long> timesList = Arrays.asList(TimeUnit.DAYS.toMillis(365L), TimeUnit.DAYS.toMillis(30L), TimeUnit.DAYS.toMillis(1L), TimeUnit.HOURS.toMillis(1L), TimeUnit.MINUTES.toMillis(1L), TimeUnit.SECONDS.toMillis(1L));
+        StringBuffer relativeTime = new StringBuffer();
+        for(int i = 0; i < timesList.size(); ++i) {
+            Long current = (Long)timesList.get(i);
+            long temp = duration / current;
+            if (temp > 0L) {
+                relativeTime.append(" ").append(temp).append(" ").append((String)timesString.get(i)).append(temp != 1L ? "s" : "");
+                duration = duration % current;
+            }
+        }
+
+        return relativeTime.length() == 0 ? relativeTime.append("0 seconds").toString() : relativeTime.toString();
     }
 }

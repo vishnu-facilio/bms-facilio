@@ -323,14 +323,16 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 						for(Long moduleId : webtab_moduleIds)
 						{
 							FacilioModule module = modBean.getModule(moduleId);
-							if(!module.isCustom())
+							if(module != null && !module.isCustom())
 							{
 								Set<FacilioModule> subModules = ReportFactoryFields.getSubModulesList(module.getName());
 								if(subModules != null){
 									moduleIds.addAll(subModules.stream().map(m -> m.getModuleId()).collect(Collectors.toList()));
 								}
 							}
-							moduleIds.add(moduleId);
+							if(module != null) {
+								moduleIds.add(moduleId);
+							}
 						}
 					}
 				}

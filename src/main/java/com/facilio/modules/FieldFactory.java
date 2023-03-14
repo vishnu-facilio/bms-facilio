@@ -5229,6 +5229,11 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("tabEnabled", "IS_TAB_ENABLED", module, FieldType.BOOLEAN));
         fields.add(getField("dashboardTabPlacement", "DASHBOARD_TAB_PLACEMENT", module, FieldType.NUMBER));
         fields.add(getField("clientMetaJsonString", "CLIENT_META_JSON", module, FieldType.STRING));
+        fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+
         return fields;
     }
 

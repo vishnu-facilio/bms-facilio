@@ -3062,7 +3062,9 @@ public class DashboardUtil {
 	}
 	
 	public static void updateDashboard(DashboardContext dashboard) throws Exception {
-		
+
+		dashboard.setModifiedBy(AccountUtil.getCurrentUser().getPeopleId());
+		dashboard.setModifiedTime(System.currentTimeMillis());
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.fields(FieldFactory.getDashboardFields())

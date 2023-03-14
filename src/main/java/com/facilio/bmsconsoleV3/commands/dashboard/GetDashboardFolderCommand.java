@@ -51,10 +51,10 @@ public class GetDashboardFolderCommand extends FacilioCommand {
 
         ApplicationContext app = appId != null ? ApplicationApi.getApplicationForId(appId): AccountUtil.getCurrentApp();
         appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
-        selectBuilder.andCriteria(appCriteria);
         if(app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
         }
+        selectBuilder.andCriteria(appCriteria);
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty())
         {

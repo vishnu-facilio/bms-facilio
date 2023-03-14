@@ -184,6 +184,43 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 
 	public Boolean isTabPresent;
 
+	public Long getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public Long getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
+	public Long getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Long createdTime;
+	public Long modifiedTime;
+	public Long createdBy;
+	public Long modifiedBy;
+
 	public Boolean getIsTabPresent() {
 		return isTabPresent;
 	}

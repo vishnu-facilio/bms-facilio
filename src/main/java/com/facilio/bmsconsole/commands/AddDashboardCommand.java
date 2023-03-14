@@ -49,6 +49,8 @@ public class AddDashboardCommand extends FacilioCommand {
 			dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
 			dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
 			dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			dashboard.setCreatedBy(AccountUtil.getCurrentUser().getPeopleId());
+			dashboard.setCreatedTime(System.currentTimeMillis());
 			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
