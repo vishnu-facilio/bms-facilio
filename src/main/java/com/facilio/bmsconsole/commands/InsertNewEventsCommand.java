@@ -76,8 +76,11 @@ public class InsertNewEventsCommand extends FacilioCommand {
 					EventAPI.addSourceToResourceMapping(((BMSEventContext) baseEvent).getSource(), orgId, controllerId,((BMSEventContext) baseEvent).getAgentId());
 				}
 			}
-			if (ResourceAPI.getResource(baseEvent.getResource().getId()) == null) {
-				throw new IllegalArgumentException("Invalid Resource");
+			if (baseEvent.getResource() == null) {
+				throw new IllegalArgumentException("No resource is mapped for the given source");
+			}
+			else if (ResourceAPI.getResource(baseEvent.getResource().getId()) == null) {
+				throw new IllegalArgumentException("Resource with id ("+ baseEvent.getResource().getId() +") cannot be found");
 			}
 			if(((BMSEventContext)baseEvent).getSources() != null && !(((BMSEventContext)baseEvent).getSources().isEmpty())){
 				EventAPI.addBulkSources(((BMSEventContext)baseEvent).getSources(),((BMSEventContext)baseEvent).getAgentId());

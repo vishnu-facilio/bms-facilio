@@ -23,17 +23,9 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         this.readingKpi = (ReadingKPIContext) context.get(FacilioConstants.ReadingKpi.READING_KPI);
 
-        updateNamespace();
         updateFields(context);
         updateReadingModuleName(context);
         return false;
-    }
-
-    private void updateNamespace() throws Exception {
-        NameSpaceContext ns = readingKpi.getNs();
-        if (ns != null) {
-            Constants.getNsBean().updateNamespace(ns);
-        }
     }
 
     private void updateFields(Context context) throws Exception {

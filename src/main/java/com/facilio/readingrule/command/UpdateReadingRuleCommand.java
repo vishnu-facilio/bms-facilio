@@ -30,7 +30,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
         this.rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
         updateAlarmDetails();
-        updateNamespace();
         updateNamespaceStatus();
         updateReadingModuleName(context);
 
@@ -44,13 +43,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
                     .table(ModuleFactory.getRuleAlarmDetailsModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rule.getAlarmDetails().getId()), NumberOperators.EQUALS));
             updateBuilder.update(FieldUtil.getAsProperties(rule.getAlarmDetails()));
-        }
-    }
-
-    private void updateNamespace() throws Exception {
-        NameSpaceContext ns = rule.getNs();
-        if (ns != null) {
-            Constants.getNsBean().updateNamespace(ns);
         }
     }
 

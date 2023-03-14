@@ -278,6 +278,7 @@ import com.facilio.readingrule.command.LoadSupplementsForNewReadingRule;
 import com.facilio.readingrule.command.PrepareReadingRuleForUpdateCommand;
 import com.facilio.readingrule.command.ReadingRuleDependenciesCommand;
 import com.facilio.readingrule.command.UpdateReadingRuleCommand;
+import com.facilio.ns.command.UpdateNamespaceCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
 import com.facilio.readingrule.rca.command.AddRCAGroupCommand;
@@ -2472,6 +2473,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain updateReadingKpiWorkflowAndNamespace() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new PrepareReadingKpiForUpdateCommand());
+        chain.addCommand(new UpdateNamespaceCommand());
         chain.addCommand(new UpdateNamespaceAndFieldsCommand());
         chain.addCommand(new UpdateWorkflowCommand());
         return chain;
@@ -2908,6 +2910,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain updateReadingRuleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(addOrDeleteFaultImpactChain());
+        c.addCommand(new UpdateNamespaceCommand());
         c.addCommand(new UpdateReadingRuleCommand());
         c.addCommand(new UpdateWorkflowCommand());
         c.addCommand(updateReadingRuleRcaChain());

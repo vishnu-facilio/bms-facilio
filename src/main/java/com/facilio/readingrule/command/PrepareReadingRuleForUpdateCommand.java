@@ -96,13 +96,6 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(assets)) {
             @NonNull List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
 
-            for (Long asset : assets) {
-                boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();
-                if (!present) {
-                    throw new RuntimeException("Asset (" + asset + ") is not found");
-                }
-            }
-
             Map<Long, ResourceContext> resourcesMap = assetInfo.stream().collect(Collectors.toMap(ResourceContext::getId, Function.identity()));
             rule.setMatchedResources(resourcesMap);
         }
