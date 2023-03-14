@@ -80,20 +80,20 @@
         </requestbody>
     </request>
 
-    <request path="/api/setup/adduser">
-        <requestbody type="object">
-            <property name="user" type="object">
-                <property name="accessibleSpace" type="array">
-                    <items type="number"/>
-                </property>
-                <property name="language" type="string"/>
-                <property name="name" type="string" mandatory="true" maxLength="255"/>
-                <property name="email" type="string" mandatory="true" maxLength="150" />
-                <property name="roleId" type="number" mandatory="true"/>
-                <property name="timezone" type="string" maxLength="100"/>
-            </property>
-        </requestbody>
-    </request>
+<!--    <request path="/api/setup/adduser">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="user" type="object">-->
+<!--                <property name="accessibleSpace" type="array">-->
+<!--                    <items type="number"/>-->
+<!--                </property>-->
+<!--                <property name="language" type="string"/>-->
+<!--                <property name="name" type="string" mandatory="true" maxLength="255"/>-->
+<!--                <property name="email" type="string" mandatory="true" maxLength="150" />-->
+<!--                <property name="roleId" type="number" mandatory="true"/>-->
+<!--                <property name="timezone" type="string" maxLength="100"/>-->
+<!--            </property>-->
+<!--        </requestbody>-->
+<!--    </request>-->
 
     <request path="/api/v2/updateSecurityPolicy">
         <requestbody type="object">

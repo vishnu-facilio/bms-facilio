@@ -67,7 +67,7 @@ public class BeforeAuthInputFilter implements Filter {
                 filterChain.doFilter(servletRequest, servletResponse);
                return;
             }
-            if (FacilioProperties.isProduction() || FacilioProperties.isOnpremise() || exclution.isMatch()) {
+            if ( !isAllowed() || exclution.isMatch()) {
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
@@ -77,14 +77,15 @@ public class BeforeAuthInputFilter implements Filter {
             return;
         }
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
-        RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
-        String matchedPattern = matcher.getMatchedPattern();
-        RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
-        Executor executor = new Executor(requestConfig, requestContext);
         try {
+            RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
+            String matchedPattern = matcher.getMatchedPattern();
+            RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
+            Executor executor = new Executor(requestConfig, requestContext);
+
             NodeError nodeError = executor.validatePreAuth();
             if (nodeError != null) {
-                if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                if (isAllowed()) {
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put("message", nodeError.getErrorMessage());
                     write(errorMap, 400, servletResponse);
@@ -96,7 +97,7 @@ public class BeforeAuthInputFilter implements Filter {
             securityRequestWrapper.setAttribute("executor", executor);
         } catch (Exception ex) {
             log(securityRequestWrapper, ex.getMessage());
-            if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+            if (isAllowed()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("message", "Error validating");
                 write(errorMap, 500, servletResponse);
@@ -123,6 +124,9 @@ public class BeforeAuthInputFilter implements Filter {
         out.flush();
     }
 
+    private boolean isAllowed() {
+        return !(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equals("stage2") || FacilioProperties.isOnpremise());
+    }
     @Override
     public void destroy() {
 
