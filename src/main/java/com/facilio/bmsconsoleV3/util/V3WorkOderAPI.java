@@ -68,8 +68,20 @@ public class V3WorkOderAPI {
         return getWorkOrder(ticketId, null);
     }
 
+    public static V3WorkOrderContext getWorkOrder(long ticketId, boolean skipPermission) throws Exception {
+        return getWorkOrder(ticketId, null, skipPermission);
+    }
+
     public static V3WorkOrderContext getWorkOrder(long ticketId, List<String> lookupFieldList) throws Exception {
         List<V3WorkOrderContext> workorders = getWorkOrders(Collections.singletonList(ticketId), lookupFieldList);
+        if (CollectionUtils.isNotEmpty(workorders)) {
+            return workorders.get(0);
+        }
+        return null;
+    }
+
+    public static V3WorkOrderContext getWorkOrder(long ticketId, List<String> lookupFieldList, boolean skipPermission) throws Exception {
+        List<V3WorkOrderContext> workorders = getWorkOrders(Collections.singletonList(ticketId), lookupFieldList, skipPermission);
         if (CollectionUtils.isNotEmpty(workorders)) {
             return workorders.get(0);
         }
@@ -88,6 +100,35 @@ public class V3WorkOderAPI {
                 .select(fields)
                 .andCondition(CriteriaAPI.getIdCondition(ticketIds, module))
                 ;
+        if (CollectionUtils.isNotEmpty(lookupFieldList)) {
+            List<LookupField> lookupFields = new ArrayList<>();
+            for(String fieldName: lookupFieldList) {
+                lookupFields.add((LookupField)fieldMap.get(fieldName));
+            }
+            builder.fetchSupplements(lookupFields);
+        }
+
+        List<V3WorkOrderContext> workOrders = builder.get();
+        return workOrders;
+    }
+
+    public static List<V3WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList, boolean skipPermission) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<V3WorkOrderContext> builder = new SelectRecordsBuilder<V3WorkOrderContext>()
+                .module(module)
+                .beanClass(V3WorkOrderContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getIdCondition(ticketIds, module));
+
+        if (skipPermission){
+            builder.skipPermission();
+            builder.skipScopeCriteria();
+        }
+
         if (CollectionUtils.isNotEmpty(lookupFieldList)) {
             List<LookupField> lookupFields = new ArrayList<>();
             for(String fieldName: lookupFieldList) {

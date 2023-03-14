@@ -132,7 +132,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
             return false;
         }
         ResourceContext resource = ResourceAPI.getResource(wo.getResource().getId());
-        if (resource.getResourceTypeEnum() != ResourceContext.ResourceType.SPACE) {
+        if (resource == null || resource.getResourceTypeEnum() != ResourceContext.ResourceType.SPACE) {
             return false;
         }
         BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(resource.getId());
@@ -150,7 +150,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
             return false;
         }
         ResourceContext resource = ResourceAPI.getResource(wo.getResource().getId());
-        if (resource.getResourceTypeEnum() != ResourceContext.ResourceType.ASSET) {
+        if (resource == null || resource.getResourceTypeEnum() != ResourceContext.ResourceType.ASSET) {
             return false;
         }
         AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false);
@@ -219,9 +219,20 @@ public class ValidateWOForUpdate extends FacilioCommand {
         if (wo.getParentWO() == null) {
             return false;
         }
-        V3WorkOrderContext parentWO = V3WorkOderAPI.getWorkOrder(wo.getParentWO().getId());
+        V3WorkOrderContext parentWO = V3WorkOderAPI.getWorkOrder(wo.getParentWO().getId(), true);
+        if(parentWO == null){
+            return false;
+        }
+
         FacilioStatus parentWOStatus = TicketAPI.getStatus(parentWO.getStatus().getId());
+        if (parentWOStatus == null){
+            return false;
+        }
+
         FacilioStatus woStatus = TicketAPI.getStatus(wo.getStatus().getId());
+        if (woStatus == null){
+            return false;
+        }
 
         return (woStatus.getType() == parentWOStatus.getType()) &&
                 (parentWOStatus.getType() == FacilioStatus.StatusType.CLOSED);
