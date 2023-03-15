@@ -88,6 +88,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
     	LookupField jobPlanField = (LookupField) FieldFactory.getField("jobPlan", "Job Plan", "JOB_PLAN_ID", Constants.getModBean().getModule(FacilioConstants.ContextNames.WORK_ORDER), FieldType.LOOKUP);
     	jobPlanField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
     	jobPlanField.setLookupModule(jobPlanModule);
+        jobPlanField.setDefault(true);
         Constants.getModBean().addField(jobPlanField);
     }
     
