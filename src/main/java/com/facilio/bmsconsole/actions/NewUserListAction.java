@@ -30,7 +30,7 @@ public class NewUserListAction extends FacilioAction{
 
     private String search;
 
-    private boolean inviteAcceptStatus = true;
+    private Boolean inviteAcceptStatus = null;
 
     public String newUserList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getUserList();
