@@ -207,6 +207,12 @@ public class FacilioProperties {
     private static String vendorPortalIosURL;
     @Getter
     private static String vendorPortalAndroidURL;
+    @Getter
+    private static boolean isApiRateLimiterEnabled;
+    @Getter
+    private static long rateLimiterAllowedRequest;
+    @Getter
+    private static long rateLimiterInterval;
 
     @Getter
     private static long defaultTransactionTimeout = -1;
@@ -443,6 +449,12 @@ public class FacilioProperties {
                 if(StringUtils.isEmpty(malwareScannerHost) && malwareScannerPort.equals(0)){
                     malwareScanningEnabled = false;
                 }
+            }
+
+            isApiRateLimiterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("apiRateLimiter.enabled"));
+            if(isApiRateLimiterEnabled){
+                rateLimiterAllowedRequest = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.allowedRequest"));
+                rateLimiterInterval = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.intervalInSeconds"));
             }
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");

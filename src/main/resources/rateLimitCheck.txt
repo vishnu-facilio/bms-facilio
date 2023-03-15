@@ -1,0 +1,2 @@
+/api/integ/lookup
+/api/integ/loginWithPasswordAndDigest

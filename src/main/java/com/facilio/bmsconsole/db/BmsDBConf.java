@@ -113,6 +113,14 @@ public class BmsDBConf extends DBConf {
         return FacilioProperties.getMalwareScannerEngine();
     }
 
+    public Long getRateLimiterAllowedRequest() {
+        return FacilioProperties.getRateLimiterAllowedRequest();
+    }
+
+    public Long getRateLimiterInterval() {
+        return FacilioProperties.getRateLimiterInterval();
+    }
+
     @Override
     public int getClamReadTimeout() {
         return FacilioProperties.getClamReadTimeout();

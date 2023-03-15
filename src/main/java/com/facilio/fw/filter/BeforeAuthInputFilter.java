@@ -2,6 +2,8 @@ package com.facilio.fw.filter;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.SecurityRequestWrapper;
+import com.facilio.security.ratelimiter.APIRateLimiter;
+import com.facilio.security.ratelimiter.RateLimiterAPI;
 import com.facilio.security.requestvalidator.Executor;
 import com.facilio.security.requestvalidator.NodeError;
 import com.facilio.security.requestvalidator.config.Config;
@@ -20,10 +22,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Log4j
@@ -31,7 +30,8 @@ public class BeforeAuthInputFilter implements Filter {
     private URLReTree urlReTree;
     private URLReTree execlutionUrlReTree;
     private Config config;
-    
+    private Set<String> rateLimitUrlSet = new HashSet<>();
+
     public String[] execludeFile() throws IOException {
         File file = new File(ConfigParser.class.getClassLoader().getResource("validation.txt").getFile());
         BufferedReader br
@@ -52,6 +52,15 @@ public class BeforeAuthInputFilter implements Filter {
             this.urlReTree = new URLReTree(this.config.getAllPaths());
             String[] s = execludeFile();
             this.execlutionUrlReTree = new URLReTree(s);
+
+            File file = new File(ConfigParser.class.getClassLoader().getResource("rateLimitCheck.txt").getFile());
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String str;
+            while ((str = br.readLine()) != null) {
+                if (!str.isEmpty()) {
+                    rateLimitUrlSet.add(str.trim());
+                }
+            }
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -60,6 +69,26 @@ public class BeforeAuthInputFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
+
+        if(FacilioProperties.isApiRateLimiterEnabled() && (FacilioProperties.getEnvironment().equals("stage") || FacilioProperties.getEnvironment().equals("stage2")) ){
+            if(rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
+                try {
+                    APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();
+                    log(securityRequestWrapper, "Entered APIRateLimiter, object: "+ ratelimit +" - "+ httpServletRequest.getRequestURI()+" - "+httpServletRequest.getRemoteHost());
+                    if(!(ratelimit.allow(httpServletRequest.getRequestURI(),httpServletRequest.getRemoteHost()))){
+                        log(securityRequestWrapper, "Rate Limiter Strike: API strike limit was reached");
+                    }
+                    log(securityRequestWrapper, "Request made on APILimiter: "+ ratelimit.getRequestsMade(httpServletRequest.getRequestURI(),httpServletRequest.getRemoteHost()));
+                } catch (Exception e) {
+                    if(!FacilioProperties.isProduction()) {
+                        log(securityRequestWrapper, "APILimiter exception thrown");
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!matcher.isMatch()) {
@@ -76,7 +105,7 @@ public class BeforeAuthInputFilter implements Filter {
             }
             return;
         }
-        SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
+
         try {
             RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
             String matchedPattern = matcher.getMatchedPattern();
