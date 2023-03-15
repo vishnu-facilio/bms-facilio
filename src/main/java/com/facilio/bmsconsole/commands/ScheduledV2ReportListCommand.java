@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -39,6 +40,22 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
+		List<Long> moduleIds = new ArrayList<>();
+		String name = AccountUtil.getCurrentApp().getLinkName();
+		if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			if(moduleName != null && moduleName.equals("custom")){
+				List<FacilioModule> moduleList = modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY,true);
+				for (FacilioModule prop : moduleList) {
+					moduleIds.add(prop.getModuleId());
+				}
+			}
+			else{
+				moduleIds.add(moduleToFetch.getModuleId());
+			}
+		}
+		else{
+			moduleIds.add(moduleToFetch.getModuleId());
+		}
 
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		FacilioModule reportModule = ModuleFactory.getReportModule();
@@ -58,7 +75,6 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 					selectBuilder.andCondition(CriteriaAPI.getCondition(module.getTableName()+".REPORT_TYPE","reportType", ReportContext.ReportType.PIVOT_REPORT.getValue()+"", NumberOperators.EQUALS));
 				}else {
 					selectBuilder.andCondition(CriteriaAPI.getCondition(module.getTableName()+".REPORT_TYPE","reportType", ReportContext.ReportType.PIVOT_REPORT.getValue()+"", NumberOperators.NOT_EQUALS));
-					selectBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
 				}
 
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
@@ -66,7 +82,13 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
 
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Map<String, Object>> props = new ArrayList<>();
+		List<Map<String, Object>> lists = selectBuilder.get();
+		for(Map<String, Object> list : lists){
+			if(list.get("moduleId") != null && moduleIds.contains(list.get("moduleId"))) {
+				props.add(list);
+			}
+		}
 		Map<Long, ReportInfo> reportsMap = new HashMap<>();
 
 		List<Long> reportInfoIds = new ArrayList<>();
