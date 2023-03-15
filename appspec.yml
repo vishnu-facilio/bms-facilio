@@ -57,11 +57,15 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-ae-user.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-demo.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-preprod.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-stage.properties
     destination: /home/facilio/deployment-files/
