@@ -99,7 +99,7 @@ public class UserBeanImpl implements UserBean {
 		}
 		if(user.getGroups() != null) {
 			deleteAccessibleGroups(user.getOuid());
-			addAccessibleTeam(user.getOuid(), user.getGroups());
+			addAccessibleTeam(user.getOuid(), user.getPeopleId(), user.getGroups());
 		}
 		Map<String, Object> orgUserprops = FieldUtil.getAsProperties(user);
 		
@@ -364,7 +364,7 @@ public class UserBeanImpl implements UserBean {
 		}
 		if(user.getAppDomain() != null && user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			if (user.getGroups() != null) {
-				addAccessibleTeam(user.getOuid(), user.getGroups());
+				addAccessibleTeam(user.getOuid(), user.getPeopleId(), user.getGroups());
 			}
 			if (user.getRoleId() == 0) {
 				throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
@@ -976,7 +976,7 @@ public class UserBeanImpl implements UserBean {
 		return baseSpace.getSiteId();
 	}
 
-	private void addAccessibleTeam(long uid, List<Long> groups) throws Exception {
+	private void addAccessibleTeam(long uid,long pplId, List<Long> groups) throws Exception {
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupMemberModule().getTableName())
@@ -988,7 +988,9 @@ public class UserBeanImpl implements UserBean {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
 			props.put("groupId", group);
-//			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(uid)).getId());
+			if(pplId > 0){
+				props.put(FacilioConstants.ContextNames.PEOPLE,pplId);
+			}
 			props.put("moduleId",module.getModuleId());
 			props.put("memberRole", GroupMemberRole.MEMBER.getMemberRole());
 
