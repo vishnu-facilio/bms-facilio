@@ -1543,7 +1543,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING && module.getTypeEnum() != ModuleType.SYSTEM_SCHEDULED_FORMULA) {
             FacilioField dataField = null;
 
             List<FacilioField> facilioFields = modBean.getAllFields(module.getName());
@@ -1595,7 +1595,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
 
-        if(module.getTypeEnum() == ModuleType.READING){
+        if(module.getTypeEnum() == ModuleType.READING || module.getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA){
             FacilioField facilioField = (FacilioField) pivotField.get("field");
             FacilioField moduleField = modBean.getField(facilioField.getFieldId()).clone();
 

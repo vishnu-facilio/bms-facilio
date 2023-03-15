@@ -68,7 +68,15 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                 }
             } else {
                 if (data.getAlias().equals(alias) && data.getReadingField().getId() > 0) {
-                    facilioField = modBean.getReadingField(data.getReadingField().getId()).clone();
+                    if(data.getReadingField().getModuleId() > 0)
+                    {
+                        FacilioModule module = modBean.getModule(data.getReadingField().getModuleId());
+                        if(module != null && module.getTypeEnum() == FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA){
+                            facilioField =  modBean.getField(data.getReadingField().getId()).clone();
+                        }else{
+                            facilioField = modBean.getReadingField(data.getReadingField().getId()).clone();
+                        }
+                    }
                 } else if(data.getAlias().equals(alias) && data.getReadingField().getModuleId() > 0 &&  data.getReadingField().getName() != null){
                     FacilioModule module = modBean.getModule(data.getReadingField().getModuleId());
                     facilioField = modBean.getField(data.getReadingField().getName(), module.getName());

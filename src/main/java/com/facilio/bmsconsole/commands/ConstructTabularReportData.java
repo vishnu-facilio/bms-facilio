@@ -286,7 +286,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(data.getBaselineLabel());
                     DateOperators dateOperator = (DateOperators) Operator.getOperator(data.getDatePeriod());
                     DateRange actualRange = null;
-                    if(startTime > -1 && endTime > -1 && !data.isExcludeFromTimelineFilter())
+                    if(dateFieldId > 0 && startTime > -1 && endTime > -1 && !data.isExcludeFromTimelineFilter())
                         actualRange = new DateRange(startTime, endTime);
                     else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20)
                         actualRange = new DateRange(data.getStartTime(), data.getEndTime());
@@ -353,7 +353,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
                 } else if (startTime > 0 && endTime > 0
-                        && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING) {
+                        && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && dateFieldId > 0 && !data.isExcludeFromTimelineFilter() ) {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
