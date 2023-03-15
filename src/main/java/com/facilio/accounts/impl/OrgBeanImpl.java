@@ -43,7 +43,9 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.json.simple.JSONObject;
@@ -54,6 +56,7 @@ import java.util.stream.Collectors;
 
 import static com.facilio.util.FacilioStreamUtil.distinctByKey;
 
+@Log4j
 public class OrgBeanImpl implements OrgBean {
 
 	@Override
@@ -556,6 +559,24 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 
+	private Map<String,Long> getPreProdFeatureLicense() throws Exception{
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getPreProdFeatureLicenseFields())
+				.table(AccountConstants.getPreProdFeatureLicenseModule().getTableName());
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<String, Object> moduleMap = props.get(0);
+			Map<String,Long> licenseMap= new HashMap<>();
+			for (LicenseMapping val:LicenseMapping.values()) {
+				licenseMap.put(val.getLicenseKey(),moduleMap.containsKey(val.getLicenseKey()) ? (long) moduleMap.get(val.getLicenseKey()) : 0);
+			}
+			return licenseMap;
+		}
+		else {
+			return new HashMap<>();
+		}
+	}
 
 	@Override
 	public Map<String,Long> getFeatureLicense() throws Exception{
@@ -612,10 +633,45 @@ public class OrgBeanImpl implements OrgBean {
 //			props.put(FacilioConstants.LicenseKeys.LICENSE2, summodule.get(FacilioConstants.LicenseKeys.LICENSE2));
 		}
 		int value = updateBuilder.update(props);
+		try {
+			if (!FacilioProperties.isPreProd()) {
+				addPreProdLicence(summodule);
+			}
+		} catch (Exception e) {
+			LOGGER.info("Add prepord license error");
+		}
 		return value;
 	}
 
-	public JSONObject orgInfo() throws Exception{
+	private int addPreProdLicence(Map<LicenseMapping, Long> summodule) throws Exception {
+
+		Map<LicenseMapping, Long> prodValue = new HashMap<>(summodule);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getPreProdFeatureLicenseModule().getTableName())
+				.fields(AccountConstants.getPreProdFeatureLicenseFields());
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+
+		Map<String,Long> preprodExistingValue = getPreProdFeatureLicense();
+		if(MapUtils.isNotEmpty(preprodExistingValue)) {
+			for (AccountUtil.FeatureLicense eachLicense : AccountUtil.FeatureLicense.values()) {
+				Long val = preprodExistingValue.get(eachLicense.getGroup().getLicenseKey());
+				if (val != null && (val & eachLicense.getLicense()) == eachLicense.getLicense()) {
+					if (!((prodValue.get(eachLicense.getGroup()) & eachLicense.getLicense()) == eachLicense.getLicense())) {
+						prodValue.put(eachLicense.getGroup(), prodValue.get(eachLicense.getGroup()) + eachLicense.getLicense());
+					}
+				}
+			}
+		}
+
+		Map<String, Object> props = new HashMap<>();
+		for (Map.Entry<LicenseMapping, Long> entry : prodValue.entrySet()) {
+			props.put(entry.getKey().getLicenseKey(), entry.getValue());
+		}
+		int value = updateBuilder.update(props);
+		return value;
+	}
+	public JSONObject orgInfo() throws Exception {
 		JSONObject result = new JSONObject();
 		FacilioModule module = AccountConstants.getOrgInfoModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

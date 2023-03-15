@@ -69,11 +69,11 @@ public class AccountUtil {
 			account.setPrevService(prevService);
 		}
 	}
-	
+
 	public static void setCurrentAccount(long orgId) throws Exception {
 		Organization org = null;
 		org = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->IAMUtil.getOrgBean().getOrgv2(orgId));
-		
+
 		if (org != null) {
 
 			Account account = new Account(org, null);
@@ -83,7 +83,7 @@ public class AccountUtil {
 			setScopingMap(account);
 		}
 	}
-	
+
 	public static void setScopingMap(Account account) throws Exception {
 		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
@@ -97,7 +97,7 @@ public class AccountUtil {
 			}
 		}
 	}
-	
+
 	public static void setCurrentSiteId(long siteId) throws Exception {
 		getCurrentAccount().setCurrentSiteId(siteId);
 		setScopingMap(getCurrentAccount());
@@ -116,20 +116,21 @@ public class AccountUtil {
 		}
 		return null;
 	}
+	
 	public static Account getCurrentAccount() {
 		if (currentAccount.get() != null && !currentAccount.get().isScoped()) {
 			return null;
 		}
 		return currentAccount.get();
 	}
-	
+
 	public static Organization getCurrentOrg() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getOrg();
 		}
 		return null;
 	}
-	
+
 	public static User getCurrentUser() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getUser();
@@ -143,7 +144,7 @@ public class AccountUtil {
 		}
 		return null;
 	}
-	
+
 	public static void cleanCurrentAccount() throws Exception {
 		Account account = currentAccount.get();
 		currentAccount.remove();
@@ -154,7 +155,7 @@ public class AccountUtil {
 			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.DEFAULT_SERVICE);
 		}
 	}
-	
+
 	public static int getCurrentSelectQuery() {
 		return getCurrentAccount() != null ? getCurrentAccount().getSelectQueries() : 0;
 	}
@@ -162,7 +163,7 @@ public class AccountUtil {
 	public static int getCurrentPublicSelectQuery() {
 		return getCurrentAccount() != null ? getCurrentAccount().getPublicSelectQueries() : 0;
 	}
-	
+
 	public static Object getSwitchScopingFieldValue(String fieldName) {
 		if (currentAccount.get() != null) {
 			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
@@ -172,14 +173,14 @@ public class AccountUtil {
 		}
 		return null;
 	}
-	
+
 	public static long getCurrentSiteId() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getCurrentSiteId();
 		}
 		return -1;
 	}
-	
+
 	public static void setSwitchScopingFieldValue(String fieldName, Object value) {
 		if (currentAccount.get() != null) {
 			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
@@ -189,7 +190,7 @@ public class AccountUtil {
 			switchScopingMap.put(fieldName, value);
 		}
 	}
-	
+
 	public static Map<String, Object> getSwitchScopingFieldMap() {
 		if (currentAccount.get() != null) {
 			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
@@ -197,7 +198,7 @@ public class AccountUtil {
 		}
 		return null;
 	}
-	
+
 	public static long getCurrentUserSessionId() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getUserSessionId();
@@ -221,7 +222,7 @@ public class AccountUtil {
 		}
 		return null;
 	}
-	
+
 	public static void incrementInsertQueryCount(int count) {
 		if(currentAccount.get() != null) {
 			currentAccount.get().incrementInsertQueryCount(count);
@@ -305,13 +306,13 @@ public class AccountUtil {
 			currentAccount.get().incrementRedisDeleteCount(redisQueries);
 		}
 	}
-	
+
 	public static void incrementInstantJobCount(int instantJobs) {
 		if(currentAccount.get() != null) {
 			currentAccount.get().incrementInstantJobCount(instantJobs);
 		}
 	}
-	
+
 	public static void incrementInstantJobFileAddTime(long duration) {
 		if(currentAccount.get() != null) {
 			currentAccount.get().incrementInstantJobFileAddTime(duration);
@@ -328,7 +329,7 @@ public class AccountUtil {
 		SecurityBean securityBean = (SecurityBean) BeanFactory.lookup("SecurityBean");
 		return securityBean;
 	}
-	
+
 	public static UserBean getUserBean() throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		return userBean;
@@ -338,16 +339,16 @@ public class AccountUtil {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean",orgId);
 		return userBean;
 	}
-	
+
 	public static UserBean getTransactionalUserBean() throws Exception {
 		return (UserBean) TransactionBeanFactory.lookup("UserBean");
 	}
-	
+
 	public static UserBean getTransactionalUserBean(long orgId) throws Exception {
 		return (UserBean) TransactionBeanFactory.lookup("UserBean",orgId);
 	}
-	
-	
+
+
 	public static OrgBean getOrgBean() throws Exception {
 		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean");
 		return orgBean;
@@ -357,17 +358,17 @@ public class AccountUtil {
 		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
 		return orgBean;
 	}
-	
+
 	public static OrgBean getTransactionalOrgBean(long orgId) throws Exception {
 		OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
 		return orgBean;
 	}
-	
+
 	public static GroupBean getGroupBean() throws Exception {
 		GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
 		return groupBean;
 	}
-	
+
 	public static RoleBean getRoleBean() throws Exception {
 		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean");
 		return roleBean;
@@ -408,8 +409,8 @@ public class AccountUtil {
 	public enum LicenseMapping
 	{
 		GROUP1LICENSE(1,FacilioConstants.LicenseKeys.LICENSE1),
-		GROUP2LICENSE(2,FacilioConstants.LicenseKeys.LICENSE2);
-		
+		GROUP2LICENSE(2,FacilioConstants.LicenseKeys.LICENSE2),
+		GROUP3LICENSE(3,FacilioConstants.LicenseKeys.LICENSE3);
 		private int groupId;
 		private String licenseKey;
 
@@ -418,7 +419,7 @@ public class AccountUtil {
 			this.licenseKey = licenseKey;
 		}
 	}
-	
+
     public enum FeatureLicense {
 		MAINTENANCE(1,1,LicenseMapping.GROUP1LICENSE),
 		ALARMS(2,2,LicenseMapping.GROUP1LICENSE),
@@ -541,7 +542,6 @@ public class AccountUtil {
 		THROW_403_WEBTAB(118,18014398509481984L,LicenseMapping.GROUP2LICENSE),//2^54
 		SITE_FILTER_WORKFLOW_RULE(119,36028797018963968L,LicenseMapping.GROUP2LICENSE),//2^55
 		ATTENDANCE(120,72057594037927940L,LicenseMapping.GROUP2LICENSE);//2^56
-
 		public int featureId;
 		private long license;
 		private String[] modules;
@@ -552,7 +552,7 @@ public class AccountUtil {
 			this.license = license;
 			this.group = group;
 		}
-		
+
 		FeatureLicense(int featureId,long license, String[] modules, LicenseMapping group) {
 			this.featureId = featureId;
 			this.license = license;
@@ -574,42 +574,42 @@ public class AccountUtil {
 		public static FeatureLicense getFeatureLicense (String licenseGroup, long value) {
 			return FEATURE_MAP.get(licenseGroup).get(value);
 		}
-		
+
 		public static FeatureLicense getFeatureLicense (int featureLicenseId) {
 			return FEATURE_ID_MAP.get(featureLicenseId);
 		}
-		
-		public static Map<String,Map<Long, FeatureLicense>> getAllFeatureLicense() {	
+
+		public static Map<String,Map<Long, FeatureLicense>> getAllFeatureLicense() {
 			return FEATURE_MAP;
 		}
-		
-		public static Map<Integer, FeatureLicense> getAllFeatureLicenseIdMap() {	
+
+		public static Map<Integer, FeatureLicense> getAllFeatureLicenseIdMap() {
 			return FEATURE_ID_MAP;
 		}
-	
+
 		private static final Map<Integer, FeatureLicense> FEATURE_ID_MAP = Collections.unmodifiableMap(initFeatureIdMap());
-		
+
 		private static final Map<String,Map<Long, FeatureLicense>> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
 		private static Map<String,Map<Long, FeatureLicense>> initFeatureMap() {
 			Map<String,Map<Long, FeatureLicense>> typeMap = new HashMap<>();
-			
+
 			Map<String, FeatureLicense> moduleMap = new HashMap<>();
-			
+
 			for(FeatureLicense fLicense : values()) {
-				
+
 				Map<Long, FeatureLicense> groupedLicenseMap = typeMap.getOrDefault(fLicense.getGroup().getLicenseKey(), new HashMap<Long, AccountUtil.FeatureLicense>());
-				
+
 				groupedLicenseMap.put(fLicense.getLicense(), fLicense);
-				
+
 				typeMap.put(fLicense.getGroup().getLicenseKey(), groupedLicenseMap);
-				
+
 				if (fLicense.getModules() != null) {
 					for (String module : fLicense.getModules()){
 						moduleMap.put(module, fLicense);
 					}
 				}
 			}
-			
+
 			moduleVsLicense = Collections.unmodifiableMap(moduleMap);
 			return typeMap;
 		}
@@ -642,24 +642,25 @@ public class AccountUtil {
 	    	return licenseMap;
     }*/
 
-    
+
     public static Map<String,Long> getOrgFeatureLicense(long orgId) throws Exception
     {
     	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
     	Map<String,Long> licence =bean.getFeatureLicense();
     	System.out.println("#########$$$$ Orgbean : orgid "+orgId+", license : "+licence);
     	return licence;
-    	
+
     }
+
 
     public static Map<String,Long> getFeatureLicense() throws Exception {
     	return getOrgBean().getFeatureLicense();
 	}
-	
+
 	public static boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
 		return getOrgBean().isFeatureEnabled(featureLicense);
 	}
-	
+
 	public static boolean isModuleLicenseEnabled(String moduleName) throws Exception {
 		FeatureLicense license = moduleVsLicense.get(moduleName);
 		return license == null || isFeatureEnabled(license);

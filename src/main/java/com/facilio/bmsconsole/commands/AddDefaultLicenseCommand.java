@@ -2,9 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.util.DBConf;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -13,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class AddDefaultLicenseCommand extends FacilioCommand {
-
     private static final Set<AccountUtil.FeatureLicense> DEFAULT_FEATURE_LIST = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             AccountUtil.FeatureLicense.MAINTENANCE,
             AccountUtil.FeatureLicense.ALARMS,
@@ -55,6 +57,11 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+
+        if(FacilioProperties.isPreProd()) {
+            throw new RuntimeException("Don't Signup From Pre Prod Env");
+        }
+
         Map<String, Object> defaultLicenseVal = DEFAULT_FEATURE_LIST.stream()
                 .collect(Collectors.groupingBy(
                                 this::licenseMappingKey,
@@ -64,10 +71,16 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
                         )
                 );
 
+        Map<String,Object> preProdInsertValue = new HashMap<>(defaultLicenseVal);
         new GenericInsertRecordBuilder()
                 .table(AccountConstants.getFeatureLicenseModule().getTableName())
                 .fields(AccountConstants.getFeatureLicenseFields())
                 .insert(defaultLicenseVal);
+
+        GenericInsertRecordBuilder preProdInsert = new GenericInsertRecordBuilder()
+                .table(AccountConstants.getPreProdFeatureLicenseModule().getTableName())
+                .fields(AccountConstants.getPreProdFeatureLicenseFields());
+        preProdInsert.insert(preProdInsertValue);
 
         LOGGER.info("Default license for org => " + DBConf.getInstance().getCurrentOrgId() + " is "+defaultLicenseVal);
 

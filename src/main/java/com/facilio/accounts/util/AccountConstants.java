@@ -2,6 +2,8 @@ package com.facilio.accounts.util;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -626,6 +628,17 @@ public class AccountConstants {
 		license.setName("featurelicense");
 		license.setDisplayName("Feature License");
 		license.setTableName("FeatureLicense");
+		if(FacilioProperties.isPreProd()) {
+			return getPreProdFeatureLicenseModule();
+		}
+		return license;
+	}
+
+	public static FacilioModule getPreProdFeatureLicenseModule() {
+		FacilioModule license = new FacilioModule();
+		license.setName("preprodfeaturelicense");
+		license.setDisplayName("Pre Production Feature License");
+		license.setTableName("PreProdFeatureLicense");
 
 		return license;
 	}
@@ -971,6 +984,7 @@ public class AccountConstants {
 
 	public static List<FacilioField> getFeatureLicenseFields() {
 		FacilioModule module = getFeatureLicenseModule();
+
 		List<FacilioField> fields = new ArrayList<>();
 
 		/*
@@ -992,6 +1006,44 @@ public class AccountConstants {
 		license2.setColumnName("MODULE2");
 		license2.setModule(module);
 		fields.add(license2);
+
+		FacilioField license3 = new FacilioField();
+		license3.setName(FacilioConstants.LicenseKeys.LICENSE3);
+		license3.setDataType(FieldType.NUMBER);
+		license3.setColumnName("MODULE3");
+		license3.setModule(module);
+		fields.add(license3);
+
+		if(FacilioProperties.isPreProd()) {
+			return getPreProdFeatureLicenseFields();
+		}
+		return fields;
+	}
+
+	public static List<FacilioField> getPreProdFeatureLicenseFields() {
+		FacilioModule module = getPreProdFeatureLicenseModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField license = new FacilioField();
+		license.setName(FacilioConstants.LicenseKeys.LICENSE1);
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("MODULE");
+		license.setModule(module);
+		fields.add(license);
+
+		FacilioField license2 = new FacilioField();
+		license2.setName(FacilioConstants.LicenseKeys.LICENSE2);
+		license2.setDataType(FieldType.NUMBER);
+		license2.setColumnName("MODULE2");
+		license2.setModule(module);
+		fields.add(license2);
+
+		FacilioField license3 = new FacilioField();
+		license3.setName(FacilioConstants.LicenseKeys.LICENSE3);
+		license3.setDataType(FieldType.NUMBER);
+		license3.setColumnName("MODULE3");
+		license3.setModule(module);
+		fields.add(license3);
 
 		return fields;
 	}

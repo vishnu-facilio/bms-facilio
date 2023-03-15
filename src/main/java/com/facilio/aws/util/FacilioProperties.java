@@ -213,7 +213,6 @@ public class FacilioProperties {
     @Getter
     private static long defaultTransactionTimeout = -1;
 
-
     static {
         loadProperties();
     }
@@ -246,7 +245,7 @@ public class FacilioProperties {
             region = PROPERTIES.getProperty("region", "us-west-2");
             HashMap<String, String> awsSecret = getPassword(environment + "-app.properties");
             awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
-            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
+            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) || "preprod".equalsIgnoreCase(environment);
             developmentEnvironment = "development".equalsIgnoreCase(environment);
             isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
             securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
@@ -444,6 +443,7 @@ public class FacilioProperties {
             }
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
+
         } catch (IOException e) {
             LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
         }
@@ -955,5 +955,11 @@ public class FacilioProperties {
        }
        return regionCountryCode;
    }
-    
+   public static boolean isPreProd() {
+        String environment = getEnvironment();
+        if(StringUtils.isNotEmpty(environment) && environment.equalsIgnoreCase("preprod")) {
+            return true;
+        }
+        return false;
+   }
 }

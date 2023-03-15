@@ -3120,6 +3120,8 @@ public class FacilioConstants {
 		public static final String GROUP_2_LICENSE = "group2";
 		public static final String LICENSE1 = "license1";
 		public static final String LICENSE2 = "license2";
+
+		public static final String LICENSE3 = "license3";
 	}
 
 	public static class PermissionKeys {
