@@ -52,7 +52,7 @@ public class V3SiteQRDownloadAPI {
 
         BundleFolderContext siteFolder = new BundleFolderContext(site.getName()+DELIMITER+siteId);
 
-        String qrVal = site.getQrVal().trim();
+        String qrVal = site.getQrVal();
 
         if (CollectionUtils.isEmpty(baseSpaces)) {
 
