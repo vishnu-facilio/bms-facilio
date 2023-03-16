@@ -33,7 +33,7 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
 
 
         String[] supplementFieldNames = new String[]{"type", "category", "priority", "tenant",
-                "vendor", "createdBy", "resource", "status","assignmentGroup","assignedTo","assignedBy","moduleState","approvalStatus","jobPlan"};
+                "vendor", "createdBy", "resource", "status","assignmentGroup","assignedTo","assignedBy","moduleState","approvalStatus"};
         for (String fieldName : supplementFieldNames) {
             fetchLookupsList.add((LookupField) fieldsAsMap.get(fieldName));
         }
