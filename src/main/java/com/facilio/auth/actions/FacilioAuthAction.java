@@ -2004,6 +2004,7 @@ public class FacilioAuthAction extends FacilioAction {
 		String isDevice = request.getParameter("isDevice");
 		String currentOrg = request.getParameter("currentOrg");
 		String currentSite = request.getParameter("currentSite");
+		String proxyToken = request.getParameter("proxyToken");
 		boolean isPotalUser = false;
 		boolean isDeviceUser = false;
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
@@ -2014,6 +2015,9 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (isDeviceUser) {
 			addDeviceAuthCookies(authtoken, request);
+		}
+		else if(org.apache.commons.lang3.StringUtils.isNotEmpty(proxyToken)){
+			addAuthCookies(authtoken, isPotalUser, isDeviceUser, request, false,proxyToken);
 		}
 		else {
 			addAuthCookies(authtoken, isPotalUser, isDeviceUser, request);
