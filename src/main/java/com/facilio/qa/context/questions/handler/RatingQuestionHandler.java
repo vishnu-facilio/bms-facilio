@@ -7,7 +7,9 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RatingQuestionHandler implements QuestionHandler<RatingQuestionContext> {
 
@@ -23,9 +25,16 @@ public class RatingQuestionHandler implements QuestionHandler<RatingQuestionCont
 
 
     private void commonValidate(List<RatingQuestionContext> questions) throws Exception {
+        Map<String, Number> errorParams = new HashMap<>();
         for (RatingQuestionContext q : questions) {
             Integer ratingScale = q.getRatingScale();
-            V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_RATING || ratingScale > RatingQuestionContext.MAX_RATING), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_RATING, RatingQuestionContext.MAX_RATING));
+            if((ratingScale < RatingQuestionContext.MIN_RATING || ratingScale > RatingQuestionContext.MAX_RATING)) {
+                errorParams.put("ratingScale",ratingScale);
+                errorParams.put("minRating",RatingQuestionContext.MIN_RATING);
+                errorParams.put("maxRating",RatingQuestionContext.MAX_RATING);
+            }
+            V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_RATING || ratingScale > RatingQuestionContext.MAX_RATING), ErrorCode.VALIDATION_ERROR, "errors.qa.ratingQuestionHandler.ratingCheck",true,errorParams);
+            //V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_RATING || ratingScale > RatingQuestionContext.MAX_RATING), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_RATING, RatingQuestionContext.MAX_RATING),true,errorParams);
         }
     }
 

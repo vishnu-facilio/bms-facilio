@@ -26,7 +26,8 @@ public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerConte
     @Override
     public AnswerContext deSerialize(FileUploadAnswerContext answer, QuestionContext question) throws Exception {
         AnswerContext answerContext = new AnswerContext();
-        V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "File ID cannot be null while adding file upload answer");
+        V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "errors.qa.fileUploadAnswerHandler.fileIdCheck",true,null);
+        //V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "File ID cannot be null while adding file upload answer",true,null);
         answerContext.setFileAnswerId(answer.getAnswer().getId());
         return answerContext;
     }

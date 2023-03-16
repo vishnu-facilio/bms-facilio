@@ -55,7 +55,8 @@ public enum MatrixRuleHandler implements RuleHandler{
 			MatrixQuestionRow row = options.get(prop.get("rowId"));
 			String value = prop.remove("value").toString();
 			String operatorId = (String) prop.remove("operatorId");
-			V3Util.throwRestException(row == null, ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding MQ Rule");
+			V3Util.throwRestException(row == null, ErrorCode.VALIDATION_ERROR, "errors.qa.matrixRuleHandler.optionCheck",true,null);
+			//V3Util.throwRestException(row == null, ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding MQ Rule",true,null);
 			RuleCondition condition = FieldUtil.getAsBeanFromMap(prop, type.getRuleConditionClass());
 			condition.setOperator(Integer.parseInt(operatorId));
 			condition.setValue(value);

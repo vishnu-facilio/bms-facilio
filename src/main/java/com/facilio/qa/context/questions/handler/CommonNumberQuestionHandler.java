@@ -8,7 +8,9 @@ import com.facilio.v3.util.V3Util;
 import lombok.AllArgsConstructor;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @AllArgsConstructor
@@ -17,10 +19,14 @@ public class CommonNumberQuestionHandler<Q extends QuestionContext> implements Q
     private Function<Q, Number> minValue, maxValue;
 
     private void commonValidate (List<Q> questions) throws Exception {
+        Map<String, Number> errorParams = new HashMap<>();
         for (Q q : questions) {
             Number minVal = minValue.apply(q);
             Number maxVal = maxValue.apply(q);
-            V3Util.throwRestException(minVal != null && maxVal != null && minVal.doubleValue() > maxVal.doubleValue(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Max value ({0}) cannot be less than Min value ({1})", maxVal, minVal));
+            errorParams.put("minValue", minVal);
+            errorParams.put("maxValue", maxVal);
+            V3Util.throwRestException(minVal != null && maxVal != null && minVal.doubleValue() > maxVal.doubleValue(), ErrorCode.VALIDATION_ERROR,"errors.qa.commonNumberQuestionHandler.minMaxCheck",true,errorParams);
+            //V3Util.throwRestException(minVal != null && maxVal != null && minVal.doubleValue() > maxVal.doubleValue(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Max value ({0}) cannot be less than Min value ({1})", maxVal, minVal),true,errorParams);
         }
     }
 

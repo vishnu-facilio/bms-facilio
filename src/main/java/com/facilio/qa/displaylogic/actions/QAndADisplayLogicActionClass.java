@@ -54,8 +54,9 @@ public class QAndADisplayLogicActionClass extends V3Action {
 	
 	 public String add() throws Exception {
 		 
-		 V3Util.throwRestException(displayLogic == null, ErrorCode.VALIDATION_ERROR, "Display Logic cannot be empty during save");
-		 
+		 V3Util.throwRestException(displayLogic == null, ErrorCode.VALIDATION_ERROR, "errors.qa.qAndADisplayLogicActionClass.displayCheck",true,null);
+		 //V3Util.throwRestException(displayLogic == null, ErrorCode.VALIDATION_ERROR, "Display Logic cannot be empty during save",true,null);
+
 		 FacilioChain addChain = QAndATransactionChainFactory.addOrUpdateDisplayLogicChain();
 		 
 		 addChain.getContext().put(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT, displayLogic);
@@ -68,8 +69,9 @@ public class QAndADisplayLogicActionClass extends V3Action {
 	 
 	 public String update() throws Exception {
 		 
-		 V3Util.throwRestException(displayLogic == null || displayLogic.getId() == null || displayLogic.getId() <= 0, ErrorCode.VALIDATION_ERROR, "Display Logic or Id cannot be empty during update");
-		 
+		 V3Util.throwRestException(displayLogic == null || displayLogic.getId() == null || displayLogic.getId() <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.qAndADisplayLogicActionClass.displayIdCheck",true,null);
+		 //V3Util.throwRestException(displayLogic == null || displayLogic.getId() == null || displayLogic.getId() <= 0, ErrorCode.VALIDATION_ERROR, "Display Logic or Id cannot be empty during update",true,null);
+
 		 FacilioChain addChain = QAndATransactionChainFactory.addOrUpdateDisplayLogicChain();
 		 
 		 addChain.getContext().put(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT, displayLogic);

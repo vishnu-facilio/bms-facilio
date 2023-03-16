@@ -22,7 +22,8 @@ public class DeserializeRulesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         QAndARuleType type = (QAndARuleType) context.get(Constants.Command.RULE_TYPE);
-        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Type cannot be empty while adding rules");
+        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "errors.qa.deserializeRulesCommand.typeEmptyCheck",true,null);
+//        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Type cannot be empty while adding rules",true,null);
         List<Map<String, Object>> rules = (List<Map<String, Object>>) context.get(Constants.Command.RULES);
 
         if (CollectionUtils.isNotEmpty(rules)) {
@@ -32,10 +33,12 @@ public class DeserializeRulesCommand extends FacilioCommand {
                     questions.stream().filter(QuestionContext::isRuleSupported)
                             .collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
             List<QAndARule> ruleList = new ArrayList<>();
+            Map<String, String> errorParams = new HashMap<>();
             for (Map<String, Object> prop : rules) {
                 Long questionId = (Long) prop.get("questionId");
                 QuestionContext question = rulesSupportedQuestions.get(questionId);
-                V3Util.throwRestException(question == null || !question.getQuestionType().isRuleSupported(), ErrorCode.VALIDATION_ERROR, "Invalid question id specified while adding rules");
+                V3Util.throwRestException(question == null || !question.getQuestionType().isRuleSupported(), ErrorCode.VALIDATION_ERROR, "errors.qa.deserializeRulesCommand.questionValidation",true,null);
+                //V3Util.throwRestException(question == null || !question.getQuestionType().isRuleSupported(), ErrorCode.VALIDATION_ERROR, "Invalid question id specified while adding rules",true,null);
                 List<Map<String, Object>> conditions = (List<Map<String, Object>>) prop.remove("conditions");
 //                V3Util.throwRestException(CollectionUtils.isEmpty(conditions), ErrorCode.VALIDATION_ERROR, "Rule conditions cannot be empty");
                 List<RuleCondition> conditionList = CollectionUtils.isEmpty(conditions) ? Collections.EMPTY_LIST : // So this means we'll delete existing conditions for this rule
@@ -47,7 +50,11 @@ public class DeserializeRulesCommand extends FacilioCommand {
 
                 Long workflowId = (Long) prop.get("workflowId");
                 if (workflowId == null && type.isActionMandatory()) {
-                    V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Condition {0} cannot be empty", type.getEmptyActionErrorValue()));
+                    if(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty)) {
+                        errorParams.put("actionError",type.getEmptyActionErrorValue());
+                    }
+                    V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, "errors.qa.deserializeRulesCommand.actionValidation",true,errorParams);
+                    //V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Condition {0} cannot be empty", type.getEmptyActionErrorValue()));
                 }
 
                 rule.setRuleConditions(conditionList);

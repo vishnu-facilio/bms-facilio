@@ -18,6 +18,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,7 +52,10 @@ public class SerializeAnswersCommand extends FacilioCommand {
     @SneakyThrows
     private ClientAnswerContext serialze(AnswerContext answer, Map<Long, QuestionContext> questions, boolean isSingleResponse) {
         QuestionContext question = questions.get(answer.getQuestion().getId());
-        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion().getId()));
+        Map<String, Long> errorParams = new HashMap<>();
+        errorParams.put("questionId", answer.getQuestion().getId());
+        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR,"errors.qa.serializeAnswersCommand.questionIdCheck",true,errorParams);
+        //V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion().getId()),true,errorParams);
         answer.setQuestion(question);
         ClientAnswerContext clientAnswer = QAndAUtil.serializedAnswer(question,answer);
 

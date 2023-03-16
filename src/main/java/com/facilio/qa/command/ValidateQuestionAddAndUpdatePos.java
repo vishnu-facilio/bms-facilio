@@ -29,16 +29,22 @@ public class ValidateQuestionAddAndUpdatePos extends FacilioCommand {
             Map<Long, List<QuestionContext>> pageVsQuestions = new HashMap<>();
             for (QuestionContext question : list) {
                 Long pageId = question.getPage() == null ? null : question.getPage().getId();
-                V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "Parent page of question cannot be null");
-                V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null");
-                V3Util.throwRestException(question.getPosition() == null || question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question");
+                V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionAddAndUpdatePos.parentPageQuestionCheck",true,null);
+                V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionAddAndUpdatePos.questionTypeCheck",true,null);
+                V3Util.throwRestException(question.getPosition() == null || question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionAddAndUpdatePos.invalidPositionQuestionCheck",true,null);
+                //V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "Parent page of question cannot be null",true,null);
+                //V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null",true,null);
+                //V3Util.throwRestException(question.getPosition() == null || question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question",true,null);
                 pageVsQuestions.computeIfAbsent(pageId, k -> new ArrayList<>()).add(question);
             }
 
             Map<Long, PageContext> pageMap = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.PAGE, pageVsQuestions.keySet(), PageContext.class);
             for (Map.Entry<Long, List<QuestionContext>> entry : pageVsQuestions.entrySet()) {
                 PageContext parentPage = pageMap.get(entry.getKey());
-                V3Util.throwRestException(parentPage == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid parent ({0}) specified for question", entry.getKey()));
+                Map<String, Object> errorParams = new HashMap<>();
+                errorParams.put("entryKey", entry.getKey());
+                V3Util.throwRestException(parentPage == null, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionAddAndUpdatePos.parentCheck",true,errorParams);
+                //V3Util.throwRestException(parentPage == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid parent ({0}) specified for question", entry.getKey()),true,errorParams);
                 entry.getValue().stream().forEach(q -> q.setParent(parentPage.getParent()));
             }
 

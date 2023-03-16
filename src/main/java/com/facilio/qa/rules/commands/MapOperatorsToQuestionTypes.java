@@ -23,7 +23,8 @@ public class MapOperatorsToQuestionTypes extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<FilterOperator>> filterOperatorsMap = (Map<String, List<FilterOperator>>) context.get(FacilioConstants.Filters.FILTER_OPERATORS);
-        V3Util.throwRestException(MapUtils.isEmpty(filterOperatorsMap), ErrorCode.UNHANDLED_EXCEPTION, "Operators map cannot be empty. This shouldn't happen");
+        V3Util.throwRestException(MapUtils.isEmpty(filterOperatorsMap), ErrorCode.UNHANDLED_EXCEPTION, "errors.qa.mapOperatorsToQuestionTypes.operatorCheck",true,null);
+        //V3Util.throwRestException(MapUtils.isEmpty(filterOperatorsMap), ErrorCode.UNHANDLED_EXCEPTION, "Operators map cannot be empty. This shouldn't happen",true,null);
         Map<String, List<FilterOperator>> questionVsOperators = new HashMap<>();
         for (QuestionType type : QuestionType.values()) {
             if (type.isOperatorSupportedForRules()) {

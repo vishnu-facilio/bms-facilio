@@ -49,8 +49,9 @@ public class PrepareQuestionForDisplayLogicExecution extends FacilioCommand {
 			
 	        List<ClientAnswerContext> answers = answerData == null ? null : (List<ClientAnswerContext>) answerData.get("answers");
 	        
-	        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty for display logic execution");
-	        
+	        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "errors.qa.prepareQuestionForDisplayLogicException.answerEmptyCheck",true,null);
+	        //V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty for display logic execution",true,null);
+
 	        List<Long> triggerQuestionIds = answers.stream().map(ClientAnswerContext::getQuestion).collect(Collectors.toList());;
 
 	        context.put(DisplayLogicUtil.TRIGGER_QUESTION_IDS, triggerQuestionIds);
@@ -63,7 +64,8 @@ public class PrepareQuestionForDisplayLogicExecution extends FacilioCommand {
 	@SneakyThrows
     private Long fetchQuestionId (Map<String, Object> answer)  {
         Long questionId = (Long) answer.get("question");
-        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer");
+        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareQuestionForDisplayLogicException.questionNullCheck",true,null);
+        //V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer",true,null);
         return questionId;
     }
 

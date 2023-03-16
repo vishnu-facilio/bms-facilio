@@ -68,7 +68,8 @@ public class AddPagesAndQuestionsCommand extends FacilioCommand {
     }
 
     private void addToRelation (Map<String, List<SubFormContext>> questionRelations, QuestionContext question, FacilioField questionPageField) throws Exception {
-        V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null");
+        V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.addPagesandQuestions.questionTypeCheck",true,null);
+        //V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null",true,null);
         String moduleName = question.getQuestionType().getSubModuleName();
         List<SubFormContext> questions = questionRelations.get(moduleName);
         if (questions == null) {

@@ -51,10 +51,14 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
     public AnswerContext deSerialize(MCQSingleAnswerContext answer, QuestionContext question) throws Exception {
         MCQSingleContext mcqQuestion = (MCQSingleContext) question;
         Long selected = answer.getAnswer().getSelected();
-        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
+        Map<String, Number> errorParams = new HashMap<>();
+        errorParams.put("selectedAnswer",selected);
+        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "errors.qa.mcqSingleAnswerHandler.optionSelectionCheck",true,null);
+        //V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ",true,null);
         LOGGER.debug(MessageFormat.format("Question => {0} | Options => {1} | Selected => {2}", question.getId(), ((MCQSingleContext) question).getOptions(), selected));
         Optional<MCQOptionContext> option = mcqQuestion.getOptions().stream().filter(o -> o.getId() == selected).findFirst();
-        V3Util.throwRestException(!option.isPresent(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        V3Util.throwRestException(!option.isPresent(), ErrorCode.VALIDATION_ERROR, "errors.qa.mcqSingleAnswerHandler.selectionValidationCheck",true,errorParams);
+        //V3Util.throwRestException(!option.isPresent(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected),true,errorParams);
         AnswerContext answerContext = new AnswerContext();
         answerContext.setEnumAnswer(selected);
         if ( option.get().otherEnabled() && StringUtils.isNotEmpty(answer.getAnswer().getOther()) ) {

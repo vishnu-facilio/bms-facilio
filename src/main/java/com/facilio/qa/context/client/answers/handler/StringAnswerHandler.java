@@ -13,6 +13,8 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
     private boolean isBigString;
@@ -30,9 +32,14 @@ public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
 
     @Override
     public AnswerContext deSerialize(StringAnswerContext answer, QuestionContext question) throws Exception {
-        V3Util.throwRestException(StringUtils.isEmpty(answer.getAnswer()), ErrorCode.VALIDATION_ERROR, "String answer cannot be empty");
+        V3Util.throwRestException(StringUtils.isEmpty(answer.getAnswer()), ErrorCode.VALIDATION_ERROR, "errors.qa.stringAnswerHandler.stringEmptyCheck",true,null);
+        //V3Util.throwRestException(StringUtils.isEmpty(answer.getAnswer()), ErrorCode.VALIDATION_ERROR, "String answer cannot be empty",true,null);
         int maxLength = maxLength(question);
-        V3Util.throwRestException(answer.getAnswer().length() > maxLength, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length ({1}) allowed", answer.getAnswer().length(), maxLength));
+        Map<String, Object> errorParams = new HashMap<>();
+        errorParams.put("answerLength",answer.getAnswer().length());
+        errorParams.put("maxLength",maxLength);
+        V3Util.throwRestException(answer.getAnswer().length() > maxLength, ErrorCode.VALIDATION_ERROR, "errors.qa.stringAnswerHandler.stringLengthCheck",true,errorParams);
+        //V3Util.throwRestException(answer.getAnswer().length() > maxLength, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length ({1}) allowed", answer.getAnswer().length(), maxLength),true,errorParams);
         AnswerContext answerContext = new AnswerContext();
         if (isBigString) {
             answerContext.setLongAnswer(answer.getAnswer());

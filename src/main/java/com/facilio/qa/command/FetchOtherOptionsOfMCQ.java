@@ -31,11 +31,14 @@ public class FetchOtherOptionsOfMCQ extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long questionId = (long) context.get(FacilioConstants.QAndA.Command.QUESTION_ID);
-        V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
+        V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchOtherOptionsOfMCQ.questionIdCheck",true,null);
+        //V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers",true,null);
         DateRange range = (DateRange) context.get(FacilioConstants.QAndA.Command.ANSWER_RANGE);
-        V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "Invalid startTime/ endTime specified for fetching answers");
+        V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "errors.qa.fetchOtherOptionsOfMCQ.timeCheck",true,null);
+        //V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "Invalid startTime/ endTime specified for fetching answers",true,null);
         QuestionContext question = QAndAUtil.fetchQuestionWithProps(questionId);
-        V3Util.throwRestException(question == null || !(question instanceof BaseMCQContext), ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
+        V3Util.throwRestException(question == null || !(question instanceof BaseMCQContext), ErrorCode.VALIDATION_ERROR, "errors.qa.fetchOtherOptionsOfMCQ.questionIdCheck",true,null);
+        //V3Util.throwRestException(question == null || !(question instanceof BaseMCQContext), ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers",true,null);
 
         List<AnswerContext> answers = fetchAnswers((BaseMCQContext) question, range);
         if (CollectionUtils.isNotEmpty(answers)) {

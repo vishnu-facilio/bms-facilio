@@ -51,7 +51,8 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         MCQMultiContext mcqQuestion = (MCQMultiContext) question;
         Set<Long> selected = answer.getAnswer().getSelected();
-        V3Util.throwRestException(CollectionUtils.isEmpty(selected), ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
+        V3Util.throwRestException(CollectionUtils.isEmpty(selected), ErrorCode.VALIDATION_ERROR, "errors.qa.mcqMultiAnswerHandler.optionSelectionCheck",true,null);
+        //V3Util.throwRestException(CollectionUtils.isEmpty(selected), ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ",true,null);
         AnswerContext answerContext = new AnswerContext();
         Map<Long, MCQOptionContext> optionMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::getId, Function.identity()));
         if (CollectionUtils.isNotEmpty(selected)) { // Check is for handling answers only with 'other' option
@@ -68,9 +69,13 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
 
     @SneakyThrows
     private MCQOptionContext validateAndReturnMCQOption(Long selected, Map<Long, MCQOptionContext> optionMap, MCQMultiAnswerContext answer, AnswerContext answerContext) {
-        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        Map<String, Number> errorParams = new HashMap<>();
+        errorParams.put("selectedOption",selected);
+        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "errors.qa.mcqMultiAnswerHandler.optionSelectionValidationCheck",true,errorParams);
+        //V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected),true,errorParams);
         MCQOptionContext option = optionMap.get(selected);
-        V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, "errors.qa.mcqMultiAnswerHandler.optionSelectionValidationCheck",true,errorParams);
+        //V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected),true,errorParams);
         if (option.otherEnabled() && StringUtils.isNotEmpty(answer.getAnswer().getOther())) {
             answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
         }

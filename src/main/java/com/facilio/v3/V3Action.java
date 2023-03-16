@@ -1,6 +1,7 @@
 package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.v3.exception.ErrorCode;

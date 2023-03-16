@@ -42,6 +42,11 @@ public class V3Util {
         }
     }
 
+    public static void throwRestException (boolean condition, ErrorCode errorCode, String key, Boolean isVisible, Object arguments) throws RESTException {
+        if (condition) {
+            throw new RESTException(errorCode, isVisible, key, arguments );
+        }
+    }
     public static FacilioContext createRecord(FacilioModule module, Map<String, Object> data) throws Exception {
         return createRecord(module, data, null, null);
     }

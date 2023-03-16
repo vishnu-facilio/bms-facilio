@@ -16,7 +16,9 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExecuteQAndATemplateCommand extends FacilioCommand {
 
@@ -25,16 +27,20 @@ public class ExecuteQAndATemplateCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         FacilioModule module = Constants.getModBean().getModule(moduleName);
-        V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid Q And A Module ({0}) specified while executing template", moduleName));
+        Map<String, Object> errorParams = new HashMap<>();
+        errorParams.put("moduleName", moduleName);
+        V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, "errors.qa.executeQandATemplateCommand.moduleCheck",true,errorParams);
+        //V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid Q And A Module ({0}) specified while executing template", moduleName),true,errorParams);
         Long id = Constants.getRecordId(context);
         QAndAType type = QAndAType.getQAndATypeFromTemplateModule(moduleName);
         
         FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList(id));
         
         QAndATemplateContext template = (QAndATemplateContext) Constants.getRecordListFromContext(summaryContext, moduleName).get(0);
-        
-        V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id));
-        
+        errorParams.put("id", id);
+        V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, "errors.qa.executeQandATemplateCommand.idCheck",true,errorParams);
+        //V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id),true,errorParams);
+
         List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 
         List response = template.constructResponses(resources);

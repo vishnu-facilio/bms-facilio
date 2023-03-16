@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +34,13 @@ public class AddDefaultQAndAPropsCommand extends FacilioCommand {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         QAndAType type = QAndAType.getQAndATypeFromTemplateModule(moduleName);
-        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Invalid module for q and a");
+        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "errors.qa.addDefaultQandAProps.modCheck",true,null);
+        //V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Invalid module for q and a",true,null);
         FacilioModule responseModule = modBean.getModule(type.getResponseModule());
-        V3Util.throwRestException(responseModule == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response module for type {0}. This is not supposed to happen", type.getValue()));
+        Map<String, String> errorParams = new HashMap<>();
+        errorParams.put("moduleType", type.getValue());
+        V3Util.throwRestException(responseModule == null, ErrorCode.VALIDATION_ERROR, "errors.qa.addDefaultQandAProps.moduleCheck",true,errorParams);
+        //V3Util.throwRestException(responseModule == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response module for type {0}. This is not supposed to happen", type.getValue()),true,errorParams);
 
         for (QAndATemplateContext template : list) {
             template.setQAndAType(type);

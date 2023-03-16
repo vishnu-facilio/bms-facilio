@@ -8,7 +8,9 @@ import com.facilio.v3.util.V3Util;
 import lombok.AllArgsConstructor;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -21,10 +23,15 @@ public class CommonStringQuestionHandler<Q extends QuestionContext> implements Q
     private int maxAllowedLen;
 
     private void commonValidate (List<Q> questions) throws RESTException {
+        Map<String, Object> errorParams = new HashMap<>();
         for (Q q : questions) {
             Integer maxLen = maxLength.apply(q);
-            V3Util.throwRestException(maxLen != null && maxLen <= 0, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid maxLength ({0}) specified while adding string question", maxLen));
-            V3Util.throwRestException(maxLen != null && maxLen > maxAllowedLen, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Max Length ({0}) cannot be greater than {1}", maxLen, maxAllowedLen));
+            errorParams.put("maxLen",maxLen);
+            errorParams.put("maxAllowedLen",maxAllowedLen);
+            V3Util.throwRestException(maxLen != null && maxLen <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.commonStringQuestionHandler.maxLengthSpecifyCheck",true,errorParams);
+            V3Util.throwRestException(maxLen != null && maxLen > maxAllowedLen, ErrorCode.VALIDATION_ERROR, "errors.qa.commonStringQuestionHandler.maxLengthCheck",true,errorParams);
+//            V3Util.throwRestException(maxLen != null && maxLen <= 0, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid maxLength ({0}) specified while adding string question", maxLen),true,errorParams);
+//            V3Util.throwRestException(maxLen != null && maxLen > maxAllowedLen, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Max Length ({0}) cannot be greater than {1}", maxLen, maxAllowedLen),true,errorParams);
         }
     }
 
