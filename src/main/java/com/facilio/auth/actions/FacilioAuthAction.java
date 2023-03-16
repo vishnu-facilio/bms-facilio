@@ -462,6 +462,20 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	public String clientlookup() {
+		String username = getUsername();
+		AppDomain.GroupType groupType = AppDomain.GroupType.CLIENT_PORTAL;
+		try {
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, AppDomainType.CLIENT_PORTAL, groupType);
+			setJsonresponse(loginModes);
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while user lookup ", e);
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
+		return SUCCESS;
+	}
 	@SneakyThrows
 	public String lookup() {
 		try {
@@ -472,6 +486,8 @@ public class FacilioAuthAction extends FacilioAction {
 					groupType = GroupType.TENANT_OCCUPANT_PORTAL;
 				} else if (getLookUpType().equals("vendor")) {
 					groupType = GroupType.VENDOR_PORTAL;
+				} else if (getLookUpType().equals("client")) {
+					groupType = GroupType.CLIENT_PORTAL;
 				}
 			}
 			
@@ -491,6 +507,8 @@ public class FacilioAuthAction extends FacilioAction {
 					return vendorlookup();
 				} else if (groupType == GroupType.EMPLOYEE_PORTAL) {
 					return employeelookup();
+				} else if (groupType == GroupType.CLIENT_PORTAL) {
+					return clientlookup();
 				}
 			}
 	
@@ -871,6 +889,15 @@ public class FacilioAuthAction extends FacilioAction {
 					setDomain(org.getDomain());
 				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(7, org.getOrgId()).get(0);
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, GroupType.CLIENT_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
+				}
+				appdomainObj = IAMAppUtil.getAppDomainForType(5, org.getOrgId()).get(0);
 			}
 
 			HttpServletRequest request = ServletActionContext.getRequest();
@@ -1004,6 +1031,8 @@ public class FacilioAuthAction extends FacilioAction {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileMainAppScheme());
 		} else if (mobileAppType.equalsIgnoreCase("workQ")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getWorkQAppScheme());
+		} else if (mobileAppType.equalsIgnoreCase("client")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileClientportalAppScheme());
 		}
 
 		setTempCookieProperties(schemeCookie, false);
@@ -1055,6 +1084,8 @@ public class FacilioAuthAction extends FacilioAction {
 			appdomainObj = IAMAppUtil.getAppDomainForType(4, org.getOrgId()).get(0);
 		} else if (FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP.equalsIgnoreCase(getLookUpType())) {
 			appdomainObj = IAMAppUtil.getAppDomainForType(7, org.getOrgId()).get(0);
+		} else if ("client".equalsIgnoreCase(getLookUpType())) {
+			appdomainObj = IAMAppUtil.getAppDomainForType(5, org.getOrgId()).get(0);
 		}
 
 
@@ -1126,7 +1157,9 @@ public class FacilioAuthAction extends FacilioAction {
 				groupType = AppDomain.GroupType.VENDOR_PORTAL;
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				groupType = AppDomain.GroupType.EMPLOYEE_PORTAL;
-			} else {
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				groupType = AppDomain.GroupType.CLIENT_PORTAL;
+			}else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
 		} else {
@@ -1172,6 +1205,9 @@ public class FacilioAuthAction extends FacilioAction {
 					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
 				} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, defaultOrg.getOrgId());
+					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
+				} else if (getLookUpType().equalsIgnoreCase("client")) {
+					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, defaultOrg.getOrgId());
 					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
 				}
 			}
@@ -1378,7 +1414,9 @@ public class FacilioAuthAction extends FacilioAction {
 				groupType = AppDomain.GroupType.VENDOR_PORTAL;
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				groupType = AppDomain.GroupType.EMPLOYEE_PORTAL;
-			} else {
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				groupType = AppDomain.GroupType.CLIENT_PORTAL;
+			}else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
 		} else {
@@ -1426,6 +1464,8 @@ public class FacilioAuthAction extends FacilioAction {
 				groupType = AppDomain.GroupType.VENDOR_PORTAL;
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				groupType = AppDomain.GroupType.EMPLOYEE_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				groupType = AppDomain.GroupType.CLIENT_PORTAL;
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
@@ -1722,6 +1762,9 @@ public class FacilioAuthAction extends FacilioAction {
 						} else if ("mobile-vendorportal".equals(relayState)) {
 							setLookUpType("vendor");
 							setPortalWebViewCookies("vendor");
+						}  else if ("mobile-clientportal".equals(relayState)) {
+							setLookUpType("client");
+							setPortalWebViewCookies("client");
 						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
@@ -2173,6 +2216,9 @@ public class FacilioAuthAction extends FacilioAction {
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, org.getOrgId());
 				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			}
 		}
 		else {
@@ -2444,6 +2490,8 @@ public class FacilioAuthAction extends FacilioAction {
 				groupType = AppDomain.GroupType.VENDOR_PORTAL;
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				groupType = AppDomain.GroupType.EMPLOYEE_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				groupType = AppDomain.GroupType.CLIENT_PORTAL;
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
@@ -2473,6 +2521,9 @@ public class FacilioAuthAction extends FacilioAction {
 				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
 			} else if (getLookUpType().equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
 				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, org.getOrgId());
+				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
+			} else if (getLookUpType().equalsIgnoreCase("client")) {
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, org.getOrgId());
 				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
 			}
 		}
