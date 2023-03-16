@@ -184,7 +184,7 @@
         <dependency>
             <groupId>com.facilio.taskengine</groupId>
             <artifactId>facilio-taskengine</artifactId>
-            <version>0.0.11</version>
+            <version>0.0.12</version>
         </dependency>
 
         <dependency>
