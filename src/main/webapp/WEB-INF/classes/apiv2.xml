@@ -251,6 +251,9 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</action>
+
+		<action name="isSessionActive" class="com.facilio.bmsconsole.actions.LoginAction" method="isSessionActive">
+		</action>
 	</package>
 
 	<package name="v2ApiNullIgnored" strict-method-invocation="false" extends="v2Api">

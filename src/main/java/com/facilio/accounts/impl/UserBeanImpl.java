@@ -1305,7 +1305,7 @@ public class UserBeanImpl implements UserBean {
 		}
 
 	}
-	
+
 	private String getUserLink(User user, String url, AppDomain appDomainObj) throws Exception {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		if (StringUtils.isEmpty(inviteToken)) {
@@ -1340,7 +1340,7 @@ public class UserBeanImpl implements UserBean {
 			logMessage += " domain: " + FieldUtil.getAsJSON(appDomainObj);
 		}
 		logMessage += " isInviteTokenEmpty: " + StringUtils.isEmpty(inviteToken);
-		LOGGER.error("[inviteTokenEmptyLog] " + logMessage);
+		LOGGER.info("[inviteTokenEmptyLog] " + logMessage);
 
 		return hostname + url + inviteToken;
 	}

@@ -1143,4 +1143,11 @@ public class LoginAction extends FacilioAction {
 		account = null;
 		return ERROR;
 	}
+
+	public String isSessionActive(){
+		String response = "ping";
+		setResult("response",response);
+		log.info("Session valid");
+		return SUCCESS;
+	}
 }

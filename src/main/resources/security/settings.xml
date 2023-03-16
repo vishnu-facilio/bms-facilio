@@ -1239,4 +1239,5 @@
             <property name="formId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v2/isSessionActive"></request>
 </config>
