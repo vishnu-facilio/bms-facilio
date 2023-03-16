@@ -5,7 +5,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioChain;
@@ -15,7 +14,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.db.util.DBConf;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
@@ -31,6 +29,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,8 +44,10 @@ import org.json.simple.JSONObject;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.text.MessageFormat;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class EmailClient extends BaseEmailClient {
@@ -59,10 +64,10 @@ public abstract class EmailClient extends BaseEmailClient {
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
         if (user == null) {
-            LOGGER.info("Sending email to user who is not in the org  - " + email);
-//        	return false;
+            LOGGER.info("OG_MAIL_LOG :: Sending email to user who is not in the org  - " + email);
+        	return true;
         }
-        return (user == null || user.getUserStatus());
+        return user.getUserStatus();
     }
 
     public long sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
@@ -78,21 +83,52 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation) throws Exception {
-        if (removeInActiveUsers(mailJson)) {
-            if (handleUserDelegation) {
-                checkUserDelegation(mailJson);
-            }
-            return sendEmail(mailJson, files, true);
+        return pushToEmailPreprocessQueue(mailJson, files, handleUserDelegation, true);
+    }
+
+    private long sendEmail(JSONObject mailJson, Map<String, String> files, boolean isActive) throws Exception {
+        return pushToEmailPreprocessQueue(mailJson, files, false, isActive);
+    }
+
+    private long pushToEmailPreprocessQueue(JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation, boolean isActive) throws Exception {
+        try {
+            mailJson.put(MailConstants.Params.FILES, files);
+            mailJson.put(MailConstants.Params.HANDLE_DELEGATION, handleUserDelegation);
+            mailJson.put(MailConstants.Params.IS_ACTIVE, isActive);
+
+            long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
+            String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
+            SessionManager.getInstance().sendMessage(new Message()
+                    .setTopic(Topics.Mail.prepareOutgoingMail + "/" + topicIdentifier)
+                    .setOrgId(orgId)
+                    .setContent(mailJson));
+            LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/wms for topic ::" + topicIdentifier);
+        } catch (Exception e) {
+            LOGGER.error("OG_MAIL_ERROR :: outgoing mail preprocessing push failed [BEFORE-1st-QUEUE]. " + mailJson, e);
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION);
         }
         return -1;
     }
 
-    private long sendEmail(JSONObject mailJson, Map<String, String> files, boolean isActive) throws Exception {
+    /**
+     * Used to log outgoing mail tracking info. Don't use this method directly.
+     * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
+     */
+    @Deprecated
+    public long prepareAndPushOutgoingMail(JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation, boolean isActive) throws Exception {
+        if(isActive) {
+            if(!removeInActiveUsers(mailJson)) {
+                return -1;
+            }
+            if(handleUserDelegation) {
+                checkUserDelegation(mailJson);
+            }
+        }
         if(canTrack(mailJson)) {
             if(!isActive) {
                 preserveOriginalEmailAddress(mailJson);
             }
-            return NewTransactionService.newTransactionWithReturn(() -> pushEmailToQueue(mailJson, files));
+            return pushEmailToQueue(mailJson, files);
         }
         return sendMailWithoutTracking(mailJson, files);
     }
@@ -126,12 +162,11 @@ public abstract class EmailClient extends BaseEmailClient {
             LOGGER.error("OG_MAIL_ERROR :: outgoing mail tracking failed [BEFORE-QUEUE]. So sending in normal flow :: "+mailJson, e);
             OutgoingMailAPI.triggerFallbackMailSendChain(context);
             return -1;
-        } finally {
-            OutgoingMailAPI.resetMailJson(mailJson);
         }
     }
 
     public long sendMailWithoutTracking(JSONObject mailJson, Map<String, String> files) throws Exception {
+        LOGGER.info("OG_MAIL_LOG :: Sending mail without tracking");
         FacilioChain chain = MailTransactionChainFactory.sendNormalMailChain();
         FacilioContext context = chain.getContext();
         context.put(MailConstants.Params.MAIL_JSON, mailJson);
@@ -219,7 +254,7 @@ public abstract class EmailClient extends BaseEmailClient {
         if (AccountUtil.getCurrentOrg() != null) {
             Set<String> emailAddress = getEmailAddresses(mailJson, TO, true);
             if (CollectionUtils.isEmpty(emailAddress)) { //Not sending email if to is empty. Not even checking cc or Bcc in this case
-                LOGGER.info(MessageFormat.format("Not sending email since ''to address'' ({0}) is empty after removing inactive users", mailJson.get(TO)));
+                LOGGER.info(MessageFormat.format("OG_MAIL_LOG :: Not sending email since ''to address'' ({0}) is empty after removing inactive users", mailJson.get(TO)));
                 return false;
             }
             mailJson.put(TO, combineEmailsAgain(emailAddress));
@@ -321,7 +356,6 @@ public abstract class EmailClient extends BaseEmailClient {
             String emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
             return emailAddress;
         }
-
         return null;
     }
 
@@ -336,62 +370,7 @@ public abstract class EmailClient extends BaseEmailClient {
         return builder.toString();
     }
 
-    public void sendErrorMail(long orgid,long ml_id,String error)
-    {
-        try
-        {
-            JSONObject json = new JSONObject();
-            json.put(SENDER, ERROR_MAIL_FROM);
-            json.put(TO, ERROR_MAIL_TO);
-            json.put(SUBJECT, orgid+" - "+ml_id);
 
-            StringBuilder body = new StringBuilder()
-                    .append(error)
-                    .append("\n\nInfo : \n--------\n")
-                    .append("\n Org Time : ").append(DateTimeUtil.getDateTime())
-                    .append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
-                    .append("\n\nMsg : ")
-                    .append(error)
-                    .append("\n\nOrg Info : \n--------\n")
-                    .append(orgid)
-                    ;
-            json.put(MESSAGE, body.toString());
-
-            sendEmailImpl(json);
-        }
-        catch(Exception e)
-        {
-            LOGGER.error("Error while sending mail ",e);
-        }
-    }
-    void logEmail(JSONObject mailJson) {
-        try {
-            String toAddress = (String) mailJson.get("to");
-            String ccAddress = null, bccAddress = null;
-            if (mailJson.get("cc") != null) {
-                ccAddress = (String) mailJson.get("cc");
-            }
-            if (mailJson.get("bcc") != null) {
-                bccAddress = (String) mailJson.get("bcc");
-            }
-            if (!ERROR_AND_ALERT_AT_FACILIO.equals(toAddress) && !ERROR_AT_FACILIO.equals(toAddress)) {
-                toAddress = toAddress == null ? "" : toAddress;
-                JSONObject info = new JSONObject();
-                info.put(SENDER, mailJson.get(SENDER));
-                info.put(SUBJECT, mailJson.get(SUBJECT));
-                if (mailJson.get(CC) != null) {
-                    info.put("cc", mailJson.get(CC));
-                }
-                if (mailJson.get(BCC) != null) {
-                    info.put("bcc", mailJson.get(BCC));
-                }
-                CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, info);
-            }
-        }
-        catch (Exception e) {
-            LOGGER.error("Error occurred while logging email", e);
-        }
-    }
     boolean canSendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
         if(files == null || files.isEmpty() || FacilioProperties.isDevelopment()) {
             sendEmailImpl(mailJson);

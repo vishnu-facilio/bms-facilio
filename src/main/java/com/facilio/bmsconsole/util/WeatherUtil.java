@@ -767,7 +767,7 @@ public class WeatherUtil {
 			reading.addReading("dewPointTemperature", dewPointTemperature);
 			reading.addReading("enthalpy", enthalpy);
 		} catch (Exception e) {
-			throw e;
+			LOGGER.error("Not able to calculate psychrometric readings", e);
 		}
 		return reading;
 	}

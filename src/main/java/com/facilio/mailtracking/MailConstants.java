@@ -27,6 +27,8 @@ public class MailConstants {
         public static final String RECORDS_MODULE_ID = "recordsModuleId";
         public static final String RECORD_CREATED_TIME = "recordCreatedTime";
         public static final String MASK_URL = "maskUrl";
+        public static final String HANDLE_DELEGATION = "handleDelegation";
+        public static final String IS_ACTIVE = "isActive";
     }
 
     public static class Email {

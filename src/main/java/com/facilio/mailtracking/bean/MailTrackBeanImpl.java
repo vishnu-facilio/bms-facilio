@@ -1,12 +1,12 @@
 package com.facilio.mailtracking.bean;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.mailtracking.context.Bounce;
 import com.facilio.mailtracking.context.MailEnums.RecipientStatus;
@@ -94,16 +94,20 @@ public class MailTrackBeanImpl implements MailBean {
     }
 
     @Override
-    public void trackAndSendMail(JSONObject mailJson) throws Exception {
-        FacilioContext context = NewTransactionService.newTransactionWithReturn(() -> prepareOutgoingMailContext(mailJson));
-        if(FacilioProperties.isDevelopment()) {
-            NewTransactionService.newTransaction(() -> sentOutgoingMail(context, mailJson));
-        } else {
-            sentOutgoingMail(context, mailJson);
-        }
+    public void prepareAndPushMail(JSONObject mailJson) throws Exception {
+        FacilioChain chain = MailReadOnlyChainFactory.prepareOutgoingMailChain();
+        FacilioContext context = chain.getContext();
+        context.put(MailConstants.Params.MAIL_JSON, mailJson);
+        chain.execute();
     }
 
-    private FacilioContext prepareOutgoingMailContext(JSONObject mailJson) throws Exception {
+    @Override
+    public void trackAndSendMail(JSONObject mailJson) throws Exception {
+        FacilioContext context = NewTransactionService.newTransactionWithReturn(() -> constructOutgoingMailContext(mailJson));
+        sentOutgoingMail(context, mailJson);
+    }
+
+    private FacilioContext constructOutgoingMailContext(JSONObject mailJson) throws Exception {
         FacilioChain chain = MailTransactionChainFactory.outgoingMailPreChain();
         FacilioContext context = chain.getContext();
         try {

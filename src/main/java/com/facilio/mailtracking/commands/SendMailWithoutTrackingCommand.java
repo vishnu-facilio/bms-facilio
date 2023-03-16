@@ -31,7 +31,7 @@ public class SendMailWithoutTrackingCommand extends FacilioCommand {
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.SENT_WITHOUT_TRACKING);
         } catch (Exception e) {
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.FAILED);
-            LOGGER.error("OG_MAIL_ERROR :: SendMailFailed with exception :: ", e);
+            LOGGER.error("OG_MAIL_ERROR :: SendMailFailed (without tracking) with exception :: ", e);
         }
         return false;
     }

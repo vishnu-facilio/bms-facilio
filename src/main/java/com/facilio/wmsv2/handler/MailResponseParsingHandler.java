@@ -13,7 +13,7 @@ import org.json.simple.JSONObject;
 
 @TopicHandler(
         topic = Topics.Mail.mailResponse + "/#",
-        group = Group.SEND_MAIL_WORKER,
+        group = Group.PRE_SEND_MAIL_WORKER,
         priority = -5,
         recordTimeout = 120
 )

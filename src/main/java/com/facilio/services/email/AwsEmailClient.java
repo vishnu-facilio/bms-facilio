@@ -3,7 +3,6 @@ package com.facilio.services.email;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.util.DBConf;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,7 +21,7 @@ class AwsEmailClient extends EmailClient {
     private static volatile AWSCredentialsProvider credentialsProvider = null;
 
     private AwsEmailClient(){
-        LOGGER.error("AWS Email Client created");
+        LOGGER.info("OG_MAIL_LOG :: AWS Email Client created");
     }
 
     @Override
@@ -39,7 +38,6 @@ class AwsEmailClient extends EmailClient {
     }
 
     private String sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
-//        logEmail(mailJson);
         if(canSendEmail(mailJson)) {
             try {
                 boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
@@ -50,12 +48,12 @@ class AwsEmailClient extends EmailClient {
                 }
                 return AwsUtil.sendMail(mailJson, files);
             } catch (Exception ex) {
-                LOGGER.info("The email was not sent.");
-                LOGGER.info("Error message: "+ex.getMessage());
+                LOGGER.info("OG_MAIL_ERROR :: The email was not sent.");
+                LOGGER.info("OG_MAIL_ERROR :: Error message: "+ex.getMessage());
                 throw ex;
             }
         } else {
-            LOGGER.info("Can't send email. Because the TO address is empty");
+            LOGGER.info("OG_MAIL_LOG :: Can't send email. Because the TO address is empty");
         }
         return null;
     }

@@ -29,6 +29,7 @@ public interface Topics {
 
     interface Mail {
         String outgoingMail = "__sendmail__/org";
+        String prepareOutgoingMail = "__prepare_ogmail__/org";
         String mailResponse = "__mailresponse__";
     }
     interface PushNotification {

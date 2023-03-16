@@ -1,6 +1,5 @@
 package com.facilio.wmsv2.handler;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
@@ -47,7 +46,7 @@ public class OutgoingMailHandler extends BaseHandler {
                 mailBean.trackAndSendMail(mailJson);
             }
         } catch (Exception e) {
-            LOGGER.info("OG_MAIL_ERROR :: ERROR IN [OutgoingMailHandler] for ORGID "+ orgId + " with MAPPER_ID ::"+mapperId, e);
+            LOGGER.error("OG_MAIL_ERROR :: ERROR IN [OutgoingMailHandler] for ORGID "+ orgId + " with MAPPER_ID ::"+mapperId, e);
         }
         return null;
     }

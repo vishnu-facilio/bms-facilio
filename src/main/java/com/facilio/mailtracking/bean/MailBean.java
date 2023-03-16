@@ -10,6 +10,8 @@ public interface MailBean {
 
     public void updateBounceStatus(String mapperId, Map<String, Object> bounce) throws Exception;
 
+    public void prepareAndPushMail(JSONObject mailJson) throws Exception;
+
     public void trackAndSendMail(JSONObject mailJson) throws Exception;
 
 }

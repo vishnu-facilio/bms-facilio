@@ -32,4 +32,10 @@ public class MailReadOnlyChainFactory {
         c.addCommand(new OutgoingMailStatsCommand());
         return c;
     }
+
+    public static FacilioChain prepareOutgoingMailChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new HandleUserDelegationAndIsActiveCommand());
+        return c;
+    }
 }

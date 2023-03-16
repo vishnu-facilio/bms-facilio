@@ -117,16 +117,16 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             kafkaGroupName = FacilioProperties.getEnvironment()+"-"+ group.getName();
             if(group.isSendToAllWorker()) {
                 kafkaGroupName = kafkaGroupName +"-"+ ServerInfo.getHostname();
-                recordCount = 500;
+                recordCount = 500;  // assumption is default topic should handle granular tasks. so will complete sooner even for 500 records
             }
 
-            consumer = new KafkaConsumer<>(getProperties(maxTimeOut));
+            consumer = new KafkaConsumer<>(getProperties(maxTimeOut, group.getName()));
             consumer.subscribe(Collections.singleton(kafkaTopicName));
 
             LOGGER.info("Kafka-consumer create for :: "+kafkaTopicName);
         }
 
-        private Properties getProperties(int maxTimeOut) {
+        private Properties getProperties(int maxTimeOut, String groupName) {
             // Assuming default source is kafka type. If not, source should be passed as a param from some config
             int pollInterval = (recordCount+1) * maxTimeOut; // in seconds
 
@@ -143,7 +143,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             props.put("value.deserializer", StringDeserializer.class.getName());
 
             props.put("group.instance.id", ServerInfo.getHostname());
-            props.put("client.id", ServerInfo.getHostname());
+            props.put("client.id", ServerInfo.getHostname()+"-"+groupName);  //for each consumer in same machine should have diff client id
             KafkaUtil.setKafkaAuthProps(props, source);
             return props;
         }

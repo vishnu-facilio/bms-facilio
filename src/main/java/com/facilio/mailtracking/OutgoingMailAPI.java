@@ -238,4 +238,23 @@ public class OutgoingMailAPI {
         String logMeta = " for [ MAPPER_ID="+mapperId+", LOGGER_ID="+loggerId+" ]";
         return logMeta;
     }
+
+    public static String getTopicIdentifier(JSONObject mailJson, long orgId) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(orgId);
+        if(mailJson.containsKey(MailConstants.Params.SOURCE_TYPE)) {
+            sb.append("/");
+            sb.append(mailJson.get(MailConstants.Params.SOURCE_TYPE));
+        }
+        if(mailJson.containsKey(MailConstants.Params.RECORDS_MODULE_ID)) {
+            sb.append("/");
+            sb.append(mailJson.get(MailConstants.Params.RECORDS_MODULE_ID));
+        }
+        if(mailJson.containsKey(MailConstants.Params.RECORD_ID)) {
+            sb.append("/");
+            sb.append(mailJson.get(MailConstants.Params.RECORD_ID));
+        }
+        return sb.toString();
+    }
+
 }
