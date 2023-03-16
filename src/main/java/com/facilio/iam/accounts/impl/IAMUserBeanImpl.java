@@ -306,22 +306,27 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser resetExpiredPassword(String digest, String password) throws Exception {
+	public IAMUser resetExpiredPassword(String digest, String password , String confirmPassword) throws Exception {
 		long uid = getUIDFromPWDResetToken(digest);
 		IAMUser user = getFacilioUser(-1, uid, true);
 
-		return resetUserPassword(password, user);
+		return resetUserPassword(password, user,confirmPassword);
 	}
 
 	@Override
-	public IAMUser resetPasswordv2(String token, String password) throws Exception{
+	public IAMUser resetPasswordv2(String token, String password , String confirmPassword) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
-		return resetUserPassword(password, user);
+		return resetUserPassword(password, user,confirmPassword);
 	}
 
-	private IAMUser resetUserPassword(String password, IAMUser user) throws Exception {
+	private IAMUser resetUserPassword(String password, IAMUser user,String confirmPassword) throws Exception {
 		if(user != null) {
+			if(confirmPassword != null){
+				if(!password.equals(confirmPassword)){
+					throw new IllegalArgumentException("Passwords doest not match");
+				}
+			}
 			validatePasswordWithSecurityPolicy(user.getUid(), password);
 			password = PasswordHashUtil.cryptWithMD5(password);
 			savePreviousPassword(user.getUid(), password);

@@ -149,6 +149,9 @@ public class FacilioAuthAction extends FacilioAction {
 	public String getPassword() {
 		return password;
 	}
+	@Getter
+	@Setter
+	private String confirmPass;
 
 	@Getter
 	@Setter
@@ -2415,7 +2418,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String resetExpiredPassword() throws Exception {
 		IAMUser user = null;
 		try {
-			user = IAMUserUtil.resetExpiredPassword(getDigest(), getRawPassword());
+			user = IAMUserUtil.resetExpiredPassword(getDigest(), getRawPassword(),getConfirmPass());
 		} catch (SecurityPolicyException secEx) {
 			setJsonresponse("status", "failure");
 			setJsonresponse("message", secEx.getMessage());
@@ -2521,7 +2524,7 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 
 		if (getInviteToken() != null) {
-			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getRawPassword());
+			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getRawPassword(),getConfirmPass());
 			if (iamUser == null) {
 				invitation.put("message", "Link has been expired");
 				ActionContext.getContext().getValueStack().set("invitation", invitation);

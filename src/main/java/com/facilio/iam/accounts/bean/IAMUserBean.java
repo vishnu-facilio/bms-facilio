@@ -28,9 +28,9 @@ public interface IAMUserBean {
 	
 	IAMUser verifyEmailv2(String token) throws Exception;
 
-	IAMUser resetExpiredPassword(String digest, String password) throws Exception;
+	IAMUser resetExpiredPassword(String digest, String password ,String confirmPassword) throws Exception;
 
-	IAMUser resetPasswordv2(String token, String password) throws Exception;
+	IAMUser resetPasswordv2(String token, String password , String confirmPassword) throws Exception;
 	
 	IAMUser validateUserInvitev2(String token) throws Exception;
 

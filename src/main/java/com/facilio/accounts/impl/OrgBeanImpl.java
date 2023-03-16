@@ -165,7 +165,7 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds,Criteria criteria) throws Exception {
-		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds, defaultIds, criteria, null, null);
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers, offset , perPage , searchQuery, inviteAcceptStatus, teamId, applicationIds, defaultIds, criteria, null, null);
 	}
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage, String searchQuery, Boolean inviteAcceptStatus, List<Long> teamId, List<Long> applicationIds, List<Long> defaultIds, Criteria criteria, String orderBy, String orderType) throws Exception {

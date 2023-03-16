@@ -58,8 +58,8 @@ public class IAMUserUtil {
 		}
 	}
 
-	public static IAMUser resetPassword(String invitetoken, String password) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password));
+	public static IAMUser resetPassword(String invitetoken, String password , String confirmPassword) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password,confirmPassword));
 
 	}
 
@@ -373,8 +373,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().decodeProxyUserToken(token));
 	}
 
-	public static IAMUser resetExpiredPassword(String digest, String password) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().resetExpiredPassword(digest, password));
+	public static IAMUser resetExpiredPassword(String digest, String password,String confirmPassword) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().resetExpiredPassword(digest, password,confirmPassword));
 	}
 
 	public static String generatePWDPolicyPWDResetToken(String userName, AppDomain.GroupType groupType) throws Exception {
