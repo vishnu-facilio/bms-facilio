@@ -285,7 +285,9 @@ public class WebTabContext implements Serializable {
         SCRIPT_LOGS("Script Logs",false,TabType.SETUP),
         SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()),
         MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()),
-        ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler());
+        ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler()),
+        SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler());
+
 
         public void setName(String name) {
             this.name = name;
