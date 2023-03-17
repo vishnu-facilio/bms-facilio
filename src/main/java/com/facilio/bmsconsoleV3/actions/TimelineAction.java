@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
@@ -12,6 +13,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -53,7 +55,7 @@ public class TimelineAction extends RESTAPIHandler {
 		if(groupByField instanceof LookupField) {
 			setModuleName(((LookupField) (((TimelineViewContext) viewObj).getGroupByField())).getLookupModule().getName());
 			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
-				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil. getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, ((TimelineViewContext) viewObj).getGroupCriteria(), getOrderBy(), getOrderType()));
+				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, ((TimelineViewContext) viewObj).getGroupCriteria(), getOrderBy(), getOrderType()));
 				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 				setMeta("localSearch", !localSearchDisabled.contains(getModuleName()));
 			} else {
@@ -62,9 +64,14 @@ public class TimelineAction extends RESTAPIHandler {
 				if (((TimelineViewContext) viewObj).getGroupCriteriaId() > 0) {
 					pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
 				}
-				if (getOrderBy() != null) {
+				if (getOrderType() != null) {
+					ModuleBean moduleBean = Constants.getModBean();
+					FacilioField primaryField = moduleBean.getPrimaryField(getModuleName());
+					if (primaryField == null) {
+						primaryField = FieldFactory.getIdField(moduleBean.getModule(getModuleName()));
+					}
 					JSONObject sorting = new JSONObject();
-					sorting.put("orderBy", getOrderBy());
+					sorting.put("orderBy", primaryField.getCompleteColumnName());
 					sorting.put("orderType", getOrderType());
 					pickListContext.put(FacilioConstants.ContextNames.SORTING, sorting);
 				}
@@ -85,7 +92,7 @@ public class TimelineAction extends RESTAPIHandler {
 			if (getSearch() != null) {
 				pickListContext.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 			}
-			if (getOrderBy() != null) {
+			if (getOrderType() != null) {
 				JSONObject sorting = new JSONObject();
 				FacilioField valueField = FieldFactory.getStringField("value", "VAL", ModuleFactory.getEnumFieldValuesModule());
 				sorting.put("orderBy", valueField.getCompleteColumnName());

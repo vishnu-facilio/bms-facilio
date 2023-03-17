@@ -96,7 +96,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
             Map<String, FacilioField> sourceFieldNameVsFields = sourceFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
             List<SupplementRecord> sourceSupplements = DataMigrationUtil.getSupplementFields((Collection<FacilioField>) sourceFieldNameVsFields.values());
 
-            if(CollectionUtils.isEmpty(sourceSupplements) && MapUtils.isEmpty(numberLookups) && (sourceFields.isEmpty() || (CollectionUtils.isNotEmpty(sourceFields) && sourceFields.size() <= 1))) {
+            if(CollectionUtils.isEmpty(sourceSupplements) && MapUtils.isEmpty(numberLookups) && (sourceFields.isEmpty() || (CollectionUtils.isNotEmpty(sourceFields) && sourceFields.size() < 1))) {
                 LOGGER.info("####Skipped Module - " + moduleName + " source fields - " + sourceFields);
                 continue;
             }

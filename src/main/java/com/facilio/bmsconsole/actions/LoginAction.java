@@ -411,7 +411,7 @@ public class LoginAction extends FacilioAction {
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		data.put("orgPrefs", PreferenceAPI.getAllOrgPreferences());
 		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
-
+		data.put("currencyInfo", CurrencyUtil.getCurrencyInfo());
 
 		// temp	
 		if (AccountUtil.getCurrentOrg().getOrgId() == 213l) {

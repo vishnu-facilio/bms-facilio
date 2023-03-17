@@ -23,6 +23,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -194,8 +195,9 @@ public class LookupSpecialTypeUtil {
 					}
 				}
 			}
-			if (paramsMap.containsKey("orderBy")) {
-				orderBy = (String) paramsMap.get("orderBy");
+			if (paramsMap.containsKey("orderType")) {
+				FacilioField nameField = Constants.getModBean().getField("name", FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+				orderBy = nameField.getCompleteColumnName();
 				orderType = (String) paramsMap.get("orderType");
 			}
 			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true,true,
@@ -234,8 +236,9 @@ public class LookupSpecialTypeUtil {
 					offset = 0;
 				}
 			}
-			if (paramsMap.containsKey("orderBy")) {
-				orderBy = (String) paramsMap.get("orderBy");
+			if (paramsMap.containsKey("orderType")) {
+				FacilioField nameField = Constants.getModBean().getField("name", ContextNames.ROLE);
+				orderBy = nameField.getCompleteColumnName();
 				orderType = (String) paramsMap.get("orderType");
 			}
 			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(appIds, perPage, offset, search, orderBy, orderType);
@@ -250,6 +253,14 @@ public class LookupSpecialTypeUtil {
 
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+				if (paramsMap.containsKey("orderType")) {
+					ModuleBean moduleBean = Constants.getModBean();
+					FacilioField primaryField = moduleBean.getPrimaryField(FacilioConstants.ReadingRules.NEW_READING_RULE);
+					if (primaryField == null) {
+						primaryField = FieldFactory.getIdField(moduleBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE));
+					}
+					paramsMap.put("orderBy", primaryField.getCompleteColumnName());
+				}
 				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getAllRules(paramsMap);
 				return getNewRulePickList(readingRules);
 			}else{

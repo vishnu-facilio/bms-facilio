@@ -49,7 +49,7 @@ public class PickListUtil {
         if(criteria != null) {
             paramsData.put("serverCriteria", criteria);
         }
-        if (StringUtils.isNotEmpty(orderBy)) {
+        if (StringUtils.isNotEmpty(orderType)) {
             paramsData.put("orderBy", orderBy);
             paramsData.put("orderType", orderType);
         }
