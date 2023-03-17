@@ -451,8 +451,13 @@ public class ReadingKpiAPI {
                 return null;
             }
         }
-        ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
-        return Double.parseDouble(result.getReturnValue().toString());
+        try {
+            ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
+            return Double.parseDouble(result.getReturnValue().toString());
+        } catch (NumberFormatException e){
+            LOGGER.info("Script Params: " + scriptParams, e);
+            throw e;
+        }
     }
 
     private static Double fetchAggregatedReading(Long fieldId, Long resourceId, Long startTime, Long endTime, AggregationType aggregationType) throws Exception {
