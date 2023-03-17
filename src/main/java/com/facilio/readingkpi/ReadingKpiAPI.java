@@ -440,24 +440,18 @@ public class ReadingKpiAPI {
             Double reading = fetchAggregatedReading(field.getFieldId(), resourceId, interval.getStartTime(), interval.getEndTime(), field.getAggregation());
             if (reading != null) {
                 scriptParams.add(reading);
-
-                Map<String, Object> sysPropMap = new HashMap<>();
-                sysPropMap.put("resourceId", resourceId);
-                sysPropMap.put("ttime", interval.getStartTime());
-                scriptParams.add(sysPropMap);
-
             } else {
                 LOGGER.info("Variable " + field.getVarName() + "with fieldID " + field.getField() + " field does not have data, for resource" + resourceId);
                 return null;
             }
         }
-        try {
-            ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
-            return Double.parseDouble(result.getReturnValue().toString());
-        } catch (NumberFormatException e){
-            LOGGER.info("Script Params: " + scriptParams, e);
-            throw e;
-        }
+        Map<String, Object> sysPropMap = new HashMap<>();
+        sysPropMap.put("resourceId", resourceId);
+        sysPropMap.put("ttime", interval.getStartTime());
+        scriptParams.add(sysPropMap);
+
+        ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
+        return Double.parseDouble(result.getReturnValue().toString());
     }
 
     private static Double fetchAggregatedReading(Long fieldId, Long resourceId, Long startTime, Long endTime, AggregationType aggregationType) throws Exception {
