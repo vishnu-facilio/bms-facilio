@@ -27,7 +27,7 @@ public class NightlyExecutor extends ExecutorBase {
 		// TODO Auto-generated method stub
 		
 		PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
-        long cutOffTime = (Long) context.get("cutOffTime");
+        long currentTime = System.currentTimeMillis();
         
         PMPlanner pmPlanner = (PMPlanner) context.get(FacilioConstants.PM_V2.PM_V2_PLANNER);
         
@@ -35,8 +35,7 @@ public class NightlyExecutor extends ExecutorBase {
         
         if(generatedUpto > 0) {
         	
-        	long endDate = computeEndtimeUsingTriggerType(trigger.getScheduleInfo(), cutOffTime);
-        	trigger.setEndTime(endDate);
+        	long endDate = computeEndtimeUsingTriggerType(trigger.getScheduleInfo(), currentTime);
             
             if(generatedUpto < endDate) {
             	List<DateRange> times = trigger.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);

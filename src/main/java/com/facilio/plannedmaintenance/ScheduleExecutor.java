@@ -1,5 +1,6 @@
 package com.facilio.plannedmaintenance;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
@@ -14,8 +15,11 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.ArrayStack;
+import org.apache.commons.collections.list.AbstractLinkedList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,32 +35,27 @@ public class ScheduleExecutor extends ExecutorBase {
     }
 
     @Override
-    protected List<Long> getNextExecutionTimes(Context context) throws Exception {	// return list of milliseconds. 
+    protected List<Long> getNextExecutionTimes(Context context) throws Exception {// return list of milliseconds.
         PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
-        long cutOffTime = (Long) context.get("cutOffTime");
+        long currentTime = System.currentTimeMillis();
 
-        // nextExecutionTime <Seconds,Int>
-        Pair<Long, Integer> nextExecutionTimePair = trigger.getScheduleInfo().nextExecutionTime(Pair.of(trigger.getStartTime() / 1000, 0));
-        
-        long nextExecutionTime = nextExecutionTimePair.getLeft() * 1000;
-        
+        long endTime = calculateEndTime(trigger, System.currentTimeMillis());
         List<Long> nextExecutionTimes = new ArrayList<>();
-        calculateEndTime(trigger, cutOffTime);
+
+        List<DateRange> nextExecutionTimesRange = trigger.getScheduleInfo().getTimeIntervals(currentTime,endTime);
 
         long maxNextExecutionCount = 1000;
-        
-        while (nextExecutionTime <= (trigger.getEndTime())) {
-            if (nextExecutionTime < cutOffTime ) {
-                nextExecutionTime = trigger.getScheduleInfo().nextExecutionTime(nextExecutionTime/1000) * 1000;
+
+        for(DateRange executionTime : nextExecutionTimesRange){
+            long times = executionTime.getEndTime()+1;
+            if (times < currentTime ) {
                 continue;
             }
-            nextExecutionTimes.add(nextExecutionTime);
+            nextExecutionTimes.add(times);
             if (nextExecutionTimes.size() > maxNextExecutionCount) {
                 throw new IllegalArgumentException("Only 1000 executions are allowed, this is to avoid OOMs and infinite looping.");
             }
-            nextExecutionTime = trigger.getScheduleInfo().nextExecutionTime(nextExecutionTime/1000) * 1000;
         }
-
         return nextExecutionTimes;
     }
 
@@ -81,7 +80,7 @@ public class ScheduleExecutor extends ExecutorBase {
      * @param cutOffTime - Time from which schedule generation should be calculated.
      * @throws Exception
      */
-    private void calculateEndTime(PMTriggerV2 triggerV2, long cutOffTime) throws Exception {
+    private long calculateEndTime(PMTriggerV2 triggerV2, long cutOffTime) throws Exception {
         // planEndtime is the time till which the trigger will be executed
         // trigger end time is the time till which the trigger was configured
 
@@ -93,19 +92,13 @@ public class ScheduleExecutor extends ExecutorBase {
         ScheduleInfo scheduleInfo = triggerV2.getScheduleInfo();
 
         long endTime = triggerV2.getPlanEndTime();
-        if (triggerV2.getEndTime() <= 0 && triggerV2.getPlanEndTime() <= 0) {
+        if (triggerV2.getEndTime() <= 0) {
             endTime = computeEndtimeUsingTriggerType(scheduleInfo, cutOffTime); // endtime isn't assigned here, and again set at line:68, where endpoint is 0. -Now Fixed
-        } 
-        else if (triggerV2.getPlanEndTime() > 0 && triggerV2.getEndTime() <= 0) {
-            endTime = triggerV2.getPlanEndTime();
-        } 
-        else if (triggerV2.getEndTime() > 0 && triggerV2.getPlanEndTime() <= 0) {
-            endTime = triggerV2.getEndTime();
-        } 
-        else {
-            endTime = Math.min(triggerV2.getPlanEndTime(), triggerV2.getEndTime());
         }
-        triggerV2.setEndTime(endTime);
+        else if (triggerV2.getEndTime() > 0 ) {
+            endTime = triggerV2.getEndTime();
+        }
+        return endTime;
     }
 
     /**

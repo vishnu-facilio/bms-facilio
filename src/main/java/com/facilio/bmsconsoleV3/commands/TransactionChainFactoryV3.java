@@ -44,6 +44,8 @@ import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
+import com.facilio.plannedmaintenance.FetchPlannerDetails;
+import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -3065,6 +3067,12 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAttendanceSettingsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAttendanceSettingsCommand());
+        return c;
+    }
+    public static FacilioChain preCreateWorkOrderAfterPPMPublish(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPlannerDetails());
+        c.addCommand(new PreCreateWorkOrderRecord());
         return c;
     }
 }

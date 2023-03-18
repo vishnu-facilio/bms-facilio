@@ -105,7 +105,7 @@ public abstract class ExecutorBase implements Executor {
                 }
             }
         }
-
+        context.put("generatedWorkOrderList",result);
         return result;
     }
     
