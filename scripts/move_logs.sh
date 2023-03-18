@@ -45,4 +45,4 @@ do
         fi
     fi
 done
-find tomcat/temp/* -mmin +1440 -delete
+find $APP_HOME/temp/* -mmin +1440 -delete
