@@ -1,6 +1,7 @@
 package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -15,15 +16,20 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class AccessibleBasespaceValueGenerator extends ValueGenerator {
@@ -88,22 +94,26 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
     }
 
     private String getAccessibleSites() throws Exception {
-        FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
-        GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
-                .select(AccountConstants.getAccessbileSpaceFields())
-                .table(accessibleSpaceMod.getTableName())
-                .andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
-        List<Map<String, Object>> props = null;
-        props = selectAccessibleBuilder.get();
-        List<Long> baseSpaceIds = new ArrayList<Long>();
-        if (props != null && !props.isEmpty()) {
-            for (Map<String, Object> prop : props) {
-                Long bsId = (Long) prop.get("bsid");
-                Long siteId = (Long) prop.get("siteId");
-                if (bsId != null && siteId != null) {
-                    baseSpaceIds.add(bsId);
-                    if(!baseSpaceIds.contains(siteId)) {
-                        baseSpaceIds.add(siteId);
+        //handling user delegation
+        List<User> delegatedUsers = new ArrayList<>();
+        List<User> users = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
+        if(CollectionUtils.isNotEmpty(users)) {
+            delegatedUsers.addAll(users);
+        }
+        delegatedUsers.add(AccountUtil.getCurrentUser());
+
+        List<Long> baseSpaceIds = new ArrayList<>();
+
+        Map<Long,List<Long>> usersAccessibleSpaces = getAccessibleSpacesForUserMap(delegatedUsers);
+        if(MapUtils.isNotEmpty(usersAccessibleSpaces)) {
+            if(CollectionUtils.isNotEmpty(delegatedUsers)) {
+                for (User delegatedUser : delegatedUsers) {
+                    List<Long> accessibleSpaces = usersAccessibleSpaces.get(delegatedUser.getId());
+                    if(CollectionUtils.isNotEmpty(accessibleSpaces)) {
+                        baseSpaceIds.addAll(accessibleSpaces);
+                    }
+                    else {
+                        return FacilioConstants.ContextNames.ALL_VALUE;
                     }
                 }
             }
@@ -114,6 +124,41 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
         return FacilioConstants.ContextNames.ALL_VALUE;
     }
 
+    private Map<Long,List<Long>> getAccessibleSpacesForUserMap(List<User> users) throws Exception {
+        Map<Long,List<Long>> userSpacesMap = new HashMap<>();
+        if(CollectionUtils.isNotEmpty(users)) {
+            List<Long> ouIds = users.stream().map(User::getOuid).collect(Collectors.toList());
+            if(CollectionUtils.isNotEmpty(ouIds)) {
+                FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+                GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+                        .select(AccountConstants.getAccessbileSpaceFields())
+                        .table(accessibleSpaceMod.getTableName())
+                        .andCondition(CriteriaAPI.getCondition("ORG_USER_ID","ouid",StringUtils.join(ouIds,","),NumberOperators.EQUALS));
+                List<Map<String, Object>> props = null;
+                props = selectAccessibleBuilder.get();
+                if (CollectionUtils.isNotEmpty(props)) {
+                    for (Map<String, Object> prop : props) {
+                        Long bsId = (Long) prop.get("bsid");
+                        Long siteId = (Long) prop.get("siteId");
+                        Long ouId = (Long) prop.get("ouid");
+                        List<Long> spaces = null;
+                        if(userSpacesMap.containsKey(ouId)) {
+                            spaces = userSpacesMap.get(ouId);
+                        }
+                        else {
+                            spaces = new ArrayList<>();
+                        }
+                        spaces.add(bsId);
+                        if(!spaces.contains(siteId)) {
+                            spaces.add(siteId);
+                        }
+                        userSpacesMap.put(ouId,spaces);
+                    }
+                }
+            }
+        }
+        return userSpacesMap;
+    }
     @Override
     public String getValueGeneratorName() {
         return FacilioConstants.ContextNames.ValueGenerators.ACCESSIBLE_SPACES;
