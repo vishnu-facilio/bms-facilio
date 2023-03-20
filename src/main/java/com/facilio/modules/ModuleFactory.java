@@ -5459,6 +5459,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		woSettingModule.setDisplayName("WorkOrder Module Setting");
 		return woSettingModule;
 	}
+	public static FacilioModule getPagesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pages");
+		module.setDisplayName("Pages");
+		module.setTableName("Pages");
+		return module;
+	}
+	public static FacilioModule getPageTabsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageTabs");
+		module.setDisplayName("Tabs");
+		module.setTableName("Page_Tabs");
+		return module;
+	}
 
 	public static FacilioModule getAttendanceSettingsPseudoModule() {
 		FacilioModule attendanceSettings = new FacilioModule();

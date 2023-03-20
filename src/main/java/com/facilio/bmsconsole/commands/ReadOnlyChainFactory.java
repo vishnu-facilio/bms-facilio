@@ -3259,4 +3259,27 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchResourceNamesForKpiLogger());
 		return c;
 	}
+
+	public static FacilioChain getAllCustomPageChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllCustomPageCommand());
+		return chain;
+	}
+	public static FacilioChain getPageForRecordChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPageForRecordCommand());
+		c.addCommand(new FetchPageTabsCommand());
+		return c;
+	}
+	public static FacilioChain getCustomPageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCustomPageCommand());
+		c.addCommand(new FetchPageTabsCommand());
+		return c;
+	}
+	public static FacilioChain getPageTabChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPageTabCommand());
+		return c;
+	}
 }

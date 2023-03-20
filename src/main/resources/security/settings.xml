@@ -1242,6 +1242,122 @@
             <property name="formId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+
+    <request path="/api/v2/customPage/create">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number"/>
+            <property name ="customPage" type="object" mandatory="true">
+                <property name="displayName" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/patch">
+        <requestbody type="object">
+            <property name="customPage" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="displayName" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/changeStatus">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/reorder">
+        <requestbody type="object">
+            <property name="previousId" type="number"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="nextId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/fetch" >
+        <urlparams>
+            <property name="tabName" type="string"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="excludeTabs" type="boolean"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/fetchForRecord">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number"/>
+            <property name="tabName" type="string"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/list">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/customPage/delete">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/add">
+        <requestbody type="object">
+            <property name="pageId" type="number" mandatory="true"/>
+            <property name ="tab" type="object" mandatory="true">
+                <property name="displayName" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/patch">
+        <requestbody type="object">
+            <property name="tab" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="displayName" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/changeStatus">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/reorder">
+        <requestbody type="object">
+            <property name="previousId" type="number"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="nextId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/fetch" >
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="tabName" type="string"/>
+            <property name="pageId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/tabs/delete">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v2/isSessionActive"></request>
     <request path="/api/integ/orgLogo"></request>
 

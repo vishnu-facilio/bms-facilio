@@ -3877,4 +3877,54 @@ public class FacilioConstants {
 		public static final List<String> KEYS = Arrays.asList("permission","moduleName","setupTab","permissionModuleName",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME);
 	}
 
+	public static class CustomPage{
+		public static final String SEQUENCE_NUMBER = "sequenceNumber";
+		public static final String PREVIOUS_ID = "previousId";
+		public static final String NEXT_ID = "nextId";
+		public static final String IS_TEMPLATE = "isTemplate";
+		public static final String IS_DEFAULT_PAGE = "isDefaultPage";
+		public static final String CUSTOM_PAGE = "customPage";
+		public static final String CUSTOM_PAGES = "customPages";
+		public static final String PAGE_ID = "pageId";
+		public static final String TAB = "tab";
+		public static final String PAGE_TABS = "tabs";
+		public static final String TAB_ID = "tabId";
+		public static final String TAB_IDS = "tabIds";
+		public static final String COLUMN = "column";
+		public static final String PAGE_COLUMNS = "columns";
+		public static final String COLUMN_ID = "columnId";
+		public static final String COLUMN_IDS = "columnIds";
+		public static final String SECTION = "section";
+		public static final String PAGE_SECTIONS = "sections";
+		public static final String SECTION_ID = "sectionId";
+		public static final String SECTION_IDS = "sectionIds";
+		public static final String PAGE_SECTION_WIDGET = "widget";
+		public static final String PAGE_SECTION_WIDGETS = "widgets";
+		public static final String WIDGETGROUP = "widgetGroup";
+		public static final String WIDGETGROUPS = "widgetGroups";
+		public static final String WIDGETGROUP_ID = "widgetGroupId";
+		public static final String WIDGETGROUP_IDS = "widgetGroupIds";
+		public static final String WIDGETGROUP_CONFIGS = "widgetGroupConfigs";
+		public static final String WIDGETGROUP_SECTION = "widgetGroupSection";
+		public static final String WIDGETGROUP_SECTIONS = "widgetGroupSections";
+		public static final String WIDGETGROUP_SECTION_ID = "WGsectionIds";
+		public static final String WIDGETGROUP_SECTION_IDS = "WGsectionIds";
+		public static final String WIDGETGROUP_WIDGET = "widgetGroupWidget";
+		public static final String WIDGETGROUP_WIDGETS = "widgetGroupWidgets";
+		public static final String WIDGETGROUP_WIDGET_ID = "widgetGroupWidgetId";
+		public static final String WIDGETGROUP_WIDGET_IDS = "widgetGroupWidgetIds";
+		public static final String MESSAGE = "message";
+		public static final String PAGE_SECTION_WIDGET_ID = "widgetId";
+		public static final String PAGE_SECTION_WIDGET_IDS = "widgetIds";
+		public static final String TAB_NAME = "tabName";
+		public static final String IS_BUILDER_REQUEST = "isBuilderRequest";
+		public static final String PAGE_ENABLED = "enablePage";
+		public static final String PAGE_DISABLED = "disablePage";
+		public static final String TAB_ENABLED = "enableTab";
+		public static final String TAB_DISABLED = "disableTab";
+		public static final String TYPE = "type";
+        public static final String PARENT_ID = "parentId";
+        public static final String EXCLUDE_TABS = "excludeTabs";
+    }
+
 }

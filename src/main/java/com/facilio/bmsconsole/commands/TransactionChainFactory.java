@@ -17,7 +17,6 @@ import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
-import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.people.UpdateScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
@@ -71,7 +70,6 @@ import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.storm.command.StormInstructionPublishCommand;
 import com.facilio.trigger.context.TriggerType;
-import com.facilio.v3.commands.AddActivityForModuleDataCommand;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
@@ -6736,7 +6734,66 @@ public class TransactionChainFactory {
 		c.addCommand(new AddActivitiesCommandV3());
 		return c;
 	}
-	
+
+	public static FacilioChain getCreateCustomPageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddCustomPageCommand());
+		return c;
+	}
+	public static FacilioChain getAddPageTabsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddPageTabsCommand());
+		return c;
+	}
+	public static FacilioChain getPatchCustomPageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PatchCustomPageCommand());
+		return c;
+	}
+	public static FacilioChain getPatchPageTabsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PatchPageTabsCommand());
+		return c;
+	}
+	public static FacilioChain getDeleteCustomPageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteCustomPageCommand());
+		return c;
+	}
+	public static FacilioChain getDeletePageTabsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeletePageTabsCommand());
+		return c;
+	}
+	public static FacilioChain getReorderPageChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidatePageReorderCommand());
+		chain.addCommand(new ReorderPageComponentsCommand());
+		return chain;
+	}
+	public static FacilioChain getReorderPageTabsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidatePageTabsReorderCommand());
+		chain.addCommand(new ReorderPageComponentsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getChangeStatusForPageChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ChangePageStatusCommand());
+		return chain;
+	}
+	public static FacilioChain getChangeStatusForTabChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ChangePageTabStatusCommand());
+		return chain;
+	}
+	public static FacilioChain getChangeDefaultPageChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ChangeDefaultPageCommand());
+		return chain;
+	}
+
 	public static FacilioChain getKioskVendorCheckoutChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new KioskVendorCheckOutCommand());

@@ -1215,7 +1215,7 @@
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeViewGroups">
 		</action>
 	</package>
-	
+
 	<package name="woScheduledViewV2" namespace="/api/v2/scheduledViews" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2AddScheduleView">
@@ -7309,6 +7309,56 @@
 		</action>
 		<action name="list/count"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getCurrenciesCount">
+		</action>
+	</package>
+
+	<package name="customPage" namespace="/api/v2/customPage" extends="v2Api">
+		<action name="fetchForRecord"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
+		</action>
+<!--		<action name="changeDefault"-->
+<!--				class="com.facilio.bmsconsole.actions.CustomPageAction" method="changeDefaultPage">-->
+<!--		</action>-->
+		<action name="changeStatus"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="changePageStatus">
+		</action>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="getAllCustomPage">
+		</action>
+		<action name="create"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="createCustomPage">
+		</action>
+		<action name="fetch"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchCustomPage">
+		</action>
+		<action name="patch"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="patchCustomPage">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="deleteCustomPage">
+		</action>
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPage">
+		</action>
+	</package>
+	<package name="PageTabs" namespace="/api/v2/customPage/tabs" extends="v2Api">
+		<action name="changeStatus"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="changeTabStatus">
+		</action>
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="addPageTabs">
+		</action>
+		<action name="fetch"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageTab">
+		</action>
+		<action name="patch"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="patchPageTab">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="deletePageTabs">
+		</action>
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPageTabs">
 		</action>
 	</package>
 

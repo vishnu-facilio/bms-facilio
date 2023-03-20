@@ -11225,6 +11225,42 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getPagesFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPagesModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("appId", "APP_ID", module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getNumberField("moduleId", "MODULEID", module));
+        fields.add(getNumberField("criteriaId", "CRITERIA_ID", module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getBooleanField("isTemplate","IS_TEMPLATE",module));
+        fields.add(getBooleanField("isDefaultPage","IS_DEFAULT_PAGE",module));
+        fields.add(getBooleanField("status","STATUS",module));
+        fields.add(getSystemField("sysCreatedBy",module));
+        fields.add(getSystemField("sysCreatedTime",module));
+        fields.add(getSystemField("sysModifiedBy",module));
+        fields.add(getSystemField("sysModifiedTime",module));
+        fields.add(getSysDeletedByField(module));
+        fields.add(getSysDeletedTimeField(module));
+        return  fields;
+    }
+    public static List<FacilioField> getPageTabsFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPageTabsModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("pageId", "PAGE_ID", module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getBooleanField("status","STATUS",module));
+        fields.add(getSystemField("sysCreatedBy",module));
+        fields.add(getSystemField("sysCreatedTime",module));
+        fields.add(getSystemField("sysModifiedBy",module));
+        fields.add(getSystemField("sysModifiedTime",module));
+        return  fields;
+    }
     public static List<FacilioField> getConnectedAppFilesFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getConnectedAppFilesModule();
