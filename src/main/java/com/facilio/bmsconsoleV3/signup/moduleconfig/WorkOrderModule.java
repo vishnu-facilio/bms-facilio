@@ -1308,10 +1308,10 @@ public class WorkOrderModule extends BaseModuleConfig {
         maintenanceApp.setModuleId(module.getModuleId());
         maintenanceApp.setFieldName("siteId");
 
-        ScopeVariableModulesFields occupantApp = new ScopeVariableModulesFields();
-        occupantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_occupant_user"));
-        occupantApp.setModuleId(module.getModuleId());
-        occupantApp.setFieldName("requester");
+//        ScopeVariableModulesFields occupantApp = new ScopeVariableModulesFields();
+//        occupantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_occupant_user"));
+//        occupantApp.setModuleId(module.getModuleId());
+//        occupantApp.setFieldName("requester");
 
         ScopeVariableModulesFields tenantApp = new ScopeVariableModulesFields();
         tenantApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_tenant_user"));
@@ -1323,7 +1323,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         vendorApp.setModuleId(module.getModuleId());
         vendorApp.setFieldName("vendor");
 
-        scopeConfigList = Arrays.asList(maintenanceApp,occupantApp,tenantApp,vendorApp);
+        scopeConfigList = Arrays.asList(maintenanceApp,tenantApp,vendorApp);
         return scopeConfigList;
     }
 }

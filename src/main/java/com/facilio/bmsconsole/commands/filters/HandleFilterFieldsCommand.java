@@ -11,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PeopleOperator;
 import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
@@ -150,11 +151,24 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     break;
                 case FacilioConstants.ContextNames.USERS:
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    field.setOperators(Collections.singletonList(
+                    field.setOperators(Arrays.asList(
                             new FilterOperator(
                                     UserOperators.ROLE_IS,
                                     "with role",
                                     new FilterFieldContext.FilterFieldLookupModule(modBean.getModule(ContextNames.ROLE))
+                            ),
+                            new FilterOperator(
+                                    PeopleOperator.CURRENT_USER,
+                                    "Logged In User",
+                                    true
+                            )));
+                    break;
+                case ContextNames.PEOPLE:
+                    field.setOperators(Arrays.asList(
+                            new FilterOperator(
+                                    PeopleOperator.CURRENT_USER,
+                                    "Logged In User",
+                                   true
                             )));
                     break;
             }

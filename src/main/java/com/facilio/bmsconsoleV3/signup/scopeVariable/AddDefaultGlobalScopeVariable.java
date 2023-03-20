@@ -30,16 +30,16 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         scopeBean.addScopeVariable(maintenanceSiteScopeVariable);
 
         //Occupant app - user
-        GlobalScopeVariableContext occupantUserScopeVariable = new GlobalScopeVariableContext();
-        occupantUserScopeVariable.setLinkName("default_occupant_user");
-        occupantUserScopeVariable.setApplicableModuleName(FacilioConstants.ContextNames.USERS);
-        occupantUserScopeVariable.setStatus(true);
-        occupantUserScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
-        occupantUserScopeVariable.setDescription("Default User Scope Variable");
-        occupantUserScopeVariable.setDisplayName("User Scope Variable");
-        occupantUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
-        occupantUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.CurrentUserValueGenerator").getId());
-        scopeBean.addScopeVariable(occupantUserScopeVariable);
+//        GlobalScopeVariableContext occupantUserScopeVariable = new GlobalScopeVariableContext();
+//        occupantUserScopeVariable.setLinkName("default_occupant_user");
+//        occupantUserScopeVariable.setApplicableModuleName(FacilioConstants.ContextNames.USERS);
+//        occupantUserScopeVariable.setStatus(true);
+//        occupantUserScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+//        occupantUserScopeVariable.setDescription("Default User Scope Variable");
+//        occupantUserScopeVariable.setDisplayName("User Scope Variable");
+//        occupantUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
+//        occupantUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.CurrentUserValueGenerator").getId());
+//        scopeBean.addScopeVariable(occupantUserScopeVariable);
 
         //Tenant app - tenant
         GlobalScopeVariableContext tenantUserScopeVariable = new GlobalScopeVariableContext();

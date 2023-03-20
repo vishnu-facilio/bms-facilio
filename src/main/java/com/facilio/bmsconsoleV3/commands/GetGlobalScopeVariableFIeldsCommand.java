@@ -14,7 +14,7 @@ public class GetGlobalScopeVariableFIeldsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        context.put(FacilioConstants.ContextNames.MODULE_LIST,ScopingUtil.getFieldsMapDetails(ScopingUtil.getModulesList(true),moduleName));
+        context.put(FacilioConstants.ContextNames.MODULE_LIST,ScopingUtil.getFieldsMapDetails(ScopingUtil.getModulesList(false),moduleName));
         return false;
     }
 }

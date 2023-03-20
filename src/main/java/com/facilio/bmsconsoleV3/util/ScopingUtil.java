@@ -182,7 +182,6 @@ public class ScopingUtil {
 
 
     public static List<FacilioModule> getModulesList(boolean includeOthers) throws Exception {
-
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> moduleList = V3ModuleAPI.getSystemModuleWithFeatureLicenceCheck();
 

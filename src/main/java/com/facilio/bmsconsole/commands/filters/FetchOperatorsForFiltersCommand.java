@@ -122,6 +122,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                 || operator instanceof MultiLookupOperator
                 || operator instanceof SiteOperator
                 || operator instanceof UserOperator
+                || operator instanceof PeopleOperator
         ) {
             return null;
         }
