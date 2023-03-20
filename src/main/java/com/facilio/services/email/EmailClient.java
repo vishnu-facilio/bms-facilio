@@ -92,17 +92,21 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private long pushToEmailPreprocessQueue(JSONObject mailJson, Map<String, String> files, boolean handleUserDelegation, boolean isActive) throws Exception {
         try {
-            mailJson.put(MailConstants.Params.FILES, files);
-            mailJson.put(MailConstants.Params.HANDLE_DELEGATION, handleUserDelegation);
-            mailJson.put(MailConstants.Params.IS_ACTIVE, isActive);
+            if(canTrack(mailJson)) {
+                mailJson.put(MailConstants.Params.FILES, files);
+                mailJson.put(MailConstants.Params.HANDLE_DELEGATION, handleUserDelegation);
+                mailJson.put(MailConstants.Params.IS_ACTIVE, isActive);
 
-            long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
-            String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
-            SessionManager.getInstance().sendMessage(new Message()
-                    .setTopic(Topics.Mail.prepareOutgoingMail + "/" + topicIdentifier)
-                    .setOrgId(orgId)
-                    .setContent(mailJson));
-            LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/wms for topic ::" + topicIdentifier);
+                long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
+                String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
+                SessionManager.getInstance().sendMessage(new Message()
+                        .setTopic(Topics.Mail.prepareOutgoingMail + "/" + topicIdentifier)
+                        .setOrgId(orgId)
+                        .setContent(mailJson));
+                LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/wms for topic ::" + topicIdentifier);
+            } else {
+                prepareAndPushOutgoingMail(mailJson, files, handleUserDelegation, isActive);
+            }
         } catch (Exception e) {
             LOGGER.error("OG_MAIL_ERROR :: outgoing mail preprocessing push failed [BEFORE-1st-QUEUE]. " + mailJson, e);
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION);
