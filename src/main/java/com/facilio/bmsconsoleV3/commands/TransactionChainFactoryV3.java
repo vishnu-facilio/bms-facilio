@@ -2968,6 +2968,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain PPMAfterPatchChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new PMAfterPatchCommand());
+        c.addCommand(new MarkPMAsDeactivatedCommand());
         c.addCommand(new DeletePPMPreOpenWorkorders());
         return c;
     }

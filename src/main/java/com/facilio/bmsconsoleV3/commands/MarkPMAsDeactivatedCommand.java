@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -26,8 +27,11 @@ public class MarkPMAsDeactivatedCommand extends FacilioCommand {
         List<Long> pmIds = new ArrayList<>();
         if (pmId != null) {
             pmIds.add(pmId);
-        } else {
+        } else if(context.containsKey("pmIds")){
             pmIds = (List<Long>) context.get("pmIds");
+        }
+        else if(context.containsKey(FacilioConstants.ContextNames.RECORD_ID_LIST)){
+            pmIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
         }
 
         if (CollectionUtils.isEmpty(pmIds)) {
