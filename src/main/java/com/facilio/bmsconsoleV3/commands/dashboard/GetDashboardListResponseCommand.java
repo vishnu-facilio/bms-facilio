@@ -7,7 +7,7 @@ import com.facilio.bmsconsoleV3.context.dashboard.DashboardListPropsContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import java.util.List;
+import java.util.*;
 
 public class GetDashboardListResponseCommand extends FacilioCommand {
 
@@ -32,6 +32,29 @@ public class GetDashboardListResponseCommand extends FacilioCommand {
                     if(dashboard.getDashboardFolderId() == folder.getId()) {
                         folder.addDashboard(dashboard);
                     }
+                }
+            }
+            if(dashboard_list_prop.isOnlyPublished())
+            {
+                /**P
+                    code is added for sorting the folders base on dashboard for published dashboard for portals
+                 */
+                List<Long> folder_ids = new ArrayList<>();
+                List<DashboardFolderContext> folders = new ArrayList<>();
+                for(DashboardContext dashboard : dashboards)
+                {
+                    for(DashboardFolderContext folder : dashboard_list_prop.getFolders())
+                    {
+                        if (dashboard.getDashboardFolderId() == folder.getId()) {
+                            if (folder_ids != null && !folder_ids.contains(dashboard.getDashboardFolderId())) {
+                                folders.add(folder);
+                                folder_ids.add(dashboard.getDashboardFolderId());
+                            }
+                        }
+                    }
+                }
+                if(!folders.isEmpty()){
+                    dashboard_list_prop.setFolders(folders);
                 }
             }
         }

@@ -126,6 +126,7 @@ public class GetDashboardListCommand extends FacilioCommand {
 
     private List<DashboardContext> getOnlyPublishedDashboards(List<Long> dashboard_ids, DashboardListPropsContext dashboard_list_prop) throws Exception
     {
+        List<DashboardContext> dashboard_list = new ArrayList<>();
         if(dashboard_ids == null || dashboard_ids.size() == 0)
         {
             return null;
@@ -144,6 +145,7 @@ public class GetDashboardListCommand extends FacilioCommand {
         }
         List<Map<String, Object>> props = selectBuilder.get();
         if(props != null && props.size() > 0) {
+            HashMap<Long, DashboardContext> id_vs_dashboard = new HashMap<>();
             Set<Long> folderIds = new HashSet<>();
             for(Map<String, Object> prop : props)
             {
@@ -151,13 +153,18 @@ public class GetDashboardListCommand extends FacilioCommand {
                 if(dashboard.getDashboardFolderId() != null){
                     folderIds.add(dashboard.getDashboardFolderId());
                 }
+                id_vs_dashboard.put(dashboard.getId(), dashboard);
             }
             if(folderIds.size() > 0) {
                 getDashboardFolderFromFolderIds(folderIds, dashboard_list_prop);
             }
-            return FieldUtil.getAsBeanListFromMapList(props, DashboardContext.class);
+            for(Long id : dashboard_ids)
+            {
+                if(id_vs_dashboard.containsKey(id))
+                dashboard_list.add(id_vs_dashboard.get(id));
+            }
         }
-        return null;
+        return dashboard_list != null && dashboard_list.size() > 0 ? dashboard_list : null;
     }
 
     private void getDashboardFolderFromFolderIds(Set<Long> folder_ids, DashboardListPropsContext dashboard_list_prop)throws Exception

@@ -28,6 +28,17 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
             Map<String,Object> params = new HashMap<>();
             Map<String,Object> rows = (Map<String, Object>) record.get("rows");
             Map<String,Object> data = (Map<String, Object>) record.get("data");
+
+            if(columnHeaders != null && columnHeaders.size() > 0)
+            {
+                for(String data_column_alias : columnHeaders)
+                {
+                    if(data != null && !data.containsKey(data_column_alias))
+                    {
+                        data.put(data_column_alias, 0);
+                    }
+                }
+            }
             params.putAll(rows);
             params.putAll(data);
             paramList.add(params);
