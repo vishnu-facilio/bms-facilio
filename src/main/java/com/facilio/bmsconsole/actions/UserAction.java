@@ -745,7 +745,7 @@ public class UserAction extends FacilioAction {
 
 //			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
-			String url = AccountUtil.getUserBean().updateUserPhoto(userId, user);
+			String url = AccountUtil.getUserBean().updateUserPhoto(AccountUtil.getCurrentAccount().getUser().getUid(), user);
 			if(url != null && !url.isEmpty() && !url.equalsIgnoreCase("null")) {
 				setAvatarUrl(url);
 			}
@@ -759,7 +759,7 @@ public class UserAction extends FacilioAction {
 		
 		long photoId = AccountUtil.getCurrentUser().getPhotoId();
 		if (photoId > 0) {
-			boolean isDeleted = AccountUtil.getUserBean().deleteUserPhoto(userId, photoId);
+			boolean isDeleted = AccountUtil.getUserBean().deleteUserPhoto(AccountUtil.getCurrentAccount().getUser().getUid(), photoId);
 			if(isDeleted){
 				return SUCCESS;
 			}
