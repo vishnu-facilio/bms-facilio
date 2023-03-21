@@ -26,7 +26,7 @@ public class GetDashboardListResponseCommand extends FacilioCommand {
     {
         if(dashboard_list_prop.getDashboards() != null && dashboard_list_prop.getDashboards().size() > 0)
         {
-            List<DashboardContext> dashboards = DashboardUtil.sortDashboardByOrder(dashboard_list_prop.getDashboards());
+            List<DashboardContext> dashboards = dashboard_list_prop.isOnlyPublished() ? dashboard_list_prop.getDashboards() : DashboardUtil.sortDashboardByOrder(dashboard_list_prop.getDashboards());
             for(DashboardFolderContext folder : dashboard_list_prop.getFolders()) {
                 for(DashboardContext dashboard : dashboards) {
                     if(dashboard.getDashboardFolderId() == folder.getId()) {
