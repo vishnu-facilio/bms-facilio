@@ -180,9 +180,9 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             FacilioModule jobPlanLaboursModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
 
             FacilioForm defaultForm = new FacilioForm();
-            defaultForm.setName("standard");
+            defaultForm.setName("standard_" + app);
             defaultForm.setModule(jobPlanLaboursModule);
-            defaultForm.setDisplayName("Standard");
+            defaultForm.setDisplayName("Standard_" + app);
             defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
             defaultForm.setShowInWeb(true);
             defaultForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));   //form needs to be created for multiple applications
