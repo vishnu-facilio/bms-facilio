@@ -8,11 +8,14 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter@Setter
 public class V3WorkOrderLabourContext extends V3Context {
 
     private double cost = -1;
-    private double rate = -1;
+    private Map<String,Object> totalAmount;
+    private Map<String,Object> rate;
     private long startTime = -1;
     private long endTime = -1;
     private double duration = 0;
@@ -23,18 +26,18 @@ public class V3WorkOrderLabourContext extends V3Context {
     private SkillsContext skill;
     private Integer type;
 
-    public void calculate() {
-        if (this.duration == -1) {
-            if (this.endTime == -1 || this.startTime == -1) {
-                this.duration = 0;
-            } else {
-                this.duration = this.endTime - this.startTime;
-            }
-        }
-
-        if (this.labour != null) {
-            this.cost = (this.duration / 1000.0 / 60 / 60) * this.labour.getCost();
-        }
-    }
+//    public void calculate() {
+//        if (this.duration == -1) {
+//            if (this.endTime == -1 || this.startTime == -1) {
+//                this.duration = 0;
+//            } else {
+//                this.duration = this.endTime - this.startTime;
+//            }
+//        }
+//
+//        if (this.labour != null) {
+//            this.cost = (this.duration / 1000.0 / 60 / 60) * this.labour.getCost();
+//        }
+//    }
 
 }

@@ -28,7 +28,7 @@ public class JobPlanPlannedLabourCommandV3 extends FacilioCommand {
                 CraftContext craft =  V3RecordAPI.getRecord(moduleName, recordId);
                 V3JobPlanLabourContext jobPlanLabour = new V3JobPlanLabourContext();
                 jobPlanLabour.setCraft(craft);
-                jobPlanLabour.setRate(craft.getStandardRate());
+                //jobPlanLabour.setRate(craft.getStandardRate());
 
                 context.put(FacilioConstants.ContextNames.JOB_PLAN_LABOURS, jobPlanLabour);
             }

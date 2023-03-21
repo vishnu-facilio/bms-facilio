@@ -33,6 +33,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.facilio.modules.fields.FacilioField.FieldDisplayType.SELECTBOX;
+
 public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
     public AddWorkorderActualsLabourModule(){
@@ -76,13 +78,16 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         skill.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.CraftAndSKills.SKILLS),"Skill module doesn't exists."));
         fields.add(skill);
 
+        NumberField cost = FieldFactory.getDefaultField("cost","Cost","COST", FieldType.DECIMAL);
+        fields.add(cost);
 
-        NumberField rate = FieldFactory.getDefaultField("rate","Rate per Hour","RATE_PER_HOUR", FieldType.DECIMAL);
+        CurrencyField rate = FieldFactory.getDefaultField("rate","Rate per Hour",null, FieldType.CURRENCY_FIELD,FacilioField.FieldDisplayType.CURRENCY);
         rate.setRequired(true);
         fields.add(rate);
 
-        NumberField cost = FieldFactory.getDefaultField("cost","Cost","COST", FieldType.DECIMAL);
-        fields.add(cost);
+        CurrencyField totalAmount = FieldFactory.getDefaultField("totalAmount","Total Amount",null, FieldType.CURRENCY_FIELD,FacilioField.FieldDisplayType.CURRENCY);
+        totalAmount.setRequired(true);
+        fields.add(totalAmount);
 
         DateField startTime = FieldFactory.getDefaultField("startTime","Start Time","START_TIME", FieldType.DATE_TIME);
         startTime.setRequired(true);
@@ -120,7 +125,10 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
             return new EnumFieldValue<>(index, val, index, true);
         }).collect(Collectors.toList());
         typeField.setValues(typeValues);
+
+
         fields.add(typeField);
+
 
         module.setFields(fields);
         return module;
@@ -136,9 +144,16 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
         for (String app : apps) {
             ModuleBean moduleBean = Constants.getModBean();
-
+            FacilioField labour = moduleBean.getField("labour", FacilioConstants.ContextNames.WO_LABOUR);
             FacilioField crafts = moduleBean.getField("craft", FacilioConstants.ContextNames.WO_LABOUR);
             FacilioField skills = moduleBean.getField("skill", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField type = moduleBean.getField("type", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField startTime = moduleBean.getField("startTime", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField endTime = moduleBean.getField("endTime", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField duration = moduleBean.getField("duration", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField rate = moduleBean.getField("rate", FacilioConstants.ContextNames.WO_LABOUR);
+            FacilioField cost = moduleBean.getField("totalAmount", FacilioConstants.ContextNames.WO_LABOUR);
+
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WO_LABOUR);
             FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WO_LABOUR);
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_LABOUR);
@@ -146,71 +161,148 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
             CustomPageWidget widget = new CustomPageWidget();
 
-            SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+            SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
+            SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
+
             SummaryWidgetGroupFields groupField1 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField2 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField3 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField4 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField5 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField6 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField7 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField8 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField9 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
 
-            groupField1.setName(crafts.getName());
-            groupField1.setDisplayName(crafts.getDisplayName());
-            groupField1.setFieldId(crafts.getId());
+
+
+            groupField1.setName(labour.getName());
+            groupField1.setDisplayName(labour.getDisplayName());
+            groupField1.setFieldId(labour.getId());
             groupField1.setRowIndex(1);
             groupField1.setColIndex(1);
             groupField1.setColSpan(1);
 
-            groupField2.setName(skills.getName());
-            groupField2.setDisplayName(skills.getDisplayName());
-            groupField2.setFieldId(skills.getId());
+            groupField2.setName(crafts.getName());
+            groupField2.setDisplayName(crafts.getDisplayName());
+            groupField2.setFieldId(crafts.getId());
             groupField2.setRowIndex(1);
             groupField2.setColIndex(2);
             groupField2.setColSpan(1);
 
-            groupField3.setName(sysCreatedByField.getName());
-            groupField3.setDisplayName(sysCreatedByField.getDisplayName());
-            groupField3.setFieldId(sysCreatedByField.getId());
+            groupField3.setName(skills.getName());
+            groupField3.setDisplayName(skills.getDisplayName());
+            groupField3.setFieldId(skills.getId());
             groupField3.setRowIndex(1);
             groupField3.setColIndex(3);
             groupField3.setColSpan(1);
 
-            groupField4.setName(sysCreatedTimeField.getName());
-            groupField4.setDisplayName(sysCreatedTimeField.getDisplayName());
-            groupField4.setFieldId(sysCreatedTimeField.getId());
-            groupField4.setRowIndex(1);
-            groupField4.setColIndex(4);
+            groupField4.setName(type.getName());
+            groupField4.setDisplayName(type.getDisplayName());
+            groupField4.setFieldId(type.getId());
+            groupField4.setRowIndex(2);
+            groupField4.setColIndex(1);
             groupField4.setColSpan(1);
 
-            groupField5.setName(sysModifiedByField.getName());
-            groupField5.setDisplayName(sysModifiedByField.getDisplayName());
-            groupField5.setFieldId(sysModifiedByField.getId());
+            groupField5.setName(startTime.getName());
+            groupField5.setDisplayName(startTime.getDisplayName());
+            groupField5.setFieldId(startTime.getId());
             groupField5.setRowIndex(2);
-            groupField5.setColIndex(1);
+            groupField5.setColIndex(2);
             groupField5.setColSpan(1);
 
-            groupField6.setName(sysModifiedTimeField.getName());
-            groupField6.setDisplayName(sysModifiedTimeField.getDisplayName());
-            groupField6.setFieldId(sysModifiedTimeField.getId());
+            groupField6.setName(endTime.getName());
+            groupField6.setDisplayName(endTime.getDisplayName());
+            groupField6.setFieldId(endTime.getId());
             groupField6.setRowIndex(2);
-            groupField6.setColIndex(2);
+            groupField6.setColIndex(3);
             groupField6.setColSpan(1);
 
+            groupField7.setName(duration.getName());
+            groupField7.setDisplayName(duration.getDisplayName());
+            groupField7.setFieldId(duration.getId());
+            groupField7.setRowIndex(3);
+            groupField7.setColIndex(1);
+            groupField7.setColSpan(1);
+
+            groupField8.setName(rate.getName());
+            groupField8.setDisplayName(rate.getDisplayName());
+            groupField8.setFieldId(rate.getId());
+            groupField8.setRowIndex(3);
+            groupField8.setColIndex(2);
+            groupField8.setColSpan(1);
+
+            groupField9.setName(cost.getName());
+            groupField9.setDisplayName(cost.getDisplayName());
+            groupField9.setFieldId(cost.getId());
+            groupField9.setRowIndex(3);
+            groupField9.setColIndex(3);
+            groupField9.setColSpan(1);
+
+
+            groupField11.setName(sysCreatedByField.getName());
+            groupField11.setDisplayName(sysCreatedByField.getDisplayName());
+            groupField11.setFieldId(sysCreatedByField.getId());
+            groupField11.setRowIndex(1);
+            groupField11.setColIndex(1);
+            groupField11.setColSpan(1);
+
+            groupField12.setName(sysCreatedTimeField.getName());
+            groupField12.setDisplayName(sysCreatedTimeField.getDisplayName());
+            groupField12.setFieldId(sysCreatedTimeField.getId());
+            groupField12.setRowIndex(1);
+            groupField12.setColIndex(2);
+            groupField12.setColSpan(1);
+
+            groupField13.setName(sysModifiedByField.getName());
+            groupField13.setDisplayName(sysModifiedByField.getDisplayName());
+            groupField13.setFieldId(sysModifiedByField.getId());
+            groupField13.setRowIndex(1);
+            groupField13.setColIndex(3);
+            groupField13.setColSpan(1);
+
+            groupField14.setName(sysModifiedTimeField.getName());
+            groupField14.setDisplayName(sysModifiedTimeField.getDisplayName());
+            groupField14.setFieldId(sysModifiedTimeField.getId());
+            groupField14.setRowIndex(2);
+            groupField14.setColIndex(1);
+            groupField14.setColSpan(1);
+
             List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
+            List<SummaryWidgetGroupFields> groupTwoFields = new ArrayList<>();
             groupOneFields.add(groupField1);
             groupOneFields.add(groupField2);
             groupOneFields.add(groupField3);
             groupOneFields.add(groupField4);
             groupOneFields.add(groupField5);
             groupOneFields.add(groupField6);
+            groupOneFields.add(groupField7);
+            groupOneFields.add(groupField8);
+            groupOneFields.add(groupField9);
+            groupTwoFields.add(groupField11);
+            groupTwoFields.add(groupField12);
+            groupTwoFields.add(groupField13);
+            groupTwoFields.add(groupField14);
 
-            widgetGroup.setName("moreDetails");
-            widgetGroup.setDisplayName("More Details");
-            widgetGroup.setColumns(4);
-            widgetGroup.setFields(groupOneFields);
+
+
+            widgetGroup1.setName("section1");
+            widgetGroup1.setDisplayName("Labor Details");
+            widgetGroup1.setColumns(3);
+            widgetGroup1.setFields(groupOneFields);
+
+            widgetGroup2.setName("section2");
+            widgetGroup2.setDisplayName("Additional Details");
+            widgetGroup2.setColumns(3);
+            widgetGroup2.setFields(groupTwoFields);
 
             List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
-            widgetGroupList.add(widgetGroup);
+            widgetGroupList.add(widgetGroup1);
+            widgetGroupList.add(widgetGroup2);
 
             widget.setName("actualsLabourWidget");
             widget.setDisplayName("Actuals Labour Widget");
@@ -258,12 +350,23 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
             fields.add(new FormField(fieldMap.get("labour").getFieldId(), "labour", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Labour", FormField.Required.REQUIRED, ++seq, 1));
             fields.add(new FormField(fieldMap.get("craft").getFieldId(), "craft", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Craft", FormField.Required.OPTIONAL, ++seq, 1));
             fields.add(new FormField(fieldMap.get("skill").getFieldId(), "skill", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Skill", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("type").getFieldId(), "type", FacilioField.FieldDisplayType.SELECTBOX, "Type", FormField.Required.OPTIONAL, ++seq, 1));
+            FormField formField= new FormField(fieldMap.get("type").getFieldId(), "type", FacilioField.FieldDisplayType.SELECTBOX, "Type", FormField.Required.OPTIONAL, ++seq, 1);
+            formField.setValue("3");
+            fields.add(formField);
+
             fields.add(new FormField(fieldMap.get("startTime").getFieldId(), "startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.OPTIONAL, ++seq, 1));
             fields.add(new FormField(fieldMap.get("endTime").getFieldId(), "endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("duration").getFieldId(), "duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.NUMBER, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("cost").getFieldId(), "cost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("duration").getFieldId(), "duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.REQUIRED, ++seq, 1));
+
+
+            FormField rateField = new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.CURRENCY, "Rate per Hour", FormField.Required.REQUIRED, ++seq, 1);
+            rateField.setIsDisabled(true);
+            fields.add(rateField);
+
+            FormField totalField = new FormField(fieldMap.get("totalAmount").getFieldId(), "totalAmount", FacilioField.FieldDisplayType.CURRENCY, "Total Cost", FormField.Required.REQUIRED, ++seq, 1);
+            totalField.setIsDisabled(true);
+            fields.add(totalField);
+
 
             section.setFields(fields);
             section.setSequenceNumber(1);
@@ -271,118 +374,23 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
             defaultForm.setSections(sections);
 
+//            for (FormSection sec : defaultForm.getSections()){
+//                for(FormField field:sec.getFields()){
+//                    if(field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.SELECTBOX && field.getDisplayName() == "Type" ){
+//                        field.setValue("3");
+//                    }
+//                }
+//            }
+
             FormsAPI.createForm(defaultForm, workOrderLabourModule);
+
             Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
-            addRuleForlabourOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForSkillOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForWorkOrderLabour(defaultForm, fieldMap, formFieldMap);
         }
     }
 
-    public void addRuleForlabourOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-
-        FormRuleContext singleRule = new FormRuleContext();
-        singleRule.setName("Labour on update");
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setFormId(defaultForm.getId());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-
-        List<FormRuleTriggerFieldContext> triggerFieldList= new ArrayList<>();
-        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-        triggerField.setFieldId(formFieldMap.get(fieldMap.get("labour").getId()).getId());
-        triggerFieldList.add(triggerField);
-        singleRule.setTriggerFields(triggerFieldList);
-
-        long craftFormFieldId = formFieldMap.get(fieldMap.get("craft").getId()).getId();
-//        long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
-        long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
-
-        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-        FormRuleActionContext showAction = new FormRuleActionContext();
-        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
-        String workflowString = "List getActions(Map formData) {\n" +
-                "resultList = [];\n" +
-                "if(formData.labour != null && formData.craft == null && formData.skill == null) {\n" +
-//                " valueMap = {};\n" +
-//                "conditionMap = {};\n" +
-//                "conditionMap.operatorId = 36;\n"+
-//                "conditionMap.fieldName = \"parentId\";\n" +
-//                "conditionMap.value = formData.labour.id;\n" +
-//                "conditionsMap = {};\n" +
-//                "conditionsMap.put(\"1\", conditionMap);\n" +
-//                "valueMap.put(\"conditions\", conditionsMap);\n" +
-//                "valueMap.put(\"pattern\", \"(1)\");\n" +
-//                "actionMap = {};\n" +
-//                "actionMap.value = valueMap;\n" +
-//                "actionMap.actionName = \"filter\" ;\n" +
-//                "result = {}; \n" +
-//                "result.action = actionMap;\n" +
-//                "result.fieldId ="+craftFormFieldId+";\n" +
-//                "resultList.add(result);\n" +
-                "labour = Module(\"labour\").fetchFirst([id == formData.labour.id]);\n" +
-                "ratePerHour = labour.cost;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
-                "actionMap1.actionName = \"set\" ;\n" +
-                "result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "result1.fieldId = "+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
-//                "actionMap2 = {};\n" +
-//                "actionMap2.value = null;\n" +
-//                "actionMap2.actionName = \"set\" ;\n" +
-//                "result2 = {};\n" +
-//                "result2.action = actionMap2;\n" +
-//                "result2.fieldId = "+craftFormFieldId+";\n" +
-//                "resultList.add(result2);\n" +
-                "}\n" +
-                "if(formData.labour != null && formData.craft != null ){\n" +
-                "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
-                "ratePerHour = craft.standardRate;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
-                "actionMap1.actionName = \"set\" ;\n" +
-                "result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "result1.fieldId ="+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
-                "}\n" +
-
-                "if(formData.labour != null && formData.craft != null && formData.skill != null){\n" +
-                "craft = Module(\"craftSkill\").fetchFirst([id == formData.skill.id]);\n" +
-                "ratePerHour = craft.standardRate;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
-                "actionMap1.actionName = \"set\" ;\n" +
-                "result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "result1.fieldId ="+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
-                "}\n" +
-
-                "return resultList;\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "}";
-
-        WorkflowContext workflowScript = new WorkflowContext();
-        workflowScript.setWorkflowV2String(workflowString);
-        workflowScript.setIsV2Script(true);
-        showAction.setWorkflow(workflowScript);
-        actions.add(showAction);
-        singleRule.setActions(actions);
-
-        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-        Context context = chain.getContext();
-        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-        chain.execute();
-
-    }
     public void addRuleForCraftOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 
         FormRuleContext singleRule = new FormRuleContext();
@@ -399,6 +407,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         triggerFieldList.add(triggerField);
         singleRule.setTriggerFields(triggerFieldList);
 
+        long labourFormFieldId = formFieldMap.get(fieldMap.get("labour").getId()).getId();
         long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
         long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
 
@@ -426,8 +435,19 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "resultList.add(result);\n" +
                 "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
                 "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+//                "if(formData.id != null ){\n" +
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "if(code != null ){\n" +
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "else if( code == null){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
                 "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
+                "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
                 "result1 = {};\n" +
                 "result1.action = actionMap1;\n" +
@@ -444,15 +464,26 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "if(formData.craft != null && formData.skill != null){\n" +
                 "craft = Module(\"craftSkill\").fetchFirst([id == formData.skill.id]);\n" +
                 "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "if(code != null ){\n" +
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "else if( code == null){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
                 "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
+                "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
                 "result1 = {};\n" +
                 "result1.action = actionMap1;\n" +
                 "result1.fieldId ="+rateFormFieldId+";\n" +
                 "resultList.add(result1);\n" +
                 "}\n" +
-                "return resultList;\n" +
+
+               "return resultList;\n" +
                 "\n" +
                 "\n" +
                 "\n" +
@@ -488,6 +519,8 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         singleRule.setTriggerFields(triggerFieldList);
 
         long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
+        long labourFormFieldId = formFieldMap.get(fieldMap.get("labour").getId()).getId();
+        long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
         FormRuleActionContext showAction = new FormRuleActionContext();
@@ -497,25 +530,125 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "if(formData.skill != null) {\n" +
                 "craft = Module(\"craftSkill\").fetchFirst([id == formData.skill.id]);\n" +
                 "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "if(code != null ){\n" +
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "else if( code == null){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
                 "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
+                "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
                 "result1 = {};\n" +
                 "result1.action = actionMap1;\n" +
                 "result1.fieldId ="+rateFormFieldId+";\n" +
                 "resultList.add(result1);\n" +
                 "}\n" +
+                "if(formData.craft != null && formData.skill != null){\n" +
+                "labourList = [];\n" +
+                "labourCrafts = Module(\"labourCraftSkill\").fetch([skill == formData.skill.id && craft == formData.craft.id]);\n" +
+                "for each index,value in labourCrafts {\n"+
+                "labourCraft= value;\n"+
+                "labours = labourCraft.labour;\n" +
+                "labour = labours.id+\"\";\n"+
+                "labourList.add(labour);\n" +
+                "}\n" +
+                "conditionMap = {};\n" +
+                "conditionMap.operatorId = 36;\n"+
+                "conditionMap.fieldName = \"id\";\n" +
+                "conditionMap.value = labourList.join(\",\");\n" +
+                "valueMap = {};\n" +
+                "conditionsMap = {};\n" +
+                "conditionsMap.put(\"1\", conditionMap);\n" +
+                "valueMap.put(\"conditions\", conditionsMap);\n" +
+                "valueMap.put(\"pattern\", \"(1)\");\n" +
+                "actionMap = {};\n" +
+                "actionMap.value = valueMap;\n" +
+                "actionMap.actionName = \"filter\" ;\n" +
+                "result = {}; \n" +
+                "result.action = actionMap;\n" +
+                "result.fieldId ="+labourFormFieldId+";\n" +
+                "resultList.add(result);\n" +
+                "}\n" +
+
                 "if(formData.skill == null && formData.craft != null){\n" +
+
                 "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
                 "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "if(code != null ){\n" +
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "else if( code == null){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
                 "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n"+
+                "actionMap1.value = valueMap;\n"+
                 "actionMap1.actionName = \"set\" ;\n" +
                 " result1 = {};\n" +
                 "result1.action = actionMap1;\n" +
-                "  result1.fieldId = "+rateFormFieldId+";\n" +
+                " result1.fieldId = "+rateFormFieldId+";\n" +
                 "resultList.add(result1);\n" +
+
+                " valueMap = {};\n" +
+                "conditionMap = {};\n" +
+                "conditionMap.operatorId = 36;\n"+
+                "conditionMap.fieldName = \"parentId\";\n" +
+                "conditionMap.value = formData.craft.id;\n" +
+                "conditionsMap = {};\n" +
+                "conditionsMap.put(\"1\", conditionMap);\n" +
+                "valueMap.put(\"conditions\", conditionsMap);\n" +
+                "valueMap.put(\"pattern\", \"(1)\");\n" +
+                "actionMap = {};\n" +
+                "actionMap.value = valueMap;\n" +
+                "actionMap.actionName = \"filter\" ;\n" +
+                "result = {}; \n" +
+                "result.action = actionMap;\n" +
+                "result.fieldId ="+skillFormFieldId+";\n" +
+                "resultList.add(result);\n" +
+
+                "labourList = [];\n" +
+                "labourCrafts = Module(\"labourCraftSkill\").fetch([craft == formData.craft.id]);\n" +
+                "for each index,value in labourCrafts {\n"+
+                "labourCraft= value;\n"+
+                "labours = labourCraft.labour;\n" +
+                "labour = labours.id+\"\";\n"+
+                "labourList.add(labour);\n" +
                 "}\n" +
+                "conditionMap = {};\n" +
+                "conditionMap.operatorId = 36;\n"+
+                "conditionMap.fieldName = \"id\";\n" +
+                "conditionMap.value = labourList.join(\",\");\n" +
+                "valueMap = {};\n" +
+                "conditionsMap = {};\n" +
+                "conditionsMap.put(\"1\", conditionMap);\n" +
+                "valueMap.put(\"conditions\", conditionsMap);\n" +
+                "valueMap.put(\"pattern\", \"(1)\");\n" +
+                "actionMap = {};\n" +
+                "actionMap.value = valueMap;\n" +
+                "actionMap.actionName = \"filter\" ;\n" +
+                "result = {}; \n" +
+                "result.action = actionMap;\n" +
+                "result.fieldId ="+labourFormFieldId+";\n" +
+                "resultList.add(result);\n" +
+
+                "}\n" +
+//                "if(formData.skill == null ){\n" +
+//                "actionMap2 = {};\n" +
+//                "actionMap2.value = null;\n" +
+//                "actionMap2.actionName = \"set\" ;\n" +
+//                "result2 = {};\n" +
+//                "result2.action = actionMap2;\n" +
+//                "result2.fieldId = "+labourFormFieldId+";\n" +
+//                "resultList.add(result2);\n" +
+//                "}\n" +
                 "return resultList;\n" +
                 "\n" +
                 "\n" +
@@ -563,7 +696,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
         singleRule.setTriggerFields(triggerFieldList);
 
-        long costFormFieldId = formFieldMap.get(fieldMap.get("cost").getId()).getId();
+        long costFormFieldId = formFieldMap.get(fieldMap.get("totalAmount").getId()).getId();
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
         FormRuleActionContext showAction = new FormRuleActionContext();
@@ -572,12 +705,24 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "result = [];\n" +
                 "duration = formData.duration;\n" +
                 "duartionInHours = new NameSpace(\"date\").secToHour(duration);\n" +
-                "ratePerHour= formData.rate;\n" +
+                "rate= formData.rate;\n" +
+                "currencyValue = rate.currencyValue;\n"+
+                "ratePerHour = new NameSpace(\"number\").intValue(currencyValue);\n" +
                 "cost = duartionInHours*ratePerHour;\n" +
+                "valueMap = {};\n"+
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "if(code != null ){\n" +
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "else if( code == null){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = cost;\n" +
                 "temp = {};\n" +
                 "action = {};\n" +
                 "action.actionName = \"set\";\n" +
-                "action.value = cost;\n" +
+                "action.value = valueMap;\n" +
                 "temp.action = action;  \n" +
                 "temp.fieldId ="+costFormFieldId+";\n" +
                 "result.push(temp);\n" +
@@ -640,7 +785,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         workorderLabourViewFields.add(new ViewField("endTime","End TIme"));
         workorderLabourViewFields.add(new ViewField("duration","Duration"));
         workorderLabourViewFields.add(new ViewField("rate","Rate per Hour"));
-        workorderLabourViewFields.add(new ViewField("cost","Total Amount"));
+        workorderLabourViewFields.add(new ViewField("totalAmount","Total Amount"));
 
         workorderActualLabourView.setFields(workorderLabourViewFields);
 

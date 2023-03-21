@@ -15,10 +15,7 @@ import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -40,16 +37,43 @@ public class AddorUpdateWoActualsCostforLabourCommand extends FacilioCommand {
         long parent_Id = workOrderLabour.get(0).getParentId();
 
         if (parent_Id != -1) {
-            double cost = 0;
-            long qty = 0;
             int costType = 3;
             V3WorkorderCostContext.CostType cos = V3WorkorderCostContext.CostType.valueOf(costType);
 
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
+            String moduleName = FacilioConstants.ContextNames.WO_LABOUR;
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WO_LABOUR);
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-            cost = getTotalLabourCost(parent_Id, module, fieldsMap);
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
+            FacilioField totalCost = fieldsMap.get("totalAmount");
+            double cost = 0;
 
+            SelectRecordsBuilder<V3WorkOrderLabourContext> recordsBuilderLabour = new SelectRecordsBuilder<V3WorkOrderLabourContext>()
+                    .moduleName(moduleName)
+                    .select(fields)
+                    .beanClass(V3WorkOrderLabourContext.class)
+                    .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parent_Id), NumberOperators.EQUALS));
+
+            List<V3WorkOrderLabourContext> recordListLabour = recordsBuilderLabour.get();
+            for(V3WorkOrderLabourContext recordListLabours: recordListLabour){
+
+                recordListLabours.getId();
+                totalCost.getFieldId();
+
+                FacilioModule recordModule = modBean.getModule(FacilioConstants.SystemLookup.CURRENCY_RECORD);
+                List<FacilioField> selectFields = modBean.getAllFields(recordModule.getName());
+
+                SelectRecordsBuilder<CurrencyRecord> select = new SelectRecordsBuilder<CurrencyRecord>()
+                        .moduleName(recordModule.getName())
+                        .select(selectFields)
+                        .beanClass(CurrencyRecord.class)
+                        .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(recordListLabours.getId()), NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", String.valueOf(totalCost.getFieldId()), NumberOperators.EQUALS));;
+
+                List<CurrencyRecord> lists = select.get();
+                for(CurrencyRecord list: lists){
+                    cost += list.getBaseCurrencyValue();
+                }
+            }
 
 
             FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
@@ -88,30 +112,6 @@ public class AddorUpdateWoActualsCostforLabourCommand extends FacilioCommand {
         }
 
         return false;
-    }
-    public static double getTotalLabourCost(long id, FacilioModule module, Map<String, FacilioField> fieldsMap)
-            throws Exception {
-
-        if (id <= 0) {
-            return 0d;
-        }
-        List<FacilioField> field = new ArrayList<>();
-        field.add(FieldFactory.getField("totalLabourCost", "sum(COST)", FieldType.DECIMAL));
-
-        SelectRecordsBuilder<WorkOrderLabourContext> builder = new SelectRecordsBuilder<WorkOrderLabourContext>()
-                .select(field).moduleName(module.getName())
-                .andCondition(
-                        CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
-                .setAggregation();
-
-        List<Map<String, Object>> rs = builder.getAsProps();
-        if (rs != null && rs.size() > 0) {
-            if (rs.get(0).get("totalLabourCost") != null) {
-                return (double) rs.get(0).get("totalLabourCost");
-            }
-            return 0d;
-        }
-        return 0d;
     }
 
 }

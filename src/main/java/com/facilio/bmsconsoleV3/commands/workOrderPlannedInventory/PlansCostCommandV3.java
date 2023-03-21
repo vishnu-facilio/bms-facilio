@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
@@ -10,11 +11,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import java.util.LinkedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,20 +85,42 @@ public class PlansCostCommandV3  extends FacilioCommand {
 
             //PLANNED LABOUR COST
             moduleName = FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN;
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
             fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
             totalCost = fieldMap.get("totalPrice");
+            double cost = 0;
 
             SelectRecordsBuilder<V3WorkOrderLabourPlanContext> recordsBuilderLabour = new SelectRecordsBuilder<V3WorkOrderLabourPlanContext>()
                     .moduleName(moduleName)
+                    .select(fields)
                     .beanClass(V3WorkOrderLabourPlanContext.class)
                     .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parent", String.valueOf(workOrderId), NumberOperators.EQUALS));
 
-            recordsBuilderLabour.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM,  totalCost);
             List<V3WorkOrderLabourPlanContext> recordListLabour = recordsBuilderLabour.get();
+            for(V3WorkOrderLabourPlanContext recordListLabours: recordListLabour){
+
+                recordListLabours.getId();
+                totalCost.getFieldId();
+
+                FacilioModule recordModule = modBean.getModule(FacilioConstants.SystemLookup.CURRENCY_RECORD);
+                List<FacilioField> selectFields = modBean.getAllFields(recordModule.getName());
+
+                SelectRecordsBuilder<CurrencyRecord> select = new SelectRecordsBuilder<CurrencyRecord>()
+                        .moduleName(recordModule.getName())
+                        .select(selectFields)
+                        .beanClass(CurrencyRecord.class)
+                        .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(recordListLabours.getId()), NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", String.valueOf(totalCost.getFieldId()), NumberOperators.EQUALS));;
+
+                List<CurrencyRecord> lists = select.get();
+                for(CurrencyRecord list: lists){
+                    cost += list.getBaseCurrencyValue();
+                }
+            }
             if(recordListLabour.size()<1){
                 context.put(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, 0);
             }else{
-                context.put(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, recordListLabour.get(0).getTotalPrice());
+                context.put(FacilioConstants.ContextNames.PLANNED_LABOUR_COST, cost);
             }
         }
         return false;

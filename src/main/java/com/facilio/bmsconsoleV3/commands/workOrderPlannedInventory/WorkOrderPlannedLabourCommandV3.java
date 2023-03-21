@@ -29,7 +29,7 @@ public class WorkOrderPlannedLabourCommandV3 extends FacilioCommand {
                 CraftContext craft =  V3RecordAPI.getRecord(moduleName, recordId);
                     V3WorkOrderLabourPlanContext woLabourPlan = new V3WorkOrderLabourPlanContext();
                     woLabourPlan.setCraft(craft);
-                    woLabourPlan.setRate(craft.getStandardRate());
+                    //woLabourPlan.setRate(craft.getStandardRate());
 
                 context.put(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN, woLabourPlan);
             }

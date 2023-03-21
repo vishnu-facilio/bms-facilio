@@ -69,11 +69,11 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField parent = FieldFactory.getDefaultField("parent","Parent","PARENT_ID", FieldType.LOOKUP,true);
+        LookupField parent = FieldFactory.getDefaultField("parent","Parent","PARENT_ID", FieldType.LOOKUP);
         parent.setLookupModule(jobPlanModule);
         fields.add(parent);
 
-        LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP);
+        LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP,true);
         craft.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.CraftAndSKills.CRAFT),"Craft module doesn't exists."));
         fields.add(craft);
 
@@ -81,9 +81,9 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         skill.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.CraftAndSKills.SKILLS),"Skill module doesn't exists."));
         fields.add(skill);
 
-        fields.add(FieldFactory.getDefaultField("rate","Rate per Hour","RATE",FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("rate","Rate per Hour",null,FieldType.CURRENCY_FIELD,FacilioField.FieldDisplayType.CURRENCY));
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("totalPrice","Total Amount","TOTAL_PRICE",FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("totalPrice","Total Amount",null,FieldType.CURRENCY_FIELD,FacilioField.FieldDisplayType.CURRENCY));
         fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER,FacilioField.FieldDisplayType.DURATION));
 
         module.setFields(fields);
@@ -100,6 +100,11 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         for (String app : apps) {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+            FacilioField craftField = moduleBean.getField("craft", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField skillField = moduleBean.getField("skill", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField quantityField = moduleBean.getField("quantity", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+            FacilioField durationField = moduleBean.getField("duration", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
             FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime",FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
@@ -108,6 +113,13 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
 
             CustomPageWidget pageWidget1 = new CustomPageWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
+            SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
+
+            SummaryWidgetGroupFields groupField1 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField2 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField3 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField4 = new SummaryWidgetGroupFields();
+
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
@@ -115,49 +127,90 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField15 = new SummaryWidgetGroupFields();
 
+            groupField1.setName(craftField.getName());
+            groupField1.setDisplayName(craftField.getDisplayName());
+            groupField1.setFieldId(craftField.getId());
+            groupField1.setRowIndex(1);
+            groupField1.setColIndex(1);
+            groupField1.setColSpan(1);
+
+            groupField2.setName(skillField.getName());
+            groupField2.setDisplayName(skillField.getDisplayName());
+            groupField2.setFieldId(skillField.getId());
+            groupField2.setRowIndex(1);
+            groupField2.setColIndex(2);
+            groupField2.setColSpan(1);
+
+            groupField3.setName(quantityField.getName());
+            groupField3.setDisplayName(quantityField.getDisplayName());
+            groupField3.setFieldId(quantityField.getId());
+            groupField3.setRowIndex(1);
+            groupField3.setColIndex(3);
+            groupField3.setColSpan(1);
+
+            groupField4.setName(durationField.getName());
+            groupField4.setDisplayName(durationField.getDisplayName());
+            groupField4.setFieldId(durationField.getId());
+            groupField4.setRowIndex(2);
+            groupField4.setColIndex(1);
+            groupField4.setColSpan(1);
+
             groupField11.setName(sysCreatedByField.getName());
             groupField11.setDisplayName(sysCreatedByField.getDisplayName());
             groupField11.setFieldId(sysCreatedByField.getId());
             groupField11.setRowIndex(1);
             groupField11.setColIndex(1);
-            groupField11.setColSpan(2);
+            groupField11.setColSpan(1);
 
             groupField12.setName(sysCreatedTimeField.getName());
             groupField12.setDisplayName(sysCreatedTimeField.getDisplayName());
             groupField12.setFieldId(sysCreatedTimeField.getId());
             groupField12.setRowIndex(1);
-            groupField12.setColIndex(3);
-            groupField12.setColSpan(2);
+            groupField12.setColIndex(2);
+            groupField12.setColSpan(1);
 
             groupField13.setName(sysModifiedByField.getName());
             groupField13.setDisplayName(sysModifiedByField.getDisplayName());
             groupField13.setFieldId(sysModifiedByField.getId());
-            groupField13.setRowIndex(2);
-            groupField13.setColIndex(1);
-            groupField13.setColSpan(2);
+            groupField13.setRowIndex(1);
+            groupField13.setColIndex(3);
+            groupField13.setColSpan(1);
 
             groupField14.setName(sysModifiedTimeField.getName());
             groupField14.setDisplayName(sysModifiedTimeField.getDisplayName());
             groupField14.setFieldId(sysModifiedTimeField.getId());
             groupField14.setRowIndex(2);
-            groupField14.setColIndex(3);
-            groupField14.setColSpan(2);
+            groupField14.setColIndex(1);
+            groupField14.setColSpan(1);
+
 
 
             List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
-            groupOneFields.add(groupField11);
-            groupOneFields.add(groupField12);
-            groupOneFields.add(groupField13);
-            groupOneFields.add(groupField14);
+            List<SummaryWidgetGroupFields> groupTwoFields = new ArrayList<>();
+            groupOneFields.add(groupField1);
+            groupOneFields.add(groupField2);
+            groupOneFields.add(groupField3);
+            groupOneFields.add(groupField4);
+
+            groupTwoFields.add(groupField11);
+            groupTwoFields.add(groupField12);
+            groupTwoFields.add(groupField13);
+            groupTwoFields.add(groupField14);
 
 
-            widgetGroup1.setName("moreDetails");
-            widgetGroup1.setDisplayName("More Details");
-            widgetGroup1.setColumns(4);
+            widgetGroup1.setName("section1");
+            widgetGroup1.setDisplayName("Labor Details");
+            widgetGroup1.setColumns(3);
             widgetGroup1.setFields(groupOneFields);
+
+            widgetGroup2.setName("section2");
+            widgetGroup2.setDisplayName("Additional Details");
+            widgetGroup2.setColumns(3);
+            widgetGroup2.setFields(groupTwoFields);
 
             List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
             widgetGroupList.add(widgetGroup1);
+            widgetGroupList.add(widgetGroup2);
 
             pageWidget1.setName("jobPlanLaboursWidget");
             pageWidget1.setDisplayName("JobPlanLabour Widget");
@@ -201,10 +254,10 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             int seq = 0;
             fields.add(new FormField(fieldMap.get("craft").getFieldId(), "craft", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Craft", FormField.Required.REQUIRED, ++seq, 1));
             fields.add(new FormField(fieldMap.get("skill").getFieldId(), "skill", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Skill", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("quantity").getFieldId(), "quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("quantity").getFieldId(), "quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seq, 1));
             fields.add(new FormField(fieldMap.get("duration").getFieldId(), "duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.NUMBER, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1));
-            fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.NUMBER, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1));
+            //fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.CURRENCY, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1));
+            //fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1));
 
 
             section.setFields(fields);
@@ -216,8 +269,6 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             FormsAPI.createForm(defaultForm, jobPlanLaboursModule);
             Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
-            addRuleForSkillOnUpdate(defaultForm, fieldMap, formFieldMap);
-            addRuleForJobPlanLabour(defaultForm, fieldMap, formFieldMap);
         }
     }
     public void addRuleForCraftOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
@@ -237,14 +288,14 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         singleRule.setTriggerFields(triggerFieldList);
 
         long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
-        long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
+        //long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
         FormRuleActionContext showAction = new FormRuleActionContext();
         showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
         String workflowString = "List getActions(Map formData) {\n" +
                 "resultList = [];\n" +
-                "if(formData.craft != null) {\n" +
+                "if(formData.craft != null && formData.skill == null) {\n" +
                 " valueMap = {};\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
@@ -261,15 +312,6 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "result.action = actionMap;\n" +
                 "result.fieldId ="+skillFormFieldId+";\n" +
                 "resultList.add(result);\n" +
-                "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
-                "ratePerHour = craft.standardRate;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
-                "actionMap1.actionName = \"set\" ;\n" +
-                "result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "result1.fieldId = "+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
                 "actionMap2 = {};\n" +
                 "actionMap2.value = null;\n" +
                 "actionMap2.actionName = \"set\" ;\n" +
@@ -298,137 +340,6 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         chain.execute();
 
     }
-    public void addRuleForSkillOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-        FormRuleContext singleRule = new FormRuleContext();
-        singleRule.setName("Skill on update");
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setFormId(defaultForm.getId());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-
-        List<FormRuleTriggerFieldContext> triggerFieldList= new ArrayList<>();
-        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-        triggerField.setFieldId(formFieldMap.get(fieldMap.get("skill").getId()).getId());
-        triggerFieldList.add(triggerField);
-        singleRule.setTriggerFields(triggerFieldList);
-
-        long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
-
-        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-        FormRuleActionContext showAction = new FormRuleActionContext();
-        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
-        String workflowString = "List getActions(Map formData) {\n" +
-                "resultList = [];\n" +
-                "if(formData.skill != null) {\n" +
-                "craft = Module(\"craftSkill\").fetchFirst([id == formData.skill.id]);\n" +
-                "ratePerHour = craft.standardRate;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n" +
-                "actionMap1.actionName = \"set\" ;\n" +
-                "result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "result1.fieldId ="+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
-                "}\n" +
-                "if(formData.skill == null){\n" +
-                "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
-                "ratePerHour = craft.standardRate;\n" +
-                "actionMap1 = {};\n" +
-                "actionMap1.value = ratePerHour;\n"+
-                "actionMap1.actionName = \"set\" ;\n" +
-                " result1 = {};\n" +
-                "result1.action = actionMap1;\n" +
-                "  result1.fieldId = "+rateFormFieldId+";\n" +
-                "resultList.add(result1);\n" +
-                "}\n" +
-                "return resultList;\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "}";
-        WorkflowContext workflowScript = new WorkflowContext();
-        workflowScript.setWorkflowV2String(workflowString);
-        workflowScript.setIsV2Script(true);
-        showAction.setWorkflow(workflowScript);
-        actions.add(showAction);
-        singleRule.setActions(actions);
-
-        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-        Context context = chain.getContext();
-        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-        chain.execute();
-
-
-
-
-    }
-
-
-    public void addRuleForJobPlanLabour(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-
-        FormRuleContext singleRule = new FormRuleContext();
-        singleRule.setName("Compute Cost");
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setFormId(defaultForm.getId());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("duration"), CommonOperators.IS_NOT_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rate"), CommonOperators.IS_NOT_EMPTY));
-        singleRule.setCriteria(criteria);
-
-        List<FormRuleTriggerFieldContext> triggerFieldList= new ArrayList<>();
-        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-        triggerField.setFieldId(formFieldMap.get(fieldMap.get("duration").getId()).getId());
-        triggerFieldList.add(triggerField);
-        FormRuleTriggerFieldContext triggerField2 = new FormRuleTriggerFieldContext();
-        triggerField2.setFieldId(formFieldMap.get(fieldMap.get("rate").getId()).getId());
-        triggerFieldList.add(triggerField2);
-
-        singleRule.setTriggerFields(triggerFieldList);
-
-        long costFormFieldId = formFieldMap.get(fieldMap.get("totalPrice").getId()).getId();
-
-        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-        FormRuleActionContext showAction = new FormRuleActionContext();
-        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
-        String workflowString = "List getActions(Map formData) {\n" +
-                "result = [];\n" +
-                "duration = formData.duration;\n" +
-                "duartionInHours = new NameSpace(\"date\").secToHour(duration);\n" +
-                "ratePerHour= formData.rate;\n" +
-                "cost = formData.quantity*duartionInHours*ratePerHour;\n" +
-                "temp = {};\n" +
-                "action = {};\n" +
-                "action.actionName = \"set\";\n" +
-                "action.value = cost;\n" +
-                "temp.action = action;  \n" +
-                "temp.fieldId ="+costFormFieldId+";\n" +
-                "result.push(temp);\n" +
-                "return result;\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "}";
-
-        WorkflowContext workflowScript = new WorkflowContext();
-        workflowScript.setWorkflowV2String(workflowString);
-        workflowScript.setIsV2Script(true);
-        showAction.setWorkflow(workflowScript);
-        actions.add(showAction);
-        singleRule.setActions(actions);
-
-        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-        Context context = chain.getContext();
-        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-        chain.execute();
-
-    }
-
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -466,8 +377,6 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         jobPlanLabourViewFields.add(new ViewField("skill","Skill"));
         jobPlanLabourViewFields.add(new ViewField("quantity","Quantity"));
         jobPlanLabourViewFields.add(new ViewField("duration","Duration"));
-        jobPlanLabourViewFields.add(new ViewField("rate","Rate per Hour"));
-        jobPlanLabourViewFields.add(new ViewField("totalPrice","Total Amount"));
 
         jobPlanLabourView.setFields(jobPlanLabourViewFields);
 

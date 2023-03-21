@@ -159,8 +159,8 @@ public class JobPlanPageFactory extends PageFactory {
         PageWidget labourWidget = new PageWidget();
         labourWidget.setWidgetType(PageWidget.WidgetType.JOB_PLAN_LABOURS);
         plansPageWidgetGroup.addToWidget(labourWidget);
-        labourWidget.setName("Labours");
-        labourWidget.setTitle("Labour");
+        labourWidget.setName("Labors");
+        labourWidget.setTitle("Labor");
         JSONObject labourRelatedList = new JSONObject();
         labourRelatedList.put("summaryWidgetName","jobPlanLaboursWidget");
         labourWidget.setRelatedList(labourRelatedList);

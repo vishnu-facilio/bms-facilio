@@ -3,7 +3,11 @@ package com.facilio.bmsconsoleV3.signup.craft;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -13,11 +17,13 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class LabourCraftAndSkillsModules extends SignUpData{
+public class LabourCraftAndSkillsModules extends BaseModuleConfig {
+	public LabourCraftAndSkillsModules() throws Exception {
+		setModuleName(FacilioConstants.CraftAndSKills.LABOUR_CRAFT);
+	}
+
 	@Override
 	public void addData() throws Exception{
 
@@ -58,12 +64,12 @@ public class LabourCraftAndSkillsModules extends SignUpData{
 
 		List<FacilioField> fields =new ArrayList<>();
 
-		LookupField labour = FieldFactory.getDefaultField("labour","Labour","LABOUR_ID", FieldType.LOOKUP);
+		LookupField labour = FieldFactory.getDefaultField("labour","Labour","LABOUR_ID", FieldType.LOOKUP,true);
 		labour.setLookupModule(labourModule);
 
 		fields.add(labour);
 
-		LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP,true);
+		LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP);
 		craft.setLookupModule(bean.getModule(FacilioConstants.CraftAndSKills.CRAFT));
 
 		fields.add(craft);
@@ -79,4 +85,48 @@ public class LabourCraftAndSkillsModules extends SignUpData{
 
 		return module;
 	}
+	@Override
+	public List<Map<String, Object>> getViewsAndGroups() {
+		List<Map<String, Object>> groupVsViews = new ArrayList<>();
+		Map<String, Object> groupDetails;
+
+		int order = 1;
+		ArrayList<FacilioView> labourcraft = new ArrayList<FacilioView>();
+		labourcraft.add(getLabourCraftsViews().setOrder(order++));
+
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "systemviews");
+		groupDetails.put("displayName", "System Views");
+		groupDetails.put("moduleName", FacilioConstants.CraftAndSKills.LABOUR_CRAFT);
+		groupDetails.put("views", labourcraft);
+		groupVsViews.add(groupDetails);
+
+		return groupVsViews;
+	}
+
+	private FacilioView getLabourCraftsViews() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "LabourCraftSkills.ID", FieldType.NUMBER), true));
+
+		FacilioView labourCraftsView = new FacilioView();
+		labourCraftsView.setName("all");
+		labourCraftsView.setDisplayName("Labour crafts skill");
+
+		labourCraftsView.setModuleName(FacilioConstants.CraftAndSKills.LABOUR_CRAFT);
+		labourCraftsView.setSortFields(sortFields);
+
+		List<ViewField> LabourCraftViewFields = new ArrayList<>();
+
+		LabourCraftViewFields.add(new ViewField("labour","Labour"));
+		LabourCraftViewFields.add(new ViewField("craft","Craft"));
+		LabourCraftViewFields.add(new ViewField("skill","Skill"));
+		LabourCraftViewFields.add(new ViewField("rate","Rate"));
+		LabourCraftViewFields.add(new ViewField("isDefault","Is Default Craft?"));
+
+
+		labourCraftsView.setFields(LabourCraftViewFields);
+
+		return labourCraftsView;
+	}
 }
+

@@ -151,6 +151,7 @@ import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.labour.LabourCraftAndSkillContext;
 import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -2444,6 +2445,16 @@ public class APIv3Config {
 							 .delete()
 							 .build();
 	}
+
+    @Module(FacilioConstants.CraftAndSKills.LABOUR_CRAFT)
+    public static Supplier<V3Config> getLabourCrafts() {
+        return () -> new V3Config(LabourCraftAndSkillContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new LoadSupplementsForLabourCraftCommand())
+                .delete()
+                .build();
+
+    }
 
     @Module(FacilioConstants.Routes.NAME)
     public static Supplier<V3Config> getRoute() {

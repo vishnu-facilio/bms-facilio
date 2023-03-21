@@ -321,8 +321,8 @@ public class WorkorderPageFactory extends PageFactory {
         PageWidget labourWidget = new PageWidget();
         labourWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_LABOUR);
         actualsPageWidgetGroup.addToWidget(labourWidget);
-        labourWidget.setName("Labours");
-        labourWidget.setTitle("Labour");
+        labourWidget.setName("Labors");
+        labourWidget.setTitle("Labor");
         JSONObject labourRelatedList = new JSONObject();
         labourRelatedList.put("summaryWidgetName","actualsLabourWidget");
         labourWidget.setWidgetParams(labourRelatedList);
@@ -567,7 +567,7 @@ public class WorkorderPageFactory extends PageFactory {
             addSafetyPlanTab(page, workorder);
         }
         addTasksTab(page);
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
             addInventoryTab(page);
         }
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)

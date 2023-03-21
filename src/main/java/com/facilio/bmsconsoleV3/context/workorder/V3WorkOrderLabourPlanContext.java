@@ -7,6 +7,8 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter@Setter
 public class V3WorkOrderLabourPlanContext extends V3Context {
 
@@ -15,7 +17,7 @@ public class V3WorkOrderLabourPlanContext extends V3Context {
     private SkillsContext skill;
 
     private Long quantity;
-    private Double rate;
-    private Double totalPrice;
+    private Map<String,Object> rate;
+    private Map<String,Object> totalPrice;
     private Long duration;
 }
