@@ -226,7 +226,6 @@
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
-
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
         <action name="*/*/get/*" class="com.facilio.bmsconsoleV3.actions.TimelineActionV3">
             <param name="moduleName">{1}</param>
@@ -1570,4 +1569,19 @@
                 method="siteQrDownloadUrl"/>
     </package>
 
+    <package name="unRelatedAPI" extends="v3Api" namespace="/api/v3/unrelated">
+        <action name="*/fetchAll/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="parentModuleName">{1}</param>
+            <param name="moduleName">{2}</param>
+            <param name="checkPermission">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="*/fetch/*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="parentModuleName">{1}</param>
+            <param name="moduleName">{2}</param>
+            <param name="id">{3}</param>
+            <param name="checkPermission">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
 </struts>
