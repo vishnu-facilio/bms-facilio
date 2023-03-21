@@ -332,7 +332,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "noOfAttachments",
                 "estimatedEnd",
                 "description",
-                "jobPlan"
+                "jobPlan",
+                "pmV2"
         }));
 
         public static final List<String> PM_FIELDS_EXCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
