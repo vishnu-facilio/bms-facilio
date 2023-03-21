@@ -1,6 +1,7 @@
 package com.facilio.services.email;
 
 import com.facilio.aws.util.FacilioProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -89,8 +90,11 @@ class SMTPEmailClient extends EmailClient {
         try {
             if(canSendEmail(mailJson,files)) {
                     MimeMessage message = getEmailMessage(mailJson, files);
+                    String sender = FacilioProperties.getConfig(MAIL_FROM) != null ? FacilioProperties.getConfig(MAIL_FROM) : FacilioProperties.getConfig(MAIL_USERNAME);
+                    if (StringUtils.isNotEmpty(sender)) {
+                        message.setFrom(sender);
+                    }
                     Transport.send(message);
-
             }
         }catch (Exception ex){
             LOGGER.info("Exception while sending message ", ex);
