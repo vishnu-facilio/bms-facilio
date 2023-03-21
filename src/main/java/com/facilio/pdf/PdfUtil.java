@@ -5,10 +5,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,7 +34,7 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
-
+@Log4j
 public class PdfUtil {
 
     private static final String NODE = FacilioProperties.getNodeJSLocation();
@@ -33,7 +42,12 @@ public class PdfUtil {
     private static final String RENDER_PUPETTEER_JS_WIDGET = FacilioProperties.getPdfjsLocation() + "/puppeteer-render-widget.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
 
-	public static String convertUrlToPdf(String url, String htmlContent, JSONObject additionalInfo , FileFormat... formats) {
+	public static String convertUrlToPdf(String url, String htmlContent, JSONObject additionalInfo , FileFormat... formats) throws Exception {
+
+		FacilioUtil.throwRunTimeException(StringUtils.isEmpty(url),"Invalid URL");
+
+		isAllowedDomains(url);
+
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
@@ -57,6 +71,14 @@ public class PdfUtil {
 		LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFileLocation);
 		
 		return pdfFileLocation;
+	}
+
+	private static void isAllowedDomains(String url) throws Exception {
+			URI uri = new URI(url);
+			String domain = uri.getHost();
+			LOGGER.info("Current App domain : "+ domain);
+			AppDomain appDomain = IAMAppUtil.getAppDomain(domain);
+			FacilioUtil.throwRunTimeException(appDomain == null,"Invalid App Domain");
 	}
 	
 	public static String convertWidgetToPdf(String url, JSONObject exportOptions, JSONObject widgetContext, FileFormat... formats) {
@@ -142,15 +164,15 @@ public class PdfUtil {
 		}
 	}
 
-	public static String exportUrlAsPdf(String url, FileFormat... formats){
+	public static String exportUrlAsPdf(String url, FileFormat... formats) throws Exception {
 		return exportUrlAsPdf(url, false, null, formats);
 	}
 
-	public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, FileFormat... formats){
+	public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, FileFormat... formats) throws Exception {
 		return exportUrlAsPdf(url, isPublicUrl, name, null, formats);
 	}
 
-	public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, FileFormat... formats){      	
+	public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, FileFormat... formats) throws Exception {
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
@@ -176,7 +198,7 @@ public class PdfUtil {
 		return null;
 	}
 	
-	public static Long exportUrlAsPDF(String url, String name, JSONObject additionalInfo, FileFormat... formats){      	
+	public static Long exportUrlAsPDF(String url, String name, JSONObject additionalInfo, FileFormat... formats) throws Exception {
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
@@ -219,7 +241,7 @@ public class PdfUtil {
 		return null;
 	}
 
-	public static String exportUrlAsPublicFilePdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, long expiry, FileFormat... formats){      	
+	public static String exportUrlAsPublicFilePdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, long expiry, FileFormat... formats) throws Exception {
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
@@ -238,7 +260,7 @@ public class PdfUtil {
 		return null;
 	}
 
-	public static File exportUrlAsFile(String url, String name, String htmlContent, JSONObject additionalInfo, FileFormat... formats){	
+	public static File exportUrlAsFile(String url, String name, String htmlContent, JSONObject additionalInfo, FileFormat... formats) throws Exception {
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
@@ -250,11 +272,11 @@ public class PdfUtil {
 		return pdfFile;
 	}
 
-	public static File exportUrlAsFile(String url, String name, FileFormat... formats){	
+	public static File exportUrlAsFile(String url, String name, FileFormat... formats) throws Exception {
 		return exportUrlAsFile(url, name, null, null, formats);
 	}
 
-	public static long exportUrlAsFileId(String url, String name, FileFormat... formats){
+	public static long exportUrlAsFileId(String url, String name, FileFormat... formats) throws Exception {
 		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];

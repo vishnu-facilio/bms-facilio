@@ -17,7 +17,7 @@ public class TemplateUrlContext extends TemplateAttachment {
 	private String urlString;
 
 	@Override
-	protected long fetchFileId(Object record) {
+	protected long fetchFileId(Object record) throws Exception {
 		return PdfUtil.exportUrlAsFileId(urlString, getFileName());
 	}
 
