@@ -1240,4 +1240,5 @@
         </requestbody>
     </request>
     <request path="/api/v2/isSessionActive"></request>
+    <request path="/api/integ/orgLogo"></request>
 </config>

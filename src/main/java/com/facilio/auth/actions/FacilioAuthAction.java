@@ -2867,13 +2867,19 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 		String logoURL = null;
+		String domain = null;
+		Long orgId = null;
 		if (appDomain != null && appDomain.getOrgId() > 0) {
 			Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
 			if (org != null) {
 				logoURL = org.getLogoUrl();
+				domain = org.getDomain();
+				orgId = org.getOrgId();
 			}
 		}
 		setResult("url", logoURL);
+		setResult("domain",domain);
+		setResult("id",orgId);
 		return SUCCESS;
 	}
 
