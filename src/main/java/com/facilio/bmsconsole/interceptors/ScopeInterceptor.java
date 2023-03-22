@@ -346,6 +346,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
                         Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
                         Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
+                        Boolean deprecated = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("deprecated")));
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
@@ -376,12 +377,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             }
                         }
 
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(),isSetupPermission)) {
-                            if(method != null && method.equalsIgnoreCase("GET")) {
-                                if (isSetupPermission || isV3Permission) {
-                                    if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
-                                        return logAndReturn("unauthorized", null, startTime, request);
-                                    }
+                        if(throwDeprecatedApiError(deprecated)) {
+                            return logAndReturn("unauthorized", null, startTime, request);
+                        }
+
+                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, method)) {
+                            if (isSetupPermission || isV3Permission) {
+                                if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
+                                    return logAndReturn("unauthorized", null, startTime, request);
                                 }
                             }
                         }
@@ -500,7 +503,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission) throws Exception {
+    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,String method) throws Exception {
 
         if (action == null || "".equals(action.trim())) {
             return true;
@@ -521,10 +524,17 @@ public class ScopeInterceptor extends AbstractInterceptor {
             return true;
         }
 
-        if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
-            return true;
+        try {
+            if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
+                return true;
+            }
+            HttpServletRequest request = ServletActionContext.getRequest();
+            if(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI())) {
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Error checking whitelisted API");
         }
-        
         if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             try {
                 HttpServletRequest request = ServletActionContext.getRequest();
@@ -533,11 +543,17 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     long tabId = Long.parseLong(currentTab);
                     boolean hasPerm = WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId);
                     if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                        if(!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
-                            permissionLogsForTabs(tabId, moduleName, role.getName(), action);
+                        permissionLogsForTabs(tabId, moduleName, role.getName(), action);
+                    }
+
+//                  This is a temporary solution but logs will be added
+                    if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
+                        if (isV3Permission) {
+                            return WebTabUtil.checkModulePermissionForTab(action, moduleName);
                         }
                     }
-                    return checkAndReturnHasWebtabPermission(hasPerm);
+//                  For now not throwing this. Need to change this immediately
+//                  return checkAndReturnHasWebtabPermission(hasPerm);
                 } else {
                     LOGGER.info("scope interceptor tab permission - Tab id is empty " + getReferrerUri());
                 }
@@ -552,7 +568,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     permissionLogsForModule(moduleName,role.getName(),action);
                 }
                 if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403)) {
-                    return hasPerm;
+                    if(method != null && method.equalsIgnoreCase("GET")) {
+                        return hasPerm;
+                    }
                 }
                 return true;
             } catch (Exception e) {
@@ -639,5 +657,18 @@ public class ScopeInterceptor extends AbstractInterceptor {
             LOGGER.info("Error occured in checkAndReturnHasWebtabPermission method");
         }
         return true;
+    }
+
+    private static boolean throwDeprecatedApiError(Boolean deprecated) {
+        try {
+            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
+                if(deprecated != null && deprecated) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.info("Error checking deprecated API");
+        }
+        return false;
     }
 }

@@ -106,16 +106,19 @@
         <action name="create"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="create">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="bulkCreate"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="bulkCreate">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="update"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="update">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="list"
@@ -133,20 +136,25 @@
         <action name="patch"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="patch">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="bulkpatch"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="bulkPatch">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="bulkget"
                 class="com.facilio.v3.RESTAPIHandler"
-                method="bulkGet" />
+                method="bulkGet" >
+            <param name="deprecated">true</param>
+        </action>
 
         <action name="delete"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="delete">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="files"

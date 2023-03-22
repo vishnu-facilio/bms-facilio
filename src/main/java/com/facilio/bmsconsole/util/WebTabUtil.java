@@ -1,16 +1,30 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.webtab.WebTabHandler;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.dispatcher.HttpParameters;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,5 +76,62 @@ public class WebTabUtil {
             }
         }
         return true;
+    }
+
+//    Temp Solution
+    public static boolean checkModulePermissionForTab(String action,String moduleName) throws Exception {
+        Role role = AccountUtil.getCurrentUser().getRole();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        //portfolio is handled for portfolio tab
+
+        FacilioModule module = modBean.getModule(moduleName);
+        ApplicationContext currentApp = AccountUtil.getCurrentApp();
+
+
+        if(module != null && currentApp != null) {
+            List<Long> tabIds;
+            if (moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space")) {
+                tabIds = Collections.singletonList(getPortfolioTabId(currentApp));
+            } else {
+                tabIds = ApplicationApi.getTabForModules(currentApp.getId(), module.getModuleId());
+            }
+            if(CollectionUtils.isNotEmpty(tabIds)) {
+                boolean hasPerm = currentUserHasPermission(tabIds.get(0),action,role);
+                return hasPerm;
+            }
+        }
+        return false;
+    }
+
+    private static Long getPortfolioTabId(ApplicationContext currentApp) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(currentApp.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("CONFIG","config","portfolio", StringOperators.CONTAINS));
+        Map<String,Object> prop = builder.fetchFirst();
+        if(MapUtils.isNotEmpty(prop)) {
+            WebTabContext tab = FieldUtil.getAsBeanFromMap(prop,WebTabContext.class);
+            if(tab != null) {
+                return tab.getId();
+            }
+        }
+        return null;
+    }
+    public static boolean currentUserHasPermission(long tabId, String action, Role role) {
+
+        try {
+            if (V3PermissionUtil.isFeatureEnabled()) {
+                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
+                boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);
+                return hasPerm;
+            } else {
+                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+                boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
+                return hasPerm;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
