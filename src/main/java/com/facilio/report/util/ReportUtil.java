@@ -1184,11 +1184,6 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 							new_report_context.setName(report_context.getName());
 							new_report_context.setId(report_context.getId());
 							new_report_context.setReportFolderId(report_context.getReportFolderId());
-							new_report_context.setModule(report_context.getModule());
-							new_report_context.setCreatedBy(report_context.getCreatedBy());
-							new_report_context.setModifiedTime(report_context.getModifiedTime());
-							new_report_context.setModifiedBy(report_context.getModifiedBy());
-							new_report_context.setModuleName(report_context.getModule().getName());
 							response_folder_list.add(new_report_context);
 						}
 					}
