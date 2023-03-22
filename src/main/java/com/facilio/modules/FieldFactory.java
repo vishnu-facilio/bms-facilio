@@ -3352,6 +3352,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("importEndTime","IMPORT_END_TIME",module));
         fields.add(getBooleanField("hasErrorRecords","HAS_ERROR_RECORDS",module));
         fields.add(getStringField("errorMessage","ERROR_MESSAGE",module));
+        fields.add(getNumberField("errorFileId","ERROR_FILE_ID",module));
         return fields;
     }
 

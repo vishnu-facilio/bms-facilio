@@ -1583,6 +1583,8 @@
         </action>
         <action name="import" class="com.facilio.multiImport.action.MultiImportDataAction" method="parseAndImportData">
         </action>
+        <action name="downloadErrorRecords" class="com.facilio.multiImport.action.MultiImportDataAction" method="downloadErrorRecords">
+        </action>
         <action name="abortImport" class="com.facilio.multiImport.action.MultiImportDataAction" method="abortImport">
         </action>
     </package>

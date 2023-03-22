@@ -131,7 +131,15 @@ public class ImportDataDetails implements Serializable {
     public void setImportFiles(List<ImportFileContext> importFiles) {
         this.importFiles = importFiles;
     }
+    private long errorFileId=-1l;
 
+    public long getErrorFileId() {
+        return errorFileId;
+    }
+
+    public void setErrorFileId(long errorFileId) {
+        this.errorFileId = errorFileId;
+    }
     private boolean hasErrorRecords;
 
     public boolean isHasErrorRecords() {

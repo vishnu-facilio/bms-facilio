@@ -219,6 +219,11 @@ public class MultiImportChainUtil {
         FacilioChain chain = getDefaultChain();
         return chain;
     }
+    public static FacilioChain getDownloadErrorRecordsChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new DownloadErrorRecordsCommand());
+        return chain;
+    }
 
     public static Class getBeanClass(ImportConfig config, FacilioModule module) {
         Class beanClass = null;

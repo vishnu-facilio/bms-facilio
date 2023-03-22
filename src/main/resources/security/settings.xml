@@ -1617,6 +1617,11 @@
             <property name="search" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/v3/multiImport/downloadErrorRecords">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/multiImport/abortImport">
         <urlparams>
             <property name="importId" type="number"/>

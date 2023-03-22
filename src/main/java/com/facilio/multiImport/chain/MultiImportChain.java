@@ -1,11 +1,9 @@
 package com.facilio.multiImport.chain;
 
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterForNonModulesCommand;
-import com.facilio.command.FacilioCommand;
 import com.facilio.multiImport.command.*;
 
 import com.facilio.chain.FacilioChain;
-import org.apache.commons.chain.Context;
 
 public class MultiImportChain {
 
@@ -100,6 +98,13 @@ public class MultiImportChain {
         chain.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
         chain.addCommand(new MultiImportListFilterCommand());
         chain.addCommand(new GetImportListCountCommand());
+        return chain;
+    }
+    public static FacilioChain getDownloadErrorRecordsChain() {
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new MultiImportMetaValidationCommand());
+        chain.addCommand(new ScheduleDownloadErrorRecordsJobCommand());
+
         return chain;
     }
     public static FacilioChain getAbortChain() {

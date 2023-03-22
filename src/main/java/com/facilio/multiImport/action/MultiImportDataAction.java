@@ -202,6 +202,17 @@ public class MultiImportDataAction extends V3Action {
         setData(FacilioConstants.ContextNames.SUPPLEMENTS, context.get(FacilioConstants.ContextNames.SUPPLEMENTS));
         return SUCCESS;
     }
+    public String downloadErrorRecords() throws Exception{
+        FacilioChain chain = MultiImportChain.getDownloadErrorRecordsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.IMPORT_ID, importId);
+
+        chain.execute();
+
+        setData(FacilioConstants.ContextNames.FILE_URL,context.get(FacilioConstants.ContextNames.FILE_URL));
+        setData(FacilioConstants.ContextNames.MESSAGE,context.get(FacilioConstants.ContextNames.MESSAGE));
+        return SUCCESS;
+    }
     public String abortImport() throws Exception {
         FacilioChain chain = MultiImportChain.getAbortChain();
         FacilioContext context = chain.getContext();
