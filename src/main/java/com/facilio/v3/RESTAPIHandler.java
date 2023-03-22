@@ -184,7 +184,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioModule module = ChainUtil.getModule(moduleName);
         FacilioContext context = V3Util.processAndUpdateBulkRecords(module, moduleBaseWithCustomFields, rawRecords, bodyParams, getQueryParameters(), getStateTransitionId(),
-                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), false);
+                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), getLocationValue(), false);
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 
@@ -382,10 +382,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
         removeRestrictedFields(data, this.getModuleName(), true);
 
-        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue(),this.getLocationValue());
 
         addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated",
                     AuditLogHandler.ActionType.UPDATE, true);
+
         this.setData(result);
 
         return SUCCESS;

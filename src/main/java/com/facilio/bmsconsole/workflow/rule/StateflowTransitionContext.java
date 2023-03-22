@@ -10,6 +10,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
@@ -43,6 +45,12 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	public Long getQrLookupFieldId() {
 		return qrLookupFieldId;
 	}
+	@Getter @Setter
+	public long locationFieldId = -1;
+	@Getter @Setter
+	public FacilioField locationField;
+	@Getter @Setter
+	public Long radius;
 
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,

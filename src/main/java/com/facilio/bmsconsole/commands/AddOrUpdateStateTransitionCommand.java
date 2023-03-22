@@ -7,6 +7,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.chain.FacilioChain;
@@ -26,6 +27,14 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 				FacilioField qrField = modBean.getField(stateTransition.getQrFieldId());
 				validateQrField(modBean,stateTransition.getModuleName(),qrField,stateTransition);
 				stateTransition.setQrField(qrField);
+			}
+
+			if(stateTransition.getLocationFieldId() > 0){
+				FacilioField locationField = modBean.getField(stateTransition.getLocationFieldId());
+				validateLocationField(locationField);
+				stateTransition.setLocationField(locationField);
+
+				FacilioUtil.throwIllegalArgumentException(stateTransition.getRadius() == null,"radius cannot be empty");
 			}
 
 			if (stateTransition.getId() < 0) {
@@ -64,6 +73,13 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 				throw new Exception("Qr field is invalid");
 			}
 		}
+	}
+
+	public void validateLocationField(FacilioField locationField) {
+		if(locationField.getDataTypeEnum() != FieldType.STRING || !(locationField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION))){
+			throw new IllegalArgumentException("Invalid field type");
+		}
+
 	}
 
 }

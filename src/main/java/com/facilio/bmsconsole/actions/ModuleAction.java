@@ -953,6 +953,14 @@ public class ModuleAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROLL_UP_FIELDS,(List<RollUpField>) chain.getContext().get(FacilioConstants.ContextNames.ROLL_UP_FIELDS));	
 		return SUCCESS;
 	}
+	public String getGeoLocationFields() throws Exception{
+		FacilioChain chain = TransactionChainFactory.getGeoLocationFieldsChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.MODULE_NAME,moduleName);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.GEOLOCATION_FIELDS,context.get(FacilioConstants.ContextNames.GEOLOCATION_FIELDS));
+		return SUCCESS;
+	}
 	
 	private Integer aggregateFunctionId;
 	private Long aggregateFieldId;

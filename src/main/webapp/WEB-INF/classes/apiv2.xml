@@ -7368,4 +7368,11 @@
 				method="vendorCheckout">
 		</action>
 	</package>
+
+	<package name="geoLocationFields" namespace="/api/v2/getFields" extends="v2Api">
+		<action name="geoLocation/*"
+				class="com.facilio.bmsconsole.actions.ModuleAction" method="getGeoLocationFields">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 </struts>

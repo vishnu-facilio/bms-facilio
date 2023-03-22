@@ -968,6 +968,7 @@ public class FacilioConstants {
 		public static final String MODULE_CRITERIA_MAP = "moduleCriteriaMap";
 		public static final String ROLL_UP_FIELD_IDS = "rollUpFieldIds";
 		public static final String ROLL_UP_FIELDS = "rollUpFields";
+		public static final String GEOLOCATION_FIELDS = "geoLocationFields";
 
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
@@ -1616,6 +1617,7 @@ public class FacilioConstants {
 		public static final String SKIP_TEMPLATE_PERMISSION = "skipTemplatePermission";
 		public static final String FOR_CREATE = "forCreate";
 		public static final String QR_VALUE = "qrValue";
+		public static final String LOCATION_VALUE = "locationValue";
 		public static final String MAP_QR = "mapqr";
 
 		public static final String PUBLISH_DATA = "publishData";

@@ -6799,6 +6799,12 @@ public class TransactionChainFactory {
 		c.addCommand(new KioskVendorCheckOutCommand());
 		return c;
 	}
+
+	public static FacilioChain getGeoLocationFieldsChain(){
+		FacilioChain c= getDefaultChain();
+		c.addCommand(new GetGeoLocationFiledsCommand());
+		return c;
+	}
 }
 
 

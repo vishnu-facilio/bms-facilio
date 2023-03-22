@@ -9,26 +9,34 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.vividsolutions.jts.geom.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class UpdateStateForModuleDataCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStateForModuleDataCommand.class.getName());
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String qrCode = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
+		String locationValue = (String) context.get(FacilioConstants.ContextNames.LOCATION_VALUE);
 		boolean isfromV2 = context.containsKey(FacilioConstants.ContextNames.IS_FROM_V2) ? (boolean) context.get(FacilioConstants.ContextNames.IS_FROM_V2) : false;
 		ModuleBean moduleBean = Constants.getModBean();
 		List<? extends ModuleBaseWithCustomFields> records = null;
@@ -62,6 +70,16 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 						throw new Exception("Invalid state");
 					}
 					stateflowTransition.executeTrueActions(record, context, recordPlaceHolders);
+				}
+
+				if (stateflowTransition.getLocationFieldId() > 0) {
+
+					FacilioField locationField = moduleBean.getField(stateflowTransition.getLocationFieldId());
+					String value = (String) FieldUtil.getValue(record, locationField);
+					Long radius = stateflowTransition.getRadius();
+
+					validateLocation(locationValue, value, radius);
+
 				}
 
 				if(stateflowTransition.getQrFieldId() > 0){
@@ -105,4 +123,38 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		return false;
 	}
 
+	public void validateLocation(String locationValue, String value, Long radius) {
+
+		if(value == null) {
+			return;
+		}
+
+		FacilioUtil.throwIllegalArgumentException(value != null && locationValue == null, "locationValue is mandatory");
+
+		Point area = getPointFromCoordinates(value);
+		Geometry geometry = (area != null) ? area.buffer(radius) : null;
+
+		Point currentLocation = getPointFromCoordinates(locationValue);
+
+		FacilioUtil.throwIllegalArgumentException((geometry != null && currentLocation != null) && !geometry.contains(currentLocation), "location doesn't match to the current location");
+
+	}
+
+	public Point getPointFromCoordinates(String coordinatesValue) {
+		if (coordinatesValue != null) {
+
+			String regex = "^[-+]?[0-9]*\\.?[0-9]+,[-+]?[0-9]*\\.?[0-9]+$";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(coordinatesValue);
+
+			FacilioUtil.throwIllegalArgumentException(!matcher.matches(), "Invalid GeoLocation Pattern");
+
+			String[] coordinates = FacilioUtil.splitByComma(coordinatesValue);
+			Coordinate coordinate = new Coordinate(Double.parseDouble(coordinates[0].toString()), Double.parseDouble(coordinates[1].toString()));
+			GeometryFactory geometryFactory = new GeometryFactory();
+			Point point = geometryFactory.createPoint(coordinate);
+			return point;
+		}
+		return null;
+	}
 }

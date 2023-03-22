@@ -1432,4 +1432,9 @@
     <request path="/api/v3/attendance/getsettings">
     </request>
 
+    <request path="/api/v2/getFields/geoLocation/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

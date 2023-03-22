@@ -92,6 +92,8 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	public String getQrValue() {
 		return qrValue;
 	}
+	@Getter @Setter
+	private String locationValue;
 
 	private String filters;
 
