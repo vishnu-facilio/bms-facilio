@@ -38,13 +38,18 @@ public class AuditLogHandler extends BaseHandler {
 
     @Override
     public Message processOutgoingMessage(Message message) {
+        AuditLogContext auditLog = new AuditLogContext();
         try {
             JSONObject content = message.getContent();
-            AuditLogContext auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
+            auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
             ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());
             moduleCRUD.addAuditLog(auditLog);
         } catch (Exception e) {
-            LOGGER.error("Error in inserting log", e);
+            LOGGER.error("Error in inserting log", e );
+            if (auditLog!=null) {
+                LOGGER.info("Insertion failed Record Details : \n" + "Subject: " + auditLog.getSubject() + "\nRecord Id: " + auditLog.getRecordId()
+                        + "\nRecord Type: " + auditLog.getRecordTypeEnum() + "\nType: " + auditLog.getTypeName() + "\nLink config: " + auditLog.getLinkConfig());
+            }
         }
         return null;
     }
