@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,6 +9,8 @@ import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
+import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
@@ -47,24 +46,31 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(FetchAlarmInsightCommand.class.getName());
 
-	@Override
-	public boolean executeCommand(Context context) throws Exception {
-		long assetId = (long) context.get(ContextNames.ASSET_ID);
-		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
-		long parentAlarmId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_ALARM_ID, -1l);
-		List<Long> assetIds = (List<Long>) context.get(ContextNames.RESOURCE_LIST);
-		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
-		long alarmId = (long) context.get(ContextNames.ALARM_ID);
-		DateOperators operator = DateOperators.CURRENT_WEEK;
-		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-		if (dateRange == null) {
-			Integer dateOperatorInt = (Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR);
-			if (dateOperatorInt != null && dateOperatorInt > -1) {
-				String dateOperatorValue = (String) context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE);
-				operator = (DateOperators) Operator.getOperator(dateOperatorInt);
-				dateRange = operator.getRange(dateOperatorValue);
-			}
-		}
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
+        long assetId = (long) context.get(ContextNames.ASSET_ID);
+        Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
+        long parentAlarmId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_ALARM_ID, -1l);
+        long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
+
+        List<Long> assetIds = (List<Long>) context.getOrDefault(ContextNames.RESOURCE_LIST, null);
+        if (CollectionUtils.isEmpty(assetIds) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            List<Long> nsIds = NamespaceAPI.getNsIdForRuleId(readingRuleId, Collections.singletonList(NSType.READING_RULE));
+            if (CollectionUtils.isNotEmpty(nsIds)) {
+                assetIds = NamespaceAPI.fetchResourceIdsFromNamespaceInclusions(nsIds.get(0));
+            }
+        }
+        long alarmId = (long) context.get(ContextNames.ALARM_ID);
+        DateOperators operator = DateOperators.CURRENT_WEEK;
+        DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+        if (dateRange == null) {
+            Integer dateOperatorInt = (Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR);
+            if (dateOperatorInt != null && dateOperatorInt > -1) {
+                String dateOperatorValue = (String) context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE);
+                operator = (DateOperators) Operator.getOperator(dateOperatorInt);
+                dateRange = operator.getRange(dateOperatorValue);
+            }
+        }
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 

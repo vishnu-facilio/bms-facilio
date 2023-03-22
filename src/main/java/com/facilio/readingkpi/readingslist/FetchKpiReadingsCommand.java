@@ -18,6 +18,7 @@ import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
 import java.util.ArrayList;
@@ -60,19 +61,23 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(rdmModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
 
 
         if (groupBy.equals("kpi")) {
             ReadingKPIContext readingKpi = ReadingKpiAPI.getReadingKpi(recordId);
             Long fieldId = readingKpi.getReadingFieldId();
+            List<Long> includedAssetIds = readingKpi.getNs().getIncludedAssetIds();
             selectFields.add(resourceNameField);
             builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
                     .innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName() + "=" + resourceTable + ".ID")
                     .innerJoin(assetModule.getTableName()).on(assetTableName + ".ID" + "=" + resourceTable + ".ID")
                     .innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
                     .innerJoin(readingKpiModule.getTableName()).on(readingKpiFieldMap.get("readingFieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName());
-
+            if (CollectionUtils.isNotEmpty(includedAssetIds)) {
+                builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("resourceId"), includedAssetIds, NumberOperators.EQUALS));
+            }
         } else {
             builder.innerJoin(readingKpiModule.getTableName()).on(readingKpiFieldMap.get("readingFieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
                     .innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
