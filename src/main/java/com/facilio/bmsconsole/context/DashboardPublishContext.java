@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -121,6 +119,24 @@ public class DashboardPublishContext extends ModuleBaseWithCustomFields {
 			return typeMap;
 		}
 	}
-	
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+	private Integer order;
+
+	public List<Long> getUser_ids() {
+		return user_ids;
+	}
+
+	public void setUser_ids(List<Long> user_ids) {
+		this.user_ids = user_ids;
+	}
+
+	private List<Long> user_ids =new ArrayList<>();
 	
 }

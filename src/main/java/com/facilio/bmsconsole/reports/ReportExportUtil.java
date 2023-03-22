@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.reports;
 
 import java.util.*;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.report.context.ReadingAnalysisContext;
 import org.apache.commons.chain.Context;
@@ -50,7 +51,7 @@ public class ReportExportUtil {
 			url.append("http://"+ FacilioProperties.getAppDomain());
 		}
 		else {
-			if(AccountUtil.getCurrentUser().isPortalUser()){
+			if(AccountUtil.getCurrentUser().isPortalUser() && isPortalApp()){
 				url.append("https://"+ AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			}
 			else {
@@ -140,6 +141,10 @@ public class ReportExportUtil {
 		}
 		
 		return PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileName, additionalInfo, fileFormat);
+	}
+	public static boolean isPortalApp() {
+		AppDomain appDomain = AccountUtil.getCurrentApp().getAppDomain();
+		return appDomain != null && appDomain.getAppDomainTypeEnum() != AppDomain.AppDomainType.FACILIO;
 	}
 	
 }

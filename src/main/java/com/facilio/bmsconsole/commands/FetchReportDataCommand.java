@@ -34,6 +34,7 @@ import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,6 +45,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1199,6 +1201,16 @@ public class FetchReportDataCommand extends FacilioCommand {
                     xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, dp.getxAxis().getField()).clone();
                 } else {
                     xAggrField = xAggr.getSelectField(dp.getxAxis().getField()).clone();
+                }
+                if(xAggr == DateAggregateOperator.WEEKANDYEAR){
+                    DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
+                    if(dayOfWeek == DayOfWeek.MONDAY){
+                        String expr_col = xAggrField.getColumnName();
+                        if(expr_col != null){
+                            expr_col = expr_col.replace("%V", "%v");
+                            xAggrField.setColumnName(expr_col);
+                        }
+                    }
                 }
             } else {
                 xAggrField = dp.getxAxis().getField();
