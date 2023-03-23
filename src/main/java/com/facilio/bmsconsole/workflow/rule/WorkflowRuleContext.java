@@ -465,7 +465,11 @@ public class WorkflowRuleContext implements Serializable {
 		if(siteId == -1) {
 			return true;
 		}
-		else if (record instanceof ModuleBaseWithCustomFields && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SITE_FILTER_WORKFLOW_RULE)){
+			if (record instanceof ModuleBaseWithCustomFields) {
+				return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
+			}
+		} else if (record instanceof ModuleBaseWithCustomFields && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
 		}
 		return true;
