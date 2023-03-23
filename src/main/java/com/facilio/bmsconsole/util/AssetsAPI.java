@@ -1663,6 +1663,9 @@ public class AssetsAPI {
 	public static  List<Map<String, Object>> getRunStatusFields(long assetId) throws Exception {
 		
 		AssetContext asset = getAssetInfo(assetId);
+		if (asset == null){
+			return null;
+		}
 		AssetCategoryContext category = getCategoryForAsset(asset.getCategory().getId());
 		
 		String statusField = categoryVsRunStatus.get(category.getName());

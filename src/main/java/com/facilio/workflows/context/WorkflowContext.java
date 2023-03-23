@@ -386,8 +386,7 @@ public class WorkflowContext extends ScriptContext{
 			        	visitor.setScriptContext(this);
 				        visitor.visitFunctionHeader(tree);
 				        visitor.setParams(params);
-				        fillDefaultGlobalVariables(globalParameters);
-				        visitor.setGlobalParams(globalParameters);
+				        visitor.setGlobalParams(fillDefaultGlobalVariables(globalParameters));
 				        visitor.visit(tree);
 				        WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.SUCCESS,null);
 			        }
@@ -463,7 +462,7 @@ public class WorkflowContext extends ScriptContext{
 		return result;
 	}
 	
-	private void fillDefaultGlobalVariables(Map<String, Object> globalParameters) throws Exception {
+	private Map<String, Object> fillDefaultGlobalVariables(Map<String, Object> globalParameters) throws Exception {
 		globalParameters = globalParameters == null ? new HashMap<>() : globalParameters;
 		
 		globalParameters.put("currentOrg", FieldUtil.getAsJSON(AccountUtil.getCurrentOrg()));
@@ -473,6 +472,7 @@ public class WorkflowContext extends ScriptContext{
 		if (MapUtils.isNotEmpty(liveVariables)) {
 			globalParameters.put("cv", liveVariables);		
 		}
+		return globalParameters;
 	}
 	//	old workflow methods starts
 	// only from client
