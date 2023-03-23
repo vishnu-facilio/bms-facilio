@@ -21,6 +21,8 @@ public class DashboardListPropsContext
         public boolean onlySelected;
         public boolean onlyFolders;
         public boolean withTabs;
+        public boolean isMigrationDone;
+
         public List<DashboardContext> dashboards = new ArrayList<>();
         public List<Long> published_dashboard_ids = new ArrayList<>();
         public List<Long> mobile_dashboard_ids = new ArrayList<>();

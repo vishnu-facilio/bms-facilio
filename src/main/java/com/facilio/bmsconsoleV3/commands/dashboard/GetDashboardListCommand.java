@@ -37,6 +37,7 @@ public class GetDashboardListCommand extends FacilioCommand {
             isMigrationDone = true;
         }
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
+        dashboard_list_prop.setMigrationDone(isMigrationDone);
         List<DashboardContext> dashboard_list = new ArrayList<>();
         if(dashboard_list_prop.isOnlyMobile() && !dashboard_list_prop.isOnlyPublished())
         {

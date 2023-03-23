@@ -38,7 +38,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
         if(dashboard_list_prop.isWithSharing()) {
             List<DashboardContext> dashboards = new ArrayList<>();
             if(dashboard_list_prop.getDashboards() != null && dashboard_list_prop.getDashboards().size() > 0) {
-                getDashboardWithSharing(dashboard_list_prop.getDashboards(), dashboards);
+                getDashboardWithSharing(dashboard_list_prop.getDashboards(), dashboards, dashboard_list_prop.isMigrationDone());
             }
             if (dashboards != null) {
                 dashboard_list_prop.setDashboards(dashboards);
@@ -47,7 +47,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
         return false;
     }
 
-    private void getDashboardWithSharing(List<DashboardContext> dashboard_list, List<DashboardContext> dashboards)throws Exception
+    private void getDashboardWithSharing(List<DashboardContext> dashboard_list, List<DashboardContext> dashboards, boolean isMigrationDone)throws Exception
     {
         Role currnt_user_role = AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getRole() : null;
         if (currnt_user_role != null && ( currnt_user_role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || (currnt_user_role.getIsPrevileged() != null && currnt_user_role.getIsPrevileged()))) {
@@ -66,7 +66,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
                 .andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
                 .andCondition(CriteriaAPI.getCondition("Dashboard_Sharing.DASHBOARD_ID", "dashboardId", StringUtils.join(dashboardIds, ","), NumberOperators.EQUALS));
 
-        if(!AccountUtil.getCurrentUser().isPortalUser()) {
+        if(!AccountUtil.getCurrentUser().isPortalUser() || isMigrationDone) {
             selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
         }
         else {
@@ -134,7 +134,7 @@ public class GetDashboardSharingCommand extends FacilioCommand {
         }
         else
         {
-            if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+            if(isMigrationDone || (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO)) {
                 dashboards.addAll(dashboard_list);
             }
         }
