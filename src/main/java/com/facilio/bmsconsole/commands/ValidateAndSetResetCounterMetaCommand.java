@@ -85,9 +85,7 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 
             context.put(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST, resetCounterMetaList);
         }
-        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("ValidateAndSetResetCounterMetaCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+        LOGGER.debug("ValidateAndSetResetCounterMetaCommand time taken " + (System.currentTimeMillis() - startTime));
         return false;
     }
 

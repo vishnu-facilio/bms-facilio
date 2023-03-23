@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
@@ -36,6 +37,7 @@ public class AddRuleReadingsModuleCommand extends FacilioCommand {
 
             context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
             context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+            context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.READING_RULE);
         }
         return false;
     }

@@ -8,6 +8,7 @@ import com.facilio.wmsv2.message.TopicHandler;
 import com.facilio.wmsv2.util.TopicUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
+import org.reflections.ReflectionsException;
 import org.reflections.util.ClasspathHelper;
 
 import java.util.*;
@@ -48,7 +49,7 @@ public class Processor {
                     else {
                         // log
                     }
-                } catch (InstantiationException | IllegalAccessException ex) {
+                } catch (InstantiationException | IllegalAccessException | ReflectionsException ex) {
                     // log
 
                 }

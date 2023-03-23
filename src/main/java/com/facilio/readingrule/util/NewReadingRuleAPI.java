@@ -202,9 +202,7 @@ public class NewReadingRuleAPI {
 
     public static Map<Long, String> getReadingRuleNamesByIds(List<Long> ruleIds) throws Exception {
 
-        String s = "(" + StringUtils.join(ruleIds, ",") + ")";
         Map<Long, String> nameMap = new HashMap<>();
-
         List<NewReadingRuleContext> resList = getReadingRules(ruleIds);
         if (resList != null) {
             for (NewReadingRuleContext props : resList) {

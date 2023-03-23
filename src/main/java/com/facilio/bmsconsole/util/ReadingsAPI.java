@@ -107,6 +107,8 @@ public class ReadingsAPI {
 			case LIVE_FORMULA:
 			case SYSTEM_SCHEDULED_FORMULA:
 				return ReadingInputType.FORMULA_FIELD;
+			case READING_RULE:
+				return ReadingInputType.ALARM_POINT_FIELD;
 			default:
 				return ReadingInputType.WEB;
 		}

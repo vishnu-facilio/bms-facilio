@@ -1,27 +1,22 @@
 package com.facilio.workflowv2.util;
 
-import java.io.FileReader;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.db.util.DBConf;
+import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FieldUtil;
+import com.facilio.scriptengine.context.Value;
 import com.facilio.util.FacilioUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.reflections.Reflections;
 import org.yaml.snakeyaml.Yaml;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.scriptengine.annotation.ScriptModule;
-import com.facilio.scriptengine.context.Value;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class WorkflowV2Util {
 
@@ -72,7 +67,9 @@ public class WorkflowV2Util {
 
 	static {
 		try {
-			initWorkflowResource();
+			if(!DBConf.getInstance().getService().equalsIgnoreCase("storm")) {
+				initWorkflowResource();
+			}
 		} catch (Exception e) {
 			CommonCommandUtil.emailException(WorkflowV2Util.class.getName(), "Workflow Resource init failed", e);
 		}
