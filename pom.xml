@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.facilio.security</groupId>
             <artifactId>security</artifactId>
-            <version>2.0.3</version>
+            <version>2.0.4</version>
         </dependency>
 
         <dependency>

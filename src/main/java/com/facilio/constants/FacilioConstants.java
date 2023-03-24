@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.budget.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
@@ -2596,6 +2597,7 @@ public class FacilioConstants {
 			classMap.put(VENDOR_ACTIVITY, ActivityContext.class);
 			classMap.put(TENANT_ACTIVITY, ActivityContext.class);
 			classMap.put(SERVICE_REQUEST_ACTIVITY, ActivityContext.class);
+			classMap.put(Shift.SHIFT_ACTIVITY, ActivityContext.class);
 
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
@@ -2686,8 +2688,8 @@ public class FacilioConstants {
 			classMap.put(TERMS_AND_CONDITIONS, V3TermsAndConditionContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_ASSETS, ContractAssociatedAssetsContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
-			classMap.put(ATTENDANCE, AttendanceContext.class);
-			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
+			classMap.put(ATTENDANCE, Attendance.class);
+			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransaction.class);
 			classMap.put(SHIFT, com.facilio.bmsconsoleV3.context.shift.Shift.class);
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
@@ -3386,6 +3388,7 @@ public class FacilioConstants {
 
 		public static final String SHIFT_RICH_TEXT = "shiftrichtext";
 		public static final String EMPLOYEES = "employees";
+		public static final String ACTIVE_STATE = "activeState";
 		public static final String URL = "url";
 		public static final String EXPORT_LIST = "exportList";
 		public static final String FORMAT = "format";
@@ -3805,6 +3808,22 @@ public class FacilioConstants {
 	public static class Break {
 		public static final String BREAK = "break";
         public static final String BREAK_RICH_TEXT = "breakrichtext";
+    }
+
+	public static class Attendance {
+		public static final String ATTENDANCE = "attendance";
+		public static final String ATTENDANCE_TRANSACTION = "attendanceTransaction";
+		public static final String ATTENDANCE_TRANSACTION_RICH_TEXT = "attendanceTransactionRichText";
+		public static final String RANGE_FROM = "rangeFrom";
+		public static final String RANGE_TO = "rangeTo";
+		public static final String PEOPLE_ID = "peopleID";
+
+		public static final String MODE = "mode";
+
+		public static final String DURATION = "duration";
+		public static final String ATTENDANCE_TRANSITIONS = "attendanceTransitions";
+
+		public static String DATE = "date";
     }
 
 	public static class ReadingKpi {

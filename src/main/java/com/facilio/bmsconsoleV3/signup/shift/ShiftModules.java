@@ -4,10 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -19,12 +16,14 @@ import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShiftModules extends SignUpData {
     public final int CASCADE_DELETE = 2;
+
     @Override
     public void addData() throws Exception {
 
@@ -44,6 +43,7 @@ public class ShiftModules extends SignUpData {
         defaultShift.setStartTime(32400L);
         defaultShift.setEndTime(64800L);
         defaultShift.setDefaultShift(true);
+        defaultShift.setIsActive(true);
         defaultShift.setWeekend("{\"1\":[6,7],\"2\":[6,7],\"3\":[6,7],\"4\":[6,7],\"5\":[6,7]}");
         defaultShift.setColorCode("#EEF4F4");
         defaultShift.setModuleState(TicketAPI.getStatus(shiftMod, "active"));
@@ -91,7 +91,7 @@ public class ShiftModules extends SignUpData {
 
     /**
      * creates description field for Shift
-     * **/
+     **/
     public void persistRichTextDescriptionFieldForShift(FacilioModule shiftRichTextMod, FacilioModule shiftMod) throws Exception {
 
         LargeTextField richTextField = FieldFactory.getDefaultField("description", "Description", null, FieldType.LARGE_TEXT);
@@ -127,9 +127,36 @@ public class ShiftModules extends SignUpData {
         AbstractStateTransitionRuleContext.TransitionType normalTransition =
                 AbstractStateTransitionRuleContext.TransitionType.NORMAL;
 
-        SignupUtil.createStateflowTransition(shiftMod, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus, normalTransition);
-        SignupUtil.createStateflowTransition(shiftMod, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus, normalTransition);
+        ActionContext deactivateAction = new ActionContext();
+        deactivateAction.setActionType(ActionType.FIELD_CHANGE);
+        deactivateAction.setTemplateJson(composeTemplateToDeActivate());
+        SignupUtil.createStateflowTransition(shiftMod, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus, normalTransition, Collections.singletonList(deactivateAction));
 
+        ActionContext activateAction = new ActionContext();
+        activateAction.setActionType(ActionType.FIELD_CHANGE);
+        activateAction.setTemplateJson(composeTemplateToActivate());
+        SignupUtil.createStateflowTransition(shiftMod, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus, normalTransition, Collections.singletonList(activateAction));
+    }
+
+    private static JSONObject composeTemplateToActivate() {
+        JSONObject obj = new JSONObject();
+        obj.put("fieldMatcher", getActionToSetIsActive(true));
+        return obj;
+    }
+
+    private static JSONObject composeTemplateToDeActivate() {
+        JSONObject obj = new JSONObject();
+        obj.put("fieldMatcher", getActionToSetIsActive(false));
+        return obj;
+    }
+
+    private static Object getActionToSetIsActive(boolean value) {
+        JSONObject obj = new JSONObject();
+        obj.put("field", "isActive");
+        obj.put("value", Boolean.toString(value));
+        ArrayList list = new ArrayList();
+        list.add(obj);
+        return list;
     }
 
     public FacilioModule composeShiftModule() throws Exception {
@@ -143,9 +170,10 @@ public class ShiftModules extends SignUpData {
         FacilioField nameField = FieldFactory.getStringField("name", "NAME", mod);
         nameField.setMainField(true);
         fields.add(nameField);
-        fields.add(FieldFactory.getNumberField("startTime",   "START_TIME", mod));
-        fields.add(FieldFactory.getNumberField("endTime",   "END_TIME", mod));
-        fields.add(FieldFactory.getBooleanField("defaultShift",   "IS_DEFAULT", mod));
+        fields.add(FieldFactory.getNumberField("startTime", "START_TIME", mod));
+        fields.add(FieldFactory.getNumberField("endTime", "END_TIME", mod));
+        fields.add(FieldFactory.getBooleanField("defaultShift", "IS_DEFAULT", mod));
+        fields.add(FieldFactory.getBooleanField("isActive", "IS_ACTIVE", mod));
         fields.add(FieldFactory.getStringField("weekend", "WEEKEND", mod));
         fields.add(FieldFactory.getStringField("colorCode", "COLOR_CODE", mod));
 
@@ -155,7 +183,10 @@ public class ShiftModules extends SignUpData {
         moduleStateField.setLookupModule(ticketStatusMod);
         fields.add(moduleStateField);
 
-        fields.add(FieldFactory.getNumberField("stateFlowId",   "STATE_FLOW_ID", mod));
+        fields.add(FieldFactory.getNumberField("stateFlowId", "STATE_FLOW_ID", mod));
+        for (FacilioField f : fields) {
+            f.setDefault(true);
+        }
 
         mod.setFields(fields);
         return mod;

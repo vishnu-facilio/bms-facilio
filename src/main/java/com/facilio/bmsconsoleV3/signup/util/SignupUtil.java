@@ -279,6 +279,7 @@ public class SignupUtil {
         }
 
         public static boolean maintenanceAppSignup() {
+
                 try {
                         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MAINTENANCE_APP_SIGNUP)) {
                                 return true;
@@ -326,13 +327,20 @@ public class SignupUtil {
          * @param transitionType  type of Transition
          * @return StateflowTransition
          * **/
-        public static StateflowTransitionContext createStateflowTransition(FacilioModule module, StateFlowRuleContext sf, String name, FacilioStatus from, FacilioStatus to, AbstractStateTransitionRuleContext.TransitionType transitionType) throws Exception {
+        public static StateflowTransitionContext createStateflowTransition(FacilioModule module,
+                                                                           StateFlowRuleContext sf,
+                                                                           String name,
+                                                                           FacilioStatus from,
+                                                                           FacilioStatus to,
+                                                                           AbstractStateTransitionRuleContext.TransitionType transitionType,
+                List<ActionContext> actions) throws Exception {
 
                 StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
                 stateFlowTransitionContext.setName(name);
                 stateFlowTransitionContext.setModule(module);
                 stateFlowTransitionContext.setModuleId(module.getModuleId());
                 stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
+                stateFlowTransitionContext.setActions(actions);
                 stateFlowTransitionContext.setExecutionOrder(1);
                 stateFlowTransitionContext.setButtonType(1);
                 stateFlowTransitionContext.setFromStateId(from.getId());
@@ -341,8 +349,11 @@ public class SignupUtil {
                 stateFlowTransitionContext.setType(transitionType);
                 stateFlowTransitionContext.setStateFlowId(sf.getId());
 
-                WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
-
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
+                FacilioContext context = chain.getContext();
+                context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlowTransitionContext);
+                context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+                chain.execute();
                 return stateFlowTransitionContext;
         }
 }

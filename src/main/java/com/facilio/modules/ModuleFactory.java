@@ -5459,4 +5459,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		woSettingModule.setDisplayName("WorkOrder Module Setting");
 		return woSettingModule;
 	}
+
+	public static FacilioModule getAttendanceSettingsPseudoModule() {
+		FacilioModule attendanceSettings = new FacilioModule();
+		attendanceSettings.setName("attendanceSettings");
+		attendanceSettings.setDisplayName("Attendance Settings");
+		attendanceSettings.setTableName("Attendance_Settings");
+		return attendanceSettings;
+	}
 }

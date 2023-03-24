@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.shift.Break;
 import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.shift.ShiftSlot;
 import com.facilio.constants.FacilioConstants;
@@ -172,19 +173,18 @@ public class ShiftAPI {
             shift.put("name", defaultShiftSlot.getShift().getName());
             shift.put("shiftId", defaultShiftSlot.getShift().getId());
             shift.put("colorCode", defaultShiftSlot.getShift().getColorCode());
-            shift.put("startTime", dayEpochToReadableTime(defaultShiftSlot.getShift().getStartTime()));
-            shift.put("endTime", dayEpochToReadableTime(defaultShiftSlot.getShift().getEndTime()));
+            shift.put("startTime", defaultShiftSlot.getShift().getStartTime());
+            shift.put("endTime", defaultShiftSlot.getShift().getEndTime());
             shift.put("isWeeklyOff", defaultShiftSlot.getShift().isWeeklyOff(time));
 
             shiftSchedule.add(shift);
             shiftScheduleMap.put(date, shift);
         }
-
         for (ShiftSlot slot : slots) {
 
             long modificationStart = slot.getFrom();
             long modificationEnd = slot.getTo();
-            if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD){
+            if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD) {
                 continue;
             }
             Shift shift = slot.getShift();
@@ -192,14 +192,14 @@ public class ShiftAPI {
             for (long time = modificationStart; time <= modificationEnd; time += DAY_IN_MILLIS) {
                 String date = epochToReadableDate(time);
                 Map<String, Object> shiftObj = shiftScheduleMap.get(date);
-                if (shiftObj == null){
+                if (shiftObj == null) {
                     continue;
                 }
                 shiftObj.put("name", shift.getName());
                 shiftObj.put("shiftId", shift.getId());
                 shiftObj.put("colorCode", shift.getColorCode());
-                shiftObj.put("startTime", dayEpochToReadableTime(shift.getStartTime()));
-                shiftObj.put("endTime", dayEpochToReadableTime(shift.getEndTime()));
+                shiftObj.put("startTime", shift.getStartTime());
+                shiftObj.put("endTime", shift.getEndTime());
                 shiftObj.put("isWeeklyOff", shift.isWeeklyOff(time));
             }
 
@@ -238,7 +238,7 @@ public class ShiftAPI {
 
         // A.1 People Condition | PEOPLE_ID = peopleID
         Condition peopleCondition = CriteriaAPI.getCondition(fieldMap.get("peopleId"),
-                employeeIDs ,
+                employeeIDs,
                 NumberOperators.EQUALS);
 
         // B.1 Bound Condition | START_TIME = -2
@@ -251,22 +251,29 @@ public class ShiftAPI {
                 Collections.singletonList(UNLIMITED_PERIOD),
                 NumberOperators.EQUALS);
 
-        // B.3 START_TIME >= 1672597800000
-        Condition startRangeCond = CriteriaAPI.getCondition(fieldMap.get("startTime"),
+        Criteria slotStartIncidentInView = new Criteria();
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
                 Collections.singletonList(rangeFrom),
-                NumberOperators.GREATER_THAN_EQUAL);
+                NumberOperators.GREATER_THAN_EQUAL));
 
-        // B.4 END_TIME <= 1672684200000
-        Condition endRangeCond = CriteriaAPI.getCondition(fieldMap.get("endTime"),
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
                 Collections.singletonList(rangeTo),
-                NumberOperators.LESS_THAN_EQUAL);
+                NumberOperators.LESS_THAN_EQUAL));
 
-        // Time Bound Criteria
-        Criteria boundCriteria = new Criteria();
-        boundCriteria.addOrCondition(perpetualStartTimeCond);
-        boundCriteria.addOrCondition(perpetualEndTimeCond);
-        boundCriteria.addOrCondition(startRangeCond);
-        boundCriteria.addOrCondition(endRangeCond);
+        Criteria slotEndIncidentInView = new Criteria();
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeFrom),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeTo),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addOrCondition(perpetualStartTimeCond);
+        timeCriteria.addOrCondition(perpetualEndTimeCond);
+        timeCriteria.orCriteria(slotStartIncidentInView);
+        timeCriteria.orCriteria(slotEndIncidentInView);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(shiftPeopleRelMod.getTableName())
@@ -275,19 +282,19 @@ public class ShiftAPI {
                 .on("Shift_People_Rel.SHIFT_ID = Shift.ID")
                 .orderBy("Shift_People_Rel.START_TIME")
                 .andCondition(peopleCondition)
-                .andCriteria(boundCriteria);
+                .andCriteria(timeCriteria);
 
         List<Map<String, Object>> resultSet = builder.get();
 
-        List<ShiftSlot>  slots = new ArrayList<>();
+        List<ShiftSlot> slots = new ArrayList<>();
 
-        for (Map<String, Object> row: resultSet) {
+        for (Map<String, Object> row : resultSet) {
             Long slotStart = (Long) row.get("slotStart");
-            Long slotEnd =  (Long) row.get("slotEnd");
-            Long peopleID =  (Long) row.get("peopleID");
+            Long slotEnd = (Long) row.get("slotEnd");
+            Long peopleID = (Long) row.get("peopleID");
 
             Shift shift = FieldUtil.cloneBean(row, Shift.class);
-            Long shiftID =  (Long) row.get("shiftID");
+            Long shiftID = (Long) row.get("shiftID");
             shift.setId(shiftID);
 
             V3EmployeeContext emp = new V3EmployeeContext();
@@ -387,19 +394,53 @@ public class ShiftAPI {
      * @param shiftID ID of the Shift
      * @return Number of Employee associated to the Shift
      **/
+    public static Integer getAssociatedEmployeesCount(long shiftID) throws Exception {
+
+        //        SELECT count(distinct(PEOPLE_ID)) as 'count'
+        //        FROM Shift_People_Rel
+        //        WHERE
+        //        SHIFT_ID = 5
+        //        AND orgid = 7;
+
+        FacilioModule shiftPeopleRelMod = ModuleFactory.getShiftPeopleRelPseudoModule();
+        FacilioField countField =
+                FieldFactory.getField("count", "COUNT(DISTINCT PEOPLE_ID)", FieldType.NUMBER);
+
+        Map<String, FacilioField> fieldMap =
+                FieldFactory.getAsMap(FieldFactory.getShiftPeopleRelPseudoModuleFields());
+
+        // Shift Condition | SHIFT_ID = shiftID
+        Condition shiftCond = CriteriaAPI.getCondition(fieldMap.get("shiftId"),
+                Collections.singleton(shiftID),
+                NumberOperators.EQUALS);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(shiftPeopleRelMod.getTableName())
+                .select(Collections.singletonList(countField))
+                .andCondition(shiftCond);
+
+        List<Map<String, Object>> resultSet = builder.get();
+        return FacilioUtil.parseInt(resultSet.get(0).get("count"));
+    }
+    /**
+     * Returns the number of employees associated to the given Shift
+     *
+     * @param shiftID ID of the Shift
+     * @return Number of Employee associated to the Shift
+     **/
     public static Integer getAssociatedEmployeesCount(long shiftID, long date) throws Exception {
 
-    //        SELECT count(distinct(PEOPLE_ID)) as 'count'
-    //        FROM Shift_People_Rel
-    //        WHERE
-    //        SHIFT_ID = 5
-    //        AND orgid = 7
-    //        AND (
-    //                (START_TIME <= 1672770600000 AND END_TIME >= 1672770600000) OR
-    //                (START_TIME = -2 AND END_TIME = -2) OR
-    //                (START_TIME = -2 AND END_TIME >= 1672770600000) OR
-    //                (START_TIME <= 1672770600000 AND END_TIME = -2)
-    //        );
+        //        SELECT count(distinct(PEOPLE_ID)) as 'count'
+        //        FROM Shift_People_Rel
+        //        WHERE
+        //        SHIFT_ID = 5
+        //        AND orgid = 7
+        //        AND (
+        //                (START_TIME <= 1672770600000 AND END_TIME >= 1672770600000) OR
+        //                (START_TIME = -2 AND END_TIME = -2) OR
+        //                (START_TIME = -2 AND END_TIME >= 1672770600000) OR
+        //                (START_TIME <= 1672770600000 AND END_TIME = -2)
+        //        );
 
         FacilioModule shiftPeopleRelMod = ModuleFactory.getShiftPeopleRelPseudoModule();
         FacilioField countField =
@@ -422,7 +463,7 @@ public class ShiftAPI {
                 NumberOperators.GREATER_THAN_EQUAL);
 
         // A. (START_TIME <= day AND END_TIME >= day)
-        Criteria  nonPerpetualSlotInterceptingTheDateCriteria = new Criteria();
+        Criteria nonPerpetualSlotInterceptingTheDateCriteria = new Criteria();
         nonPerpetualSlotInterceptingTheDateCriteria.addAndCondition(startTimeLessThanEqDayCond);
         nonPerpetualSlotInterceptingTheDateCriteria.addAndCondition(endTimeGreaterThanEqDayCond);
 
@@ -435,22 +476,22 @@ public class ShiftAPI {
                 NumberOperators.EQUALS);
 
         // B. (START_TIME = -2 AND END_TIME = -2)
-        Criteria  perpetualSlotCriteria = new Criteria();
+        Criteria perpetualSlotCriteria = new Criteria();
         perpetualSlotCriteria.addAndCondition(perpetualStartTimeCond);
         perpetualSlotCriteria.addAndCondition(perpetualEndTimeCond);
 
         // C. (START_TIME = -2 AND END_TIME >= day)
-        Criteria  semiPerpetualWithEndTimeSlotCriteria = new Criteria();
+        Criteria semiPerpetualWithEndTimeSlotCriteria = new Criteria();
         semiPerpetualWithEndTimeSlotCriteria.addAndCondition(perpetualStartTimeCond);
         semiPerpetualWithEndTimeSlotCriteria.addAndCondition(endTimeGreaterThanEqDayCond);
 
         // D. (START_TIME <= day AND END_TIME = -2)
-        Criteria  semiPerpetualWithStartTimeSlotCriteria = new Criteria();
+        Criteria semiPerpetualWithStartTimeSlotCriteria = new Criteria();
         semiPerpetualWithStartTimeSlotCriteria.addAndCondition(startTimeLessThanEqDayCond);
         semiPerpetualWithStartTimeSlotCriteria.addAndCondition(perpetualEndTimeCond);
 
         // A + B + C + D
-        Criteria  slotBoundsCriteria = new Criteria();
+        Criteria slotBoundsCriteria = new Criteria();
         slotBoundsCriteria.orCriteria(nonPerpetualSlotInterceptingTheDateCriteria);
         slotBoundsCriteria.orCriteria(perpetualSlotCriteria);
         slotBoundsCriteria.orCriteria(semiPerpetualWithEndTimeSlotCriteria);
@@ -504,31 +545,28 @@ public class ShiftAPI {
         slotsToBeDeleted.addAll(incidentSlots);
 
         for (ShiftSlot incidentSlot : incidentSlots) {
-            if (fullyContainedSlot(incidentSlot, newSlot)){
+            if (incidentSlotFullyContainedByNewSlot(incidentSlot, newSlot)) {
                 continue;
             }
             if (isDefaultShiftSlot(incidentSlot)) {
                 List<ShiftSlot> trimmedSlots = breakDefaultSlot(incidentSlot, newSlot);
                 slotsToBeAdded.addAll(trimmedSlots);
             } else {
-                ShiftSlot trimmedSlot = trimHalfContainedSlot(incidentSlot, newSlot);
-                if (trimmedSlot == null){
-                    throw new Exception("trimmed slot cannot be null");
-                }
-                slotsToBeAdded.add(trimmedSlot);
+                List<ShiftSlot> trimmedSlots = trimHalfContainedSlot(incidentSlot, newSlot);
+                slotsToBeAdded.addAll(trimmedSlots);
             }
         }
         deleteSlots(slotsToBeDeleted);
         addSlots(slotsToBeAdded);
     }
 
-    private static boolean fullyContainedSlot(ShiftSlot incidentSlot, ShiftSlot newSlot) {
+    private static boolean incidentSlotFullyContainedByNewSlot(ShiftSlot incidentSlot, ShiftSlot newSlot) {
         // perpetual slots can never be fully contained
         if (incidentSlot.getFrom() == UNLIMITED_PERIOD ||
                 incidentSlot.getTo() == UNLIMITED_PERIOD) {
             return false;
         }
-        return incidentSlot.getFrom()>= newSlot.getFrom() &&
+        return incidentSlot.getFrom() >= newSlot.getFrom() &&
                 incidentSlot.getTo() <= newSlot.getTo();
     }
 
@@ -567,21 +605,42 @@ public class ShiftAPI {
         del.delete();
     }
 
-    private static ShiftSlot trimHalfContainedSlot(ShiftSlot incidentSlot, ShiftSlot newSlot) {
+    private static List<ShiftSlot> trimHalfContainedSlot(ShiftSlot incidentSlot, ShiftSlot newSlot) {
+        List<ShiftSlot> trimmedSlots = new ArrayList<>();
 
-        if (incidentSlot.getTo() >= newSlot.getFrom()) {
-            long updatesStartForIncidentSlot = incidentSlot.getFrom();
-            long updatedEndForIncidentSlot = newSlot.getFrom() - DAY_IN_MILLIS;
-            return new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), updatesStartForIncidentSlot, updatedEndForIncidentSlot);
+        if (incidentSlot.getTo() != UNLIMITED_PERIOD &&  newSlot.getFrom() != UNLIMITED_PERIOD &&
+                incidentSlot.getTo() >= newSlot.getFrom()) {
+            long start = incidentSlot.getFrom();
+            long end = newSlot.getFrom() - DAY_IN_MILLIS;
+            trimmedSlots.add(new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), start, end));
         }
 
-        if (incidentSlot.getFrom() <= newSlot.getTo()) {
-            long updatesStartForIncidentSlot = newSlot.getTo() + DAY_IN_MILLIS;
-            long updatedEndForIncidentSlot = incidentSlot.getTo();
-            return new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), updatesStartForIncidentSlot, updatedEndForIncidentSlot);
+        if (incidentSlot.getFrom() != UNLIMITED_PERIOD &&  newSlot.getTo() != UNLIMITED_PERIOD &&
+                incidentSlot.getFrom() <= newSlot.getTo()) {
+            long start = newSlot.getTo() + DAY_IN_MILLIS;
+            long end = incidentSlot.getTo();
+            trimmedSlots.add(new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), start, end));
         }
 
-        return null;
+        // if start of newSlot is after the start of the incidentSlot, create a slot
+        // from start of incidentSlot and one day before start of newSlot
+        if (newSlot.getFrom() != UNLIMITED_PERIOD && incidentSlot.getFrom() != UNLIMITED_PERIOD &&
+                newSlot.getFrom() >= incidentSlot.getFrom()){
+            long start = incidentSlot.getFrom();
+            long end = newSlot.getFrom() - DAY_IN_MILLIS;
+            trimmedSlots.add(new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), start, end));
+        }
+
+        // if end of newSlot is before the end of the incidentSlot, create a slot
+        // from the day next to end of newSlot and end of incident slot.
+        if (newSlot.getTo() != UNLIMITED_PERIOD && incidentSlot.getTo() != UNLIMITED_PERIOD &&
+                newSlot.getTo() <= incidentSlot.getTo()){
+            long start = newSlot.getTo() + DAY_IN_MILLIS;
+            long end = incidentSlot.getTo();
+            trimmedSlots.add(new ShiftSlot(incidentSlot.getPeople(), incidentSlot.getShift(), start, end));
+        }
+
+        return trimmedSlots;
     }
 
     private static List<ShiftSlot> getIncidentSlots(long peopleID, long from, long to) throws Exception {
@@ -642,7 +701,7 @@ public class ShiftAPI {
 
     private static List<ShiftSlot> composeShiftSlotsFromResult(List<Map<String, Object>> resultSet) {
         List<ShiftSlot> slots = new ArrayList<>();
-        for (Map<String, Object> rec: resultSet) {
+        for (Map<String, Object> rec : resultSet) {
 
             Long id = (Long) rec.get("id");
 
@@ -678,7 +737,7 @@ public class ShiftAPI {
     }
 
     private static boolean isDefaultShiftSlot(ShiftSlot slot) {
-        return slot.getFrom() == UNLIMITED_PERIOD && slot.getTo() == UNLIMITED_PERIOD;
+        return slot.getFrom() == UNLIMITED_PERIOD || slot.getTo() == UNLIMITED_PERIOD;
     }
 
 
@@ -694,6 +753,63 @@ public class ShiftAPI {
                 FieldFactory.getField("shiftId", "SHIFT_ID", FieldType.NUMBER);
         Condition shiftCond =
                 CriteriaAPI.getCondition(shiftField, String.valueOf(shiftID), NumberOperators.EQUALS);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(shiftBreakRelMod.getTableName())
+                .select(Collections.singletonList(countField))
+                .andCondition(shiftCond);
+
+        List<Map<String, Object>> resultSet = builder.get();
+        if (resultSet == null) {
+            throw new Exception("resultSet cannot be null");
+        }
+        return FacilioUtil.parseInt(resultSet.get(0).get("count"));
+    }
+
+    public static Shift getPeopleShiftForDay(Long peopleID, long day) throws Exception {
+        List<Map<String, Object>> res = getShiftList(peopleID, day, day);
+        return getShift(FacilioUtil.parseLong(res.get(0).get("shiftId")));
+    }
+
+    /**
+     * Returns the Break object of given ID
+     *
+     * @param id ID of the break to look for
+     * @return retrieved Break object
+     */
+    public static Break getBreak(long id) throws Exception {
+        List<Break> breaks = getBreaks(Collections.singletonList(id));
+        return breaks == null || breaks.isEmpty() ? null : breaks.get(0);
+    }
+
+    /**
+     * Returns a list of Breaks with respect to the given ids
+     *
+     * @param ids list of break IDs to be retrieved
+     * @return retrieved list of Breaks
+     */
+    public static List<Break> getBreaks(List<Long> ids) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+        SelectRecordsBuilder<Break> builder = new SelectRecordsBuilder<Break>()
+                .beanClass(Break.class)
+                .module(module)
+                .select(modBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(ids, module));
+        return builder.get();
+    }
+
+    public static Integer getAssociatedShiftCount(long breakID) throws Exception {
+        FacilioModule shiftBreakRelMod =
+                Constants.getModBean().getModule(FacilioConstants.ContextNames.SHIFT_BREAK_REL);
+
+        FacilioField countField =
+                FieldFactory.getField("count", "COUNT(DISTINCT SHIFT_ID)", FieldType.NUMBER);
+
+        FacilioField shiftField =
+                FieldFactory.getField("breakId", "BREAK_ID", FieldType.NUMBER);
+        Condition shiftCond =
+                CriteriaAPI.getCondition(shiftField, String.valueOf(breakID), NumberOperators.EQUALS);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(shiftBreakRelMod.getTableName())

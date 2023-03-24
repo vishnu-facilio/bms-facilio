@@ -1,6 +1,5 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.shift;
 
-import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
@@ -11,8 +10,16 @@ import java.util.List;
 @Data
 public class Break extends V3Context {
 
+    Break() {
+    }
+    public Break(Type type, Long time) {
+        this.breakType = type;
+        this.breakTime = time;
+    }
+
+
     private String name;
-    private Long BreakTime;
+    private Long breakTime;
     private List<Shift> shifts;
 
     public enum Type implements FacilioStringEnum {

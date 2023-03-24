@@ -60,6 +60,7 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.PLANNEDMAINTENANCE,
 			ContextNames.ANNOUNCEMENT,
 			ContextNames.JOB_PLAN,
+			ContextNames.ATTENDANCE,
 			FacilioConstants.PeopleGroup.PEOPLE_GROUP);
 
 	

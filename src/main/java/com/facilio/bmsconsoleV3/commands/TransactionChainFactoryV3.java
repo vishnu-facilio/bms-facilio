@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.attendance.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
@@ -2360,14 +2361,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getShiftBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateShiftsCommand());
+        chain.addCommand(new AssignShiftActivityModuleCommand());
         chain.addCommand(new MarkAsNonDefaultShiftCommand());
-        chain.addCommand(new AddActivitiesCommand(FacilioConstants.Shift.SHIFT_ACTIVITY));
-        return chain;
-    }
-
-    public static FacilioChain getShiftAfterSaveChain() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new AddShiftAbsenceDetectionJobCommand());
         return chain;
     }
 
@@ -2377,24 +2372,10 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getShiftAfterDeleteChain() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new RemoveShiftAbsenceDetectionJobCommand());
-        return chain;
-    }
-
     public static FacilioChain getShiftBeforeUpdateChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateShiftsCommand());
-        chain.addCommand(new MarkAsNonDefaultShiftCommand());
-        chain.addCommand(new AddActivitiesCommand(FacilioConstants.Shift.SHIFT_ACTIVITY));
-        return chain;
-    }
-
-    public static Command getShiftAfterUpdateChain() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new RemoveShiftAbsenceDetectionJobCommand());
-        chain.addCommand(new AddShiftAbsenceDetectionJobCommand());
+        chain.addCommand(new AssignShiftActivityModuleCommand());
         return chain;
     }
 
@@ -2444,7 +2425,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getBreakBeforeDeleteChain() {
         FacilioChain c = getDefaultChain();
-//        c.addCommand(new RemoveBreakShiftRelationshipCommand());
+        c.addCommand(new ValidateBreakUsageCommand());
         return c;
     }
 
@@ -3038,6 +3019,51 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain updateUserScopingStatusChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateUserScopingStatusCommand());
+        return c;
+    }
+
+    public static FacilioChain getAttendanceTransitionListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAttendanceTransitionCommand());
+        return c;
+    }
+    public static FacilioChain getAttendanceTransactionListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAttendanceTransactionCommand());
+        return c;
+    }
+    public static Command getAttendanceTxnBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateAttendanceTransactionCommand());
+        return c;
+    }
+
+    public static FacilioChain getAttendanceListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ListAttendanceCommand());
+        return c;
+    }
+
+    public static Command getAttendanceTxnAfterTransactionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateAttendance());
+        return c;
+    }
+
+    public static FacilioChain getShiftStatesChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetShiftStatesCommand());
+        return c;
+    }
+
+    public static FacilioChain getAttendanceSettingsUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAttendanceSettingsUpdateCommand());
+        return c;
+    }
+    public static FacilioChain getAttendanceSettingsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAttendanceSettingsCommand());
         return c;
     }
 }

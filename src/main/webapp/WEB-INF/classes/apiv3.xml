@@ -9,7 +9,7 @@
              extends="struts-default,json-default">
         <result-types>
             <result-type name="json"
-                         class="com.facilio.bmsconsole.interceptors.CacheResult" />
+                         class="com.facilio.bmsconsole.interceptors.CacheResult"/>
         </result-types>
 
         <global-results>
@@ -56,44 +56,44 @@
 
         <global-exception-mappings>
             <exception-mapping exception="java.lang.Exception"
-                               result="exception" />
+                               result="exception"/>
         </global-exception-mappings>
     </package>
     <package name="internalExV3" namespace="/v3/exception"
-			 extends="v3BaseApi">
-		<action name="handleException"
-				class="com.facilio.v3.V3Action"
-				method="handleException">
-			<interceptor-ref name="defaultStack" />
-		</action>
-	</package>
+             extends="v3BaseApi">
+        <action name="handleException"
+                class="com.facilio.v3.V3Action"
+                method="handleException">
+            <interceptor-ref name="defaultStack"/>
+        </action>
+    </package>
 
     <package name="v3Api" namespace="/api/v3/modules/data" extends="v3BaseApi">
         <interceptors>
             <interceptor name="cacheinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor"/>
             <interceptor name="scopeinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor"/>
             <interceptor name="datasourceinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor"/>
             <interceptor name="authinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor"/>
             <interceptor name="validationinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor"/>
             <interceptor name="globalscopevariableinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
-            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
-            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor"/>
+            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor"/>
+            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor"/>
             <interceptor-stack name="defaultInterceptor">
-                <interceptor-ref name="defaultStack" />
-                <interceptor-ref name="authinterceptor" />
-                <interceptor-ref name="apiKeyInterceptor" />
-                <interceptor-ref name="datasourceinterceptor" />
-                <interceptor-ref name="scopeinterceptor" />
-                <interceptor-ref name="malwareInterceptor" />
-                <interceptor-ref name="globalscopevariableinterceptor" />
-                <interceptor-ref name="cacheinterceptor" />
-                <interceptor-ref name="validationinterceptor" />
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="authinterceptor"/>
+                <interceptor-ref name="apiKeyInterceptor"/>
+                <interceptor-ref name="datasourceinterceptor"/>
+                <interceptor-ref name="scopeinterceptor"/>
+                <interceptor-ref name="malwareInterceptor"/>
+                <interceptor-ref name="globalscopevariableinterceptor"/>
+                <interceptor-ref name="cacheinterceptor"/>
+                <interceptor-ref name="validationinterceptor"/>
                 <interceptor-ref name="json">
                     <param name="enableSMD">true</param>
                 </interceptor-ref>
@@ -101,7 +101,7 @@
         </interceptors>
 
         <default-interceptor-ref
-                name="defaultInterceptor" />
+                name="defaultInterceptor"/>
 
         <action name="create"
                 class="com.facilio.v3.RESTAPIHandler"
@@ -147,7 +147,7 @@
 
         <action name="bulkget"
                 class="com.facilio.v3.RESTAPIHandler"
-                method="bulkGet" >
+                method="bulkGet">
             <param name="deprecated">true</param>
         </action>
 
@@ -181,26 +181,34 @@
     <package name="newV3Api" extends="v3Api" namespace="/api/v3/modules">
         <action name="*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">
+                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
             <param name="checkPermission">true</param>
         </action>
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">
+                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
             <param name="checkPermission">true</param>
         </action>
         <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">
+                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
             <param name="checkPermission">true</param>
         </action>
         <action name="*/view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
             <param name="type">count</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">
+                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
             <param name="checkPermission">true</param>
         </action>
         <action name="wo/site/summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
@@ -227,9 +235,9 @@
         </action>
 
         <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.TimelineActionV3">
-        <param name="moduleName">{1}</param>
-        <param name="viewName">{2}</param>
-        <param name="id">{3}</param>
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+            <param name="id">{3}</param>
         </action>
     </package>
 
@@ -243,7 +251,7 @@
     <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
         <action name="get"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
-                method="timelineData" />
+                method="timelineData"/>
 
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
@@ -261,11 +269,11 @@
     <package name="calendarV3Api" namespace="/api/v3/modules/data/calendarView" extends="v3Api">
         <action name="get"
                 class="com.facilio.bmsconsoleV3.actions.CalendarViewAction"
-                method="calendarData" />
+                method="calendarData"/>
 
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.CalendarViewAction"
-                method="calendarList" />
+                method="calendarList"/>
     </package>
 
     <package name="workorderV3Api" namespace="/api/v3/workorders" extends="v3Api">
@@ -282,20 +290,72 @@
         <action name="view"
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="list">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">shift</param>
+            <param name="checkPermission">true</param>
         </action>
 
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="update">
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="moduleName">shift</param>
+            <param name="checkPermission">true</param>
         </action>
         <action name="calendar"
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="calendar">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">shift</param>
+            <param name="checkPermission">true</param>
         </action>
 
         <action name="export"
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="export">
+        </action>
+    </package>
+
+    <package name="attendanceList" namespace="/api/v3/attendance" extends="v3Api">
+        <action name="view"
+                class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
+                method="list">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">attendance</param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="transition"
+                class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
+                method="transitionList">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">attendance</param>
+            <param name="checkPermission">true</param>
+        </action>
+
+        <action name="settings"
+                class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
+                method="settings">
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="moduleName">attendance</param>
+            <param name="checkPermission">true</param>
+        </action>
+
+        <action name="getsettings"
+                class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
+                method="getSettings">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">attendance</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
+
+    <package name="attendanceTransactionsList" namespace="/api/v3/attendancetransaction" extends="v3Api">
+        <action name="view"
+                class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
+                method="transactionList">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">attendance</param>
+            <param name="checkPermission">true</param>
         </action>
     </package>
 
@@ -317,9 +377,9 @@
         <action name="list"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listTriggers">
-                <param name="permission">ALL</param>
-		<param name="setupTab">SCHEDULER</param>
-        </action>        
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCHEDULER</param>
+        </action>
 
         <action name="addOrUpdate"
                 class="com.facilio.trigger.action.TriggerAction"
@@ -332,11 +392,11 @@
         </action>
         <action name="rearrange"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="reArrangeTriggerAction" />
+                method="reArrangeTriggerAction"/>
 
         <action name="changeStatus"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="changeStatus" />
+                method="changeStatus"/>
 
         <action name="execute"
                 class="com.facilio.trigger.action.TriggerAction"
@@ -346,20 +406,20 @@
         <action name="agent"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listAgentTriggers">
-               <param name="moduleName">agent</param>
-               <result name="success" type="json">
-	                <param name="excludeNullProperties">true</param>
-	                <param name="ignoreHierarchy">false</param>
-	                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
-	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name|displayName)).)*</param>
+            <param name="moduleName">agent</param>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name|displayName)).)*</param>
 
-           	 	</result>
+            </result>
         </action>
 
         <action name="*"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="triggerDetails">
-               <param name="id">{1}</param>
+            <param name="id">{1}</param>
         </action>
 
     </package>
@@ -368,7 +428,7 @@
     <package name="v3MailMessageAction" namespace="/api/v3/mailmessage" extends="v3Api">
         <action name="reSendVerificationEmail"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
-                method="reSendVerificationEmail" />
+                method="reSendVerificationEmail"/>
 
         <action name="getfromEmailForEmailThreadingReply"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
@@ -387,7 +447,7 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="getSlot">
         </action>
-		<action name="getTenantsToBePublished"
+        <action name="getTenantsToBePublished"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="getTenantsToBePublished">
         </action>
@@ -430,7 +490,7 @@
             <param name="moduleName">{1}</param>
         </action>
     </package>
-    
+
     <package name="bulkActionCreate" namespace="/api/v3/bulkAction" extends="v3Api">
         <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
@@ -449,8 +509,8 @@
 
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
-        <param name="permission">ALL</param>
-	<param name="setupTab">TABS_AND_LAYOUTS</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">TABS_AND_LAYOUTS</param>
         </action>
     </package>
 
@@ -468,12 +528,14 @@
                 <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
                 <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
-                <param name="excludeProperties">data.fields.*\.field.(columnName|completeColumnName|tableName|inputName|module|accessType)</param>
+                <param name="excludeProperties">
+                    data.fields.*\.field.(columnName|completeColumnName|tableName|inputName|module|accessType)
+                </param>
 
             </result>
         </action>
     </package>
-     <package name="fieldsApiv3" namespace="/api/v3/fields" extends="v3Api">
+    <package name="fieldsApiv3" namespace="/api/v3/fields" extends="v3Api">
         <action name="sortable/*" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="sortableFields">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">FieldTranslationV3</param>
@@ -535,7 +597,7 @@
                 class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
                 method="delete">
         </action>
-       	<action name="list"
+        <action name="list"
                 class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
                 method="list">
         </action>
@@ -563,7 +625,7 @@
     <package name="qandaRulesAdd" namespace="/api/v3/qandarules/add" extends="v3Api">
         <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction"
                 method="addQandARules">
-        <param name="pageId">{1}</param>
+            <param name="pageId">{1}</param>
         </action>
     </package>
 
@@ -617,7 +679,7 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getViewData">
         </action>
-         <action name="propertiesdata"
+        <action name="propertiesdata"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getPropertiesData">
         </action>
@@ -627,7 +689,7 @@
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="floorplanListSearch">
-                <param name="floorPlanId">{1}</param>
+            <param name="floorPlanId">{1}</param>
         </action>
     </package>
 
@@ -635,40 +697,40 @@
         <action name="listGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="listGroup">
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
         </action>
         <action name="addOrUpdateGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdateGroup">
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
-                </action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
+        </action>
         <action name="deleteGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="deleteGroup">
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
-                </action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
+        </action>
 
         <action name="list"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
-                method="list" >
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
-        </action>        
+                method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
+        </action>
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdate">
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
-                </action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
+        </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="delete">
-                <param name="permission">ALL</param>
-		<param name="setupTab">VARIABLES</param>
-                </action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">VARIABLES</param>
+        </action>
     </package>
 
     <package name="setup" namespace="/api/v3/setup" extends="v3Api">
@@ -761,25 +823,25 @@
     <package name="resources" namespace="/api/v3/resource" extends="v3Api">
         <action name="qr"
                 class="com.facilio.bmsconsoleV3.actions.V3ResourceAction"
-                method="getResourceFromQR" />
+                method="getResourceFromQR"/>
         <action name="generateQr"
                 class="com.facilio.bmsconsoleV3.actions.V3ResourceAction"
-                method="generateQr" />
+                method="generateQr"/>
     </package>
 
     <package name="accessiblespaces" namespace="/api/v3/accessiblespace" extends="v3Api">
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
-                method="list" >
-                <param name="permission">ALL</param>
-	        <param name="setupTab">USERS</param>
-                </action>
+                method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
         <action name="add"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="add">
-                <param name="permission">ALL</param>
-		<param name="setupTab">USERS</param>
-                </action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
         <action name="delete"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="delete"></action>
@@ -968,49 +1030,53 @@
         <action name="fetchRules" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaRuleList">
             <param name="permission">READ,READ_TEAM,READ_OWN</param>
         </action>
-        <action name="fetchRcaReadings" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaReadingsFetch"/>
+        <action name="fetchRcaReadings" class="com.facilio.readingrule.action.ReadingRuleAction"
+                method="rcaReadingsFetch"/>
         <action name="fetchRootCause" class="com.facilio.readingrule.action.ReadingRuleAction" method="rootCauseFetch"/>
     </package>
 
     <package name="readingRuleActions" namespace="/api/v3/readingrule/actions" extends="v3Api">
 
         <action name="add"
-				class="com.facilio.readingrule.action.NewRuleAction"
-				method="addRuleAction" />
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="addRuleAction"/>
 
         <action name="fetch"
-				class="com.facilio.readingrule.action.NewRuleAction"
-				method="fetchRuleActions" />
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="fetchRuleActions"/>
 
         <action name="delete"
-				class="com.facilio.readingrule.action.NewRuleAction"
-				method="deleteRuleAction" />
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="deleteRuleAction"/>
 
         <action name="update"
-				class="com.facilio.readingrule.action.NewRuleAction"
-				method="updateRuleAction" />
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="updateRuleAction"/>
 
-	</package>
+    </package>
 
     <package name="newRulesListApiv3" namespace="/api/v3/readingrules" extends="v3Api">
-		<action name="*" class="com.facilio.readingrule.action.ReadingRuleAction" method="v3RulesList">
-			<param name="permission">READ,READ_OWN,READ_TEAM</param>
-			<param name="moduleName">alarmrules</param>
-			<param name="viewName">{1}</param>
-			<param name="ruleType">1</param>
-		</action>
-	</package>
+        <action name="*" class="com.facilio.readingrule.action.ReadingRuleAction" method="v3RulesList">
+            <param name="permission">READ,READ_OWN,READ_TEAM</param>
+            <param name="moduleName">alarmrules</param>
+            <param name="viewName">{1}</param>
+            <param name="ruleType">1</param>
+        </action>
+    </package>
 
     <package name="ReadingRuleHistorical" namespace="/api/v3/readingrule/historical" extends="v3Api">
         <action name="run" class="com.facilio.readingrule.action.ReadingRuleAction" method="runHistorical"/>
     </package>
 
     <package name="KpiReadingsList" namespace="/api/v3/readingKpi" extends="v3Api">
-        <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchReadings"/>
-        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames"/>
-        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames"/>
+        <action name="fetchReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
+                method="fetchReadings"/>
+        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
+                method="fetchAssetNames"/>
+        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction"
+                method="fetchKpiNames"/>
     </package>
-    
+
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
         <action name="run" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical"/>
         <action name="fetchAssetDetails" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetDetails"/>
@@ -1026,7 +1092,7 @@
 
                 class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
 
-                method="list" />
+                method="list"/>
 
         <action name="delete"
 
@@ -1079,18 +1145,18 @@
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="getAllDashboardRules">
-                <param name="dashbaordId">{1}</param>
+            <param name="dashbaordId">{1}</param>
         </action>
         <action name="*/list/*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="getAllDashboardRules">
-                <param name="dashboardId">{1}</param>
-                <param name="dashboardTabId">{2}</param>
+            <param name="dashboardId">{1}</param>
+            <param name="dashboardTabId">{2}</param>
         </action>
         <action name="delete/*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="deleteDashboardRule">
-                <param name="dashboard_rule_id">{1}</param>
+            <param name="dashboard_rule_id">{1}</param>
         </action>
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
@@ -1103,12 +1169,12 @@
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="getDashboardRule">
-                <param name="dashboard_rule_id">{1}</param>
+            <param name="dashboard_rule_id">{1}</param>
         </action>
         <action name="widgets/*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="getTriggerWidgets">
-                <param name="dashboardId">{1}</param>
+            <param name="dashboardId">{1}</param>
         </action>
         <!-- temp code will be removed once dashboard actions ready-->
         <action name="runMigrationForWidgetLinkName"
@@ -1164,7 +1230,6 @@
     </package>
 
 
-
     <package name="ogmail" namespace="/api/v3/ogmail" extends="v3Api">
         <action name="history"
                 class="com.facilio.mailtracking.actions.OutgoingMailAction"
@@ -1185,11 +1250,14 @@
         </action>
     </package>
     <package name="requestForQuotation" namespace="/api/v3/requestForQuotation" extends="v3Api">
-        <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertPrToRfq">
+        <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
+                method="convertPrToRfq">
         </action>
-        <action name="convertRfqToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertRfqToPo">
+        <action name="convertRfqToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
+                method="convertRfqToPo">
         </action>
-        <action name="convertVendorQuoteToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertVendorQuoteToPo">
+        <action name="convertVendorQuoteToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
+                method="convertVendorQuoteToPo">
         </action>
     </package>
 
@@ -1200,11 +1268,14 @@
         </action>
         <action name="deactivate" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="deactivate">
         </action>
-        <action name="bulkpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkPublish">
+        <action name="bulkpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
+                method="bulkPublish">
         </action>
-        <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkUnPublishPM">
+        <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
+                method="bulkUnPublishPM">
         </action>
-        <action name="getTriggerFrequencyList" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="getTriggerFrequencyList">
+        <action name="getTriggerFrequencyList" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
+                method="getTriggerFrequencyList">
         </action>
     </package>
     <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
@@ -1215,9 +1286,10 @@
     </package>
 
     <package name="defaultAppUser" namespace="/api/v3/defaultApp" extends="v3Api">
-        <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction" method="setDefaultAppUser">
-       <param name="permission">ALL</param>
-       <param name="setupTab">USERS</param>
+        <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction"
+                method="setDefaultAppUser">
+            <param name="permission">ALL</param>
+            <param name="setupTab">USERS</param>
         </action>
     </package>
 
@@ -1225,20 +1297,24 @@
     <package name="myApps" namespace="/api/v3/myApps" extends="v3Api">
         <action name="listMyApps" class="com.facilio.bmsconsoleV3.actions.MyAppsAction" method="listMyApps">
         </action>
-        <action name="listMyAppsForUser" class="com.facilio.bmsconsoleV3.actions.MyAppsAction" method="listMyAppsForUser">
-        <param name="permission">ALL</param>
-	<param name="setupTab">USERS</param>
+        <action name="listMyAppsForUser" class="com.facilio.bmsconsoleV3.actions.MyAppsAction"
+                method="listMyAppsForUser">
+            <param name="permission">ALL</param>
+            <param name="setupTab">USERS</param>
         </action>
     </package>
 
     <package name="unProcessedEmail" namespace="/api/v3/unProcessedEmail" extends="v3Api">
-        <action name="runUnprocessedEmail" class="com.facilio.bmsconsole.actions.SupportMailParseAction" method="runUnprocessedEmail">
+        <action name="runUnprocessedEmail" class="com.facilio.bmsconsole.actions.SupportMailParseAction"
+                method="runUnprocessedEmail">
         </action>
     </package>
     <package name="classifications" namespace="/api/v3/classifications" extends="v3Api">
-        <action name="changeStatus" class="com.facilio.classification.action.ClassificationAction" method="changeStatus">
+        <action name="changeStatus" class="com.facilio.classification.action.ClassificationAction"
+                method="changeStatus">
         </action>
-        <action name="modules" class="com.facilio.classification.action.ClassificationAction" method="getClassificationSupportedModules">
+        <action name="modules" class="com.facilio.classification.action.ClassificationAction"
+                method="getClassificationSupportedModules">
         </action>
     </package>
     <package name="applicationPermissions" namespace="/api/v3/applicationPermissions"
@@ -1263,47 +1339,51 @@
 
     <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
-        <param name="permission">ALL</param>
-	<param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
         <action name="detail" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="detail">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
         <action name="setStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setStatus">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
-        <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setSwitchStatus">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+        <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
+                method="setSwitchStatus">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
         <action name="meta" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getScopeMetaData">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
-        <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicableFieldsMap">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+        <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
+                method="getApplicableFieldsMap">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
-        <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getApplicationValueGenerators">
-          <param name="permission">ALL</param>
-	  <param name="setupTab">SCOPE</param>
+        <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
+                method="getApplicationValueGenerators">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SCOPE</param>
         </action>
     </package>
 
     <package name="switchVariable" namespace="/api/v3/switchVariable" extends="v3Api">
-        <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getSwitchVariable">
-        <param name="permission">ALL</param>
-	<param name="setupTab">TABS_AND_LAYOUTS</param>
+        <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
+                method="getSwitchVariable">
+            <param name="permission">ALL</param>
+            <param name="setupTab">TABS_AND_LAYOUTS</param>
         </action>
     </package>
     <package name="assetSpareParts" namespace="/api/v3/assetSpareParts"
@@ -1414,13 +1494,15 @@
     </package>
 
     <package name="workOrderLabourV3" namespace="/api/v3/workOrderLabour" extends="v3Api">
-        <action name="actuals" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction" method="actualLabour">
+        <action name="actuals" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
+                method="actualLabour">
         </action>
-        <action name="plans" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction" method="plannedLabour">
+        <action name="plans" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
+                method="plannedLabour">
         </action>
     </package>
 
-<!--    this is temp we will remove it soon -->
+    <!--    this is temp we will remove it soon -->
     <package name="spaceCategoryformRelation" namespace="/api/v3/formrelation" extends="v3Api">
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
@@ -1470,13 +1552,13 @@
     </package>
 
 
-
     <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>
     </package>
 
     <package name="siteqrdownload" namespace="/api/v3/site/qr" extends="v3Api">
-        <action name="download" class="com.facilio.bmsconsoleV3.actions.V3SiteQRDownloadAction" method="siteQrDownloadUrl"/>
+        <action name="download" class="com.facilio.bmsconsoleV3.actions.V3SiteQRDownloadAction"
+                method="siteQrDownloadUrl"/>
     </package>
 
 </struts>

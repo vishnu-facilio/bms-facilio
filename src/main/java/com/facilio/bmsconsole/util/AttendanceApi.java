@@ -21,6 +21,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
+@Deprecated
 public class AttendanceApi {
 	public static long addAttendanceTransaction(AttendanceTransactionContext attendanceTransaction) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

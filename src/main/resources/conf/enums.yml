@@ -289,7 +289,16 @@ enums:
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPStatus
 
   - name: BreakType
-    enumClassName: com.facilio.bmsconsoleV3.context.Break$Type
+    enumClassName: com.facilio.bmsconsoleV3.context.shift.Break$Type
 
   - name: BreakMode
-    enumClassName: com.facilio.bmsconsoleV3.context.Break$Mode
+    enumClassName: com.facilio.bmsconsoleV3.context.shift.Break$Mode
+
+  - name: AttendanceStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.attendance.Attendance$Status
+
+  - name: AttendanceTransactionType
+    enumClassName: com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction$Type
+
+  - name: AttendanceTransactionSource
+    enumClassName: com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction$Source

@@ -433,21 +433,11 @@ public class ExportUtil {
 		if (value != null) {
 			value = value.trim();
 			try {
-				if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
-					int count = 0;
-					while (true) {
-						count++;
-						if (count > 100) {
-							break;
-						}
-						if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@") || value.startsWith("\"") || value.startsWith("'") || value.startsWith(",")) {
-							value = value.substring(1);
-						}
-						else {
-							break;
-						}
-					}
+				StringBuilder sb = new StringBuilder(value);
+				if (sb.charAt(0) == '=' || sb.charAt(0) == '@' || sb.charAt(0) == '+' || sb.charAt(0) == '-') {
+					sb.insert(0,'\\');
 				}
+				value = sb.toString();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

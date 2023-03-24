@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.v3.context.V3Context;
 
+@Deprecated
 public class AttendanceTransaction extends V3Context {
 
     private Attendance attendance;

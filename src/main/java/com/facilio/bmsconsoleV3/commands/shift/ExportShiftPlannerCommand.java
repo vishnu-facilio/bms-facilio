@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
@@ -69,7 +71,9 @@ public class ExportShiftPlannerCommand extends FacilioCommand {
         Map<String, Object> table = new HashMap<>();
         table.put("headers", getListExportHeaders());
         table.put("records", shifts);
-        String fileName = "shift-planner-list-export";
+
+        PeopleContext people = PeopleAPI.getPeopleForId(employeeID);
+        String fileName = people.getName() +"-shift-planner-list-export";
         return ExportUtil.exportData(fileType, fileName, table, false);
     }
 

@@ -36,6 +36,10 @@ public class NewPermissionUtil {
     private static Map<String, Integer> reportTabType = Collections.unmodifiableMap(initReportMap());
     private static Map<String, Integer> analyticsTabType = Collections.unmodifiableMap(initAnalyticsMap());
     private static Map<String, Integer> kpiTabType = Collections.unmodifiableMap(initKpiMap());
+
+    private static Map<String, Integer> shiftPlannerTabType = Collections.unmodifiableMap(initShiftPlannerMap());
+    private static Map<String, Integer> myAttendanceTabType = Collections.unmodifiableMap(initMyAttendanceMap());
+    private static Map<String, Integer> attendanceTabType = Collections.unmodifiableMap(initAttendanceMap());
     private static Map<String, Integer> dashboardTabType = Collections.unmodifiableMap(initDashboardMap());
     private static Map<String, Integer> customTabType = Collections.unmodifiableMap(initCustomMap());
     private static Map<String, Integer> appTabType = Collections.unmodifiableMap(initConnectedAppMap());
@@ -106,6 +110,28 @@ public class NewPermissionUtil {
         kpiTabType.put("UPDATE", 4);
         kpiTabType.put("DELETE", 8);
         return kpiTabType;
+    }
+
+    private static Map<String, Integer> initShiftPlannerMap() {
+        shiftPlannerTabType = new HashMap<>();
+        shiftPlannerTabType.put("READ", 1);
+        shiftPlannerTabType.put("UPDATE", 2);
+        shiftPlannerTabType.put("EXPORT", 4);
+        return shiftPlannerTabType;
+    }
+
+    private static Map<String, Integer> initMyAttendanceMap() {
+        myAttendanceTabType = new HashMap<>();
+        myAttendanceTabType.put("READ", 1);
+        myAttendanceTabType.put("UPDATE", 2);
+        return myAttendanceTabType;
+    }
+
+    private static Map<String, Integer> initAttendanceMap() {
+        attendanceTabType = new HashMap<>();
+        attendanceTabType.put("READ", 1);
+        attendanceTabType.put("UPDATE", 2);
+        return attendanceTabType;
     }
 
     private static Map<String, Integer> initDashboardMap() {
@@ -336,6 +362,28 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", shiftPlannerTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", shiftPlannerTabType.get("UPDATE"), null));
+        permissions.add(new Permission("EXPORT", "Export", shiftPlannerTabType.get("EXPORT"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.SHIFT_PLANNER.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", myAttendanceTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", myAttendanceTabType.get("UPDATE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.MY_ATTENDANCE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", attendanceTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", attendanceTabType.get("UPDATE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.ATTENDANCE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
         permissions.add(new Permission("CREATE", "Create", dashboardTabType.get("CREATE"), null));
         permissions.add(new Permission("VIEW", "View", dashboardTabType.get("VIEW"), null));
         permissions.add(new Permission("EDIT", "Edit", dashboardTabType.get("EDIT"), null));
@@ -476,7 +524,6 @@ public class NewPermissionUtil {
         permissionMap.put("*", permissions);
         permissionList.put(Type.INDOOR_FLOORPLAN.getIndex(), permissionMap);
 
-
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
         permissions.add(new Permission("CREATE", "Create", homepageTabType.get("CREATE"), null));
@@ -593,6 +640,12 @@ public class NewPermissionUtil {
                 return homepageTabType.getOrDefault(action, -1);
             case 16:
                 return serviceCatalogTabType.getOrDefault(action, -1);
+            case 83:
+                return shiftPlannerTabType.getOrDefault(action, -1);
+            case 84:
+                return myAttendanceTabType.getOrDefault(action, -1);
+            case 85:
+                return attendanceTabType.getOrDefault(action, -1);
 
             default:
                 return -1;

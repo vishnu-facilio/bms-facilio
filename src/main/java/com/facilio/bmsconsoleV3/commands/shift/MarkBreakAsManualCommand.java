@@ -1,10 +1,9 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
-import com.facilio.bmsconsoleV3.context.Break;
+import com.facilio.bmsconsoleV3.context.shift.Break;
 import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.List;

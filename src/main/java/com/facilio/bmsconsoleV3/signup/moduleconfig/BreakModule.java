@@ -51,35 +51,47 @@ public class BreakModule extends BaseModuleConfig{
         allView.setDisplayName("All Break");
         allView.setSortFields(Arrays.asList(new SortField(name, false)));
 
+        List<String> apps = Arrays.asList(
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
+                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.IWMS_APP
+        );
+        allView.setAppLinkNames(apps);
+
         return allView;
     }
 
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule shiftModule = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+        FacilioModule breakModule = modBean.getModule(FacilioConstants.ContextNames.BREAK);
 
-        FacilioForm shiftModuleForm = new FacilioForm();
-        shiftModuleForm.setDisplayName("New Break");
-        shiftModuleForm.setName("default_break_web");
-        shiftModuleForm.setModule(shiftModule);
-        shiftModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        shiftModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        FacilioForm breakModuleForm = new FacilioForm();
+        breakModuleForm.setDisplayName("New Break");
+        breakModuleForm.setName("default_break_web");
+        breakModuleForm.setModule(breakModule);
+        breakModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        List<String> apps = Arrays.asList(
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
+                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.IWMS_APP
+        );
+        breakModuleForm.setAppLinkNamesForForm(apps);
 
         List<FormField> breakModuleFormFields = new ArrayList<>();
 
         breakModuleFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 2));
         breakModuleFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         breakModuleFormFields.add(new FormField("breakType", FacilioField.FieldDisplayType.SELECTBOX, "Break Type", FormField.Required.REQUIRED,"breaktype", 3, 2));
-        breakModuleFormFields.add(new FormField("shifts", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Applicable Shifts", FormField.Required.REQUIRED, "shift", 4, 2));
+        breakModuleFormFields.add(new FormField("shifts", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Applicable Shifts", FormField.Required.OPTIONAL, "shift", 4, 2));
         breakModuleFormFields.add(new FormField("breakTime", FacilioField.FieldDisplayType.DURATION, "Allowed Duration", FormField.Required.OPTIONAL, "duration", 5, 1));
 
         FormSection section = new FormSection("Default", 1, breakModuleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
-        shiftModuleForm.setSections(Collections.singletonList(section));
-        shiftModuleForm.setIsSystemForm(true);
-        shiftModuleForm.setType(FacilioForm.Type.FORM);
+        breakModuleForm.setSections(Collections.singletonList(section));
+        breakModuleForm.setIsSystemForm(true);
+        breakModuleForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(shiftModuleForm);
+        return Collections.singletonList(breakModuleForm);
     }
 }
 

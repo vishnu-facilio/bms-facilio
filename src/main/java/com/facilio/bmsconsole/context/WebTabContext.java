@@ -3,9 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.annotations.AnnotationEnums;
 import com.facilio.annotations.ImmutableChildClass;
-import com.facilio.bmsconsole.context.webtab.ModuleTypeHandler;
-import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
-import com.facilio.bmsconsole.context.webtab.WebTabHandler;
+import com.facilio.bmsconsole.context.webtab.*;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
@@ -285,8 +283,9 @@ public class WebTabContext implements Serializable {
         ORGANIZATION_SETTINGS("Organization Settings", false, TabType.SETUP,new SetupTypeHandler()),
         CLASSIFICATIONS("Classifications",false,TabType.SETUP),
         SCRIPT_LOGS("Script Logs",false,TabType.SETUP),
-        SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL),
-        MY_ATTENDANCE("My Attendance", false, TabType.NORMAL);
+        SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()),
+        MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()),
+        ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler());
 
         public void setName(String name) {
             this.name = name;

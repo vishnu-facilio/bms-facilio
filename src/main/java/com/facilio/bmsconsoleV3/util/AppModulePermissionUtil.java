@@ -239,6 +239,17 @@ public class AppModulePermissionUtil {
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("UPDATE"), permissionMap.get("READ"), permissionMap.get("DELETE"));
         modulePermissionGroupMap.put(WebTabContext.Type.SERVICE_CATALOG.name(), new ModuleAppPermission(permissionTypes));
 
+        //Shift Planner
+        permissionTypes = Arrays.asList(permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("EXPORT"));
+        modulePermissionGroupMap.put(WebTabContext.Type.SHIFT_PLANNER.name(), new ModuleAppPermission(permissionTypes));
+
+        //My Attendance
+        permissionTypes = Arrays.asList(permissionMap.get("READ"), permissionMap.get("UPDATE"));
+        modulePermissionGroupMap.put(WebTabContext.Type.MY_ATTENDANCE.name(), new ModuleAppPermission(permissionTypes));
+
+        //Attendance
+        permissionTypes = Arrays.asList(permissionMap.get("READ"), permissionMap.get("UPDATE"));
+        modulePermissionGroupMap.put(WebTabContext.Type.ATTENDANCE.name(), new ModuleAppPermission(permissionTypes));
 
         Permission allAssign = FieldUtil.cloneBean(permissionMap.get("VIEW_ASSIGNMENT"), Permission.class);
         allAssign.setDisplayName("All");

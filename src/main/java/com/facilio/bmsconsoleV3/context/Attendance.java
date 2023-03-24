@@ -6,6 +6,7 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+@Deprecated
 public class Attendance extends V3Context {
 
     public V3PeopleContext getPeople() {

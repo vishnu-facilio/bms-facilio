@@ -180,6 +180,7 @@ classes:
   # Shift & Shift Related Modules
   - com.facilio.bmsconsoleV3.signup.shift.ShiftModules
   - com.facilio.bmsconsoleV3.signup.breakMod.AddBreakModule
+  - com.facilio.bmsconsoleV3.signup.attendance.AddAttendanceModule
 
   #Adding System Views and Forms
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InventoryReservationModule
@@ -250,8 +251,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InventoryRequestModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InventoryRequestLineItemsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ShipmentModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.AttendanceModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.AttendanceTransactionsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BreakTransactionModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ShiftRotationModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ServiceModule

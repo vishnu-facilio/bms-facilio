@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
-import com.facilio.bmsconsoleV3.context.Break;
+import com.facilio.bmsconsoleV3.context.shift.Break;
 import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -8,7 +8,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +51,6 @@ public class ValidateBreakCommand extends FacilioCommand {
             }
             if (emptyBreakTimeBreach(br)) {
                 throw new IllegalArgumentException("Time cannot be zero");
-            }
-            if (emptyShiftAssociationBreach(br)) {
-                throw new IllegalArgumentException("Applicable shifts cannot be empty");
             }
             if (emptyTypeBreach(br)) {
                 throw new IllegalArgumentException("Type cannot be empty");

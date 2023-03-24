@@ -205,6 +205,14 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getAttendanceSettingsPseudoModuleFields() {
+        FacilioModule module = ModuleFactory.getAttendanceSettingsPseudoModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("minWorkHours", "MIN_WORK_HOURS", module, FieldType.NUMBER));
+        fields.add(getField("workingHoursMode", "WORKING_HOURS_MODE", module, FieldType.STRING_SYSTEM_ENUM));
+        return  fields;
+    }
+
 
     public static class Fields {
         public static enum FilterType {
@@ -381,8 +389,16 @@ public class FieldFactory extends BaseFieldFactory {
                 AgentConstants.DELETED_TIME,
                 "agentType",
                 AgentKeys.NAME
+        }));
 
-
+        public static final List<String> SHIFT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
+                "name",
+                "startTime",
+                "endTime",
+                "defaultShift",
+                "isActive",
+                "colorCode",
+                "moduleState",
         }));
 
         public static final List<String> AGENT_ALARM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{

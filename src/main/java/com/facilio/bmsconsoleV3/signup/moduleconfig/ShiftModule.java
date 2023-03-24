@@ -53,6 +53,13 @@ public class ShiftModule extends BaseModuleConfig{
         allView.setDisplayName("All Shift(s)");
         allView.setSortFields(Arrays.asList(new SortField(name, false)));
 
+        List<String> apps = Arrays.asList(
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
+                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.IWMS_APP
+        );
+        allView.setAppLinkNames(apps);
+
         return allView;
     }
 
@@ -66,7 +73,12 @@ public class ShiftModule extends BaseModuleConfig{
         shiftModuleForm.setName("default_shift_web");
         shiftModuleForm.setModule(shiftModule);
         shiftModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        shiftModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        List<String> apps = Arrays.asList(
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
+                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.IWMS_APP
+        );
+        shiftModuleForm.setAppLinkNamesForForm(apps);
 
         List<FormField> ShiftModuleFormFields = new ArrayList<>();
 
@@ -81,6 +93,7 @@ public class ShiftModule extends BaseModuleConfig{
         colorPickerConfig.put("predefineColors",predefineColors);
 
         ShiftModuleFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 2));
+
         FormField colorCode = new FormField("colorCode", FacilioField.FieldDisplayType.COLOR_PICKER, "Color Code", FormField.Required.REQUIRED, 1, 2);
         colorCode.setConfig(colorPickerConfig);
         ShiftModuleFormFields.add(colorCode);
@@ -95,7 +108,17 @@ public class ShiftModule extends BaseModuleConfig{
         endTime.setConfig(timeConfig);
         ShiftModuleFormFields.add(endTime);
 
-        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 4, 1 ));
+        FormField isDefaultField = new FormField("isDefault", FacilioField.FieldDisplayType.DECISION_BOX, "Is Default", FormField.Required.OPTIONAL, 4, 2);
+        isDefaultField.setHideField(true);
+        isDefaultField.setValue(String.valueOf(false));
+        ShiftModuleFormFields.add(isDefaultField);
+
+        FormField isActiveField = new FormField("isActive", FacilioField.FieldDisplayType.DECISION_BOX, "Is Active", FormField.Required.OPTIONAL, 4, 2);
+        isActiveField.setHideField(true);
+        isActiveField.setValue(String.valueOf(true));
+        ShiftModuleFormFields.add(isActiveField);
+
+        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 5, 1 ));
         shiftModuleForm.setFields(ShiftModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, ShiftModuleFormFields, false);

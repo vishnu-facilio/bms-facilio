@@ -9,7 +9,7 @@ import java.util.List;
 public class ValidateShiftsUsageCommand extends FacilioCommand {
 
     private boolean shiftUsageBreach(long shiftID) throws Exception {
-        return ShiftAPI.getAssociatedEmployeesCount(shiftID, ShiftAPI.getTodayEpochDate()) > 0;
+        return ShiftAPI.getAssociatedEmployeesCount(shiftID) > 0;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class ValidateShiftsUsageCommand extends FacilioCommand {
         List<Long> shiftIDs = (List<Long>) context.get("recordIds");
         for (long id : shiftIDs) {
             if (shiftUsageBreach(id)) {
-                throw new IllegalArgumentException("Shift is associated with employees. Remove employees before delete");
+                throw new IllegalArgumentException("Shift is associated with employees. Delete cannot be done.");
             }
         }
 

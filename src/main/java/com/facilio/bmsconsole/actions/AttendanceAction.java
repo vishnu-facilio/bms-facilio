@@ -16,6 +16,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+@Deprecated
 public class AttendanceAction extends ModuleAction{
 
 	private static final long serialVersionUID = 1L;

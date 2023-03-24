@@ -18,7 +18,6 @@ public class AddDefaultSystemFields extends SignUpData {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioModule> modules = new ArrayList<>();
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET_ACTIVITY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ITEM_ACTIVITY));
@@ -30,7 +29,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.GATE_PASS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SHIPMENT));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION));

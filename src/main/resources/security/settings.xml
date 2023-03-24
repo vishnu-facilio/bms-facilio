@@ -3,23 +3,23 @@
     <request path="/api/setup/adduser">
         <requestbody type="object">
             <property name="appId" type="number"/>
-            <property name="emailVerificationNeeded" type="boolean" />
+            <property name="emailVerificationNeeded" type="boolean"/>
             <property name="user" type="object">
                 <property name="email" type="string"/>
                 <property name="language" type="string"/>
-                <property name="name" type="string" />
-                <property name="roleId" type="number" />
+                <property name="name" type="string"/>
+                <property name="roleId" type="number"/>
             </property>
         </requestbody>
     </request>
 
     <request path="/api/v3/modules/data/create">
-        <requestbody type="v3fields" />
+        <requestbody type="v3fields"/>
     </request>
 
     <request path="/api/v3/modules/data/bulkget">
         <requestbody type="object">
-            <property name="moduleName" type="string" />
+            <property name="moduleName" type="string"/>
         </requestbody>
     </request>
 
@@ -74,26 +74,26 @@
             </property>
             <property name="roleApp" type="array">
                 <items type="object">
-                <property name="applicationId" type="number"/>
+                    <property name="applicationId" type="number"/>
                 </items>
             </property>
         </requestbody>
     </request>
 
-<!--    <request path="/api/setup/adduser">-->
-<!--        <requestbody type="object">-->
-<!--            <property name="user" type="object">-->
-<!--                <property name="accessibleSpace" type="array">-->
-<!--                    <items type="number"/>-->
-<!--                </property>-->
-<!--                <property name="language" type="string"/>-->
-<!--                <property name="name" type="string" mandatory="true" maxLength="255"/>-->
-<!--                <property name="email" type="string" mandatory="true" maxLength="150" />-->
-<!--                <property name="roleId" type="number" mandatory="true"/>-->
-<!--                <property name="timezone" type="string" maxLength="100"/>-->
-<!--            </property>-->
-<!--        </requestbody>-->
-<!--    </request>-->
+    <!--    <request path="/api/setup/adduser">-->
+    <!--        <requestbody type="object">-->
+    <!--            <property name="user" type="object">-->
+    <!--                <property name="accessibleSpace" type="array">-->
+    <!--                    <items type="number"/>-->
+    <!--                </property>-->
+    <!--                <property name="language" type="string"/>-->
+    <!--                <property name="name" type="string" mandatory="true" maxLength="255"/>-->
+    <!--                <property name="email" type="string" mandatory="true" maxLength="150" />-->
+    <!--                <property name="roleId" type="number" mandatory="true"/>-->
+    <!--                <property name="timezone" type="string" maxLength="100"/>-->
+    <!--            </property>-->
+    <!--        </requestbody>-->
+    <!--    </request>-->
 
     <request path="/api/v2/updateSecurityPolicy">
         <requestbody type="object">
@@ -124,52 +124,52 @@
 
     <request path="/api/v2/createSecurityPolicy">
         <requestbody type="object">
-          <property name="securityPolicy" type="object">
-              <property name="name" type="string" maxLength="255"/>
-              <property name="description" type="string" maxLength="500"/>
-              <property name="isDefault" type="boolean"/>
-              <property name="pwdIsMixed" type="boolean"/>
-              <property name="isWebSessManagementEnabled" type="boolean"/>
-              <property name="isTOTPEnabled" type="boolean"/>
-              <property name="isPwdPolicyEnabled" type="boolean"/>
-              <property name="isMOTPEnabled" type="boolean"/>
-              <property name="pwdMinAge" type="number"/>
-              <property name="pwdMinLength" type="number"/>
-              <property name="pwdMinNumDigits" type="number"/>
-              <property name="pwdMinSplChars" type="number"/>
-              <property name="pwdPrevPassRefusal" type="number"/>
-              <property name="webSessLifeTime" type="number"/>
-          </property>
+            <property name="securityPolicy" type="object">
+                <property name="name" type="string" maxLength="255"/>
+                <property name="description" type="string" maxLength="500"/>
+                <property name="isDefault" type="boolean"/>
+                <property name="pwdIsMixed" type="boolean"/>
+                <property name="isWebSessManagementEnabled" type="boolean"/>
+                <property name="isTOTPEnabled" type="boolean"/>
+                <property name="isPwdPolicyEnabled" type="boolean"/>
+                <property name="isMOTPEnabled" type="boolean"/>
+                <property name="pwdMinAge" type="number"/>
+                <property name="pwdMinLength" type="number"/>
+                <property name="pwdMinNumDigits" type="number"/>
+                <property name="pwdMinSplChars" type="number"/>
+                <property name="pwdPrevPassRefusal" type="number"/>
+                <property name="webSessLifeTime" type="number"/>
+            </property>
         </requestbody>
     </request>
 
-<!--    <request path="/api/settings/updateCompanySettings">-->
-<!--        <requestbody type="object">-->
-<!--                <property name="org.businessHour" type="number"/>-->
-<!--                <property name="org.city" type="string"/>-->
-<!--                <property name="org.country" type="string"/>-->
-<!--                <property name="org.createdTime" type="number"/>-->
-<!--                <property name="org.currency" type="number"/>-->
-<!--                <property name="org.dbName" type="string"/>-->
-<!--                <property name="org.domain" type="string"/>-->
-<!--                <property name="org.emailDomain" type="string"/>-->
-<!--                <property name="org.fax" type="number"/>-->
-<!--                <property name="org.id" type="number"/>-->
-<!--                <property name="org.language" type="string"/>-->
-<!--                <property name="org.loggerLevel" type="number"/>-->
-<!--                <property name="org.mobile" type="number"/>-->
-<!--                <property name="org.name" type="string"/>-->
-<!--                <property name="org.orgId" type="number"/>-->
-<!--                <property name="org.phone" type="number"/>-->
-<!--                <property name="org.state" type="string"/>-->
-<!--                <property name="org.street" type="string"/>-->
-<!--                <property name="org.timeFormat" type="number"/>-->
-<!--                <property name="org.timezone" type="string"/>-->
-<!--                <property name="org.zip" type="number"/>-->
-<!--                <property name="org.dateformat" type="string"/>-->
-<!--                <property name="org.timestate" type="number"/>-->
-<!--        </requestbody>-->
-<!--    </request>-->
+    <!--    <request path="/api/settings/updateCompanySettings">-->
+    <!--        <requestbody type="object">-->
+    <!--                <property name="org.businessHour" type="number"/>-->
+    <!--                <property name="org.city" type="string"/>-->
+    <!--                <property name="org.country" type="string"/>-->
+    <!--                <property name="org.createdTime" type="number"/>-->
+    <!--                <property name="org.currency" type="number"/>-->
+    <!--                <property name="org.dbName" type="string"/>-->
+    <!--                <property name="org.domain" type="string"/>-->
+    <!--                <property name="org.emailDomain" type="string"/>-->
+    <!--                <property name="org.fax" type="number"/>-->
+    <!--                <property name="org.id" type="number"/>-->
+    <!--                <property name="org.language" type="string"/>-->
+    <!--                <property name="org.loggerLevel" type="number"/>-->
+    <!--                <property name="org.mobile" type="number"/>-->
+    <!--                <property name="org.name" type="string"/>-->
+    <!--                <property name="org.orgId" type="number"/>-->
+    <!--                <property name="org.phone" type="number"/>-->
+    <!--                <property name="org.state" type="string"/>-->
+    <!--                <property name="org.street" type="string"/>-->
+    <!--                <property name="org.timeFormat" type="number"/>-->
+    <!--                <property name="org.timezone" type="string"/>-->
+    <!--                <property name="org.zip" type="number"/>-->
+    <!--                <property name="org.dateformat" type="string"/>-->
+    <!--                <property name="org.timestate" type="number"/>-->
+    <!--        </requestbody>-->
+    <!--    </request>-->
 
     <request path="/api/serviceportal/updateserviceportal">
         <requestbody type="object">
@@ -194,38 +194,38 @@
         <requestbody type="object">
             <property name="peopleList" type="array">
                 <items type="object">
-                <property name="name" type="string" mandatory="true"/>
-                <property name="email" type="string" mandatory="true"/>
-                <property name="phone" type="string"/>
-                <property name="isOccupantPortalAccess" type="boolean"/>
-                <property name="language" type="string"/>
-                <property name="peopleType" type="number"/>
-                <property name="rolesMap" type="object">
-                    <property name="service" type="number"/>
-                </property>
+                    <property name="name" type="string" mandatory="true"/>
+                    <property name="email" type="string" mandatory="true"/>
+                    <property name="phone" type="string"/>
+                    <property name="isOccupantPortalAccess" type="boolean"/>
+                    <property name="language" type="string"/>
+                    <property name="peopleType" type="number"/>
+                    <property name="rolesMap" type="object">
+                        <property name="service" type="number"/>
+                    </property>
                 </items>
             </property>
         </requestbody>
     </request>
 
     <request path="/api/v2/people/update">
-    <requestbody type="object">
-        <property name="peopleList" type="array">
-            <items type="object">
-            <property name="name" type="string" mandatory="true"/>
-            <property name="email" type="string" mandatory="true"/>
-            <property name="phone" type="string"/>
-            <property name="isOccupantPortalAccess" type="boolean"/>
-            <property name="language" type="string"/>
-            <property name="peopleType" type="number"/>
-            <property name="id" type="number"/>
-            <property name="rolesMap" type="object">
-            <property name="service" type="number"/>
+        <requestbody type="object">
+            <property name="peopleList" type="array">
+                <items type="object">
+                    <property name="name" type="string" mandatory="true"/>
+                    <property name="email" type="string" mandatory="true"/>
+                    <property name="phone" type="string"/>
+                    <property name="isOccupantPortalAccess" type="boolean"/>
+                    <property name="language" type="string"/>
+                    <property name="peopleType" type="number"/>
+                    <property name="id" type="number"/>
+                    <property name="rolesMap" type="object">
+                        <property name="service" type="number"/>
+                    </property>
+                </items>
             </property>
-            </items>
-        </property>
-    </requestbody>
-</request>
+        </requestbody>
+    </request>
 
     <request path="/api/v2/application/users/add">
         <requestbody type="object">
@@ -296,7 +296,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v2/servicecataloggroup/addOrUpdate">
         <requestbody type="object">
             <property name="serviceCatalogGroup" type="object">
@@ -606,9 +606,9 @@
                 <property name="name" type="string"/>
                 <property name="singleDaybusinessHoursList" type="array">
                     <items type="object">
-                    <property name="dayOfWeek" type="string"/>
-                    <property name="startTime" type="string"/>
-                    <property name="endTime" type="string"/>
+                        <property name="dayOfWeek" type="string"/>
+                        <property name="startTime" type="string"/>
+                        <property name="endTime" type="string"/>
                     </items>
                 </property>
             </property>
@@ -666,16 +666,19 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
- <!--<request path="/api/v3/modules/:moduleName/view/:viewName/count" method="GET">
-        <urlparams>
-            <property name="moduleName" type="string" mandatory="true"/>
-            <property name="viewName" type="string" mandatory="true"/>
-            <property name="type" type="string" mandatory="true"/>
-            <property name="search" type="string"/>
-            <property name="filters" type="string"/>
-            <property name="includeParentFilter" type="boolean"/>
-        </urlparams>
-    </request>-->
+    <request path="/api/v3/modules/list/all">
+    </request>
+
+    <!--<request path="/api/v3/modules/:moduleName/view/:viewName/count" method="GET">
+           <urlparams>
+               <property name="moduleName" type="string" mandatory="true"/>
+               <property name="viewName" type="string" mandatory="true"/>
+               <property name="type" type="string" mandatory="true"/>
+               <property name="search" type="string"/>
+               <property name="filters" type="string"/>
+               <property name="includeParentFilter" type="boolean"/>
+           </urlparams>
+       </request>-->
     <request path="/api/v3/modules/:moduleName" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -907,10 +910,10 @@
             <property name="lng" type="number"/>
         </requestbody>
     </request>
-     <request path="/api/v3/homepage/widgetData">
-         <urlparams>
-             <property name="linkName" type="string"/>
-         </urlparams>
+    <request path="/api/v3/homepage/widgetData">
+        <urlparams>
+            <property name="linkName" type="string"/>
+        </urlparams>
     </request>
 
     <request path="/api/v3/homepage/list">
@@ -932,47 +935,47 @@
                 <property name="fileId" type="number"/>
                 <property name="sourceType" type="number"/>
                 <items type="object">
-                    <property name="layerName" type="string" />
-                    <property name="layerGeoJson" type="string" />
+                    <property name="layerName" type="string"/>
+                    <property name="layerGeoJson" type="string"/>
                 </items>
             </property>
         </requestbody>
     </request>
 
 
-<!--    <request path="/api/v2/application/relatedApps/fetchList">-->
-<!--        <urlparams>-->
-<!--            <property name="appId" type="number"  mandatory="true"/>-->
-<!--        </urlparams>-->
-<!--    </request>-->
+    <!--    <request path="/api/v2/application/relatedApps/fetchList">-->
+    <!--        <urlparams>-->
+    <!--            <property name="appId" type="number"  mandatory="true"/>-->
+    <!--        </urlparams>-->
+    <!--    </request>-->
 
-<!--    <request path="/api/v2/application/relatedApps/delete">-->
-<!--        <requestbody type="object">-->
-<!--            <property name="appId" type="number"  mandatory="true"/>-->
-<!--            <property name="relatedApplicationIds" type="array">-->
-<!--                <items type="number"/>-->
-<!--            </property>-->
-<!--        </requestbody>-->
-<!--    </request>-->
-<!--    <request path="/api/v2/application/relatedApps/add">-->
-<!--        <requestbody type="object">-->
-<!--            <property name="appId" type="number"  mandatory="true"/>-->
-<!--            <property name="relatedApplicationIds" type="array">-->
-<!--                <items type="number"/>-->
-<!--            </property>-->
-<!--        </requestbody>-->
-<!--    </request>-->
+    <!--    <request path="/api/v2/application/relatedApps/delete">-->
+    <!--        <requestbody type="object">-->
+    <!--            <property name="appId" type="number"  mandatory="true"/>-->
+    <!--            <property name="relatedApplicationIds" type="array">-->
+    <!--                <items type="number"/>-->
+    <!--            </property>-->
+    <!--        </requestbody>-->
+    <!--    </request>-->
+    <!--    <request path="/api/v2/application/relatedApps/add">-->
+    <!--        <requestbody type="object">-->
+    <!--            <property name="appId" type="number"  mandatory="true"/>-->
+    <!--            <property name="relatedApplicationIds" type="array">-->
+    <!--                <items type="number"/>-->
+    <!--            </property>-->
+    <!--        </requestbody>-->
+    <!--    </request>-->
 
 
-	<request path="/api/v3/sandbox/add">
+    <request path="/api/v3/sandbox/add">
         <requestbody type="object">
             <property name="sandbox" type="object">
                 <property name="name" type="string"/>
                 <property name="domain" type="string"/>
                 <property name="sharing" type="array">
-                	<items type="object">
-	                	<property name="peopleId" type="number"/>
-	                </items>
+                    <items type="object">
+                        <property name="peopleId" type="number"/>
+                    </items>
                 </property>
             </property>
         </requestbody>
@@ -992,7 +995,7 @@
                 <property name="createdTime" type="number"/>
                 <property name="modifiedTime" type="number"/>
             </property>
-             </requestbody>
+        </requestbody>
     </request>
     <request path="/api/v3/visitorTypeForm/update">
         <requestbody type="object">
@@ -1010,7 +1013,7 @@
         </requestbody>
     </request>
 
-	<request path="/api/v3/sandbox/changeSet">
+    <request path="/api/v3/sandbox/changeSet">
         <requestbody type="object">
             <property name="sandbox" type="object">
                 <property name="id" type="number"/>
@@ -1063,77 +1066,77 @@
         </requestbody>
     </request>
 
- <!--   <request path="/api/v2/colorPalette/add">
-        <requestbody type="object">
-            <property name="colorPalette" type="object">
-                <property name="keyName" type="string"></property>
-                <property name="colorCode" type="string"></property>
-            </property>
-        </requestbody>
-    </request>
-    <request path="/api/v2/colorPalette/list">
-        <requestbody type="object">
-            <property name="keys" type="array">
-                <items type="string"/>
-            </property>
-        </requestbody>
-    </request>
+    <!--   <request path="/api/v2/colorPalette/add">
+           <requestbody type="object">
+               <property name="colorPalette" type="object">
+                   <property name="keyName" type="string"></property>
+                   <property name="colorCode" type="string"></property>
+               </property>
+           </requestbody>
+       </request>
+       <request path="/api/v2/colorPalette/list">
+           <requestbody type="object">
+               <property name="keys" type="array">
+                   <items type="string"/>
+               </property>
+           </requestbody>
+       </request>
 
-    <request path="/api/v2/colorPalette/delete">
-        <requestbody type="object">
-            <property name="id" type="number"></property>
-        </requestbody>
-    </request>-->
+       <request path="/api/v2/colorPalette/delete">
+           <requestbody type="object">
+               <property name="id" type="number"></property>
+           </requestbody>
+       </request>-->
 
-  <!--  <request path="/api/v3/approval/:moduleName/view/:viewName" method="GET">
-        <urlparams>
-            <property name="moduleName" type="string" mandatory="true"/>
-            <property name="viewName" type="string" mandatory="true"/>
-            <property name="page" type="number"/>
-            <property name="perPage" type="number"/>
-            <property name="orderBy" type="string"/>
-            <property name="orderType" type="string"/>
-            <property name="filters" type="string"/>
-        </urlparams>
-    </request>-->
+    <!--  <request path="/api/v3/approval/:moduleName/view/:viewName" method="GET">
+          <urlparams>
+              <property name="moduleName" type="string" mandatory="true"/>
+              <property name="viewName" type="string" mandatory="true"/>
+              <property name="page" type="number"/>
+              <property name="perPage" type="number"/>
+              <property name="orderBy" type="string"/>
+              <property name="orderType" type="string"/>
+              <property name="filters" type="string"/>
+          </urlparams>
+      </request>-->
 
 
-<!--    <request path="/api/v2/publicFile/addPublicFile">
-        <requestbody type="object">
-            <property name="fileName" type="string"/>
-            <property name="fileContentContentType" type="string"/>
-            <property name="expiryOn" type="number"/>
-            <property name="file" type="upload"/>
-        </requestbody>
-    </request>
+    <!--    <request path="/api/v2/publicFile/addPublicFile">
+            <requestbody type="object">
+                <property name="fileName" type="string"/>
+                <property name="fileContentContentType" type="string"/>
+                <property name="expiryOn" type="number"/>
+                <property name="file" type="upload"/>
+            </requestbody>
+        </request>
 
-    <request path="/api/v2/publicFile/addPublicUrlForFile">
-        <requestbody type="object">
-            <property name="fileId" type="number"/>
-        </requestbody>
-    </request>
-
-    <request path="/api/v2/publicFile/deletePublicFile">
-        <requestbody type="object">
+        <request path="/api/v2/publicFile/addPublicUrlForFile">
+            <requestbody type="object">
                 <property name="fileId" type="number"/>
-        </requestbody>
-    </request>
+            </requestbody>
+        </request>
 
-    <request path="/api/v3/file/preview/public">
-        <urlparams>
-            <property name="q" type="string"  mandatory="true"/>
-            <property name="isDownload" type="boolean"/>
-        </urlparams>
-    </request>-->
-<!--    <request path="/api/v2/template/email/testMail">
-        <requestbody type="object">
-                <property name="templateId" type="number" mandatory="true"/>
-                <property name="recordId" type="number" mandatory="true"/>
-        </requestbody>
-        <urlparams>
-            <property name="moduleName" type="string" mandatory="true"/>
-        </urlparams>
-    </request>-->
+        <request path="/api/v2/publicFile/deletePublicFile">
+            <requestbody type="object">
+                    <property name="fileId" type="number"/>
+            </requestbody>
+        </request>
+
+        <request path="/api/v3/file/preview/public">
+            <urlparams>
+                <property name="q" type="string"  mandatory="true"/>
+                <property name="isDownload" type="boolean"/>
+            </urlparams>
+        </request>-->
+    <!--    <request path="/api/v2/template/email/testMail">
+            <requestbody type="object">
+                    <property name="templateId" type="number" mandatory="true"/>
+                    <property name="recordId" type="number" mandatory="true"/>
+            </requestbody>
+            <urlparams>
+                <property name="moduleName" type="string" mandatory="true"/>
+            </urlparams>
+        </request>-->
 
     <request path="/api/v2/forms/fields/formFieldUsages">
         <requestbody type="object">
@@ -1241,4 +1244,76 @@
     </request>
     <request path="/api/v2/isSessionActive"></request>
     <request path="/api/integ/orgLogo"></request>
+
+    <request path="/api/v3/shiftplanner/view">
+        <requestbody type="object">
+            <property name="rangeFrom" type="number" mandatory="true"/>
+            <property name="rangeTo" type="number" mandatory="true"/>
+            <property name="employeeID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/shiftplanner/calendar">
+        <requestbody type="object">
+            <property name="rangeFrom" type="number" mandatory="true"/>
+            <property name="rangeTo" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="orderBy" type="string" mandatory="true"/>
+            <property name="orderType" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/shiftplanner/update">
+        <requestbody type="object">
+            <property name="employees" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="shiftEnd" type="number" mandatory="true"/>
+            <property name="shiftStart" type="number" mandatory="true"/>
+            <property name="shiftID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/shiftplanner/export">
+        <requestbody type="object">
+            <property name="rangeFrom" type="number" mandatory="true"/>
+            <property name="rangeTo" type="number" mandatory="true"/>
+            <property name="format" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="orderBy" type="string" mandatory="true"/>
+            <property name="orderType" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+
+    <request path="/api/v3/attendance/view">
+        <requestbody type="object">
+            <property name="rangeFrom" type="number" mandatory="true"/>
+            <property name="rangeTo" type="number" mandatory="true"/>
+            <property name="peopleID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/attendance/transition">
+        <requestbody type="object">
+            <property name="peopleID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/attendancetransaction/view">
+        <requestbody type="object">
+            <property name="rangeFrom" type="number" mandatory="true"/>
+            <property name="rangeTo" type="number" mandatory="true"/>
+            <property name="peopleID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/attendance/settings">
+        <requestbody type="object">
+            <property name="duration" type="number"/>
+            <property name="mode" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/attendance/getsettings">
+    </request>
+
 </config>

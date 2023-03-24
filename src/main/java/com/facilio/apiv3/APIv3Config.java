@@ -136,6 +136,7 @@ import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCo
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.*;
+import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -163,6 +164,7 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.safetyplans.*;
+import com.facilio.bmsconsoleV3.context.shift.Break;
 import com.facilio.bmsconsoleV3.context.spacebooking.FetchCriteriaObjectCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.SpaceBookingSupplementsCommand;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
@@ -2484,13 +2486,10 @@ public class APIv3Config {
         return () -> new V3Config(Shift.class, new ModuleCustomFieldCount15())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getShiftBeforeSaveChain())
-                .afterSave(TransactionChainFactoryV3.getShiftAfterSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getShiftBeforeUpdateChain())
-                .afterSave(TransactionChainFactoryV3.getShiftAfterUpdateChain())
                 .delete()
                 .beforeDelete(TransactionChainFactoryV3.getShiftBeforeDeleteChain())
-                .afterDelete(TransactionChainFactoryV3.getShiftAfterDeleteChain())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getShiftBeforeListChain())
                 .summary()
@@ -2915,4 +2914,26 @@ public class APIv3Config {
                 .build();
     }
 
+
+    @Module(FacilioConstants.Attendance.ATTENDANCE_TRANSACTION)
+    public static Supplier<V3Config> getAttendanceTransaction() {
+        return () -> new V3Config(AttendanceTransaction.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getAttendanceTxnBeforeSaveChain())
+                .afterTransaction(TransactionChainFactoryV3.getAttendanceTxnAfterTransactionChain())
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.Attendance.ATTENDANCE)
+    public static Supplier<V3Config> getAttendance() {
+        return () -> new V3Config(Attendance.class, null)
+                .create()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
 }

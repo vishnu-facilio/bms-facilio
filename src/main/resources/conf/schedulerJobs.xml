@@ -59,6 +59,9 @@
 	<job name='PreOpenWoObservation' classname='com.facilio.bmsconsole.jobs.PreOpenWoObservation'
 		 transactionTimeout='900000'/>
 
+	<job name='AttendanceJob' classname='com.facilio.bmsconsole.jobs.AttendanceJob'
+		 transactionTimeout='900000'/>
+
 	<!-- Weather Data Job -->
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DailyWeatherData' classname = 'com.facilio.bmsconsole.jobs.DailyWeatherDataJob' transactionTimeout='300000'/>
