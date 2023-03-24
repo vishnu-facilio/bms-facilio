@@ -588,7 +588,7 @@ public class WorkflowRuleContext implements Serializable {
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
 		MODULE_RULE(false,false,false, false, true), // 37
-		MODULE_RULE_NOTIFICATION,
+		MODULE_RULE_NOTIFICATION(false,false,false, false, true),
 		
 		READING_VIOLATION_RULE, // 39
 		CUSTOM_BUTTON,	// 40
