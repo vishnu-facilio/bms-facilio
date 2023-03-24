@@ -1,10 +1,7 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.PermissionUtil;
@@ -109,7 +106,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-
+import com.facilio.constants.FacilioConstants.MultiResource;
 public class PageFactory {
 
 
@@ -448,7 +445,14 @@ public class PageFactory {
 						FacilioModule.ModuleType.Q_AND_A_RESPONSE,
 						FacilioModule.ModuleType.Q_AND_A
 								);
+		List<String> moduleList = new ArrayList<>();
 
+		moduleList.add(ContextNames.ASSET_SPARE_PARTS);
+		moduleList.add(MultiResource.NAME);
+		moduleList.add(ContextNames.ASSET_DEPRECIATION_REL);
+		if (CollectionUtils.isNotEmpty(subModules)) {
+			subModules = subModules.stream().filter(module -> !moduleList.contains(module.getName())).collect(Collectors.toList());
+		}
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
 				if(subModule.isModuleHidden()) {

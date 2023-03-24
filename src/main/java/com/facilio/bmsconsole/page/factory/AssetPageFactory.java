@@ -147,7 +147,6 @@ public class AssetPageFactory extends PageFactory {
 			Section tab4Sec1 = page.new Section();
 			tab4.addSection(tab4Sec1);
 
-			addAssetLifeWidget(tab4Sec1);
 			addAlarmInsightsWidget(tab4Sec1);
 			addLastDownTimeWidget(tab4Sec1);
 			addOverallDowntimeWidget(tab4Sec1);
