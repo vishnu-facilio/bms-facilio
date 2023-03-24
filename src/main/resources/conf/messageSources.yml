@@ -83,16 +83,10 @@ sources:
       iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_IoTKafka','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
       iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_IoTKafka','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}      
 
-  - name: msk-ae #ae region
-    type: kafka
-    configs:
-      broker: b-2.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-3.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096,b-1.aekafka.ovxloy.c2.kafka.ap-southeast-2.amazonaws.com:9096
-      auth: true
-
   - name: msk-ae1 #ae region
     type: kafka
     configs:
-      broker: b-2.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-1.aekafka.wh6h8e.c3.kafka.ap-southeast-1.amazonaws.com:9096
+      broker: b-2.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096,b-1.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096,b-3.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096
       auth: true
 
   - name: msk-oci #ae region
