@@ -808,6 +808,10 @@ public class ApplicationApi {
                     FacilioConstants.DefaultRoleNames.CLIENT_USER);
             addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
 
+            ApplicationLayoutContext cpLayoutMobile = new ApplicationLayoutContext(clientPortal.getId(),
+                    ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE,
+                    FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+            addApplicationLayout(cpLayoutMobile);
         }
 
         ApplicationContext employeePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
