@@ -114,8 +114,8 @@ public class AttendanceAPI {
                 NumberOperators.LESS_THAN);
 
         Criteria timeCriteria = new Criteria();
-        timeCriteria.addOrCondition(dateConditionGTE);
-        timeCriteria.addOrCondition(dateConditionLT);
+        timeCriteria.addAndCondition(dateConditionGTE);
+        timeCriteria.addAndCondition(dateConditionLT);
 
         SelectRecordsBuilder<AttendanceTransaction> builder = new SelectRecordsBuilder<AttendanceTransaction>()
                 .beanClass(AttendanceTransaction.class)
@@ -124,7 +124,7 @@ public class AttendanceAPI {
                 .andCondition(peopleCondition)
                 .andCriteria(timeCriteria)
                 .fetchSupplements(Arrays.asList((LargeTextField) fieldMap.get("notes")))
-                .orderBy("ID ASC");
+                .orderBy("TRANSACTION_TIME ASC");
 
         List<AttendanceTransaction> txns = builder.get();
         LOGGER.debug("attendance txns fetched " + txns.size() + " txns for people ID " + peopleID + " on " + date);
@@ -213,11 +213,14 @@ public class AttendanceAPI {
 
             if (isPaidBreak(associatedBreak)) {
                 long allowedTime = associatedBreak.getBreakTime();
-                if (breakTimeElapsed > allowedTime) {
-                    long extraBreakTimeConsumed = breakTimeElapsed - allowedTime;
+                long allowedTimeInMillis = allowedTime * 1000;
+                if (breakTimeElapsed > allowedTimeInMillis) {
+                    long extraBreakTimeConsumed = breakTimeElapsed - allowedTimeInMillis;
                     attendance.setWorkingHours(attendance.getWorkingHours() - extraBreakTimeConsumed);
+                    attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + allowedTimeInMillis);
+                } else {
+                    attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + breakTimeElapsed);
                 }
-                attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + allowedTime);
                 continue;
             }
             // handling for unpaid break
@@ -284,11 +287,13 @@ public class AttendanceAPI {
     }
 
     public static List<AttendanceTransaction.Type> getAttendanceTransitions(Long peopleID) throws Exception {
-        List<AttendanceTransaction> transactions = getAttendanceTxnsForToday(peopleID);
-        if (CollectionUtils.isEmpty(transactions)) {
+
+        Long now = new Date().getTime();
+        AttendanceTransaction lastTransaction = getPriorAttendanceTxn(peopleID, now);
+        if (lastTransaction == null) {
             return Collections.singletonList(AttendanceTransaction.Type.CHECK_IN);
         }
-        AttendanceTransaction lastTransaction = transactions.get(transactions.size() - 1);
+
         switch (lastTransaction.getTransactionType()) {
             case CHECK_IN:
             case RESUME_WORK:
@@ -378,7 +383,7 @@ public class AttendanceAPI {
         updateBuilder.update(FieldUtil.getAsProperties(settings));
     }
 
-    public static AttendanceTransaction getPriorAttendanceTxns(Long peopleID, Long time) throws Exception {
+    public static AttendanceTransaction getPriorAttendanceTxn(Long peopleID, Long time) throws Exception {
 
         FacilioModule module =
                 Constants.getModBean().getModule(FacilioConstants.Attendance.ATTENDANCE_TRANSACTION);
@@ -416,7 +421,7 @@ public class AttendanceAPI {
         Long time = tx.getTransactionTime();
             AttendanceTransaction.Type newTxType = tx.getTransactionType();
 
-        AttendanceTransaction previousTxn = getPriorAttendanceTxns(peopleID, time);
+        AttendanceTransaction previousTxn = getPriorAttendanceTxn(peopleID, time);
         if (previousTxn == null) {
             return newTxType == AttendanceTransaction.Type.CHECK_IN ?  false : true;
         }

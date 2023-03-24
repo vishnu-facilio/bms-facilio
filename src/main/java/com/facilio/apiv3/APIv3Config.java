@@ -2924,6 +2924,9 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete()
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getAttendanceTxnBeforeSaveChain())
+                .afterTransaction(TransactionChainFactoryV3.getAttendanceTxnAfterTransactionChain())
                 .build();
     }
 

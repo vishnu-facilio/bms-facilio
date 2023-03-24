@@ -403,6 +403,12 @@ public class FieldFactory extends BaseFieldFactory {
                 "moduleState",
         }));
 
+        public static final List<String> BREAK_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
+                "name",
+                "breakType",
+                "shifts",
+        }));
+
         public static final List<String> AGENT_ALARM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
                 "agent",
                 "agentAlarmType",

@@ -230,6 +230,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.AGENT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case ContextNames.SHIFT:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.SHIFT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case ContextNames.BREAK:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.BREAK_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

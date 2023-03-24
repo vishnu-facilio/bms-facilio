@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.attendance;
 
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceSettings;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
@@ -27,8 +28,8 @@ public class UpdateAttendance extends FacilioCommand {
         List<AttendanceTransaction> transactionsCreated = recordMap.get(ModName);
         AttendanceTransaction transaction = transactionsCreated.get(0);
 
-        // attendance creation/update to be done only after checkout
-        if (!isCheckoutTransaction(transaction)) {
+        if (isCreateTransaction(context) &&
+                isNotCheckoutTransaction(transaction)){
             return false;
         }
 
@@ -53,6 +54,10 @@ public class UpdateAttendance extends FacilioCommand {
         }
         updateAttendance(attendanceMod, existingAttendance, reducedAttendance);
         return false;
+    }
+
+    private boolean isCreateTransaction(Context context) {
+        return context.get("eventType").equals(EventType.CREATE);
     }
 
     private void fillBreaks(List<AttendanceTransaction> transactions) throws Exception {
@@ -88,8 +93,8 @@ public class UpdateAttendance extends FacilioCommand {
         insert.save();
     }
 
-    private static boolean isCheckoutTransaction(AttendanceTransaction transaction) {
-        return transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT);
+    private static boolean isNotCheckoutTransaction(AttendanceTransaction transaction) {
+        return !transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT);
     }
 
 
