@@ -73,9 +73,9 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Formula_Field_Resource_Jobs" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Workflow_Rule" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
-		tablesContainsDateField.put("Preventive_Maintenance" , Arrays.asList("CREATION_TIME","LAST_MODIFIED_TIME","END_TIME"));
+//		tablesContainsDateField.put("Preventive_Maintenance" , Arrays.asList("CREATION_TIME","LAST_MODIFIED_TIME","END_TIME"));
 		tablesContainsDateField.put("Approval_Steps" , Arrays.asList("ACTION_TIME"));
-		tablesContainsDateField.put("PM_Triggers" , Arrays.asList("START_TIME"));
+//		tablesContainsDateField.put("PM_Triggers" , Arrays.asList("START_TIME"));
 		tablesContainsDateField.put("WorkOrders" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("WorkOrderTimeLog" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("User_Workhour_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
@@ -91,7 +91,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
 		tablesContainsDateField.put("Scheduled_Actions" , Arrays.asList("JOB_TIME"));
 		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
-		tablesContainsDateField.put("PM_Jobs" , Arrays.asList("NEXT_EXECUTION_TIME"));
+//		tablesContainsDateField.put("PM_Jobs" , Arrays.asList("NEXT_EXECUTION_TIME"));
 		tablesContainsDateField.put("Reading_Data_Meta" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Tenant_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
