@@ -10,8 +10,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.auth.AuthUtils;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.util.ServiceHttpUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -231,5 +233,27 @@ public class IamClient {
             LOGGER.info("Exception occurred ",e);
         }
         return "_";
+    }
+    public static ConnectedDeviceContext getConnectedDevice(long connectedDeviceId, String appDomain) throws Exception {
+        if(FacilioProperties.isDevelopment()|| StringUtils.isEmpty(appDomain))
+        {
+            appDomain = FacilioProperties.getIAMURL();
+        }
+        var url = appDomain + "/api/v3/internal/dc/getConnectedDevice";
+        JSONObject params = new JSONObject();
+        params.put("connectedDeviceId", connectedDeviceId);
+        String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getIamregion(), "iam", getUrl(url), null, null, params);
+        LOGGER.error("[getConnectedDevice] " + response);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("data")) {
+                JSONObject data = (JSONObject) obj.get("data");
+                Map<String, Object> connectedDeviceMap = (Map<String, Object>) data.get("connectedDevice");
+                ObjectMapper mapper = new ObjectMapper();
+                ConnectedDeviceContext connectedDevice = mapper.convertValue(connectedDeviceMap, ConnectedDeviceContext.class);
+                return connectedDevice;
+            }
+        }
+        return null;
     }
 }

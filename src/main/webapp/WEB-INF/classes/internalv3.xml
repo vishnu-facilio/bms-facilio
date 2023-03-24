@@ -62,6 +62,9 @@
         </action>
 
         <action name="deleteDCLookup" class="com.facilio.auth.actions.FacilioDCAction" method="deleteUserFromDCLookup"></action>
+
+        <action name="getConnectedDevice" class="com.facilio.auth.actions.FacilioDCAction" method="getConnectedDeviceForId"></action>
+
     </package>
 
 </struts>

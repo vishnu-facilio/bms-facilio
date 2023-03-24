@@ -1444,4 +1444,10 @@
     <request path="/api/v1/setup/readingkpi/crud"></request>
     <request path="/api/v3/readingKpi/historical/run"></request>
     <request path="/api/v3/readingKpi/historical/fetchAssetDetails"></request>
+
+    <request path="/api/v3/internal/dc/getConnectedDevice">
+        <urlparams>
+            <property name="connectedDeviceId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

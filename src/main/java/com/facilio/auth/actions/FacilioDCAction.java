@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain.GroupType;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -94,5 +95,11 @@ public class FacilioDCAction extends V3Action {
 		setData("result", "success");
 		return SUCCESS;
 	}
+	public String getConnectedDeviceForId() throws Exception {
+		ConnectedDeviceContext deviceObj = DevicesUtil.getConnectedDevice(connectedDeviceId);
+		setData("connectedDevice", deviceObj);
+		return SUCCESS;
+	}
+
 
 }

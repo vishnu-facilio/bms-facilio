@@ -74,9 +74,10 @@ public String validateCode() {
 				String scheme;
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
-					ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
 
-					scheme= generateScheme(connectedDeviceId);
+					String appDomain= DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
+					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain);
+					scheme= generateScheme(connectedDevice);
 
 					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
@@ -92,7 +93,7 @@ public String validateCode() {
 					response.addCookie(cookie1);
 
 					FacilioAuthAction facilio = new FacilioAuthAction();
-					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(connectedDevice));
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(appDomain));
 					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 					setTempCookieProperties(mobileTokenCookie, false);
 
@@ -140,9 +141,8 @@ public String validateCode() {
 		return RequestUtil.getProtocol(request);
 	}
 
-	private String generateScheme(long connectedDeviceId) throws Exception {
+	private String generateScheme(ConnectedDeviceContext connectedDevice) throws Exception {
 		String scheme;
-		ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
 		AccountUtil.setCurrentAccount(connectedDevice.getOrgId());
 		DeviceContext device= DevicesAPI.getDevice(connectedDevice.getDeviceId());
 		scheme = device.getDeviceTypeEnum().toString().toLowerCase().replace("_","");
@@ -159,11 +159,10 @@ public String validateCode() {
 		}
 	}
 
-	private String getBaseUrl(ConnectedDeviceContext connectedDevice) throws Exception {
+	private String getBaseUrl(String appDomain) throws Exception {
 
 		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
-		List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomain.AppDomainType.FACILIO, connectedDevice.getOrgId());
-		baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+		baseUrl.append(appDomain);
 		String s = baseUrl.toString();
 		return s;
 	}
