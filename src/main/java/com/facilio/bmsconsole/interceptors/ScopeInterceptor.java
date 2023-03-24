@@ -135,12 +135,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         appLinkName = (String) request.getAttribute("facilio.app.name");
                     }
                     if (StringUtils.isNotEmpty(appLinkName)) {
-                    	
-                        ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName,true);
-                        if (application != null) {
-                            appId = application.getId();
-                        } else {
-                            return ErrorUtil.sendError(ErrorUtil.Error.PAGE_NOT_FOUND);
+                    	if(!appLinkName.equalsIgnoreCase("tv")) {
+                            ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName, true);
+                            if (application != null) {
+                                appId = application.getId();
+                            } else {
+                                return ErrorUtil.sendError(ErrorUtil.Error.PAGE_NOT_FOUND);
+                            }
                         }
                     }
                 } catch (Exception e) {
