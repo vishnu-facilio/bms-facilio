@@ -30,9 +30,11 @@
                          class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
             <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
             <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
+            <interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
             <interceptor-stack name="defaultInterceptor">
                 <interceptor-ref name="defaultStack" />
                 <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="exceptionHandlingInterceptor" />
                 <interceptor-ref name="datasourceinterceptor" />
                 <interceptor-ref name="oauth2interceptor" />
                 <interceptor-ref name="apiKeyInterceptor" />
