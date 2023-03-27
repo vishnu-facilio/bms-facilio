@@ -44,7 +44,7 @@
             <result name="error" type="json">
                 <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^message.*,^code.*,^data.*,^stackTrace.*</param>
+                <param name="includeProperties">^message.*,^code.*,^correctiveAction.*,^isErrorGeneralized.*,^isVisible.*,^data.*,^stackTrace.*</param>
             </result>
             <result name="sessionexpired" type="httpheader">
                 <param name="status">440</param>
@@ -84,9 +84,11 @@
                          class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor"/>
             <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor"/>
             <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor"/>
+            <interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor"/>
             <interceptor-stack name="defaultInterceptor">
                 <interceptor-ref name="defaultStack"/>
                 <interceptor-ref name="authinterceptor"/>
+                <interceptor-ref name="exceptionHandlingInterceptor"/>
                 <interceptor-ref name="apiKeyInterceptor"/>
                 <interceptor-ref name="datasourceinterceptor"/>
                 <interceptor-ref name="scopeinterceptor"/>

@@ -556,8 +556,8 @@ public class AccountUtil {
 		ATTENDANCE(120,getExponentValue(56),LicenseMapping.GROUP2LICENSE),//2^56
 		PEOPLE_USER_SCOPING(121,getExponentValue(57),LicenseMapping.GROUP2LICENSE),//2^27
 		OFFLINE_SUPPORT(122,getExponentValue(58),LicenseMapping.GROUP2LICENSE),//2^58
-		CLIENT_PORTAL(123,getExponentValue(59),LicenseMapping.GROUP2LICENSE);//2^59
-
+		CLIENT_PORTAL(123,getExponentValue(59),LicenseMapping.GROUP2LICENSE),//2^59
+		ERROR_FRAMEWORK_GENERALIZATION(123, getExponentValue(60), LicenseMapping.GROUP2LICENSE); // 2 ^ 60
 		public int featureId;
 		private long license;
 		private String[] modules;

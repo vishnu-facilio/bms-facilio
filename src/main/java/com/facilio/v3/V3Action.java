@@ -16,10 +16,14 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
+import com.facilio.exception.ErrorResponseUtil;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Log4j
@@ -38,6 +42,12 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	private JSONObject meta;
 	private JSONObject params;
 	private int code = 0;
+	@Getter @Setter
+	private String correctiveAction;
+	@Getter @Setter
+	private Boolean isErrorGeneralized;
+	@Getter @Setter
+	private Boolean isVisible;
 	private String message;
 
 	public JSONObject getData() {
@@ -336,14 +346,15 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 		return httpServletResponse;
 	}
 	
-	public String handleException() {
-		ErrorCode errorCode;
-		String message;
+	public String handleException() throws Exception{
+		ErrorCode errorCode = null;
+		String message = StringUtils.EMPTY;
+		ErrorResponseUtil values = null;
+		Boolean errRestType = false;
 		if (exception instanceof RESTException) {
-			RESTException ex = (RESTException) exception;
-			errorCode = ex.getErrorCode();
-			message = ex.getMessage();
-			this.setData(ex.getData());
+			errRestType = true;
+			values = new ErrorResponseUtil((RESTException) exception);
+			this.setData(values.getData());
 		} else if (exception instanceof IllegalArgumentException) {
 			errorCode =  ErrorCode.VALIDATION_ERROR;
 			message = exception.getMessage();
@@ -351,15 +362,23 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 				message = "Error occurred due to some validation";
 			}
 			this.setData(null);
-		} else {
+		} else if(exception instanceof SQLException || exception instanceof SQLDataException) {
+			errorCode =  ErrorCode.VALIDATION_ERROR;
+			message = ((SQLException)exception).getLocalizedMessage();
+		}
+		else {
 			errorCode =  ErrorCode.UNHANDLED_EXCEPTION;
 			message = "Internal Server Error";
 			this.setData(null);
 		}
 
-		this.setCode(errorCode.getCode());
-		this.setMessage(message);
-		this.httpServletResponse.setStatus(errorCode.getHttpStatus());
+		this.setCode(errRestType  ? values.getErrorCode().getCode() : errorCode.getCode());
+		this.setMessage(errRestType ? values.getMessage(): message);
+		this.setCorrectiveAction(errRestType ? values.getCorrectiveAction() : StringUtils.EMPTY);
+		this.setIsErrorGeneralized(errRestType ? values.getIsErrorGeneralized() : false );
+		this.setIsVisible(errRestType ? values.getIsVisible() : false);
+		this.httpServletResponse.setStatus(errRestType ?  values.getErrorCode().getHttpStatus() : errorCode.getHttpStatus());
+
 
 		this.setStackTrace(exception);
 		LOGGER.error("Exception handling v3 api, moduleName: " + getModuleName(), exception);
