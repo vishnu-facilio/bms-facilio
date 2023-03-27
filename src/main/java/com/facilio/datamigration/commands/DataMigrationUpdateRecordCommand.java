@@ -43,6 +43,8 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
         Long superAdminUserId = AccountUtil.getOrgBean(targetOrgId).getSuperAdmin(targetOrgId).getOuid();
         Map<Long, Long> userIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.USER_ID_MAPPING);
         Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new ArrayList<Long>());
+        List<String> skipModuleNamesList = (List<String>) context.get(DataMigrationConstants.SKIP_MODULES_LIST);
+        List<String> logModuleNamesList = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
 
         DataMigrationBean sourceConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
@@ -74,7 +76,13 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
                 moduleMigrationStarted = true;
             }
 
-            LOGGER.info("Migration - Updation - Completed for moduleName -"+moduleName);
+            LOGGER.info("Migration - Updation - Started for moduleName -"+moduleName);
+            FacilioModule targetModule = targetModuleBean.getModule(moduleName);
+            if((CollectionUtils.isNotEmpty(skipModuleNamesList) && skipModuleNamesList.contains(moduleName)) ||
+                    targetModule.getTypeEnum().equals(FacilioModule.ModuleType.READING)) {
+                LOGGER.info("Migration - Updation - Skipping for moduleName -"+moduleName);
+                continue;
+            }
 
             Map<String, Object> moduleDetails = moduleNameVsDetails.getValue();
             Map<String, Map<String, Object>> numberLookups = (Map<String, Map<String, Object>>) moduleDetails.get("numberLookups");
@@ -92,7 +100,6 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
                 continue;
             }
 
-            FacilioModule targetModule = targetModuleBean.getModule(moduleName);//(FacilioModule) moduleDetails.get("targetModule");
             List<FacilioField> targetFields = targetModuleBean.getAllFields(moduleName);
             targetFields = targetFields.stream().filter(field -> (field.getName().equals("id") || field.getDataTypeEnum().equals(FieldType.LOOKUP)
                     || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP))
@@ -107,7 +114,12 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
                 moduleCriteria = (Criteria) moduleDetails.get("criteria");
             }
 
+            boolean addLogger = (CollectionUtils.isNotEmpty(logModuleNamesList) && logModuleNamesList.contains(moduleName));
+
             int limit = 5000;
+            if(moduleDetails.containsKey("recordsLimit")) {
+                limit = (int) moduleDetails.get("recordsLimit");
+            }
             int offset = 0;
             if(moduleName.equals(lastModuleName) && offset < dataMigrationContext.getMigratedCount()) {
                 offset = (int)dataMigrationContext.getMigratedCount();
@@ -161,7 +173,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
                     List<Map<String, Object>> propsToUpdate = sanitizePropsBeforeUpdate(targetModule.getModuleId(), targetFieldNameVsFields, sourceFieldNameVsFields, props, userIdMapping,
                             superAdminUserId, moduleIdVsOldNewIdMapping, numberLookups, fieldDataMapping);
 
-                    targetConnection.updateModuleData(targetModule, targetFields, targetSupplements, propsToUpdate);
+                    targetConnection.updateModuleData(targetModule, targetFields, targetSupplements, propsToUpdate, addLogger);
 
                     offset = offset + props.size();
                 }
@@ -268,7 +280,11 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
         for (Map<String, Object> prop : props) {
             Map<String, Object> updatedProp = new LinkedHashMap<>();
             Long id = (Long) prop.get("id");
-            updatedProp.put("id", moduleIdVsOldNewIdMapping.get(moduleId).get(id));
+            Long newId = moduleIdVsOldNewIdMapping.get(moduleId).get(id);
+            if(newId == null || newId <=0) {
+                continue;
+            }
+            updatedProp.put("id", newId);
             Boolean hasLookupValue = false;
             for (Map.Entry<String, Object> value : prop.entrySet()) {
                 String fieldName = value.getKey();

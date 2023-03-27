@@ -13,7 +13,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -30,15 +29,13 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
         long sourceOrgId = (long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
         long targetOrgId = (long) context.get(DataMigrationConstants.TARGET_ORG_ID);
         boolean isSiteScoped = (boolean) context.getOrDefault(DataMigrationConstants.IS_SITE_SCOPED, false);
+        List<String> runMigrationOnlyForModules = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
+        List<String> moduleSequenceList = (List<String>) context.get(DataMigrationConstants.MODULE_SEQUENCE);
         LOGGER.info("Module sequence computation started");
-        List<String> skipModules = new ArrayList<>();//(List<FacilioModule>) context.get(DataMigrationConstants.MODULES_TO_SKIP);
+        List<String> skipModules = new ArrayList<>();
         if(isSiteScoped) {
             skipModules.add("site");
         }
-
-        //RUn time issues
-        //skipModules.add("bacnetipcontroller"); // unique constraint fails
-
 
         //Modules as a configuration
         skipModules.add("alarmseverity");
@@ -61,7 +58,7 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
         skipModules.add("inspectionPriority");
         skipModules.add("peopleGroup");
         skipModules.add("peopleGroupMember");
-
+        skipModules.add("basespace");
 
         //Modules with no relation in SubModuleRel
         skipModules.add("cmdattachments");
@@ -76,6 +73,60 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
         skipModules.add("occupantattachments"); // Occupants_Attachments.PARENT_CONTACT column not present
         skipModules.add("readingalarm");        // Reading_Alarms.IS_NEW_READING_RULE column not present
         skipModules.add("assetdepreciation");  // Skipping this since one of the number/decimal field doesnt have entry in sub table-numberfields
+        skipModules.add("agentMetrics"); // Doesn't have parentid
+
+        //Skipping all alarm,event and occurence modules
+        skipModules.add("baseEvent");
+        skipModules.add("alarmoccurrence");
+        skipModules.add("baseAlarm");
+        skipModules.add("newreadingalarm");
+        skipModules.add("readingrcaalarm");
+        skipModules.add("bmsalarm");
+        skipModules.add("violationalarm");
+        skipModules.add("mlAnomalyAlarm");
+        skipModules.add("prealarm");
+        skipModules.add("sensoralarm");
+        skipModules.add("sensorrollupalarm");
+        skipModules.add("rulerollupalarm");
+        skipModules.add("assetrollupalarm");
+        skipModules.add("agentAlarm");
+        skipModules.add("controllerAlarm");
+        skipModules.add("operationalarm");
+        skipModules.add("violationalarmoccurrence");
+        skipModules.add("prealarmoccurrence");
+        skipModules.add("sensoralarmoccurrence");
+        skipModules.add("sensorrollupalarmoccurrence");
+        skipModules.add("rulerollupoccurrence");
+        skipModules.add("assetrollupoccurrence");
+        skipModules.add("anomalyalarmoccurrence");
+        skipModules.add("readingalarmoccurrence");
+        skipModules.add("agentAlarmOccurrence");
+        skipModules.add("controllerAlarmOccurrence");
+        skipModules.add("operationalarmoccurrence");
+        skipModules.add("bmsalarmoccurrence");
+        skipModules.add("readingevent");
+        skipModules.add("readingrcaevent");
+        skipModules.add("mlAnomalyEvent");
+        skipModules.add("bmsevent");
+        skipModules.add("violationevent");
+        skipModules.add("preevent");
+        skipModules.add("sensorevent");
+        skipModules.add("sensorrollupevent");
+        skipModules.add("rulerollupevent");
+        skipModules.add("assetrollupevent");
+        skipModules.add("agentAlarmEvent");
+        skipModules.add("controllerAlarmEvent");
+        skipModules.add("operationevent");
+        skipModules.add("newreadingrules");
+        skipModules.add("readingrulerca");
+        skipModules.add("readingrulerca_group");
+        skipModules.add("readingrulerca_score_readings");
+        skipModules.add("readingrulerca_score_condition");
+
+
+        skipModules.add("readingkpi");
+        skipModules.add("kpiLogger");
+        skipModules.add("kpiResourceLogger");
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", targetOrgId);
@@ -103,7 +154,7 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
 
         Set<Long> extendedIds = modules.stream().filter(module -> module.getExtendModule() != null).map(module ->  module.getExtendModule().getModuleId()).collect(Collectors.toSet());
 
-        Map<String, Map<String, Object>> moduleNameVsDetails = new HashMap<>();
+        Map<String, Map<String, Object>> moduleNameVsDetails = new LinkedHashMap<>();
         for(FacilioModule module : modules ) {
             String moduleName = module.getName();
 
@@ -119,6 +170,9 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
             while (currModule != null) {
                 numberLookupUps.putAll(getNumberLookups(currModule, targetModuleBean, targetModuleNameWithoutFilterVsObj));
                 numberFileFields.addAll(getNumberFileFields(currModule));
+                if (module.getTypeEnum().isReadingType()) {
+                    details.put("recordsLimit", 9000);
+                }
                 currModule = currModule.getExtendModule();
             }
             details.put("numberLookups", numberLookupUps);
@@ -143,40 +197,50 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
             }
         }
 
-
         Map<String, Map<String, Object>> orderedModuleNameVsDetails = new LinkedHashMap<>();
-        Map<String, Map<String, Object>> moduleWithParentWithoutChild = new LinkedHashMap<>();
-        Map<String, Map<String, Object>> moduleWithBothParentChild = new LinkedHashMap<>();
-        Map<String, Map<String, Object>> moduleWithOnlyChild = new LinkedHashMap<>();
-        Map<String, Map<String, Object>> baseEntityModules = new LinkedHashMap<>();
-        Map<String, Map<String, Object>> otherModules = new LinkedHashMap<>();
-
-        for(Map.Entry<String, Map<String,Object>> moduleVsDetails : moduleNameVsDetails.entrySet()) {
-            String key = moduleVsDetails.getKey();
-            Map<String,Object> value = moduleVsDetails.getValue();
-            FacilioModule module = (FacilioModule)value.get("sourceModule");
-            if(module.getExtendModule() != null && !extendedIds.contains(module.getModuleId())) {
-                moduleWithParentWithoutChild.put(key, value);
-            } else if(module.getExtendModule() != null && extendedIds.contains(module.getModuleId())) {
-                moduleWithBothParentChild.put(key, value);
-            } else if(module.getExtendModule() == null && extendedIds.contains(module.getModuleId())) {
-                moduleWithOnlyChild.put(key, value);
-            } else if(module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY ||
-                    module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A_RESPONSE ||
-                    module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A) {
-                baseEntityModules.put(key, value);
-            } else {
-                otherModules.put(key, value);
+        if (CollectionUtils.isNotEmpty(moduleSequenceList)) {
+            for (String moduleName : moduleSequenceList) {
+                orderedModuleNameVsDetails.put(moduleName, moduleNameVsDetails.get(moduleName));
             }
+        } else {
+            Map<String, Map<String, Object>> moduleWithParentWithoutChild = new LinkedHashMap<>();
+            Map<String, Map<String, Object>> moduleWithBothParentChild = new LinkedHashMap<>();
+            Map<String, Map<String, Object>> moduleWithOnlyChild = new LinkedHashMap<>();
+            Map<String, Map<String, Object>> baseEntityModules = new LinkedHashMap<>();
+            Map<String, Map<String, Object>> otherModules = new LinkedHashMap<>();
+
+            for (Map.Entry<String, Map<String, Object>> moduleVsDetails : moduleNameVsDetails.entrySet()) {
+                String key = moduleVsDetails.getKey();
+                Map<String, Object> value = moduleVsDetails.getValue();
+                FacilioModule module = (FacilioModule) value.get("sourceModule");
+                if (module.getExtendModule() != null && !extendedIds.contains(module.getModuleId())) {
+                    moduleWithParentWithoutChild.put(key, value);
+                } else if (module.getExtendModule() != null && extendedIds.contains(module.getModuleId())) {
+                    moduleWithBothParentChild.put(key, value);
+                } else if (module.getExtendModule() == null && extendedIds.contains(module.getModuleId())) {
+                    moduleWithOnlyChild.put(key, value);
+                } else if (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY ||
+                        module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A_RESPONSE ||
+                        module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A) {
+                    baseEntityModules.put(key, value);
+                } else {
+                    otherModules.put(key, value);
+                }
+            }
+            orderedModuleNameVsDetails.putAll(moduleWithParentWithoutChild);
+            orderedModuleNameVsDetails.putAll(moduleWithBothParentChild);
+            orderedModuleNameVsDetails.putAll(moduleWithOnlyChild);
+            orderedModuleNameVsDetails.putAll(baseEntityModules);
+            orderedModuleNameVsDetails.putAll(otherModules);
         }
-        orderedModuleNameVsDetails.putAll(moduleWithParentWithoutChild);
-        orderedModuleNameVsDetails.putAll(moduleWithBothParentChild);
-        orderedModuleNameVsDetails.putAll(moduleWithOnlyChild);
-        orderedModuleNameVsDetails.putAll(baseEntityModules);
-        orderedModuleNameVsDetails.putAll(otherModules);
+
+        if (CollectionUtils.isNotEmpty(runMigrationOnlyForModules)) {
+            orderedModuleNameVsDetails.keySet().retainAll(runMigrationOnlyForModules);
+        }
 
         context.put("ModulesVsInfo", orderedModuleNameVsDetails);
         LOGGER.info("Module sequence computation completed");
+        LOGGER.info("Ordered Module Sequence - "+orderedModuleNameVsDetails.keySet());
         return false;
     }
 

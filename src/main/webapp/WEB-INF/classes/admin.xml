@@ -10,6 +10,16 @@
 				method="addJob">
 		</action>
 		<action name="runDataMigration" class="com.facilio.datamigration.action.DataMigrationAction">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="statusCode">500</param>
+			</result>
 		</action>
 		<action name="dataMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/datamigration.jsp</result>

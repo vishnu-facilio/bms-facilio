@@ -1,6 +1,8 @@
 package com.facilio.datamigration.beans;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.context.DataMigrationMappingContext;
@@ -11,14 +13,14 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import javassist.bytecode.FieldInfo;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.InputStream;
 import java.util.*;
 
+@Log4j
 public class DataMigrationBeanImpl implements DataMigrationBean{
     private static final List<Integer> SKIP_SITE_FILTER = Arrays.asList(FacilioModule.ModuleType.NOTES.getValue(), FacilioModule.ModuleType.ATTACHMENTS.getValue());
 
@@ -36,7 +39,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 //            AccountUtil.setCurrentSiteId(siteIds.iterator().next());
 //        }
         ScopeHandler.ScopeFieldsAndCriteria siteScopeCriteria = null;
-        if (FieldUtil.isSiteIdFieldPresent(module) || (module.isCustom() && !SKIP_SITE_FILTER.contains(module.getType()))) {
+        if (CollectionUtils.isNotEmpty(siteIds) && (FieldUtil.isSiteIdFieldPresent(module) || (module.isCustom() && !SKIP_SITE_FILTER.contains(module.getType())))) {
             siteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(module, false, new ArrayList<Long>(){{addAll(siteIds);}});
         }
         if(siteScopeCriteria != null) {
@@ -53,11 +56,53 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(supplements)) {
             selectBuilder.fetchSupplements(supplements);
         }
+        Criteria cr = new Criteria();
         if(siteScopeCriteria != null) {
-            selectBuilder.andCriteria(siteScopeCriteria.getCriteria());
+            cr.andCriteria(siteScopeCriteria.getCriteria());
         }
         if(moduleCriteria != null) {
-            selectBuilder.andCriteria(moduleCriteria);
+            cr.andCriteria(moduleCriteria);
+        }
+
+        if (module.getTypeEnum().equals(FacilioModule.ModuleType.READING)) {
+            List<Integer> resourceTypeCategories = Arrays.asList(
+                    ResourceContext.ResourceType.ASSET.getValue(), ResourceContext.ResourceType.SPACE.getValue());
+
+            ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", module.getOrgId());
+            FacilioModule resourceModule = targetModuleBean.getModule("resource");
+            FacilioField resourceIdField = FieldFactory.getIdField(resourceModule);
+
+            Criteria resourceFilterCriteria = new Criteria();
+            resourceFilterCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(resourceTypeCategories, ","), NumberOperators.EQUALS));
+
+            ScopeHandler.ScopeFieldsAndCriteria resourceSiteScopeCriteria = null;
+            if (CollectionUtils.isNotEmpty(siteIds)) {
+                 resourceSiteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(resourceModule, false, new ArrayList<Long>() {{
+                    addAll(siteIds);
+                }});
+                if (resourceSiteScopeCriteria != null) {
+                    resourceFilterCriteria.andCriteria(resourceSiteScopeCriteria.getCriteria());
+                }
+            }
+
+            SelectRecordsBuilder<ModuleBaseWithCustomFields> subQueryBuilder = new SelectRecordsBuilder<>();
+            subQueryBuilder.module(resourceModule)
+                    .select(Collections.singleton(resourceIdField))
+                    .andCriteria(resourceFilterCriteria)
+                    .setAggregation()
+                    .skipModuleCriteria();
+
+            String valueList = subQueryBuilder.constructQueryString();
+
+            FacilioField parentIdField = targetModuleBean.getField("parentId", module.getName());
+            Criteria additionalModCriteria = new Criteria();
+            additionalModCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, valueList, NumberOperators.EQUALS));
+
+            cr.andCriteria(additionalModCriteria);
+        }
+
+        if(!cr.isEmpty()) {
+            selectBuilder.andCriteria(cr);
         }
 
         return selectBuilder.getAsProps();
@@ -65,7 +110,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
     @Override
     public Map<Long, Long> createModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements,
-                                            List<Map<String, Object>> props) throws Exception {
+                                            List<Map<String, Object>> props, Boolean addLogger) throws Exception {
         List<Long> oldIds =  new ArrayList<Long>();
         Map<Long,Long> childOldIdVsNewIds = new LinkedHashMap<>();
         List<Map<String, Object>> propToInsert = new ArrayList<>();
@@ -77,6 +122,9 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                 oldIds.add(new Long((Long) prop.get("id")));
                 prop.remove("id");
                 propToInsert.add(prop);
+                if(addLogger) {
+                    LOGGER.info(module.getName()+" - Insert prop :::"+prop);
+                }
             }
         }
 
@@ -97,12 +145,12 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
             oldIdVsNewIds.put(oldIds.get(index), (Long) insertedProp.get("id"));
             index++;
         }
-        oldIdVsNewIds.putAll(childOldIdVsNewIds);
+//        oldIdVsNewIds.putAll(childOldIdVsNewIds);
         return oldIdVsNewIds;
     }
 
     @Override
-    public void updateModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements, List<Map<String, Object>> props) throws Exception {
+    public void updateModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements, List<Map<String, Object>> props, Boolean addLogger) throws Exception {
 
         if(CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> prop : props) {
@@ -112,8 +160,11 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                         .allowSysModifiedFieldsProps()
                         .andCondition(CriteriaAPI.getIdCondition((long)prop.get("id"), module));
 
-                if(!supplements.isEmpty()) {
+                if(CollectionUtils.isNotEmpty(supplements)) {
                     updateRecordBuilder.updateSupplements(supplements);
+                }
+                if(addLogger) {
+                    LOGGER.info(module.getName()+" - Update prop :::"+prop);
                 }
                 updateRecordBuilder.updateViaMap(prop);
             }
@@ -200,7 +251,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("SOURCE_ORGID", "sourceOrgId", String.valueOf(sourceOrgId), NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(DataMigrationStatusContext.DataMigrationStatus.COMPLETED.getIndex()), NumberOperators.NOT_EQUALS));
+//        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(DataMigrationStatusContext.DataMigrationStatus.COMPLETED.getIndex()), NumberOperators.NOT_EQUALS));
         if(dataMigrationId != null) {
             criteria.addAndCondition(CriteriaAPI.getIdCondition(dataMigrationId, dataMigrationModule));
         }
@@ -228,15 +279,33 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
     }
 
     @Override
+    public DataMigrationStatusContext getDataMigrationStatus(long dataMigrationId) throws Exception {
+        FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(dataMigrationModule.getTableName())
+                .select(FieldFactory.getDataMigrationStatusFields())
+                .andCondition(CriteriaAPI.getIdCondition(dataMigrationId, dataMigrationModule));
+
+        Map<String,Object> props = selectBuilder.fetchFirst();
+        if(MapUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanFromMap(props, DataMigrationStatusContext.class);
+        }
+        return null;
+    }
+
+    @Override
     public void updateDataMigrationStatus(Long id, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, int count) throws Exception {
         DataMigrationStatusContext migrationStatus = new DataMigrationStatusContext();
         migrationStatus.setId(id);
         migrationStatus.setStatus(status);
         migrationStatus.setSysModifiedTime(System.currentTimeMillis());
-        if(moduleId != null) {
+        if (moduleId == null) {
+            migrationStatus.setLastModuleId(-99);
+        } else {
             migrationStatus.setLastModuleId(moduleId);
         }
-        if(count > 0) {
+        if(count >= 0) {
             migrationStatus.setMigratedCount(count);
         }
 

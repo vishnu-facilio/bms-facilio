@@ -36,6 +36,8 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
         long targetOrgId = (long) context.get(DataMigrationConstants.TARGET_ORG_ID);
         long transactionStartTime = (long) context.get(DataMigrationConstants.TRANSACTION_START_TIME);
         long transactionTimeOut = (long) context.getOrDefault(DataMigrationConstants.TRANSACTION_TIME_OUT, 500000l);
+        List<String> skipModuleNamesList = (List<String>) context.get(DataMigrationConstants.SKIP_MODULES_LIST);
+        List<String> logModuleNamesList = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         Long superAdminUserId = AccountUtil.getOrgBean(targetOrgId).getSuperAdmin(targetOrgId).getOuid();
         Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new ArrayList<Long>());
         Map<Long, Long> userIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.USER_ID_MAPPING);
@@ -65,6 +67,10 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
             }
 
             LOGGER.info("Migration - Creation started for : "+moduleName);
+            if(CollectionUtils.isNotEmpty(skipModuleNamesList) && skipModuleNamesList.contains(moduleName)) {
+                LOGGER.info("Migration - Creation - Skipping for moduleName -"+moduleName);
+                continue;
+            }
 
             Map<String, Object> moduleDetails = moduleNameVsDetails.getValue();
             FacilioModule sourceModule = sourceModuleBean.getModule(moduleName);//FacilioModule) moduleDetails.get("sourceModule");
@@ -78,11 +84,20 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
             List<String> targetFileFieldNamesWithId = targetFields.stream().filter(field -> field.getDataTypeEnum().equals(FieldType.FILE)).map(fieldObj -> fieldObj.getName() + "Id").collect(Collectors.toList());
             List<SupplementRecord> targetSupplements = DataMigrationUtil.getSupplementFields(targetFields);
 
+            Map<String, Map<String, Object>> numberLookups = (targetModule.getTypeEnum().equals(FacilioModule.ModuleType.READING))
+                                                    ? (Map<String, Map<String, Object>>) moduleDetails.get("numberLookups") :null;
+
+            List<Long> extendedModuleIds = targetModule.getExtendedModuleIds();
             Criteria moduleCriteria = null;
             if(moduleDetails.containsKey("criteria")) {
                 moduleCriteria = (Criteria) moduleDetails.get("criteria");
             }
+            boolean addLogger = (CollectionUtils.isNotEmpty(logModuleNamesList) && logModuleNamesList.contains(moduleName));
+
             int limit = 5000;
+            if(moduleDetails.containsKey("recordsLimit")) {
+                limit = (int) moduleDetails.get("recordsLimit");
+            }
             int offset = 0;
             if(moduleName.equals(lastModuleName) && offset < dataMigrationContext.getMigratedCount()) {
                 offset = (int)dataMigrationContext.getMigratedCount();
@@ -108,13 +123,40 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
                         isModuleMigrated = true;
                     }
 
+                    Map<Long, Map<Long,Long>> moduleIdVsOldNewIdMapping = null;
+                    if(MapUtils.isNotEmpty(numberLookups)) {
+                        moduleIdVsOldNewIdMapping = new HashMap<>();
+                        Map<Long, List<Long>> moduleIdsVsIdsAndOldLookupIds = DataMigrationUtil.getIdsAndLookupIdsToFetch(props, targetModule.getModuleId(), targetFieldNameVsFields, numberLookups);
+                        if (MapUtils.isNotEmpty(moduleIdsVsIdsAndOldLookupIds)) {
+                            for (Map.Entry<Long, List<Long>> moduleVsIds : moduleIdsVsIdsAndOldLookupIds.entrySet()) {
+                                Map<Long, Long> idMappings = targetConnection.getOldVsNewId(dataMigrationContext.getId(), moduleVsIds.getKey(), moduleVsIds.getValue());
+                                if (MapUtils.isNotEmpty(idMappings)) {
+                                    if (moduleIdVsOldNewIdMapping.containsKey(moduleVsIds.getKey())) {
+                                        moduleIdVsOldNewIdMapping.get(moduleVsIds.getKey()).putAll(idMappings);
+                                    } else {
+                                        moduleIdVsOldNewIdMapping.put(moduleVsIds.getKey(), idMappings);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     List<Map<String, Object>> propsToInsert = sanitizePropsBeforeInsert(targetOrgId, dataMigrationContext.getId(),
                             targetFieldNameVsFields, sourceFieldNameVsFields, targetFileFieldNamesWithId, props, userIdMapping,
-                            superAdminUserId, groupIdMapping, roleIdMapping, sourceConnection, targetConnection, moduleDetails, context);
+                            superAdminUserId, groupIdMapping, roleIdMapping, sourceConnection, targetConnection, moduleDetails, context,
+                            moduleIdVsOldNewIdMapping, numberLookups);
 
-                    Map<Long, Long> oldVsNewIds = targetConnection.createModuleData(targetModule, targetFields, targetSupplements, propsToInsert);
+                    Map<Long, Long> oldVsNewIds = targetConnection.createModuleData(targetModule, targetFields, targetSupplements, propsToInsert, addLogger);
 
                     targetConnection.addIntoDataMappingTable(dataMigrationContext.getId(), targetModule.getModuleId(), oldVsNewIds);
+                    if(CollectionUtils.isNotEmpty(extendedModuleIds)) {
+                        for(Long moduleId : extendedModuleIds) {
+                            if (moduleId == targetModule.getModuleId()) {
+                                continue;
+                            }
+                            targetConnection.addIntoDataMappingTable(dataMigrationContext.getId(), moduleId, oldVsNewIds);
+                        }
+                    }
 
                     offset = offset + props.size();
                 }
@@ -128,6 +170,10 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
 
             LOGGER.info("Migration creation completed for : "+moduleName);
         }
+
+        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
+        dataMigrationContext = targetConnection.getDataMigrationStatus(dataMigrationContext.getId());
+        context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationContext);
 
         return false;
     }
@@ -144,7 +190,9 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
                                                                 DataMigrationBean sourceConnection,
                                                                 DataMigrationBean targetConnection,
                                                                 Map<String, Object> moduleDetails,
-                                                                Context context) throws Exception {
+                                                                Context context, Map<Long,
+                                                                Map<Long, Long>> moduleIdVsOldNewIdMapping,
+                                                                Map<String, Map<String, Object>> numberLookups) throws Exception {
 
         Map<Long, Long> siteMapping = (Map<Long, Long>) context.get(DataMigrationConstants.SITE_MAPPING);
         Map<Long, Long> formIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.FORM_ID_MAPPING);
@@ -180,7 +228,7 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
                             && ((CollectionUtils.isEmpty(fileFieldsAsNumber) || (CollectionUtils.isNotEmpty(fileFieldsAsNumber) && !fileFieldsAsNumber.contains(fieldName))))) {
                             FacilioField fieldObj = targetFieldNameVsFields.get(fieldName);
                             FacilioField sourceFieldObj = sourceFieldNameVsFields.get(fieldName);
-                            modifyFieldTypeData(fieldObj, sourceFieldObj, fieldName, data, updatedProp, userIdMapping, superAdminUserId, groupIdMapping, roleIdMapping);
+                            modifyFieldTypeData(fieldObj, sourceFieldObj, fieldName, data, updatedProp, userIdMapping, superAdminUserId, groupIdMapping, roleIdMapping, moduleIdVsOldNewIdMapping, numberLookups);
 
                         } else if (targetFileFieldNamesWithId.contains(fieldName) || (CollectionUtils.isNotEmpty(fileFieldsAsNumber) && fileFieldsAsNumber.contains(fieldName))) {
                             Long fileId = (Long) data;
@@ -257,9 +305,25 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
 
 
     private void modifyFieldTypeData(FacilioField fieldObj, FacilioField sourceFieldObj, String fieldName, Object data, Map<String, Object> updatedProp, Map<Long, Long> userIdMapping, Long superAdminUserId,
-                                     Map<Long, Long> groupIdMapping, Map<Long, Long> roleIdMapping) throws Exception {
+                                     Map<Long, Long> groupIdMapping, Map<Long, Long> roleIdMapping,
+                                     Map<Long, Map<Long, Long>> moduleIdVsOldNewIdMapping, Map<String, Map<String, Object>> numberLookups) throws Exception {
 
         switch (fieldObj.getDataTypeEnum()) {
+            case NUMBER:
+                //Replacing lookupmoduleids only for reading module
+                if(MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
+                    Long lookupDataId = (Long) data;
+                    if (lookupDataId != null && lookupDataId > 0) {
+                        Long parentModuleId = (Long) numberLookups.get(fieldName).get("lookupModuleId");
+                        if (moduleIdVsOldNewIdMapping != null && moduleIdVsOldNewIdMapping.containsKey(parentModuleId) &&
+                                moduleIdVsOldNewIdMapping.get(parentModuleId).containsKey(lookupDataId)) {
+                            updatedProp.put(fieldName, moduleIdVsOldNewIdMapping.get(parentModuleId).get(lookupDataId));
+                        }
+                    }
+                } else {
+                    updatedProp.put(fieldName, data);
+                }
+                break;
             case URL_FIELD:
                 if (data instanceof HashMap) {
                     HashMap urldata = (HashMap) data;

@@ -60,4 +60,8 @@ public class DataMigrationConstants {
     public static final String TRANSACTION_TIME_OUT = "transactionTimeOut";
     public static final String TRANSACTION_START_TIME = "transactionStartTime";
     public static final Object DATA_MIGRATION_CONTEXT = "dataMigrationContext";
+    public static final String MODULE_SEQUENCE = "moduleSequence";
+    public static final String SKIP_MODULES_LIST = "skipModules";
+    public static final String LOG_MODULES_LIST = "logModules";
+    public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
 }
