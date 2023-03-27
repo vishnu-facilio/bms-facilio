@@ -654,14 +654,14 @@ public class NewPermissionUtil {
                 return homepageTabType.getOrDefault(action, -1);
             case 16:
                 return serviceCatalogTabType.getOrDefault(action, -1);
-            case 85:
-                return newKpiTabType.getOrDefault(action, -1);
             case 83:
                 return shiftPlannerTabType.getOrDefault(action, -1);
             case 84:
                 return myAttendanceTabType.getOrDefault(action, -1);
             case 85:
                 return attendanceTabType.getOrDefault(action, -1);
+            case 87:
+                return newKpiTabType.getOrDefault(action, -1);
 
             default:
                 return -1;
@@ -838,6 +838,13 @@ public class NewPermissionUtil {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : serviceCatalogTabType.keySet()) {
                     maps.put(key, Long.valueOf(serviceCatalogTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 87: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : newKpiTabType.keySet()) {
+                    maps.put(key, Long.valueOf(newKpiTabType.get(key).toString()));
                 }
                 return maps;
             }

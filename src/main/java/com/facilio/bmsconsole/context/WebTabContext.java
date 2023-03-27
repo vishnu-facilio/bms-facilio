@@ -205,94 +205,95 @@ public class WebTabContext implements Serializable {
         }
     }
     public enum Type implements FacilioIntEnum {
-        MODULE ("Module", false, TabType.NORMAL,new ModuleTypeHandler()),
-        APPROVAL ("Approval", false, TabType.NORMAL,null),
-        CALENDAR ("Calendar", false, TabType.NORMAL,null),
-        REPORT ("Report", false, TabType.NORMAL,null),
-        ANALYTICS ("Analytics", true, TabType.NORMAL,null),
-        KPI ("Kpi", false,TabType.NORMAL,null),
-        DASHBOARD ("Dashboard", false,TabType.NORMAL,null),
-        CUSTOM ("Custom",false, TabType.NORMAL,null),
-        APPS ("Apps",false,TabType.NORMAL,null),
-        SETTINGS("Settings",true,TabType.NORMAL,null),
-        TIMELINE("Timeline", false, TabType.NORMAL,null),
-        PORTAL_OVERVIEW("Portal Overview", false, TabType.NORMAL,null),
-        NOTIFICATION("Notification", false,TabType.NORMAL,null),
-        INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL,null),
-        HOMEPAGE("Home Page", false,TabType.NORMAL,null),
-        SERVICE_CATALOG("Service Catalog", false,TabType.NORMAL,null),
-        COMPANY_PROFILE("Company Profile", false,TabType.SETUP,new SetupTypeHandler()),
-        PORTALS("Portals", false,TabType.SETUP,new SetupTypeHandler()),
-        VISITOR_SETTINGS("Visitor Settings", false,TabType.SETUP,new SetupTypeHandler()),
-        FEEDBACK_COMPLAINTS("Feedback & Complaints", false,TabType.SETUP,new SetupTypeHandler()),
-        SMART_CONTROLS("Smart Controls",false,TabType.SETUP,new SetupTypeHandler()),
-        SERVICE_CATALOGS("Service Catalogs",false,TabType.SETUP,new SetupTypeHandler()),
-        TAX("Tax",false,TabType.SETUP,new SetupTypeHandler()),
-        USERS("Users",false,TabType.SETUP,new SetupTypeHandler()),
-        TEAMS("Teams",false,TabType.SETUP,new SetupTypeHandler()),
-        ROLES("Roles",false,TabType.SETUP,new SetupTypeHandler()),
-        LABOUR("Labour",false,TabType.SETUP,new SetupTypeHandler()),
-        CRAFTS("Crafts",false,TabType.SETUP,new SetupTypeHandler()),
-        PEOPLE("People",false,TabType.SETUP,new SetupTypeHandler()),
-        SINGLE_SIGN_ON("Single Sign-On",false,TabType.SETUP,new SetupTypeHandler()),
-        SECURITY_POLICY("Security Policy",false,TabType.SETUP,new SetupTypeHandler()),
-        SCOPE("Scope",false,TabType.SETUP,new SetupTypeHandler()),
-        EMAIL_SETTINGS("Email Settings",false,TabType.SETUP,new SetupTypeHandler()),
-        CATEGORY("Category",false,TabType.SETUP,new SetupTypeHandler()),
-        WORKORDER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),
-        PRIORITY("Priority",false,TabType.SETUP,new SetupTypeHandler()),
-        TYPES("Types",false,TabType.SETUP,new SetupTypeHandler()),
-        SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()),
-        SPACE_ASSET_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),
-        READINGS("Readings",false,TabType.SETUP,new SetupTypeHandler()),
-        ASSET_DEPRECIATION("Asset Depreciation",false,TabType.SETUP,new SetupTypeHandler()),
-        SPACE_CATEGORIES("Space categories",false,TabType.SETUP,new SetupTypeHandler()),
-        OPERATING_HOURS("Operating Hours",false,TabType.SETUP,new SetupTypeHandler()),
-        DEPARTMENT("Department",false,TabType.SETUP,new SetupTypeHandler()),
-        TYPE("Type",false,TabType.SETUP,new SetupTypeHandler()),
-        WEATHER_STATION("Weather station",false,TabType.SETUP,new SetupTypeHandler()),
-        WORKFLOWS("Workflows", false,TabType.SETUP,new SetupTypeHandler()),
-        NOTIFICATIONS("Notifications",false,TabType.SETUP,new SetupTypeHandler()),
-        TRIGGERS("Triggers",false,TabType.SETUP,new SetupTypeHandler()),
-        CONDITION_MANAGER("Condition Manager",false,TabType.SETUP,new SetupTypeHandler()),
-        SCHEDULER("Scheduler",false,TabType.SETUP,new SetupTypeHandler()),
-        VARIABLES("Variables",false,TabType.SETUP,new SetupTypeHandler()),
-        SLA_POLICIES("SLA Policies",false,TabType.SETUP,new SetupTypeHandler()),
-        ASSIGNMENT_RULES("Assignment Rules",false,TabType.SETUP,new SetupTypeHandler()),
-        BMS_EVENT_FILTERING("BMS Event Filtering",false,TabType.SETUP,new SetupTypeHandler()),
-        SCORING_RULES("Scoring Rules",false,TabType.SETUP,new SetupTypeHandler()),
-        TRANSACTION_RULES("Transaction Rules",false,TabType.SETUP,new SetupTypeHandler()),
-        STATEFLOWS("Stateflows",false,TabType.SETUP,new SetupTypeHandler()),
-        APPROVALS("Approvals",false,TabType.SETUP,new SetupTypeHandler()),
-        MODULES("Modules",false,TabType.SETUP,new SetupTypeHandler()),
-        TABS_AND_LAYOUTS("Tabs and Layouts",false,TabType.SETUP,new SetupTypeHandler()),
-        CONNECTED_APPS("Connected Apps",false,TabType.SETUP,new SetupTypeHandler()),
-        CONNECTORS("Connectors",false,TabType.SETUP,new SetupTypeHandler()),
-        FUNCTIONS("Functions",false,TabType.SETUP,new SetupTypeHandler()),
-        EMAIL_TEMPLATES("Email Templates",false,TabType.SETUP,new SetupTypeHandler()),
-        LOCALIZATION("Localization",false,TabType.SETUP,new SetupTypeHandler()),
-        USER_SCOPES("User Scopes",false,TabType.SETUP,new SetupTypeHandler()),
-        ENERGY_METERS("Energy Meters",false,TabType.SETUP,new SetupTypeHandler()),
-        BASELINE("Baseline",false,TabType.SETUP,new SetupTypeHandler()),
-        FAULT_IMPACT_TEMPLATE("Fault Impact Template",false,TabType.SETUP,new SetupTypeHandler()),
-        ENPI("EnPI",false,TabType.SETUP,new SetupTypeHandler()),
-        API_SETUP("API Setup",false,TabType.SETUP,new SetupTypeHandler()),
-        BUNDLE("Bundle",false,TabType.SETUP,new SetupTypeHandler()),
-        INSTALL_BUNDLE("Install Bundle",false,TabType.SETUP,new SetupTypeHandler()),
-        EMAIL_LOGS("Email Logs",false,TabType.SETUP,new SetupTypeHandler()),
-        AUDIT_LOGS("Audit Logs",false,TabType.SETUP,new SetupTypeHandler()),
-        BOOKING_POLICY("Booking Policy",false,TabType.SETUP,new SetupTypeHandler()),
-        PIVOT("Pivot",false,TabType.NORMAL),
-        SCOPING("Scoping",false,TabType.SETUP,new SetupTypeHandler()),
-        ORGANIZATION_SETTINGS("Organization Settings", false, TabType.SETUP,new SetupTypeHandler()),
-        CLASSIFICATIONS("Classifications",false,TabType.SETUP),
-        SCRIPT_LOGS("Script Logs",false,TabType.SETUP),
-        SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()),
-        MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()),
-        ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler()),
-        SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()),
-        NEW_KPI ("New Kpi", false,TabType.NORMAL), // 85
-        RULES("ReadingRule",false,TabType.NORMAL); // 86
+        MODULE ("Module", false, TabType.NORMAL,new ModuleTypeHandler()), // 1
+        APPROVAL ("Approval", false, TabType.NORMAL,null), // 2
+        CALENDAR ("Calendar", false, TabType.NORMAL,null), // 3
+        REPORT ("Report", false, TabType.NORMAL,null), // 4
+        ANALYTICS ("Analytics", true, TabType.NORMAL,null), // 5
+        KPI ("Kpi", false,TabType.NORMAL,null), // 6
+        DASHBOARD ("Dashboard", false,TabType.NORMAL,null), // 7
+        CUSTOM ("Custom",false, TabType.NORMAL,null), // 8
+        APPS ("Apps",false,TabType.NORMAL,null), // 9
+        SETTINGS("Settings",true,TabType.NORMAL,null), // 10
+        TIMELINE("Timeline", false, TabType.NORMAL,null), // 11
+        PORTAL_OVERVIEW("Portal Overview", false, TabType.NORMAL,null), // 12
+        NOTIFICATION("Notification", false,TabType.NORMAL,null), // 13
+        INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL,null), // 14
+        HOMEPAGE("Home Page", false,TabType.NORMAL,null), // 15
+        SERVICE_CATALOG("Service Catalog", false,TabType.NORMAL,null), // 16
+        COMPANY_PROFILE("Company Profile", false,TabType.SETUP,new SetupTypeHandler()), // 17
+        PORTALS("Portals", false,TabType.SETUP,new SetupTypeHandler()), // 18
+        VISITOR_SETTINGS("Visitor Settings", false,TabType.SETUP,new SetupTypeHandler()), // 19
+        FEEDBACK_COMPLAINTS("Feedback & Complaints", false,TabType.SETUP,new SetupTypeHandler()),// 20
+        SMART_CONTROLS("Smart Controls",false,TabType.SETUP,new SetupTypeHandler()), // 21
+        SERVICE_CATALOGS("Service Catalogs",false,TabType.SETUP,new SetupTypeHandler()), // 22
+        TAX("Tax",false,TabType.SETUP,new SetupTypeHandler()), // 23
+        USERS("Users",false,TabType.SETUP,new SetupTypeHandler()), // 24
+        TEAMS("Teams",false,TabType.SETUP,new SetupTypeHandler()), // 25
+        ROLES("Roles",false,TabType.SETUP,new SetupTypeHandler()), // 26
+        LABOUR("Labour",false,TabType.SETUP,new SetupTypeHandler()), // 27
+        CRAFTS("Crafts",false,TabType.SETUP,new SetupTypeHandler()), // 28
+        PEOPLE("People",false,TabType.SETUP,new SetupTypeHandler()), // 29
+        SINGLE_SIGN_ON("Single Sign-On",false,TabType.SETUP,new SetupTypeHandler()), // 30
+        SECURITY_POLICY("Security Policy",false,TabType.SETUP,new SetupTypeHandler()), // 31
+        SCOPE("Scope",false,TabType.SETUP,new SetupTypeHandler()), // 32
+        EMAIL_SETTINGS("Email Settings",false,TabType.SETUP,new SetupTypeHandler()), // 33
+        CATEGORY("Category",false,TabType.SETUP,new SetupTypeHandler()), // 34
+        WORKORDER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), // 35
+        PRIORITY("Priority",false,TabType.SETUP,new SetupTypeHandler()), // 36
+        TYPES("Types",false,TabType.SETUP,new SetupTypeHandler()), // 37
+        SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()), // 38
+        SPACE_ASSET_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), // 39
+        READINGS("Readings",false,TabType.SETUP,new SetupTypeHandler()), // 40
+        ASSET_DEPRECIATION("Asset Depreciation",false,TabType.SETUP,new SetupTypeHandler()), // 41
+        SPACE_CATEGORIES("Space categories",false,TabType.SETUP,new SetupTypeHandler()), // 42
+        OPERATING_HOURS("Operating Hours",false,TabType.SETUP,new SetupTypeHandler()), // 43
+        DEPARTMENT("Department",false,TabType.SETUP,new SetupTypeHandler()), // 44
+        TYPE("Type",false,TabType.SETUP,new SetupTypeHandler()), // 45
+        WEATHER_STATION("Weather station",false,TabType.SETUP,new SetupTypeHandler()), // 46
+        WORKFLOWS("Workflows", false,TabType.SETUP,new SetupTypeHandler()), // 47
+        NOTIFICATIONS("Notifications",false,TabType.SETUP,new SetupTypeHandler()), // 48
+        TRIGGERS("Triggers",false,TabType.SETUP,new SetupTypeHandler()), // 49
+        CONDITION_MANAGER("Condition Manager",false,TabType.SETUP,new SetupTypeHandler()), // 50
+        SCHEDULER("Scheduler",false,TabType.SETUP,new SetupTypeHandler()), // 51
+        VARIABLES("Variables",false,TabType.SETUP,new SetupTypeHandler()), // 52
+        SLA_POLICIES("SLA Policies",false,TabType.SETUP,new SetupTypeHandler()), // 53
+        ASSIGNMENT_RULES("Assignment Rules",false,TabType.SETUP,new SetupTypeHandler()), // 54
+        BMS_EVENT_FILTERING("BMS Event Filtering",false,TabType.SETUP,new SetupTypeHandler()), // 55
+        SCORING_RULES("Scoring Rules",false,TabType.SETUP,new SetupTypeHandler()), // 56
+        TRANSACTION_RULES("Transaction Rules",false,TabType.SETUP,new SetupTypeHandler()), // 57
+        STATEFLOWS("Stateflows",false,TabType.SETUP,new SetupTypeHandler()), // 58
+        APPROVALS("Approvals",false,TabType.SETUP,new SetupTypeHandler()), // 59
+        MODULES("Modules",false,TabType.SETUP,new SetupTypeHandler()), // 60
+        TABS_AND_LAYOUTS("Tabs and Layouts",false,TabType.SETUP,new SetupTypeHandler()), // 61
+        CONNECTED_APPS("Connected Apps",false,TabType.SETUP,new SetupTypeHandler()), // 62
+        CONNECTORS("Connectors",false,TabType.SETUP,new SetupTypeHandler()), // 63
+        FUNCTIONS("Functions",false,TabType.SETUP,new SetupTypeHandler()), // 64
+        EMAIL_TEMPLATES("Email Templates",false,TabType.SETUP,new SetupTypeHandler()), // 65
+        LOCALIZATION("Localization",false,TabType.SETUP,new SetupTypeHandler()), // 66
+        USER_SCOPES("User Scopes",false,TabType.SETUP,new SetupTypeHandler()), // 67
+        ENERGY_METERS("Energy Meters",false,TabType.SETUP,new SetupTypeHandler()), // 68
+        BASELINE("Baseline",false,TabType.SETUP,new SetupTypeHandler()), // 69
+        FAULT_IMPACT_TEMPLATE("Fault Impact Template",false,TabType.SETUP,new SetupTypeHandler()), // 70
+        ENPI("EnPI",false,TabType.SETUP,new SetupTypeHandler()), // 71
+        API_SETUP("API Setup",false,TabType.SETUP,new SetupTypeHandler()), // 72
+        BUNDLE("Bundle",false,TabType.SETUP,new SetupTypeHandler()), // 73
+        INSTALL_BUNDLE("Install Bundle",false,TabType.SETUP,new SetupTypeHandler()), // 74
+        EMAIL_LOGS("Email Logs",false,TabType.SETUP,new SetupTypeHandler()), // 75
+        AUDIT_LOGS("Audit Logs",false,TabType.SETUP,new SetupTypeHandler()), // 76
+        BOOKING_POLICY("Booking Policy",false,TabType.SETUP,new SetupTypeHandler()), // 77
+        PIVOT("Pivot",false,TabType.NORMAL), // 78
+        SCOPING("Scoping",false,TabType.SETUP,new SetupTypeHandler()), // 79
+        ORGANIZATION_SETTINGS("Organization Settings", false, TabType.SETUP,new SetupTypeHandler()), // 80
+        CLASSIFICATIONS("Classifications",false,TabType.SETUP), // 81
+        SCRIPT_LOGS("Script Logs",false,TabType.SETUP), // 82
+        SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()), // 83
+        MY_ATTENDANCE("My Attendance", false, TabType.NORMAL, new MyAttendanceHandler()), // 84
+        ATTENDANCE("Attendance", false, TabType.NORMAL, new AttendanceHandler()), // 85
+        SETUP_SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()), // 86
+        NEW_KPI ("New Kpi", false,TabType.NORMAL, new ReadingKpiTypeHandler()), // 87
+        RULES("ReadingRule",false,TabType.NORMAL,new ModuleTypeHandler()), // 88
+        NEW_KPI_TEMPLATES ("Kpi Templates", false,TabType.SETUP,new SetupTypeHandler()); // 89
 
         public void setName(String name) {
             this.name = name;

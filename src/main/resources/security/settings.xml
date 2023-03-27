@@ -1437,4 +1437,11 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/readingKpi/fetchReadings"></request>
+    <request path="/api/v3/readingKpi/fetchAssetNames"></request>
+    <request path="/api/v3/readingKpi/fetchKpiNames"></request>
+    <request path="/api/v1/setup/kpiLogger/crud"></request>
+    <request path="/api/v1/setup/readingkpi/crud"></request>
+    <request path="/api/v3/readingKpi/historical/run"></request>
+    <request path="/api/v3/readingKpi/historical/fetchAssetDetails"></request>
 </config>
