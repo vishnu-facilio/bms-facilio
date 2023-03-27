@@ -52,6 +52,9 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	@Getter @Setter
 	public Long radius;
 
+	@Getter@Setter
+	public long locationLookupFieldId = -1;
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 								FacilioContext context) throws Exception {

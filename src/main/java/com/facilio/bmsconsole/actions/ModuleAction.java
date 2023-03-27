@@ -958,7 +958,8 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(ContextNames.MODULE_NAME,moduleName);
 		chain.execute();
-		setResult(FacilioConstants.ContextNames.GEOLOCATION_FIELDS,context.get(FacilioConstants.ContextNames.GEOLOCATION_FIELDS));
+		setResult(ContextNames.FIELDS,context.get(ContextNames.FIELDS));
+		setResult(ContextNames.MODULE_FIELD_LIST,context.get(ContextNames.MODULE_FIELD_LIST));
 		return SUCCESS;
 	}
 	

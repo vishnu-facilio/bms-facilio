@@ -75,10 +75,23 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				if (stateflowTransition.getLocationFieldId() > 0) {
 
 					FacilioField locationField = moduleBean.getField(stateflowTransition.getLocationFieldId());
-					String value = (String) FieldUtil.getValue(record, locationField);
-					Long radius = stateflowTransition.getRadius();
+					String recordLocationValue = null;
+					Object value = FieldUtil.getValue(record, locationField);
 
-					validateLocation(locationValue, value, radius);
+					if(locationField instanceof LookupField && value!=null){
+						FacilioField locationLookUpField = moduleBean.getField(stateflowTransition.getLocationLookupFieldId());
+						if (value instanceof ModuleBaseWithCustomFields) {
+							recordLocationValue = (String) FieldUtil.getValue((ModuleBaseWithCustomFields) value, locationLookUpField);
+						}else if (value instanceof  Map){
+							recordLocationValue = (String) ((Map) value).get(locationLookUpField.getName());
+						}
+					}
+					else{
+						recordLocationValue = (String) value;
+					}
+
+					Long radius = stateflowTransition.getRadius();
+					validateLocation(locationValue, recordLocationValue, radius);
 
 				}
 
@@ -132,11 +145,12 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		FacilioUtil.throwIllegalArgumentException(value != null && locationValue == null, "locationValue is mandatory");
 
 		Point area = getPointFromCoordinates(value);
-		Geometry geometry = (area != null) ? area.buffer(radius) : null;
+		double radiusInDegree = radius/(11132.0 * Math.cos(Math.toRadians(area.getX())));
+		Geometry geometry = (area != null) ? area.buffer(radiusInDegree) : null;
 
 		Point currentLocation = getPointFromCoordinates(locationValue);
 
-		FacilioUtil.throwIllegalArgumentException((geometry != null && currentLocation != null) && !geometry.contains(currentLocation), "location doesn't match to the current location");
+		FacilioUtil.throwIllegalArgumentException((geometry != null && currentLocation != null) && !geometry.contains(currentLocation), "This transition can only be performed if it is within the range of the chosen location");
 
 	}
 

@@ -31,7 +31,7 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 
 			if(stateTransition.getLocationFieldId() > 0){
 				FacilioField locationField = modBean.getField(stateTransition.getLocationFieldId());
-				validateLocationField(locationField);
+				validateLocationField(locationField,modBean,stateTransition);
 				stateTransition.setLocationField(locationField);
 
 				FacilioUtil.throwIllegalArgumentException(stateTransition.getRadius() == null,"radius cannot be empty");
@@ -75,7 +75,12 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 		}
 	}
 
-	public void validateLocationField(FacilioField locationField) {
+	public void validateLocationField(FacilioField locationField,ModuleBean moduleBean,StateflowTransitionContext stateTransition) throws Exception {
+		if(locationField instanceof LookupField){
+			 locationField = moduleBean.getField(stateTransition.getLocationLookupFieldId(),((LookupField) locationField).getLookupModule().getModuleId());
+		}
+		FacilioUtil.throwIllegalArgumentException(locationField == null,"Location field cannot be empty ");
+
 		if(locationField.getDataTypeEnum() != FieldType.STRING || !(locationField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION))){
 			throw new IllegalArgumentException("Invalid field type");
 		}
