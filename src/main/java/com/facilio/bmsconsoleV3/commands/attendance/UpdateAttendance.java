@@ -11,12 +11,10 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UpdateAttendance extends FacilioCommand {
 
@@ -36,7 +34,7 @@ public class UpdateAttendance extends FacilioCommand {
 
         FacilioModule attendanceMod = Constants.getModBean().getModule(FacilioConstants.Attendance.ATTENDANCE);
         Long peopleID = transaction.getPeople().getId();
-        Long date = stripTime(transaction.getTransactionTime());
+        Long date = AttendanceAPI.stripTime(transaction.getTransactionTime());
         Shift shift = ShiftAPI.getPeopleShiftForDay(peopleID, date);
 
         Attendance existingAttendance = AttendanceAPI.getAttendanceForGivenDay(date, peopleID);
@@ -94,13 +92,5 @@ public class UpdateAttendance extends FacilioCommand {
         return transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT);
     }
 
-    private Long stripTime(Long time) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date(time));
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTimeInMillis();
-    }
+
 }

@@ -6,8 +6,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.util.DBConf;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -46,7 +44,8 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
             AccountUtil.FeatureLicense.WO_STATE_TRANSITION_V3,
             AccountUtil.FeatureLicense.PM_PLANNER,
             AccountUtil.FeatureLicense.SCOPE_SUBQUERY,
-            AccountUtil.FeatureLicense.NEW_DASHBOARD_FLOW
+            AccountUtil.FeatureLicense.NEW_DASHBOARD_FLOW,
+            AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING
             // Add new default licenses here
     )));
 

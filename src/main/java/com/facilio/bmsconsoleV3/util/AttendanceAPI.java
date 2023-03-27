@@ -7,7 +7,6 @@ import com.facilio.bmsconsoleV3.context.attendance.AttendanceSettings;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -16,6 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsoleV3.context.shift.Break;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AttendanceAPI {
     private static final Logger LOGGER = LogManager.getLogger(AttendanceAPI.class.getName());
@@ -122,6 +123,7 @@ public class AttendanceAPI {
                 .select(attendanceTxnFields)
                 .andCondition(peopleCondition)
                 .andCriteria(timeCriteria)
+                .fetchSupplements(Arrays.asList((LargeTextField) fieldMap.get("notes")))
                 .orderBy("ID ASC");
 
         List<AttendanceTransaction> txns = builder.get();
@@ -156,12 +158,12 @@ public class AttendanceAPI {
                 Long startTime = peopleShift.getStartTime();
                 Long endTime = peopleShift.getEndTime();
                 Long shiftWorkingHoursInSecs = 0L;
-                if (startTime.equals(endTime)){
+                if (startTime.equals(endTime)) {
                     shiftWorkingHoursInSecs = TWENTY_FOUR_HOURS_IN_SECS;
                 } else if (startTime > endTime) {
                     shiftWorkingHoursInSecs = TWENTY_FOUR_HOURS_IN_SECS - (startTime - endTime);
-                }else {
-                    shiftWorkingHoursInSecs = startTime - endTime;
+                } else {
+                    shiftWorkingHoursInSecs = endTime - startTime;
                 }
                 Long expectedMinWorkHoursInMillis = shiftWorkingHoursInSecs * 1000;
                 workedMoreThanRequiredMinHours =
@@ -176,9 +178,19 @@ public class AttendanceAPI {
                 Attendance.Status.PRESENT : Attendance.Status.ABSENT);
     }
 
+    public static Long stripTime(Long time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date(time));
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
     private static void computeWorkingHoursAndDay(Attendance attendance, List<AttendanceTransaction> txns) {
         AttendanceTransaction firstCheckInTransaction = txns.get(0);
-        attendance.setDay(firstCheckInTransaction.getTransactionTime());
+        attendance.setDay(stripTime(firstCheckInTransaction.getTransactionTime()));
         attendance.setCheckInTime(firstCheckInTransaction.getTransactionTime());
 
         AttendanceTransaction lastCheckOutTransaction = getLastCheckoutTxn(txns);
@@ -199,9 +211,9 @@ public class AttendanceAPI {
             long breakTimeElapsed = resumeWorkTxn.getTransactionTime() - txn.getTransactionTime();
             Break associatedBreak = txn.getShiftBreak();
 
-            if (isPaidBreak(associatedBreak)){
+            if (isPaidBreak(associatedBreak)) {
                 long allowedTime = associatedBreak.getBreakTime();
-                if (breakTimeElapsed > allowedTime){
+                if (breakTimeElapsed > allowedTime) {
                     long extraBreakTimeConsumed = breakTimeElapsed - allowedTime;
                     attendance.setWorkingHours(attendance.getWorkingHours() - extraBreakTimeConsumed);
                 }
@@ -289,7 +301,7 @@ public class AttendanceAPI {
         return null;
     }
 
-    public static List<V3PeopleContext> getPeopleWithoutAttendance(Long date) throws Exception {
+    public static List<Long> getPeopleWithoutAttendance(Long date) throws Exception {
 
 //        SELECT
 //        Employee.ID
@@ -308,6 +320,18 @@ public class AttendanceAPI {
         List<FacilioField> employeeFields =
                 Constants.getModBean().getAllFields(FacilioConstants.ContextNames.EMPLOYEE);
 
+
+        SelectRecordsBuilder<V3PeopleContext> employeeBuilder = new SelectRecordsBuilder<V3PeopleContext>()
+                .beanClass(V3PeopleContext.class)
+                .module(employeeMod)
+                .select(employeeFields);
+
+        List<V3PeopleContext> people = employeeBuilder.get();
+
+        List<Long> allEmployeeIDs = people
+                .stream().map(ModuleBaseWithCustomFields::getId)
+                .collect(Collectors.toList());
+
         FacilioModule attendanceMod =
                 Constants.getModBean().getModule(FacilioConstants.ContextNames.ATTENDANCE);
 
@@ -317,31 +341,31 @@ public class AttendanceAPI {
         Map<String, FacilioField> attendanceFieldMap =
                 FieldFactory.getAsMap(attendanceFields);
 
-        Condition dateConditionGTE = CriteriaAPI.getCondition(attendanceFieldMap.get("day"),
+        Condition dateCondition = CriteriaAPI.getCondition(attendanceFieldMap.get("day"),
                 Collections.singletonList(date),
-                NumberOperators.GREATER_THAN_EQUAL);
+                NumberOperators.EQUALS);
 
-        Condition dateConditionLT = CriteriaAPI.getCondition(attendanceFieldMap.get("day"),
-                Collections.singletonList(date + ShiftAPI.DAY_IN_MILLIS),
-                NumberOperators.LESS_THAN);
+        SelectRecordsBuilder<Attendance> attendanceBuilder = new SelectRecordsBuilder<Attendance>()
+                .beanClass(Attendance.class)
+                .module(attendanceMod)
+                .select(attendanceFields)
+                .andCondition(dateCondition);
 
-        Criteria timeCriteria = new Criteria();
-        timeCriteria.addOrCondition(dateConditionGTE);
-        timeCriteria.addOrCondition(dateConditionLT);
+        List<Attendance> attendance = attendanceBuilder.get();
 
-        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
-                .beanClass(V3PeopleContext.class)
-                .module(employeeMod)
-                .select(employeeFields)
-                .innerJoin(attendanceMod.getTableName()).on("Employee.ID = Attendance.PEOPLE")
-                .andCriteria(timeCriteria);
+        List<Long> employeesWithAttendance = attendance
+                .stream()
+                .filter(a -> a.getPeople() != null)
+                .map(a -> a.getPeople().getId())
+                .collect(Collectors.toList());
 
-        List<V3PeopleContext> txns = builder.get();
-        LOGGER.debug("people without attendance fetched " + txns.size() + " on " + date);
-        return txns;
+        allEmployeeIDs.removeAll(employeesWithAttendance);
+
+        LOGGER.debug("people without attendance fetched " + allEmployeeIDs.size() + " on " + date);
+        return allEmployeeIDs;
     }
 
-    public static void setAttendanceSettings(AttendanceSettings settings)  throws Exception{
+    public static void setAttendanceSettings(AttendanceSettings settings) throws Exception {
         FacilioModule mod = ModuleFactory.getAttendanceSettingsPseudoModule();
         List<FacilioField> fields = FieldFactory.getAttendanceSettingsPseudoModuleFields();
 
@@ -352,6 +376,109 @@ public class AttendanceAPI {
                 .fields(fields)
                 .andCustomWhere("ORGID = ?", orgId);
         updateBuilder.update(FieldUtil.getAsProperties(settings));
-
     }
+
+    public static AttendanceTransaction getPriorAttendanceTxns(Long peopleID, Long time) throws Exception {
+
+        FacilioModule module =
+                Constants.getModBean().getModule(FacilioConstants.Attendance.ATTENDANCE_TRANSACTION);
+
+        List<FacilioField> attendanceTxnFields =
+                Constants.getModBean().getAllFields(FacilioConstants.Attendance.ATTENDANCE_TRANSACTION);
+
+        Map<String, FacilioField> fieldMap =
+                FieldFactory.getAsMap(attendanceTxnFields);
+
+        Condition peopleCondition = CriteriaAPI.getCondition(fieldMap.get("people"),
+                Collections.singletonList(peopleID),
+                NumberOperators.EQUALS);
+
+        Condition timeCriteria = CriteriaAPI.getCondition(fieldMap.get("transactionTime"),
+                Collections.singletonList(time),
+                NumberOperators.LESS_THAN_EQUAL);
+
+        SelectRecordsBuilder<AttendanceTransaction> builder = new SelectRecordsBuilder<AttendanceTransaction>()
+                .beanClass(AttendanceTransaction.class)
+                .module(module)
+                .select(attendanceTxnFields)
+                .andCondition(peopleCondition)
+                .andCondition(timeCriteria)
+                .orderBy("TRANSACTION_TIME DESC")
+                .limit(1);
+
+        List<AttendanceTransaction> txns = builder.get();
+        return txns.size() == 1 ? txns.get(0) : null;
+    }
+
+    public static boolean transactionIsNotCausallyValid(AttendanceTransaction tx) throws Exception {
+
+        Long peopleID = tx.getPeople().getId();
+        Long time = tx.getTransactionTime();
+            AttendanceTransaction.Type newTxType = tx.getTransactionType();
+
+        AttendanceTransaction previousTxn = getPriorAttendanceTxns(peopleID, time);
+        if (previousTxn == null) {
+            return newTxType == AttendanceTransaction.Type.CHECK_IN ?  false : true;
+        }
+        AttendanceTransaction.Type oldTxType = previousTxn.getTransactionType();
+
+        switch (newTxType) {
+            case CHECK_IN:
+                if (oldTxType != AttendanceTransaction.Type.CHECK_OUT) {
+                    return true;
+                }
+                break;
+            case CHECK_OUT:
+            case BREAK:
+                if (oldTxType == AttendanceTransaction.Type.CHECK_OUT) {
+                    return true;
+                }
+                if (oldTxType == AttendanceTransaction.Type.BREAK) {
+                    return true;
+                }
+                break;
+            case RESUME_WORK:
+                if (oldTxType != AttendanceTransaction.Type.BREAK) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+
+    public static void markAttendanceForPreviousDay() throws Exception {
+        Long previousDay = ShiftAPI.getTodayEpochDate() - ShiftAPI.DAY_IN_MILLIS;
+        List<Long> people = AttendanceAPI.getPeopleWithoutAttendance(previousDay);
+
+        List<Attendance> attendanceToBeAdded = new ArrayList<>();
+
+        for (Long p : people) {
+            Shift shift = ShiftAPI.getPeopleShiftForDay(p, previousDay);
+            Attendance.Status prevDayStatus = shift.isWeeklyOff(previousDay) ?
+                    Attendance.Status.WEEKLY_OFF :
+                    Attendance.Status.ABSENT;
+            Attendance attendance = new Attendance(previousDay, prevDayStatus);
+            attendance.setShift(shift);
+            V3PeopleContext emp = new V3PeopleContext();
+            emp.setId(p);
+            attendance.setPeople(emp);
+
+            attendanceToBeAdded.add(attendance);
+        }
+
+        FacilioModule attendanceMod =
+                Constants.getModBean().getModule(FacilioConstants.ContextNames.ATTENDANCE);
+
+        List<FacilioField> attendanceFields =
+                Constants.getModBean().getAllFields(FacilioConstants.ContextNames.ATTENDANCE);
+
+        InsertRecordBuilder<Attendance> insert = new InsertRecordBuilder<Attendance>()
+                .module(attendanceMod)
+                .fields(attendanceFields)
+                .addRecords(attendanceToBeAdded);
+        insert.save();
+
+        LOGGER.debug("marked " + attendanceToBeAdded.size() + " attendances for " + previousDay);
+    }
+
 }

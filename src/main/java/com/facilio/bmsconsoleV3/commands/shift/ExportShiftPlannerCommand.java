@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +22,12 @@ public class ExportShiftPlannerCommand extends FacilioCommand {
 
         Long rangeFrom = (Long) context.get(FacilioConstants.Shift.RANGE_FROM);
         Long rangeTo = (Long) context.get(FacilioConstants.Shift.RANGE_TO);
+
+        String orgTz = AccountUtil.getCurrentOrg().getTimezone();
+        if (!FacilioUtil.isEmptyOrNull(orgTz)){
+            rangeFrom += TimeZone.getTimeZone(orgTz).getRawOffset();
+            rangeTo += TimeZone.getTimeZone(orgTz).getRawOffset();
+        }
 
         FileInfo.FileFormat fileType = context.get(FacilioConstants.Shift.FORMAT).equals("csv") ?
                 FileInfo.FileFormat.CSV : FileInfo.FileFormat.XLS;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.attendance;
 
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
+import com.facilio.bmsconsoleV3.util.AttendanceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -27,6 +27,10 @@ public class ValidateAttendanceTransactionCommand extends FacilioCommand {
                 throw new IllegalArgumentException("transaction date is mandatory");
             }
 
+            if (AttendanceAPI.transactionIsNotCausallyValid(tx)){
+                throw new IllegalArgumentException("transaction is causally invalid");
+            }
+
             if (malformedBreakTransaction(tx)){
                 throw new IllegalArgumentException("malformed break transactions");
             }
@@ -34,6 +38,10 @@ public class ValidateAttendanceTransactionCommand extends FacilioCommand {
         }
         return false;
     }
+
+
+
+
 
     private boolean malformedBreakTransaction(AttendanceTransaction tx) {
         if (!tx.getTransactionType().equals(AttendanceTransaction.Type.BREAK)){

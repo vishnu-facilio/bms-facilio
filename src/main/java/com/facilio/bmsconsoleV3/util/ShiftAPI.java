@@ -269,11 +269,21 @@ public class ShiftAPI {
                 Collections.singletonList(rangeTo),
                 NumberOperators.LESS_THAN_EQUAL));
 
+        Criteria slotOvershadowingTheView = new Criteria();
+        slotOvershadowingTheView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(rangeFrom),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        slotOvershadowingTheView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeTo),
+                NumberOperators.GREATER_THAN_EQUAL));
+
         Criteria timeCriteria = new Criteria();
         timeCriteria.addOrCondition(perpetualStartTimeCond);
         timeCriteria.addOrCondition(perpetualEndTimeCond);
         timeCriteria.orCriteria(slotStartIncidentInView);
         timeCriteria.orCriteria(slotEndIncidentInView);
+        timeCriteria.orCriteria(slotOvershadowingTheView);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(shiftPeopleRelMod.getTableName())
