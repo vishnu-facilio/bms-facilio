@@ -53,7 +53,7 @@ public class GetDashboardListCommand extends FacilioCommand {
         }
         else
         {
-            dashboard_list = getDashboardFromFolders(dashboard_list_prop.getFolder_ids(), false);
+            dashboard_list = getDashboardFromFolders(dashboard_list_prop.getFolder_ids(), dashboard_list_prop.isOnlyMobile());
         }
         if( dashboard_list != null && dashboard_list.size() > 0)
         {

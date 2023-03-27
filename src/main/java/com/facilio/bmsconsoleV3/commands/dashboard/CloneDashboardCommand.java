@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -40,6 +41,7 @@ public class CloneDashboardCommand extends FacilioCommand {
             //code to create dashboard
 
             DashboardContext cloned_dashboard = new DashboardContext();
+            cloned_dashboard.setMobileEnabled(dashboard.getMobileEnabled());
             setAddDashboardData(cloned_dashboard, cloned_dashboard_name, dashboard_folder_id);
             if(dashboard.isTabEnabled()){
                 cloned_dashboard.setTabEnabled(true);
@@ -71,6 +73,31 @@ public class CloneDashboardCommand extends FacilioCommand {
                             List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(dashboard_tab_widgets);
                             addWidgetForDashboardTab(widgets_with_section , newDashboardTabContext.getId(), cloned_dashboard.getId(), target_app_id, cloned_app_id);
                         }
+                        Boolean isFilterCloneNeeded = (Boolean) context.get("isFilterCloneNeeded");
+                        if(isFilterCloneNeeded != null && isFilterCloneNeeded )
+                        {
+                            FacilioChain getDashboardFilterChain= ReadOnlyChainFactory.getFetchDashboardFilterChain();
+                            FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+                            getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+                            getDashboardFilterChain.execute();
+
+                            if(dashboardTabContext.getDashboardFilter() != null)
+                            {
+                                FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain();
+                                FacilioContext filter_context = dbFilterUpdateChain.getContext();
+                                DashboardFilterContext cloned_dashboard_tab_Filter = dashboardTabContext.getDashboardFilter();
+                                cloned_dashboard_tab_Filter.setDashboardTabId(newDashboardTabContext.getId());
+                                cloned_dashboard_tab_Filter.setId(-1);
+                                if(cloned_dashboard_tab_Filter.getDashboardUserFilters() != null){
+                                    for(DashboardUserFilterContext usr_filter : cloned_dashboard_tab_Filter.getDashboardUserFilters())
+                                    {
+                                        usr_filter.setId(-1);
+                                    }
+                                }
+                                filter_context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, cloned_dashboard_tab_Filter);
+                                dbFilterUpdateChain.execute();
+                            }
+                        }
                     }
                 }
                 context.put("cloned_dashbaord", DashboardUtil.getDashboardWithWidgets(cloned_dashboard.getLinkName(), null));
@@ -82,6 +109,31 @@ public class CloneDashboardCommand extends FacilioCommand {
                 if(widgets_with_section != null) {
                     cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId(), target_app_id, cloned_app_id);
                     context.put("cloned_dashbaord", DashboardUtil.getDashboardWithWidgets(cloned_dashboard.getLinkName(), null));
+                }
+                Boolean isFilterCloneNeeded = (Boolean) context.get("isFilterCloneNeeded");
+                if(isFilterCloneNeeded != null && isFilterCloneNeeded )
+                {
+                    FacilioChain getDashboardFilterChain= ReadOnlyChainFactory.getFetchDashboardFilterChain();
+                    FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+                    getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,dashboard);
+                    getDashboardFilterChain.execute();
+
+                    if(dashboard.getDashboardFilter() != null)
+                    {
+                        FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain();
+                        FacilioContext filter_context = dbFilterUpdateChain.getContext();
+                        DashboardFilterContext cloned_dashboardFilter = dashboard.getDashboardFilter();
+                        cloned_dashboardFilter.setId(-1);
+                        if(cloned_dashboardFilter.getDashboardUserFilters() != null){
+                            for(DashboardUserFilterContext usr_filter : cloned_dashboardFilter.getDashboardUserFilters())
+                            {
+                                usr_filter.setId(-1);
+                            }
+                        }
+                        cloned_dashboardFilter.setDashboardId(cloned_dashboard.getId());
+                        filter_context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, cloned_dashboardFilter);
+                        dbFilterUpdateChain.execute();
+                    }
                 }
             }
         }
