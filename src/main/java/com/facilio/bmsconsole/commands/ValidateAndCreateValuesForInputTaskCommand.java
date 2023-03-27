@@ -64,7 +64,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 
 						if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
 							if(task.getInputTime() == -1) {
-								task.setInputTime(System.currentTimeMillis());
+								task.setInputTime((task.getOfflineModifiedTime() != -1 ) ? task.getOfflineModifiedTime() : System.currentTimeMillis());
 							}
 							switch(completeRecord.getInputTypeEnum()) {
 								case READING:
