@@ -1044,6 +1044,7 @@
         <action name="fetchRcaReadings" class="com.facilio.readingrule.action.ReadingRuleAction"
                 method="rcaReadingsFetch"/>
         <action name="fetchRootCause" class="com.facilio.readingrule.action.ReadingRuleAction" method="rootCauseFetch"/>
+        <action name="fetchImpact" class="com.facilio.readingrule.action.ReadingRuleAction" method="impactFetch" />
     </package>
 
     <package name="readingRuleActions" namespace="/api/v3/readingrule/actions" extends="v3Api">

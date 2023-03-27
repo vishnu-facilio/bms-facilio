@@ -105,4 +105,21 @@ public class ReadingRuleAction extends V3Action {
         setData("result",result);
         return SUCCESS;
     }
+
+    private Long parentId;
+    Boolean isCostImpact;
+
+    public String impactFetch() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getImpactForRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID, getRuleId());
+        context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+        context.put("isCostImpact", getIsCostImpact());
+        chain.execute();
+        JSONObject result = new JSONObject();
+        result.put("lastMonth", context.getOrDefault("lastMonth", 0D));
+        result.put("thisMonth", context.getOrDefault("thisMonth", 0D));
+        setData("result",result);
+        return SUCCESS;
+    }
 }

@@ -908,6 +908,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getImpactForRuleChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new GetImpactForNewRuleCommand());
+			return chain;
+		}
+
+
 		public static FacilioChain updateControlGroupChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateControlGroupCommand());

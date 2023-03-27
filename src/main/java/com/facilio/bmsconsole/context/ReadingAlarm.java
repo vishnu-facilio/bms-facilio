@@ -35,6 +35,12 @@ public class ReadingAlarm extends BaseAlarmContext {
         }
     }
 
+    public void setNewRule(ReadingRuleInterface rule) {
+        if (rule != null) {
+            this.rule = rule;
+        }
+    }
+
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
 

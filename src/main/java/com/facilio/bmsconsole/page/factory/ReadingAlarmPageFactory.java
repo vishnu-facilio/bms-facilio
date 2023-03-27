@@ -1,31 +1,26 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
@@ -50,7 +45,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
         addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
-        
+
         HashMap<String, String> titles = new HashMap<>();
         titles.put("notes", "Comment");
         addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, false, WidgetType.COMMENT);
@@ -60,15 +55,26 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         page.addTab(tab2);
         Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-        addAlarmRankCard(tab2Sec1);
+//        addAlarmRankCard(tab2Sec1);
         addMeanTimeBetweenCard(tab2Sec1);
         addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
 
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.BASE_EVENT));
-        Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
-        addImpactDetails(tab2Sec1, criteria, alarms.getLastOccurrence());
+        if(alarms.getRule() != null && alarms.getIsNewReadingRule()) {
+            Long ruleId = alarms.getRule().getId();
+            NewReadingRuleContext rule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
+            if (rule != null && rule.getImpact() != null) {
+                addImpactInfoCard(tab2Sec1);
+                addEnergyImpactCard(tab2Sec1);
+                addCostImpactCard(tab2Sec1);
+            }
+        }
+        addImpactReportCard(tab2Sec1, alarms);
+
+//        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.BASE_EVENT));
+//        Criteria criteria = new Criteria();
+//		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
+//        addImpactDetails(tab2Sec1, criteria, alarms.getLastOccurrence());
 
         // More Information Tab
         Page.Tab tab3 = page.new Tab("moreinfo");
@@ -213,5 +219,45 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         pageWidget.setWidgetParams(widgetParams);
         section.addWidget(pageWidget);
     }
-}
 
+    private static PageWidget addImpactReportCard(Section section, ReadingAlarm alarm) throws Exception {
+        PageWidget impactReport = new PageWidget(WidgetType.IMPACT_REPORT);
+        impactReport.addToLayoutParams(section, 24, 15);
+        JSONObject widgetParams = getWidgetParamsForImpactReport(alarm);
+        impactReport.setWidgetParams(widgetParams);
+        section.addWidget(impactReport);
+        return impactReport;
+    }
+    private static PageWidget addImpactInfoCard(Section section) {
+        PageWidget impactInfo = new PageWidget(WidgetType.IMPACT_INFO);
+        impactInfo.addToLayoutParams(section, 8, 4);
+        section.addWidget(impactInfo);
+        return impactInfo;
+    }
+    private static PageWidget addEnergyImpactCard(Section section){
+        PageWidget energyImpact = new PageWidget(WidgetType.ENERGY_IMPACT);
+        energyImpact.addToLayoutParams(section, 8, 4);
+        section.addWidget(energyImpact);
+        return energyImpact;
+    }
+    private static PageWidget addCostImpactCard(Section section){
+        PageWidget costImpact = new PageWidget(WidgetType.COST_IMPACT);
+        costImpact.addToLayoutParams(section, 8, 4);
+        section.addWidget(costImpact);
+        return costImpact;
+    }
+    private static JSONObject getWidgetParamsForImpactReport(ReadingAlarm alarm) throws Exception {
+        JSONObject widgetParams = new JSONObject();
+        if (alarm.getRule() != null && alarm.getIsNewReadingRule()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Long ruleId = alarm.getRule().getId();
+            NewReadingRuleContext rule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
+            FacilioModule module = modBean.getModule(rule.getReadingModuleId());
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            widgetParams.put("costImpactId", fieldMap.get("costImpact").getFieldId());
+            widgetParams.put("energyImpactId", fieldMap.get("energyImpact").getFieldId());
+        }
+        return widgetParams;
+    }
+}

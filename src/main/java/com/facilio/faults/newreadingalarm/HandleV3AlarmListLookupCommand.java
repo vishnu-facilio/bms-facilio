@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -78,10 +79,15 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 }
             }
             if (CollectionUtils.isNotEmpty(newRuleIds)) {
-                Map<Long, String> ruleNameMap = NewReadingRuleAPI.getReadingRuleNamesByIds(newRuleIds);
-                newReadingAlarms.stream().filter(readingAlarm -> readingAlarm.getIsNewReadingRule() && readingAlarm.getRule()!=null).forEach(alarm -> alarm.getRule().setName(ruleNameMap.get(alarm.getRule().getId())));
+                Map<Long, Map<String, Object>> ruleMap = NewReadingRuleAPI.getReadingRuleNameAndImpactByIds(newRuleIds);
+                newReadingAlarms.stream().filter(readingAlarm -> readingAlarm.getIsNewReadingRule() && readingAlarm.getRule()!=null).forEach(alarm -> {
+                    NewReadingRuleContext rule = (NewReadingRuleContext) alarm.getRule();
+                    Map<String, Object> prop = ruleMap.get(rule.getId());
+                    rule.setName((String) prop.get("name"));
+                    rule.setImpact((FaultImpactContext) prop.get("impact"));
+                    alarm.setNewRule(rule);
+                });
             }
-
             if (!oldRuleIds.isEmpty()) {
                 Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(oldRuleIds, false, false);
                 if (MapUtils.isNotEmpty(rules)) {
@@ -102,5 +108,4 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
         return false;
     }
-
 }

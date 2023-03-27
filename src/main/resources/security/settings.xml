@@ -1725,4 +1725,11 @@
     </request>
     <request path="/api/v2/portals/getLicensedPortals" method="GET"/>
 
+    <request path="/api/v3/readingrule/fetchImpact">
+        <requestbody type="object">
+            <property name="ruleId" type="number" />
+            <property name="parentId" type="number" />
+            <property name="isCostImpact" type="boolean" />
+        </requestbody>
+    </request>
 </config>

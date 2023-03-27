@@ -506,8 +506,12 @@ public class PageWidget {
 		WORK_ORDER_LABOUR("workorderlabour"),
 
 		WO_PLANNED_LABOUR("plannedLabour"),
-		JOB_PLAN_LABOURS("jobplanlabours");
+		JOB_PLAN_LABOURS("jobplanlabours"),
 
+		IMPACT_REPORT("impactReport"),
+		IMPACT_INFO("impactInfo"),
+		ENERGY_IMPACT("energyImpact"),
+		COST_IMPACT("costImpact");
 
 		private String name;
 

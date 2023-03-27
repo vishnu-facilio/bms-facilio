@@ -2,12 +2,9 @@ package com.facilio.readingrule.util;
 
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -24,18 +21,13 @@ import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
-import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
-import com.facilio.relation.context.RelationMappingContext;
-import com.facilio.relation.util.RelationUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -230,5 +222,20 @@ public class NewReadingRuleAPI {
         for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
             entry.getValue().setModuleName(moduleName);
         }
+    }
+
+    public static Map<Long, Map<String, Object>> getReadingRuleNameAndImpactByIds(List<Long> ruleIds) throws Exception {
+
+        Map<Long, Map<String, Object>> nameMap = new HashMap<>();
+        List<NewReadingRuleContext> resList = getReadingRules(ruleIds);
+        if (resList != null) {
+            for (NewReadingRuleContext props : resList) {
+                Map<String, Object> prop = new HashMap<>();
+                prop.put("name", props.getName());
+                prop.put("impact", props.getImpact());
+                nameMap.put(props.getId(), prop);
+            }
+        }
+        return nameMap;
     }
 }
