@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -28,6 +27,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class UpdateStateForModuleDataCommand extends FacilioCommand {
+	private static final double meterConstant = 1d/1084/100;
+
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStateForModuleDataCommand.class.getName());
 
 	@Override
@@ -145,8 +146,8 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		FacilioUtil.throwIllegalArgumentException(value != null && locationValue == null, "locationValue is mandatory");
 
 		Point area = getPointFromCoordinates(value);
-		double radiusInDegree = radius/(11132.0 * Math.cos(Math.toRadians(area.getX())));
-		Geometry geometry = (area != null) ? area.buffer(radiusInDegree) : null;
+
+		Geometry geometry = (area != null) ? area.buffer(radius*meterConstant) : null;
 
 		Point currentLocation = getPointFromCoordinates(locationValue);
 
@@ -164,7 +165,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 			FacilioUtil.throwIllegalArgumentException(!matcher.matches(), "Invalid GeoLocation Pattern");
 
 			String[] coordinates = FacilioUtil.splitByComma(coordinatesValue);
-			Coordinate coordinate = new Coordinate(Double.parseDouble(coordinates[0].toString()), Double.parseDouble(coordinates[1].toString()));
+			Coordinate coordinate = new Coordinate(Double.parseDouble(coordinates[1].toString()), Double.parseDouble(coordinates[0].toString()));
 			GeometryFactory geometryFactory = new GeometryFactory();
 			Point point = geometryFactory.createPoint(coordinate);
 			return point;
