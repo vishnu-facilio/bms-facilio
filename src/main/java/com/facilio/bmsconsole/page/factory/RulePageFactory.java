@@ -170,7 +170,7 @@ public class RulePageFactory extends PageFactory {
 		PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
 		alarmDetails.addToLayoutParams(section, 24, 12);
 		alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
-		addChartParams(alarmDetails, null, BmsAggregateOperators.DateAggregateOperator.FULLDATE, "createdTime", BmsAggregateOperators.NumberAggregateOperator.SUM,  "cost" , "resource", DateOperators.CURRENT_MONTH,"30" ,criteria);
+		addChartParams(alarmDetails, null, BmsAggregateOperators.DateAggregateOperator.FULLDATE, "createdTime",null, BmsAggregateOperators.NumberAggregateOperator.SUM,  "cost" ,null, "resource", DateOperators.CURRENT_MONTH,"30" ,criteria);
 		section.addWidget(alarmDetails);
 	}
 	private static void addHistoryLogWidget(Section section) {

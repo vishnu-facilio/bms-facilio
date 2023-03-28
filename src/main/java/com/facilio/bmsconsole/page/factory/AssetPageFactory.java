@@ -497,7 +497,7 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addCardType(CardType.MAINTENANCE_COST_TREND);
-		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
+		addChartParams(cardWidget, "createdTime","Created Time", "totalCost","Total Cost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
 	

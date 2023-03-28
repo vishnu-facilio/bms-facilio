@@ -631,31 +631,35 @@ public class PageFactory {
 	}
 	
 	protected static void addChartParams(String groupByFieldName,PageWidget widget, String xFieldName, String yFieldName , Criteria criteria) {
-		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.SUM, yFieldName, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName,null, NumberAggregateOperator.SUM, yFieldName,null, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName,AggregateOperator xAggr, String yFieldName,AggregateOperator yAggr, Criteria criteria) {
-		addChartParams(widget, "line", xAggr, xFieldName, yAggr, yFieldName, null , DateOperators.CURRENT_YEAR, null, criteria);
+		addChartParams(widget, "line", xAggr, xFieldName,null, yAggr, yFieldName, null,null , DateOperators.CURRENT_YEAR, null, criteria);
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName,String groupByFieldName, Criteria criteria) {
-		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, null,NumberAggregateOperator.AVERAGE, yFieldName,null, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
 	}
-	
+	protected static void addChartParams(PageWidget widget, String xFieldName,String xDisplayName, String yFieldName,String yDisplayName,String groupByFieldName, Criteria criteria) {
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, xDisplayName,NumberAggregateOperator.AVERAGE, yFieldName,yDisplayName, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
+	}
 	@SuppressWarnings("unchecked")
-	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
-			String yFieldName,String groupByFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
+	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName,String xDisplayName, AggregateOperator yAggr,
+			String yFieldName,String yDisplayName,String groupByFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
 		JSONObject obj = new JSONObject();
 		obj.put("chartType", chartType);
 		
 		JSONObject xField = new JSONObject();
 		xField.put("aggr", xAggr.getValue());
 		xField.put("fieldName", xFieldName);
+		xField.put("displayName",xDisplayName);
 		obj.put("xField", xField);
 		
 		JSONObject yField = new JSONObject();
 		yField.put("aggr", yAggr.getValue());
 		yField.put("fieldName", yFieldName);
+		yField.put("displayName",yDisplayName);
 		obj.put("yField", yField);
 		
 		JSONObject groupBy = new JSONObject();

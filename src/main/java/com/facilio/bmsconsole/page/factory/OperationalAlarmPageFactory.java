@@ -75,7 +75,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
         PageWidget alarmDetails = new PageWidget(PageWidget.WidgetType.CHART, "outOfSchedule");
         alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.OUT_OF_SCHEDULE);
-        addChartParams(alarmDetails, "stackedbar", BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR , "createdTime", BmsAggregateOperators.NumberAggregateOperator.SUM , "duration" ,"coverageType", DateOperators.CURRENT_YEAR, String.valueOf(lastOccurrence.getCreatedTime()) ,criteria);
+        addChartParams(alarmDetails, "stackedbar", BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR , "createdTime",null, BmsAggregateOperators.NumberAggregateOperator.SUM , "duration" ,null,"coverageType", DateOperators.CURRENT_YEAR, String.valueOf(lastOccurrence.getCreatedTime()) ,criteria);
         section.addWidget(alarmDetails);
         return alarmDetails;
     }
