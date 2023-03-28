@@ -469,7 +469,7 @@ public class TransactionChainFactory {
 	 * @deprecated use V3 Update instead.
 	 */
 	@Deprecated
-	public static FacilioChain getUpdateWorkOrderChain() {
+	public static FacilioChain getUpdateWorkOrderChain() throws Exception {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -496,11 +496,17 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
 		c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
-				.addCommand(new ClearAlarmOnWOCloseCommand())
-				.addCommand(new ExecuteTaskFailureActionCommand())
-		);
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS)) {
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ClearAlarmOnWOCloseCommand());
+			c.addCommand(new ExecuteTaskFailureActionCommand());
+		}else{
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
+					.addCommand(new ClearAlarmOnWOCloseCommand())
+					.addCommand(new ExecuteTaskFailureActionCommand())
+			);
+		}
 		c.addCommand(new ConstructTicketNotesCommand());
 		c.addCommand(getAddNotesChain());
 		c.addCommand(new AddAttachmentCommand());
