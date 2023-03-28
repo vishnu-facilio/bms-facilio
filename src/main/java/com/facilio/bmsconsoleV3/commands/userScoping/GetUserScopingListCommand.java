@@ -27,12 +27,11 @@ public class GetUserScopingListCommand extends FacilioCommand {
 
         try {
             UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
-            Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
             String searchQuery = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
             int page = (int) context.get(FacilioConstants.ContextNames.PAGE);
             int perPage = (int) context.get(FacilioConstants.ContextNames.PER_PAGE);
-            Long count = userScopeBean.getUserScopingCount(appId,searchQuery);
-            List<ScopingContext> userScopingList = userScopeBean.getUserScopingList(appId, searchQuery, page, perPage);
+            Long count = userScopeBean.getUserScopingCount(searchQuery);
+            List<ScopingContext> userScopingList = userScopeBean.getUserScopingList(searchQuery, page, perPage);
             List<Long> ouids = userScopingList.stream().map(userScoping -> {
                 Long userId = userScoping.getCreatedBy();
                 return userId;

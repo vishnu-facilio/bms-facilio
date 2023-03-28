@@ -6,6 +6,7 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
@@ -11034,6 +11035,7 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+
     public static List<FacilioField> getScatterGraphMetaFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getScatterGraphLineModule();
@@ -11298,6 +11300,15 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getIdField(module));
         list.add(getBooleanField(V3WorkOrderModuleSettingAPI.HIDE_GALLERY, "IS_HIDE_GALLERY", module));
         return list;
+    }
+
+    public static List<FacilioField> getPeopleUserScopingFields() {
+        FacilioModule module = ModuleFactory.getPeopleUserScopingModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("peopleId","PEOPLE_ID",module));
+        fieldList.add(getNumberField("userScopingId","USER_SCOPING_ID",module));
+        return fieldList;
     }
 
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {

@@ -50,6 +50,8 @@ public class CacheUtil {
 
 	public static final String VALUE_GENERATOR_ID = "valueGeneratorId";
 
+	public static final String PEOPLE_ID = "peopleId";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -173,6 +175,9 @@ public class CacheUtil {
 		return SCOPE_ID + KEY_SEPARATOR + scopeId;
 	}
 
+	public static String PEOPLE_ID_KEY(long orgId, long peopleId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + PEOPLE_ID + KEY_SEPARATOR + peopleId;
+	}
 	public static String GLOBAL_SCOPE_VARIABLE_KEY(long orgId, long appId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + APPID_KEY(appId);
 	};

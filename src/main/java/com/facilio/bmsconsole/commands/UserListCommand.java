@@ -114,7 +114,7 @@ public class UserListCommand extends FacilioCommand {
                 RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
 
                 List<Role> roles = roleBean.getRolesForApps(appId > 0 ? Collections.singletonList(appId) : null);
-                List<ScopingContext> scopingList = ApplicationApi.getScopingForApp(appId);
+                List<ScopingContext> scopingList = ApplicationApi.getAllScoping();
 
                 Map<Long, Role> roleMap = new HashMap<>();
                 for(Role role : roles){
@@ -122,8 +122,10 @@ public class UserListCommand extends FacilioCommand {
                 }
 
                 Map<Long, ScopingContext> scopingMap = new HashMap<>();
-                for(ScopingContext scoping : scopingList){
-                    scopingMap.put(scoping.getId(), scoping);
+                if(CollectionUtils.isNotEmpty(scopingList)) {
+                    for (ScopingContext scoping : scopingList) {
+                        scopingMap.put(scoping.getId(), scoping);
+                    }
                 }
 
                 Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
@@ -139,7 +141,7 @@ public class UserListCommand extends FacilioCommand {
                             user.setAppType(appDomain.getAppType());
                         }
                         user.setApplicationId((long)prop.get("applicationId"));
-                        if(user.getScopingId() > 0){
+                        if(user.getScopingId() != null && user.getScopingId() > 0){
                             user.setScoping(scopingMap.get(user.getScopingId()));
                         }
                     }

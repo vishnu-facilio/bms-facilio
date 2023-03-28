@@ -86,11 +86,11 @@ public class AddInductionModules extends BaseModuleConfig {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-        if(!SignupUtil.maintenanceAppSignup()) {
-            addScoping(induction);
-        }
-        long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        addScopingForMaintenanceApp(induction,applicationScopingId);
+//        if(!SignupUtil.maintenanceAppSignup()) {
+//            addScoping(induction);
+//        }
+//        long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+//        addScopingForMaintenanceApp(induction,applicationScopingId);
 
         addInductionResponseRollUpToTemplate(Constants.getModBean(), InductionResponseModule);
         

@@ -1359,6 +1359,7 @@
     </request>
 
     <request path="/api/v2/isSessionActive"></request>
+
     <request path="/api/integ/orgLogo"></request>
 
     <request path="/api/v3/shiftplanner/view">
@@ -1449,5 +1450,51 @@
         <urlparams>
             <property name="connectedDeviceId" type="number" mandatory="true"/>
         </urlparams>
+    </request>
+    <request path="/api/v3/group/scopeBySite">
+        <requestbody type="object">
+            <property name="siteId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/userScoping/list">
+        <urlparams>
+            <property name="search" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/userScoping/addOrUpdate">
+        <requestbody type="object">
+            <property name="userScoping" type="object">
+                <property name="scopeName" type="string" mandatory="true" maxLength="255"/>
+                <property name="description" type="string" maxLength="2000"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/userScoping/updateStatus">
+        <requestbody type="object">
+            <property name="scopingId" type="number" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/userScoping/scopingModules">
+    </request>
+    <request path="/api/v1/setup/userScoping/getConfig">
+        <requestbody type="object">
+            <property name="scopingId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/userScoping/updateConfig">
+        <requestbody type="object">
+            <property name="scopingId" type="number" mandatory="true"/>
+            <property name="userScopingConfigList" type="array">
+                <items type="object"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/userScoping/delete">
+        <requestbody type="object">
+            <property name="scopingId" type="number" mandatory="true"/>
+        </requestbody>
     </request>
 </config>

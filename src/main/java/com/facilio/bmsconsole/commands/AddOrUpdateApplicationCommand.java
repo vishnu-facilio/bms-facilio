@@ -54,7 +54,6 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 					addCustomSetupLayout(app);
 				}
 				addAdminRoleForApp(app);
-				ApplicationApi.addDefaultScoping(app.getId());
 				context.put(FacilioConstants.ContextNames.APPLICATION_ID,app.getId());
 			}
 

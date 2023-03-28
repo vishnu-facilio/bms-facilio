@@ -65,15 +65,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
 
-		ScopingContext maintenanceScoping = new ScopingContext();
-		maintenanceScoping.setScopeName("Default scoping for app - " + appId + " admin");
-		maintenanceScoping.setDescription("Default scoping for app - " + appId + " admin");
-		maintenanceScoping.setApplicationId(appId);
-		maintenanceScoping.setIsDefault(false);
-		long maintenanceScopingId = ApplicationApi.addScoping(maintenanceScoping);
-		context.put(FacilioConstants.ContextNames.Maintenance.MAINTENANCE_ADMIN_SCOPING_ID, maintenanceScopingId);
-		ScopingContext maintenanceAdminScoping = ApplicationApi.getScoping(maintenanceScopingId);
-		user.setScoping(maintenanceAdminScoping);
 
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true, false);
 		ApplicationApi.updateCreatedByForDefaultScoping(user);
@@ -87,14 +78,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		clonedUser.setApplicationId(agentAppId);
 		clonedUser.setRole(agentAdmin);
 		clonedUser.setRoleId(agentAdmin.getRoleId());
-		ScopingContext agentScoping = new ScopingContext();
-		agentScoping.setScopeName("Default scoping for app - " + agentAppId + " admin");
-		agentScoping.setDescription("Default scoping for app - " + agentAppId + " admin");
-		agentScoping.setApplicationId(agentAppId);
-		agentScoping.setIsDefault(true);
-		long agentScopingId = ApplicationApi.addScoping(agentScoping);
-		ScopingContext agentAdminScoping = ApplicationApi.getScoping(agentScopingId);
-		clonedUser.setScoping(agentAdminScoping);
 		clonedUser.setApplicationId(agentAppId);
 
 		if (agentAppId > 0) {
@@ -121,15 +104,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 					FacilioConstants.DefaultRoleNames.DATA_LOADER_ADMIN);
 			clonedUser.setRole(dataLoaderAdmin);
 			clonedUser.setRoleId(dataLoaderAdmin.getRoleId());
-			// admin scoping
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + dataLoaderAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + dataLoaderAppId + " admin");
-			scoping.setApplicationId(dataLoaderAppId);
-			scoping.setIsDefault(false);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(dataLoaderAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -141,14 +115,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setApplicationId(kioskAppId);
 			clonedUser.setRole(kioskAdmin);
 			clonedUser.setRoleId(kioskAdmin.getRoleId());
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + kioskAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + kioskAppId + " admin");
-			scoping.setApplicationId(kioskAppId);
-			scoping.setIsDefault(true);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(kioskAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -160,14 +126,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setApplicationId(iwmsAppId);
 			clonedUser.setRole(iwmsAdmin);
 			clonedUser.setRoleId(iwmsAdmin.getRoleId());
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + iwmsAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + iwmsAppId + " admin");
-			scoping.setApplicationId(iwmsAppId);
-			scoping.setIsDefault(true);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(iwmsAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -216,16 +174,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 					FacilioConstants.DefaultRoleNames.MAINTENANCE_SUPER_ADMIN);
 			clonedUser.setRole(cafmAdminRole);
 			clonedUser.setRoleId(cafmAdminRole.getRoleId());
-			// admin scoping
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + cafmAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + cafmAppId + " admin");
-			scoping.setApplicationId(cafmAppId);
-			scoping.setIsDefault(false);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			context.put(FacilioConstants.ContextNames.Maintenance.MAINTENANCE_ADMIN_SCOPING_ID, scopingId);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(cafmAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -237,15 +185,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 					FacilioConstants.DefaultRoleNames.DATA_LOADER_ADMIN);
 			clonedUser.setRole(dataLoaderAdmin);
 			clonedUser.setRoleId(dataLoaderAdmin.getRoleId());
-			// admin scoping
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + dataLoaderAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + dataLoaderAppId + " admin");
-			scoping.setApplicationId(dataLoaderAppId);
-			scoping.setIsDefault(false);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(dataLoaderAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -257,14 +196,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setApplicationId(kioskAppId);
 			clonedUser.setRole(kioskAdmin);
 			clonedUser.setRoleId(kioskAdmin.getRoleId());
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + kioskAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + kioskAppId + " admin");
-			scoping.setApplicationId(kioskAppId);
-			scoping.setIsDefault(true);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(kioskAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -276,14 +207,6 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setApplicationId(iwmsAppId);
 			clonedUser.setRole(iwmsAdmin);
 			clonedUser.setRoleId(iwmsAdmin.getRoleId());
-			ScopingContext scoping = new ScopingContext();
-			scoping.setScopeName("Default scoping for app - " + iwmsAppId + " admin");
-			scoping.setDescription("Default scoping for app - " + iwmsAppId + " admin");
-			scoping.setApplicationId(iwmsAppId);
-			scoping.setIsDefault(true);
-			long scopingId = ApplicationApi.addScoping(scoping);
-			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
-			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(iwmsAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}

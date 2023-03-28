@@ -39,7 +39,6 @@ public class EnableOauth2 extends SignUpData {
         ApplicationContext devApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
 
         if (devApp.getId() > 0) {
-            ApplicationApi.addDefaultScoping(devApp.getId());
             ApplicationLayoutContext devLayout = new ApplicationLayoutContext(devApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
             ApplicationApi.addApplicationLayout(devLayout);
             ApplicationApi.addDevAppWebTabs(devLayout);

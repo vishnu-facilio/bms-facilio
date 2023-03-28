@@ -7,6 +7,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.license.LicenseContext.FacilioLicense;
+import lombok.Getter;
+import lombok.Setter;
 
 public class User extends IAMUser {
 	private static final long serialVersionUID = 1L;
@@ -245,15 +247,9 @@ public class User extends IAMUser {
 		}
 		return false;
 	}
-	private long scopingId;
 
-	public long getScopingId() {
-		return scopingId;
-	}
-
-	public void setScopingId(long scopingId) {
-		this.scopingId = scopingId;
-	}
+	@Getter @Setter
+	private Long scopingId;
 
 	private ScopingContext scoping;
 

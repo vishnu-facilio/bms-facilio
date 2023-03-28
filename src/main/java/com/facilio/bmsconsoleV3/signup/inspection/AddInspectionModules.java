@@ -106,11 +106,11 @@ public class AddInspectionModules extends BaseModuleConfig {
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-        if(!SignupUtil.maintenanceAppSignup()) {
-			addScoping(inspection);
-		}
-		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-		addScopingMaintenanceApp(inspection,applicationScopingId);
+//        if(!SignupUtil.maintenanceAppSignup()) {
+//			addScoping(inspection);
+//		}
+//		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+//		addScopingMaintenanceApp(inspection,applicationScopingId);
 
         SignupUtil.addNotesAndAttachmentModule(inspectionResponseModule);
         

@@ -26,17 +26,15 @@ public class AddOrUpdateUserScopingCommand extends FacilioCommand {
         try {
             UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
             ScopingContext userScoping = (ScopingContext) context.get(FacilioConstants.ContextNames.RECORD);
-            long applicationId = userScoping.getApplicationId();
             long userScopingId = userScoping.getId();
             V3Util.throwRestException(StringUtils.isEmpty(userScoping.getScopeName()), ErrorCode.VALIDATION_ERROR, "Scope name is mandatory");
-            V3Util.throwRestException(applicationId <= 0, ErrorCode.VALIDATION_ERROR, "Application Id is mandatory and can't be zero or negative number");
 
             if (userScopingId > 0) {
                 userScopeBean.updateUserScoping(userScoping);
             } else {
-                List<ScopingContext> userScopingList = userScopeBean.getUserScopingList(applicationId, "", -1, -1);
+                List<ScopingContext> userScopingList = userScopeBean.getUserScopingList("", -1, -1);
                 int existingRecords = CollectionUtils.size(userScopingList);
-                V3Util.throwRestException(existingRecords >= 5, ErrorCode.VALIDATION_ERROR, "Can't add more than five user scoping for an app");
+                V3Util.throwRestException(existingRecords >= 10, ErrorCode.VALIDATION_ERROR, "Maximum number of user scoping reached.");
                 userScopeBean.addUserScoping(userScoping);
             }
         } catch (Exception e) {

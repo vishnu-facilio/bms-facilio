@@ -265,14 +265,14 @@ public class UserBeanImpl implements UserBean {
 		props.put("applicationId", user.getApplicationId());
 		props.put("orgId", user.getOrgId());
 		props.put("roleId", user.getRoleId());
-		ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(user.getApplicationId());
-		if(user.getScoping() != null){
-			props.put("scopingId", user.getScoping().getId());
+		if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING)) {
+			ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(user.getApplicationId());
+			if (user.getScoping() != null) {
+				props.put("scopingId", user.getScoping().getId());
+			} else if (defaultScoping != null) {
+				props.put("scopingId", defaultScoping.getId());
+			}
 		}
-		else if(defaultScoping != null) {
-			props.put("scopingId", defaultScoping.getId());
-		}
-
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
@@ -1114,11 +1114,13 @@ public class UserBeanImpl implements UserBean {
 			user.setAppDomain(appDomain);
 			user.setApplicationId((long)prop.get("applicationId"));
 			user.setAppType(appDomain.getAppType());
-			if(prop.get("scopingId") != null) {
+			if(prop.containsKey("scopingId") && prop.get("scopingId") != null) {
 				user.setScopingId((long)prop.get("scopingId"));
 			}
-			if(user.getScopingId() > 0) {
-				user.setScoping(ApplicationApi.getScoping(user.getScopingId()));
+			if(!(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING))) {
+				if (user.getScopingId() != null && user.getScopingId() > 0) {
+					user.setScoping(ApplicationApi.getScoping(user.getScopingId()));
+				}
 			}
 		}
 		

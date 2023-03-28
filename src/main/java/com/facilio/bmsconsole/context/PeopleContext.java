@@ -193,4 +193,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	@Setter
 	private User userContext; // for client purpose only
 
+	@Setter @Getter
+	private Long scopingId;
 }

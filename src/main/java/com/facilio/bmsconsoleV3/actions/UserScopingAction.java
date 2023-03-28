@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class UserScopingAction extends V3Action {
+public class UserScopingAction extends FacilioAction {
     private ScopingContext userScoping;
     private List<ScopingConfigContext> userScopingConfigList;
     private Long scopingId;
@@ -33,7 +34,7 @@ public class UserScopingAction extends V3Action {
         FacilioChain chain = ReadOnlyChainFactoryV3.getUserScopingModulesListChain();
         FacilioContext context = chain.getContext();
         chain.execute();
-        setData(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return SUCCESS;
     }
 
@@ -42,21 +43,20 @@ public class UserScopingAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.RECORD, userScoping);
         chain.execute();
-        setData(FacilioConstants.ContextNames.SCOPING_CONTEXT, context.get(FacilioConstants.ContextNames.RECORD));
+        setResult(FacilioConstants.ContextNames.SCOPING_CONTEXT, context.get(FacilioConstants.ContextNames.RECORD));
         return SUCCESS;
     }
 
     public String list() throws Exception {
         FacilioChain chain = ReadOnlyChainFactoryV3.getUserScopingListChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.SEARCH_QUERY, searchQuery);
         context.put(FacilioConstants.ContextNames.PAGE, page);
         context.put(FacilioConstants.ContextNames.PER_PAGE, perPage);
         chain.execute();
-        setData(FacilioConstants.ContextNames.USER_SCOPING_LIST, context.get(FacilioConstants.ContextNames.USER_SCOPING_LIST));
-        setMeta(FacilioConstants.ContextNames.CREATED_BY, context.get(FacilioConstants.ContextNames.CREATED_BY));
-        setMeta(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
+        setResult(FacilioConstants.ContextNames.USER_SCOPING_LIST, context.get(FacilioConstants.ContextNames.USER_SCOPING_LIST));
+        setResult(FacilioConstants.ContextNames.CREATED_BY, context.get(FacilioConstants.ContextNames.CREATED_BY));
+        setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
         return SUCCESS;
     }
 
@@ -83,7 +83,7 @@ public class UserScopingAction extends V3Action {
         context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
         context.put(FacilioConstants.ContextNames.MODULE_ID, moduleId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST, context.get(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST));
+        setResult(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST, context.get(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST));
         return SUCCESS;
     }
 
@@ -93,7 +93,7 @@ public class UserScopingAction extends V3Action {
         context.put(FacilioConstants.ContextNames.RECORD, userScopingConfigList);
         context.put("scopingId", scopingId);
         chain.execute();
-        setData(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST, userScopingConfigList);
+        setResult(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST, userScopingConfigList);
         return SUCCESS;
 
     }

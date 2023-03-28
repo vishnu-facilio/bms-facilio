@@ -618,7 +618,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
 
         if (agentApplication.getId() > 0) {
-            addDefaultScoping(agentApplication.getId());
             ApplicationLayoutContext layout = new ApplicationLayoutContext(agentApplication.getId(),
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
                     FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
@@ -637,7 +636,6 @@ public class ApplicationApi {
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
                     FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             addApplicationLayout(tpLayout);
-            addDefaultScoping(tenantPortal.getId());
 
             // mobile layout for tenant portal
             ApplicationLayoutContext tpLayoutMobile = new ApplicationLayoutContext(tenantPortal.getId(),
@@ -661,7 +659,6 @@ public class ApplicationApi {
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE,
                     FacilioConstants.ApplicationLinkNames.KIOSK_APP);
             addApplicationLayout(kioskLayout);
-            addDefaultScoping(kioskApp.getId());
             addKioskWebTabs(kioskLayout);
 
             Role kioskAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
@@ -673,7 +670,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
         if (maintenance.getId() > 0) {
-            addDefaultScoping(maintenance.getId());
 
             // mobile layout for Maintenance App
             ApplicationLayoutContext maintenanceLayoutMobile = new ApplicationLayoutContext(maintenance.getId(),
@@ -712,7 +708,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
 
         if (dataLoader.getId() > 0) {
-            addDefaultScoping(dataLoader.getId());
 
             ApplicationLayoutContext dataLoaderLayout = new ApplicationLayoutContext(dataLoader.getId(),
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
@@ -728,7 +723,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
         if (servicePortal.getId() > 0) {
-            addDefaultScoping(servicePortal.getId());
 
             ApplicationLayoutContext spLayout = new ApplicationLayoutContext(servicePortal.getId(),
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
@@ -754,7 +748,6 @@ public class ApplicationApi {
             ApplicationContext mainApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 
             if (mainApp.getId() > 0) {
-                addDefaultScoping(mainApp.getId());
 
                 ApplicationLayoutContext mainLayout = new ApplicationLayoutContext(mainApp.getId(),
                         ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB,
@@ -781,7 +774,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
 
         if (vendorPortal.getId() > 0) {
-            addDefaultScoping(vendorPortal.getId());
 
             ApplicationLayoutContext vpLayout = new ApplicationLayoutContext(vendorPortal.getId(),
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
@@ -806,7 +798,6 @@ public class ApplicationApi {
                 FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 
         if (clientPortal.getId() > 0) {
-            addDefaultScoping(clientPortal.getId());
 
             ApplicationLayoutContext cpLayout = new ApplicationLayoutContext(clientPortal.getId(),
                     ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB,
@@ -822,7 +813,6 @@ public class ApplicationApi {
         ApplicationContext employeePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
 
         if (employeePortal.getId() > 0) {
-            addDefaultScoping(employeePortal.getId());
             ApplicationLayoutContext layout = new ApplicationLayoutContext(employeePortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
             addApplicationLayout(layout);
             addEmployeeAppWebTabs(layout);
@@ -833,7 +823,6 @@ public class ApplicationApi {
         ApplicationContext workplaceApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         if(workplaceApp.getId() >0)
         {
-            addDefaultScoping(workplaceApp.getId());
             //Workplace App Layout
             ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
                     ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.IWMS_APP);
@@ -1891,16 +1880,24 @@ public class ApplicationApi {
     }
 
     public static Map<Long, ScopingConfigContext> getScopingMapForApp(long scopingId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
-
-        List<ScopingConfigCacheContext> list = userScopeBean.getScopingConfig(scopingId);
-        Map<Long, ScopingConfigContext> moduleScoping = new HashMap<Long, ScopingConfigContext>();
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (ScopingConfigContext scopingConfig : list) {
-                moduleScoping.put(scopingConfig.getModuleId(), scopingConfig);
+        boolean isScopingEnabled = true;
+        if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING)) {
+            isScopingEnabled = false;
+            ScopingContext scoping = ApplicationApi.getScoping(scopingId);
+            if(scoping != null && scoping.isStatus()) {
+                isScopingEnabled = true;
             }
-            return moduleScoping;
+        }
+        if(isScopingEnabled) {
+            List<ScopingConfigCacheContext> list = userScopeBean.getScopingConfig(scopingId);
+            Map<Long, ScopingConfigContext> moduleScoping = new HashMap<>();
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (ScopingConfigContext scopingConfig : list) {
+                    moduleScoping.put(scopingConfig.getModuleId(), scopingConfig);
+                }
+                return moduleScoping;
+            }
         }
         return null;
     }
@@ -2168,22 +2165,28 @@ public class ApplicationApi {
 
         // need to remove assign default role & scope when we start throwing error
         long roleId = -1;
-        long scopingId = -1;
+        Long scopingId = null;
         ScopingContext scoping = null;
         if (!assignDefaultRole) {
             Map<String, Object> map = getRoleAndScopeForApp(app.getId(), user.getOuid());
             if (MapUtils.isNotEmpty(map)) {
                 roleId = (long) map.get("roleId");
-                scopingId = (long) map.get("scopingId");
-                scoping = getScoping(scopingId);
+                if(map.containsKey("scopingId")) {
+                    scopingId = (Long) map.get("scopingId");
+                    if(scopingId != null && scopingId > -1) {
+                        scoping = getScoping(scopingId);
+                    }
+                }
             }
         }
         if (roleId <= 0) {
             roleId = getPrivelegedRoleForApp(app.getId());
         }
-        if (scopingId <= 0) {
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING) && (scopingId == null || scopingId <= 0)) {
             scoping = getDefaultScopingForApp(app.getId());
-            scopingId = scoping.getId();
+            if(scoping != null) {
+                scopingId = scoping.getId();
+            }
         }
         user.setRoleId(roleId);
         user.setScopingId(scopingId);
@@ -2285,6 +2288,19 @@ public class ApplicationApi {
             builder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId),
                     NumberOperators.EQUALS));
         }
+        List<Map<String, Object>> map = builder.get();
+        if (CollectionUtils.isNotEmpty(map)) {
+            return FieldUtil.getAsBeanListFromMapList(map, ScopingContext.class);
+        }
+
+        return null;
+    }
+
+    public static List<ScopingContext> getAllScoping() throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .select(FieldFactory.getScopingFields());
+
         List<Map<String, Object>> map = builder.get();
         if (CollectionUtils.isNotEmpty(map)) {
             return FieldUtil.getAsBeanListFromMapList(map, ScopingContext.class);
@@ -2676,6 +2692,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Single Sign-On", "sso", WebTabContext.Type.SINGLE_SIGN_ON, null, appId, null));
             webTabs.add(new WebTabContext("Security Policy", "securitypolicy", WebTabContext.Type.SECURITY_POLICY, null, appId, null));
             webTabs.add(new WebTabContext("Scope", "scope", WebTabContext.Type.SCOPE, null, appId, null,AccountUtil.FeatureLicense.SCOPE_VARIABLE.getFeatureId()));
+            webTabs.add(new WebTabContext("Data Sharing", "datasharing", WebTabContext.Type.DATA_SHARING, null, appId, null,AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING.getFeatureId()));
 
             groupNameVsWebTabsMap.put("usersandaccess", webTabs);
 

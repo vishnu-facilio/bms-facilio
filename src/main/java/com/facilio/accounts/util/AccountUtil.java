@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
@@ -88,11 +89,22 @@ public class AccountUtil {
 		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
 			if(appId > 0) {
-				long scopingId = account.getUser().getScopingId();
+				Long scopingId = null;
+				if(getCurrentOrg() != null && isFeatureEnabled(FeatureLicense.PEOPLE_USER_SCOPING)) {
+					UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+					Long userScopingId = userScopeBean.getPeopleScoping(account.getUser().getPeopleId());
+					if(userScopingId != null) {
+						scopingId = userScopingId;
+					}
+				} else {
+					scopingId = account.getUser().getScopingId();
+				}
 				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
 				if(app != null) {
 					account.setApp(app);
-					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(scopingId));
+					if(scopingId != null && scopingId > -1) {
+						account.setAppScopingMap(ApplicationApi.getScopingMapForApp(scopingId));
+					}
 				}
 			}
 		}
@@ -541,7 +553,8 @@ public class AccountUtil {
 		PUSHNOTIFICATION_WMS(117,9007199254740992L,LicenseMapping.GROUP2LICENSE),//2^53
 		THROW_403_WEBTAB(118,18014398509481984L,LicenseMapping.GROUP2LICENSE),//2^54
 		SITE_FILTER_WORKFLOW_RULE(119,36028797018963968L,LicenseMapping.GROUP2LICENSE),//2^55
-		ATTENDANCE(120,72057594037927940L,LicenseMapping.GROUP2LICENSE);//2^56
+		ATTENDANCE(120,getExponentValue(56),LicenseMapping.GROUP2LICENSE),//2^56
+		PEOPLE_USER_SCOPING(121,getExponentValue(57),LicenseMapping.GROUP2LICENSE);//2^57
 		public int featureId;
 		private long license;
 		private String[] modules;
@@ -612,6 +625,10 @@ public class AccountUtil {
 
 			moduleVsLicense = Collections.unmodifiableMap(moduleMap);
 			return typeMap;
+		}
+
+		private static long getExponentValue(int exponent) {
+			return (long) Math.pow(2, (exponent));
 		}
 
 		private static Map<Integer, FeatureLicense> initFeatureIdMap() {

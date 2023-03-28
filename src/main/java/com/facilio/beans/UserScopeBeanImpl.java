@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingConfigCacheContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -15,16 +16,15 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserScopeBeanImpl implements UserScopeBean {
     public List<ScopingConfigCacheContext> getScopingConfig(long scopingId) throws Exception {
@@ -57,7 +57,13 @@ public class UserScopeBeanImpl implements UserScopeBean {
         builder.delete();
     }
 
-
+    public void deleteScopingConfigs(List<Long> scopingConfigIds) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getScopingConfigModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(scopingConfigIds,","),
+                        NumberOperators.EQUALS));
+        builder.delete();
+    }
     public void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
 
         List<FacilioField> fields = FieldFactory.getScopingConfigFields();
@@ -107,16 +113,12 @@ public class UserScopeBeanImpl implements UserScopeBean {
         builder.update(FieldUtil.getAsProperties(userScoping));
     }
 
-    public Long getUserScopingCount(Long appId, String searchQuery) throws Exception {
-        if (appId == null) {
-            throw new IllegalArgumentException("AppId can't be null");
-        }
+    public Long getUserScopingCount(String searchQuery) throws Exception {
         List<FacilioField> fieldsList = FieldFactory.getScopingFields();
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
-                .select(FieldFactory.getCountField())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("applicationId"), Collections.singleton(appId), NumberOperators.EQUALS));
+                .select(FieldFactory.getCountField());
         if (StringUtils.isNotEmpty(searchQuery)) {
             builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("scopeName"), searchQuery, StringOperators.CONTAINS));
         }
@@ -125,15 +127,11 @@ public class UserScopeBeanImpl implements UserScopeBean {
         return count;
     }
 
-    public List<ScopingContext> getUserScopingList(Long appId, String searchQuery, int page, int perPage) throws Exception {
-        if (appId == null) {
-            throw new IllegalArgumentException("AppId can't be null");
-        }
+    public List<ScopingContext> getUserScopingList(String searchQuery, int page, int perPage) throws Exception {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getScopingFields());
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
-                .select(FieldFactory.getScopingFields())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), Collections.singleton(appId), NumberOperators.EQUALS));
+                .select(FieldFactory.getScopingFields());
         if (StringUtils.isNotEmpty(searchQuery)) {
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("scopeName"), searchQuery, StringOperators.CONTAINS));
         }
@@ -156,11 +154,6 @@ public class UserScopeBeanImpl implements UserScopeBean {
     public void deleteUserScoping(Long userScopingId) throws Exception {
         if (userScopingId == null) {
             throw new IllegalArgumentException("Scoping id can't be null");
-        }
-
-        boolean canDeleteScoping = ScopingUtil.isScopingAssociatedToUser(userScopingId);
-        if (!canDeleteScoping) {
-            throw new IllegalArgumentException("Can't delete scoping associated with user");
         }
         ScopingUtil.deleteCriteriaAssociatedWithUserScoping(userScopingId);
         deleteScopingConfig(userScopingId);
@@ -209,11 +202,35 @@ public class UserScopeBeanImpl implements UserScopeBean {
         return new ArrayList<>();
     }
 
+    private static List<ScopingConfigContext> getScopingConfigForScopingIdAndModule(long scopingId,long moduleId) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getScopingConfigFields())
+                .table(ModuleFactory.getScopingConfigModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("MODULE_ID","moduleId",String.valueOf(moduleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID","scopingId",String.valueOf(scopingId),NumberOperators.EQUALS));
+        List<Map<String,Object>> props = selectRecordBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            List<ScopingConfigContext> configs = FieldUtil.getAsBeanListFromMapList(props,ScopingConfigContext.class);
+            return configs;
+        }
+        return null;
+    }
+
     public void updateScopingConfigForUserScoping(List<ScopingConfigContext> userScopingConfigList, Long userScopingId) throws Exception {
         if (userScopingId != null && userScopingId > 0) {
-            ScopingUtil.deleteCriteriaAssociatedWithUserScoping(userScopingId);
-            deleteScopingConfig(userScopingId);
+            if(CollectionUtils.isNotEmpty(userScopingConfigList)) {
+                for(ScopingConfigContext config : userScopingConfigList) {
+                    List<ScopingConfigContext> existingConfigs = getScopingConfigForScopingIdAndModule(userScopingId,config.getModuleId());
+                    if(CollectionUtils.isNotEmpty(existingConfigs)) {
+                        for(ScopingConfigContext existingConfig : existingConfigs) {
+                            CriteriaAPI.deleteCriteria(existingConfig.getCriteriaId());
+                            deleteScopingConfigForId(existingConfig.getId());
+                        }
+                    }
+                }
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<ScopingConfigContext> scopingConfigContextList = new ArrayList<>();
             for (ScopingConfigContext userScopingConfig : userScopingConfigList) {
                 long moduleId = userScopingConfig.getModuleId();
                 if (moduleId <= 0) {
@@ -221,19 +238,55 @@ public class UserScopeBeanImpl implements UserScopeBean {
                 }
                 FacilioModule module = modBean.getModule(moduleId);
                 Criteria moduleCriteria = userScopingConfig.getCriteria();
-                if (moduleCriteria == null) {
-                    throw new IllegalArgumentException("criteria can't be null");
+                if(moduleCriteria != null) {
+                    for (String key : moduleCriteria.getConditions().keySet()) {
+                        Condition condition = moduleCriteria.getConditions().get(key);
+                        FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
+                        condition.setField(field);
+                    }
+                    userScopingConfig.setScopingId(userScopingId);
+                    scopingConfigContextList.add(userScopingConfig);
                 }
-                for (String key : moduleCriteria.getConditions().keySet()) {
-                    Condition condition = moduleCriteria.getConditions().get(key);
-                    FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
-                    condition.setField(field);
-                }
-                userScopingConfig.setScopingId(userScopingId);
             }
-            addScopingConfigForApp(userScopingConfigList);
+            addScopingConfigForApp(scopingConfigContextList);
         } else {
             throw new IllegalArgumentException("Scoping Id is mandatory");
+        }
+    }
+
+    @Override
+    public Long getPeopleScoping(Long peopleId) throws Exception {
+        if(peopleId != null && peopleId > -1) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getPeopleUserScopingFields())
+                    .table(ModuleFactory.getPeopleUserScopingModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+            Map<String, Object> props = selectRecordBuilder.fetchFirst();
+            if (MapUtils.isNotEmpty(props)) {
+                if (props.containsKey("userScopingId")) {
+                    return (Long) props.get("userScopingId");
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception {
+
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getPeopleUserScopingModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId",String.valueOf(peopleId),NumberOperators.EQUALS));
+        deleteRecordBuilder.delete();
+
+        if(scopingId != null && scopingId > -1) {
+            GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getPeopleUserScopingModule().getTableName())
+                    .fields(FieldFactory.getPeopleUserScopingFields());
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("peopleId", peopleId);
+            prop.put("userScopingId", scopingId);
+            insertRecordBuilder.insert(prop);
         }
     }
 }

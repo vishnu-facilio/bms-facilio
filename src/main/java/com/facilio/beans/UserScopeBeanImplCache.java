@@ -50,6 +50,19 @@ public class UserScopeBeanImplCache extends UserScopeBeanImpl implements UserSco
         FacilioCache<String, List<ScopingConfigCacheContext>> scopeConfigCache = LRUCache.getScopeConfigCache();
         super.updateScopingConfigForUserScoping(userScopingConfigList, userScopingId);
         scopeConfigCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
+    }
 
+    public void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception {
+        FacilioCache<String, Long> scopeConfigCache = LRUCache.getPeopleScopingCache();
+        String key = CacheUtil.PEOPLE_ID_KEY(AccountUtil.getCurrentOrg().getId(),peopleId);
+        scopeConfigCache.remove(key);
+        super.updatePeopleScoping(peopleId,scopingId);
+    }
+    public Long getPeopleScoping(Long peopleId) throws Exception {
+        FacilioCache<String, Long> scopeConfigCache = LRUCache.getPeopleScopingCache();
+        String key = CacheUtil.PEOPLE_ID_KEY(AccountUtil.getCurrentOrg().getId(),peopleId);
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(scopeConfigCache, key, () -> {
+            return super.getPeopleScoping(peopleId);
+        });
     }
 }

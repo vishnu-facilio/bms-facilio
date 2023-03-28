@@ -21,9 +21,9 @@ public interface UserScopeBean {
 
     public void updateUserScoping(ScopingContext userScoping) throws Exception;
 
-    public Long getUserScopingCount(Long appId, String searchQuery) throws Exception;
+    public Long getUserScopingCount(String searchQuery) throws Exception;
 
-    public List<ScopingContext> getUserScopingList(Long appId, String searchQuery, int page, int perPage) throws Exception;
+    public List<ScopingContext> getUserScopingList(String searchQuery, int page, int perPage) throws Exception;
 
     public void deleteUserScoping(Long userScopingId) throws Exception;
 
@@ -33,4 +33,6 @@ public interface UserScopeBean {
 
     public void updateScopingConfigForUserScoping(List<ScopingConfigContext> userScopingConfigList, Long userScopingId) throws Exception;
 
-    }
+    void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception;
+    Long getPeopleScoping(Long peopleId) throws Exception;
+}

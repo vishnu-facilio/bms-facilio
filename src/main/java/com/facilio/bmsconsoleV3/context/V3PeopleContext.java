@@ -211,4 +211,7 @@ public class V3PeopleContext extends V3Context {
 		}
 		return false;
 	}
+
+    @Setter @Getter
+    private Long scopingId;
 }
