@@ -1497,4 +1497,10 @@
             <property name="scopingId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/automation/slaModule"></request>
+    <request path="/api/v1/setup/getFields/geoLocation/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

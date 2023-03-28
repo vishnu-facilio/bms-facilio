@@ -186,6 +186,8 @@
     <package name="automationSetup" namespace="/api/v1/setup/automation" extends="v2Api">
         <action name="slaModule"
                 class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SLA_POLICIES</param>
         </action>
     </package>
 
@@ -257,6 +259,14 @@
             <param name="moduleName">kpiLogger</param>
             <param name="permission">ALL</param>
             <param name="setupTab">NEW_KPI_TEMPLATES</param>
+        </action>
+    </package>
+    <package name="geoLocationFieldsSetup" namespace="/api/v1/setup/getFields" extends="v2Api">
+        <action name="geoLocation/*"
+                class="com.facilio.bmsconsole.actions.ModuleAction" method="getGeoLocationFields">
+            <param name="moduleName">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">STATEFLOWS</param>
         </action>
     </package>
 
