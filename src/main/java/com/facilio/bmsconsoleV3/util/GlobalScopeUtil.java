@@ -450,7 +450,7 @@ public class GlobalScopeUtil {
             if(scopeVsValueGen != null) {
                 for (Pair<GlobalScopeVariableContext, ValueGeneratorContext> value : scopeVsValueGen.values()) {
                     GlobalScopeVariableContext scopeVariableContext = value.getKey();
-                    if (scopeVariableContext.getApplicableModuleId() == siteModule.getModuleId() || (scopeVariableContext.getApplicableModuleName() != null && scopeVariableContext.getDeleted().equals(siteModule.getName()))) {
+                    if (scopeVariableContext != null && ((scopeVariableContext.getApplicableModuleId() != null && scopeVariableContext.getApplicableModuleId() == siteModule.getModuleId()) || (scopeVariableContext.getApplicableModuleName() != null && scopeVariableContext.getApplicableModuleName().equals(siteModule.getName())))) {
                         JSONObject switchMap = getFilterRecordIdMapFromHeader();
                         if (switchMap != null) {
                             List<Long> ids = getFilterRecordIdFromHeader(switchMap, scopeVariableContext.getLinkName());
