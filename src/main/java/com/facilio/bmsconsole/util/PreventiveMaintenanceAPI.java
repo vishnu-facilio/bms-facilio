@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -1491,10 +1492,6 @@ public class PreventiveMaintenanceAPI {
 		if (searchQuery!= null) {
 			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
 		}
-
-		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Preventive_Maintenance.SITE_ID", "siteId", AccountUtil.getCurrentAccount().getCurrentSiteId()+"", NumberOperators.EQUALS));
-		}
 		
 		boolean fetchDependency = false;
 		boolean setTriggers = false;
@@ -1513,13 +1510,35 @@ public class PreventiveMaintenanceAPI {
 
 		// Add accessible spaces criteria for Multisite PMs
 		User user = AccountUtil.getCurrentUser();
+		// Add global site switch value check in criteria
+		List<Long> globalSwitchSiteValues = GlobalScopeUtil.getGlobalSwitchSiteValues();
+		List<Long> accessibleSpaceIds = null;
+
 		if(user != null) {
 			List<Long> accessibleSpace = user.getAccessibleSpace();
 			if(accessibleSpace !=null && accessibleSpace.size() > 0) {
-				selectBuilder.andCustomWhere("( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
-						+ StringUtils.join(accessibleSpace, ",")
-						+") group by PM_ID having count(PM_ID) = (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))");
+				accessibleSpaceIds = accessibleSpace;
 			}
+		}
+
+		if(CollectionUtils.isNotEmpty(accessibleSpaceIds) && CollectionUtils.isNotEmpty(globalSwitchSiteValues)){
+			selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
+			selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
+		} else if ((CollectionUtils.isNotEmpty(globalSwitchSiteValues) && CollectionUtils.isEmpty(accessibleSpaceIds))) {
+			selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
+		}else if ((CollectionUtils.isNotEmpty(accessibleSpaceIds) && CollectionUtils.isEmpty(globalSwitchSiteValues))) {
+			selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
+		}
+
+		//Adding condition to show the single site PMs
+		long singleSiteSiteID = -1L;
+
+		if(CollectionUtils.isNotEmpty(globalSwitchSiteValues) && globalSwitchSiteValues.size() == 1){
+			singleSiteSiteID = globalSwitchSiteValues.get(0);
+		}
+
+		if(singleSiteSiteID > 0){
+			selectBuilder.orCondition(CriteriaAPI.getCondition("Preventive_Maintenance.SITE_ID", "siteId", singleSiteSiteID+"", NumberOperators.EQUALS));
 		}
 
 		List<Map<String, Object>> pmProps = selectBuilder.get();
@@ -1824,7 +1843,19 @@ public class PreventiveMaintenanceAPI {
 		}
 		return pmTriggerContexts;
 	}
-	
+
+	private static String getPMSiteIDQuery(List<Long> siteIds){
+		return "( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
+				+ StringUtils.join(siteIds, ",")
+				+") group by PM_ID having count(PM_ID) = (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))";
+	}
+
+	private static String getPMSiteIDQueryForGlobalSiteSwitch(List<Long> siteIds){
+		return "( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
+				+ StringUtils.join(siteIds, ",")
+				+") group by PM_ID having count(PM_ID) <= (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))";
+	}
+
 	public static void setPMInActive(long pmId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
 		updatePm.setStatus(PMStatus.INACTIVE);

@@ -436,4 +436,37 @@ public class GlobalScopeUtil {
         }
         return switchValue;
     }
+
+    public static List<Long> getGlobalSwitchSiteValues() throws Exception {
+         if(AccountUtil.getCurrentApp() == null){
+            return null;
+        }
+
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+            GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(AccountUtil.getCurrentApp().getId());
+            FacilioModule siteModule = modBean.getModule("site");
+            if(scopeVsValueGen != null) {
+                for (Pair<GlobalScopeVariableContext, ValueGeneratorContext> value : scopeVsValueGen.values()) {
+                    GlobalScopeVariableContext scopeVariableContext = value.getKey();
+                    if (scopeVariableContext.getApplicableModuleId() == siteModule.getModuleId() || (scopeVariableContext.getApplicableModuleName() != null && scopeVariableContext.getDeleted().equals(siteModule.getName()))) {
+                        JSONObject switchMap = getFilterRecordIdMapFromHeader();
+                        if (switchMap != null) {
+                            List<Long> ids = getFilterRecordIdFromHeader(switchMap, scopeVariableContext.getLinkName());
+                            if (CollectionUtils.isNotEmpty(ids)) {
+                                return ids;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            long currentSiteId = AccountUtil.getCurrentSiteId();
+            if (currentSiteId > 0) {
+                return Collections.singletonList(currentSiteId);
+            }
+        }
+        return null;
+    }
 }
