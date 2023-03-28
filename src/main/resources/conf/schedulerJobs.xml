@@ -26,6 +26,8 @@
 		<job name='OpenScheduleWOV2' classname='com.facilio.bmsconsole.jobs.OpenScheduleWOV2' transactionTimeout='300000'/>
 		<!-- PM V2 Monitoring tool-->
 		<job name='pmV2MonitoringToolJob' classname='com.facilio.bmsconsole.jobs.PMV2MonitoringToolJob' transactionTimeout='300000'/>
+		<!-- PM V1 Monitoring tool-->
+		<job name='PMV1MonitoringToolJob' classname='com.facilio.bmsconsole.jobs.monitoring.PMV1MonitoringToolJob' transactionTimeout='300000'/>
 	
 	<!-- PM RELATED JOBS ENDS  -->
 	

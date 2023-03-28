@@ -15,6 +15,7 @@
 <%@page import="com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
 <%@ page import="com.facilio.bmsconsole.util.ApplicationApi" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 
@@ -140,8 +141,11 @@ function showLicense() {
 <br>
 <br>Execution Meta = <textarea style="width: 1000px;height:400px;overflow-y:auto;">
 <%
-	String qToFetchLastMeta = "select * from Monitoring_Tool_Meta order by ttime desc limit 1;";
-	try(ResultSet rs = conn.prepareStatement(qToFetchLastMeta).executeQuery();) {
+	String qToFetchLastMeta = "select * from Monitoring_Tool_Meta WHERE FEATURE = ? order by ttime desc limit 1;";
+	try {
+		PreparedStatement pStmt = conn.prepareStatement(qToFetchLastMeta);
+		pStmt.setInt(1, MonitoringFeature.INSPECTION.getVal());
+		ResultSet rs = pStmt.executeQuery();
 		String meta = null;
 		Long ttime = null;
 		while(rs.next()) {

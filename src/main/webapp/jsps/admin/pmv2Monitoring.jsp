@@ -15,6 +15,7 @@
 <%@page import="com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
 <%@ page import="com.facilio.bmsconsole.util.ApplicationApi" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 
@@ -24,7 +25,7 @@
 	String qWoForDeletedTriggers = "SELECT count(*) as res from WorkOrders inner join Tickets on WorkOrders.ID = Tickets.ID where PM_V2_Trigger_ID IN(SELECT ID from PM_V2_Trigger WHERE SYS_DELETED  = 1) and MODULE_STATE is null and (SYS_DELETED is null or sys_deleted = 0);";
 	String qWoForDeletedPlanners = "SELECT count(*) as res from WorkOrders inner join Tickets on WorkOrders.ID = Tickets.ID where PM_PLANNER_ID IN(SELECT ID from PM_Planner WHERE SYS_DELETED  = 1) and MODULE_STATE is null and (SYS_DELETED is null or sys_deleted = 0);";
 	String qWoForDisabledPMs = "SELECT count(*) as res from WorkOrders inner join Tickets on WorkOrders.ID = Tickets.ID where PM_V2_ID IN(select Tickets.id from Tickets inner join PM_V2 on Tickets.ID = PM_V2.ID where (SYS_DELETED is null or sys_deleted = 0) and PM_STATUS = 1) and MODULE_STATE is null and (SYS_DELETED is null or sys_deleted = 0);";
-	String qToFetchLastMeta = "select * from Monitoring_Tool_Meta order by ttime desc limit 1;";
+	String qToFetchLastMeta = "select * from Monitoring_Tool_Meta WHERE FEATURE = ? order by ttime desc limit 1;";
 	String qToFetchStatusOfNightlyScheduler = "select count(*) as res from Jobs where jobname = 'PMV2NightlyScheduler' and is_active = 1 and status = 3 and EXECUTION_ERROR_COUNT = 0 and orgid in (?)";
 	
 	Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -198,7 +199,10 @@ function showLicense() {
 <%
 	//
 	
-	try(ResultSet rs = conn.prepareStatement(qToFetchLastMeta).executeQuery();) {
+	try {
+		PreparedStatement pStmt = conn.prepareStatement(qToFetchLastMeta);
+		pStmt.setInt(1, MonitoringFeature.PM_V2.getVal());
+		ResultSet rs = pStmt.executeQuery();
 		String meta = null;
 		Long ttime = null;
 		while(rs.next()) { 

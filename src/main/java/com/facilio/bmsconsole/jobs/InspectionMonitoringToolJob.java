@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
@@ -179,8 +180,9 @@ public class InspectionMonitoringToolJob extends FacilioJob {
         }
         JSONObject result = new JSONObject();
         result.put("result", res);
-        String query = "insert into Monitoring_Tool_Meta(FEATURE,TTIME,META) values(1,?,?)";
+        String query = "insert into Monitoring_Tool_Meta(FEATURE,TTIME,META) values(?,?,?)";
         try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement stmt=conn.prepareStatement(query);) {
+            stmt.setInt(1, MonitoringFeature.INSPECTION.getVal());
             stmt.setLong(1, DateTimeUtil.getCurrenTime());
             stmt.setString(2,result.toString());
             int i=stmt.executeUpdate();

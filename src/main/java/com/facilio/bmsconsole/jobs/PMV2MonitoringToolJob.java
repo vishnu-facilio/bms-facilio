@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -222,12 +223,12 @@ public class PMV2MonitoringToolJob extends FacilioJob {
         JSONObject result = new JSONObject();
         result.put("result", res);
         
-        String query = "insert into Monitoring_Tool_Meta(FEATURE,TTIME,META) values(1,?,?)";
+        String query = "insert into Monitoring_Tool_Meta(FEATURE,TTIME,META) values(?,?,?)";
         
         try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement stmt=conn.prepareStatement(query);) {
-        	
-            stmt.setLong(1,DateTimeUtil.getCurrenTime());  
-            stmt.setString(2,result.toString());  
+			stmt.setInt(1, MonitoringFeature.PM_V2.getVal());
+            stmt.setLong(2,DateTimeUtil.getCurrenTime());
+            stmt.setString(3,result.toString());
               
             int i=stmt.executeUpdate();  
             System.out.println(i+" records inserted");  

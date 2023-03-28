@@ -95,14 +95,21 @@ if (buildinfo == null) {
                <span class="nav-title">Anomaly Console</span>
                </a>
            </li>
-           
+            <li>
+                <a href="pmV1Monitoring">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-exclamation-triangle fa-fw "></i> </span>
+                    <span class="nav-title">PM V1 Monitoring</span>
+                </a>
+            </li>
            <li>
                <a href="pmv2monitoring">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">PM V2</span>
+               <span class="nav-title">PM V2 Monitoring</span>
                </a>
            </li>
+
            <li>
                <a href="inspectionmonitoring">
                    <span class="nav-icon">
