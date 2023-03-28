@@ -39,6 +39,8 @@ files:
     destination: /home/facilio
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-ae-kafka.properties
+    destination: /home/facilio/deployment-files/    
   - source: /awsprops-ae-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-scheduler-app.properties
