@@ -4,6 +4,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.v3.V3Action;
 import com.facilio.weather.commands.WeatherReadOnlyChainFactory;
+import com.facilio.weather.commands.WeatherTransactionChainFactory;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
@@ -75,6 +76,14 @@ public class WeatherAction extends V3Action {
         chain.execute();
         setData("fields", context.get("fields"));
         setData("stationMap", context.get("stationMap"));
+        return V3Action.SUCCESS;
+    }
+
+    public String runWeatherStationMigration() throws Exception {
+        FacilioChain chain = WeatherTransactionChainFactory.addWeatherStationMigratinChain();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+        setMessage((String) context.get("message"));
         return V3Action.SUCCESS;
     }
 

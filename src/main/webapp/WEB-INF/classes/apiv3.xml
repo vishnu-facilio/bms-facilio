@@ -1235,6 +1235,9 @@
         <action name="allWeatherFields"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAllWeatherFields"/>
+        <action name="migrateWeatherStation"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="runWeatherStationMigration"/>
     </package>
 
 
