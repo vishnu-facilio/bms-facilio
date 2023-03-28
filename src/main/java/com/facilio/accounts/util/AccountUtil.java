@@ -554,10 +554,13 @@ public class AccountUtil {
 		THROW_403_WEBTAB(118,18014398509481984L,LicenseMapping.GROUP2LICENSE),//2^54
 		SITE_FILTER_WORKFLOW_RULE(119,36028797018963968L,LicenseMapping.GROUP2LICENSE),//2^55
 		ATTENDANCE(120,getExponentValue(56),LicenseMapping.GROUP2LICENSE),//2^56
+
 		PEOPLE_USER_SCOPING(121,getExponentValue(57),LicenseMapping.GROUP2LICENSE),//2^27
 		OFFLINE_SUPPORT(122,getExponentValue(58),LicenseMapping.GROUP2LICENSE),//2^58
 		CLIENT_PORTAL(123,getExponentValue(59),LicenseMapping.GROUP2LICENSE),//2^59
-		ERROR_FRAMEWORK_GENERALIZATION(124, getExponentValue(60), LicenseMapping.GROUP2LICENSE); // 2 ^ 60
+		ERROR_FRAMEWORK_GENERALIZATION(124, getExponentValue(60), LicenseMapping.GROUP2LICENSE), // 2 ^ 60
+
+		QUICK_SEARCH(125,getExponentValue(61),LicenseMapping.GROUP2LICENSE);//2^61
 		public int featureId;
 		private long license;
 		private String[] modules;
