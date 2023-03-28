@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class WeatherAPI {
@@ -201,18 +202,19 @@ public class WeatherAPI {
 		return 0;
 	}
 
-	public static long getSiteIdForStationId(Long stationId) throws Exception {
+	public static List<Long> getSiteIdsForStationId(Long stationId) throws Exception {
 		String revLinkName = "belongsto";
 		String requiredModuleName = "site";
 		JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(revLinkName, requiredModuleName, stationId, -1, -1);
 		JSONObject data = (JSONObject) recordsWithRelationship.get("data");
+		List<Long> relatedSiteIds = new ArrayList<>();
 		if(data != null) {
 			List<Map> resources = (ArrayList<Map>) data.get(requiredModuleName);
 			if(!resources.isEmpty()) {
-				return (long) resources.get(0).get("id");
+				return resources.stream().map(row -> (long)row.get("id")).collect(Collectors.toList());
 			}
 		}
-		return 0;
+		return new ArrayList<>();
 	}
 
 	public static boolean allow() throws Exception {
