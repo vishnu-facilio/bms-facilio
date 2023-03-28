@@ -194,6 +194,10 @@ public class FacilioProperties {
     private static Integer malwareScannerPort;
 
     @Getter
+    private static int clamReadTimeout;
+    @Getter
+    private static int maxFileSize;
+    @Getter
     private static String facilioIosURL;
     @Getter
     private static String facilioAndroidURL;
@@ -433,13 +437,14 @@ public class FacilioProperties {
                 }
             }
 
-
+            maxFileSize = Integer.parseInt(PROPERTIES.getProperty("maxFileSizeInBytes"));
             malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled"));
             if (malwareScanningEnabled) {
                 malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine");
                 malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout"));
                 malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
                 malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
+                clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout"));
             }
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
