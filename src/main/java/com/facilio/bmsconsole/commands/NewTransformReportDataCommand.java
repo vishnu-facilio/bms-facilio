@@ -5,8 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
@@ -14,7 +16,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class NewTransformReportDataCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = Logger.getLogger(NewTransformReportDataCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -41,6 +43,10 @@ public class NewTransformReportDataCommand extends FacilioCommand {
 		}
 		else {
 			context.put(FacilioConstants.ContextNames.CALCULATE_REPORT_AGGR_DATA, false);
+		}
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		if(orgId == 6l) {
+			LOGGER.info("NewTransformReportCommand is" + context);
 		}
 		return false;
 	}

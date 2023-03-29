@@ -15,6 +15,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -36,6 +37,7 @@ import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
 
 public class ConstructReportDataCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(ConstructReportDataCommand.class.getName());
     public JSONObject dayOfWeek = new JSONObject();
     protected Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
         if (isTimeSeries) {
@@ -110,13 +112,16 @@ public class ConstructReportDataCommand extends FacilioCommand {
             }
             transformedData = groupedData;
         }
-
-
         JSONObject data = new JSONObject();
         data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
 //		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
         context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, xAlias);
         context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
+        long orgId = AccountUtil.getCurrentOrg().getId();
+        if(orgId == 6l) {
+            LOGGER.info("transformed data is" + transformedData);
+            LOGGER.info("ConstructReportDataCommand is" + context);
+        }
         return false;
     }
 

@@ -75,6 +75,9 @@ public class GetTrendLineCommand extends FacilioCommand {
 					}
 				}
 		}
+			if(orgId == 6l) {
+				LOGGER.info("GetTrendLineCommand is" + context);
+			}
 		return false;
 	}
 	

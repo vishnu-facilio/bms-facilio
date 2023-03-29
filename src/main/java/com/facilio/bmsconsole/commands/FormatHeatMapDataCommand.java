@@ -127,8 +127,10 @@ public class FormatHeatMapDataCommand extends FacilioCommand {
 			LOGGER.info("time taken for command  -->  "+commandend);
 			
 		}
-		
-		
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		if(orgId == 6l) {
+			LOGGER.info("FormatHeatMapDataCommand is" + context);
+		}
 		return false;
 	}
 	

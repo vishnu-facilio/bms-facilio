@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -76,6 +77,11 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			}
 		}
 		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		if(orgId == 6l) {
+			LOGGER.info("AggregateData is"+ reportData);
+			LOGGER.info("CalculateAggregationCommand is"+ context);
+		}
 		return false;
 	}
 	
