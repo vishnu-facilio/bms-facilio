@@ -207,7 +207,6 @@ public class WeatherAPI {
 		String requiredModuleName = "site";
 		JSONObject recordsWithRelationship = RelationUtil.getRecordsWithRelationship(revLinkName, requiredModuleName, stationId, -1, -1);
 		JSONObject data = (JSONObject) recordsWithRelationship.get("data");
-		List<Long> relatedSiteIds = new ArrayList<>();
 		if(data != null) {
 			List<Map> resources = (ArrayList<Map>) data.get(requiredModuleName);
 			if(!resources.isEmpty()) {

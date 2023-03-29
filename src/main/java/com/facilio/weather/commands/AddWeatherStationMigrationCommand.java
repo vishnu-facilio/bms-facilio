@@ -37,6 +37,12 @@ public class AddWeatherStationMigrationCommand extends FacilioCommand {
             V3WeatherServiceContext facilioWeatherService = WeatherAPI.getWeatherServiceByName("facilioweather");
             LOGGER.info("facilioWeatherService ::" + facilioWeatherService);
             for (SiteContext site : sites) {
+                LOGGER.info(" site : " + site.getName());
+                long associatedWeatherStation = WeatherAPI.getStationIdForSiteId(site.getId());
+                if(associatedWeatherStation != 0) {
+                    LOGGER.info("Already associated with available weather station");
+                    continue;
+                }
                 JSONObject stationData = WeatherAPI.getStationCode(site.getLocation(), site.getName());
                 if (stationData == null) {
                     continue;
@@ -46,12 +52,8 @@ public class AddWeatherStationMigrationCommand extends FacilioCommand {
                 V3WeatherStationContext weatherStationByCode = WeatherAPI.getExistingWeatherStation(stationCode, facilioWeatherService.getId());
                 LOGGER.info("weatherStationByCode ::" + weatherStationByCode);
                 if (weatherStationByCode != null) {
-                    LOGGER.info("Weather station already available");
-                    List<Long> associatedSiteIds = WeatherAPI.getSiteIdsForStationId(weatherStationByCode.getId());
-                    if(!associatedSiteIds.contains(site.getId())) {
-                        LOGGER.info("Weather station associated with siteId now");
-                        WeatherAPI.associateSiteWithWeatherStation(site.getId(), weatherStationByCode.getId());
-                    }
+                    WeatherAPI.associateSiteWithWeatherStation(site.getId(), weatherStationByCode.getId());
+                    LOGGER.info("Weather station associated with siteId now");
                     continue;
                 }
                 stationData.put("serviceId", facilioWeatherService.getId());
@@ -61,7 +63,7 @@ public class AddWeatherStationMigrationCommand extends FacilioCommand {
                 FacilioContext ctx = V3Util.createRecord(module, stationData);
                 long stationId = (long) ((List) ctx.get("recordIds")).get(0);
                 WeatherAPI.associateSiteWithWeatherStation(site.getId(), stationId);
-                LOGGER.info("Weather station addedd.");
+                LOGGER.info("Weather station added and associated with respective site.");
             }
             context.put("message", "Migrated successfully");
         } catch (Exception e ){

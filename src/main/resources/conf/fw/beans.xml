@@ -31,6 +31,8 @@
 
 	<bean name="MailBean" class="com.facilio.mailtracking.bean.MailTrackBeanImpl" />
 
+	<bean name="LongTasksBean" class="com.facilio.wmsv2.bean.LongTasksBeanImpl" />
+
 	<bean name="ScopeBean" class="com.facilio.beans.GlobalScopeBeanCacheImpl"></bean>
 
 	<bean name="ValueGeneratorBean" class="com.facilio.beans.ValueGeneratorCacheBeanImpl"></bean>

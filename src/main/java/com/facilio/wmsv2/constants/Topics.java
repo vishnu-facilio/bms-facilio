@@ -35,4 +35,8 @@ public interface Topics {
     interface PushNotification {
         String pushNotification = "__pushnotification__";
     }
+
+    interface Tasks {
+        String longRunnningTasks = "__longrunning_tasks__";
+    }
 }

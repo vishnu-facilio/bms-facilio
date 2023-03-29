@@ -8,7 +8,8 @@ public enum Group {
     RECIEVE_MAIL_WORKER("receive-mail", false),
     SCRIPTLOG_WORKER("scriptlog", false),
     PM_PLANNER_WORKER("pm-planner", false),
-    ALARM_WORKFLOW_WORKER("alarm-wf",false);
+    ALARM_WORKFLOW_WORKER("alarm-wf",false),
+    LONG_RUNNING_WORKER("long-running-task", false);
 
     String name;
     boolean sendToAllWorker;

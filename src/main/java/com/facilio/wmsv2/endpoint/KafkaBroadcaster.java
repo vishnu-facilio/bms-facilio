@@ -128,6 +128,9 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         private Properties getProperties(int maxTimeOut, String groupName) {
             // Assuming default source is kafka type. If not, source should be passed as a param from some config
+            if(maxTimeOut > 600) { // only 3 records will be process if the processing timeout is 10 mins or more.
+                recordCount = 3;
+            }
             int pollInterval = (recordCount+1) * maxTimeOut; // in seconds
 
             KafkaMessageSource source = MessageSourceUtil.getDefaultSource();
