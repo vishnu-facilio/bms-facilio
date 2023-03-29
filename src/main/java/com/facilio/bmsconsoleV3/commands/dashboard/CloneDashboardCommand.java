@@ -87,6 +87,7 @@ public class CloneDashboardCommand extends FacilioCommand {
                                 FacilioContext filter_context = dbFilterUpdateChain.getContext();
                                 DashboardFilterContext cloned_dashboard_tab_Filter = dashboardTabContext.getDashboardFilter();
                                 cloned_dashboard_tab_Filter.setDashboardTabId(newDashboardTabContext.getId());
+                                cloned_dashboard_tab_Filter.setDashboardId(cloned_dashboard.getId());
                                 cloned_dashboard_tab_Filter.setId(-1);
                                 if(cloned_dashboard_tab_Filter.getDashboardUserFilters() != null){
                                     for(DashboardUserFilterContext usr_filter : cloned_dashboard_tab_Filter.getDashboardUserFilters())
