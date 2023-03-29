@@ -115,15 +115,6 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
-    public int getClamReadTimeout() {
-        return FacilioProperties.getClamReadTimeout();
-    }
-
-    @Override
-    public int getMaxFileSize() {
-        return FacilioProperties.getMaxFileSize();
-    }
-    @Override
     public String getTransactionId() {
         Account account = AccountUtil.getCurrentAccount();
         StringBuilder transactionId = new StringBuilder();
