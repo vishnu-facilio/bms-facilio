@@ -8,6 +8,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.multiImport.enums.ImportDataStatus;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 
@@ -18,21 +19,24 @@ public class AddImportDataCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ImportDataDetails importDataDetails = new ImportDataDetails();
 
-        importDataDetails.setStatus(ImportDataDetails.ImportDataStatus.DRAFT.getValue());
+
         importDataDetails.setModifiedTime(DateTimeUtil.getCurrenTime());
         importDataDetails.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
         importDataDetails.setCreatedTime(DateTimeUtil.getCurrenTime());
         importDataDetails.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
 
-            GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                    .table(ModuleFactory.getImportDataDetailsModule().getTableName())
-                    .fields(FieldFactory.getImportDataDetailsFields());
+        GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getImportDataDetailsModule().getTableName())
+                .fields(FieldFactory.getImportDataDetailsFields());
 
-            Map<String, Object> props = FieldUtil.getAsProperties(importDataDetails);
-            insertRecordBuilder.addRecord(props);
-            insertRecordBuilder.save();
+        Map<String, Object> props = FieldUtil.getAsProperties(importDataDetails);
+        insertRecordBuilder.addRecord(props);
+        insertRecordBuilder.save();
 
-            context.put(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS,importDataDetails);
+        Long importId = (Long) props.get("id");
+        importDataDetails.setId(importId);
+
+        context.put(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS, importDataDetails);
 
         return false;
     }

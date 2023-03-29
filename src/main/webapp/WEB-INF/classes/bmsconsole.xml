@@ -3130,25 +3130,6 @@
 		</action>
 	</package>
 
-	<package name="multiImportApi" namespace="/api/import/multiImport" extends="homeApi">
-
-		<action name="importDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="createImportDataDetails">
-			<result name="success" type="json">
-			</result>
-		</action>
-
-		<action name="importFileUpload" class="com.facilio.multiImport.action.MultiImportDataAction" method="addImportFile">
-			<result name="success" type="json">
-			</result>
-		</action>
-
-		<action name="importSheetMapping" class="com.facilio.multiImport.action.MultiImportDataAction" method="sheetMapping">
-			<result name="success" type="json">
-			</result>
-		</action>
-
-	</package>
-
 	<package name="importapi" namespace="/api/import" extends="homeApi">
 
 		<action name="importPasteData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importPasteData">

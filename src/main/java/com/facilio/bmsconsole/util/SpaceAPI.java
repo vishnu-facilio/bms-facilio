@@ -2273,5 +2273,22 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		return (List<SiteContext>)selectBuilder.get();
 
 	}
+	public static List<SiteContext> getSitesByNameWithoutScoping(Collection<String> siteNames) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+				.table(module.getTableName())
+				.select(fields)
+				.moduleName(module.getName())
+				.beanClass(SiteContext.class)
+				.skipScopeCriteria()
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"),Integer.valueOf(BaseSpaceContext.SpaceType.SITE.getIntVal()).toString(),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"),StringUtils.join(siteNames,","),StringOperators.IS));
+
+		return selectBuilder.get();
+
+	}
 	
 }

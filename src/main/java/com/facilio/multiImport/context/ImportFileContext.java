@@ -1,11 +1,14 @@
 package com.facilio.multiImport.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 
-public class ImportFileContext {
+public class ImportFileContext implements Serializable {
     private long id = -1;
 
     public void setId(long id) {
@@ -55,16 +58,44 @@ public class ImportFileContext {
     public void setImportFileSheetsContext(List<ImportFileSheetsContext> importFileSheetsContext) {
         this.importFileSheetsContext = importFileSheetsContext;
     }
-
+    @JsonIgnore
     File file;
 
-    @JsonIgnore
+    @JSON(deserialize = false)
     public File getFile() {
         return file;
     }
-
-    @JsonIgnore
+    @JSON(deserialize = false)
     public void setFile(File file) {
         this.file = file;
     }
+    private boolean hasSheetMappingDependencies;
+
+    public boolean isHasSheetMappingDependencies() {
+        return hasSheetMappingDependencies;
+    }
+
+    public void setHasSheetMappingDependencies(boolean hasSheetMappingDependencies) {
+        this.hasSheetMappingDependencies = hasSheetMappingDependencies;
+    }
+
+    private Long fileSize;
+    private Long totalRecords;
+
+    public Long getTotalRecords() {
+        return totalRecords;
+    }
+
+    public void setTotalRecords(Long totalRecords) {
+        this.totalRecords = totalRecords;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
 }

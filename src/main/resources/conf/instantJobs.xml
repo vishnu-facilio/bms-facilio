@@ -29,7 +29,6 @@
     <job name="SendUserNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendUserNotificationJob' transactionTimeout='3600'/>
 
     <job name="V3InsertDataLogJob" classname='com.facilio.bmsconsole.imports.job.InsertDataLogJob' transactionTimeout= '3600' />
-
     -->
 
 </instantjob>

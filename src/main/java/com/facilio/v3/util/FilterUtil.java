@@ -368,7 +368,7 @@ public class FilterUtil {
     private static Map<FieldType,Operator> initDefaultOperatorsMap(){
         Map<FieldType,Operator> map=new HashMap<>();
         map.put(FieldType.STRING,StringOperators.CONTAINS);
-        map.put(FieldType.NUMBER,NumberOperators.EQUALS);
+        map.put(FieldType.NUMBER,StringOperators.CONTAINS);
         map.put(FieldType.BOOLEAN,BooleanOperators.IS);
         map.put(FieldType.STRING_SYSTEM_ENUM,StringSystemEnumOperators.IS);
         map.put(FieldType.SYSTEM_ENUM,EnumOperators.IS);
@@ -378,7 +378,7 @@ public class FilterUtil {
         map.put(FieldType.LOOKUP,PickListOperators.IS);
         map.put(FieldType.ID,NumberOperators.EQUALS);
         map.put(FieldType.ENUM,EnumOperators.IS);
-        map.put(FieldType.DECIMAL,NumberOperators.EQUALS);
+        map.put(FieldType.DECIMAL,StringOperators.CONTAINS);
         map.put(FieldType.DATE_TIME,DateOperators.BETWEEN);
         map.put(FieldType.DATE,DateOperators.BETWEEN);
         map.put(FieldType.CURRENCY_FIELD,CurrencyOperator.EQUALS);

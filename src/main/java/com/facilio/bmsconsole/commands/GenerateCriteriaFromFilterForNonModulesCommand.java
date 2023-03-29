@@ -12,6 +12,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.multiImport.util.MultiImportApi;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -144,6 +145,9 @@ public class GenerateCriteriaFromFilterForNonModulesCommand extends FacilioComma
                 return FieldFactory.getUserDelegationFields();
             case FacilioConstants.ContextNames.READING_IMPORT_APP:
                 return FieldFactory.getReadingImportFields();
+            case FacilioConstants.ContextNames.MULTI_MODULE_IMPORT:
+                return FieldFactory.getImportDataDetailsFields();
+
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);

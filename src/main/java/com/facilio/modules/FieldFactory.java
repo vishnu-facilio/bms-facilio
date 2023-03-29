@@ -3309,6 +3309,11 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
         fields.add(getNumberField("createdBy", "CREATED_BY", module));
         fields.add(getNumberField("modifiedBy", "MODIFIED_BY", module));
+        fields.add(getNumberField("importType","IMPORT_TYPE",module));
+        fields.add(getNumberField("importStartTime","IMPORT_START_TIME",module));
+        fields.add(getNumberField("importEndTime","IMPORT_END_TIME",module));
+        fields.add(getBooleanField("hasErrorRecords","HAS_ERROR_RECORDS",module));
+        fields.add(getStringField("errorMessage","ERROR_MESSAGE",module));
         return fields;
     }
 
@@ -3329,9 +3334,48 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
         fields.add(getStringField("name","NAME",module));
+        fields.add(getNumberField("status", "STATUS", module));
+        fields.add(getNumberField("lastRowIdTaken","LAST_ROW_ID_TAKEN",module));
+        fields.add(getNumberField("sheetIndex","SHEET_INDEX",module));
+        fields.add(getStringField("columnHeadingString","COLUMN_HEADING",module));
         fields.add(getNumberField("importFileId","IMPORT_FILE_ID",module));
         fields.add(getNumberField("rowCount","ROW_COUNT",module));
+        fields.add(getNumberField("processedRowCount","PROCESSED_ROW_COUNT ",module));
         fields.add(getNumberField("moduleId","MODULE_ID",module));
+        fields.add(getNumberField("executionOrder","EXECUTION_ORDER",module));
+        fields.add(getNumberField("importSetting","IMPORT_SETTING",module));
+        fields.add(getStringField("insertBy","INSERT_BY",module));
+        fields.add(getStringField("updateBy","UPDATE_BY",module));
+        fields.add(getStringField("firstRowString","FIRST_ROW_STRING",module));
+        fields.add(getStringField("secondRowString","SECOND_ROW_STRING",module));
+        fields.add(getNumberField("insertCount","INSERT_COUNT",module));
+        fields.add(getNumberField("skipCount","SKIP_COUNT",module));
+        fields.add(getNumberField("updateCount","UPDATE_COUNT",module));
+        return fields;
+    }
+    public static List<FacilioField> getImportSheetFieldMappingFields(){
+        FacilioModule module = ModuleFactory.getImportSheetFieldMappingModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getStringField("sheetColumnName","SHEET_COLUMN_NAME",module));
+        fields.add(getNumberField("importSheetId","IMPORT_SHEET_ID",module));
+        fields.add(getNumberField("fieldId","FIELDID",module));
+        fields.add(getStringField("fieldName","FIELD_NAME",module));
+        fields.add(getNumberField("unitId","UNIT_ID",module));
+        fields.add(getBooleanField("mandatory", "IS_MANDATORY", module));
+        fields.add(getStringField("dateFormat","DATE_FORMAT",module));
+        return fields;
+    }
+    public static List<FacilioField> getMultiImportProcessLogFields(){
+        FacilioModule module = ModuleFactory.getMultiImportProcessLogModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("importSheetId","IMPORT_SHEET_ID",module));
+        fields.add(getNumberField("rowNumber","ROW__NUMBER",module));
+        fields.add(getStringField("rowContent","ROW_CONTENT",module));
+        fields.add(getStringField("errorMessage","ERROR_MESSAGE",module));
+        fields.add(getNumberField("rowStatus","ROW_STATUS",module));
+        fields.add(getBooleanField("errorOccuredRow", "IS_ERROR_OCCURRED_ROW", module));
         return fields;
     }
 

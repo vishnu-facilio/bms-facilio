@@ -1536,6 +1536,39 @@
             <param name="actionType">{3}</param>
         </action>
     </package>
+    <package name="multiImportApi" namespace="/api/v3/multiImport" extends="v3Api">
+
+        <action name="createImportDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="createImportDataDetails">
+        </action>
+        <action name="getImportDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="fetchImportDataDetails">
+        </action>
+
+        <action name="importFileUpload" class="com.facilio.multiImport.action.MultiImportDataAction" method="addImportFile">
+        </action>
+
+        <action name="importSheetMapping" class="com.facilio.multiImport.action.MultiImportDataAction" method="sheetMapping">
+        </action>
+        <action name="predictSheetExcutionOrder" class="com.facilio.multiImport.action.MultiImportDataAction" method="predictSheetExecution">
+        </action>
+        <action name="importSheetExecutionReorder" class="com.facilio.multiImport.action.MultiImportDataAction" method="reorderSheetsExecution">
+        </action>
+        <action name="importFileList" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportFileList">
+        </action>
+        <action name="importSheetList" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportSheetList">
+        </action>
+        <action name="deleteImportFile" class="com.facilio.multiImport.action.MultiImportDataAction" method="deleteImportFile">
+        </action>
+        <action name="importFieldMapping" class="com.facilio.multiImport.action.MultiImportDataAction" method="fieldMapping">
+        </action>
+        <action name="list" class="com.facilio.multiImport.action.MultiImportDataAction" method="list">
+        </action>
+        <action name="count" class="com.facilio.multiImport.action.MultiImportDataAction" method="count">
+        </action>
+        <action name="import" class="com.facilio.multiImport.action.MultiImportDataAction" method="parseAndImportData">
+        </action>
+        <action name="abortImport" class="com.facilio.multiImport.action.MultiImportDataAction" method="abortImport">
+        </action>
+    </package>
 
     <package name="relationAction" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/*/relationship/*" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">

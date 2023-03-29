@@ -731,6 +731,20 @@ public class ModuleFactory {
 		importFileSheets.setTableName("ImportFileSheets");
 		return importFileSheets;
 	}
+	public static FacilioModule getImportSheetFieldMappingModule(){
+		FacilioModule importFileSheets = new FacilioModule();
+		importFileSheets.setName("importSheetFieldMapping");
+		importFileSheets.setDisplayName("Import Sheet Field Mapping");
+		importFileSheets.setTableName("ImportSheetFieldMapping");
+		return importFileSheets;
+	}
+	public static FacilioModule getMultiImportProcessLogModule(){
+		FacilioModule multiImportProcessLog = new FacilioModule();
+		multiImportProcessLog.setName("multiImportProcessLog");
+		multiImportProcessLog.setDisplayName("MultiImport Process Log");
+		multiImportProcessLog.setTableName("MultiImportProcessLog");
+		return multiImportProcessLog;
+	}
 
 	public static FacilioModule getReadingRuleInclusionsExclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();

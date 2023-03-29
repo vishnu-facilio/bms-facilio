@@ -1503,4 +1503,83 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+
+    <request path="/api/v3/multiImport/createImportDataDetails"></request>
+    <request path="/api/v3/multiImport/getImportDataDetails">
+        <urlparams>
+            <property name="importId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/importFileUpload">
+    </request>
+    <request path="/api/v3/multiImport/importSheetMapping">
+        <requestbody type="object">
+            <property name="importId" type="number" mandatory="true"/>
+            <property name="importSheetList" type="array">
+                <items type="object">
+                    <property name="id" type="number" mandatory="true"/>
+                    <property name="moduleId" type="number"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/multiImport/predictSheetExcutionOrder">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/importSheetExecutionReorder">
+        <requestbody type="object">
+
+        </requestbody>
+    </request>
+    <request path="/api/v3/multiImport/importFileList">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/importSheetList">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/deleteImportFile">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/importFieldMapping">
+        <requestbody type="object">
+
+        </requestbody>
+    </request>
+    <request path="/api/v3/multiImport/parse">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/import">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/list">
+        <urlparams>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/count">
+        <urlparams>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/multiImport/abortImport">
+        <urlparams>
+            <property name="importId" type="number"/>
+        </urlparams>
+    </request>
 </config>

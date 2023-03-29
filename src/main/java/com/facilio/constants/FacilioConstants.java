@@ -718,9 +718,12 @@ public class FacilioConstants {
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";
 
+		public static final String MULTI_MODULE_IMPORT = "multiModuleImport";
 		public static final String IMPORT_ID = "importId";
+		public static final String IMPORT_FILE_ID = "importFileId";
 
 		public static final String IMPORT_SHEET_LIST = "importSheetList";
+		public static final String MULTI_IMPORT_PROCESS_CONTEXT = "multiImportProcessContext";
 		public static final String PUBLIC_FILE = "publicFile";
 		public static final String PUBLIC_FILE_URL = "publicFileUrl";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
@@ -1179,10 +1182,16 @@ public class FacilioConstants {
 		public static final String EMAIL_SETTING = "emailSetting";
 
 		public static final String IMPORT_DATA_DETAILS = "importDataDetails";
+		public static final String IMPORT_FILE_READERS_MAP = "importFileIdVsImportFileReadersMap";
+		public static final String IMPORT_LIST = "importList";
+		public static final String MY_IMPORT = "myImport";
+		public static final String IS_PREDICTABLE="isPredictable";
+		public static final String IMPORT_FILE_LIST = "importFileList";
 
-		public static final String IMPORT_FILE_DETAILS = "importFileDetails";
-
+		public static final String IMPORT_SHEET = "importSheet";
 		public static final String IMPORT_SHEETS = "importSheets";
+		public static final String IMPORT_ROW_CONTEXT_LIST = "importRowContextList";
+		public static final String CHUNK_LIMIT = "chunkLimit";
 
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";
