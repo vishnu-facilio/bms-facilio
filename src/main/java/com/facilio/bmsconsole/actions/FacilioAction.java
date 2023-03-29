@@ -12,16 +12,12 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.fw.FacilioException;
 import com.facilio.util.FacilioUtil;
-import com.facilio.v3.exception.ErrorCode;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
-import com.facilio.exception.ErrorResponseUtil;
-import com.facilio.v3.exception.RESTException;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -58,12 +53,6 @@ public class FacilioAction extends ActionSupport {
 	private void setMessage(String message) {
 		this.message = message;
 	}
-	@Getter @Setter
-	private String correctiveAction;
-	@Getter @Setter
-	private Boolean isErrorGeneralized = false;
-	@Getter @Setter
-	private Boolean isVisible = false;
 
 	private JSONObject errorData;
 	public String getErrorData() {
@@ -94,25 +83,10 @@ public class FacilioAction extends ActionSupport {
 	public String handleException() {
 		try {
 			this.responseCode = 1;
-			if (exception instanceof RESTException) {
-					ErrorResponseUtil values = new ErrorResponseUtil((RESTException) exception);
-					this.responseCode = ((RESTException) exception).getErrorCode().getCode();
-					this.message = values.getMessage();
-					this.errorData = ((RESTException) exception).getData();
-					this.correctiveAction = values.getCorrectiveAction();
-					this.responseCode = values.getErrorCode().getCode();
-					this.setIsErrorGeneralized(values.getIsErrorGeneralized());
-					this.setIsVisible(values.getIsVisible());
-				} else if(exception instanceof SQLException || exception instanceof SQLDataException) {
-				this.responseCode = ErrorCode.VALIDATION_ERROR.getCode();
-				this.message = ((SQLException) exception).getLocalizedMessage();
-			}
-			else {
-					this.message = FacilioUtil.constructMessageFromException(exception);
-					if(exception instanceof DependencyException) {
-						this.responseCode = ((DependencyException) exception).getErrorCode().getCode();
-						this.errorData = ((DependencyException) exception).getData();
-					}
+			this.message = FacilioUtil.constructMessageFromException(exception);
+			if(exception instanceof DependencyException) {
+				this.responseCode = ((DependencyException) exception).getErrorCode().getCode();
+				this.errorData = ((DependencyException) exception).getData();
 			}
 			setStackTrace(exception);
 		} catch (Exception e) {
