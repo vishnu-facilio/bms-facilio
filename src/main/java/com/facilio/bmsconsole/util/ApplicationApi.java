@@ -2781,6 +2781,12 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("energyanalytics", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+
+            groupNameVsWebTabsMap.put("dataadministration", webTabs);
+
 
 //            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
 //            webTabs = new ArrayList<>();
@@ -2893,6 +2899,13 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+
+            groupNameVsWebTabsMap.put("dataadministration", webTabs);
+
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
                 System.out.println("we: " + webTabGroupContext.getRoute());
@@ -3017,6 +3030,11 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+
+            groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
 
 

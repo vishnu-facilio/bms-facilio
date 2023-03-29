@@ -566,7 +566,9 @@ public class AccountUtil {
 		SEND_EMAIL_WITH_CALLBACK_FUNCTION(126,getExponentValue(62),LicenseMapping.GROUP2LICENSE),//2^62
 		DASHBOARD_ACTION(127,getExponentValue(63),LicenseMapping.GROUP2LICENSE), //2^63
 		PENDO_VENDOR(128,getExponentValue(1),LicenseMapping.GROUP3LICENSE),//2^1
-		PENDO_TENANT(129,getExponentValue(2),LicenseMapping.GROUP3LICENSE);//2^2
+		PENDO_TENANT(129,getExponentValue(2),LicenseMapping.GROUP3LICENSE),//2^2
+		IMPORT_DATA(130,getExponentValue(3),LicenseMapping.GROUP3LICENSE);//2^3
+
 
 		public int featureId;
 		private long license;
