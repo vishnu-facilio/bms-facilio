@@ -47,6 +47,9 @@ public class DCUtil {
     public static String getVendorPortalDomain(int id) {
 		return getDc(id).get("vendorportal");
     }
+    public static String getRegion(int id) {
+        return getDc(id).get("region");
+    }
 
     public static Integer getCurrentDC() {
     		String appDomain = FacilioProperties.getMainAppDomain();

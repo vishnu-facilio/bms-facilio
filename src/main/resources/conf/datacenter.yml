@@ -6,6 +6,7 @@ datacenters:
     clientportal: facilioclients.com
     vendorportal: faciliovendors.com
     employeeportal: facilioworkplace.com
+    region : us-west-2
 
   2:
     mainapp: app-au.facilio.com
@@ -14,25 +15,32 @@ datacenters:
     clientportal: facilioclients.com.au
     vendorportal: faciliovendors.com.au
     employeeportal: facilioworkplace.com.au
+    region: ap-southeast-2
 
   3:
     mainapp: app-eu.facilio.com
+    region: eu-central-1
 
   4:
     mainapp: sg.facilio.com
+    region: ap-southeast-1
 
   5:
     mainapp: stage.facilio.in
- 
+    region: us-west-2
+
   6:
     mainapp: app.facilio.co.uk
+    region: eu-west-2
 
   7:
     mainapp: app.facilio.ae
+    region: me-central-1
 
   8:
     mainapp: stage2.facilio.in
-    
+    region: us-west-2
+
   9:
     mainapp: sabb.faciliopilot.com
     occupantportal: ociportal.faciliopilot.com

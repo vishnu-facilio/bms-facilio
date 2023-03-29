@@ -234,7 +234,7 @@ public class IamClient {
         }
         return "_";
     }
-    public static ConnectedDeviceContext getConnectedDevice(long connectedDeviceId, String appDomain) throws Exception {
+    public static ConnectedDeviceContext getConnectedDevice(long connectedDeviceId, String appDomain, String region) throws Exception {
         if(FacilioProperties.isDevelopment()|| StringUtils.isEmpty(appDomain))
         {
             appDomain = FacilioProperties.getIAMURL();
@@ -242,7 +242,7 @@ public class IamClient {
         var url = appDomain + "/api/v3/internal/dc/getConnectedDevice";
         JSONObject params = new JSONObject();
         params.put("connectedDeviceId", connectedDeviceId);
-        String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getIamregion(), "iam", getUrl(url), null, null, params);
+        String response = ServiceHttpUtils.doHttpPost(region, "iam", getUrl(url), null, null, params);
         LOGGER.error("[getConnectedDevice] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);

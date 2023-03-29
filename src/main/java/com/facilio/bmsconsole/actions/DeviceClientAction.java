@@ -75,8 +75,9 @@ public String validateCode() {
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
 
-					String appDomain= DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
-					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain);
+					String appDomain = DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
+					String region = DCUtil.getRegion(Integer.valueOf((long) codeObj.get("dc") + ""));
+					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain,region);
 					scheme= generateScheme(connectedDevice);
 
 					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
