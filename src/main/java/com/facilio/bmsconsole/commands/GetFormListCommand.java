@@ -41,9 +41,8 @@ public class GetFormListCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
 		Boolean skipTemplatePermission = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_TEMPLATE_PERMISSION,false);
-
-		Boolean fetchExtendedModuleForms = (Boolean) context.get(ContextNames.FETCH_EXTENDED_MODULE_FORMS);
-		Boolean fetchDisabledForms = (Boolean) context.get(ContextNames.FETCH_DISABLED_FORMS);
+		Boolean fetchExtendedModuleForms = (Boolean) context.getOrDefault(ContextNames.FETCH_EXTENDED_MODULE_FORMS,false);
+		Boolean fetchDisabledForms = (Boolean) context.getOrDefault(ContextNames.FETCH_DISABLED_FORMS,false);
 		Boolean fetchHiddenForms = (Boolean) context.getOrDefault(ContextNames.FETCH_HIDDEN_FORMS, false);
 
 
@@ -52,7 +51,9 @@ public class GetFormListCommand extends FacilioCommand {
 			formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && form.getShowInMobile() != null && !form.getShowInMobile()));
 		}
 
+
 		List<Long> stateFlowIds = new ArrayList<>();
+
 		for (FacilioForm form : formsList) {
 			if (form.getShowInMobile() == null) {
 				form.setShowInMobile(true);
@@ -61,12 +62,11 @@ public class GetFormListCommand extends FacilioCommand {
 				stateFlowIds.add(form.getStateFlowId());
 			}
 		}
-
-		Map<Long, WorkflowRuleContext> stateFlowMap = new HashMap<>();
+		Map<Long, String> stateFlowMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(stateFlowIds)) {
 			List<WorkflowRuleContext> stateFlowBaseDetails = WorkflowRuleAPI.getWorkflowRules(stateFlowIds, false, false);
 			for (WorkflowRuleContext rule : stateFlowBaseDetails) {
-				stateFlowMap.put(rule.getId(), rule);
+				stateFlowMap.put(rule.getId(), rule.getName());
 			}
 		}
 
@@ -90,6 +90,7 @@ public class GetFormListCommand extends FacilioCommand {
 		}
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, stateFlowMap);
+
 		return false;
 	}
 

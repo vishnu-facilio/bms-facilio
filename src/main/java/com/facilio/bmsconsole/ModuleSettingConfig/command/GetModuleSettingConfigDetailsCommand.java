@@ -31,13 +31,8 @@ public class GetModuleSettingConfigDetailsCommand extends FacilioCommand {
 
             FacilioUtil.throwIllegalArgumentException(facilioModule == null, "Invalid module while getting module summary");
 
-            List<ModuleSettingContext> tempModuleSetting = new ArrayList<>();
             if(CollectionUtils.isNotEmpty(moduleSetting)){
-                tempModuleSetting = moduleSetting;
-            }
-            tempModuleSetting.removeIf(moduleSettingContext -> Objects.equals(moduleSettingContext.getName(), FacilioConstants.ContextNames.GLIMPSE));
-            if(CollectionUtils.isNotEmpty(tempModuleSetting)){
-                for(ModuleSettingContext setting : tempModuleSetting) {
+                for(ModuleSettingContext setting : moduleSetting) {
 
                     Object result = null;
                     if (setting.isStatusDependent() && !(boolean) setting.isStatus()) {
@@ -50,7 +45,7 @@ public class GetModuleSettingConfigDetailsCommand extends FacilioCommand {
                 }
             }
 
-            context.put(FacilioConstants.ContextNames.MODULE_SETTING, tempModuleSetting);
+            context.put(FacilioConstants.ContextNames.MODULE_SETTING, moduleSetting);
         }
 
         return false;

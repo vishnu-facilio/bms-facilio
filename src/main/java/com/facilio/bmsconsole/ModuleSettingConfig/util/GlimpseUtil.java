@@ -121,10 +121,10 @@ public class GlimpseUtil {
                     .select(glimpseFieldsList)
                     .table(glimpseModule.getTableName())
                     .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
-            List<Map<String, Object>> summaryProps = selectRecordBuilder.get();
+            List<Map<String, Object>> glimpseProps = selectRecordBuilder.get();
 
-            if (CollectionUtils.isNotEmpty(summaryProps)) {
-                List<GlimpseContext> glimpseContexts = FieldUtil.getAsBeanListFromMapList(summaryProps, GlimpseContext.class);
+            if (CollectionUtils.isNotEmpty(glimpseProps)) {
+                List<GlimpseContext> glimpseContexts = FieldUtil.getAsBeanListFromMapList(glimpseProps, GlimpseContext.class);
                 glimpseId = glimpseContexts.get(0).getGlimpseId();
             } else {
                 GenericInsertRecordBuilder glimpseInsertRecordBuilder = new GenericInsertRecordBuilder()

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.ModuleSettingConfig.impl;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.bean.ModuleSettingConfig;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
@@ -8,9 +9,9 @@ import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,13 +25,9 @@ public class GlimpseConfiguration extends ModuleSettingConfig {
 
         FacilioModule glimpseModule = ModuleFactory.getGlimpseModule();
         FacilioModule glimpseFieldsModule = ModuleFactory.getGlimpseFieldsModule();
-        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
 
         List<GlimpseFieldContext> glimpseFieldsContext = new ArrayList<>();
         GlimpseContext glimpseContext = new GlimpseContext();
-        List<FacilioField> fieldsList = FieldFactory.getFieldFields();
-
-        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 
         List<FacilioField> selectFields = GlimpseUtil.getGlimpseSelectableFields();
 
@@ -47,7 +44,7 @@ public class GlimpseConfiguration extends ModuleSettingConfig {
         long modifiedTime = -1;
         boolean isActive = false;
         List<Long> glimpseFieldsIds = new ArrayList<>();
-        List<String> glimpseFieldsName = new ArrayList<>();
+        List<String> glimpseFieldsNames = new ArrayList<>();
         Map<Object,Long> fieldVsSequenceNumber = new HashMap<>();
 
         for(Map<String,Object> field : fieldProps){
@@ -58,41 +55,42 @@ public class GlimpseConfiguration extends ModuleSettingConfig {
                 glimpseFieldsIds.add((long) field.get("fieldId"));
                 fieldVsSequenceNumber.put(field.get("fieldId"),(long)field.get("sequenceNumber"));
             }else {
-                glimpseFieldsName.add((String) field.get("fieldName"));
+                glimpseFieldsNames.add((String) field.get("fieldName"));
                 fieldVsSequenceNumber.put(field.get("fieldName"),(long)field.get("sequenceNumber"));
             }
         }
+        List<FacilioField> fieldList = new ArrayList<>();
 
         if(CollectionUtils.isNotEmpty(glimpseFieldsIds)) {
-            GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
-                    .select(fieldsList)
-                    .table(fieldsModule.getTableName())
-                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("fieldId"), glimpseFieldsIds, NumberOperators.EQUALS));
-            List<Map<String, Object>> props = fieldSelectBuilder.get();
-            List<FacilioField> fieldList = FieldUtil.getAsBeanListFromMapList(props, FacilioField.class);
 
-            for(String fieldName : glimpseFieldsName){
-                if(Objects.equals(fieldName, "siteId")){
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            fieldList = modBean.getFields(glimpseFieldsIds);
+        }
+        if(CollectionUtils.isNotEmpty(glimpseFieldsNames)) {
+            for (String fieldName : glimpseFieldsNames) {
+                if (Objects.equals(fieldName, "siteId")) {
                     FacilioField siteField = FieldFactory.getSiteIdField(module);
                     fieldList.add(siteField);
                 }
             }
-            for(FacilioField facilioField :fieldList){
+        }
+
+        if(CollectionUtils.isNotEmpty(fieldList)) {
+            for (FacilioField facilioField : fieldList) {
                 GlimpseFieldContext glimpseFieldContext = new GlimpseFieldContext();
                 glimpseFieldContext.setFacilioField(facilioField);
                 glimpseFieldContext.setFieldId(facilioField.getFieldId());
                 glimpseFieldContext.setGlimpseId(glimpseId);
-                if(facilioField.getFieldId()>0) {
+                if (facilioField.getFieldId() > 0) {
                     glimpseFieldContext.setFieldId(facilioField.getFieldId());
                     glimpseFieldContext.setSequenceNumber(fieldVsSequenceNumber.get(facilioField.getFieldId()));
-                }else {
+                } else {
                     glimpseFieldContext.setFieldName(facilioField.getName());
                     glimpseFieldContext.setSequenceNumber(fieldVsSequenceNumber.get(facilioField.getName()));
                 }
                 glimpseFieldsContext.add(glimpseFieldContext);
             }
         }
-
         glimpseContext.setConfigurationFields(glimpseFieldsContext);
         glimpseContext.setModuleId(module.getModuleId());
         glimpseContext.setGlimpseId(glimpseId);

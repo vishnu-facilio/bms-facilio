@@ -306,27 +306,21 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String formList() throws Exception {
-		Context context=new FacilioContext();
+
+		FacilioChain chain = ReadOnlyChainFactory.getFormList();
+		FacilioContext context = chain.getContext();
+
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		if (fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
-			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, true);
-		}
-		else {
-			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, false);
-		}
-		
-		if (fetchDisabledForms != null && fetchDisabledForms) {
-			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
-		}
-		
+		context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, fetchExtendedModuleForms);
+		context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, fetchDisabledForms);
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		context.put(FacilioConstants.ContextNames.SKIP_TEMPLATE_PERMISSION, getSkipTemplatePermission());
 
-		
-		ReadOnlyChainFactory.getFormList().execute(context);
-		setResult("forms",context.get(ContextNames.FORMS));
+		chain.execute();
+
+		setResult(ContextNames.FORMS,context.get(ContextNames.FORMS));
 		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
-		
+
 		return SUCCESS;
 	}
 	

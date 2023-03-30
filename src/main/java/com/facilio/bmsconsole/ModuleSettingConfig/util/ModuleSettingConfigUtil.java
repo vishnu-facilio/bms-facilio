@@ -34,7 +34,7 @@ public class ModuleSettingConfigUtil {
         List<String> configurationNames = new ArrayList<>();
 
         configurationNames.add(FacilioConstants.SettingConfigurationContextNames.STATE_FLOW);
-//        configurationNames.add(FacilioConstants.ContextNames.GLIMPSE);
+        configurationNames.add(FacilioConstants.ContextNames.GLIMPSE);
 
         return configurationNames;
     }
