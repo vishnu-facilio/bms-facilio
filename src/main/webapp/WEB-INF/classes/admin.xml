@@ -27,6 +27,18 @@
 		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="deleteJob">
 		</action>
+		<action name="migrateAgent" class="com.facilio.agentv2.migration.AgentMigrationAction"
+				method="migrateAgent">
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="migrateReadingMeta" class="com.facilio.agentv2.migration.AgentMigrationAction"
+				method="migrateReadingMeta">
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
 		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>

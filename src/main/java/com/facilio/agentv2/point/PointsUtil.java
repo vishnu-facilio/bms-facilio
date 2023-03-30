@@ -213,9 +213,11 @@ public class PointsUtil
     //BULK INSERT
     public static void addPoints(Controller controller,List<Map<String,Object>>points) throws Exception {
         FacilioControllerType controllerType = FacilioControllerType.valueOf(controller.getControllerType());
+        addPoints(controllerType,points);
+    }
 
+    public static void addPoints(FacilioControllerType controllerType, List<Map<String,Object>>points) throws Exception {
         List<FacilioField> fields = PointsAPI.getChildPointFields(controllerType);
-
         DBUtil.insertValuesWithJoin(PointsAPI.getPointModule(controllerType),fields, FieldUtil.getAsMapList(points,PointsAPI.getPointType(controllerType)));
 
     }

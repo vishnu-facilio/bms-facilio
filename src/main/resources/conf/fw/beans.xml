@@ -45,4 +45,6 @@
 
 	<bean name="NamespaceBean" class="com.facilio.beans.NamespaceBeanCacheImpl"></bean>
 
+	<bean name="AgentMigrationBean" class="com.facilio.agentv2.migration.beans.AgentMigrationBeanImpl"></bean>
+
 </beans>
