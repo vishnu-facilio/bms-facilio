@@ -1871,7 +1871,7 @@ public enum ActionType {
 							if (respondent != null && !respondent.isEmpty()) {
 								FacilioModule lookupModule = lookup.getLookupModule();
 								FacilioModule extModule = lookupModule.getExtendModule();
-								if(lookupModule.getName().equals(FacilioConstants.ContextNames.PEOPLE) || extModule.getName().equals(FacilioConstants.ContextNames.PEOPLE)){
+								if(lookupModule.getName().equals(FacilioConstants.ContextNames.PEOPLE) || (extModule != null && extModule.getName().equals(FacilioConstants.ContextNames.PEOPLE))){
 									obj.put("assignedTo",respondent.get("id"));
 								} else {
 									pplId = PeopleAPI.getPeopleIdForUser((Long) respondent.get("id"));

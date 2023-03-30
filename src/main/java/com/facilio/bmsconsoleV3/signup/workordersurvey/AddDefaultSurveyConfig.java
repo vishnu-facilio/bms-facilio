@@ -400,7 +400,7 @@ public class AddDefaultSurveyConfig extends SignUpData {
         action.setActionType(36);
         JSONObject jsonObj = new JSONObject();
         Map<String, Object> map = new HashMap<>();
-        map.put("fieldId", AccountUtil.getCurrentUser().getId());
+        map.put("fieldId", Constants.getModBean().getField("requester", "workorder").getFieldId());
         map.put("expiryDay", 3);
         map.put("isRetakeAllowed", false);
         map.put("retakeExpiryDay", 3);

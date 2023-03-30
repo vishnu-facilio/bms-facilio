@@ -49,6 +49,7 @@ public class EmailProcessHandler extends BaseHandler{
         			Map<String, Object> messageMap = message.getContent();
         			if(messageMap!=null) {
 						String s3Id = (String) messageMap.get("s3MessageId");
+						LOGGER.info("s3Id --- "+s3Id);
 						workOrderRequestEmailId = FacilioUtil.parseLong(messageMap.get("id"));
 
 						String recepient = (String) messageMap.get("recipient");
@@ -104,7 +105,6 @@ public class EmailProcessHandler extends BaseHandler{
 
 //	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
 	private SupportEmailContext getSupportEmail(String recepient) throws Exception {
-		LOGGER.info("Reached getSupport Email");
 		SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(recepient);
 		LOGGER.info("Support email object : " + supportEmail);
 		return supportEmail;
@@ -177,7 +177,6 @@ public class EmailProcessHandler extends BaseHandler{
 					.fields(FieldFactory.getWorkorderEmailFields())
 					.table("WorkOrderRequest_EMail")
 					.andCondition(CriteriaAPI.getIdCondition(workOrderRequestEmailId, module));
-			LOGGER.info("Update Query in Email Process handler : " + updateBuilder.toString());
 			updateBuilder.update(dataBag);
 			LOGGER.info("Update Query in Email Process handler : " + updateBuilder.toString() + "map -- "+dataBag);
 
