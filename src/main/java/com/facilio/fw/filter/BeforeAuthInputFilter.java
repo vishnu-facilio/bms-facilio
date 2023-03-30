@@ -75,14 +75,12 @@ public class BeforeAuthInputFilter implements Filter {
             if(rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
                 try {
                     APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();
-                    log(securityRequestWrapper, "Entered APIRateLimiter, object: "+ ratelimit +" - "+ httpServletRequest.getRequestURI()+" - "+httpServletRequest.getRemoteHost());
                     if(!(ratelimit.allow(httpServletRequest.getRequestURI(),httpServletRequest.getRemoteHost()))){
                         log(securityRequestWrapper, "Rate Limiter Strike: API strike limit was reached");
                     }
-                    log(securityRequestWrapper, "Request made on APILimiter: "+ ratelimit.getRequestsMade(httpServletRequest.getRequestURI(),httpServletRequest.getRemoteHost()));
                 } catch (Exception e) {
+                    log(securityRequestWrapper, "APILimiter exception thrown: "+e);
                     if(!FacilioProperties.isProduction()) {
-                        log(securityRequestWrapper, "APILimiter exception thrown");
                         throw new RuntimeException(e);
                     }
                 }

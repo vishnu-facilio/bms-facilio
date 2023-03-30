@@ -450,13 +450,11 @@ public class FacilioProperties {
                     malwareScanningEnabled = false;
                 }
             }
-
-            isApiRateLimiterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("apiRateLimiter.enabled"));
+            isApiRateLimiterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("apiRateLimiter.enabled", "false"));
             if(isApiRateLimiterEnabled){
-                rateLimiterAllowedRequest = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.allowedRequest"));
-                rateLimiterInterval = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.intervalInSeconds"));
+                rateLimiterAllowedRequest = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.allowedRequest", "100"));
+                rateLimiterInterval = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.intervalInSeconds", "60"));
             }
-
             LOGGER.info(getIotEndPoint() + "iot endpoint");
 
         } catch (IOException e) {
