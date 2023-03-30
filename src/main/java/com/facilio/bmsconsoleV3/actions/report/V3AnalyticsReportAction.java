@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
 import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleReportActionContext;
@@ -32,6 +33,8 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 @Getter @Setter
 @Log4j
 public class V3AnalyticsReportAction extends V3Action {
@@ -43,7 +46,6 @@ public class V3AnalyticsReportAction extends V3Action {
     private long endTime = -1;
     private List<Long> assetCategory;
     private List<Long> spaceId;
-    private Long spaceId_forExport;
     private Integer filterModeValue_toExport;
     private List<Long> parentId;
     private ResourceContext alarmResource;
@@ -298,14 +300,26 @@ public class V3AnalyticsReportAction extends V3Action {
         return setReportResult(context);
     }
 
-    private String setReportResult(FacilioContext context)
-    {
+    private String setReportResult(FacilioContext context) throws Exception {
         if (context.get(FacilioConstants.ContextNames.REPORT) != null) {
 
             reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
             if (alarmId > 0) {
                 reportContext.setDateOperator(DateOperators.CURRENT_N_DAY.getOperatorId());
             }
+            reportContext.setParentId((ArrayList) context.get("parentIds"));
+            ArrayList id = (ArrayList) context.get("basespaces");
+            if(!isEmpty(id) && id.get(0)!=null) {
+                BaseSpaceContext filterContext = SpaceAPI.getBaseSpace((Long) id.get(0));
+                if(filterContext!=null){
+                    if(filterContext.getSpaceType()==2){
+                        reportContext.setBuildingId((ArrayList) context.get("basespaces"));
+                    } else if (filterContext.getSpaceType()==1) {
+                        reportContext.setFilterSiteId((ArrayList) context.get("basespaces"));
+                    }
+                }
+            }
+
             setData("report", reportContext);
         }
         setData("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); //This can be removed from new format
@@ -465,12 +479,6 @@ public class V3AnalyticsReportAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getReadingDataChain(-1, null, newFormat, true);
         FacilioContext context = chain.getContext();
         setReportWithDataContext(context); //This could be moved to a command
-        if(spaceId_forExport != null){
-            List<Long> list = new ArrayList<Long>();
-            list.add(spaceId_forExport);
-            context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, list);
-            context.put("filterModeValue", filterModeValue_toExport);
-        }
         if(filterMode != null ){
             context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
             context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
@@ -562,10 +570,10 @@ public class V3AnalyticsReportAction extends V3Action {
         FacilioChain exportChain = null;
         if(reportId != -1)
         {
-            exportChain = spaceId != null || assetCategory!=null ? TransactionChainFactoryV3.getExportReportFileChain(false, true) : TransactionChainFactoryV3.getExportReportFileChain(false, false);
+            exportChain = spaceId != null || assetCategory!=null || parentId !=null ? TransactionChainFactoryV3.getExportReportFileChain(false, true) : TransactionChainFactoryV3.getExportReportFileChain(false, false);
             context = exportChain.getContext();
             setReportWithDataContext(context);
-            if(spaceId != null || assetCategory!=null){
+            if(spaceId != null || assetCategory!=null || parentId !=null){
                 context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
                 context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
                 context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);

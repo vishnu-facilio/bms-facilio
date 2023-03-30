@@ -25,21 +25,8 @@ public class ConstructLiveFilterCommandToExport extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception
     {
         ReportContext reportContext = (ReportContext) context.get("report");
-        Integer filterModeValue = (Integer) context.get("filterModeValue");
         ReadingAnalysisContext.ReportFilterMode criteriafilterMode = (ReadingAnalysisContext.ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
-        if(filterModeValue != null) {
-            ReadingAnalysisContext.ReportFilterMode filterMode = ReadingAnalysisContext.ReportFilterMode.NONE;
-            if (filterModeValue == 4) {
-                filterMode = ReadingAnalysisContext.ReportFilterMode.SPACE;
-            } else if (filterModeValue == 3) {
-                filterMode = ReadingAnalysisContext.ReportFilterMode.SPECIFIC_ASSETS_OF_CATEGORY;
-            }
-            List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
-            if (filters != null) {
-                reportContext.setFilters(filters);
-            }
-        }
-        else if(criteriafilterMode != null)
+        if(criteriafilterMode != null)
         {
             List<ReportFilterContext> filters = constructFilters(criteriafilterMode, (FacilioContext) context);
             if (filters != null) {

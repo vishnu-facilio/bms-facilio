@@ -106,16 +106,26 @@ public class ReportExportUtil {
 			dateRange.put("value", report.getDateValue());
 			url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
 		}
-		if(context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST) != null )
-		{
-			List<Long> spaceIdlist = (ArrayList<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
-			ReadingAnalysisContext.ReportFilterMode filtermode = (ReadingAnalysisContext.ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
-			url.append("&filterModeValue_toExport=").append(filtermode.getValue()).append("&spaceId_forExport=").append(spaceIdlist.get(0));
-		}
 		
 		String chartType = (String) context.get("chartType");
 		if (chartType != null) {
 			url.append("&charttype=").append(chartType);
+		}
+		JSONObject liveFilter = new JSONObject();
+		ArrayList parentId = (ArrayList) context.get("parentIds");
+		if(parentId !=null){
+			liveFilter.put("parentId",parentId);
+		}
+		ReadingAnalysisContext.ReportFilterMode filterMode = (ReadingAnalysisContext.ReportFilterMode) context.get("reportFilterMode");
+		if(filterMode !=null){
+			liveFilter.put("filterMode",filterMode.toString());
+		}
+		ArrayList spaceId = (ArrayList) context.get("basespaces");
+		if(spaceId !=null){
+			liveFilter.put("spaceId",spaceId);
+		}
+		if(!liveFilter.isEmpty()){
+			url.append("&liveFilter=").append(ReportsUtil.encodeURIComponent(liveFilter.toJSONString()));
 		}
 		Map<String, Object> params = (Map<String, Object>) context.get("exportParams");
 		if (params != null) {

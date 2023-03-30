@@ -33,6 +33,34 @@ public class ReportContext {
 	private long id = -1;
 
 	int booleanSetting;
+    private ArrayList parentId;
+
+	public void setParentId(ArrayList parentId) {
+		this.parentId = parentId;
+	}
+
+	public ArrayList getParentId() {
+		return parentId;
+	}
+
+	private ArrayList buildingId;
+
+	public ArrayList getBuildingId() {
+		return buildingId;
+	}
+
+	public void setBuildingId(ArrayList buildingId) {
+		this.buildingId = buildingId;
+	}
+	private ArrayList FilterSiteId;
+
+	public ArrayList getFilterSiteId() {
+		return FilterSiteId;
+	}
+
+	public void setFilterSiteId(ArrayList filterSiteId) {
+		FilterSiteId = filterSiteId;
+	}
 
 	public String getModuleName() {
 		return moduleName;

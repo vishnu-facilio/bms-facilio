@@ -432,12 +432,14 @@ public class ReportFactoryFields {
 		
 		for (FacilioField field : fields) {
 			if(field != null) {
-				if (field instanceof NumberField) {
-					metricFields.add(field);
-				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
-					addFieldInList(dimensionFieldMap, "time", field);
-				} else {
-					addFieldInList(dimensionFieldMap, module, field);
+				if (field.getDataTypeEnum() != FieldType.BIG_STRING && field.getDataTypeEnum() != FieldType.LARGE_TEXT) {
+					if (field instanceof NumberField) {
+						metricFields.add(field);
+					} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+						addFieldInList(dimensionFieldMap, "time", field);
+					} else {
+						addFieldInList(dimensionFieldMap, module, field);
+					}
 				}
 			}
 		}
@@ -462,23 +464,22 @@ public class ReportFactoryFields {
 		
 		for (FacilioField field : fields) {
 			if(field != null) {
-				if (field instanceof NumberField) {
-					if("siteId".equalsIgnoreCase(field.getName())) {
-						addFieldInList(dimensionFieldMap, "siteId", field);
+				if(field.getDataTypeEnum() != FieldType.BIG_STRING && field.getDataTypeEnum() != FieldType.LARGE_TEXT) {
+					if (field instanceof NumberField) {
+						if ("siteId".equalsIgnoreCase(field.getName())) {
+							addFieldInList(dimensionFieldMap, "siteId", field);
+						} else if ((!"stateFlowId".equalsIgnoreCase(field.getName()))) {
+							metricFields.add(field);
+						}
+					} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+						addFieldInList(dimensionFieldMap, "time", field);
+					} else if (field.getDataTypeEnum() != FieldType.FILE && (field.getDataTypeEnum() != FieldType.STRING || AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))) {
+						addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+					} else if (field.getDataTypeEnum() == FieldType.STRING) {
+						addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+					} else if (field.isMainField()) {
+						addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
 					}
-					else if((!"stateFlowId".equalsIgnoreCase(field.getName()))) {
-						metricFields.add(field);
-					}
-				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
-					addFieldInList(dimensionFieldMap, "time", field);
-				} else if(field.getDataTypeEnum() != FieldType.FILE && (field.getDataTypeEnum() != FieldType.STRING || AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))){
-					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
-				}
-				else if(field.getDataTypeEnum() == FieldType.STRING){
-					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
-				}
-				else if(field.isMainField()) {
-					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
 				}
 			}
 		}
