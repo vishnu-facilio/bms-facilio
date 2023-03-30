@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -24,7 +23,6 @@ public class HandleGroupByDataCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		long orgId = AccountUtil.getCurrentOrg().getId();
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if(!(report.getgroupByTimeAggr()>0 && report.getxAggr() > 0)) {
 		JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
@@ -89,14 +87,9 @@ public class HandleGroupByDataCommand extends FacilioCommand {
 			shouldIterate = true;
 		}
 		data.put("data", dataFormatted);
-		if(orgId == 6l) {
-			LOGGER.info("dataFormatted is" + dataFormatted);
-		}
 //		context.put(FacilioConstants.ContextNames.REPORT_DATA, dataFormated);
 		}
-		if(orgId == 6l) {
-			LOGGER.info("HandleGroupByData is" + context);
-		}
+		
 		return false;
 	}
 	

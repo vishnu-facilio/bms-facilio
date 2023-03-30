@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -10,7 +9,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.report.context.ReportContext;
 import org.apache.commons.chain.Context;
 import org.apache.kafka.common.protocol.types.Field;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class FetchCustomBaselineData extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(FetchCustomBaselineData.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         if(context.containsKey("scatterConfig") || context.containsKey("report") ) {
@@ -66,10 +63,6 @@ public class FetchCustomBaselineData extends FacilioCommand {
                     }
                 }
             }
-        }
-        long orgId = AccountUtil.getCurrentOrg().getId();
-        if(orgId == 6l) {
-            LOGGER.info("FetchCustomBaselineData is" + context);
         }
         return false;
     }

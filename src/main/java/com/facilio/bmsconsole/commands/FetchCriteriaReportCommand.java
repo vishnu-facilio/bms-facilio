@@ -134,10 +134,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			}
 			reportAggrData.putAll(operatingTimeLine);
 		}
-		long orgId = AccountUtil.getCurrentOrg().getId();
-		if(orgId == 6l) {
-			Logger.getLogger("FetchCriteriaReportCommand is" + context);
-		}
 		return false;
 	}
 	

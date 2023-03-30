@@ -56,7 +56,6 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		long orgId = AccountUtil.getCurrentOrg().getId();
 		if (report.getTypeEnum() == ReportType.READING_REPORT || report.getTypeEnum() == ReportType.REGRESSION_REPORT
 				|| report.getTypeEnum() == ReportType.TEMPLATE_REPORT) {
 			Boolean showAlarms = (Boolean) report.getFromReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS);
@@ -139,13 +138,8 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 						}
 					}
 				}
-				if(orgId == 6l) {
-					LOGGER.info("ReportAggregateData" + reportAggrData);
-				}
+				
 			}
-		}
-		if(orgId == 6l) {
-			LOGGER.info("FetchReportAdditionalInfoCommand is" + context);
 		}
 		return false;
 	}

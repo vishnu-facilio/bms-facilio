@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -81,10 +80,6 @@ public class FetchResourcesCommand extends FacilioCommand {
 					});
 				}
 			}
-		}
-		long orgId = AccountUtil.getCurrentOrg().getId();
-		if(orgId == 6l) {
-			LOGGER.info("FetchResourcesCommand is" + context);
 		}
 		return false;
 	}

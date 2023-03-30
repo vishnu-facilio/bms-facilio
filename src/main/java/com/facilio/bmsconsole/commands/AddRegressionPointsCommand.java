@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.math3.distribution.TDistribution;
@@ -125,10 +124,6 @@ public class AddRegressionPointsCommand extends FacilioCommand {
 				reportState.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
 				reportContext.setReportState(reportState);
 			}
-		}
-		long orgId = AccountUtil.getCurrentOrg().getId();
-		if(orgId == 6l) {
-			LOGGER.info("AddRegressionPointsCommand is" + context);
 		}
 		return false;
 	}

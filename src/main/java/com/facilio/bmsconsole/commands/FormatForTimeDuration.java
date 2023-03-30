@@ -3,9 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -17,7 +15,6 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 
 public class FormatForTimeDuration extends FacilioCommand {
-	private static final Logger LOGGER = Logger.getLogger(FormatForTimeDuration.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -51,10 +48,6 @@ public class FormatForTimeDuration extends FacilioCommand {
 				}
 				reportData.put(FacilioConstants.ContextNames.DATA_KEY, enumData);
 			}
-		}
-		long orgId = AccountUtil.getCurrentOrg().getId();
-		if(orgId == 6l) {
-			LOGGER.info("FormatForTimeDuration is" + context);
 		}
 		return false;
 	}

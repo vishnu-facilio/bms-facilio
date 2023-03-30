@@ -204,10 +204,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
         context.put(FacilioConstants.ContextNames.PIVOT_EXTENDED_MODULE_IDS, baseModule != null ? baseModule.getExtendedModuleIds() : null);
-        long orgId = AccountUtil.getCurrentOrg().getId();
-        if(orgId == 6l) {
-            LOGGER.info("FetchReportDataCommand is" + context);
-        }
         return false;
     }
 
@@ -702,10 +698,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                 newSelectBuilder.andCriteria((Criteria) globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA));
             }
             props = newSelectBuilder.getAsProps();
-            long orgId = AccountUtil.getCurrentOrg().getId();
-            if(orgId == 6l) {
-                LOGGER.info("fetchedData is" + props);
-            }
             pivotFieldsList.clear();
 
             isBaseModuleJoined = false;
