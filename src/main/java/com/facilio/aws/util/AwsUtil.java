@@ -95,6 +95,7 @@ public class AwsUtil extends BaseAwsUtil{
 	private static final String IOT_RULE_SASL_SCRAM_PASSWORD = "iot.rule.sasl.scram.password";
 	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
 	private static final String IOT_RULE_ARN = "iot.rule.arn";
+	private static final String IOT_RULE_DISABLED = "iot.rule.disabled";
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE, () -> getClientInfo());
@@ -590,6 +591,9 @@ public class AwsUtil extends BaseAwsUtil{
 			KafkaMessageSource defaultSource = MessageSourceUtil.getDefaultSource();
 			Map<String, Object> configs = defaultSource.getConfigs();
 			if (configs != null ) {
+				if(configs.containsKey(IOT_RULE_DISABLED) && (Boolean) configs.get(IOT_RULE_DISABLED)){
+					return;
+				}
 				if (defaultSource.isAuthEnabled() && defaultSource.getSecurityProtocol() == KafkaMessageSource.SecProtocol.SASL_SSL) {
 					if (configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
 							&& configs.containsKey(IOT_RULE_SASL_MECHANISM)

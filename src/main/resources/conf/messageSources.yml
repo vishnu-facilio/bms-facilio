@@ -88,6 +88,7 @@ sources:
     configs:
       broker: b-2.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096,b-1.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096,b-3.aekafka.nx2ygo.c2.kafka.me-central-1.amazonaws.com:9096
       auth: true
+      iot.rule.disabled: true
 
   - name: msk-oci #ae region
     type: kafka
