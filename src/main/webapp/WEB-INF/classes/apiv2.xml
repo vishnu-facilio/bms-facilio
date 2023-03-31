@@ -6070,6 +6070,12 @@
 		<action name="validatecode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="validateCode">
 			<param name="auth">false</param>					
 		</action>
+		<action name="validatevendorcode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="validateVendorCode">
+			<param name="auth">false</param>
+		</action>
+		<action name="validatevendorkiosk" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="validateVendorKiosk">
+			<param name="auth">false</param>
+		</action>
 	</package>
 	
 	<package name="deviceApi" namespace="/api/v2/devices" extends="v2Api">

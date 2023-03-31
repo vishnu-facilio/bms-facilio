@@ -21,6 +21,7 @@ import com.facilio.iam.accounts.util.DCUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -28,7 +29,7 @@ import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.service.FacilioService;
 
-
+@Log4j
 public class DeviceClientAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	private String code;
@@ -71,35 +72,20 @@ public String validateCode() {
 			}
 			else {
 				Long connectedDeviceId = (Long) codeObj.get("connectedDeviceId");
-				String scheme;
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
-
-					String appDomain = DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
-					String region = DCUtil.getRegion(Integer.valueOf((long) codeObj.get("dc") + ""));
-					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain,region);
-					scheme= generateScheme(connectedDevice);
 
 					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
 	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();
 
-	                Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
-					setTempCookieProperties(cookie, false);
-	                response.addCookie(cookie);
-
-					Cookie cookie1 = new Cookie("fc.mobile.scheme", scheme);
-					setTempCookieProperties(cookie1, false);
-					response.addCookie(cookie1);
-
-					FacilioAuthAction facilio = new FacilioAuthAction();
-					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(appDomain));
-					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
-					setTempCookieProperties(mobileTokenCookie, false);
-
-					response.addCookie(mobileTokenCookie);
-
+					Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
+					cookie.setMaxAge(60 * 60 * 24 * 30);
+					cookie.setPath("/");
+					cookie.setHttpOnly(true);
+					//   cookie.setSecure(true);
+					response.addCookie(cookie);
 	                IamClient.deleteDevicePassCode(getCode());
 	                
 	                setResponseCode(0);
@@ -124,7 +110,8 @@ public String validateCode() {
 				}
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("passcode_error");
+			LOGGER.info("passcode_error" + e);
+			throw new IllegalArgumentException(e);
 		}
 	}
 
@@ -142,15 +129,6 @@ public String validateCode() {
 		return RequestUtil.getProtocol(request);
 	}
 
-	private String generateScheme(ConnectedDeviceContext connectedDevice) throws Exception {
-		String scheme;
-		AccountUtil.setCurrentAccount(connectedDevice.getOrgId());
-		DeviceContext device= DevicesAPI.getDevice(connectedDevice.getDeviceId());
-		scheme = device.getDeviceTypeEnum().toString().toLowerCase().replace("_","");
-
-		return scheme;
-	}
-
 	private void setTempCookieProperties(Cookie cookie, boolean authModel) {
 		cookie.setMaxAge(60 * 60); // Make the cookie last an hour
 		cookie.setPath("/");
@@ -166,6 +144,135 @@ public String validateCode() {
 		baseUrl.append(appDomain);
 		String s = baseUrl.toString();
 		return s;
+	}
+
+	public String validateVendorCode() {
+
+		try {
+			Map<String, Object> codeObj = IamClient.getDevicePasscode(getCode());
+			if (codeObj == null) {
+				throw new IllegalArgumentException("passcode_invalid");
+			}
+			else {
+				Long connectedDeviceId = (Long) codeObj.get("connectedDeviceId");
+				String scheme;
+				//connected Device has been added user side.
+				if (connectedDeviceId != null && connectedDeviceId > 0) {
+
+					String appDomain = DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
+					String region = DCUtil.getRegion(Integer.valueOf((long) codeObj.get("dc") + ""));
+					scheme = IamClient.getConnectedDevice(connectedDeviceId,appDomain,region);
+
+					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
+
+					ServletActionContext.getRequest();
+					HttpServletResponse response = ServletActionContext.getResponse();
+
+					Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
+					setTempCookieProperties(cookie, false);
+					response.addCookie(cookie);
+
+					Cookie cookie1 = new Cookie("fc.mobile.scheme", scheme);
+					setTempCookieProperties(cookie1, false);
+					response.addCookie(cookie1);
+
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(appDomain));
+					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
+					setTempCookieProperties(mobileTokenCookie, false);
+
+					response.addCookie(mobileTokenCookie);
+
+					IamClient.deleteDevicePassCode(getCode());
+
+					setResponseCode(0);
+					setResult("status", "connected");
+					setResult("token", jwt);
+					setResult("dc", DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + "")));
+
+					return SUCCESS;
+				}
+				else {
+					long currentTime = System.currentTimeMillis();
+					long expiryTime = (Long) codeObj.get("expiryTime");
+					if (currentTime >= expiryTime) {
+						IamClient.deleteDevicePassCode(getCode());
+						throw new IllegalArgumentException("passcode_expired");
+					}
+					else {
+						setResponseCode(0);
+						setResult("status", "not_connected");
+						return SUCCESS;
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.info("passcode_error" + e);
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	public String validateVendorKiosk() {
+
+		try {
+			Map<String, Object> codeObj = IamClient.getDevicePasscode(getCode());
+			if (codeObj == null) {
+				throw new IllegalArgumentException("passcode_invalid");
+			}
+			else {
+				Long connectedDeviceId = (Long) codeObj.get("connectedDeviceId");
+				String scheme;
+				//connected Device has been added user side.
+				if (connectedDeviceId != null && connectedDeviceId > 0) {
+
+					String appDomain = DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
+					String region = DCUtil.getRegion(Integer.valueOf((long) codeObj.get("dc") + ""));
+					scheme = "customkiosk";
+					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
+
+					ServletActionContext.getRequest();
+					HttpServletResponse response = ServletActionContext.getResponse();
+
+					Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
+					setTempCookieProperties(cookie, false);
+					response.addCookie(cookie);
+
+					Cookie cookie1 = new Cookie("fc.mobile.scheme", scheme);
+					setTempCookieProperties(cookie1, false);
+					response.addCookie(cookie1);
+
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", "investa", "baseUrl", getBaseUrl(appDomain));
+					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
+					setTempCookieProperties(mobileTokenCookie, false);
+
+					response.addCookie(mobileTokenCookie);
+
+					IamClient.deleteDevicePassCode(getCode());
+
+					setResponseCode(0);
+					setResult("status", "connected");
+					setResult("token", jwt);
+					setResult("dc", DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + "")));
+
+					return SUCCESS;
+				}
+				else {
+					long currentTime = System.currentTimeMillis();
+					long expiryTime = (Long) codeObj.get("expiryTime");
+					if (currentTime >= expiryTime) {
+						IamClient.deleteDevicePassCode(getCode());
+						throw new IllegalArgumentException("passcode_expired");
+					}
+					else {
+						setResponseCode(0);
+						setResult("status", "not_connected");
+						return SUCCESS;
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.info("passcode_error" + e);
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 }

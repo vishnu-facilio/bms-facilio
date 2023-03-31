@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.AuthUtils;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.iam.accounts.exceptions.AccountException;
@@ -234,26 +235,35 @@ public class IamClient {
         }
         return "_";
     }
-    public static ConnectedDeviceContext getConnectedDevice(long connectedDeviceId, String appDomain, String region) throws Exception {
+    public static String getConnectedDevice(long connectedDeviceId, String appDomain, String region) throws Exception {
         if(FacilioProperties.isDevelopment()|| StringUtils.isEmpty(appDomain))
         {
             appDomain = FacilioProperties.getIAMURL();
         }
+        if(FacilioProperties.isDevelopment()){
+            region = FacilioProperties.getIamregion();
+        }
+        String scheme = "customkiosk";
         var url = appDomain + "/api/v3/internal/dc/getConnectedDevice";
         JSONObject params = new JSONObject();
         params.put("connectedDeviceId", connectedDeviceId);
-        String response = ServiceHttpUtils.doHttpPost(region, "iam", getUrl(url), null, null, params);
-        LOGGER.error("[getConnectedDevice] " + response);
-        if (StringUtils.isNotEmpty(response)) {
-            JSONObject obj = FacilioUtil.parseJson(response);
-            if (obj.containsKey("data")) {
-                JSONObject data = (JSONObject) obj.get("data");
-                Map<String, Object> connectedDeviceMap = (Map<String, Object>) data.get("connectedDevice");
-                ObjectMapper mapper = new ObjectMapper();
-                ConnectedDeviceContext connectedDevice = mapper.convertValue(connectedDeviceMap, ConnectedDeviceContext.class);
-                return connectedDevice;
+        try {
+            String response = ServiceHttpUtils.doHttpPost(region, "iam", getUrl(url), null, null, params);
+            LOGGER.error("[getConnectedDevice] " + response);
+            if (StringUtils.isNotEmpty(response)) {
+                JSONObject obj = FacilioUtil.parseJson(response);
+                if (obj.containsKey("data")) {
+                    JSONObject data = (JSONObject) obj.get("data");
+                    Map<String, Object> deviceObj = (Map<String, Object>) data.get("deviceObj");
+                    scheme = (String) deviceObj.get("scheme");
+                    AccountUtil.setCurrentAccount((Long) deviceObj.get("orgId"));
+                }
             }
+            return scheme;
         }
-        return null;
+        catch (Exception e){
+            LOGGER.info("Exception occurred ",e);
+        }
+        return scheme;
     }
 }

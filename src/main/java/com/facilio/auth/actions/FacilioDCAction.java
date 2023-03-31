@@ -1,10 +1,14 @@
 package com.facilio.auth.actions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain.GroupType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.context.DeviceContext;
+import com.facilio.bmsconsole.util.DevicesAPI;
 import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -96,8 +100,14 @@ public class FacilioDCAction extends V3Action {
 		return SUCCESS;
 	}
 	public String getConnectedDeviceForId() throws Exception {
-		ConnectedDeviceContext deviceObj = DevicesUtil.getConnectedDevice(connectedDeviceId);
-		setData("connectedDevice", deviceObj);
+		ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(connectedDeviceId);
+		AccountUtil.setCurrentAccount(connectedDevice.getOrgId());
+		DeviceContext device = DevicesAPI.getDevice(connectedDevice.getDeviceId());
+		String scheme = device.getDeviceTypeEnum().toString().toLowerCase().replace("_","");
+		Map<String, Object> deviceObj = new HashMap<>();
+		deviceObj.put("scheme", scheme);
+		deviceObj.put("orgId", connectedDevice.getOrgId());
+		setData("deviceObj", deviceObj);
 		return SUCCESS;
 	}
 

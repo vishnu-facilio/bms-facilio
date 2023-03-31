@@ -762,6 +762,16 @@
             <property name="code" type="string" mandatory="true" maxLength="10"/>
         </urlparams>
     </request>
+    <request path="/api/v2/deviceclient/validatevendorcode">
+        <urlparams>
+            <property name="code" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/deviceclient/validatevendorkiosk">
+        <urlparams>
+            <property name="code" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
 
     <request path="/api/basespace">
         <urlparams>
