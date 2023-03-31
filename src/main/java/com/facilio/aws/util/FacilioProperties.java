@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -437,14 +438,17 @@ public class FacilioProperties {
                 }
             }
 
-            maxFileSize = Integer.parseInt(PROPERTIES.getProperty("maxFileSizeInBytes"));
-            malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled"));
+            maxFileSize = Integer.parseInt(PROPERTIES.getProperty("maxFileSizeInBytes","104857600"));
+            malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled","false"));
             if (malwareScanningEnabled) {
-                malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine");
-                malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout"));
+                malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine","clam");
+                malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout","20000"));
+                clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout","18000"));
                 malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
-                malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port"));
-                clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout"));
+                malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port","0"));
+                if(StringUtils.isEmpty(malwareScannerHost) && malwareScannerPort.equals(0)){
+                    malwareScanningEnabled = false;
+                }
             }
 
             LOGGER.info(getIotEndPoint() + "iot endpoint");
