@@ -1,7 +1,7 @@
 global :
-  include :
-    - 17
-    - 426
+#  include :
+#    - 17
+#    - 426
 #  exclude :
 #    - 1
 executors :
