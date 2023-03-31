@@ -19,5 +19,6 @@ public class FileUploadAnswerContext extends ClientAnswerContext<FileUploadAnswe
     public static class FileAnswer {
         private Long id;
         private String fileName, url, contentType;
+        private String downloadUrl;
     }
 }

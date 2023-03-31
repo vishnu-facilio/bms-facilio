@@ -23,6 +23,7 @@ public class MultiFileUploadAnswerContext extends ClientAnswerContext<List<Multi
             this.setId(answerContext.getFileAnswerId());
             this.setFileName(answerContext.getFileAnswerFileName());
             this.setUrl(answerContext.getFileAnswerUrl());
+            this.setDownloadUrl(answerContext.getFileAnswerDownloadUrl());
             this.setContentType(answerContext.getFileAnswerContentType());
             if (isRemarksEnabled) {
                 this.setRemarks(answerContext.getRemarks());

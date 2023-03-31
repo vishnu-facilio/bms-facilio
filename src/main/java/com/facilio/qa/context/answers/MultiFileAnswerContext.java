@@ -12,6 +12,7 @@ import java.io.File;
 public class MultiFileAnswerContext extends V3Context {
     private Long fileAnswerId;
     private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType;
+    private String fileAnswerDownloadUrl;
     private File fileAnswer;
     private String remarks;
     private AnswerContext parent;

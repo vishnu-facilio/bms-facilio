@@ -36,7 +36,7 @@ public class AnswerContext extends V3Context {
     private Integer ratingAnswer;
 
     private Long fileAnswerId;
-    private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType;
+    private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType,fileAnswerDownloadUrl;
     private File fileAnswer;
 
     // Multi record answers and these field names should be added as fetchsupplement in AddAnswerSupplementsCommand

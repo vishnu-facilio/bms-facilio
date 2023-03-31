@@ -17,7 +17,7 @@ public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerConte
     @Override
     public FileUploadAnswerContext serialize(AnswerContext answer) {
         FileUploadAnswerContext fileUploadAnswer = new FileUploadAnswerContext();
-        FileUploadAnswerContext.FileAnswer fileAnswer = new FileUploadAnswerContext.FileAnswer(answer.getFileAnswerId(), answer.getFileAnswerFileName(), answer.getFileAnswerUrl(), answer.getFileAnswerContentType());
+        FileUploadAnswerContext.FileAnswer fileAnswer = new FileUploadAnswerContext.FileAnswer(answer.getFileAnswerId(), answer.getFileAnswerFileName(), answer.getFileAnswerUrl(), answer.getFileAnswerContentType(), answer.getFileAnswerDownloadUrl());
         fileUploadAnswer.setAnswer(fileAnswer);
 
         return fileUploadAnswer;
