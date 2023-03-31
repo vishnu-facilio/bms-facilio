@@ -21,7 +21,6 @@ import com.facilio.iam.accounts.util.DCUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
-import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -29,7 +28,7 @@ import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.service.FacilioService;
 
-@Log4j
+
 public class DeviceClientAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	private String code;
@@ -78,8 +77,8 @@ public String validateCode() {
 
 					String appDomain = DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + ""));
 					String region = DCUtil.getRegion(Integer.valueOf((long) codeObj.get("dc") + ""));
-//					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain,region);
-					scheme = "customkiosk";
+					ConnectedDeviceContext connectedDevice = IamClient.getConnectedDevice(connectedDeviceId,appDomain,region);
+					scheme= generateScheme(connectedDevice);
 
 					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
@@ -95,7 +94,7 @@ public String validateCode() {
 					response.addCookie(cookie1);
 
 					FacilioAuthAction facilio = new FacilioAuthAction();
-					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", "investa", "baseUrl", getBaseUrl(appDomain));
+					JSONObject jsonObject = getMobileAuthJSON("token", jwt, "homePath", "/app/mobile/login", "domain", AccountUtil.getCurrentAccount().getOrg().getDomain(), "baseUrl", getBaseUrl(appDomain));
 					Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 					setTempCookieProperties(mobileTokenCookie, false);
 
@@ -125,8 +124,7 @@ public String validateCode() {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.info("passcode_error" + e);
-			throw new IllegalArgumentException(e);
+			throw new IllegalArgumentException("passcode_error");
 		}
 	}
 
