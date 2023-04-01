@@ -6118,7 +6118,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddApplicationUsersCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
-
+		c.addCommand(new AddorUpdateUserScopingCommand());
 		return c;
 	}
 
