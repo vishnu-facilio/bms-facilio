@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.people;
 
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -18,6 +19,7 @@ public class DeletePeopleAssociatedRecordsCommand extends FacilioCommand {
             // mark as delete People associated Records
 
             PeopleGroupUtils.markAsDeletePeopleGroupMember(peopleIds);
+            PeopleAPI.deletePeopleUsers(peopleIds);
         }
         return false;
     }

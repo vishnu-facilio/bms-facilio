@@ -550,6 +550,8 @@ public class V3PeopleAPI {
         User user = new User();
         user.setEmail(existingPeople.getEmail());
         user.setPhone(existingPeople.getPhone());
+        user.setMobile(existingPeople.getMobile());
+        user.setTimezone(existingPeople.getTimezone());
         user.setName(existingPeople.getName());
         user.setUserVerified(verifyUser);
         user.setInviteAcceptStatus(verifyUser);
@@ -862,7 +864,7 @@ public class V3PeopleAPI {
         }
         return Collections.emptyList();
     }
-    private static boolean isSsoEnabledForApplication(String linkname) throws Exception {
+    public static boolean isSsoEnabledForApplication(String linkname) throws Exception {
 
         long orgId = AccountUtil.getCurrentOrg().getId();
         if (linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {

@@ -726,7 +726,7 @@ public class PeopleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users");
-		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleIds), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> list = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(list)) {

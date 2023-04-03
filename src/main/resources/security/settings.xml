@@ -1952,4 +1952,28 @@
         <requestbody type="object">
         </requestbody>
     </request>
+    <request path="/api/v3/people/util/applicationList">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/people/util/addAppAccess">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="roleId" type="number" mandatory="true"/>
+            <property name="securityPolicyId" type="number" mandatory="true"/>
+            <property name="appLinkName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/people/util/convert">
+        <requestbody type="object">
+            <property name="peopleIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="peopleType" type="number"/>
+            <property name="lookupId" type="number"/>
+        </requestbody>
+    </request>
 </config>

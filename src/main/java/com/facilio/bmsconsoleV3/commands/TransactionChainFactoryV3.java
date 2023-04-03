@@ -22,10 +22,10 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
+import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
-import com.facilio.bmsconsoleV3.commands.people.SetPeopleTypeCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.RemoveDuplicateSites;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
@@ -2870,6 +2870,24 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getPeopleFromRecordFieldsChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new getPeopleFromRecordFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain fetchAppListForPeopleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPeopleApplicationListCommand());
+        return c;
+    }
+
+    public static FacilioChain addAppAccessForPeopleChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddAppPortalAccessForPeopleCommand());
+        return c;
+    }
+
+    public static FacilioChain convertPeopleTypeChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new convertPeopleTypeCommand());
         return c;
     }
 

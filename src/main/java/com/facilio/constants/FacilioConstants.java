@@ -274,6 +274,8 @@ public class FacilioConstants {
 		public static final String LOG_CONTEXT = "logContext";
 		public static final String RESOURCE_MODULENAME = "resourceModuleName";
 		//public static final String RESOURCE_ID = "resourceId";
+		public static final String EMAIL="email";
+
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
@@ -2237,6 +2239,9 @@ public class FacilioConstants {
 
 		public static final String PEOPLE = "people";
 		public static final String PEOPLE_ID = "peopleId";
+
+		public static final String PEOPLE_TYPE = "peopleType";
+		public static final String SECURITY_POLICY_ID = "securityPolicyId";
 
 		public static final String WORKORDER_FAILURE_CLASS_RELATIONSHIP = "workorderFailureClassRelationship";
 		public static final String CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP = "customModuleDataFailureClassRelationship";
