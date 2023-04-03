@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -17,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+@Log4j
 public class StateFlowAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 
@@ -439,6 +443,10 @@ public class StateFlowAction extends FacilioAction {
 	}
 	
 	public String getAvailableState() throws Exception {
+
+		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
+			LOGGER.info("ACtion class of getAvailableState called");
+		}
 
 		FacilioChain chain = TransactionChainFactory.getAvailableState();
 		FacilioContext context = chain.getContext();

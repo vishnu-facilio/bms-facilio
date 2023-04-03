@@ -1,6 +1,7 @@
 
 package com.facilio.bmsconsole.interceptors;
 
+import com.amazonaws.regions.Regions;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -221,6 +222,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
         try {
             if(request != null) {
                 AccountUtil.setReqUri(request.getRequestURI());
+                if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
+                        (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
+                ) {
+                    LOGGER.info("Scope interceptor called for url : "+request.getRequestURI());
+                }
                 String currentTab = request.getHeader("X-Tab-Id");
                 if (StringUtils.isNotEmpty(currentTab)) {
                     WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");

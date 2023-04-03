@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -15,12 +17,14 @@ import com.facilio.v3.context.Constants;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import java.util.function.Function;
 import org.json.simple.JSONArray;
 
 import java.util.List;
 
+@Log4j
 public class CustomButtonAction extends FacilioAction {
 
     private String moduleName;
@@ -137,6 +141,11 @@ public class CustomButtonAction extends FacilioAction {
     }
 
     public String getAvailableButtons() throws Exception {
+
+        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
+            LOGGER.info("ACtion class of getAvailableButtons called");
+        }
+
         FacilioChain chain = ReadOnlyChainFactory.getAvailableButtons();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
