@@ -242,7 +242,7 @@ public class WebTabContext implements Serializable {
         WORKORDER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), // 35
         PRIORITY("Priority",false,TabType.SETUP,new SetupTypeHandler()), // 36
         TYPES("Types",false,TabType.SETUP,new SetupTypeHandler()), // 37
-        SURVEY("Survey",false,TabType.SETUP,new SetupTypeHandler()), // 38
+        SURVEY("Survey",false,TabType.NORMAL,new SetupTypeHandler()), // 38
         SPACE_ASSET_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), // 39
         READINGS("Readings",false,TabType.SETUP,new SetupTypeHandler()), // 40
         ASSET_DEPRECIATION("Asset Depreciation",false,TabType.SETUP,new SetupTypeHandler()), // 41
