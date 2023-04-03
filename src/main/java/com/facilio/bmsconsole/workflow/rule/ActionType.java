@@ -429,53 +429,11 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			try {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-				long parentModuleId = -1;
 				FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
-				if (module != null) {
-					parentModuleId = module.getModuleId();
-				} else if (currentRecord instanceof ModuleBaseWithCustomFields) {
-					parentModuleId = ((ModuleBaseWithCustomFields) currentRecord).getModuleId();
-				} else {
-					// temp fix
-					LOGGER.info("Cannot find moduleId for the current record, skipping for now");
-				}
-
 				String ids = (String) obj.get("id");
 				List<Long> idLongList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList());
-
-				List<Long> delegatedUserList = NotificationAPI.checkUserDelegation(idLongList);
-				if (CollectionUtils.isNotEmpty(delegatedUserList)){
-					idLongList = delegatedUserList;
-				}
-
-				Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
-				if (CollectionUtils.isNotEmpty(idLongList) && parentModuleId > 0) {
-					LOGGER.info("Notification Modules entry : " + idLongList);
-					List<UserNotificationContext> recordList = new ArrayList<>();
-					if (idLongList.size() > 0) {
-						for (Long uid : idLongList) {
-							UserNotificationContext userNotification = new UserNotificationContext();
-							userNotification = UserNotificationContext.instance(obj);
-							User user = new User();
-							user.setId(uid);
-							userNotification.setUser(user);
-							userNotification.setSiteId(currentRule.getSiteId());
-							userNotification.setParentModule(parentModuleId);
-							if (currentRecord instanceof ModuleBaseWithCustomFields) {
-								long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
-								userNotification.setParentId(parentId);
-							}
-							userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
-							recordList.add(userNotification);
-						}
-					}
-
-					FacilioModule userNotificationModule = modBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION);
-					JSONObject pushNotificationObj = new JSONObject();
-					pushNotificationObj.put("isPushNotification",isPushNotification);
-					V3Util.createRecordList(userNotificationModule,FieldUtil.getAsMapList(recordList,UserNotificationContext.class),pushNotificationObj,null);
-				}
+				Boolean isPushNotification = (obj!=null )?(Boolean) obj.getOrDefault("isSendNotification",false):false;
+				NotificationAPI.pushNotification(obj,idLongList,isPushNotification,currentRecord,module,currentRule);
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}

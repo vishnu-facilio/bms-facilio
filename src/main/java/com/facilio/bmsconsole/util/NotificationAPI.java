@@ -7,7 +7,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.UserNotificationContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.*;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -29,10 +35,6 @@ import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.wms.message.WmsNotification;
@@ -103,6 +105,8 @@ public class NotificationAPI {
 		
 		userIds = checkUserDelegation(userIds);
 
+		UserNotificationContext userNotificationContext = FieldUtil.getAsBeanFromJson(message, UserNotificationContext.class);
+
 		ApplicationContext applicationContext = ApplicationApi.getApplicationForId((Long) message.get("application"));
 		String appLinkName = applicationContext.getLinkName();
 		List<UserMobileSetting> mobileInstanceSettings = getMobileInstanceIDs(userIds,appLinkName);
@@ -111,9 +115,16 @@ public class NotificationAPI {
 			LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getMobileInstanceId()).collect(Collectors.toList()));
 			for (UserMobileSetting mobileInstanceSetting : mobileInstanceSettings) {
 				if (mobileInstanceSetting != null) {
-					
+
+					JSONObject obj = new JSONObject();
+					if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+						obj = UserNotificationContext.getFcmObject(userNotificationContext);
+					}else {
+						obj = UserNotificationContext.getFcmObjectMaintainence(userNotificationContext);
+					}
+
 //					message.put("to","fHD-LqsgPBA:APA91bEuVMMnWqC_LaxYg1w1K9fF4bL9Exunbh7W4syfBBCkEIhQC0lYP2CT-EKAbdvS7Hl3iayAdKojXUgQ_OwAlMANO7Rtl8DbQ1-Zettsae6hXRG9bzh6ob9IjGXQBwNTBOu-qbmF");
-					message.put("to", mobileInstanceSetting.getMobileInstanceId());
+					obj.put("to", mobileInstanceSetting.getMobileInstanceId());
 
 					Map<String, String> headers = new HashMap<>();
 					headers.put("Content-Type", "application/json");
@@ -121,7 +132,7 @@ public class NotificationAPI {
 
 					String url = "https://fcm.googleapis.com/fcm/send";
 
-					AwsUtil.doHttpPost(url, headers, null, message.toJSONString());
+					AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
 				}
 			}
 		}
@@ -310,5 +321,51 @@ public class NotificationAPI {
 		}
 
 		return null;
+	}
+
+	public static void pushNotification(JSONObject obj, List<Long> idLongList, Boolean isPushNotification, Object currentRecord, FacilioModule module , WorkflowRuleContext currentRule) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long parentModuleId = -1;
+		if (module != null) {
+			parentModuleId = module.getModuleId();
+		} else if (currentRecord instanceof ModuleBaseWithCustomFields) {
+			parentModuleId = ((ModuleBaseWithCustomFields) currentRecord).getModuleId();
+		} else {
+			// temp fix
+			LOGGER.info("Cannot find moduleId for the current record, skipping for now");
+		}
+		List<Long> delegatedUserList = NotificationAPI.checkUserDelegation(idLongList);
+		if (CollectionUtils.isNotEmpty(delegatedUserList)) {
+			idLongList = delegatedUserList;
+		}
+		if (CollectionUtils.isNotEmpty(idLongList) && parentModuleId > 0) {
+			LOGGER.info("Notification Modules entry : " + idLongList);
+			List<UserNotificationContext> recordList = new ArrayList<>();
+			if (idLongList.size() > 0) {
+				for (Long uid : idLongList) {
+					UserNotificationContext userNotification = new UserNotificationContext();
+					userNotification = UserNotificationContext.instance(obj);
+					User user = new User();
+					user.setId(uid);
+					userNotification.setUser(user);
+					if (currentRule!=null) {
+						userNotification.setSiteId(currentRule.getSiteId());
+					}
+					userNotification.setParentModule(parentModuleId);
+					if (currentRecord instanceof ModuleBaseWithCustomFields) {
+						long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
+						userNotification.setParentId(parentId);
+					}
+					userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
+					recordList.add(userNotification);
+				}
+			}
+
+			FacilioModule userNotificationModule = modBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION);
+			JSONObject pushNotificationObj = new JSONObject();
+			pushNotificationObj.put("isPushNotification", isPushNotification);
+			V3Util.createRecordList(userNotificationModule, FieldUtil.getAsMapList(recordList, UserNotificationContext.class), pushNotificationObj, null);
+		}
 	}
 }

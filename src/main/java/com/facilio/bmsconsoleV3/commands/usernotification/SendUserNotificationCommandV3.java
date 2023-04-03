@@ -55,10 +55,9 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
         if (moduleName != null) {
           records = recordMap.get(moduleName);
         }
-        Boolean isPushNotification = (Boolean) bodyParams.get("isPushNotification");
+        Boolean isPushNotification = (bodyParams!=null)? (Boolean) bodyParams.getOrDefault("isPushNotification",false) :false;
         if (isPushNotification && FacilioProperties.isProduction()) {
 
-            if( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS )) {
                 List<Long> recordId = new ArrayList<>();
                 for (UserNotificationContext userNotificationContext : records) {
                     long id = userNotificationContext.getId();
@@ -73,26 +72,6 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
                     LOGGER.info("Sending push notifications for ids to wms: " + recordId);
                     SessionManager.getInstance().sendMessage(message);
                 }
-            }
-            else {
-                List<Long> idLongList = new ArrayList<>();
-            for (UserNotificationContext userNotificationContext : records) {
-                long id = userNotificationContext.getUser().getId();
-                idLongList.add(id);
-            }
-
-            if (CollectionUtils.isNotEmpty(idLongList)) {
-                ApplicationContext applicationContext = ApplicationApi.getApplicationForId(records.get(0).getApplication());
-                String appLinkName = applicationContext.getLinkName();
-                List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(idLongList, appLinkName);
-                Map<Long,List<UserMobileSetting>> userMobileSettingMap = new HashMap<>();
-                userMobileSettingMap = mobileInstanceSettings.stream().collect(
-                        Collectors.groupingBy(UserMobileSetting::getUserId,HashMap::new,Collectors.toCollection(
-                                ArrayList::new)));
-                LOGGER.info("Sending push notifications for ids : " + idLongList);
-                sendNotification(records, userMobileSettingMap);
-               }
-            }
         }
 //        if(CollectionUtils.isNotEmpty(records)) {
 //            for (UserNotificationContext notify : records) {
@@ -122,12 +101,5 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
 //            }
 //        }
         return false;
-    }
-
-    public void sendNotification(List<UserNotificationContext> userNotificationList,Map<Long,List<UserMobileSetting>> mobileInstanceSettings) throws Exception {
-        FacilioContext context = new FacilioContext();
-        Constants.setRecordList(context,userNotificationList);
-        context.put(FacilioConstants.ContextNames.USER_MOBILE_SETTING,mobileInstanceSettings);
-        FacilioTimer.scheduleInstantJob("default","SendUserNotificationJob",context);
     }
 }

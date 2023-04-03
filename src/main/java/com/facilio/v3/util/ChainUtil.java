@@ -691,19 +691,7 @@ public class ChainUtil {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && DBConf.getInstance().getCurrentOrgId() == 592) {
-            chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
-        }
-        else {
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS)) {
-                chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
-            }
-            else {
-                chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                        .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-                );
-            }
-        }
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new ExecuteSLAWorkFlowsCommand());
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
@@ -716,15 +704,7 @@ public class ChainUtil {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PUSHNOTIFICATION_WMS))
-        {
-            chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
-        }
-        else {
-            chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                    .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-            );
-        }
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
