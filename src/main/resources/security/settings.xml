@@ -1808,4 +1808,12 @@
     <request path="/api/v1/setup/faultImpact">
         <requestbody type="object"/>
     </request>
+    <request path="/api/v3/modules/bulkCreate/:moduleName">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderPlansCost/cost">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

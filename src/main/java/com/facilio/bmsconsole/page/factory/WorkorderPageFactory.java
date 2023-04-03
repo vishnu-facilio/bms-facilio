@@ -50,16 +50,6 @@ public class WorkorderPageFactory extends PageFactory {
             section.addWidget(workDuration);
             yOffset += widgetHeight;
 
-            // total cost widget
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) &&
-                    !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-                widgetHeight = 3;
-                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
-                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-                section.addWidget(totalCost);
-                yOffset += widgetHeight;
-            }
-
             // resource widget
             widgetHeight = 3;
             PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
@@ -67,23 +57,21 @@ public class WorkorderPageFactory extends PageFactory {
             section.addWidget(resource);
             yOffset += widgetHeight;
 
-            // maintenance cost & quotation widget
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-                widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
-                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
-                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-                totalCost.addToWidgetParams("hideBg", true);
-                section.addWidget(totalCost);
-                yOffset += widgetHeight;
-            }
+           // Maintenance and Quote Widget
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            totalCost.addToWidgetParams("hideBg", true);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
 
             // tenant widget
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
                     workorder.getTenant() != null) {
                 widgetHeight = 4;
-                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
-                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-                section.addWidget(totalCost);
+                PageWidget tenantWidget = new PageWidget(PageWidget.WidgetType.TENANT);
+                tenantWidget.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+                section.addWidget(tenantWidget);
                 yOffset += widgetHeight;
             }
 
@@ -314,7 +302,7 @@ public class WorkorderPageFactory extends PageFactory {
 
 
         PageWidget actualsPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
-        actualsPageWidgetGroup.addToLayoutParams(actualsSection,18,12);
+        actualsPageWidgetGroup.addToLayoutParams(actualsSection,24,12);
         actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         actualsSection.addWidget(actualsPageWidgetGroup);
 
@@ -354,10 +342,6 @@ public class WorkorderPageFactory extends PageFactory {
         JSONObject servicesRelatedList = new JSONObject();
         servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
         serviceWidget.setRelatedList(servicesRelatedList);
-
-        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
-        actualsCostWidget.addToLayoutParams(actualsSection,6,8);
-        actualsSection.addWidget(actualsCostWidget);
     }
 
     private static void addFailureReportTab(Page page){
@@ -536,15 +520,11 @@ public class WorkorderPageFactory extends PageFactory {
         plans.addSection(planSection);
 
         PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.PLANS);
-        plansWidget.addToLayoutParams(planSection, 18, 12);
+        plansWidget.addToLayoutParams(planSection, 24, 12);
         JSONObject lineitemJson = new JSONObject();
         lineitemJson.put("summaryWidgetName", "plansWidget");
         plansWidget.setWidgetParams(lineitemJson);
         planSection.addWidget(plansWidget);
-
-        PageWidget plansCostWidget = new PageWidget(PageWidget.WidgetType.PLANS_COST);
-        plansCostWidget.addToLayoutParams(planSection, 6, 8);
-        planSection.addWidget(plansCostWidget);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {

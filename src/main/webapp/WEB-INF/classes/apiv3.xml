@@ -222,20 +222,7 @@
             </param>
             <param name="checkPermission">true</param>
         </action>
-        <action name="wo/site/summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
-            <param name="moduleName">site</param>
-            <param name="parentModuleName">workorder</param>
-            <param name="id">{1}</param>
-            <param name="checkPermission">true</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
-        </action>
-        <action name="sr/site/summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
-            <param name="moduleName">site</param>
-            <param name="parentModuleName">serviceRequest</param>
-            <param name="id">{1}</param>
-            <param name="checkPermission">true</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
-        </action>
+
     </package>
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
         <action name="*/*/get/*" class="com.facilio.bmsconsoleV3.actions.TimelineActionV3">
@@ -1668,6 +1655,15 @@
             <param name="id">{3}</param>
             <param name="checkPermission">true</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+    <package name="bulkCreateAPI" extends="v3Api" namespace="/api/v3/modules/bulkCreate">
+        <action name="*"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkCreate">
+            <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+            <param name="checkPermission">true</param>
         </action>
     </package>
 </struts>
