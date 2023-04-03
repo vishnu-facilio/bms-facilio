@@ -42,6 +42,17 @@ public class VendorQuotesPageFactory extends PageFactory{
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.VENDOR_QUOTES_ACTIVITY);
         tab3Sec1.addWidget(activityWidget);
 
+        Page.Tab tab4 = page.new Tab("Related");
+        boolean isRelationshipNeeded = addRelationshipSection(page, tab4, module.getModuleId());
+        Page.Section tab4Sec1 = getRelatedListSectionObj(page);
+        tab4.addSection(tab4Sec1);
+
+        addRelatedListWidgets(tab4Sec1, module.getModuleId());
+
+        if ((tab4Sec1.getWidgets() != null && !tab4Sec1.getWidgets().isEmpty()) || isRelationshipNeeded) {
+            page.addTab(tab4);
+        }
+
         return page;
     }
     private static PageWidget addNotesAttachmentsModule(Page.Section section) {

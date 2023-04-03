@@ -58,6 +58,8 @@ public class RequestForQuotationPageFactory extends PageFactory{
         addRelatedListWidget(tab4Sec1,"vendorQuotes",module.getModuleId());
         addRelatedListWidget(tab4Sec1,"purchaseorder", module.getModuleId());
         addRelatedListWidget(tab4Sec1,"purchaserequest", module.getModuleId());
+        addRelatedList(tab4Sec1,module.getModuleId());
+
 
         Page.Tab tab5 = page.new Tab("History");
         page.addTab(tab5);
@@ -74,6 +76,34 @@ public class RequestForQuotationPageFactory extends PageFactory{
         tab5Sec1.addWidget(activityWidget);
 
         return page;
+    }
+    private static void addRelatedList(Page.Section section, long moduleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioModule> subModules =
+                modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
+
+
+        if (CollectionUtils.isNotEmpty(subModules)) {
+            for (FacilioModule subModule : subModules) {
+
+                if(subModule.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST) || subModule.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || subModule.getName().equals(FacilioConstants.ContextNames.VENDOR_QUOTES)) {
+                    continue;
+                }
+                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
+                if ((CollectionUtils.isNotEmpty(fields))) {
+                    for (FacilioField field : fields) {
+                        PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.RELATED_LIST);
+                        JSONObject relatedList = new JSONObject();
+                        relatedList.put("module", subModule);
+                        relatedList.put("field", field);
+                        relatedListWidget.setRelatedList(relatedList);
+                        relatedListWidget.addToLayoutParams(section, 24, 8);
+                        section.addWidget(relatedListWidget);
+                    }
+                }
+            }
+        }
     }
     private static PageWidget addNotesAttachmentsModule(Page.Section section) {
 
