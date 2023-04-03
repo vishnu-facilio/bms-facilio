@@ -318,6 +318,7 @@ public class V3TicketAPI {
     }
 
     public static void updateTaskCount(Collection parentIds) throws Exception {
+    	LOGGER.info("parentIds for update -- "+parentIds);
         if (CollectionUtils.isNotEmpty(parentIds)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String moduleName = "task";
@@ -409,6 +410,7 @@ public class V3TicketAPI {
 //						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
                         .andCondition(idFieldCondition);
                 recordBuilder.update(updateMap);
+                LOGGER.info("updateMap for update -- "+updateMap);
             }
         }
     }
