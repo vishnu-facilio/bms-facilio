@@ -42,7 +42,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
         long transactionTimeOut = (long) context.getOrDefault(DataMigrationConstants.TRANSACTION_TIME_OUT, 500000l);
         Long superAdminUserId = AccountUtil.getOrgBean(targetOrgId).getSuperAdmin(targetOrgId).getOuid();
         Map<Long, Long> userIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.USER_ID_MAPPING);
-        Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new ArrayList<Long>());
+        Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new HashMap());
         List<String> skipModuleNamesList = (List<String>) context.get(DataMigrationConstants.SKIP_MODULES_LIST);
         List<String> logModuleNamesList = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
 

@@ -188,7 +188,7 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
                 criteria.andCriteria(requestCriteria);
             }
             if(!criteria.isEmpty()) {
-                details.put("criteria", moduleSpecificCriteria);
+                details.put("criteria", criteria);
             }
             moduleNameVsDetails.put(moduleName, details);
 

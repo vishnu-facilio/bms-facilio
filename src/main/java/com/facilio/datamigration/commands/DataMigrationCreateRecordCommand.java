@@ -39,7 +39,7 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
         List<String> skipModuleNamesList = (List<String>) context.get(DataMigrationConstants.SKIP_MODULES_LIST);
         List<String> logModuleNamesList = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         Long superAdminUserId = AccountUtil.getOrgBean(targetOrgId).getSuperAdmin(targetOrgId).getOuid();
-        Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new ArrayList<Long>());
+        Map<Long, Long> siteMapping = (Map<Long, Long>) context.getOrDefault(DataMigrationConstants.SITE_MAPPING, new HashMap());
         Map<Long, Long> userIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.USER_ID_MAPPING);
         Map<Long, Long> groupIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.GROUP_ID_MAPPING);
         Map<Long, Long> roleIdMapping = (Map<Long, Long>) context.get(DataMigrationConstants.ROLE_ID_MAPPING);
