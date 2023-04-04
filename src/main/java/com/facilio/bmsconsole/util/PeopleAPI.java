@@ -604,7 +604,7 @@ public class PeopleAPI {
 			long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
-				User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+				User user = AccountUtil.getUserBean().getUserFromEmail(existingPeople.getEmail(), appDomain.getIdentifier(),AccountUtil.getCurrentOrg().getId(),true);
 				if((linkName.equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP) && existingPeople.isClientPortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)){
 						throw new IllegalArgumentException("Role is mandatory");
@@ -614,9 +614,12 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
+						String email = user.getEmail();
 						user.setLanguage(person.getLanguage());
-						ApplicationApi.addUserInApp(user, false);
 						AccountUtil.getUserBean().updateUser(user);
+						V3PeopleAPI.enableUser(user);
+						user.setEmail(email);
+						ApplicationApi.addUserInApp(user, false);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -625,6 +628,7 @@ public class PeopleAPI {
 				else {
 					if(user != null) {
 						ApplicationApi.deleteUserFromApp(user, appId);
+						V3PeopleAPI.disableUser(existingPeople.getId(),user);
 					}
 				}
 			}

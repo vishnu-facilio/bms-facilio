@@ -103,7 +103,8 @@ public class V3ModuleAPI {
         REQUEST_FOR_QUOTATION(ContextNames.REQUEST_FOR_QUOTATION,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         VENDOR_QUOTES(ContextNames.VENDOR_QUOTES,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)),
         BREAK(FacilioConstants.Break.BREAK, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        ATTENDANCE(FacilioConstants.Attendance.ATTENDANCE, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        ATTENDANCE(FacilioConstants.Attendance.ATTENDANCE, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        CLIENT_CONTACT(ContextNames.CLIENT_CONTACT,Arrays.asList());
 
         private String moduleName;
         private List<String> applicationLinkNames;
