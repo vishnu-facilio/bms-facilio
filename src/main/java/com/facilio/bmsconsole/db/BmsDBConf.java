@@ -123,6 +123,10 @@ public class BmsDBConf extends DBConf {
     public int getMaxFileSize() {
         return FacilioProperties.getMaxFileSize();
     }
+
+    public Set getBlackListExtension() {
+        return FacilioProperties.getBlackListExtension();
+    }
     @Override
     public String getTransactionId() {
         Account account = AccountUtil.getCurrentAccount();

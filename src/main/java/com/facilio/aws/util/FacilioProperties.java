@@ -6,21 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -198,6 +189,8 @@ public class FacilioProperties {
     private static int clamReadTimeout;
     @Getter
     private static int maxFileSize;
+    @Getter
+    private static Set blackListExtension;
     @Getter
     private static String facilioIosURL;
     @Getter
@@ -444,6 +437,7 @@ public class FacilioProperties {
                 malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine","clam");
                 malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout","20000"));
                 clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout","18000"));
+                blackListExtension = new HashSet<String>(Arrays.asList(PROPERTIES.getProperty("fileExtension.blacklist", "ade,adp,apk,appx,appxbundle,bat,cab,chm,cmd,com,cpl,dll,dmg,exe,hta,ins,iso,isp,jar,js,jse,lnk,mde,msc,msi,msix,msixbundle,msp,mst,nsh,pif,ps1,scr,sct,sh,shb,sys,vb,vbe,vbs,vxd,wsc,wsf,wsh,terminal").split(",", -1)));
                 malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
                 malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port","0"));
                 if(StringUtils.isEmpty(malwareScannerHost) && malwareScannerPort.equals(0)){
