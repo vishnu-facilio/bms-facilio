@@ -21,6 +21,21 @@ public class KpiResourceLoggerContext extends V3Context {
     private String message;
     private Boolean isHistorical;
 
+    public KpiResourceLoggerContext(Long kpiId, Long parentLoggerId, Long resourceId, Long startTime, Long endTime, Long calculationStartTime, Integer status, Boolean isHistorical) {
+        this.kpiId = kpiId;
+        this.parentLoggerId = parentLoggerId;
+        this.resourceId = resourceId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.calculationStartTime = calculationStartTime;
+        this.status = status;
+        this.isHistorical = isHistorical;
+    }
+
+    public KpiResourceLoggerContext() {
+
+    }
+
     @Getter
     public enum KpiLoggerStatus implements FacilioIntEnum {
         IN_PROGRESS("In Progress"),

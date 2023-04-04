@@ -22,6 +22,20 @@ public class KpiLoggerContext extends V3Context {
     private Integer successCount;
 
     private List<Map<String,String>> resourceList;
+
+    public KpiLoggerContext(ReadingKPIContext kpi, Integer kpiType, Integer status, Boolean isSysCreated, Long execStartTime, Integer resourceCount) {
+        this.kpi = kpi;
+        this.kpiType = kpiType;
+        this.status = status;
+        this.isSysCreated = isSysCreated;
+        this.execStartTime = execStartTime;
+        this.resourceCount = resourceCount;
+    }
+
+    public KpiLoggerContext() {
+
+    }
+
     public KpiResourceLoggerContext.KpiLoggerStatus getStatusEnum(Integer index){
         return KpiResourceLoggerContext.KpiLoggerStatus.valueOf(index);
     }

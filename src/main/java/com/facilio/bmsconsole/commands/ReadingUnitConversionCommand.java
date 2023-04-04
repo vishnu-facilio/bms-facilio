@@ -34,9 +34,8 @@ public class ReadingUnitConversionCommand extends FacilioCommand {
 		if(metaMap == null || metaMap.isEmpty()) {
 			return false;
 		}
-		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 
-		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
+		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
@@ -57,13 +56,6 @@ public class ReadingUnitConversionCommand extends FacilioCommand {
 											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
 										try {
-											long orgId = AccountUtil.getCurrentOrg().getId();
-											if (orgId == 339l || orgId == 321l) {
-												if (moduleName.equals(ContextNames.WEATHER_READING) && fieldName == "temperature") {
-													LOGGER.info("Temperature for " + orgId + ", Ttime - " + reading.getTtime() + ", Parent - " + reading.getParentId() + ", Value - " + readingData.get(fieldName) + ", id - " + reading.getId());
-												}
-											}
-
                                             if (readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
                                                 Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
                                                 readingData.put(fieldName, value);

@@ -38,13 +38,16 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
     public static List<FacilioField> getNamespaceFieldFields() {
         FacilioModule module = getNamespaceFieldsModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdField(module));
+        FacilioField nsFieldId = getIdField(module);
+        nsFieldId.setName("nsFieldId");
+        fields.add(nsFieldId);
         fields.add(getStringField("varName", "VAR_NAME", module));
         fields.add(getNumberField("nsId", "NAMESPACE_ID", module));
         fields.add(getNumberField("resourceId", "RESOURCE_ID", module));
         fields.add(getNumberField("fieldId", "FIELD_ID", module));
         fields.add(getNumberField("dataInterval", "DATA_INTERVAL", module));
         fields.add(getNumberField("aggregationTypeI", "AGGREGATION_TYPE", module));
+        fields.add(getNumberField("relAggregationType", "REL_AGGREGATION_TYPE", module));
         fields.add(getBooleanField("primary", "IS_PRIMARY", module));
         fields.add(getNumberField("relMapId", "RELATION_MAPPING_ID", module));
         return fields;

@@ -22,6 +22,7 @@ public class StormInstructionPublishCommand extends FacilioCommand {
 
         JSONObject input = new JSONObject();
         input.put("orgId", AccountUtil.getCurrentOrg().getId());
+        input.put("userId", AccountUtil.getCurrentUser().getId());
         input.put("type", type);
         input.put("data", data);
 

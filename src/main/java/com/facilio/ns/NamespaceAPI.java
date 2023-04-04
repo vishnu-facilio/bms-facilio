@@ -78,6 +78,7 @@ public class NamespaceAPI {
             }
 
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
+            field.setId((Long) m.get("nsFieldId"));
             if (field.getPrimary() != null && field.getPrimary()) {
                 field.setResourceId(null);
             }
@@ -88,7 +89,7 @@ public class NamespaceAPI {
             ns.addField(field);
             field.setField(modBean.getField(field.getFieldId()));
         }
-        return nsMap.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(nsMap.values());
     }
 
     public static NameSpaceContext getNameSpaceByRuleId(Long ruleId, NSType type) throws Exception {

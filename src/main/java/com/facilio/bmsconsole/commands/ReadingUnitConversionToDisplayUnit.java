@@ -28,13 +28,12 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, ReadingDataMeta> currentReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
 
-		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
+		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {

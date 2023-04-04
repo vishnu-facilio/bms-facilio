@@ -1565,5 +1565,22 @@ public class ReadingsAPI {
 			return rdmList;
 		 }
 	 }
+
+	public static ReadingDataMeta getRDMContextForReadingAndResource(long orgId, long timestamp, Long resourceId, ReadingInputType type, FacilioField field) {
+		ReadingDataMeta dataMeta = new ReadingDataMeta();
+		dataMeta.setOrgId(orgId);
+		dataMeta.setResourceId(resourceId);
+		dataMeta.setFieldId(field.getFieldId());
+		dataMeta.setTtime(timestamp);
+		dataMeta.setValue("-1");
+		dataMeta.setInputType(type);
+		if (!field.isDefault()) {
+			dataMeta.setCustom(true);
+		}
+		if (type == ReadingInputType.FORMULA_FIELD && field instanceof NumberField) {
+			dataMeta.setUnit(((NumberField) field).getUnitId());
+		}
+		return dataMeta;
+	}
 	
 }

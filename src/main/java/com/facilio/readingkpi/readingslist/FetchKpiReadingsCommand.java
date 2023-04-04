@@ -9,22 +9,21 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
+import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FetchKpiReadingsCommand extends FacilioCommand {
     @Override
@@ -47,7 +46,6 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
 
         // remove this inner join to assets once space support is added
         FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-        Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(modBean.getAllFields(assetModule.getName()));
         String assetTableName = assetModule.getTableName();
 
         FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
@@ -62,11 +60,12 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
                 .table(rdmModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), String.valueOf(Boolean.TRUE), BooleanOperators.IS));
 
 
         if (groupBy.equals("kpi")) {
-            ReadingKPIContext readingKpi = ReadingKpiAPI.getReadingKpi(recordId);
+            ReadingKPIContext readingKpi = getReadingKpi(recordId);
             Long fieldId = readingKpi.getReadingFieldId();
             List<Long> includedAssetIds = readingKpi.getNs().getIncludedAssetIds();
             selectFields.add(resourceNameField);
@@ -86,10 +85,15 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         }
 
         selectFields.add(rdmFieldMap.get("fieldId"));
-        selectFields.add(fieldsFieldMap.get("unit"));
+        selectFields.add(rdmFieldMap.get("unit"));
         selectFields.add(rdmFieldMap.get("resourceId"));
         selectFields.add(rdmFieldMap.get("value"));
         selectFields.add(rdmFieldMap.get("ttime"));
+
+        FacilioField fieldsUnitField = fieldsFieldMap.get("unit");
+        fieldsUnitField.setName("unitLabel");
+        selectFields.add(fieldsUnitField);
+        selectFields.add(fieldsFieldMap.get("metric"));
 
         if (filterCriteria != null)
             builder.andCriteria(filterCriteria);
@@ -110,6 +114,16 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         }
 
         List<Map<String, Object>> records = builder.get();
+        for (Map<String, Object> record : records) {
+            if(record.get("unit") == null) continue;
+
+            NumberField field = new NumberField();
+            field.setMetric((Integer) record.get("metric"));
+            field.setUnitId((Integer) record.get("unit"));
+
+            Double convertedValue = (Double) UnitsUtil.convertToDisplayUnit(record.get("value"), field);
+            record.replace("value", convertedValue);
+        }
 
         builder.select(new HashSet<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, rdmFieldMap.get("id"));
 
@@ -122,7 +136,25 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.COUNT, count);
         context.put(FacilioConstants.ContextNames.DATA, records);
 
-
         return false;
+    }
+
+    public ReadingKPIContext getReadingKpi(Long recordId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule readingKpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getModuleFields(FacilioConstants.ReadingKpi.READING_KPI));
+        SelectRecordsBuilder<ReadingKPIContext> builder = new SelectRecordsBuilder<ReadingKPIContext>()
+                .select(Collections.singleton(fieldsMap.get("readingFieldId")))
+                .module(readingKpiModule)
+                .beanClass(ReadingKPIContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(recordId, readingKpiModule));
+        List<ReadingKPIContext> kpis = builder.get();
+        if (CollectionUtils.isEmpty(kpis)) {
+            throw new IllegalArgumentException("Invalid Kpi Id");
+        }
+        NameSpaceContext ns = NamespaceAPI.getNameSpaceByRuleId(recordId, NSType.KPI_RULE);
+        ReadingKPIContext kpi = kpis.get(0);
+        kpi.setNs(ns);
+        return kpi;
     }
 }

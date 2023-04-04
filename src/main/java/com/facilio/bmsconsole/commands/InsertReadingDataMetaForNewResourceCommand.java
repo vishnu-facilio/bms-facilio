@@ -1,17 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -21,6 +15,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
+import org.apache.commons.chain.Context;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.facilio.bmsconsole.util.ReadingsAPI.getRDMContextForReadingAndResource;
 
 public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand implements Serializable {
 
@@ -56,16 +57,7 @@ public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand i
 					List<FacilioField> dFields= FieldFactory.getDefaultReadingFields(module);
 					fieldsList.removeAll(dFields);
 					for(FacilioField field : fieldsList) {
-						ReadingDataMeta dataMeta = new ReadingDataMeta();
-						dataMeta.setOrgId(orgId);
-						dataMeta.setResourceId(resourceId);
-						dataMeta.setFieldId(field.getFieldId());
-						dataMeta.setTtime(timestamp);
-						dataMeta.setValue("-1");
-						dataMeta.setInputType(type);
-						if (!field.isDefault()) {
-							dataMeta.setCustom(true);							
-						}
+						ReadingDataMeta dataMeta = getRDMContextForReadingAndResource(orgId, timestamp, resourceId, type, field);
 						builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 					}
 					builder.save();
@@ -111,16 +103,7 @@ public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand i
 				List<FacilioField> dFields= FieldFactory.getDefaultReadingFields(module);
 				fieldsList.removeAll(dFields);
 				for(FacilioField field : fieldsList) {
-					ReadingDataMeta dataMeta = new ReadingDataMeta();
-					dataMeta.setOrgId(orgId);
-					dataMeta.setResourceId(resourceId);
-					dataMeta.setFieldId(field.getFieldId());
-					dataMeta.setTtime(timestamp);
-					dataMeta.setValue("-1");
-					dataMeta.setInputType(type);
-					if (!field.isDefault()) {
-						dataMeta.setCustom(true);							
-					}
+					ReadingDataMeta dataMeta = getRDMContextForReadingAndResource(orgId, timestamp, resourceId, type, field);
 					builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 				}
 			}
@@ -129,6 +112,5 @@ public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand i
 	}
 		return false;
 	}
-	
 
 }

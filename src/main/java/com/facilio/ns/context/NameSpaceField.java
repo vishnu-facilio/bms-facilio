@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 @Getter
 @Setter
@@ -35,6 +34,8 @@ public class NameSpaceField implements Cloneable, Serializable {
     FacilioModule module;
 
     Long relMapId;
+
+    Long parentResourceId; // used in storm, when related nsFields are created, their resIds are their relations, but the parentResourceId is the field's resource Id
 
     Long dataInterval;
 
@@ -66,6 +67,13 @@ public class NameSpaceField implements Cloneable, Serializable {
         return (aggregationType != null) ? aggregationType : AggregationType.valueOf(aggregationTypeI);
     }
 
+    Integer relAggregationType; // related fields aggregation type
+
+    @JsonIgnore
+    public AggregationType getRelAggregationTypeEnum(){
+        return AggregationType.valueOf(relAggregationType);
+    }
+
     boolean isEnabledCompaction;
 
     public String fieldKey() {
@@ -84,18 +92,18 @@ public class NameSpaceField implements Cloneable, Serializable {
 
     Boolean primary;
 
+    @Override
     public String toString() {
-        return new HashMap<String, Object>() {
-            {
-                put("nsid", nsId);
-                put("varname", varName);
-                put("resource id ", resourceId);
-                put("field id ", fieldId);
-                put("agg", aggregationType);
-                put("interval", dataInterval);
-                put("relmapid", relMapId);
-            }
-        }.toString();
+        return "NameSpaceField{" +
+                "nsId=" + nsId +
+                ", varName='" + varName + '\'' +
+                ", resourceId=" + resourceId +
+                ", fieldId=" + fieldId +
+                ", relMapId=" + relMapId +
+                ", dataInterval=" + dataInterval +
+                ", aggregationType=" + aggregationType +
+                ", relAggregationType=" + relAggregationType +
+                '}';
     }
 
     @Override

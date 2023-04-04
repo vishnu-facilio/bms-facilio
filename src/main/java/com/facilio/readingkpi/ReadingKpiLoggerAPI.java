@@ -25,20 +25,22 @@ public class ReadingKpiLoggerAPI {
 
     public static long insertLog(Long kpiId, Integer kpiType, Long intervalStartTime, Long intervalEndTime, Boolean isSysCreated, Integer resourceCount) throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        KpiLoggerContext kpiLoggerContext = new KpiLoggerContext();
 
         ReadingKPIContext kpi = new ReadingKPIContext();
         kpi.setId(kpiId);
-        kpiLoggerContext.setKpi(kpi);
+
+        KpiLoggerContext kpiLoggerContext = new KpiLoggerContext(
+                kpi,
+                kpiType,
+                KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex(),
+                isSysCreated,
+                System.currentTimeMillis(),
+                resourceCount
+        );
         if (!isSysCreated) {
             kpiLoggerContext.setStartTime(intervalStartTime);
             kpiLoggerContext.setEndTime(intervalEndTime);
         }
-        kpiLoggerContext.setExecStartTime(System.currentTimeMillis());
-        kpiLoggerContext.setStatus(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex());
-        kpiLoggerContext.setIsSysCreated(isSysCreated);
-        kpiLoggerContext.setResourceCount(resourceCount);
-        kpiLoggerContext.setKpiType(kpiType);
 
         kpiLoggerContext.setSysCreatedBy(AccountUtil.getCurrentUser());
         kpiLoggerContext.setSysCreatedTime(System.currentTimeMillis());
@@ -145,17 +147,18 @@ public class ReadingKpiLoggerAPI {
 
     public static void insertResourceLog(Long kpiId, Long parentLoggerId, Long resourceId, Long intervalStartTime, Long intervalEndTime, Boolean isHistorical) throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        KpiResourceLoggerContext kpiResourceLoggerContext = new KpiResourceLoggerContext();
-        kpiResourceLoggerContext.setKpiId(kpiId);
-        kpiResourceLoggerContext.setParentLoggerId(parentLoggerId);
-        kpiResourceLoggerContext.setResourceId(resourceId);
-        kpiResourceLoggerContext.setStartTime(intervalStartTime);
-        kpiResourceLoggerContext.setEndTime(intervalEndTime);
+        KpiResourceLoggerContext kpiResourceLoggerContext = new KpiResourceLoggerContext(
+                kpiId,
+                parentLoggerId,
+                resourceId,
+                intervalStartTime,
+                intervalEndTime,
+                System.currentTimeMillis(),
+                KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex(),
+                isHistorical
+        );
         kpiResourceLoggerContext.setSysCreatedBy(AccountUtil.getCurrentUser());
         kpiResourceLoggerContext.setSysCreatedTime(System.currentTimeMillis());
-        kpiResourceLoggerContext.setCalculationStartTime(System.currentTimeMillis());
-        kpiResourceLoggerContext.setStatus(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex());
-        kpiResourceLoggerContext.setIsHistorical(isHistorical);
 
         InsertRecordBuilder<KpiResourceLoggerContext> insertRecordBuilder = new InsertRecordBuilder<KpiResourceLoggerContext>()
                 .moduleName(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE)
@@ -175,7 +178,7 @@ public class ReadingKpiLoggerAPI {
         KpiResourceLoggerContext kpiResourceLoggerContext = new KpiResourceLoggerContext();
 
         kpiResourceLoggerContext.setStatus(status.getIndex());
-        if(message!=null) {
+        if (message != null) {
             kpiResourceLoggerContext.setMessage(message);
         }
         UpdateRecordBuilder<KpiResourceLoggerContext> updateRecordBuilder = new UpdateRecordBuilder<KpiResourceLoggerContext>()
