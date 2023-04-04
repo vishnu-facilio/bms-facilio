@@ -46,6 +46,7 @@ public class CloneDashboardCommand extends FacilioCommand {
             if(dashboard.isTabEnabled()){
                 cloned_dashboard.setTabEnabled(true);
             }
+            cloned_dashboard.setDashboardTabPlacement(dashboard.getDashboardTabPlacement());
 
             FacilioContext adddashboard_context = new FacilioContext();
             adddashboard_context.put(FacilioConstants.ContextNames.DASHBOARD, cloned_dashboard);;
