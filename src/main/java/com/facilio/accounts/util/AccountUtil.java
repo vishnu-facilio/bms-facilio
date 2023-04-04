@@ -564,7 +564,8 @@ public class AccountUtil {
 
 
 		QUICK_SEARCH(125,getExponentValue(61),LicenseMapping.GROUP2LICENSE),//2^61
-		SEND_EMAIL_WITH_CALLBACK_FUNCTION(126,getExponentValue(62),LicenseMapping.GROUP2LICENSE);//2^62
+		SEND_EMAIL_WITH_CALLBACK_FUNCTION(126,getExponentValue(62),LicenseMapping.GROUP2LICENSE),//2^62
+		DASHBOARD_ACTION(127,getExponentValue(63),LicenseMapping.GROUP2LICENSE); //2^63
 
 		public int featureId;
 		private long license;

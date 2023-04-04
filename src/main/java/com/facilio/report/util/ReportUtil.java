@@ -1250,7 +1250,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 			return reportFolder.getId();
 		}else {
-			Long folderId = createFolder("Default Folder", folder_type, target_app_id, moduleName);
+			Long folderId = createFolder("Default Folder", folder_type, target_app_id, reportContext.getModule().getName());
 			if (folderId == null || folderId <= 0) {
 				return null;
 			}
