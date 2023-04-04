@@ -11,11 +11,17 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -25,7 +31,8 @@ import java.util.stream.Collectors;
 @Log4j
 public class ReadingMetaMigration extends FacilioCommand {
 
-    public boolean addModule(long sourceOrgId, long targetOrgId ) throws Exception {
+
+    public boolean copyAssetReadings(long sourceOrgId, long targetOrgId ) throws Exception {
 
         AgentMigrationBean sourceBean = (AgentMigrationBean) BeanFactory.lookup("AgentMigrationBean", true, sourceOrgId);
         AgentMigrationBean targetBean = (AgentMigrationBean) BeanFactory.lookup("AgentMigrationBean", true, targetOrgId);
@@ -75,10 +82,16 @@ public class ReadingMetaMigration extends FacilioCommand {
 
         long sourceOrgId = (long) context.get(AgentMigrationConstants.SOURCE_ORG_ID);
         long targetOrgId = (long) context.get(AgentMigrationConstants.TARGET_ORG_ID);
-        boolean copyModule = (boolean) context.get("copyModule");
+        boolean copyAssetReadings = (boolean) context.getOrDefault("copyAssetReadings", false);
 
-        if (copyModule) {
-            return addModule(sourceOrgId, targetOrgId);
+        if (copyAssetReadings) {
+            return copyAssetReadings(sourceOrgId, targetOrgId);
+        }
+
+        boolean copyReadingModule = (boolean) context.getOrDefault("copyReadingModule", false);
+        if (copyReadingModule) {
+            String tableName = (String) context.get("tableName");
+            return copyReadingModule(sourceOrgId, targetOrgId, tableName);
         }
 
         AgentMigrationBean sourceBean = (AgentMigrationBean) BeanFactory.lookup("AgentMigrationBean", true, sourceOrgId);
@@ -201,6 +214,33 @@ public class ReadingMetaMigration extends FacilioCommand {
             LOGGER.info("Reading details changed for " + fieldsToUpdate.size() + " fields");
         }
 
+
+        return false;
+    }
+
+    public boolean copyReadingModule(long sourceOrgId, long targetOrgId, String tableName ) throws Exception {
+        ModuleBean sourceModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", true, sourceOrgId);
+        ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", true, targetOrgId);
+
+        AgentMigrationBean targetBean = (AgentMigrationBean) BeanFactory.lookup("AgentMigrationBean", true, targetOrgId);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", String.valueOf(FacilioModule.ModuleType.READING.getValue()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("TABLE_NAME", "tableName", tableName, StringOperators.IS));
+
+        List<FacilioModule> moduleList = sourceModuleBean.getModuleList(criteria);
+        for(FacilioModule module: moduleList) {
+            FacilioModule targetModule = targetModuleBean.getModule(module.getName());
+            if (targetModule != null) {
+                continue;
+            }
+
+            List<FacilioField> sourceFields = sourceModuleBean.getAllFields(module.getName());
+            targetModule = new FacilioModule(module);
+            targetModule.setFields(sourceFields);
+
+            targetBean.addReadingModule(Collections.singletonList(targetModule), null);
+        }
 
         return false;
     }

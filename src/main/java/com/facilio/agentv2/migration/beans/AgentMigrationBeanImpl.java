@@ -134,7 +134,7 @@ public class AgentMigrationBeanImpl implements AgentMigrationBean{
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
-        context.put(FacilioConstants.ContextNames.PARENT_MODULE, assetModule.getName());
+        context.put(FacilioConstants.ContextNames.PARENT_MODULE, assetModule != null ? assetModule.getName() : null);
         context.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
         context.put(FacilioConstants.ContextNames.APPEND_MODULE_NAME,false);
         chain.execute();

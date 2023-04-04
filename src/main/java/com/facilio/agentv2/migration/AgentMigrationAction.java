@@ -38,7 +38,10 @@ public class AgentMigrationAction extends FacilioAction {
         return chain;
     }
 
-    private boolean copyModule = false;
+    private boolean copyAssetReadings = false;
+    private boolean copyReadingModule = false;
+
+    private String tableName;
 
     public String migrateReadingMeta() throws Exception {
 
@@ -47,7 +50,9 @@ public class AgentMigrationAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(AgentMigrationConstants.SOURCE_ORG_ID, sourceOrgId);
         context.put(AgentMigrationConstants.TARGET_ORG_ID, targetOrgId);
-        context.put("copyModule", copyModule);
+        context.put("copyAssetReadings", copyAssetReadings);
+        context.put("copyReadingModule", copyReadingModule);
+        context.put("tableName", tableName);
         chain.execute();
 
         setResult("result", "success");
