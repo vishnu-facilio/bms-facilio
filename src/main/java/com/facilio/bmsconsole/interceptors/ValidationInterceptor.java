@@ -57,7 +57,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
         if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
                 (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
         ) {
-            LOGGER.info("Validation interceptor done for url : "+request.getRequestURI());
+            LOGGER.info("Validation interceptor done for url : "+request.getRequestURI()+AuthInterceptor.getResponseCode());
         }
         return resp;
     }

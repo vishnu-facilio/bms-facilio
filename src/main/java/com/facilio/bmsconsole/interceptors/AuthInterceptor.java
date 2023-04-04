@@ -167,9 +167,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
 				(request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
 		) {
-			LOGGER.info("Auth interceptor done for url : "+request.getRequestURI());
+			LOGGER.info("Auth interceptor done for url : "+request.getRequestURI()+AuthInterceptor.getResponseCode());
 		}
 		return resp;
+	}
+
+	public static String getResponseCode() {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		return response == null ? ". Response is null" : ". Response status => "+String.valueOf(response.getStatus());
 	}
 
 	public static final void logTimeTaken(String className, long timeTaken, HttpServletRequest request) {
