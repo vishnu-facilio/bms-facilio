@@ -227,6 +227,7 @@ public class ExtendedQAndAV3Config {
 				.afterTransaction(new AddActivitiesCommandV3())
 				.list()
 		        .beforeFetch(QAndAReadOnlyChainFactory.fetchSurveyListChain())
+				.afterFetch(new FilterRetakeExpiryForSurvey())
 				.summary()
 				.beforeFetch(new SurveySupplementSupplyCommand())
 				.afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())

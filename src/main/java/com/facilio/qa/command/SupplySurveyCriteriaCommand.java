@@ -57,9 +57,7 @@ public class SupplySurveyCriteriaCommand extends FacilioCommand{
 			boolean isViewAllSurvey = Boolean.parseBoolean((String) viewAllSurveyParams.get(0));
 			if(isViewAllSurvey){
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), String.valueOf(ResponseContext.ResponseStatus.DISABLED.getIndex()), NumberOperators.NOT_EQUALS));
-				if(!AccountUtil.getCurrentUser().isSuperAdmin()){
-					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
-				}
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
 			}
 		}
 		if(!criteria.isEmpty()) {
