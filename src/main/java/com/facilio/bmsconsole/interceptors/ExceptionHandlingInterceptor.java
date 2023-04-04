@@ -16,6 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,12 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             }
             Map<String, Object> errorMap = new HashMap<>();
             messageNull = ex.getMessage() == null || StringUtils.isEmpty(ex.getMessage());
-            errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :ex.getMessage());
+            //Handling exception for Multiple transactions in a thread(New Transaction Service)
+            try {
+                errorMap.put("message", ((InvocationTargetException)ex).getTargetException().getMessage());
+            }catch(Exception e){
+                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :ex.getMessage());
+            }
             errorMap.put("responseCode",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("code",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("isErrorGeneralized", errorType ? values.getIsErrorGeneralized(): false);
