@@ -31,6 +31,7 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
         boolean isSiteScoped = (boolean) context.getOrDefault(DataMigrationConstants.IS_SITE_SCOPED, false);
         List<String> runMigrationOnlyForModules = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         List<String> moduleSequenceList = (List<String>) context.get(DataMigrationConstants.MODULE_SEQUENCE);
+        Map<String,Criteria> moduleVsCriteria = (Map<String,Criteria>) context.getOrDefault("moduleVsCriteria", new HashMap());
         LOGGER.info("Module sequence computation started");
         List<String> skipModules = new ArrayList<>();
         if(isSiteScoped) {
@@ -178,7 +179,15 @@ public class ComputeModuleSequenceCommand extends FacilioCommand {
             details.put("numberLookups", numberLookupUps);
             details.put("fileFields", numberFileFields);
             Criteria moduleSpecificCriteria = getModuleSpecificCriteria(targetModule);
+            Criteria requestCriteria = moduleVsCriteria.containsKey(targetModule.getName()) ? moduleVsCriteria.get(targetModule.getName()) : null;
+            Criteria criteria = new Criteria();
             if(moduleSpecificCriteria != null) {
+                criteria.andCriteria(moduleSpecificCriteria);
+            }
+            if(requestCriteria != null) {
+                criteria.andCriteria(requestCriteria);
+            }
+            if(!criteria.isEmpty()) {
                 details.put("criteria", moduleSpecificCriteria);
             }
             moduleNameVsDetails.put(moduleName, details);
