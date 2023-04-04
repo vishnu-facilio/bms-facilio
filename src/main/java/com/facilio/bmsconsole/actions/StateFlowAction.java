@@ -445,7 +445,7 @@ public class StateFlowAction extends FacilioAction {
 	public String getAvailableState() throws Exception {
 
 		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
-			LOGGER.info("ACtion class of getAvailableState called");
+			LOGGER.info("Action class of getAvailableState called");
 		}
 
 		FacilioChain chain = TransactionChainFactory.getAvailableState();
@@ -456,6 +456,10 @@ public class StateFlowAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, context.get("availableStates"));
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
+
+		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
+			LOGGER.info("Action class done for getAvailableState");
+		}
 		
 		return SUCCESS;
 	}

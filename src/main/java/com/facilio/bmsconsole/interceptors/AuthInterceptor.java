@@ -9,7 +9,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.amazonaws.regions.Regions;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
@@ -161,7 +163,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 		long timeTaken = System.currentTimeMillis() - time;
 		logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Auth interceptor done", request);
-		return arg0.invoke();
+		String resp = arg0.invoke();
+		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
+				(request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
+		) {
+			LOGGER.info("Auth interceptor done for url : "+request.getRequestURI());
+		}
+		return resp;
 	}
 
 	public static final void logTimeTaken(String className, long timeTaken, HttpServletRequest request) {

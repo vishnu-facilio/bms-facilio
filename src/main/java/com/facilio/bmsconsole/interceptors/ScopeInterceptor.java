@@ -487,7 +487,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
         long timeTaken = System.currentTimeMillis() - startTime;
         AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
         AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Scope interceptor done with return {0}", invoke != null ? "(invoking will happen. no return)" : returnStr), request);
-        return invoke == null ? ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION) : invoke.invoke();
+        String resp = invoke == null ? ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION) : invoke.invoke();
+        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
+                (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
+        ) {
+            LOGGER.info("Scope interceptor Done for url : "+request.getRequestURI());
+        }
+        return resp;
     }
 
     private AuditData getAuditData(ActionInvocation actionInvocation) {

@@ -155,6 +155,10 @@ public class CustomButtonAction extends FacilioAction {
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 
+        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
+            LOGGER.info("Action class done for getAvailableButton");
+        }
+
         return SUCCESS;
     }
 

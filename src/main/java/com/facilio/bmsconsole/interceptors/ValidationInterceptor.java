@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.interceptors;
 
+import com.amazonaws.regions.Regions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.requestvalidator.Executor;
@@ -10,6 +11,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONObject;
 
@@ -51,7 +53,13 @@ public class ValidationInterceptor extends AbstractInterceptor {
             LOGGER.error(FacilioUtil.constructMessageFromException(ex));
         }
 
-        return invocation.invoke();
+        String resp = invocation.invoke();
+        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
+                (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
+        ) {
+            LOGGER.info("Validation interceptor done for url : "+request.getRequestURI());
+        }
+        return resp;
     }
 
     private void write(Map messageMap, int httpCode, ServletResponse servletResponse) throws IOException {
