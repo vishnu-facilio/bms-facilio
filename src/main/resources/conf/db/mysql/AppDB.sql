@@ -48529,6 +48529,7 @@ CREATE TABLE IF NOT EXISTS Vendor_Quotes
     DISCARDED          TINYINT,
     NEGOTIATION        TINYINT,
     EXPECTED_REPLY_DATE BIGINT(20),
+    AWARD_STATUS       INT,
     FORM_ID            BIGINT,
     LOCAL_ID           BIGINT(20),
     SITE_ID            BIGINT,

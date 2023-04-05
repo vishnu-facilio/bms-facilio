@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -11,6 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -24,6 +26,8 @@ public class VendorQuoteDefaultStateflow extends SignUpData {
             String awaitingVendorQuote = addStateForVendorQuoteStateFlow("Awaiting Vendor Quote");
            String submittedQuote = addStateForVendorQuoteStateFlow("Submitted Quote");
            String underNegotiation =  addStateForVendorQuoteStateFlow("Under Negotiation");
+           String awarded = addStateForVendorQuoteStateFlow("Awarded");
+            String notAwarded = addStateForVendorQuoteStateFlow("Not Awarded");
             long stateFlowId = addVendorQuoteStateFlow(awaitingVendorQuote);
             if(stateFlowId>0){
                 // transition from Awaiting Vendor Quote to Submitted Quote
@@ -38,7 +42,14 @@ public class VendorQuoteDefaultStateflow extends SignUpData {
                 Criteria submitQuoteCriteria = new Criteria();
                 submitQuoteCriteria.addAndCondition(CriteriaAPI.getCondition("Vendor_Quotes.NEGOTIATION", "negotiation",String.valueOf(false), BooleanOperators.IS));
                 addStateFlowTransitions(vendorQuoteModule,stateFlowId,underNegotiation,submittedQuote,"Submit Quote",submitQuoteCriteria);
-
+                // transition from submitted quote to awarded
+                Criteria awardedCriteria = new Criteria();
+                awardedCriteria.addAndCondition(CriteriaAPI.getCondition("Vendor_Quotes.AWARD_STATUS", "awardStatus",String.valueOf(V3VendorQuotesContext.AwardStatus.AWARDED.getIndex()), EnumOperators.IS));
+                addStateFlowTransitions(vendorQuoteModule,stateFlowId,submittedQuote,awarded,"Award",awardedCriteria);
+                // transition from submitted quote to not awarded
+                Criteria notAwardedCriteria = new Criteria();
+                notAwardedCriteria.addAndCondition(CriteriaAPI.getCondition("Vendor_Quotes.AWARD_STATUS", "awardStatus",String.valueOf(V3VendorQuotesContext.AwardStatus.NOT_AWARDED.getIndex()), EnumOperators.IS));
+                addStateFlowTransitions(vendorQuoteModule,stateFlowId,submittedQuote,notAwarded,"Award",notAwardedCriteria);
             }
         }
     }

@@ -21,6 +21,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 
@@ -36,45 +37,47 @@ public class AwardVendorsCommandV3 extends FacilioCommand {
         V3RequestForQuotationContext requestForQuotation = (V3RequestForQuotationContext) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
         List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems = (List<V3RequestForQuotationLineItemsContext>) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS);
 
-       for(V3RequestForQuotationLineItemsContext lineItem : requestForQuotationLineItems){
-            if(lineItem.getAwardedPrice() == null){
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Vendor has not quoted unit price");
+        if(CollectionUtils.isNotEmpty(requestForQuotationLineItems)) {
+            for (V3RequestForQuotationLineItemsContext lineItem : requestForQuotationLineItems) {
+                if (lineItem.getAwardedPrice() == null) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Vendor has not quoted unit price");
+                }
+                Double totalCost = lineItem.getQuantity() * lineItem.getAwardedPrice();
+
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                String moduleName = FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS;
+                FacilioModule module = modBean.getModule(moduleName);
+                List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+                List<FacilioField> updatedFields = new ArrayList<>();
+                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+                updatedFields.add(fieldsMap.get("totalCost"));
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("totalCost", totalCost);
+
+                UpdateRecordBuilder<V3RequestForQuotationLineItemsContext> updateBuilder = new UpdateRecordBuilder<V3RequestForQuotationLineItemsContext>()
+                        .module(module).fields(updatedFields)
+                        .andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module));
+                updateBuilder.updateViaMap(map);
+
+                // to update awarded status in vendorQuoteLineItem
+                Long vendorQuoteLineItemId = null;
+                if (requestForQuotation != null && lineItem != null && lineItem.getAwardedTo() != null) {
+                    vendorQuoteLineItemId = getVendorQuoteLineItem(requestForQuotation.getId(), lineItem.getId(), lineItem.getAwardedTo().getId());
+                }
+
+                if (vendorQuoteLineItemId != null) {
+                    awardVendorQuoteLineItem(vendorQuoteLineItemId);
+                }
+
+                // History handling
+                JSONObject info = new JSONObject();
+                info.put(FacilioConstants.ContextNames.USER, requestForQuotation.getSysModifiedBy().getName());
+                CommonCommandUtil.addActivityToContext(requestForQuotation.getId(), -1, RequestForQuotationActivityType.QUOTE_AWARDED, info, (FacilioContext) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_CONTEXT));
+
             }
-            Double totalCost=lineItem.getQuantity()* lineItem.getAwardedPrice();
-
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            String moduleName = FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS;
-            FacilioModule module = modBean.getModule(moduleName);
-            List<FacilioField> fields = modBean.getAllFields(moduleName);
-
-            List<FacilioField> updatedFields = new ArrayList<>();
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-            updatedFields.add(fieldsMap.get("totalCost"));
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("totalCost", totalCost);
-
-            UpdateRecordBuilder<V3RequestForQuotationLineItemsContext> updateBuilder = new UpdateRecordBuilder<V3RequestForQuotationLineItemsContext>()
-                    .module(module).fields(updatedFields)
-                    .andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module));
-            updateBuilder.updateViaMap(map);
-
-            // to update awarded status in vendorQuoteLineItem
-           Long vendorQuoteLineItemId =null;
-            if(requestForQuotation!=null && lineItem!=null && lineItem.getAwardedTo()!=null){
-                vendorQuoteLineItemId = getVendorQuoteLineItem(requestForQuotation.getId(),lineItem.getId(),lineItem.getAwardedTo().getId());
-            }
-
-            if(vendorQuoteLineItemId!=null){
-                awardVendorQuoteLineItem(vendorQuoteLineItemId);
-            }
-
-           // History handling
-           JSONObject info = new JSONObject();
-           info.put(FacilioConstants.ContextNames.USER , requestForQuotation.getSysModifiedBy().getName());
-           CommonCommandUtil.addActivityToContext(requestForQuotation.getId(), -1, RequestForQuotationActivityType.QUOTE_AWARDED, info, (FacilioContext) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_CONTEXT));
-
-       }
+        }
         return false;
     }
     private Long getVendorQuoteLineItem(Long rfqId, Long rfqLineItemId, Long vendorId) throws Exception{

@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context.vendorquotes;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class V3VendorQuotesContext extends V3Context {
     private Boolean negotiation;
     private V3PurchaseOrderContext purchaseOrder;
     private Boolean vendorPortalAccess;
+    private AwardStatus awardStatus;
 
     public Boolean getIsDiscarded() {
         if(isDiscarded != null){
@@ -104,5 +107,47 @@ public class V3VendorQuotesContext extends V3Context {
 
     public void setVendorPortalAccess(Boolean vendorPortalAccess) {
         this.vendorPortalAccess = vendorPortalAccess;
+    }
+    public Integer getAwardStatus() {
+        if (awardStatus != null) {
+            return awardStatus.getIndex();
+        }
+        return null;
+    }
+
+    public void setAwardStatus(Integer awardStatus) {
+        if (awardStatus != null) {
+            this.awardStatus = AwardStatus.valueOf(awardStatus);
+        }
+    }
+    public AwardStatus getAwardStatusEnum() {
+        return awardStatus;
+    }
+
+    public enum AwardStatus implements FacilioIntEnum {
+        NOT_AWARDED("Not Awarded"), AWARDED("Awarded");
+
+        private final String value;
+
+        AwardStatus(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        public static AwardStatus valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
     }
 }

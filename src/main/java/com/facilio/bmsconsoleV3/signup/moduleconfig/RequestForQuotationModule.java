@@ -248,6 +248,7 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         requestForQuotationModuleFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         requestForQuotationModuleFormDefaultFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 2));
         FormField field = new FormField("vendor", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Vendors", FormField.Required.OPTIONAL,3, 3);
+        field.setAllowCreateOptions(true);
         requestForQuotationModuleFormDefaultFields.add(field);
         requestForQuotationModuleFormDefaultFields.add(new FormField("requestedDate", FacilioField.FieldDisplayType.DATE, "Requested Date", FormField.Required.OPTIONAL, 4, 2));
         requestForQuotationModuleFormDefaultFields.add(new FormField("requiredDate", FacilioField.FieldDisplayType.DATE, "Required Date", FormField.Required.OPTIONAL, 4, 3));

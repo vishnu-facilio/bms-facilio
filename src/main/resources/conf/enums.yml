@@ -314,3 +314,6 @@ enums:
 
   - name: InventoryRequestReservationStatus
     enumClassName: com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext$InventoryRequestReservationStatus
+
+  - name: AwardStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext$AwardStatus

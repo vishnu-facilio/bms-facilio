@@ -2152,6 +2152,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAwardVendorsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AwardVendorsCommandV3());
+        c.addCommand(new UpdateAwardedStatusCommandV3());
         return c;
     }
 
