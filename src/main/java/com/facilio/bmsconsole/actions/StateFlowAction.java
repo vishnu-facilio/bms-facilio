@@ -5,6 +5,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
@@ -458,7 +459,7 @@ public class StateFlowAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
 
 		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
-			LOGGER.info("Action class done for getAvailableState");
+			LOGGER.info("Action class done for getAvailableState" + AuthInterceptor.getResponseCode());
 		}
 		
 		return SUCCESS;

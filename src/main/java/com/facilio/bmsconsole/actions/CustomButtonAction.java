@@ -5,6 +5,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -156,7 +157,7 @@ public class CustomButtonAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 
         if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())) {
-            LOGGER.info("Action class done for getAvailableButton");
+            LOGGER.info("Action class done for getAvailableButton" + AuthInterceptor.getResponseCode());
         }
 
         return SUCCESS;
