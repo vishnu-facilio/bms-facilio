@@ -84,9 +84,7 @@ public class CreatePurchaseOrdersCommandV3 extends FacilioCommand {
             purchaseOrderLineItem.setToolType(toolType);
         }
         else if(requestForQuotationLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex())){
-            Map<String, Object> map = FieldUtil.getAsProperties(requestForQuotationLineItem.getService());
-            ServiceContext service = FieldUtil.getAsBeanFromMap(map, ServiceContext.class);
-            purchaseOrderLineItem.setService(service);
+            purchaseOrderLineItem.setService(requestForQuotationLineItem.getService());
         }
         return purchaseOrderLineItem;
     }

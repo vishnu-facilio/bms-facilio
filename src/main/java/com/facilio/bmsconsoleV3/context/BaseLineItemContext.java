@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -13,7 +12,7 @@ public class BaseLineItemContext extends V3Context {
 
     private V3ItemTypesContext itemType;
     private V3ToolTypesContext toolType;
-    private ServiceContext service;
+    private V3ServiceContext service;
     private LabourContext labour;
     private TaxContext tax;
     private Double quantity;
@@ -37,14 +36,6 @@ public class BaseLineItemContext extends V3Context {
 
     public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
-    }
-
-    public ServiceContext getService() {
-        return service;
-    }
-
-    public void setService(ServiceContext service) {
-        this.service = service;
     }
 
     public LabourContext getLabour() {
@@ -109,5 +100,12 @@ public class BaseLineItemContext extends V3Context {
 
     public void setUnitOfMeasure(Long unitOfMeasure) {
         this.unitOfMeasure = unitOfMeasure;
+    }
+    public V3ServiceContext getService() {
+        return service;
+    }
+
+    public void setService(V3ServiceContext service) {
+        this.service = service;
     }
 }

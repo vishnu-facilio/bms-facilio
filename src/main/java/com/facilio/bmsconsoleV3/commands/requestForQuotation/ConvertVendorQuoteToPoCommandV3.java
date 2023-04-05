@@ -61,9 +61,7 @@ public class ConvertVendorQuoteToPoCommandV3  extends FacilioCommand {
                     purchaseOrderLineItem.setToolType(vendorQuotesLineItem.getToolType());
                 }
                 else if(vendorQuotesLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex())){
-                    Map<String, Object> map = FieldUtil.getAsProperties(vendorQuotesLineItem.getService());
-                    ServiceContext service = FieldUtil.getAsBeanFromMap(map, ServiceContext.class);
-                    purchaseOrderLineItem.setService(service);
+                    purchaseOrderLineItem.setService(vendorQuotesLineItem.getService());
                 }
                 purchaseOrderLineItems.add(purchaseOrderLineItem);
             }

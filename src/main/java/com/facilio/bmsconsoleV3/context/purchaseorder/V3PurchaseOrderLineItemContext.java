@@ -78,16 +78,6 @@ public class V3PurchaseOrderLineItemContext extends BaseLineItemContext {
 		this.purchasedTools = purchasedTools;
 	}
 
-	public WorkOrderServiceContext constructWorkOrderServiceContext(long parentId) throws Exception {
-		WorkOrderServiceContext woService = new WorkOrderServiceContext();
-		woService.setService(this.getService());
-		woService.setParentId(parentId);
-		woService.setQuantity(this.getQuantity());
-		woService.setUnitPrice(this.getUnitPrice());
-		woService.setCost(this.getQuantity() * this.getUnitPrice());
-		return woService;
-	}
-
 	public Double getQuantityReceived() {
 		return quantityReceived;
 	}

@@ -69,9 +69,7 @@ public class ConvertRfqToPoCommandV3 extends FacilioCommand {
                 purchaseOrderLineItem.setToolType(requestForQuotationLineItem.getToolType());
             }
             else if(requestForQuotationLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex())){
-                Map<String, Object> map = FieldUtil.getAsProperties(requestForQuotationLineItem.getService());
-                ServiceContext service = FieldUtil.getAsBeanFromMap(map, ServiceContext.class);
-                purchaseOrderLineItem.setService(service);
+                purchaseOrderLineItem.setService(requestForQuotationLineItem.getService());
             }
             purchaseOrderLineItems.add(purchaseOrderLineItem);
         }
