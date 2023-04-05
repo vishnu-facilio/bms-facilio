@@ -39,7 +39,7 @@ public class ImportFileSheetsContext implements Serializable {
     private Map<String,String> fieldNameVsSheetColumnName;
     private String columnHeadingString,insertBy,updateBy,firstRowString,secondRowString;
     private JSONObject firstRow,secondRow;
-    private long insertCount,skipCount,updateCount;
+    private long insertCount,skipCount,updateCount,failCount;
     private MultiImportSetting importSetting;
     public void setImportSetting(int importSetting) {
         this.importSetting = MultiImportSetting.valueOf(importSetting);

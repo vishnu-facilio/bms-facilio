@@ -18,6 +18,7 @@ public class XLSheetWriter implements AbstractSheetWriter{
     private Map<Integer,String> headerMap;
     private Map<Integer,String> columnIndexVsDateFormat;
     private Map<Integer,Short> columnIndexVsColour;
+    private RowFunction rowFunction;
     private int currentRowNo;
     private XLFileWriter parent;
     private CreationHelper creationHelper;
@@ -121,9 +122,19 @@ public class XLSheetWriter implements AbstractSheetWriter{
               }
 
             }
+            if(rowFunction!=null){
+                rowFunction.apply(currentRowNo);
+            }
             currentRowNo++;
         }
     }
+
+    @Override
+    public AbstractSheetWriter afterRowFunction(RowFunction rowFunction) {
+        this.rowFunction = rowFunction;
+        return this;
+    }
+
     private void setDateCellValue(Cell cell,Object cellValue,int index) throws ParseException {
         Long millis = FacilioUtil.parseLong(cellValue);
         String dateFormat = columnIndexVsDateFormat.get(index);

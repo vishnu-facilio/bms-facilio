@@ -9,6 +9,7 @@ import com.facilio.multiImport.annotations.ImportModule;
 import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.command.*;
 import com.facilio.multiImport.config.*;
+import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
@@ -111,7 +112,7 @@ public class MultiImportChainUtil {
         return chain;
     }
 
-    public static FacilioChain getImportChain(String moduleName) throws Exception {
+    public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
         ImportConfig importConfig = getMultiImportConfig(moduleName);
 
         Command beforeImportCommand = null;
@@ -140,7 +141,7 @@ public class MultiImportChainUtil {
         chain.addCommand(new V3ProcessMultiImportCommand());
         chain.addCommand(new FilterMultiImportDataCommand());
         addIfNotNull(chain, afterImportCommand);
-        chain.addCommand(getCreateChain(moduleName));
+        addCreateAndPatchChainsBySettings(chain,setting,moduleName);
         chain.addCommand(new UpdateRowStatusCommand());
         addIfNotNull(chain, afterInsertCommand);
 
@@ -196,10 +197,11 @@ public class MultiImportChainUtil {
         return transactionChain;
     }
 
-    public static FacilioChain getPatchChain(String moduleName) {
+    public static FacilioChain getPatchChain(String moduleName) throws Exception {
         ImportConfig importConfig = getMultiImportConfig(moduleName);
+        FacilioModule module = ChainUtil.getModule(moduleName);
 
-        Command initCommand = null;
+        Command initCommand = new BulkPatchInit();
         Command beforeUpdateCommand = null;
         Command afterUpdateCommand = null;
         Command afterTransactionCommand = null;
@@ -208,7 +210,9 @@ public class MultiImportChainUtil {
         if (importConfig != null) {
             UpdateHandler updateHandler = importConfig.getUpdateHandler();
             if (updateHandler != null) {
-                initCommand = updateHandler.getInitCommand();
+                if(updateHandler.getInitCommand() != null){
+                    initCommand = updateHandler.getInitCommand();
+                }
                 beforeUpdateCommand = updateHandler.getBeforeUpdateCommand();
                 afterUpdateCommand = updateHandler.getAfterUpdateCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();
@@ -216,8 +220,28 @@ public class MultiImportChainUtil {
             }
         }
 
-        FacilioChain chain = getDefaultChain();
-        return chain;
+        FacilioChain transactionChain = getDefaultChain();
+
+        addIfNotNull(transactionChain, initCommand);
+        addIfNotNull(transactionChain, beforeUpdateCommand);
+
+        transactionChain.addCommand(new ImportUpdateCommand(module));
+
+        addIfNotNull(transactionChain, afterUpdateCommand);
+        addIfNotNull(transactionChain, activitySaveCommand);
+        addIfNotNull(transactionChain, afterTransactionCommand);
+        return transactionChain;
+    }
+
+    public static void addCreateAndPatchChainsBySettings(FacilioChain chain,MultiImportSetting setting,String moduleName) throws Exception {
+        if(setting == MultiImportSetting.INSERT || setting == MultiImportSetting.INSERT_SKIP){
+            chain.addCommand(getCreateChain(moduleName));
+        }else if(setting == MultiImportSetting.UPDATE || setting == MultiImportSetting.UPDATE_NOT_NULL){
+            chain.addCommand(getPatchChain(moduleName));
+        } else if ( setting == MultiImportSetting.BOTH || setting == MultiImportSetting.BOTH_NOT_NULL) {
+            chain.addCommand(getCreateChain(moduleName));
+            chain.addCommand(getPatchChain(moduleName));
+        }
     }
     public static FacilioChain getDownloadErrorRecordsChain(){
         FacilioChain chain = getDefaultChain();

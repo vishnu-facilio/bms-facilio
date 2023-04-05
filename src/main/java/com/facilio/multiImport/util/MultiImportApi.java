@@ -2,7 +2,9 @@ package com.facilio.multiImport.util;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,6 +15,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
@@ -20,12 +23,19 @@ import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.importFileReader.AbstractImportFileReader;
 import com.facilio.multiImport.importFileReader.CSVFileReader;
 import com.facilio.multiImport.importFileReader.XLFileReader;
+import com.facilio.multiImport.multiImportExceptions.ImportFieldValueMissingException;
+import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsException;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.endpoint.LiveSession;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -40,6 +50,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.facilio.wmsv2.constants.Topics.MultiImport.multiImport;
+import static com.facilio.wmsv2.constants.Topics.MultiImport.multiImportErrorRecords;
 
 public class MultiImportApi {
 
@@ -235,7 +248,7 @@ public class MultiImportApi {
                 sheetContext.setId(sheetId);
                 sheetIdVsSheetsContext.put(sheetId, sheetContext);
 
-                if (fieldMappingId == -1L) { //skip if fildMapping is empty
+                if (fieldMappingId == -1L) { //skip if fieldMapping is empty
                     continue;
                 }
 
@@ -248,7 +261,7 @@ public class MultiImportApi {
             } else {
                 ImportFileSheetsContext sheetContext = sheetIdVsSheetsContext.get(sheetId);
 
-                if (fieldMappingId == -1L) { //skip if fildMapping is empty
+                if (fieldMappingId == -1L) { //skip if fieldMapping is empty
                     continue;
                 }
 
@@ -296,16 +309,17 @@ public class MultiImportApi {
     }
 
     public static Map<Long, List<ImportFileContext>> getImportIdVsImportFilesMap(Set<Long> importIds) throws Exception {
-        return getImportIdVsImportFilesMap(importIds, null);
+        return getImportIdVsImportFilesMap(importIds, null,false);
     }
 
-    public static Map<Long, List<ImportFileContext>> getImportIdVsImportFilesMap(Set<Long> importIds, List<FacilioField> selectableFields) throws Exception {
+    public static Map<Long, List<ImportFileContext>> getImportIdVsImportFilesMap(Set<Long> importIds, List<FacilioField> selectableFields,boolean selectFieldMapping) throws Exception {
         if (CollectionUtils.isEmpty(importIds)) {
             return null;
         }
 
         FacilioModule importFileSheetModule = ModuleFactory.getImportFileSheetsModule();
         FacilioModule importFileModule = ModuleFactory.getImportFileModule();
+        FacilioModule importSheetFieldMappingModule = ModuleFactory.getImportSheetFieldMappingModule();
 
 
         if (CollectionUtils.isEmpty(selectableFields)) {
@@ -316,6 +330,10 @@ public class MultiImportApi {
 
             selectableFields.addAll(importFileFields);
             selectableFields.addAll(importFileSheetFields);
+        }
+        if(selectFieldMapping){
+            List<FacilioField> fieldMappingFields = FieldFactory.getImportSheetFieldMappingFields();
+            selectableFields.addAll(fieldMappingFields);
         }
 
         selectableFields.removeIf(p -> {
@@ -328,6 +346,12 @@ public class MultiImportApi {
         FacilioField importFileIdField = FieldFactory.getIdField(importFileModule);
         importFileIdField.setName("importFileId");
 
+        if (selectFieldMapping){
+            FacilioField fieldMappingIdField = FieldFactory.getIdField(importSheetFieldMappingModule);
+            fieldMappingIdField.setName("fieldMappingId");
+            selectableFields.add(fieldMappingIdField);
+        }
+
         selectableFields.add(importFileIdField);
         selectableFields.add(sheetIdField);
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -337,6 +361,10 @@ public class MultiImportApi {
                 .on("ImportFile.ID=ImportFileSheets.IMPORT_FILE_ID")
                 .andCondition(CriteriaAPI.getCondition("ImportFile.IMPORT_ID", "importId", StringUtils.join(importIds, ","), NumberOperators.EQUALS));
 
+        if(selectFieldMapping){
+            selectBuilder.leftJoin(importSheetFieldMappingModule.getTableName())
+                         .on("ImportFileSheets.ID=ImportSheetFieldMapping.IMPORT_SHEET_ID");
+        }
         List<Map<String, Object>> props = selectBuilder.get();
         Map<Long, List<ImportFileContext>> importIdVsImportFiles = getImportIdVsImportFileListBeanFromMapList(props);
         return importIdVsImportFiles;
@@ -568,7 +596,7 @@ public class MultiImportApi {
                 importIds.add(importId);
             }
 
-            fillImportFilesInfo(importDataDetailsList, importIds);
+            fillImportFilesInfo(importDataDetailsList, importIds,getSelectableFieldsForImportListView(),false);
 
         }
         return CollectionUtils.isNotEmpty(importDataDetailsList) ? importDataDetailsList : Collections.emptyList();
@@ -587,9 +615,12 @@ public class MultiImportApi {
 
         selectBuilder.andCustomWhere(subQuery.toString());
     }
-
-    private static void fillImportFilesInfo(List<ImportDataDetails> importDataDetailsList, Set<Long> importIds) throws Exception {
-        Map<Long, List<ImportFileContext>> importIdVsImportFileMap = MultiImportApi.getImportIdVsImportFilesMap(importIds, getSelectableFieldsForImportListView());
+    public  static void fillImportFilesInfo(ImportDataDetails importDataDetails) throws Exception {
+        fillImportFilesInfo(Arrays.asList(importDataDetails),
+                new HashSet<>(Arrays.asList(importDataDetails.getId())),null,true);
+    }
+    public static void fillImportFilesInfo(List<ImportDataDetails> importDataDetailsList, Set<Long> importIds,List<FacilioField> selectableFields,boolean selectFieldMapping) throws Exception {
+        Map<Long, List<ImportFileContext>> importIdVsImportFileMap = MultiImportApi.getImportIdVsImportFilesMap(importIds, selectableFields,selectFieldMapping);
         for (ImportDataDetails importDataDetails : importDataDetailsList) {
             Long importId = importDataDetails.getId();
             List<ImportFileContext> importFileList = importIdVsImportFileMap.getOrDefault(importId, Collections.EMPTY_LIST);
@@ -601,6 +632,8 @@ public class MultiImportApi {
                     Long rowCount = sheet.getRowCount();
                     if (rowCount != -1L) {
                         totalRecords += rowCount;
+                        long failCount = rowCount - sheet.getInsertCount() - sheet.getUpdateCount() - sheet.getSkipCount();
+                        sheet.setFailCount(failCount);
                     }
                 }
                 importFile.setTotalRecords(totalRecords);
@@ -708,7 +741,7 @@ public class MultiImportApi {
                 .select(FieldFactory.getMultiImportProcessLogFields())
                 .table(ModuleFactory.getMultiImportProcessLogModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("IMPORT_SHEET_ID", "importSheetId", importSheetId.toString(), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("IS_ERROR_OCCURRED_ROW", "errorOccuredRow", "false", BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("IS_ERROR_OCCURRED_ROW", "errorOccurredRow", "false", BooleanOperators.IS))
                 .orderBy("ROW__NUMBER");
 
         if (lastRowIdTaken != 0) {
@@ -759,12 +792,12 @@ public class MultiImportApi {
         List<Pair<Long, Map<String, Object>>> errorFreeRows = new ArrayList<>();
 
         for (ImportRowContext rowContext : allRows) {
-            if (rowContext.isErrorOccuredRow()) {
+            if (rowContext.isErrorOccurredRow()) {
                 continue;
             }
             Long logId = rowContext.getId();
             Map<String, Object> errorFreeRow = rowContext.getProcessedRawRecordMap();
-            Pair<Long, Map<String, Object>> pair = new ImmutablePair<>(logId, errorFreeRow);
+            Pair<Long, Map<String, Object>> pair = new MutablePair<>(logId, errorFreeRow);
 
             errorFreeRows.add(pair);
         }
@@ -834,6 +867,31 @@ public class MultiImportApi {
         }
         return sheetColumnName;
     }
+    public static FacilioField getFacilioFieldFromSheetColumnName(ImportFileSheetsContext importSheet,String sheetColumnName) throws Exception {
+        Map<String,ImportFieldMappingContext> sheetColumnNameVsFieldMapping =importSheet.getSheetColumnNameVsFieldMapping();
+
+        ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
+
+        if(fieldMappingContext == null){
+            return null;
+        }
+
+        long fieldId = fieldMappingContext.getFieldId();
+        String fieldName = fieldMappingContext.getFieldName();
+
+        List<FacilioField> fields = Constants.getModBean().getAllFields(importSheet.getModuleName());
+        Map<Long, FacilioField> fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
+        Map<String, FacilioField> fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(fields);
+
+        if(fieldId != -1L) {
+            return fieldIdVsFacilioFieldMap.get(fieldId);
+        }
+        else if (StringUtils.isNotEmpty(fieldName)) {
+            return fieldNameVsFacilioFieldMap.get(fieldName);
+        }
+
+        return null;
+    }
 
     public static String getFileType(ImportFileContext importFile) {
         String fileName = importFile.getFileName();
@@ -868,14 +926,12 @@ public class MultiImportApi {
         }
         return null;
     }
-    public static void sendImportCompletedEmail(ImportDataDetails importDataDetails,User user){
+    public static void sendImportCompletedEmail(ImportDataDetails importDataDetails,String to,String message){
         try{
-            StringBuilder emailMessage = new StringBuilder();
-            emailMessage.append("Your recent import has been successfully completed");
             EMailTemplate template = new EMailTemplate();
             template.setFrom(EmailClient.getFromEmail("alert"));
-            template.setTo(user.getEmail());
-            template.setMessage(emailMessage.toString());
+            template.setTo(to);
+            template.setMessage(message);
             template.setSubject("Import of " + importDataDetails.getId());
             JSONObject emailJSON = template.getOriginalTemplate();
             emailJSON.put("mailType", "html");
@@ -886,7 +942,118 @@ public class MultiImportApi {
         }
 
     }
+    public static void checkMandatoryFieldsValueExistsOrNot(List<FacilioField> mandatoryFields, ImportFileSheetsContext importSheet, ImportRowContext rowContext){
+        if (CollectionUtils.isEmpty(mandatoryFields)) {
+            return;
+        }
+        Map<String,Object> rowVal = rowContext.getRawRecordMap();
+        ArrayList<String> valueMissingColumns = new ArrayList<>();
+        for (FacilioField field : mandatoryFields) {
 
+            String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet,field);
+
+            if (sheetColumnName != null && Objects.isNull(rowVal.get(sheetColumnName))) {  //if object is null means,mark isErrorOccurredRow as a true and save error message in ImportRow context
+                valueMissingColumns.add(sheetColumnName);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(valueMissingColumns)) {
+            ImportMandatoryFieldsException exception = new ImportMandatoryFieldsException((int)rowContext.getRowNumber(), valueMissingColumns, new Exception());
+            String errorMessage = exception.getClientMessage();
+            rowContext.setErrorOccurredRow(true);
+            rowContext.setErrorMessage(errorMessage);
+        }
+
+    }
+    public static void checkImportSettingFieldValueExistOrNot(ImportFileSheetsContext importSheet, ImportRowContext rowContext) throws Exception {
+        List<String> sheetColumnNames = null;
+        if (importSheet.getImportSetting() == MultiImportSetting.INSERT_SKIP.getValue()) {
+            sheetColumnNames = importSheet.getInsertByFieldsList();
+
+        } else {
+            sheetColumnNames = importSheet.getUpdateByFieldsList();
+        }
+
+        Map<String,Object> rowVal = rowContext.getRawRecordMap();
+        if (CollectionUtils.isNotEmpty(sheetColumnNames)) {
+            for (String columnName : sheetColumnNames) {
+                if (Objects.isNull(rowVal.get(columnName))) {  //if object is null means,mark isErrorOccurredRow as a true and save error message in ImportRow context
+                    ImportFieldValueMissingException exception = new ImportFieldValueMissingException((int) rowContext.getRowNumber(), columnName, new Exception());
+                    String errorMessage = exception.getClientMessage();
+                    rowContext.setErrorOccurredRow(true);
+                    rowContext.setErrorMessage(errorMessage);
+                }
+            }
+        }
+    }
+    public static ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
+        ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = modBean.getAllFields(moduleName);
+        for (FacilioField field : allFields) {
+            if (field.isRequired()) {
+                fields.add(field);
+            }
+        }
+        return fields;
+    }
+    public static List<FacilioField> getImportFields(Context context, String moduleName) throws Exception {
+
+        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(fields)) {
+            fields = Constants.getModBean().getAllFields(moduleName);
+        }
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(fields)) {
+            throw new IllegalArgumentException("Fields not found for module " + moduleName);
+        }
+        fields.add(FieldFactory.getIdField(Constants.getModBean().getModule(moduleName)));
+        return fields;
+    }
+    public static void sendMultiImportProgressToClient(ImportDataDetails importDataDetails) throws Exception {
+        sendMultiImportProgressToClient(importDataDetails,null);
+    }
+    public static void sendMultiImportProgressToClient(ImportDataDetails importDataDetails,Map<String,Object> clientJson) throws Exception {
+        float totalImportRecordsCount = importDataDetails.getTotalRecords();
+        float processedRecordsCount = importDataDetails.getProcessedRecordsCount();
+
+        float completePercentage = (processedRecordsCount / totalImportRecordsCount) * 100;
+
+        Long importId = importDataDetails.getId();
+        JSONObject json = new JSONObject();
+        json.put("id",importId);
+        json.put("percentage",completePercentage);
+
+        if(clientJson!=null){
+            json.putAll(clientJson);
+        }
+
+        long ouid = importDataDetails.getCreatedBy();
+        User user = AccountUtil.getUserBean().getUser(ouid,false);
+        Message message = new Message();
+        message.setTopic(multiImport+"/"+importId+"/update");
+        message.setContent(json);
+        message.setTo(ouid);
+        message.setOrgId(user.getOrgId());
+        message.setSessionType(LiveSession.LiveSessionType.APP);
+        SessionManager.getInstance().sendMessage(message);
+    }
+    public static void sendMultiImportErrorRecordsDownloadingToClient(ImportDataDetails importDataDetails,Map<String,Object> clientJson) throws Exception {
+        Long importId = importDataDetails.getId();
+        JSONObject json = new JSONObject();
+        if(clientJson!=null){
+            json.putAll(clientJson);
+        }
+
+        long ouid = importDataDetails.getCreatedBy();
+        User user = AccountUtil.getUserBean().getUser(ouid,false);
+        Message message = new Message();
+        message.setTopic(multiImportErrorRecords+"/"+importId+"/update");
+        message.setContent(json);
+        message.setTo(ouid);
+        message.setOrgId(user.getOrgId());
+        message.setSessionType(LiveSession.LiveSessionType.APP);
+        SessionManager.getInstance().sendMessage(message);
+    }
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";
         public static final String ROW_FUNCTION = "rowFunction";

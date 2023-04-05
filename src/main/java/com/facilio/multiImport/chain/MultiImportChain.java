@@ -118,4 +118,14 @@ public class MultiImportChain {
         chain.addCommand(new MultiImportMetaValidationCommand());
         return chain;
     }
+    public static FacilioChain getMultiImportModulesChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new GetMultiImportModulesCommand());
+        return chain;
+    }
+    public static FacilioChain getMultiImportFieldsChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new GetMultiImportFieldsCommand());
+        return chain;
+    }
 }

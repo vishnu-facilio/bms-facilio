@@ -1614,6 +1614,10 @@
         </action>
         <action name="abortImport" class="com.facilio.multiImport.action.MultiImportDataAction" method="abortImport">
         </action>
+        <action name="importModules" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportModules">
+        </action>
+        <action name="importFields" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportFields">
+        </action>
     </package>
 
     <package name="relationAction" namespace="/api/v3/modules" extends="v3Api">

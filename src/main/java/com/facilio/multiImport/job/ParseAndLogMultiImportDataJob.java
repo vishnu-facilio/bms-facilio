@@ -41,7 +41,6 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
             LOGGER.info("ParseAndLogMultiImportDataJob called for importId---------- " + importId);
             importDataDetails = MultiImportApi.getImportData(importId);
 
-
             List<ImportFileContext> importFiles = MultiImportApi.getImportFilesByImportId(importId, true);
 
             importDataDetails.setImportFiles(importFiles);

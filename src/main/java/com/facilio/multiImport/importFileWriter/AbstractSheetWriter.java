@@ -9,4 +9,5 @@ public interface AbstractSheetWriter {
     AbstractSheetWriter setDateFormatColumnIndex(Map<Integer,String> columnIndexVsDateFormat);
 
     void writeData(List<Map<String, Object>> dataList) throws Exception;
+    AbstractSheetWriter afterRowFunction(RowFunction rowFunction);
 }

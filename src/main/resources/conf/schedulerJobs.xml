@@ -197,8 +197,8 @@
 	<job name='V3_importDataJob' classname='com.facilio.bmsconsole.imports.job.ImportDataJob' transactionTimeout='7200000' />
 	<!-- MultiImport Jobs -->
 	<job name="ParseAndLogMultiImportDataJob" classname='com.facilio.multiImport.job.ParseAndLogMultiImportDataJob' transactionTimeout= '1800000' />
-	<job name='MultiImportDataJob' classname='com.facilio.multiImport.job.MultiImportDataJob' transactionTimeout='900000' />
-	<job name='DownloadMultiImportErrorRecordsJob' classname='com.facilio.multiImport.job.DownloadMultiImportErrorRecordsJob' transactionTimeout='1800000' />
+	<job name='MultiImportDataJob' classname='com.facilio.multiImport.job.MultiImportDataJob' transactionTimeout='1800000' />
+	<job name='DownloadMultiImportErrorRecordsJob' classname='com.facilio.multiImport.job.DownloadMultiImportErrorRecordsJob' transactionTimeout='1200000' />
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>

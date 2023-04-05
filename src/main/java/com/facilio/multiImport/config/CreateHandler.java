@@ -47,24 +47,29 @@ public class CreateHandler {
         private Command afterTransactionCommand;
         private Command activitySaveCommand;
 
-        public void initCommand(Command... initCommand) {
+        public CreateHandlerBuilder initCommand(Command... initCommand) {
             this.initCommand = buildTransactionChain(initCommand);
+            return this;
         }
 
-        public void beforeSaveCommand(Command... beforeSaveCommand) {
+        public CreateHandlerBuilder beforeSaveCommand(Command... beforeSaveCommand) {
             this.beforeSaveCommand = buildTransactionChain(beforeSaveCommand);
+            return this;
         }
 
-        public void afterSaveCommand(Command... afterSaveCommand) {
+        public CreateHandlerBuilder afterSaveCommand(Command... afterSaveCommand) {
             this.afterSaveCommand = buildTransactionChain(afterSaveCommand);
+            return this;
         }
 
-        public void afterTransactionCommand(Command... afterTransactionCommand) {
+        public CreateHandlerBuilder afterTransactionCommand(Command... afterTransactionCommand) {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
+            return this;
         }
 
-        public void activitySaveCommand(Command... activitySaveCommand) {
+        public CreateHandlerBuilder activitySaveCommand(Command... activitySaveCommand) {
             this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
+            return this;
         }
 
         public CreateHandlerBuilder(ImportConfig.ImportConfigBuilder parent) {

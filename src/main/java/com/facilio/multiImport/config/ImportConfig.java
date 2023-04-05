@@ -72,6 +72,9 @@ public class ImportConfig {
         public CreateHandler.CreateHandlerBuilder createHandler() {
             return new CreateHandler.CreateHandlerBuilder(this);
         }
+        public UpdateHandler.UpdateHandlerBuilder updateHandler() {
+            return new UpdateHandler.UpdateHandlerBuilder(this);
+        }
         public ImportConfig build() {
             return new ImportConfig(this);
         }

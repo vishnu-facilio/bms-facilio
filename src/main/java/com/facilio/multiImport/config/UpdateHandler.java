@@ -47,24 +47,29 @@ public class UpdateHandler {
         private Command afterTransactionCommand;
         private Command activitySaveCommand;
 
-        public void initCommand(Command... initCommand) {
+        public UpdateHandlerBuilder initCommand(Command... initCommand) {
             this.initCommand = buildTransactionChain(initCommand);
+            return this;
         }
 
-        public void beforeUpdateCommand(Command... beforeUpdateCommand) {
+        public UpdateHandlerBuilder beforeUpdateCommand(Command... beforeUpdateCommand) {
             this.beforeUpdateCommand = buildTransactionChain(beforeUpdateCommand);
+            return this;
         }
 
-        public void afterUpadteCommand(Command... afterUpdateCommand) {
+        public UpdateHandlerBuilder afterUpadteCommand(Command... afterUpdateCommand) {
             this.afterUpdateCommand = buildTransactionChain(afterUpdateCommand);
+            return this;
         }
 
-        public void afterTransactionCommand(Command... afterTransactionCommand) {
+        public UpdateHandlerBuilder afterTransactionCommand(Command... afterTransactionCommand) {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
+            return this;
         }
 
-        public void activitySaveCommand(Command... activitySaveCommand) {
+        public UpdateHandlerBuilder activitySaveCommand(Command... activitySaveCommand) {
             this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
+            return this;
         }
 
         public UpdateHandlerBuilder(ImportConfig.ImportConfigBuilder parent) {

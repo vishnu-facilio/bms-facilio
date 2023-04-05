@@ -39,4 +39,8 @@ public interface Topics {
     interface Tasks {
         String longRunnningTasks = "__longrunning_tasks__";
     }
+    interface MultiImport {
+        String multiImport = "__multi_import__";
+        String multiImportErrorRecords = "__multi_import_error_records__";
+    }
 }

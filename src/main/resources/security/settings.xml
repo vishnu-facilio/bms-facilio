@@ -1706,6 +1706,13 @@
             <property name="importId" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v3/multiImport/importModules">
+    </request>
+    <request path="/api/v3/multiImport/importFields">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/modules/:moduleName/setting/:settingName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

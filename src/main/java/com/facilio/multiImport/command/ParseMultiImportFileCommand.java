@@ -70,11 +70,11 @@ public class ParseMultiImportFileCommand extends FacilioCommand {
                 } else {
                     errorMessage = e.getMessage();
                 }
-                rowContext.setErrorOccuredRow(true);
+                rowContext.setErrorOccurredRow(true);
                 rowContext.setErrorMessage(errorMessage);
             }
 
-            if (rowContext.isErrorOccuredRow()) {   //if row is errorOccured while parsing ,mark it as as error occured row and save in DP
+            if (rowContext.isErrorOccurredRow()) {   //if row is errorOccured while parsing ,mark it as as error occured row and save in DP
                 processedRowCount++;
                 importRowContextList.add(rowContext);
                 continue;

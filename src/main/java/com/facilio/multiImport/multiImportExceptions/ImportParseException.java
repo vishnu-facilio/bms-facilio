@@ -24,6 +24,15 @@ public class ImportParseException extends FacilioException {
 			exceptionString.append("The value in row " + this.row_no +" under the column " + this.columnName
 			+" could not be parsed as a number because it contains non-numeric characters.");
 		}
+		else if(e instanceof ImportFieldValueMissingException){
+			exceptionString.append(((ImportFieldValueMissingException)e).getClientMessage());
+		}
+		else if (e instanceof ImportLookupModuleValueNotFoundException) {
+			exceptionString.append(((ImportLookupModuleValueNotFoundException)e).getClientMessage());
+		}
+		else if (e instanceof ImportTimeColumnParseException){
+			exceptionString.append(((ImportTimeColumnParseException)e).getClientMessage());
+		}
 		else {
 			exceptionString.append("Exception at row: " + this.row_no + " under column: " + this.columnName);
 			if(this.e!=null && StringUtils.isNotEmpty(this.e.getMessage())){

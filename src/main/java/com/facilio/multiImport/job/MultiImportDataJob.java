@@ -17,8 +17,6 @@ import java.util.logging.Logger;
 public class MultiImportDataJob extends FacilioJob {
     private static final Logger LOGGER = Logger.getLogger(MultiImportDataJob.class.getName());
     public static final String JOB_NAME = "MultiImportDataJob";
-
-    private static final long BATCH_LIMIT = 5000;
     ImportDataDetails importDataDetails = null;
     Long importId = null;
 
@@ -29,6 +27,10 @@ public class MultiImportDataJob extends FacilioJob {
             importId = jobContext.getJobId();
             LOGGER.info("MultiImportDataJob called for importId---------- " + importId);
             importDataDetails = MultiImportApi.getImportData(importId);
+
+            if(importDataDetails.getStatusEnum() == ImportDataStatus.IMPORT_FAILED){
+                return;
+            }
 
             List<ImportFileContext> importFiles = MultiImportApi.getImportFilesByImportId(importId, true);
 
@@ -42,32 +44,12 @@ public class MultiImportDataJob extends FacilioJob {
 
             chain.execute();
 
-            checkRemainingRecordsCountAndScheduleNextJob(jobContext);
+            LOGGER.info("MultiImportDataJob ended for importId---------- " + importId);
+
 
         } catch (Exception ex) {
             LOGGER.severe("Error Occured in MultiImportDataJob  -- importId: " + importId + "  Exception:" + ex);
             throw ex;
-        }
-
-    }
-
-    private void checkRemainingRecordsCountAndScheduleNextJob(JobContext jobContext) {
-        if (importDataDetails == null) {
-            return;
-        }
-        ImportDataStatus importStatus = importDataDetails.getStatusEnum();
-        if (importStatus == ImportDataStatus.IMPORT_COMPLETED || importStatus == ImportDataStatus.IMPORT_FAILED) {
-            return;
-        }
-
-        long totalImportRecordsCount = importDataDetails.getTotalRecords();
-        long processedRecordsCount = importDataDetails.getProcessedRecordsCount();
-        long remainingRecords = totalImportRecordsCount - processedRecordsCount;
-
-        if (remainingRecords > 0) {
-            LOGGER.info("Remaining records to be process " + remainingRecords);
-            LOGGER.info("Next MultiImportDataJob scheduled for importId---------- " + importId);
-            jobContext.setNextExecutionTime((System.currentTimeMillis() + (10 * 1000)) / 1000);
         }
 
     }

@@ -30,7 +30,7 @@ public class ImportRowContext implements Serializable {
     }
 
     private RowStatus rowStatus;
-    private boolean errorOccuredRow;
+    private boolean errorOccurredRow;
     public void setRowStatus(int rowStatus) {
         this.rowStatus = RowStatus.valueOf(rowStatus);
     }

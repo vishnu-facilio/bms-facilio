@@ -25,6 +25,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.constants.ImportConstants;
+import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
@@ -37,10 +38,13 @@ import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.time.Instant;
 import java.util.*;
@@ -49,6 +53,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.facilio.wmsv2.constants.Topics.MultiImport.multiImport;
 
 
 // TODO skip records if any of the value cannot be resolved.. like lookup name cannot be resolved to id
@@ -59,6 +65,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     private static final String VALUES_SEPERATOR = "##";
     int chunkLimit = 0;
     Long importId = null;
+    ImportDataDetails importDataDetails = null;
     ImportFileSheetsContext importSheet = null;
     Long importSheetId = null;
     Long lastRowIdTaken = null;
@@ -80,6 +87,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     Context context = null;
 
     List<ImportRowContext> batchRows = null;
+    int pointer=0;
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -89,9 +97,19 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
             validateRow(rowContext);
 
+            if(rowContext.isErrorOccurredRow()){ //skip if is row is not valid
+                 continue;
+            }
+
             HashMap<String, Object> processedProps = getProcessedRawRecordMap(rowContext);
 
             rowContext.setProcessedRawRecordMap(processedProps);
+
+            importDataDetails.setProcessedRecordsCount(importDataDetails.getProcessedRecordsCount()+1);
+
+            if(++pointer % 10 ==0 || batchRows.size()<10){
+                MultiImportApi.sendMultiImportProgressToClient(importDataDetails);
+            }
         }
 
         ImportConstants.setRowContextList(context, batchRows);
@@ -101,6 +119,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     private void init(Context context) throws Exception {
         this.context = context;
         importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
+        importDataDetails = (ImportDataDetails)context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
         importSheet = (ImportFileSheetsContext) context.get(FacilioConstants.ContextNames.IMPORT_SHEET);
 
         moduleName = importSheet.getModuleName();
@@ -113,7 +132,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         fieldNameVsSheetColumnNameMap = importSheet.getFieldNameVsSheetColumnNameMap();
 
         //FacilioFields info
-        fields = getFields(context, importSheet.getModuleName());
+        fields = MultiImportApi.getImportFields(context, importSheet.getModuleName());
         fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(fields);
         fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
 
@@ -125,7 +144,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
         requiredFields = (ArrayList<FacilioField>) context.get(ImportAPI.ImportProcessConstants.REQUIRED_FIELDS);
         if (CollectionUtils.isEmpty(requiredFields)) {
-            requiredFields = getRequiredFields(moduleName);
+            requiredFields = MultiImportApi.getRequiredFields(moduleName);
         }
 
         if (isSiteIdFieldPresent()) {
@@ -135,15 +154,12 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     }
 
     private void validateRow(ImportRowContext rowContext) throws Exception {
-        Map<String, Object> rowVal = rowContext.getRawRecordMap();
-        long rowNo = rowContext.getRowNumber();
-
         if (MultiImportApi.isInsertImportSheet(importSheet)) {
-            checkMandatoryFieldsValueExistsOrNot(requiredFields, importSheet, rowVal, rowNo, rowContext);
+            MultiImportApi.checkMandatoryFieldsValueExistsOrNot(requiredFields, importSheet, rowContext);
         }
 
         if (importSheet.getImportSetting() != MultiImportSetting.INSERT.getValue()) {
-            checkImportSettingFieldValueExistOrNot(importSheet, rowVal, sheetColumnNameVsFieldMapping, rowNo, rowContext);
+            MultiImportApi.checkImportSettingFieldValueExistOrNot(importSheet,rowContext);
         }
     }
 
@@ -204,15 +220,10 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 LOGGER.severe("Process Import Exception -- Row No --" + rowNo + " Fields Mapping --" + sheetColumnName);
                 String errorMessage =null;
 
-                if( ex instanceof ImportLookupModuleValueNotFoundException){
-                    errorMessage = ((ImportLookupModuleValueNotFoundException)ex).getClientMessage();
-                }
-                else{
-                    ImportParseException parseException = new ImportParseException((int) rowNo, sheetColumnName, ex);
-                    errorMessage = parseException.getClientMessage();
-                }
+                ImportParseException parseException = new ImportParseException((int) rowNo, sheetColumnName, ex);
+                errorMessage = parseException.getClientMessage();
 
-                rowContext.setErrorOccuredRow(true);
+                rowContext.setErrorOccurredRow(true);
                 rowContext.setErrorMessage(errorMessage);
                 LOGGER.severe("Reason for failed :" + errorMessage);
             }
@@ -240,7 +251,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                     ImportFieldMappingContext importFieldContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
                     String dateFormat = importFieldContext.getDateFormat();
                     if (dateFormat == null) {
-                        throw new ImportParseException((int) rowNo, sheetColumnName, new Exception("date format cannot be null"));
+                        throw new IllegalArgumentException("date format cannot be null");
                     }
                     if (dateFormat.equals(MultiImportApi.ImportProcessConstants.TIME_STAMP_STRING)) {
                         millis = Long.parseLong(cellValue.toString());
@@ -351,6 +362,11 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 break;
             }
+            case ID:
+                String cellValueString = cellValue.toString();
+                long id = (long) Double.parseDouble(cellValueString);
+                props.put(field.getName(),id);
+                break;
             default: {
                 if (!props.containsKey(field.getName())) {
                     props.put(field.getName(), cellValue);
@@ -395,7 +411,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     private Map<BaseLookupField, Map<String, Object>> loadLookupMap(List<ImportRowContext> allRows, Context context, String moduleName) throws Exception {
         Map<BaseLookupField, Map<String, Object>> lookupMap = new HashMap<>();
 
-        List<FacilioField> fields = getFields(context, moduleName);
+        List<FacilioField> fields = MultiImportApi.getImportFields(context, moduleName);
         for(FacilioField field: fields){
             Long fieldId = field.getFieldId();
             String fieldName = field.getName();
@@ -599,29 +615,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         return false;
     }
 
-    private List<FacilioField> getFields(Context context, String moduleName) throws Exception {
 
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-        if (CollectionUtils.isEmpty(fields)) {
-            fields = Constants.getModBean().getAllFields(moduleName);
-        }
-        if (CollectionUtils.isEmpty(fields)) {
-            throw new IllegalArgumentException("Fields not found for module " + moduleName);
-        }
-        return fields;
-    }
-
-    private ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
-        ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> allFields = modBean.getAllFields(moduleName);
-        for (FacilioField field : allFields) {
-            if (field.isRequired()) {
-                fields.add(field);
-            }
-        }
-        return fields;
-    }
 
     public static Map<String, Object> getSpecialLookupProps(BaseLookupField lookupField, Object value, String moduleName) throws Exception {
         String key = lookupField.getModule().getName() + "__" + lookupField.getName();
@@ -667,51 +661,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             throw e;
         }
         return null;
-    }
-
-    private void checkMandatoryFieldsValueExistsOrNot(List<FacilioField> mandatoryFields, ImportFileSheetsContext importSheet, Map<String, Object> rowVal, long rowNo, ImportRowContext rowContext) throws ImportMandatoryFieldsException {
-        if (CollectionUtils.isNotEmpty(mandatoryFields)) {
-            ArrayList<String> valueMissingColumns = new ArrayList<>();
-            for (FacilioField field : mandatoryFields) {
-
-                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet,field);
-
-                if (sheetColumnName != null && Objects.isNull(rowVal.get(sheetColumnName))) {  //if object is null means,mark isErrorOccuredRow as a true and save error message in ImportRow context
-                    valueMissingColumns.add(sheetColumnName);
-                }
-            }
-
-            if (CollectionUtils.isNotEmpty(valueMissingColumns)) {
-                ImportFieldValueMissingException exception = new ImportFieldValueMissingException((int) rowNo, valueMissingColumns.toString(), new Exception());
-                String errorMessage = exception.getClientMessage();
-                rowContext.setErrorOccuredRow(true);
-                rowContext.setErrorMessage(errorMessage);
-                LOGGER.severe(errorMessage);
-            }
-
-        }
-    }
-
-    private void checkImportSettingFieldValueExistOrNot(ImportFileSheetsContext importSheet, Map<String, Object> rowVal, Map<String, ImportFieldMappingContext> sheetColumnNameVsFieldMapping, long rowNo, ImportRowContext rowContext) throws Exception {
-        List<String> sheetColumnNames = null;
-        if (importSheet.getImportSetting() == MultiImportSetting.INSERT_SKIP.getValue()) {
-            sheetColumnNames = importSheet.getInsertByFieldsList();
-
-        } else {
-            sheetColumnNames = importSheet.getUpdateByFieldsList();
-        }
-
-        if (CollectionUtils.isNotEmpty(sheetColumnNames)) {
-            for (String columnName : sheetColumnNames) {
-                if (Objects.isNull(rowVal.get(columnName))) {  //if object is null means,mark isErrorOccuredRow as a true and save error message in ImportRow context
-                    ImportFieldValueMissingException exception = new ImportFieldValueMissingException((int) rowNo, columnName, new Exception());
-                    String errorMessage = exception.getClientMessage();
-                    rowContext.setErrorOccuredRow(true);
-                    rowContext.setErrorMessage(errorMessage);
-                    LOGGER.severe(errorMessage);
-                }
-            }
-        }
     }
 
     private Map<String, SiteContext> getSiteMap() throws Exception {

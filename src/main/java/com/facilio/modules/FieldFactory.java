@@ -3435,7 +3435,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("rowContent","ROW_CONTENT",module));
         fields.add(getStringField("errorMessage","ERROR_MESSAGE",module));
         fields.add(getNumberField("rowStatus","ROW_STATUS",module));
-        fields.add(getBooleanField("errorOccuredRow", "IS_ERROR_OCCURRED_ROW", module));
+        fields.add(getBooleanField("errorOccurredRow", "IS_ERROR_OCCURRED_ROW", module));
         return fields;
     }
 

@@ -73,7 +73,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
                     return;
                 }
             } catch (Exception e) {
-                errorMessage = "Import failed for sheetId - " + importSheet.getId() + " :" + e.getMessage();
+                errorMessage = "Import failed for sheetId - " + importSheet.getId() + " :" + e;
                 LOGGER.severe(errorMessage);
                 throw e;
             }
@@ -119,7 +119,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             LOGGER.info(i + "/" + splitSize + " batch started");
             LOGGER.info("currentRecordsInChunk:" + currentRecordsInChunk);
 
-            FacilioChain chain = MultiImportChainUtil.getImportChain(moduleName);        //import the sheet data
+            FacilioChain chain = MultiImportChainUtil.getImportChain(moduleName,importSheet.getImportSettingEnum());        //import the sheet data
             ImportConfig importConfig = MultiImportChainUtil.getMultiImportConfig(moduleName);
             Class beanClass = MultiImportChainUtil.getBeanClass(importConfig, module);
 
@@ -159,7 +159,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setImportStartTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
             LOGGER.info("MultiImport Started for multiImportId--- :" + importDataDetails.getId());
-        } else if (totalImportRecordsCount == processedRecordsCount) {
+        } else if (totalImportRecordsCount == processedRecordsCount || processedRecordsCount==MAXIMUM_RECORDS_PER_THREAD) {
             importDataDetails.setStatus(ImportDataStatus.IMPORT_COMPLETED);
             importDataDetails.setImportEndTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
@@ -177,6 +177,12 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         ImportRowContext lastRowContext = batchRows.get(batchRows.size() - 1);
         importSheet.setLastRowIdTaken(lastRowContext.getId());
 
+        Integer insertRecordsCount = (Integer) context.getOrDefault(ImportConstants.INSERT_RECORDS_COUNT,0);
+        Integer updateRecordsCount = (Integer) context.getOrDefault(ImportConstants.UPDATE_RECORDS_COUNT,0);
+        Integer skipRecordsCount = (Integer) context.getOrDefault(ImportConstants.SKIP_RECORDS_COUNT,0);
+        importSheet.setInsertCount(importSheet.getInsertCount()+insertRecordsCount);
+        importSheet.setUpdateCount(importSheet.getUpdateCount()+updateRecordsCount);
+        importSheet.setSkipCount(importSheet.getSkipCount()+skipRecordsCount);
 
         long processedRowCount = importSheet.getProcessedRowCount();
         processedRowCount += batchRows.size();
@@ -197,10 +203,18 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         }else{
             ImportDataStatus status = importDataDetails.getStatusEnum();
 
-            if(status == ImportDataStatus.IMPORT_COMPLETED){ //send email if import completed
-                long ouid = importDataDetails.getCreatedBy();
+            if(status == ImportDataStatus.IMPORT_COMPLETED){
+                Map<String,Object> clientJson = new HashMap<>();//send import completed status to wms
+                clientJson.put("status",ImportDataStatus.IMPORT_COMPLETED);
+                clientJson.put("importStartTime",importDataDetails.getImportStartTime());
+                clientJson.put("importEndTime",importDataDetails.getImportEndTime());
+                clientJson.put("hasErrorRecords",importDataDetails.isHasErrorRecords());
+                MultiImportApi.sendMultiImportProgressToClient(importDataDetails,clientJson);
+
+                long ouid = importDataDetails.getCreatedBy();               //send email if import completed
                 User user = AccountUtil.getUserBean().getUserInternal(ouid);
-                MultiImportApi.sendImportCompletedEmail(importDataDetails,user);
+                String message = "Your recent import has been successfully completed";
+                MultiImportApi.sendImportCompletedEmail(importDataDetails,user.getEmail(),message);
                 LOGGER.info("Import email sent for MultiImportDataJob:" + importId + "to" + user.getEmail());
             }
 
@@ -217,6 +231,18 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setErrorMessage(errorMessage);
             importDataDetails.setStatus(ImportDataStatus.IMPORT_FAILED);
             MultiImportApi.updateImportDataDetails(importDataDetails);
+            Map<String,Object> clientJson = new HashMap<>();
+            clientJson.put("status",ImportDataStatus.IMPORT_FAILED);
+            clientJson.put("errorMessage",errorMessage);
+            clientJson.put("importStartTime",importDataDetails.getImportStartTime());
+            clientJson.put("importEndTime",importDataDetails.getImportEndTime());
+            MultiImportApi.sendMultiImportProgressToClient(importDataDetails,clientJson);
+
+            long ouid = importDataDetails.getCreatedBy();
+            User user = AccountUtil.getUserBean().getUserInternal(ouid);
+            String message = "Your recent import has been failed";
+            MultiImportApi.sendImportCompletedEmail(importDataDetails,user.getEmail(),message);
+            MultiImportApi.sendImportCompletedEmail(importDataDetails,"gowthams@facilio.com",message);
         }
     }
 

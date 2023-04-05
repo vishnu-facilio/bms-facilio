@@ -47,7 +47,7 @@ public class UpdateRowStatusCommand extends FacilioCommand {
             batchValue.setUpdateValue(prop);
             batchUpdates.add(batchValue);
 
-            if(!hasErrorRecords && rowContext.isErrorOccuredRow()){
+            if(!hasErrorRecords && rowContext.isErrorOccurredRow()){
               hasErrorRecords = true;
             }
         }
@@ -71,7 +71,7 @@ public class UpdateRowStatusCommand extends FacilioCommand {
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(fieldMap.get("errorMessage"));
         updateFields.add(fieldMap.get("rowStatus"));
-        updateFields.add(fieldMap.get("errorOccuredRow"));
+        updateFields.add(fieldMap.get("errorOccurredRow"));
 
         return updateFields;
     }

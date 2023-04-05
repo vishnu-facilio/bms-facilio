@@ -7,9 +7,11 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
 import com.facilio.multiImport.importFileWriter.AbstractFileWriter;
 import com.facilio.multiImport.importFileWriter.AbstractSheetWriter;
@@ -18,14 +20,13 @@ import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.json.simple.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class DownloadErrorRecordsCommand extends FacilioCommand {
@@ -37,7 +38,6 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
         Long importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
 
         ImportDataDetails importDataDetails = (ImportDataDetails) context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
-
         List<ImportFileContext> importFiles = importDataDetails.getImportFiles();
 
         String fileName = importId.toString() + "-ImportErrorFile.xlsx";
@@ -64,7 +64,7 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
                     .select(FieldFactory.getMultiImportProcessLogFields())
                     .table(ModuleFactory.getMultiImportProcessLogModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition("IMPORT_SHEET_ID", "importSheetId", sheetId.toString(), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("IS_ERROR_OCCURRED_ROW", "errorOccuredRow", "true", BooleanOperators.IS));
+                    .andCondition(CriteriaAPI.getCondition("IS_ERROR_OCCURRED_ROW", "errorOccurredRow", "true", BooleanOperators.IS));
 
 
             GenericSelectRecordBuilder.GenericBatchResult batchResult = selectRecordBuilder.getInBatches("ROW__NUMBER", BATCH_SIZE);
@@ -89,6 +89,12 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
         file.delete();
         importDataDetails.setErrorFileId(fileId);
         MultiImportApi.updateImportDataDetails(importDataDetails);
+
+        JSONObject clientJson = new JSONObject();
+        float completePercentage = 100;
+        clientJson.put("id",importId);
+        clientJson.put("percentage",completePercentage);
+        MultiImportApi.sendMultiImportErrorRecordsDownloadingToClient(importDataDetails,clientJson);
         return false;
     }
 
@@ -97,7 +103,7 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
 
         for(int i=0 ; i<headerMap.size() ; i++){
             String columnName = headerMap.get(i);
-            if(columnName.equals("ROW NUMBER") || columnName.equals("ROW STATUS") || columnName.equals("ERROR MESSAGE")){
+            if(columnName.equals("ROW NUMBER") || columnName.equals("ERROR MESSAGE")){
                 columnIndexVsColour.put(i, IndexedColors.RED.getIndex());
             }else{
                 columnIndexVsColour.put(i,IndexedColors.BLACK.getIndex());
@@ -139,7 +145,6 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
             mappedHeaderMap.put(i, columnName);
             i++;
         }
-        mappedHeaderMap.put(i++, "ROW STATUS");
         mappedHeaderMap.put(i, "ERROR MESSAGE");
         return mappedHeaderMap;
     }
@@ -151,7 +156,6 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
         for (ImportRowContext importRowContext : batchRows) {
             Map<String, Object> rawRecordMap = importRowContext.getRawRecordMap();
             rawRecordMap.put("ROW NUMBER", importRowContext.getRowNumber());
-            rawRecordMap.put("ROW STATUS", importRowContext.getRowStatus());
             rawRecordMap.put("ERROR MESSAGE", importRowContext.getErrorMessage());
             dataList.add(rawRecordMap);
         }
