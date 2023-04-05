@@ -47,4 +47,6 @@
 
 	<bean name="AgentMigrationBean" class="com.facilio.agentv2.migration.beans.AgentMigrationBeanImpl"></bean>
 
+	<bean name="PermissionSetBean" class="com.facilio.beans.PermissionSetBeanCacheImpl"></bean>
+
 </beans>

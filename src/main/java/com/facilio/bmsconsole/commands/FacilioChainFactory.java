@@ -18,6 +18,7 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.v3.commands.AddPublicFileCommand;
 import com.facilio.v3.commands.DeletePublicFileCommand;
 import com.facilio.v3.commands.AddPublicUrlForFileCommand;
@@ -137,6 +138,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddUserCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 		c.addCommand(new AddorUpdateUserScopingCommand());
+		c.addCommand(new AddOrUpdatePermissionSetsForPeopleCommand());
 		c.addCommand(new AssignShiftToUserCommand());
 		return c;
 	}

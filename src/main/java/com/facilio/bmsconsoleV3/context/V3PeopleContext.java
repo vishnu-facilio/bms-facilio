@@ -5,10 +5,12 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 public class V3PeopleContext extends V3Context {
@@ -214,4 +216,6 @@ public class V3PeopleContext extends V3Context {
 
     @Setter @Getter
     private Long scopingId;
+    @Getter @Setter
+    private List<Long> permissionSets;
 }

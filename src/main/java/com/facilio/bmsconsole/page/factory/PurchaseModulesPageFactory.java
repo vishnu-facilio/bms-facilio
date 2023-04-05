@@ -128,7 +128,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
 
         return page;
     }
-    private static PageWidget addAssociatedTermsWidget(Page.Section section,String moduleName) {
+    public static PageWidget addAssociatedTermsWidget(Page.Section section,String moduleName) {
 
         PageWidget associatedTermsWidget = new PageWidget();
         associatedTermsWidget.addToLayoutParams(section, 24, 7);

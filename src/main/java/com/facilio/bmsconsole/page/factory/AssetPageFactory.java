@@ -123,7 +123,7 @@ public class AssetPageFactory extends PageFactory {
 		tab2.addSection(tab2Sec3);
 		addUnPlannedWoWidget(tab2Sec3);
 
-		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS.getIndex()){
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS.getIndex()) {
 			Tab tab3 = page.new Tab("readings");
 			page.addTab(tab3);
 
@@ -174,7 +174,7 @@ public class AssetPageFactory extends PageFactory {
 
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
-			addCostBreakupWidget(tab7Sec1,criteria);
+			addCostBreakupWidget(tab7Sec1, criteria);
 
 			criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
@@ -189,7 +189,7 @@ public class AssetPageFactory extends PageFactory {
 
 
 			// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-			if ((isDemoOrg() && asset.isConnected() )
+			if ((isDemoOrg() && asset.isConnected())
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 323)
@@ -205,7 +205,7 @@ public class AssetPageFactory extends PageFactory {
 				addGraphicsWidget(tab6Sec1);
 			}
 
-			if(asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+			if (asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
 				Tab tab8 = page.new Tab("assetMovement");
 				page.addTab(tab8);
 				Section tab8Sec1 = page.new Section();
@@ -233,8 +233,7 @@ public class AssetPageFactory extends PageFactory {
 					Section tab5Sec1 = page.new Section();
 					tab9.addSection(tab5Sec1);
 					addInventoryTransactionsWidget(tab5Sec1, "itemTransactions");
-				}
-				else if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
+				} else if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
 
 					Tab tab9 = page.new Tab("inventory usage");
 					page.addTab(tab9);
@@ -258,27 +257,26 @@ public class AssetPageFactory extends PageFactory {
 				addSafetyPlanTab(page, asset);
 			}
 
+			if(!AccountUtil.isFeatureEnabled(FeatureLicense.PERMISSION_SET)) {
+				Tab tab11 = page.new Tab("Related");
+				List<Long> moduleIds = new ArrayList<>();
+				moduleIds.add(module.getModuleId());
+				if (asset.getCategory() != null) {
+					V3AssetCategoryContext category = V3RecordAPI.getRecord(ContextNames.ASSET_CATEGORY, asset.getCategory().getId(), V3AssetCategoryContext.class);
+					if (category != null) {
+						moduleIds.add(category.getAssetModuleID());
+					}
+				}
+				boolean isRelationshipAdded = addRelationshipSection(page, tab11, moduleIds);
 
+				Section tab11Sec1 = getRelatedListSectionObj(page);
+				tab11.addSection(tab11Sec1);
 
-			Tab tab11 = page.new Tab("Related");
-			List<Long> moduleIds = new ArrayList<>();
-			moduleIds.add(module.getModuleId());
-			if(asset.getCategory() != null){
-				V3AssetCategoryContext category = V3RecordAPI.getRecord(ContextNames.ASSET_CATEGORY,asset.getCategory().getId(),V3AssetCategoryContext.class);
-				if(category != null){
-					moduleIds.add(category.getAssetModuleID());
+				addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
+				if ((tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) || isRelationshipAdded) {
+					page.addTab(tab11);
 				}
 			}
-			boolean isRelationshipAdded = addRelationshipSection(page, tab11, moduleIds);
-
-			Section tab11Sec1 = getRelatedListSectionObj(page);
-			tab11.addSection(tab11Sec1);
-
-			addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
-			if ((tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) || isRelationshipAdded) {
-				page.addTab(tab11);
-			}
-
 		}
 		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
 			addClassificationTab(page);

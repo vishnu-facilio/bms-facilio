@@ -35,4 +35,6 @@ public interface UserScopeBean {
 
     void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception;
     Long getPeopleScoping(Long peopleId) throws Exception;
+
+    public boolean scopingHasPeople(Long scopingId) throws Exception;
 }

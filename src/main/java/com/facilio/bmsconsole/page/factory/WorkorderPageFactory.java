@@ -579,6 +579,7 @@ public class WorkorderPageFactory extends PageFactory {
             addActualsTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
+
         addMetricandTimelogTab(page, workorder.getId());
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES) &&
                 workorder.getFailureClass() != null) {

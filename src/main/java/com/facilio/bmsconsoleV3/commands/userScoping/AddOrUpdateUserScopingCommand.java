@@ -36,6 +36,7 @@ public class AddOrUpdateUserScopingCommand extends FacilioCommand {
                 int existingRecords = CollectionUtils.size(userScopingList);
                 V3Util.throwRestException(existingRecords >= 10, ErrorCode.VALIDATION_ERROR, "Maximum number of user scoping reached.");
                 userScopeBean.addUserScoping(userScoping);
+                context.put(FacilioConstants.ContextNames.ID,userScoping.getId());
             }
         } catch (Exception e) {
             LOGGER.error("Error occurred while adding User Scoping " + e.getMessage());

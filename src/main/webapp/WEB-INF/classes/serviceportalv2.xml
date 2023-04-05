@@ -21,6 +21,8 @@
 						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor name="globalscopevariableinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+			<interceptor name="permissionSetInterceptor"
+						 class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
 			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
@@ -32,6 +34,7 @@
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>

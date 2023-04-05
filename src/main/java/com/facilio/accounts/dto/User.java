@@ -7,6 +7,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.license.LicenseContext.FacilioLicense;
+import com.facilio.permission.context.PermissionSetContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -260,4 +261,7 @@ public class User extends IAMUser {
 	public void setScoping(ScopingContext scoping) {
 		this.scoping = scoping;
 	}
+
+	@Getter @Setter
+	private List<Long> permissionSets;
 }

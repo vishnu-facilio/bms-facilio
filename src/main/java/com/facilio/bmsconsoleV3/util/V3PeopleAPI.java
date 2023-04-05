@@ -8,6 +8,7 @@ import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.PermissionSetBean;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
@@ -33,6 +34,7 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
@@ -497,6 +499,9 @@ public class V3PeopleAPI {
                         user.setRoleId(roleId);
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false);
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                            addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), appLinkName);
+                        }
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -538,9 +543,10 @@ public class V3PeopleAPI {
 
         user.setApplicationId(appId);
         user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
-
-
         AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+            addPermissionSetsForPeople(existingPeople.getPermissionSets(), existingPeople.getId(), linkName);
+        }
         return user;
     }
 
@@ -577,6 +583,9 @@ public class V3PeopleAPI {
                         }
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkName);
+                        }
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId);
@@ -619,6 +628,9 @@ public class V3PeopleAPI {
                         user.setApplicationId(appId);
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false);
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkName);
+                        }
                     }
                     else {
                         User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -671,6 +683,9 @@ public class V3PeopleAPI {
                         }
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkname);
+                        }
                     }
                     else {
                         addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
@@ -742,8 +757,10 @@ public class V3PeopleAPI {
 
         user.setApplicationId(appId);
         user.setAppDomain(appDomainObj);
-
         AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true, false);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+            addPermissionSetsForPeople(existingPeople.getPermissionSets(), existingPeople.getId(), linkName);
+        }
         return user;
 
     }
@@ -988,4 +1005,10 @@ public class V3PeopleAPI {
         }
     }
 
+    private static void addPermissionSetsForPeople(List<Long> permissionSets, long peopleId,String linkName) throws Exception{
+        PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+            permissionSetBean.updateUserPermissionSets(peopleId,permissionSets);
+        }
+    }
 }

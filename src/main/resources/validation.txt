@@ -2748,3 +2748,4 @@
 /api/v3/unrelated/:parentModuleName/fetch/:moduleName/:id
 
 /api/v3/weather/migrateWeatherStation
+/api/v1/setup/permissionSet/:module/getGroupItems

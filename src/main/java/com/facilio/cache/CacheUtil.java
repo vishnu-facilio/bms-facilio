@@ -1,5 +1,7 @@
 package com.facilio.cache;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.webtab.ModuleTypeHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import org.apache.log4j.LogManager;
@@ -52,6 +54,10 @@ public class CacheUtil {
 
 	public static final String PEOPLE_ID = "peopleId";
 
+	public static final String ORG_USER_ID = "orgUserId";
+
+	public static final String PERMISSION_SET_PROP_KEY = "permissionSetPropKey";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -72,6 +78,9 @@ public class CacheUtil {
 		return USER + KEY_SEPARATOR + userId;
 	}
 
+	public static String ORG_USER_KEY(long orgUserId) {
+		return ORG_USER_ID + KEY_SEPARATOR + orgUserId;
+	}
 	public static String MODULE_KEY(long orgId, String moduleName) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleName;
 	}
@@ -163,6 +172,9 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + USER_KEY(userId) + KEY_SEPARATOR + uri + KEY_SEPARATOR + hashedParam;
 	}
 
+	public static String PERMISSION_SET_KEY (long orgId,long orgUserId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + ORG_USER_KEY(orgUserId);
+	}
 	public static String AGENT_KEY(long orgId, String actualAgentName) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + AGENT_NAME + KEY_SEPARATOR + actualAgentName;
 	};
@@ -194,6 +206,10 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + NS_FIELD_ID + KEY_SEPARATOR + fieldId;
 	}
 
+
+	public static String PERMISSION_SET_PERMISSION_KEY(long orgId, String propKey, long permissionSetId, String fieldEnum) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + PERMISSION_SET_PROP_KEY + propKey + KEY_SEPARATOR + permissionSetId + KEY_SEPARATOR + fieldEnum;
+	}
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();
         return false;

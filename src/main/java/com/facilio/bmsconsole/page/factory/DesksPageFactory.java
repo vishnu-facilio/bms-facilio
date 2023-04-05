@@ -25,10 +25,7 @@ public class DesksPageFactory extends PageFactory {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-        FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        
+
         Page page = new Page();
 
         Page.Tab tab1 = page.new Tab("summary");
@@ -49,25 +46,7 @@ public class DesksPageFactory extends PageFactory {
 
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.MOVES, module.getModuleId(), "Moves");
         
-        if(deskContext.getDeskType() != 1) {
-        
-         List<FacilityContext> facilities = FacilityAPI.getFacilityList(deskContext.getId(),module.getModuleId());
-         
-         if (CollectionUtils.isNotEmpty(facilities)) {
-        	 
-         	List<Long> Ids = facilities.stream().map(prop -> (long) prop.getId()).collect(Collectors.toList());
-         	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
-            JSONObject relatedList = new JSONObject();
-            relatedList.put("module", bookingModule);
-            relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
-            relatedList.put("values", Ids);
-            relatedListWidget.setRelatedList(relatedList);
-            relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
-            tab2Sec1.addWidget(relatedListWidget);
-             
-         }
-        
-        }
+        addBookingWidget(deskContext,module,tab2Sec1);
         
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.SERVICE_REQUEST, resourceModule.getModuleId(), "Service Requests");
 
@@ -83,6 +62,31 @@ public class DesksPageFactory extends PageFactory {
         return page;
     }
 
+    public static void addBookingWidget(V3DeskContext deskContext, FacilioModule module, Page.Section section) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        if(deskContext.getDeskType() != 1) {
+
+            List<FacilityContext> facilities = FacilityAPI.getFacilityList(deskContext.getId(),module.getModuleId());
+
+            if (CollectionUtils.isNotEmpty(facilities)) {
+
+                List<Long> Ids = facilities.stream().map(prop -> (long) prop.getId()).collect(Collectors.toList());
+                PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
+                JSONObject relatedList = new JSONObject();
+                relatedList.put("module", bookingModule);
+                relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+                relatedList.put("values", Ids);
+                relatedListWidget.setRelatedList(relatedList);
+                relatedListWidget.addToLayoutParams(section, 24, 10);
+                section.addWidget(relatedListWidget);
+
+            }
+
+        }
+    }
     private static void addSecondaryDetailsWidget(Page.Section section) {
         PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         detailsWidget.addToLayoutParams(section, 24, 7);

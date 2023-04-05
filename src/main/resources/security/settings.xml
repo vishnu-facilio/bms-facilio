@@ -1648,4 +1648,57 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/permissionSet/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/permissionSet/userList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/permissionSet/fetch" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/permissionSet/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="permissionSet" type="object">
+                <property name="displayName" type="string" maxLength="255"/>
+                <property name="status" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/permissionSet/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/permissionSet/updatePermission" method="POST">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/permissionSet/getGroups" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/permissionSet/:itemName/getGroupItems" method="GET">
+        <urlparams>
+            <property name="itemName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/permissionSet/:permissionSetId/getPermissionItems/:groupType/:groupId" method="GET">
+        <urlparams>
+            <property name="permissionSetId" type="number" mandatory="true"/>
+            <property name="groupType" type="string" mandatory="true"/>
+            <property name="groupId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

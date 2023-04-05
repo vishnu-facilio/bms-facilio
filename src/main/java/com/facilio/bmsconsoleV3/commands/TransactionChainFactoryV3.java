@@ -46,6 +46,10 @@ import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
+import com.facilio.permission.commands.AddOrUpdatePermissionSet;
+import com.facilio.permission.commands.DeletePermissionSetCommand;
+import com.facilio.permission.commands.FetchPermissionSetCommand;
+import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -2995,7 +2999,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new WorkflowExportCommand());
         return c;
     }
-    public static FacilioChain PMV2BeforeSaveChain(){
+    public static FacilioChain PMV2BeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RemoveDuplicateSites());
         c.addCommand(new PMBeforeCreateCommand());
@@ -3100,12 +3104,31 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchVersionHistoryCommand());
         return c;
     }
-    public static FacilioChain getJobPlanCloneChain(){
+    public static FacilioChain getJobPlanCloneChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchJobPlanDetails());
         c.addCommand(new JobPlanContextCloningCommand());
         c.addCommand(new SetJobPlanStatusCommand());
         c.addCommand(new CreateJobPlanAfterCloning());
+        return c;
+    }
+
+    public static FacilioChain addOrUpdatePermissionSetChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdatePermissionSet());
+        c.addCommand(new FetchPermissionSetCommand());
+        return c;
+    }
+
+    public static FacilioChain deletePermissionSetChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeletePermissionSetCommand());
+        return c;
+    }
+
+    public static FacilioChain updatePermissionsForPermissionSetChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdatePermissionsForPermissionSetCommand());
         return c;
     }
 }

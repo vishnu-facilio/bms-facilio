@@ -37,6 +37,7 @@ import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
 import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
@@ -2912,6 +2913,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUsersCommand());
 		chain.addCommand(new FetchUserScopingCommand());
+		chain.addCommand(new FetchPermissionSetsForUserCommand());
 		return chain;
 	}
 
@@ -2919,6 +2921,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUserDetailsCommand());
 		chain.addCommand(new FetchUserScopingCommand());
+		chain.addCommand(new FetchPermissionSetsForUserCommand());
 		return chain;
 	}
 

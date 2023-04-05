@@ -80,6 +80,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
             addNotesAttachmentsModule(tab2Sec1);
         }
 
+
         Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
 
@@ -93,27 +94,24 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         excludedModules.add(FacilioConstants.ContextNames.ASSET);
 
         //for atre -- to be removed
-        if(AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-        excludedModules.add("custom_vendormapping");
-        excludedModules.add("custom_retailoperationassignment");
-        excludedModules.add("custom_incidentmanagement_1");
+        if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+            excludedModules.add("custom_vendormapping");
+            excludedModules.add("custom_retailoperationassignment");
+            excludedModules.add("custom_incidentmanagement_1");
         }
 
-        if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+        if (AccountUtil.getCurrentOrg().getOrgId() == 418l) {
             excludedModules.add(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
-            if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
+            if (AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
                 excludedModules.add(FacilioConstants.ContextNames.ASSET);
-            }
-            else {
+            } else {
                 addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
             }
-        }
-        else {
+        } else {
             addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
         }
         addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
         addRelatedListWidgets(tab3Sec1, module.getModuleId(), excludedModules, false);
-
         return page;
     }
     private static PageWidget addNotesAttachmentsModule(Page.Section section) {

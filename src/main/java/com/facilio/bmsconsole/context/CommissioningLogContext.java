@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;

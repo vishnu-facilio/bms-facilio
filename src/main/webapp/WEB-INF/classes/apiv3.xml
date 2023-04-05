@@ -81,21 +81,24 @@
             <interceptor name="validationinterceptor"
                          class="com.facilio.bmsconsole.interceptors.ValidationInterceptor"/>
             <interceptor name="globalscopevariableinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor"/>
-            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor"/>
-            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor"/>
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
+            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
             <interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor"/>
+            <interceptor name="permissionSetInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
+
             <interceptor-stack name="defaultInterceptor">
-                <interceptor-ref name="defaultStack"/>
-                <interceptor-ref name="authinterceptor"/>
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
                 <interceptor-ref name="exceptionHandlingInterceptor"/>
-                <interceptor-ref name="apiKeyInterceptor"/>
-                <interceptor-ref name="datasourceinterceptor"/>
-                <interceptor-ref name="scopeinterceptor"/>
-                <interceptor-ref name="malwareInterceptor"/>
-                <interceptor-ref name="globalscopevariableinterceptor"/>
-                <interceptor-ref name="cacheinterceptor"/>
-                <interceptor-ref name="validationinterceptor"/>
+                <interceptor-ref name="apiKeyInterceptor" />
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="malwareInterceptor" />
+                <interceptor-ref name="globalscopevariableinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="validationinterceptor" />
+                <interceptor-ref name="permissionSetInterceptor" />
                 <interceptor-ref name="json">
                     <param name="enableSMD">true</param>
                 </interceptor-ref>
@@ -1600,6 +1603,8 @@
             <param name="id">{2}</param>
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
+            <param name="permissionSet">RELATED_LIST</param>
+            <param name="permissionValue">RELATED_LIST_READ_PERMISSION</param>
         </action>
     </package>
     <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
@@ -1613,7 +1618,6 @@
             <param name="checkPermission">true</param>
         </action>
     </package>
-
 
     <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export"/>

@@ -80,6 +80,8 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	private Map<String, String> valueGenerators;
 	private Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues;
 
+	@Getter @Setter
+	private List<Long> permissionSets;
 	private Boolean shouldApplySwitchScope;
 
 	@Getter @Setter

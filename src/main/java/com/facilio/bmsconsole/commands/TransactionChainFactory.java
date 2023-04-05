@@ -64,6 +64,8 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
+import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
+import com.facilio.permission.commands.DefaultPermissionSetCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
@@ -105,6 +107,7 @@ public class TransactionChainFactory {
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(addScopingChain());
 			c.addCommand(new AssignShiftToUserCommand());
+			c.addCommand(new DefaultPermissionSetCommand());
 			return c;
 		}
 
@@ -6119,6 +6122,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddApplicationUsersCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 		c.addCommand(new AddorUpdateUserScopingCommand());
+		c.addCommand(new AddOrUpdatePermissionSetsForPeopleCommand());
 		return c;
 	}
 
@@ -6376,6 +6380,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ValidateUserCommand());
 		c.addCommand(new UpdateUserCommand());
 		c.addCommand(new AddorUpdateUserScopingCommand());
+		c.addCommand(new AddOrUpdatePermissionSetsForPeopleCommand());
 		return c;
 	}
 

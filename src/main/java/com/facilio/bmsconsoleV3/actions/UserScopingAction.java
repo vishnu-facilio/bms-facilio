@@ -1,18 +1,29 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.v3.V3Action;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.function.Function;
+
+import static com.facilio.bmsconsole.util.AuditLogUtil.sendAuditLogs;
 
 
 @Getter
@@ -43,6 +54,14 @@ public class UserScopingAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.RECORD, userScoping);
         chain.execute();
+        Long id = (Long) context.get(FacilioConstants.ContextNames.ID);
+        if(userScoping != null && userScoping.getId() > -1) {
+            addAuditLogs(userScoping.getId(),"updated");
+        } else if(getScopingId() != null) {
+            addAuditLogs(getScopingId(),"updated");
+        } else {
+            addAuditLogs(id,"added");
+        }
         setResult(FacilioConstants.ContextNames.SCOPING_CONTEXT, context.get(FacilioConstants.ContextNames.RECORD));
         return SUCCESS;
     }
@@ -64,6 +83,7 @@ public class UserScopingAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactoryV3.deleteUserScopingChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, getScopingId());
+        addAuditLogs(getScopingId(),"deleted");
         chain.execute();
         return SUCCESS;
     }
@@ -73,6 +93,7 @@ public class UserScopingAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
         context.put(FacilioConstants.ContextNames.STATUS, status);
+        addAuditLogs(getScopingId(),"updated");
         chain.execute();
         return SUCCESS;
     }
@@ -93,8 +114,38 @@ public class UserScopingAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.RECORD, userScopingConfigList);
         context.put("scopingId", scopingId);
         chain.execute();
+        addAuditLogs(getScopingId(),"updated");
         setResult(FacilioConstants.ContextNames.SCOPING_CONFIG_LIST, userScopingConfigList);
         return SUCCESS;
 
+    }
+
+    private void addAuditLogs(Long userScopeId , String action) throws Exception {
+        ScopingContext scoping = ApplicationApi.getScoping(userScopeId);
+        if(userScopeId != null) {
+            AuditLogHandler.ActionType actionType = null;
+            if (action.equals("added")) {
+                actionType = AuditLogHandler.ActionType.ADD;
+            } else if (action.equals("updated")) {
+                actionType = AuditLogHandler.ActionType.UPDATE;
+            } else if (action.equals("deleted")) {
+                actionType = AuditLogHandler.ActionType.DELETE;
+            }
+            sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("User Scoping  {%s}  has been %s.", scoping.getScopeName(), action),
+                    String.format("User Scoping  %s  has been %s.", scoping.getScopeName(), action),
+                    AuditLogHandler.RecordType.SETTING,
+                    "User Scoping", scoping.getId())
+                    .setActionType(actionType)
+                    .setLinkConfig(((Function<Void, String>) o -> {
+                        JSONArray array = new JSONArray();
+                        JSONObject json = new JSONObject();
+                        json.put("id", scoping.getId());
+                        json.put("name", scoping.getScopeName());
+                        json.put("navigateTo", "Data Sharing");
+                        array.add(json);
+                        return array.toJSONString();
+                    }).apply(null))
+            );
+        }
     }
 }

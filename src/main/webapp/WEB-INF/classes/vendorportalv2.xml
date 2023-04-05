@@ -22,6 +22,8 @@
 						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor name="globalscopevariableinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+			<interceptor name="permissionSetInterceptor"
+						 class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="portalauthinterceptor" />
@@ -29,6 +31,7 @@
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>

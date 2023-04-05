@@ -281,4 +281,52 @@
         </action>
     </package>
 
+    <package name="permissionSet" namespace="/api/v1/setup/permissionSet" extends="v2Api">
+        <action name="addOrUpdate" class="com.facilio.permission.action.PermissionSetAction" method="addOrUpdate">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="fetch" class="com.facilio.permission.action.PermissionSetAction" method="fetch">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="list" class="com.facilio.permission.action.PermissionSetAction" method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="userList" class="com.facilio.permission.action.PermissionSetAction" method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="delete" class="com.facilio.permission.action.PermissionSetAction" method="delete">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="updatePermission" class="com.facilio.permission.action.PermissionSetAction" method="updatePermission">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="getGroups" class="com.facilio.permission.action.PermissionSetViewAction" method="getGroupings">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+        </action>
+        <action name="*/getGroupTypes" class="com.facilio.permission.action.PermissionSetViewAction" method="getGroupTypes">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+            <param name="groupingName">{1}</param>
+        </action>
+        <action name="*/getGroupItems" class="com.facilio.permission.action.PermissionSetViewAction" method="getGroupItems">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+            <param name="groupingName">{1}</param>
+        </action>
+        <action name="*/getPermissionItems/*/*" class="com.facilio.permission.action.PermissionSetViewAction" method="getPermissionItems">
+            <param name="permission">ALL</param>
+            <param name="setupTab">DATA_SHARING</param>
+            <param name="permissionSetId">{1}</param>
+            <param name="groupType">{2}</param>
+            <param name="groupId">{3}</param>
+        </action>
+    </package>
+
 </struts>

@@ -44,25 +44,8 @@ public class PeopleModulesPageFactory extends PageFactory {
 		Section tab2Sec1 = getRelatedListSectionObj(page);
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
-		
-		//Booking module hardcoded in people module related list - to be removed
-		if( module != null && "people".equalsIgnoreCase(module.getName())) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-	        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-	        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-         	List<Long> Ids = new ArrayList<>();
-         	Ids.add(record.getId());
-         	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
-            JSONObject relatedList = new JSONObject();
-            relatedList.put("module", bookingModule);
-            relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.RESERVED_FOR));
-            relatedList.put("values", Ids);
-            relatedListWidget.setRelatedList(relatedList);
-            relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
-            tab2Sec1.addWidget(relatedListWidget);
-        
-        }
+
+		addBookingWidget(module,record,tab2Sec1);
 		
 		if((CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) || isRelationshipNeeded) {
 			page.addTab(tab2);
@@ -72,5 +55,23 @@ public class PeopleModulesPageFactory extends PageFactory {
 		return page;
 	}
 	
-
+	public static void addBookingWidget(FacilioModule module,PeopleContext record,Section section) throws Exception {
+		//Booking module hardcoded in people module related list - to be removed
+		if(module != null && "people".equalsIgnoreCase(module.getName())) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			List<Long> Ids = new ArrayList<>();
+			Ids.add(record.getId());
+			PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
+			JSONObject relatedList = new JSONObject();
+			relatedList.put("module", bookingModule);
+			relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.RESERVED_FOR));
+			relatedList.put("values", Ids);
+			relatedListWidget.setRelatedList(relatedList);
+			relatedListWidget.addToLayoutParams(section, 24, 10);
+			section.addWidget(relatedListWidget);
+		}
+	}
 }

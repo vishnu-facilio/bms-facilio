@@ -2697,7 +2697,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Security Policy", "securitypolicy", WebTabContext.Type.SECURITY_POLICY, null, appId, null));
             webTabs.add(new WebTabContext("Scope", "scope", WebTabContext.Type.SCOPE, null, appId, null,AccountUtil.FeatureLicense.SCOPE_VARIABLE.getFeatureId()));
             webTabs.add(new WebTabContext("Data Sharing", "datasharing", WebTabContext.Type.DATA_SHARING, null, appId, null,AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING.getFeatureId()));
-
             groupNameVsWebTabsMap.put("usersandaccess", webTabs);
 
 

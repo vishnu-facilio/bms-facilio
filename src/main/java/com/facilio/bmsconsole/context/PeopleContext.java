@@ -4,9 +4,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.permission.context.PermissionSetContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 public class PeopleContext extends ModuleBaseWithCustomFields{
@@ -195,4 +197,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 
 	@Setter @Getter
 	private Long scopingId;
+	@Getter @Setter
+	private List<Long> permissionSets;
 }

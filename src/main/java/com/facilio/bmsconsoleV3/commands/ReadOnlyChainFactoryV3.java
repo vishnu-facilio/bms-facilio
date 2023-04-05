@@ -47,6 +47,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookup
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.permission.commands.*;
 import com.facilio.relation.command.*;
 
 public class ReadOnlyChainFactoryV3 {
@@ -456,9 +457,45 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
-    public  static FacilioChain getUserScopingConfigChain(){
+    public  static FacilioChain getUserScopingConfigChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetUserScopingConfigCommand());
+        return c;
+    }
+
+    public static FacilioChain fetchPermissionSetChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPermissionSetCommand());
+        return c;
+    }
+
+    public static FacilioChain getPermissionSetGrouping() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPermissionSetGroupingCommand());
+        return c;
+    }
+
+    public static FacilioChain getPermissionSetTypeGroup() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPermissionSetTypeCommand());
+        return c;
+    }
+
+    public static FacilioChain getPermissionSetGroupItems() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPermissionSetGroupItemsCommand());
+        return c;
+    }
+
+    public static FacilioChain getPermissionPermissionItems() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPermissionSetPermissionItemsCommand());
+        return c;
+    }
+
+    public static FacilioChain fetchPermissionSetListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPermissionSetsListCommand());
         return c;
     }
 }

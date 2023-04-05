@@ -54,7 +54,7 @@ public class QuotationPageFactory extends PageFactory {
 
         return page;
     }
-    private static PageWidget addAssociatedTermsWidget(Page.Section section) {
+    public static PageWidget addAssociatedTermsWidget(Page.Section section) {
 
         PageWidget associatedTermsWidget = new PageWidget();
         associatedTermsWidget.addToLayoutParams(section, 24, 7);

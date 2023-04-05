@@ -192,7 +192,18 @@ public class AccountUtil {
 		}
 		return -1;
 	}
+	public static void setPermissionSets(List<Long> permissionSets) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().setPermissionSets(permissionSets);
+		}
+	}
 
+	public static List<Long> getPermissionSets() {
+		if (currentAccount.get() != null) {
+			return currentAccount.get().getPermissionSets();
+		}
+		return null;
+	}
 	public static void setSwitchScopingFieldValue(String fieldName, Object value) {
 		if (currentAccount.get() != null) {
 			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
@@ -567,8 +578,9 @@ public class AccountUtil {
 		DASHBOARD_ACTION(127,getExponentValue(63),LicenseMapping.GROUP2LICENSE), //2^63
 		PENDO_VENDOR(128,getExponentValue(1),LicenseMapping.GROUP3LICENSE),//2^1
 		PENDO_TENANT(129,getExponentValue(2),LicenseMapping.GROUP3LICENSE),//2^2
-		IMPORT_DATA(130,getExponentValue(3),LicenseMapping.GROUP3LICENSE);//2^3
+		IMPORT_DATA(130,getExponentValue(3),LicenseMapping.GROUP3LICENSE),//2^3
 
+		PERMISSION_SET(131,getExponentValue(4),LicenseMapping.GROUP3LICENSE);//2^3
 
 		public int featureId;
 		private long license;

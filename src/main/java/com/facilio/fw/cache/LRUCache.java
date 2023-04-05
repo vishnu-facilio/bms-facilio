@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.collections.UniqueMap;
 import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.ns.context.NameSpaceCacheContext;
+import com.facilio.permission.context.BasePermissionContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -53,6 +54,8 @@ public class LRUCache {
 	private static FacilioCache<String, List<Long>> nameSpaceIdsCache = new PubSubLRUCache("nameSpaceIdsCache", 2000);
 	private static FacilioCache<String, Object> superAdminCache = new PubSubLRUCache("superAdminCache", 2000);
 	private static FacilioCache<String, Long> peopleScopingCache = new PubSubLRUCache("peopleScopingCache", 2000);
+	private static FacilioCache<String, List<Long>> peoplePermissionSets = new PubSubLRUCache("peoplePermissionSets", 2000);
+	private static FacilioCache<String, List<Map<String,Object>>> permissionSetsTypePermissionCache = new PubSubLRUCache("permissionSetsTypePermissionCache", 2000);
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
@@ -149,8 +152,15 @@ public class LRUCache {
 		return superAdminCache;
 	}
 
-	public static FacilioCache<String, Long> getPeopleScopingCache(){
+	public static FacilioCache<String, Long> getPeopleScopingCache() {
 		return peopleScopingCache;
+	}
+	public static FacilioCache<String, List<Long>> getPeoplePermissionSets(){
+		return peoplePermissionSets;
+	}
+
+	public static FacilioCache<String, List<Map<String,Object>>> getPermissionSetsTypePermissionCache(){
+		return permissionSetsTypePermissionCache;
 	}
 
 }

@@ -289,4 +289,20 @@ public class UserScopeBeanImpl implements UserScopeBean {
             insertRecordBuilder.insert(prop);
         }
     }
+
+    @Override
+    public boolean scopingHasPeople(Long scopingId) throws Exception {
+        if(scopingId != null && scopingId > -1) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getPeopleUserScopingFields())
+                    .table(ModuleFactory.getPeopleUserScopingModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("USER_SCOPING_ID", "userScopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
+            Map<String, Object> props = selectRecordBuilder.fetchFirst();
+            if (MapUtils.isNotEmpty(props)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
