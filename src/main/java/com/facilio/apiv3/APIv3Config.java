@@ -186,6 +186,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.*;
+import com.facilio.bmsconsoleV3.interfaces.customfields.modules.WorkOrderModuleCustomFieldCount;
 import com.facilio.classification.chain.ClassificationChain;
 import com.facilio.classification.command.BeforeSaveClassificationCommand;
 import com.facilio.classification.context.ClassificationContext;
@@ -1220,7 +1221,7 @@ public class APIv3Config {
 
     @Module("employee")
     public static Supplier<V3Config> getEmployee() {
-        return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount50())
+        return () -> new V3Config(V3EmployeeContext.class, new WorkOrderModuleCustomFieldCount())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getEmployeeAfterSaveChain())
