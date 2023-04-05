@@ -902,15 +902,23 @@ public class ProcessImportCommand extends FacilioCommand {
 				case "location": {
 					if (value != null) {
 						String[] locationSplit = value.toString().split(",");
-
 						double lat = Double.parseDouble(locationSplit[0]);
 						double lon = Double.parseDouble(locationSplit[locationSplit.length - 1]);
 
 						LocationContext existingLocation = LocationAPI.getLocation((long) lat, (long) lon, AccountUtil.getCurrentOrg().getOrgId());
 
 						if (existingLocation == null) {
+							HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
+							String resourceNameKey = fieldMapping.get("resource__name");
+							String resourceName;
 							LocationContext newLocation = new LocationContext();
 							newLocation.setName("Import" + importProcessContext.getId());
+							if(resourceNameKey!=null){
+								if(colVal.containsKey(resourceNameKey)){
+									resourceName = (String) colVal.get(resourceNameKey);
+									newLocation.setName(resourceName+"_Location");
+								}
+							}
 							newLocation.setLat(lat);
 							newLocation.setLng(lon);
 							newLocation.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
