@@ -2439,6 +2439,7 @@ public class V2ReportAction extends FacilioAction {
             }
             context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
         }
+        context.put("url",getUrl());
         setExportParamsInContext(context);
 
         exportChain.execute(context);
@@ -2505,7 +2506,7 @@ public class V2ReportAction extends FacilioAction {
             }
             context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
         }
-
+        context.put("url",getUrl());
         context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
         context.put("isS3Url", true);
         setExportParamsInContext(context);
@@ -2529,7 +2530,7 @@ public class V2ReportAction extends FacilioAction {
             updateContext(context);
             mailReportChain = TransactionChainFactory.sendModuleAnalyticsMailChain();
         }
-
+        context.put("url",getUrl());
         context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
         context.put("isS3Url", true);
         setExportParamsInContext(context);

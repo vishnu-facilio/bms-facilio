@@ -523,8 +523,9 @@ public enum CardLayout {
 			if (criteria != null) {
 				selectRecordBuilder.andCriteria(criteria);
 			}
-			if (moduleName.equals(ContextNames.WORK_ORDER) && allFieldsMap.containsKey("noOfAttachments")) {
-				selectRecordBuilder.andCondition(CriteriaAPI.getCondition(allFieldsMap.get("noOfAttachments"),
+			String selected_key_name = subModuleName != null && subModuleName.equals(ContextNames.TASK_ATTACHMENTS) ? "noOfTasks" : "noOfAttachments";
+			if (moduleName.equals(ContextNames.WORK_ORDER) && allFieldsMap.containsKey(selected_key_name)) {
+				selectRecordBuilder.andCondition(CriteriaAPI.getCondition(allFieldsMap.get(selected_key_name),
 						String.valueOf(0), NumberOperators.GREATER_THAN)).limit(100);
 			} else {
 				selectRecordBuilder.limit(1000);
