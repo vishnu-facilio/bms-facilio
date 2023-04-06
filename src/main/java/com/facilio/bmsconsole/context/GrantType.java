@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.db.transaction.NewTransactionService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -22,7 +23,7 @@ public enum GrantType implements GrantTypeInterface{
 			if(connectionContext.getStateEnum() == State.AUTHORIZED || connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
 
 				if(connectionContext.getRefreshToken() != null) {
-					ConnectionUtil.updateAuthTokenByRefreshToken(connectionContext);
+					NewTransactionService.newTransaction(()->ConnectionUtil.updateAuthTokenByRefreshToken(connectionContext));
 				}
 				else {
 					String url = connectionContext.getAccessTokenUrl();
