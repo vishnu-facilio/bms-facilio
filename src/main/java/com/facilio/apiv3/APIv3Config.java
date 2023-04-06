@@ -1155,7 +1155,7 @@ public class APIv3Config {
 
     @Module("workorder")
     public static Supplier<V3Config> getWorkorder() {
-        return () -> new V3Config(V3WorkOrderContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3WorkOrderContext.class, new WorkOrderModuleCustomFieldCount())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getWorkorderAfterSaveChain())
@@ -1221,7 +1221,7 @@ public class APIv3Config {
 
     @Module("employee")
     public static Supplier<V3Config> getEmployee() {
-        return () -> new V3Config(V3EmployeeContext.class, new WorkOrderModuleCustomFieldCount())
+        return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getEmployeeAfterSaveChain())
