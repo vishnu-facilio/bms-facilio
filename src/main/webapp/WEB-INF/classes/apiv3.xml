@@ -1622,6 +1622,8 @@
         </action>
         <action name="importFields" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportFields">
         </action>
+        <action name="summary" class="com.facilio.multiImport.action.MultiImportDataAction" method="summary">
+        </action>
     </package>
 
     <package name="relationAction" namespace="/api/v3/modules" extends="v3Api">

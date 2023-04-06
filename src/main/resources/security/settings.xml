@@ -1768,6 +1768,11 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/multiImport/summary">
+        <urlparams>
+            <property name="importId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/modules/:moduleName/setting/:settingName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

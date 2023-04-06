@@ -222,6 +222,15 @@ public class MultiImportDataAction extends V3Action {
         setData(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS, context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS));
         return SUCCESS;
     }
+    public String summary() throws Exception{
+        FacilioChain chain = MultiImportChain.getMultiImportSummary();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.IMPORT_ID,importId);
+
+        chain.execute();
+        setData(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS, context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS));
+        return SUCCESS;
+    }
     public String getMultiImportModules() throws Exception{
         FacilioChain chain = MultiImportChain.getMultiImportModulesChain();
         FacilioContext context = chain.getContext();
