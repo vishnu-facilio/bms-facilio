@@ -209,7 +209,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 
 			List<Long> userId = (objects[0] instanceof ArrayList)? (List<Long>) objects[0] : Collections.singletonList((Long)objects[0]);
 			JSONObject sendPushNotificationMap =  FieldUtil.getAsJSON(objects[1]);
-			Boolean isPushNotification = (sendPushNotificationMap!=null)?(Boolean) sendPushNotificationMap.getOrDefault("isPushNotification",false):false;
+			Boolean isPushNotification = (sendPushNotificationMap!=null)?(Boolean) sendPushNotificationMap.getOrDefault("isSendNotification",false):false;
 			JSONParser parser = new JSONParser();
 			String notiString = new ObjectMapper().writeValueAsString(sendPushNotificationMap.get("notification"));
 			JSONObject json = (JSONObject) parser.parse(notiString);

@@ -100,12 +100,10 @@ public class NotificationAPI {
 		
 		return userIds;
 	}
-	
+    @Deprecated
 	public static void sendPushNotification(List<Long> userIds,JSONObject message) throws Exception {
 		
 		userIds = checkUserDelegation(userIds);
-
-		UserNotificationContext userNotificationContext = FieldUtil.getAsBeanFromJson(message, UserNotificationContext.class);
 
 		ApplicationContext applicationContext = ApplicationApi.getApplicationForId((Long) message.get("application"));
 		String appLinkName = applicationContext.getLinkName();
@@ -116,15 +114,8 @@ public class NotificationAPI {
 			for (UserMobileSetting mobileInstanceSetting : mobileInstanceSettings) {
 				if (mobileInstanceSetting != null) {
 
-					JSONObject obj = new JSONObject();
-					if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-						obj = UserNotificationContext.getFcmObject(userNotificationContext);
-					}else {
-						obj = UserNotificationContext.getFcmObjectMaintainence(userNotificationContext);
-					}
-
 //					message.put("to","fHD-LqsgPBA:APA91bEuVMMnWqC_LaxYg1w1K9fF4bL9Exunbh7W4syfBBCkEIhQC0lYP2CT-EKAbdvS7Hl3iayAdKojXUgQ_OwAlMANO7Rtl8DbQ1-Zettsae6hXRG9bzh6ob9IjGXQBwNTBOu-qbmF");
-					obj.put("to", mobileInstanceSetting.getMobileInstanceId());
+					message.put("to", mobileInstanceSetting.getMobileInstanceId());
 
 					Map<String, String> headers = new HashMap<>();
 					headers.put("Content-Type", "application/json");
@@ -132,7 +123,7 @@ public class NotificationAPI {
 
 					String url = "https://fcm.googleapis.com/fcm/send";
 
-					AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
+					AwsUtil.doHttpPost(url, headers, null, message.toJSONString());
 				}
 			}
 		}
