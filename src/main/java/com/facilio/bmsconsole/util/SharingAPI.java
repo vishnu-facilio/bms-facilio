@@ -179,9 +179,14 @@ public class SharingAPI {
 		parentIdVsSharingContextMap.forEach((key, value) -> value.stream().map(SingleSharingContext::getGroupId).filter(groupId -> groupId != -1).forEach(groupIds::add));
 
 		List<Group> groups = CollectionUtils.isNotEmpty(groupIds) ? AccountUtil.getGroupBean().getGroups(groupIds) : null;
-		Map<Long, List<GroupMember>> groupsMap = CollectionUtils.isNotEmpty(groups) ?
-				groups.stream().collect(Collectors.toMap(Group::getGroupId, Group::getMembers))
-				: new HashMap<>();
+		Map<Long, List<GroupMember>> groupsMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(groups)) {
+			for (Group group : groups) {
+				if (group.getMembers() != null) {
+					groupsMap.put(group.getGroupId(), group.getMembers());
+				}
+			}
+		}
 
 		List<Long> allowedParentIds = new ArrayList<>();
 

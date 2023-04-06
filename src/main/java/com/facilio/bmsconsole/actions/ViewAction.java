@@ -256,7 +256,15 @@ public class ViewAction extends FacilioAction {
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
-	
+
+	private boolean fromBuilder = false;
+	public boolean isFromBuilder() {
+		return fromBuilder;
+	}
+	public void setFromBuilder(boolean fromBuilder) {
+		this.fromBuilder = fromBuilder;
+	}
+
 	private Boolean restrictPermissions;
 	public Boolean getRestrictPermissions() {
 		if (restrictPermissions == null) {
@@ -330,6 +338,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_CALL, true);
+		context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
 		
 		FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
@@ -788,5 +797,5 @@ public String v2customizeView() throws Exception {
 			log.log(Level.INFO, "Exception while adding auditlog" , e);
 		}
 	}
-	
+
 }

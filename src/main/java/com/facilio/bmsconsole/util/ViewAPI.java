@@ -603,6 +603,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					}
 				}
 
+				// calendar view is inserted only when calendarView is enabled
 				if (view.isCalendarView()) {
 					validateCalendarView(view.getCalendarViewContext());
 					Map<String, Object> calendarViewProps = getCalendarViewProps(viewProp);
@@ -610,6 +611,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 
 					FacilioModule calendarModule = ModuleFactory.getCalendarViewModule();
 					List<FacilioField> calendarModuleFields = FieldFactory.getCalendarViewFields(calendarModule);
+
+					if (!isNew) {
+						CalendarViewContext oldCalendarView = CalendarViewUtil.getCalendarView(view.getId());
+						isNew = oldCalendarView == null;
+					}
+
 					if(isNew) {
 						addDependentTables(calendarModule, calendarModuleFields, calendarViewProps);
 					} else {
@@ -697,12 +704,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	public static long updateView(long viewId, FacilioView view) throws Exception {
 		try {
 			FacilioView oldView = getView(viewId);
+
 			Criteria criteria = view.getCriteria();
 			long criteriaId = -99;
 			if(criteria != null) {
 				criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
 			}
-			if(!oldView.isDefault()) {
+			// update criteria only for customViews and timeline views
+			if(!oldView.isDefault() || (view.getTypeEnum() != null && view.getTypeEnum().equals(ViewType.TIMELINE))) {
 				view.setCriteriaId(criteriaId);
 			}
 
@@ -716,8 +725,8 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			int count = updateBuilder.update(viewProp);
 			
 			addOrUpdateExtendedViewDetails(view, viewProp, false, oldView);
-			// delete old criteria
-			if (!oldView.isDefault() && oldView.getCriteriaId() != -1) {
+			// delete old criteria only for customViews or timeline views
+			if (oldView.getCriteriaId() != -1 && (!oldView.isDefault() || (view.getTypeEnum() != null && view.getTypeEnum().equals(ViewType.TIMELINE)))) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());
 			}
 
@@ -726,29 +735,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 
 			addViewSharing(view);
-
-			// TODO update sort fields and view columns
-			
-			/*ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module;
-			if (LookupSpecialTypeUtil.isSpecialType(view.getModuleName())) {
-				module =  modBean.getModule(view.getModuleName());
-			} else {
-				module =  modBean.getModule(view.getModuleId());
-			}
-			
-			List<SortField> defaultSortFileds = ColumnFactory.getDefaultSortField(module.getName());
-		
-			if (defaultSortFileds != null && !defaultSortFileds.isEmpty()) {
-				for (int i = 0; i < defaultSortFileds.size(); i++) {
-					FacilioField sortfield = modBean.getField(defaultSortFileds.get(i).getSortField().getName(), module.getName());
-					Long fieldID = modBean.getField(sortfield.getName(), module.getName()).getFieldId();
-					defaultSortFileds.get(i).setFieldId(fieldID);
-					defaultSortFileds.get(i).setOrgId(AccountUtil.getCurrentOrg().getId());
-				}
-				
-				customizeViewSortColumns((long) viewProp.get("id"), defaultSortFileds);
-			}*/
 			
 			return count;
 			

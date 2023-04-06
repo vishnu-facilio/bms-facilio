@@ -7,6 +7,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.calendarview.CalendarViewContext;
+import com.facilio.bmsconsole.calendarview.CalendarViewUtil;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -59,6 +61,7 @@ public class LoadViewCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		boolean isFetchCall = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_FETCH_CALL, false);
+		boolean isFromBuilder = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_FROM_BUILDER, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		JSONObject tempSortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
@@ -125,7 +128,21 @@ public class LoadViewCommand extends FacilioCommand {
 					} catch (Exception e) {
 						LOGGER.info("ViewEditAccess - LoadViewCommand -- Error occurred in ", e);
 					}
+
+					// Add calendar view only if request is from builder
+					if (isFromBuilder && view.getCalendarViewContext() == null) {
+						CalendarViewContext calendarView = CalendarViewUtil.getCalendarView(view.getId());
+						if (calendarView != null) {
+							ViewAPI.setCalendarViewFieldObjects(calendarView, modBean);
+							view.setCalendarViewContext(calendarView);
+						}
+					}
 				}
+
+				if (StringUtils.isNotEmpty(view.getModuleName()) && view.getModuleId() < 0) {
+					view.setModuleId(moduleId);
+				}
+
 				view.setDefaultModuleFields(moduleName, parentViewName);
 				Boolean overrideSorting = (Boolean) context.get(ContextNames.OVERRIDE_SORTING);
 				if (overrideSorting != null && overrideSorting) {
