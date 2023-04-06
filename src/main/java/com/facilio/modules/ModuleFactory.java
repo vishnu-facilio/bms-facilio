@@ -5512,12 +5512,21 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return connectedAppFiles;
 	}
 
+
 	public static FacilioModule getCalendarViewModule() {
 		FacilioModule calendarView = new FacilioModule();
 		calendarView.setName("calendarView");
 		calendarView.setTableName("CalendarView");
 		calendarView.setDisplayName("Calendar View");
 		return calendarView;
+	}
+	public static FacilioModule getReadingRuleWorkOrderModule(){
+		FacilioModule ruleWoModule = new FacilioModule();
+		ruleWoModule.setName("readingrulewo");
+		ruleWoModule.setDisplayName("ReadingRule_WorkOrder");
+		ruleWoModule.setTableName("ReadingRule_WO_Rel");
+		return ruleWoModule;
+
 	}
 
 	public static FacilioModule getWoSettingModule() {

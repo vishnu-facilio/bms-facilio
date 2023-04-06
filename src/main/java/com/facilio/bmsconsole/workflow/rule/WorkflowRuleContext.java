@@ -599,7 +599,8 @@ public class WorkflowRuleContext implements Serializable {
 		SCORING_RULE,// 44
 		SYSTEM_BUTTON,//45
 		SATISFACTION_SURVEY_RULE, //46
-		SURVEY_ACTION_RULE //47
+		SURVEY_ACTION_RULE,//47
+		READINGRULE_WO_ACTION_RULE,//48
 		;
 		//Always add at the end
 		

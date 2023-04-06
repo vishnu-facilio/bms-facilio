@@ -1063,8 +1063,21 @@
         <action name="update"
 				class="com.facilio.readingrule.action.NewRuleAction"
 				method="updateRuleAction" />
+        <action name="addRuleWo"
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="addRuleWorkOrderAction" />
 
-    </package>
+        <action name="fetchRuleWo"
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="fetchRuleWorkOrderAction" />
+        <action name="updateRuleWo"
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="updateRuleWorkOrderAction" />
+        <action name="updatewfStatus"
+                class="com.facilio.readingrule.action.NewRuleAction"
+                method="updateRuleWfStatus" />
+	</package>
+
 
     <package name="newRulesListApiv3" namespace="/api/v3/readingrules" extends="v3Api">
         <action name="*" class="com.facilio.readingrule.action.ReadingRuleAction" method="v3RulesList">

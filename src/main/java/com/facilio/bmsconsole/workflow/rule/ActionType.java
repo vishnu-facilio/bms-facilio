@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -695,55 +696,58 @@ public enum ActionType {
 					BaseAlarmContext baseAlarm = (BaseAlarmContext) currentRecord;
 					long lastWoId = baseAlarm.getLastWoId();
 					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm(baseAlarm);
-
-					if (lastOccurrence != null) {
-						boolean createNewWO = false;
-						WorkOrderContext workOrder = null;
-						if (lastWoId == -1) {
-							createNewWO = true;
-						}
-						else {
-							workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
-							if (workOrder == null) {
+					String moduleName=NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum());
+					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) && baseAlarm.getIsNewReadingRule()){
+						faultWorkorderCreation(obj,currentRule,baseAlarm);
+					}
+					else {
+						if (lastOccurrence != null) {
+							boolean createNewWO = false;
+							WorkOrderContext workOrder = null;
+							if (lastWoId == -1) {
 								createNewWO = true;
 							} else {
-								FacilioStatus moduleState = workOrder.getModuleState();
-								FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
-								if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+								workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
+								if (workOrder == null) {
 									createNewWO = true;
+								} else {
+									FacilioStatus moduleState = workOrder.getModuleState();
+									FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
+									if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+										createNewWO = true;
+									}
 								}
 							}
-						}
 
-						if (createNewWO) {
-							FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
-							Context woContext = c.getContext();
-							if (obj != null) {
-								workOrder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-								CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CREATE_WORKORDER, obj, (FacilioContext) context, lastOccurrence.getId() );
-								woContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
-								woContext.put(FacilioConstants.ContextNames.TASK_MAP, workOrder.getTaskList());
+							if (createNewWO) {
+								FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
+								Context woContext = c.getContext();
+								if (obj != null) {
+									workOrder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+									CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CREATE_WORKORDER, obj, (FacilioContext) context, lastOccurrence.getId());
+									woContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+									woContext.put(FacilioConstants.ContextNames.TASK_MAP, workOrder.getTaskList());
+								}
+								woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
+								c.execute();
+							} else {
+								NoteContext note = new NoteContext();
+								note.setBody(getNewV2AlarmCommentForUnClosedWO(baseAlarm));
+								note.setParentId(workOrder.getId());
+								note.setCreatedTime(lastOccurrence.getLastOccurredTime());
+
+								FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
+								FacilioContext noteContext = addNote.getContext();
+								noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+								noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
+								noteContext.put(FacilioConstants.ContextNames.NOTE, note);
+
+								noteContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+								noteContext.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, lastOccurrence);
+
+								addNote.addCommand(new UpdateWoIdInNewAlarmCommand());
+								addNote.execute();
 							}
-							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
-							c.execute();
-						}
-						else {
-							NoteContext note = new NoteContext();
-							note.setBody(getNewV2AlarmCommentForUnClosedWO(baseAlarm));
-							note.setParentId(workOrder.getId());
-							note.setCreatedTime(lastOccurrence.getLastOccurredTime());
-
-							FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
-							FacilioContext noteContext = addNote.getContext();
-							noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-							noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-							noteContext.put(FacilioConstants.ContextNames.NOTE, note);
-
-							noteContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
-							noteContext.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, lastOccurrence);
-
-							addNote.addCommand(new UpdateWoIdInNewAlarmCommand());
-							addNote.execute();
 						}
 					}
 				}
@@ -802,23 +806,31 @@ public enum ActionType {
 					wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
 				}
 				if (wo != null) {
-					FacilioContext updateContext = new FacilioContext();
-					updateContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(wo.getModuleId());
+					BaseAlarmContext baseAlarm = (BaseAlarmContext) currentRecord;
+					String moduleName=NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum());
 
-					WorkOrderContext workorder = new WorkOrderContext();
-					workorder.setStatus(TicketAPI.getStatus("Closed"));
+					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM)){
+                      FacilioChain chain=TransactionChainFactory.closeWorkOrderFromFault();
+					  FacilioContext updateCtx=chain.getContext();
+					  updateCtx.put(FacilioConstants.ContextNames.BASE_ALARM,baseAlarm);
+					  updateCtx.put(FacilioConstants.ContextNames.WORKFLOW_RULE,currentRule);
+					  updateCtx.put(FacilioConstants.ContextNames.TEMPLATE_JSON,obj);
+					  chain.execute();
 
-					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
+					}
+					else {
+						FacilioStatus status = TicketAPI.getStatus("closed");
+						changeState(status, module, context, currentRecord);
+						StateFlowRulesAPI.updateState(wo, module, status, false, context);
+					}
 
-					FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
-					updateWorkOrder.execute(context);
-				}
-			}
-			catch (Exception e) {
-				LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
-			}
-		}
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
+            }
+        }
 
 		@Override
 		public boolean isTemplateNeeded() {
@@ -1097,7 +1109,7 @@ public enum ActionType {
 			}
 			else {
 				Integer actionType = (Integer) obj.get("actionType");
-				
+
 				if(currentRule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.SCHEDULE);
 				}
@@ -1107,17 +1119,17 @@ public enum ActionType {
 				else if(currentRule.getRuleTypeEnum() == RuleType.RECORD_SPECIFIC_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.RESERVATION_CONDITION);
 				}
-				
+
 				if(actionType != null && actionType.equals(ControlActionTemplate.ActionType.GROUP.getIntVal())) {
-					
+
 					Long controlActionGroupId = (Long) obj.get("controlActionGroupId");
-					
+
 					FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForControlGroupChain();
-					
-					
+
+
 					context.put(ControlActionUtil.CONTROL_ACTION_GROUP_ID, controlActionGroupId);
 					context.put(ControlActionUtil.VALUE, val);
-					
+
 					executeControlActionCommandChain.execute(context);
 				}
 				else {
@@ -1296,7 +1308,7 @@ public enum ActionType {
 			try {
 				TaskContext task = (TaskContext) currentRecord;
 				long pmId = task.getParentWo().getPm().getId();
-				String taskUniqueId = pmId + "_" + task.getParentWo().getResource().getId() +"_" + task.getUniqueId(); 
+				String taskUniqueId = pmId + "_" + task.getParentWo().getResource().getId() +"_" + task.getUniqueId();
 				WorkOrderContext deviationWo = WorkOrderAPI.getOpenWorkOrderForDeviationTemplate(taskUniqueId);
 				if (deviationWo != null) {
 					NoteContext note = new NoteContext();
@@ -1324,7 +1336,7 @@ public enum ActionType {
 		}
 
 	},
-	
+
 	ADD_VIOLATION_ALARM (25) {
 
 		@Override
@@ -1883,7 +1895,6 @@ public enum ActionType {
 						}
 				}
 
-
 				QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred while creating survey for records : ", e);
@@ -2319,4 +2330,12 @@ public enum ActionType {
 			}
 		}
 	}
+    private static void faultWorkorderCreation(JSONObject template,WorkflowRuleContext wfRule,BaseAlarmContext baseAlarm) throws Exception{
+        FacilioChain chain =TransactionChainFactory.addFaultToWorkOrder();
+        FacilioContext context=chain.getContext();
+        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON,template);
+        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE,wfRule);
+        context.put(FacilioConstants.ContextNames.BASE_ALARM,baseAlarm);
+        chain.execute();
+    }
 }

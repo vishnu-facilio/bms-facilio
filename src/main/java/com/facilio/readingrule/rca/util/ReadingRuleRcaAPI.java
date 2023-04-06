@@ -315,15 +315,10 @@ public class ReadingRuleRcaAPI {
         return CriteriaAPI.addCriteria(criteria);
     }
 
-    private static void setModuleNameForCriteria(Criteria criteria) {
-        Map<String, Condition> conditions = criteria.getConditions();
-        for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
-            entry.getValue().setModuleName(FacilioConstants.ContextNames.NEW_READING_ALARM);
-        }
-    }
+
 
     public static void prepareGroupForInsert(RCAGroupContext group, Long rcaId) throws Exception {
-        setModuleNameForCriteria(group.getCriteria());
+        NewReadingRuleAPI.setModuleNameForCriteria(group.getCriteria(),FacilioConstants.ContextNames.NEW_READING_ALARM);
         Long criteriaId = ReadingRuleRcaAPI.createCriteria(group.getCriteria());
         group.setCriteriaId(criteriaId);
         group.setRcaId(rcaId);
@@ -333,7 +328,7 @@ public class ReadingRuleRcaAPI {
 
     public static void updateCriteriaOfGroup(RCAGroupContext group) throws Exception {
         CriteriaAPI.deleteCriteria(group.getCriteriaId());
-        setModuleNameForCriteria(group.getCriteria());
+        NewReadingRuleAPI.setModuleNameForCriteria(group.getCriteria(),FacilioConstants.ContextNames.NEW_READING_ALARM);
         Long criteriaId = createCriteria(group.getCriteria());
         group.setCriteriaId(criteriaId);
     }

@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.view;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.PickListAction;
+import com.facilio.bmsconsole.actions.TicketStatusAction;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -12,6 +14,7 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
@@ -2229,7 +2232,7 @@ public class ViewFactory {
 
 		return criteria;
 	}
-	
+
 	public static Criteria getStateCriteria(StatusType statusType) {
 		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();

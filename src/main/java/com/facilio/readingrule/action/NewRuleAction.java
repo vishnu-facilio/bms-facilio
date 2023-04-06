@@ -7,6 +7,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
+import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
@@ -17,6 +18,8 @@ public class NewRuleAction extends V3Action {
 
     private String moduleName;
     private AlarmWorkflowRuleContext workflowRule;
+
+    private Map<String,Object> faultToWorkorder;
     private long ruleId;
     private long actionId;
 //    private Long startTime;
@@ -64,6 +67,44 @@ public class NewRuleAction extends V3Action {
         setData((JSONObject) new JSONObject().put("result", true));
         return SUCCESS;
     }
+
+    public String addRuleWorkOrderAction() throws Exception{
+        FacilioChain chain =TransactionChainFactory.addRuleToWOWorkFlowChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE, faultToWorkorder);
+        context.put(FacilioConstants.ContextNames.RULE_ID,ruleId);
+        chain.execute();
+        setData((JSONObject) new JSONObject().put("result", true));
+        return SUCCESS;
+    }
+
+    public String updateRuleWorkOrderAction() throws Exception{
+        FacilioChain chain =TransactionChainFactory.updateRuleToWorkFlowChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER, faultToWorkorder);
+        context.put(FacilioConstants.ContextNames.RULE_ID,ruleId);
+        chain.execute();
+        setData((JSONObject) new JSONObject().put("result", true));
+        return SUCCESS;
+    }
+    public String fetchRuleWorkOrderAction() throws Exception{
+        FacilioChain chain =TransactionChainFactory.fetchRuleToWorkflowChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID,ruleId);
+        chain.execute();
+        setData(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER, context);
+        return SUCCESS;
+    }
+
+    public String updateRuleWfStatus() throws Exception{
+        FacilioChain chain =TransactionChainFactory.wfRuleStatusChangeFromRule();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID,ruleId);
+        chain.execute();
+        setData((JSONObject) new JSONObject().put("result", true));
+        return SUCCESS;
+    }
+
 
 //    private RuleRollupCommand.RollupType rollupType;
 //    public int getRollupType() {

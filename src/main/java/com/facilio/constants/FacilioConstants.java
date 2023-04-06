@@ -968,6 +968,8 @@ public class FacilioConstants {
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
+
+		public static final String FIELD_MATCHER="fieldMatcher";
 		public static final String CHECK_FIELD_DISPLAY_NAME_DUPLICATION = "avoidFieldDisplayNameDuplication";
 		public static final String FIELD_ID = "fieldId";
 		public static final String PREV_FIELD_ID = "prevFieldId";
@@ -3879,6 +3881,8 @@ public class FacilioConstants {
 		public static final String NEW_READING_RULE = "newreadingrules";
 
 		public static final String NEW_READING_RULE_LIST = "newreadingrulelist";
+
+		public static final String FAULT_TO_WORKORDER="faultToWorkorder";
 
 		public static class RCA {
 			public static final String RCA_MODULE = "readingrulerca";

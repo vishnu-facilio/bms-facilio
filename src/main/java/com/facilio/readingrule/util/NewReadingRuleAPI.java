@@ -10,6 +10,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import org.apache.commons.chain.Context;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -223,5 +224,11 @@ public class NewReadingRuleAPI {
             return fields.get(0).getFieldId(); //As default returns first field id. This is hack for now. Need to define primary field flag for fields.
         }
         return -1L;
+    }
+    public static void setModuleNameForCriteria(Criteria criteria, String moduleName) {
+        Map<String, Condition> conditions = criteria.getConditions();
+        for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
+            entry.getValue().setModuleName(moduleName);
+        }
     }
 }

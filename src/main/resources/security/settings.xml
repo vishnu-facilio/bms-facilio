@@ -1701,4 +1701,21 @@
             <property name="groupId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+
+    <request path="/api/v3/readingrule/actions/fetchRuleWo">
+        <requestbody type="object">
+            <property name="ruleId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingrule/actions/updatewfStatus">
+        <requestbody type="object">
+            <property name="ruleId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingrule/actions/addRuleWo">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v3/readingrule/actions/updateRuleWo">
+        <requestbody type="object"></requestbody>
+    </request>
 </config>

@@ -70,6 +70,8 @@ import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.*;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
+import com.facilio.readingrule.faulttowo.command.AddFaultToWorkOrderSupplementsCommand;
+import com.facilio.readingrule.faulttowo.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
@@ -3799,6 +3801,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READINGRULE_WO_ACTION_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 		);
@@ -4165,6 +4168,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateWOForAlarmOccurrenceCommand());
 			c.addCommand(getAddWorkOrderChain());
 			c.addCommand(new UpdateWoIdInNewAlarmCommand());
+			c.addCommand(new AddWorkOrderNotesFromAlarmCommand());
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
@@ -6830,6 +6834,39 @@ public class TransactionChainFactory {
 	public static FacilioChain getGeoLocationFieldsChain(){
 		FacilioChain c= getDefaultChain();
 		c.addCommand(new GetGeoLocationFiledsCommand());
+		return c;
+	}
+
+	public static FacilioChain addRuleToWOWorkFlowChain(){
+		FacilioChain c= getDefaultChain();
+		c.addCommand(new AddRuleWoDetailsCommand());
+		return c;
+	}
+	public static FacilioChain updateRuleToWorkFlowChain(){
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new UpdateRuleWoDetailsCommand());
+		return c;
+	}
+	public static FacilioChain fetchRuleToWorkflowChain(){
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new FetchRuleWoDetailsCommand());
+		c.addCommand(new SetWorkflowDetailsCommand());
+		return c;
+	}
+	public static FacilioChain addFaultToWorkOrder(){
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddFaultToWorkOrderSupplementsCommand());
+		c.addCommand(new WorkOrderCreationFromFaultCommand());
+		return c;
+	}
+	public static FacilioChain closeWorkOrderFromFault(){
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new CloseWorkOrderFromFaultsCommand());
+		return c;
+	}
+	public static FacilioChain wfRuleStatusChangeFromRule(){
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new FaultToWorkorderStatusChangeCommand());
 		return c;
 	}
 }

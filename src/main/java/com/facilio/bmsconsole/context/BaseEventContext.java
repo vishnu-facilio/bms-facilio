@@ -236,7 +236,8 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
         }
 
         if (add) {
-            CommonCommandUtil.addEventType(EventType.CREATE, (FacilioContext) context);
+            CommonCommandUtil.addEventType(EventType.ALARM_OCCURRENCE_CREATED,(FacilioContext)context);
+            CommonCommandUtil.addEventType(EventType.CREATE,(FacilioContext)context);
             alarmOccurrence.setCreatedTime(getCreatedTime());
             alarmOccurrence.setResource(getResource());
             if (getSiteId() != -1) {

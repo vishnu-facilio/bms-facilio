@@ -297,7 +297,7 @@ public enum EventType {
 			return null;
 		}
 	},
-	EMAIL_CONVERSATION_ON_ADMIN_REPLY(68719476736l) {
+	EMAIL_CONVERSATION_ON_ADMIN_REPLY(68719476736l) { //2^36
 		@Override
 		public String getMessage(JSONObject json) {
 			return null;
@@ -310,6 +310,12 @@ public enum EventType {
 		}
 	},
 	ANNOUNCEMENT_PUBLISH(274877906944l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
+	ALARM_OCCURRENCE_CREATED(549755813888l){ //2^39
 		@Override
 		public String getMessage(JSONObject json) {
 			return null;

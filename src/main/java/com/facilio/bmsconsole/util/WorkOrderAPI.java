@@ -3026,5 +3026,21 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	   
 	   return builder.fetchFirst().getId();
    }
+   public static WorkOrderContext getWorkOrderByCriteria(Long workOrderId,Criteria criteria) throws Exception{
+       ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+       FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+       List<FacilioField> fields = modBean.getAllFields(module.getName());
+       if(criteria!=null) {
+           SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+                   .module(module)
+                   .beanClass(WorkOrderContext.class)
+                   .select(fields)
+                   .andCriteria(criteria)
+                   .andCondition(CriteriaAPI.getIdCondition(workOrderId,module));
+           List<WorkOrderContext> workOrders = selectRecordsBuilder.get();
+           return workOrders.get(0);
+       }
+       return null;
+   }
   
  }

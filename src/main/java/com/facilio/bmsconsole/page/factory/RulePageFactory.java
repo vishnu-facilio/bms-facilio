@@ -118,7 +118,7 @@ public class RulePageFactory extends PageFactory {
 	}
 	private static void addRuleDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.RULE_DETIALS_WIGET);
-		pageWidget.addToLayoutParams(section, 24, 5);
+		pageWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(pageWidget);
 	}
 	private static void addRuleRankCard(Section section) {

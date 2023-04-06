@@ -89,7 +89,14 @@ public class WorkflowRuleAPI {
 
 		return finalString;
 	}
-
+	public static String replacePlaceholders(String moduleName, Object record, String placeholderString) throws Exception {
+		if (placeholderString != null) {
+			Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
+			String replacedString = StringSubstitutor.replace(placeholderString, params);
+			return replacedString;
+		}
+		return null;
+	}
 	public static long  addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
 		rule.setStatus(true);
