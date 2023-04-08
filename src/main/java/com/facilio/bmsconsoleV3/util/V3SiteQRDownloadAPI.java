@@ -45,19 +45,19 @@ public class V3SiteQRDownloadAPI {
     public static String getSiteQRDownloadURL(Long siteId) throws Exception {
 
         BaseSpaceContext site = SpaceAPI.getBaseSpace(siteId);
-
+        String siteName = replaceNameWithoutForwardSlash(site.getName());
         FacilioUtil.throwIllegalArgumentException(site == null,"Invalid Site ID");
 
         List<V3BaseSpaceContext> baseSpaces = V3SpaceAPI.getBaseSpaceChildren(FacilioConstants.ContextNames.SITE, siteId);
 
-        BundleFolderContext siteFolder = new BundleFolderContext(site.getName()+DELIMITER+siteId);
+        BundleFolderContext siteFolder = new BundleFolderContext(siteName+DELIMITER+siteId);
 
         String qrVal = site.getQrVal();
 
         if (CollectionUtils.isEmpty(baseSpaces)) {
 
-            BundleFileContext siteFile = new BundleFileContext(site.getName()+DELIMITER+siteId, PNG_EXTENSION, StringUtils.isEmpty(qrVal) ? FACILIO_QR+siteId : qrVal);
-            siteFolder.addFile(site.getName()+DELIMITER+siteId, siteFile);
+            BundleFileContext siteFile = new BundleFileContext(siteName+DELIMITER+siteId, PNG_EXTENSION, StringUtils.isEmpty(qrVal) ? FACILIO_QR+siteId : qrVal);
+            siteFolder.addFile(siteName+DELIMITER+siteId, siteFile);
 
             return saveFile(siteFolder);
         }
@@ -77,8 +77,8 @@ public class V3SiteQRDownloadAPI {
             Map<Long, List<V3BaseSpaceContext>> siteIdIdVsSpaceMap = baseSpaces.stream().filter(v -> v.getSpaceType() == V3BaseSpaceContext.SpaceType.SPACE.getIntVal() && v.getBuilding() == null && v.getFloor() == null).collect(Collectors.groupingBy(V3BaseSpaceContext::getSiteId));
 
 
-            BundleFileContext siteFile = new BundleFileContext(site.getName()+DELIMITER+siteId, PNG_EXTENSION, StringUtils.isEmpty(qrVal) ? FACILIO_QR+siteId : qrVal);
-            siteFolder.addFile(site.getName()+DELIMITER+siteId, siteFile);
+            BundleFileContext siteFile = new BundleFileContext(siteName+DELIMITER+siteId, PNG_EXTENSION, StringUtils.isEmpty(qrVal) ? FACILIO_QR+siteId : qrVal);
+            siteFolder.addFile(siteName+DELIMITER+siteId, siteFile);
 
             if (CollectionUtils.isNotEmpty(siteIdIdVsSpaceMap.get(site.getId()))) {
                 fillSiteSpaces(siteFolder, siteIdIdVsSpaceMap.get(site.getId()), idVsBaseSpace);
@@ -108,7 +108,7 @@ public class V3SiteQRDownloadAPI {
                             continue;
                         }
 
-                        BundleFolderContext spaceFolder = siteFolder.getOrAddFolder(BUILDING_FOLDER).getFolder(building.getName()+DELIMITER+building.getId()).getOrAddFolder(FLOOR_FOLDER).getOrAddFolder(floor.getName()+DELIMITER+floor.getId()).getOrAddFolder(SPACE_FOLDER);
+                        BundleFolderContext spaceFolder = siteFolder.getOrAddFolder(BUILDING_FOLDER).getFolder(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId()).getOrAddFolder(FLOOR_FOLDER).getOrAddFolder(replaceNameWithoutForwardSlash(floor.getName())+DELIMITER+floor.getId()).getOrAddFolder(SPACE_FOLDER);
 
                         for (V3BaseSpaceContext space : spaces) {   // Space and SubSpace Folders
 
@@ -135,33 +135,33 @@ public class V3SiteQRDownloadAPI {
 
     private static void fillSpaceChildren(Map<Long, V3BaseSpaceContext> idVsBaseSpace, BundleFolderContext spaceFolder, V3BaseSpaceContext space) throws Exception {
         if (space.getSpace1() == null) {
-            BundleFileContext spaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId() , PNG_EXTENSION,  space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+            BundleFileContext spaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId() , PNG_EXTENSION,  space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
 
-            BundleFolderContext spaceChild = spaceFolder.getOrAddFolder(space.getName()+DELIMITER+space.getId());
-            if (spaceChild.getFile(idVsBaseSpace.get(space.getId()).getName()+DELIMITER+space.getId()) == null) {
-                spaceChild.addFile(idVsBaseSpace.get(space.getId()).getName()+DELIMITER+space.getId(), spaceFile);
+            BundleFolderContext spaceChild = spaceFolder.getOrAddFolder(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId());
+            if (spaceChild.getFile(replaceNameWithoutForwardSlash(idVsBaseSpace.get(space.getId()).getName())+DELIMITER+space.getId()) == null) {
+                spaceChild.addFile(replaceNameWithoutForwardSlash(idVsBaseSpace.get(space.getId()).getName())+DELIMITER+space.getId(), spaceFile);
             }
         }
         if (space.getSpace1() != null) {
 
-            BundleFileContext subSpaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId(), PNG_EXTENSION,  space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
-            spaceFolder.getOrAddFolder(idVsBaseSpace.get(space.getSpace1().getId()).getName()+DELIMITER+ space.getSpace1().getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(space.getName()+DELIMITER+space.getId(), subSpaceFile);
+            BundleFileContext subSpaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), PNG_EXTENSION,  space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+            spaceFolder.getOrAddFolder(replaceNameWithoutForwardSlash(idVsBaseSpace.get(space.getSpace1().getId()).getName())+DELIMITER+ space.getSpace1().getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), subSpaceFile);
         }
     }
 
     private static void fillFloorChildren(BundleFolderContext siteFolder, V3BaseSpaceContext building, V3BaseSpaceContext floor) throws Exception {
 
-        BundleFileContext floorFile = new BundleFileContext(floor.getName()+DELIMITER+floor.getId(), PNG_EXTENSION, floor.getQrVal()!= null ? floor.getQrVal() : FACILIO_QR+floor.getId());
+        BundleFileContext floorFile = new BundleFileContext(replaceNameWithoutForwardSlash(floor.getName())+DELIMITER+floor.getId(), PNG_EXTENSION, floor.getQrVal()!= null ? floor.getQrVal() : FACILIO_QR+floor.getId());
 
-        siteFolder.getFolder(BUILDING_FOLDER).getFolder(building.getName()+DELIMITER+building.getId()).getOrAddFolder(FLOOR_FOLDER).getOrAddFolder(floor.getName()+DELIMITER+floor.getId()).addFile(floor.getName()+DELIMITER+floor.getId(), floorFile);
+        siteFolder.getFolder(BUILDING_FOLDER).getFolder(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId()).getOrAddFolder(FLOOR_FOLDER).getOrAddFolder(replaceNameWithoutForwardSlash(floor.getName())+DELIMITER+floor.getId()).addFile(replaceNameWithoutForwardSlash(floor.getName())+DELIMITER+floor.getId(), floorFile);
 
     }
 
     private static void fillBuildingChildren(Map<Long, V3BaseSpaceContext> idVsBaseSpace, Map<Long, List<V3BaseSpaceContext>> buildingIdVsSpaceMap, BundleFolderContext siteFolder, V3BaseSpaceContext building) throws Exception {
 
 
-        BundleFileContext buildingFile = new BundleFileContext(building.getName()+DELIMITER+building.getId(), PNG_EXTENSION,  building.getQrVal() != null ? building.getQrVal() : FACILIO_QR+ building.getId());
-        siteFolder.getOrAddFolder(BUILDING_FOLDER).addFolder(building.getName()+DELIMITER+building.getId()).addFile(building.getName()+DELIMITER+building.getId(), buildingFile);
+        BundleFileContext buildingFile = new BundleFileContext(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId(), PNG_EXTENSION,  building.getQrVal() != null ? building.getQrVal() : FACILIO_QR+ building.getId());
+        siteFolder.getOrAddFolder(BUILDING_FOLDER).addFolder(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId()).addFile(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId(), buildingFile);
 
         if (CollectionUtils.isNotEmpty(buildingIdVsSpaceMap.get(building.getId()))) {
             buildingSpace(siteFolder, building, buildingIdVsSpaceMap.get(building.getId()), idVsBaseSpace);
@@ -175,11 +175,11 @@ public class V3SiteQRDownloadAPI {
         for (V3BaseSpaceContext space : siteIdIdVsSpaces) {
 
             if (space.getSpace1() == null) {
-                BundleFileContext spaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
-                spaceFolder.getOrAddFolder(space.getName()+DELIMITER+space.getId()).addFile(space.getName()+DELIMITER+space.getId(), spaceFile);
+                BundleFileContext spaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+                spaceFolder.getOrAddFolder(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId()).addFile(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), spaceFile);
             } else if (space.getSpace1() != null) {
-                BundleFileContext subSpaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId() , PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
-                spaceFolder.getOrAddFolder(idVsBaseSpace.get(space.getSpace1().getId()).getName()+DELIMITER+space.getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(space.getName()+DELIMITER+space.getId(), subSpaceFile);
+                BundleFileContext subSpaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId() , PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+                spaceFolder.getOrAddFolder(replaceNameWithoutForwardSlash(idVsBaseSpace.get(space.getSpace1().getId()).getName())+DELIMITER+space.getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), subSpaceFile);
             }
         }
     }
@@ -189,16 +189,16 @@ public class V3SiteQRDownloadAPI {
         if (CollectionUtils.isEmpty(v3BaseSpaceContexts)) {
             return;
         }
-        BundleFolderContext buildingFolder = siteFolder.getOrAddFolder(BUILDING_FOLDER).getOrAddFolder(building.getName()+DELIMITER+building.getId()).getOrAddFolder(SPACE_FOLDER);
+        BundleFolderContext buildingFolder = siteFolder.getOrAddFolder(BUILDING_FOLDER).getOrAddFolder(replaceNameWithoutForwardSlash(building.getName())+DELIMITER+building.getId()).getOrAddFolder(SPACE_FOLDER);
         for (V3BaseSpaceContext space : v3BaseSpaceContexts) {
 
             if (space.getSpace1() == null) {
-                BundleFileContext spaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+                BundleFileContext spaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
 
-                buildingFolder.getOrAddFolder(space.getName()+DELIMITER+space.getId()).addFile(space.getName()+DELIMITER+space.getId(), spaceFile);
+                buildingFolder.getOrAddFolder(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId()).addFile(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), spaceFile);
             } else if (space.getSpace1() != null) {
-                BundleFileContext subSpaceFile = new BundleFileContext(space.getName()+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
-                buildingFolder.getOrAddFolder(idVsBaseSpace.get(space.getSpace1().getId()).getName()+DELIMITER+space.getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(space.getName()+DELIMITER+space.getId(), subSpaceFile);
+                BundleFileContext subSpaceFile = new BundleFileContext(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), PNG_EXTENSION, space.getQrVal() != null ? space.getQrVal() : FACILIO_QR+ space.getId());
+                buildingFolder.getOrAddFolder(replaceNameWithoutForwardSlash(idVsBaseSpace.get(space.getSpace1().getId()).getName())+DELIMITER+space.getId()).getOrAddFolder(SUB_SPACE_FOLDER).addFile(replaceNameWithoutForwardSlash(space.getName())+DELIMITER+space.getId(), subSpaceFile);
             }
 
         }
@@ -269,5 +269,7 @@ public class V3SiteQRDownloadAPI {
 
         return fileId;
     }
-
+    private static String replaceNameWithoutForwardSlash(String name){
+        return name.replaceAll("/"," ");
+    }
 }
