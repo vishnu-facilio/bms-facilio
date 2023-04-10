@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.classification.context.ClassificationContext;
 import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @NoArgsConstructor
 public class BaseSpaceContext extends ResourceContext {
@@ -335,7 +335,8 @@ public class BaseSpaceContext extends ResourceContext {
 		BUILDING(2, "Building",FacilioConstants.ContextNames.BUILDING),
 		FLOOR(3, "Floor",FacilioConstants.ContextNames.FLOOR),
 		SPACE(4, "Space",FacilioConstants.ContextNames.SPACE),
-		ZONE(5, "Zone",FacilioConstants.ContextNames.ZONE)
+		ZONE(5, "Zone",FacilioConstants.ContextNames.ZONE),
+		WEATHER_STATION(6, "Weather Station", FacilioConstants.ModuleNames.WEATHER_STATION)
 		;
 		
 		private int intVal;

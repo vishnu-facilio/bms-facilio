@@ -26,7 +26,6 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -101,6 +100,8 @@ public class SpaceAPI {
 			case ZONE:
 				moduleName = FacilioConstants.ContextNames.ZONE;
 				break;
+			case WEATHER_STATION:
+				moduleName = FacilioConstants.ModuleNames.WEATHER_STATION;
 		}
 		
 		List<FacilioModule> readings = null;

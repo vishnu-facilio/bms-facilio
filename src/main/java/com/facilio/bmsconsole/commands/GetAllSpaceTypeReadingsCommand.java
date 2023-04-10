@@ -111,51 +111,57 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 				spaces.put(space.getId(), space);
 			}
 			spaceType = SpaceType.SPACE;
+		} else if("Weather Station".equalsIgnoreCase(type) || (typeEnum != null && typeEnum == SpaceType.WEATHER_STATION)) {
+			spaceType = SpaceType.WEATHER_STATION;
 		}
 
-		List<FacilioField> fields = FieldFactory.getResourceReadingsFields();
-		FacilioField resourceField = FieldFactory.getAsMap(fields).get("resourceId");
-		FacilioModule module = ModuleFactory.getResourceReadingsModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCondition(resourceField, StringUtils.join(ids,","), PickListOperators.IS));
-			
+		List<FacilioModule> readings = new ArrayList<>();
+		Map<Long, List<FacilioModule>> moduleMap = new HashMap<>();
+		if(!ids.isEmpty()) {
+			List<FacilioField> fields = FieldFactory.getResourceReadingsFields();
+			FacilioField resourceField = FieldFactory.getAsMap(fields).get("resourceId");
+			FacilioModule module = ModuleFactory.getResourceReadingsModule();
+
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(resourceField, StringUtils.join(ids, ","), PickListOperators.IS));
+
 			List<Map<String, Object>> props = selectBuilder.get();
-			
-			System.out.println(">>>>>>>>>>>> props : "+props);
-			
-			List<FacilioModule> readings = new ArrayList<>();
-			Map<Long,List<FacilioModule>> moduleMap = new HashMap<>();
-			if(props != null && !props.isEmpty()) {
+
+			System.out.println(">>>>>>>>>>>> props : " + props);
+
+
+			if (props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				for(Map<String, Object> prop : props) {
+				for (Map<String, Object> prop : props) {
 					Long readingId = (Long) prop.get("readingId");
 					FacilioModule readingModule = modBean.getModule(readingId);
 					readings.add(readingModule);
-					Long spaceId = (Long)prop.get("resourceId");
+					Long spaceId = (Long) prop.get("resourceId");
 					BaseSpaceContext baseSpace = spaces.get(spaceId);
 					//String name = baseSpace.getName();
 					Long id = baseSpace.getId();
 					List<FacilioModule> modList = moduleMap.get(id);
-					if(modList == null) {
+					if (modList == null) {
 						modList = new ArrayList<>();
-						System.out.println("#### Name : "+id+", modList : "+modList);
+						System.out.println("#### Name : " + id + ", modList : " + modList);
 						moduleMap.put(id, modList);
 					}
 					modList.add(readingModule);
 				}
 			}
-			List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType, true, true);
-			if (defaultReadings != null) {
-				//moduleMap.put("All", defaultReadings);
-				moduleMap.put(-1L, defaultReadings);
-				readings.addAll(defaultReadings);
-			}
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
-			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
-			context.put(FacilioConstants.ContextNames.SPACES, spaces);
+		}
+		List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType, true, true);
+		if (defaultReadings != null) {
+			//moduleMap.put("All", defaultReadings);
+			moduleMap.put(-1L, defaultReadings);
+			readings.addAll(defaultReadings);
+		}
+		context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+		context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
+		context.put(FacilioConstants.ContextNames.SPACES, spaces);
 
 		return false;
 	}
