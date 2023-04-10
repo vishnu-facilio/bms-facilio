@@ -6780,7 +6780,17 @@ public class TransactionChainFactory {
 	}
 	public static FacilioChain getAddPageTabsChain(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddPageTabsCommand());
+		c.addCommand(new AddPageTabCommand());
+		return c;
+	}
+	public static FacilioChain getAddPageColumnsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddPageColumnsCommand());
+		return c;
+	}
+	public static FacilioChain getAddPageSectionChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddPageSectionCommand());
 		return c;
 	}
 	public static FacilioChain getPatchCustomPageChain(){
@@ -6793,14 +6803,25 @@ public class TransactionChainFactory {
 		c.addCommand(new PatchPageTabsCommand());
 		return c;
 	}
-	public static FacilioChain getDeleteCustomPageChain(){
+	public static FacilioChain getPatchPageColumnChain(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new DeleteCustomPageCommand());
+		c.addCommand(new PatchPageColumnCommand());
 		return c;
 	}
-	public static FacilioChain getDeletePageTabsChain(){
+	public static FacilioChain getPatchPageSectionChain(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new DeletePageTabsCommand());
+		c.addCommand(new PatchPageSectionCommand());
+		return c;
+	}
+	public static FacilioChain getDeleteCustomPageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidatePageDeletionCommand());
+		c.addCommand(new DeletePageComponentsCommand());
+		return c;
+	}
+	public static FacilioChain getDeletePageComponentChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeletePageComponentsCommand());
 		return c;
 	}
 	public static FacilioChain getReorderPageChain(){
@@ -6812,6 +6833,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getReorderPageTabsChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ValidatePageTabsReorderCommand());
+		chain.addCommand(new ReorderPageComponentsCommand());
+		return chain;
+	}
+	public static FacilioChain getReorderPageSectionsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidatePageSectionsReorderCommand());
 		chain.addCommand(new ReorderPageComponentsCommand());
 		return chain;
 	}

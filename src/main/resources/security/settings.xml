@@ -1273,6 +1273,7 @@
             <property name="appId" type="number"/>
             <property name ="customPage" type="object" mandatory="true">
                 <property name="displayName" type="string"/>
+                <property name="description" type="string"/>
             </property>
         </requestbody>
     </request>
@@ -1371,6 +1372,7 @@
     <request path="/api/v2/customPage/tabs/fetch" >
         <requestbody type="object">
             <property name="id" type="number"/>
+            <property name="excludeColumns" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
         </requestbody>
@@ -1382,6 +1384,69 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/customPage/columns/add">
+        <requestbody type="object">
+            <property name="tabId" type="number" mandatory="true"/>
+            <property name ="widths" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/columns/get" >
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/columns/patch">
+        <requestbody type="object">
+            <property name="column" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="displayName" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/section/add">
+        <requestbody type="object">
+            <property name="columnId" type="number" mandatory="true"/>
+            <property name ="section" type="object" mandatory="true">
+                <property name="displayName" type="string"/>
+                <property name="description" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/section/get" >
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/section/patch">
+        <requestbody type="object">
+            <property name="section" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="displayName" type="string"/>
+                <property name="description" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/section/reorder">
+        <requestbody type="object">
+            <property name="previousId" type="number"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="nextId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/customPage/section/delete">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/v2/isSessionActive"></request>
 
     <request path="/api/integ/orgLogo"></request>

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.PageTabsContext;
+import com.facilio.bmsconsole.context.PageTabContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -11,13 +11,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class AddPageTabsCommand extends FacilioCommand {
-    private static final org.apache.log4j.Logger LOGGER = Logger.getLogger(AddPageTabsCommand.class.getName());
+public class AddPageTabCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(AddPageTabCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long pageId = (long) context.get(FacilioConstants.CustomPage.PAGE_ID);
@@ -26,7 +23,7 @@ public class AddPageTabsCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid Page Id");
         }
 
-        PageTabsContext tab = (PageTabsContext) context.get(FacilioConstants.CustomPage.TAB);
+        PageTabContext tab = (PageTabContext) context.get(FacilioConstants.CustomPage.TAB);
         FacilioModule tabsModule = ModuleFactory.getPageTabsModule();
 
         if (tab != null) {
@@ -43,15 +40,16 @@ public class AddPageTabsCommand extends FacilioCommand {
                 LOGGER.info("Sequence Number For Tab named -- " + tab.getDisplayName() + " is " + tab.getSequenceNumber());
             }
 
+            Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
             String name = tab.getDisplayName() != null ? tab.getDisplayName() : "tab";
-            name = CustomPageAPI.getUniqueName(tabsModule, criteria, pageIdField, pageId, name);
+            name = CustomPageAPI.getUniqueName(tabsModule, criteria, pageIdField, pageId, name, isSystem);
 
             tab.setName(name);
             tab.setStatus(Boolean.FALSE);
             tab.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
             tab.setSysCreatedTime(System.currentTimeMillis());
 
-            tab = CustomPageAPI.insertPageTabsToDB(tab);
+            CustomPageAPI.insertPageTabToDB(tab);
 
             context.put(FacilioConstants.CustomPage.TAB_ID, tab.getId());
         }

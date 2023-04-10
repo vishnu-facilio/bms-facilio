@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.PageTabsContext;
+import com.facilio.bmsconsole.context.PageTabContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -23,7 +23,7 @@ public class ChangePageTabStatusCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid status");
         }
 
-        PageTabsContext tab = new PageTabsContext();
+        PageTabContext tab = new PageTabContext();
         tab.setId(id);
         tab.setStatus(status);
         CustomPageAPI.patchPageTab(tab);

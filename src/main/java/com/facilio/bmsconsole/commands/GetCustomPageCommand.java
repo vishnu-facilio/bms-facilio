@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PageTabsContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
@@ -9,12 +8,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.apache.xpath.operations.Bool;
-
-import java.util.List;
-import java.util.Objects;
 
 public class GetCustomPageCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetCustomPageCommand.class.getName());

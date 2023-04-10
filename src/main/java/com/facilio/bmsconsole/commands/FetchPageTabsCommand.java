@@ -1,5 +1,5 @@
 package com.facilio.bmsconsole.commands;
-import com.facilio.bmsconsole.context.PageTabsContext;
+import com.facilio.bmsconsole.context.PageTabContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
@@ -7,9 +7,9 @@ import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.stream.Collectors;
+
 public class FetchPageTabsCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(FetchPageTabsCommand.class.getName());
     @Override
@@ -22,7 +22,7 @@ public class FetchPageTabsCommand extends FacilioCommand {
             String name = (String) context.get(FacilioConstants.CustomPage.TAB_NAME);
             PagesContext customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
 
-            List<PageTabsContext> tabs;
+            List<PageTabContext> tabs;
             Long tabId = 0L;
 
             if (pageId > 0) {

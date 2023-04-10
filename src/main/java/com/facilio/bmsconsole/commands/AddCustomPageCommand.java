@@ -113,14 +113,15 @@ public class AddCustomPageCommand extends FacilioCommand {
             LOGGER.info("Sequence Number For Custom Page named --" + customPage.getDisplayName() + " is " + customPage.getSequenceNumber());
         }
 
+        Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
         String name = customPage.getDisplayName() != null ? customPage.getDisplayName() : "page";
-        name = CustomPageAPI.getUniqueName(pagesModule, criteria, moduleIdField, moduleId, name);
+        name = CustomPageAPI.getUniqueName(pagesModule, criteria, moduleIdField, moduleId, name, isSystem);
 
         customPage.setName(name);
         customPage.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
         customPage.setSysCreatedTime(System.currentTimeMillis());
 
-        customPage = CustomPageAPI.insertCustomPageToDB(customPage);
+        CustomPageAPI.insertCustomPageToDB(customPage);
         context.put(FacilioConstants.CustomPage.PAGE_ID,customPage.getId());
         LOGGER.info("Custom page named --"+customPage.getName()+" has been created");
 

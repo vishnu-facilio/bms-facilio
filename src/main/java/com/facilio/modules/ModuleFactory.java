@@ -5550,6 +5550,22 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Page_Tabs");
 		return module;
 	}
+	public static FacilioModule getPageColumnsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageColumns");
+		module.setDisplayName("Columns");
+		module.setTableName("Page_Columns");
+		return module;
+	}
+
+	public static FacilioModule getPageSectionsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageSections");
+		module.setDisplayName("Sections");
+		module.setTableName("Page_Sections");
+		return module;
+	}
+
 
 	public static FacilioModule getAttendanceSettingsPseudoModule() {
 		FacilioModule attendanceSettings = new FacilioModule();

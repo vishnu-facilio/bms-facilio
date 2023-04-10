@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.context;
-import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.xpath.operations.Bool;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,11 +14,12 @@ public class PagesContext implements Serializable {
     public PagesContext() {
     }
 
-    public PagesContext(long appId, String name, String displayName, String moduleName, Criteria criteria, Boolean isTemplate, Boolean isDefaultPage, Boolean status){
+    public PagesContext(long appId, String name, String displayName, String moduleName, String description, Criteria criteria, Boolean isTemplate, Boolean isDefaultPage, Boolean status){
         this.appId = appId;
         this.name = name;
         this.displayName = displayName;
         this.moduleName = moduleName;
+        this.description = description;
         this.criteria = criteria;
         this.isTemplate = isTemplate;
         this.isDefaultPage = isDefaultPage;
@@ -49,6 +48,7 @@ public class PagesContext implements Serializable {
         return criteriaFlag;
     }
     private Double sequenceNumber = -1D;
+    private String description;
     private Boolean isTemplate;
     private Boolean isDefaultPage;
     private Boolean status;
@@ -58,5 +58,5 @@ public class PagesContext implements Serializable {
     private Long sysModifiedTime;
     private Long sysDeletedBy;
     private Long sysDeletedTime;
-    private List<PageTabsContext> tabs ;
+    private List<PageTabContext> tabs ;
 }

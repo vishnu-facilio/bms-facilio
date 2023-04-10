@@ -3277,11 +3277,28 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetCustomPageCommand());
 		c.addCommand(new FetchPageTabsCommand());
+		c.addCommand(new FetchPageColumnsCommand());
+		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new OrderPageComponents());
 		return c;
 	}
 	public static FacilioChain getPageTabChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPageTabCommand());
+		c.addCommand(new FetchPageColumnsCommand());
+		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new OrderPageComponents());
+		return c;
+	}
+
+	public static FacilioChain getPageColumnChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPageColumnCommand());
+		return c;
+	}
+	public static FacilioChain getPageSectionChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPageSectionCommand());
 		return c;
 	}
 }

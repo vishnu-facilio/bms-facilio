@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 public class ReorderPageComponentsCommand extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(DeleteCustomPageCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long previousId = (Long) context.get(FacilioConstants.CustomPage.PREVIOUS_ID);
@@ -43,11 +42,10 @@ public class ReorderPageComponentsCommand extends FacilioCommand {
                 Long tabId = (Long) context.get(FacilioConstants.CustomPage.TAB_ID);
                 fields.add(fieldsMap.get("tabId"));
                 fieldNameVsFieldValue.put("tabId",tabId);
-                break;
+                break;*/
             case SECTION:
                 Long columnId = (Long) context.get(FacilioConstants.CustomPage.COLUMN_ID);
-                fields.add(fieldsMap.get("columnId"));
-                fieldNameVsFieldValue.put("columnId",columnId);*/
+                criteria.addAndCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("columnId"), String.valueOf(columnId)));
         }
 
         double sequenceNumber = CustomPageAPI.updateAndGetSequenceNumber(previousId, id, nextId,

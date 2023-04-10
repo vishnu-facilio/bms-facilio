@@ -1,18 +1,13 @@
 package com.facilio.bmsconsole.commands;
-import com.facilio.bmsconsole.context.PageTabsContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-public class DeleteCustomPageCommand extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(DeleteCustomPageCommand.class.getName());
+public class ValidatePageDeletionCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(ValidatePageDeletionCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -26,10 +21,6 @@ public class DeleteCustomPageCommand extends FacilioCommand {
             LOGGER.error("Default page cannot be deleted");
             throw new IllegalArgumentException("Default page cannot be deleted");
         }
-        if (id > 0) {
-            CustomPageAPI.deletePage(Collections.singletonList(id), ModuleFactory.getPagesModule());
-        }
-
         return false;
     }
 }

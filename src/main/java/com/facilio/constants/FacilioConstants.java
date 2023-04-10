@@ -3917,6 +3917,7 @@ public class FacilioConstants {
 		public static final String PREVIOUS_ID = "previousId";
 		public static final String NEXT_ID = "nextId";
 		public static final String IS_TEMPLATE = "isTemplate";
+		public static final String IS_SYSTEM = "isSystem";
 		public static final String IS_DEFAULT_PAGE = "isDefaultPage";
 		public static final String CUSTOM_PAGE = "customPage";
 		public static final String CUSTOM_PAGES = "customPages";
@@ -3960,6 +3961,8 @@ public class FacilioConstants {
 		public static final String TYPE = "type";
         public static final String PARENT_ID = "parentId";
         public static final String EXCLUDE_TABS = "excludeTabs";
+		public static final String EXCLUDE_COLUMNS = "excludeColumns";
+		public static final String COLUMN_WIDTHS = "columnWidths";
     }
 
 }

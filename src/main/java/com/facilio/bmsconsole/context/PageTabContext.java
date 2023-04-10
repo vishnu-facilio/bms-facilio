@@ -4,7 +4,7 @@ import lombok.Setter;
 import java.util.List;
 @Getter
 @Setter
-public class PageTabsContext {
+public class PageTabContext {
     private long id = -1;
     private long orgId = -1;
     private long pageId = -1;
@@ -17,5 +17,5 @@ public class PageTabsContext {
     private Long sysCreatedTime;
     private Long sysModifiedBy;
     private Long sysModifiedTime;
-//    private List<PageColumnsContext> columns;
+    private List<PageColumnContext> columns;
 }

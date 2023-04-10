@@ -7353,24 +7353,52 @@
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPage">
 		</action>
 	</package>
+
 	<package name="PageTabs" namespace="/api/v2/customPage/tabs" extends="v2Api">
 		<action name="changeStatus"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="changeTabStatus">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="changeTabStatus">
 		</action>
 		<action name="add"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="addPageTabs">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="addPageTabs">
 		</action>
 		<action name="fetch"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageTab">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
 		</action>
 		<action name="patch"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="patchPageTab">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="patchPageTab">
 		</action>
 		<action name="delete"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="deletePageTabs">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="deletePageTabs">
 		</action>
 		<action name="reorder"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPageTabs">
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="reorderPageTabs">
+		</action>
+	</package>
+
+	<package name="PageColumns" namespace="/api/v2/customPage/columns" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.PageColumnsAction" method="addPageColumns">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.PageColumnsAction" method="getPageColumn">
+		</action>
+	</package>
+
+	<package name="PageSections" namespace="/api/v2/customPage/section" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.PageSectionsAction" method="addPageSection">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.PageSectionsAction" method="getPageSection">
+		</action>
+		<action name="patch"
+				class="com.facilio.bmsconsole.actions.PageSectionsAction" method="patchPageSection">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.PageSectionsAction" method="deletePageSection">
+		</action>
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.PageSectionsAction" method="reorderPageSections">
 		</action>
 	</package>
 

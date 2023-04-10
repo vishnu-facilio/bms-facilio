@@ -2,14 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PageTabsContext;
-import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
-import com.facilio.bmsconsole.context.CustomPageWidget;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.util.SummaryWidgetUtil;
@@ -39,11 +38,7 @@ public class CustomPageAction extends FacilioAction {
     private Map<String, Object> widgetParams;
     private long pageId;
     private PagesContext customPage;
-    private List<PagesContext> customPages;
-    private long tabId;
     private String tabName;
-    private List<Long> tabIds;
-    private PageTabsContext tab;
     private Boolean status;
     private Boolean excludeTabs = false;
 
@@ -99,16 +94,6 @@ public class CustomPageAction extends FacilioAction {
         setResult(FacilioConstants.CustomPage.PAGE_ID,pageId);
         return SUCCESS;
     }
-    public String addPageTabs() throws Exception{
-        FacilioChain chain = TransactionChainFactory.getAddPageTabsChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.TAB, tab);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
-        chain.execute();
-        tabId = (long) context.get(FacilioConstants.CustomPage.TAB_ID);
-        setResult(FacilioConstants.CustomPage.TAB_ID,tabId);
-        return SUCCESS;
-    }
     public String getAllCustomPage() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getAllCustomPageChain();
         FacilioContext context = chain.getContext();
@@ -152,28 +137,10 @@ public class CustomPageAction extends FacilioAction {
         }
         return SUCCESS;
     }
-    public String fetchPageTab() throws Exception{
-        FacilioChain chain = ReadOnlyChainFactory.getPageTabChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.ID,id);
-        context.put(FacilioConstants.CustomPage.TAB_NAME,tabName);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
-        chain.execute();
-        tab = (PageTabsContext) context.get(FacilioConstants.CustomPage.TAB);
-        setResult(FacilioConstants.CustomPage.TAB, tab);
-        return SUCCESS;
-    }
     public String patchCustomPage() throws Exception{
         FacilioChain chain = TransactionChainFactory.getPatchCustomPageChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
-        chain.execute();
-        return SUCCESS;
-    }
-    public String patchPageTab() throws Exception{
-        FacilioChain chain = TransactionChainFactory.getPatchPageTabsChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.TAB, tab);
         chain.execute();
         return SUCCESS;
     }
@@ -185,25 +152,12 @@ public class CustomPageAction extends FacilioAction {
         chain.execute();
         return SUCCESS;
     }
-    public String changeTabStatus() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getChangeStatusForTabChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.ID,id);
-        context.put(FacilioConstants.ContextNames.STATUS,status);
-        chain.execute();
-        return SUCCESS;
-    }
+
     public String deleteCustomPage() throws Exception{
         FacilioChain chain = TransactionChainFactory.getDeleteCustomPageChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getPagesModule());
         context.put(FacilioConstants.CustomPage.PAGE_ID,id);
-        chain.execute();
-        return SUCCESS;
-    }
-    public String deletePageTabs() throws Exception{
-        FacilioChain chain = TransactionChainFactory.getDeletePageTabsChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.ID, id);
         chain.execute();
         return SUCCESS;
     }
@@ -215,19 +169,6 @@ public class CustomPageAction extends FacilioAction {
         context.put(FacilioConstants.CustomPage.NEXT_ID,nextId);
         context.put(FacilioConstants.CustomPage.TYPE,CustomPageAPI.PageComponent.PAGE);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-        chain.execute();
-        double sequenceNumber = (double) context.get(FacilioConstants.CustomPage.SEQUENCE_NUMBER);
-        setResult(FacilioConstants.CustomPage.SEQUENCE_NUMBER, sequenceNumber);
-        return SUCCESS;
-    }
-    public String reorderPageTabs() throws Exception{
-        FacilioChain chain = TransactionChainFactory.getReorderPageTabsChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.PREVIOUS_ID,previousId);
-        context.put(FacilioConstants.ContextNames.ID,id);
-        context.put(FacilioConstants.CustomPage.NEXT_ID,nextId);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
-        context.put(FacilioConstants.CustomPage.TYPE,CustomPageAPI.PageComponent.TAB);
         chain.execute();
         double sequenceNumber = (double) context.get(FacilioConstants.CustomPage.SEQUENCE_NUMBER);
         setResult(FacilioConstants.CustomPage.SEQUENCE_NUMBER, sequenceNumber);
