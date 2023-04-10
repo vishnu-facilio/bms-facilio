@@ -1520,14 +1520,20 @@ public class PreventiveMaintenanceAPI {
 				accessibleSpaceIds = accessibleSpace;
 			}
 		}
+		StringBuilder builder = new StringBuilder();
 
 		if(CollectionUtils.isNotEmpty(accessibleSpaceIds) && CollectionUtils.isNotEmpty(globalSwitchSiteValues)){
-			selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
-			selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
+			builder.append(" ( ").append(getPMSiteIDQuery(accessibleSpaceIds)).append(" ) ")
+					.append(" AND ")
+					.append(" ( ").append(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues)).append(" ) ");
+			//selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
+			//selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
 		} else if ((CollectionUtils.isNotEmpty(globalSwitchSiteValues) && CollectionUtils.isEmpty(accessibleSpaceIds))) {
-			selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
+			builder.append(" ( ").append(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues)).append(" ) ");
+			//selectBuilder.andCustomWhere(getPMSiteIDQueryForGlobalSiteSwitch(globalSwitchSiteValues));
 		}else if ((CollectionUtils.isNotEmpty(accessibleSpaceIds) && CollectionUtils.isEmpty(globalSwitchSiteValues))) {
-			selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
+			builder.append(" ( ").append(getPMSiteIDQuery(accessibleSpaceIds)).append(" ) ");
+			//selectBuilder.andCustomWhere(getPMSiteIDQuery(accessibleSpaceIds));
 		}
 
 		//Adding condition to show the single site PMs
@@ -1538,7 +1544,15 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		if(singleSiteSiteID > 0){
-			selectBuilder.orCondition(CriteriaAPI.getCondition("Preventive_Maintenance.SITE_ID", "siteId", singleSiteSiteID+"", NumberOperators.EQUALS));
+			//selectBuilder.orCondition(CriteriaAPI.getCondition("Preventive_Maintenance.SITE_ID", "siteId", singleSiteSiteID+"", NumberOperators.EQUALS));
+			StringBuilder builder1 = new StringBuilder();
+			builder1.append(" ( ").append(builder).append(" OR ").append("Preventive_Maintenance.SITE_ID = ").append(singleSiteSiteID).append(" ) ");
+			builder = builder1;
+			//selectBuilder.orCustomWhere("Preventive_Maintenance.SITE_ID = ?", Collections.singletonList(singleSiteSiteID));
+		}
+
+		if(!builder.toString().isEmpty()) {
+			selectBuilder.andCustomWhere(builder.toString());
 		}
 
 		List<Map<String, Object>> pmProps = selectBuilder.get();
@@ -1797,7 +1811,11 @@ public class PreventiveMaintenanceAPI {
 									if (pmIncludeExcludeList.size() == 1) {
 										var resourceId = pmIncludeExcludeList.get(0).getResourceId();
 										ResourceContext resource = ResourceAPI.getResource(resourceId);
-										pm.setPmCategoryDescription(resource.getName());
+										if(resource != null) {
+											pm.setPmCategoryDescription(resource.getName());
+										}else{
+											pm.setPmCategoryDescription("1 - Building(s)");
+										}
 									} else {
 										pm.setPmCategoryDescription(pmIncludeExcludeList.size() + " - Building(s)");
 									}
@@ -1811,7 +1829,11 @@ public class PreventiveMaintenanceAPI {
 								if (count > 0) {
 									if (count == 1) {
 										ResourceContext resource = ResourceAPI.getResource(siteIds.get(0));
-										pm.setPmCategoryDescription(resource.getName());
+										if(resource != null) {
+											pm.setPmCategoryDescription(resource.getName());
+										}else{
+											pm.setPmCategoryDescription("1 - Site(s)");
+										}
 									} else {
 										pm.setPmCategoryDescription(count + " - " + "Site(s)");
 									}
