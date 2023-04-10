@@ -1190,7 +1190,27 @@ public class FormsAPI {
 				fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
 				fields.add(new FormField("amenities",FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
 				break;
-				
+				case ContextNames.SERVICE_REQUEST:
+					fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+					fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+					fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
+					fields.add(new FormField("requester", FieldDisplayType.LOOKUP_SIMPLE, "Requester", Required.REQUIRED, "people" , 4, 1));
+					fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 5, 1));
+					fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 6, 1));
+					fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 7, 1));
+					fields.add(new FormField("classificationType", FieldDisplayType.SELECTBOX, "Classification Type", Required.OPTIONAL, "classification" , 8, 1));
+					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
+					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 10, 1));
+					fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 11, 1));
+					fields.add(new FormField("sourceType", FieldDisplayType.NUMBER, "Source Type", Required.OPTIONAL, 12, 1));
+					fields.add(new FormField("affectedPerson", FieldDisplayType.LOOKUP_SIMPLE, "Affected Person", Required.OPTIONAL, 15, 1));
+					fields.add(new FormField("reportedDate", FieldDisplayType.DATETIME, "Reported Date", Required.OPTIONAL, 16, 1));
+					fields.add(new FormField("affectedDate", FieldDisplayType.DATETIME, "Affected Date", Required.OPTIONAL, 17, 1));
+					fields.add(new FormField("actualStartDate", FieldDisplayType.DATETIME, "Actual Start Date", Required.OPTIONAL, 18, 1));
+					fields.add(new FormField("actualFinishDate", FieldDisplayType.DATETIME, "Actual Finish Date", Required.OPTIONAL, 19, 1));
+					fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, 20, 1));
+
+					break;
 			case ContextNames.SITE:
 			case ContextNames.BUILDING:
 			case ContextNames.FLOOR:

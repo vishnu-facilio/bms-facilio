@@ -143,7 +143,7 @@ public class ServiceRequestModule extends BaseModuleConfig{
         serviceRequestFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 5, 1));
         serviceRequestFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 6, 1));
         serviceRequestFormFields.add(new FormField("urgency", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Urgency", FormField.Required.OPTIONAL, "servicerequestpriority", 7, 1));
-        serviceRequestFormFields.add(new FormField("classification", FacilioField.FieldDisplayType.SELECTBOX, "Classification", FormField.Required.OPTIONAL, "classification" , 8, 1));
+        serviceRequestFormFields.add(new FormField("classificationType", FacilioField.FieldDisplayType.SELECTBOX, "Classification Type", FormField.Required.OPTIONAL, "classification" , 8, 1));
         serviceRequestFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 8, 1));
         serviceRequestForm.setFields(serviceRequestFormFields);
 
