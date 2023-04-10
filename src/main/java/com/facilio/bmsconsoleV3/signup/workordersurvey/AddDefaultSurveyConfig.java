@@ -32,9 +32,11 @@ import com.facilio.qa.context.QuestionType;
 import com.facilio.qa.context.questions.RatingQuestionContext;
 import com.facilio.qa.rules.commands.QAndARuleTransactionChainFactory;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -62,7 +64,40 @@ public class AddDefaultSurveyConfig extends SignUpData {
         eMailStructureObj.setMessage("<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Default Email Template</title>\n  </head>\n  <body\n    style=\"\n      background-color: #5735b7;\n      font-family: Helvetica;\n      text-align: center;\n    \"\n  >\n    <div\n      class=\"email-template-parent-div\"\n      style=\"\n        margin: 30px;\n        max-width: 45%;\n        background-color: white;\n        padding: 20px;\n        display: inline-block;\n      \"\n    >\n  <div\n        class=\"email-template-header\"\n        style=\"color: #202020; text-align: center\"\n      >\n        <h1>We'd love your feedback!</h1>\n      </div>\n      <div\n        class=\"email-template-content\"\n        style=\"text-align: justify; color: #202020\";width=\"100%\"\n        height=\"auto\"\n      >\n        <span\n          >We noticed that you recently raised a work request about ${workOrderSurveyResponse.parentId.subject}. Please take a minute to provide your feedback to help us improve and serve you better.</span\n        >\n      </div>\n      <div\n        class=\"email-template-takesurvey-button\"\n        style=\"text-align: center; margin-top: 30px\"\n      >\n        <a\n          style=\"\n            border: 1px solid #5735b7;\n            text-decoration: none;\n            padding-top:15px; padding-right: 20px; padding-bottom:15px;padding-left: 20px;\n            color: white;\n            background-color: #5735b7;\n            font-weight: bold;\n            border-radius: 25px;\n          \"\n          class=\"take-survey-button\"\n          href=\""+redirectURL+"\"\n          target=\"_blank\"\n          >Take Survey</a\n        >\n      </div>\n      <div\n        class=\"break-line\"\n        style=\"\n          margin-top: 40px;\n          margin-right: -20px;\n          margin-left: -20px;\n          border-top: 2px solid #cecaca;\n        \"\n      ></div>\n      <div>\n        <footer>\n          <div\n            class=\"email-template-footer-content\"\n            style=\"\n              color: #656565;\n              font-size: 11px;\n              text-align: center;\n              margin-top: 20px;\n              font-weight: bold;\n            \"\n          >\n            <span>Powered by </span>\n          </div>\n          <div\n            class=\"email-template-footer-img\"\n            style=\"text-align: center; margin-bottom: -10px\"\n          >\n            <img\n              src=\"https://media.licdn.com/dms/image/C510BAQE2Uw6HD7nQZA/company-logo_200_200/0/1536843205636?e=2147483647&v=beta&t=Z546XssB6CwBt-LhLUHKJgRWFJTuf0laE_Pmx6-r2vc\"\n              width=\"60\"\n              height=\"50\"\n            />\n          </div>\n        </footer>\n      </div>\n    </div>\n </body>\n</html>\n  </body>\n</html>\n");
         eMailStructureObj.setName("Default Email Template");
         eMailStructureObj.setSubject("Your feedback matters to us!");
-        eMailStructureObj.setWorkflow(new WorkflowContext());
+
+        WorkflowContext workflowContextObj=new WorkflowContext();
+        JSONArray jsonArrayObj=new JSONArray();
+        Map<String,Object> expression1=new HashMap<>();
+        expression1.put("constant","${workOrderSurveyResponse.parentId.subject}");
+        expression1.put("name","workOrderSurveyResponse.parentId.subject");
+        Map<String,Object> expression2=new HashMap<>();
+        expression2.put("constant","${workOrderSurveyResponse.id}");
+        expression2.put("name","workOrderSurveyResponse.id");
+        Map<String,Object> expression3=new HashMap<>();
+        expression3.put("constant","${workOrderSurveyResponse.parentId}");
+        expression3.put("name","workOrderSurveyResponse.parentId");
+        jsonArrayObj.add(expression1);
+        jsonArrayObj.add(expression2);
+        jsonArrayObj.add(expression3);
+        workflowContextObj.setExpressions(jsonArrayObj);
+
+        List<ParameterContext> ParameterContextKey=new ArrayList<>();
+        ParameterContext parameterContext1=new ParameterContext();
+        parameterContext1.setName("workOrderSurveyResponse.parentId.subject");
+        parameterContext1.setTypeString("String");
+        ParameterContext parameterContext2=new ParameterContext();
+        parameterContext2.setName("workOrderSurveyResponse.id");
+        parameterContext2.setTypeString("String");
+        ParameterContext parameterContext3=new ParameterContext();
+        parameterContext3.setName("workOrderSurveyResponse.parentId");
+        parameterContext3.setTypeString("String");
+        ParameterContextKey.add(parameterContext1);
+        ParameterContextKey.add(parameterContext2);
+        ParameterContextKey.add(parameterContext3);
+
+        workflowContextObj.setParameters(ParameterContextKey);
+
+        eMailStructureObj.setWorkflow(workflowContextObj);
 
         emailStructureContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
         emailStructureContext.put(FacilioConstants.ContextNames.EMAIL_STRUCTURE, eMailStructureObj);
@@ -95,10 +130,13 @@ public class AddDefaultSurveyConfig extends SignUpData {
         Long fromAddrId = select.get().get(0).getId();
 
         JSONObject templateJsonObj=new JSONObject();
+        templateJsonObj.put("bcc",new ArrayList<>());
+        templateJsonObj.put("cc",new ArrayList<>());
         templateJsonObj.put("attachmentList",new ArrayList<>());
         templateJsonObj.put("emailStructureId",emailStructureContextId);
         templateJsonObj.put("fromAddr",fromAddrId);
         templateJsonObj.put("ftl",false);
+        templateJsonObj.put("isAttachmentAdded",false);
         templateJsonObj.put("html",false);
         templateJsonObj.put("isPushNotification",false);
         templateJsonObj.put("message","");
@@ -109,50 +147,37 @@ public class AddDefaultSurveyConfig extends SignUpData {
         templateJsonObj.put("templateUrls",new ArrayList<>());
         templateJsonObj.put("to","${workOrderSurveyResponse.assignedTo.email:-}");
         templateJsonObj.put("type",1);
+        templateJsonObj.put("userWorkflow",null);
 
         Map<String,Object> workflowMap=new HashMap<>();
 
         List<Object> expressionKey=new ArrayList<>();
         Map<String,Object> exp1=new HashMap<>();
-        exp1.put("constant","${workOrderSurveyResponse.parentId.subject}");
-        exp1.put("name","workOrderSurveyResponse.parentId.subject");
-        Map<String,Object> exp2=new HashMap<>();
-        exp2.put("constant","${cs.url}");
-        exp2.put("name","cs.url");
+        exp1.put("constant","${org.domain}");
+        exp1.put("name","org.domain");
         Map<String,Object> exp3=new HashMap<>();
-        exp3.put("constant","${workOrderSurveyResponse.id}");
-        exp3.put("name","workOrderSurveyResponse.id");
-        Map<String,Object> exp4=new HashMap<>();
-        exp4.put("constant","${workOrderSurveyResponse.parentId}");
-        exp4.put("name","workOrderSurveyResponse.parentId");
+        exp3.put("constant","${workOrderSurveyResponse.assignedTo.email}");
+        exp3.put("name","workOrderSurveyResponse.assignedTo.email");
         expressionKey.add(exp1);
         expressionKey.add(exp3);
-        expressionKey.add(exp4);
 
         workflowMap.put("expressions",expressionKey);
 
         List<Object> parameterKey=new ArrayList<>();
         Map<String,Object> parameter1=new HashMap<>();
-        parameter1.put("name","workOrderSurveyResponse.parentId.subject");
+        parameter1.put("name","org.domain");
         parameter1.put("typeString","String");
-        Map<String,Object> parameter2=new HashMap<>();
-        parameter2.put("name","cs.url");
-        parameter2.put("typeString","String");
         Map<String,Object> parameter3=new HashMap<>();
-        parameter3.put("name","workOrderSurveyResponse.id");
+        parameter3.put("name","workOrderSurveyResponse.assignedTo.email");
         parameter3.put("typeString","String");
         Map<String,Object> parameter4=new HashMap<>();
-        parameter4.put("name","workOrderSurveyResponse.parentId");
+        parameter4.put("name","workOrderSurveyResponse");
         parameter4.put("typeString","String");
         parameterKey.add(parameter1);
         parameterKey.add(parameter3);
         parameterKey.add(parameter4);
 
         workflowMap.put("parameters",parameterKey);
-
-        Map<String,Object> userWorkflowMap=new HashMap<>();
-        userWorkflowMap.put("isV2Script",true);
-        userWorkflowMap.put("workflowV2String","Map scriptFunc(Map surveyTemplate) {\n    test={};\ntest.url=new NameSpace(\"default\").getPortalDomainUrl(1);\nreturn test;    \n}");
 
         templateJsonObj.put("workflow",workflowMap);
 
