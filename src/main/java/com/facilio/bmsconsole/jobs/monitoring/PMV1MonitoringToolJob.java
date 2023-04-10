@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.jobs.monitoring;
 
-import com.chargebee.org.json.JSONObject;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
@@ -27,6 +25,8 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,6 +52,8 @@ public class PMV1MonitoringToolJob extends FacilioJob {
                 resultStringBuilder  = appendMessage(resultStringBuilder, "TriggerMap is empty in org #" + orgId);
                 return false;
             }
+
+            resultStringBuilder.append("ORGID: ").append(orgId).append(" \n ");
 
             for(PreventiveMaintenance pm: activePMs) {
                 if(CollectionUtils.isEmpty(pm.getTriggers())){
@@ -79,15 +81,19 @@ public class PMV1MonitoringToolJob extends FacilioJob {
                 for(Long resourceId :resourceIds) {
                     List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, pmResourcePlanner, resourceId);
                     if (CollectionUtils.isEmpty(triggers)){
-                        appendMessage(resultStringBuilder, "No Trigger available for resource #" + resourceId + ", in PM #" + pm.getId() + ".");
+                        LOGGER.info("No Trigger available for resource #" + resourceId + ", in PM #" + pm.getId() + ".");
                         continue;
                     }
 
                     for(PMTriggerContext trigger: triggers) {
-                        long startTime_in_s = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-                        long minTime = -1L;
-                        long countOfNextExecutionTime_TriggerLevel = PreventiveMaintenanceAPI.getNextExecutionTimesCountForPMMonitoring(pm, trigger, startTime_in_s, endTime_in_s, minTime);
-                        countOfNextExecutionTime_PMLevel += countOfNextExecutionTime_TriggerLevel;
+                        if(trigger.getTriggerType() == PreventiveMaintenance.TriggerType.ONLY_SCHEDULE_TRIGGER.getVal() && trigger.getSchedule() != null) {
+                            long startTime_in_s = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+                            long minTime = -1L;
+                            long countOfNextExecutionTime_TriggerLevel = PreventiveMaintenanceAPI.getNextExecutionTimesCountForPMMonitoring(pm, trigger, startTime_in_s, endTime_in_s, minTime);
+                            countOfNextExecutionTime_PMLevel += countOfNextExecutionTime_TriggerLevel;
+                        }else {
+                            LOGGER.info("Trigger "+ trigger.getId() +" isn't of Scheduled Type.");
+                        }
                     }
                 }
                 // PM wise WorkOrder count check
@@ -212,43 +218,41 @@ public class PMV1MonitoringToolJob extends FacilioJob {
         }
     }
 
+    private static final Logger LOGGER = LogManager.getLogger(PMV1MonitoringToolJob.class.getName());
     @Override
-    public void execute(JobContext jc) throws Exception {
-        JSONObject result = new JSONObject();
-        List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
+    public void execute(JobContext jobContext) throws Exception {
+        Long orgID = jobContext.getOrgId();
         StringBuilder res = new StringBuilder();
-        if (CollectionUtils.isNotEmpty(orgs)) {
-            for (Organization org : orgs) {
-                try {
-                    if (org.getOrgId() > 0) {
-
-                        AccountUtil.setCurrentAccount(org.getOrgId());
-                        FacilioChain c = FacilioChain.getTransactionChain();
-                        c.addCommand(new PMV1MonitoringToolJob.PMV1SchedulerCheckCommand());
-
-                        c.getContext().put("resultStringBuilder", res);
-                        c.execute();
-
-                        AccountUtil.cleanCurrentAccount();
-
-                    }
-                }catch (Exception e){
-                    result.put("result","ERROR OCCURRED IN ORG_ID: " + org.getOrgId() + " :: " + e.getMessage());
-                }
+        try {
+            long startTime = System.currentTimeMillis();
+            FacilioChain facilioChain = FacilioChain.getTransactionChain();
+            facilioChain.addCommand(new PMV1MonitoringToolJob.PMV1SchedulerCheckCommand());
+            facilioChain.getContext().put("resultStringBuilder", res);
+            facilioChain.execute();
+            if(!res.toString().isEmpty()) {
+                insertResultIntoMonitoringToolMetaTable(res.toString(), orgID);
             }
+            LOGGER.info("Time taken to delete run PMV1MonitoringToolJob = " + (System.currentTimeMillis() - startTime) + ", in org " + orgID);
+        } catch (Exception e) {
+            LOGGER.error("Error occurred when ORGID = " + orgID, e);
         }
+    }
 
-        result.put("result", res);
-
-        String query = "INSERT INTO Monitoring_Tool_Meta(FEATURE,TTIME,META) VALUES(?,?,?)";
+    private boolean insertResultIntoMonitoringToolMetaTable(String result, long orgId){
+        String query = "INSERT INTO Monitoring_Tool_Meta(ORGID, FEATURE,TTIME,META) VALUES(?,?,?,?)";
 
         try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement stmt=conn.prepareStatement(query);) {
-            stmt.setInt(1, MonitoringFeature.PM_V1.getVal());
-            stmt.setLong(2, DateTimeUtil.getCurrenTime());
-            stmt.setString(3,result.toString());
+            stmt.setLong(1, orgId);
+            stmt.setInt(2, MonitoringFeature.PM_V1.getVal());
+            stmt.setLong(3, DateTimeUtil.getCurrenTime());
+            stmt.setString(4, result);
 
             int i=stmt.executeUpdate();
-            System.out.println(i+" records inserted");
+            LOGGER.info(i + " records inserted");
+            return true;
+        }catch (Exception e){
+            LOGGER.error("Error occurred while inserting into Monitoring_Tool_Meta ORGID = " + orgId, e);
         }
+        return false;
     }
 }

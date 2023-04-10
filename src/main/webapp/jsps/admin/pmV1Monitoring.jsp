@@ -2,18 +2,14 @@
 <%@ page import="com.facilio.db.transaction.FacilioConnectionPool" %>
 <%@ page import="com.facilio.accounts.dto.Organization" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
 <%@ page import="java.sql.PreparedStatement" %>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="com.facilio.accounts.bean.OrgBean" %>
-<%@ page import="org.json.simple.JSONObject" %>
 <%@ page import="com.facilio.time.DateTimeUtil" %>
 <%@ page import="com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature" %>
+<%@ page import="java.util.*" %>
 
 
 <%--
@@ -32,12 +28,16 @@
     String jobScheduleNewPM = "ScheduleNewPM";
     String jobOpenScheduledWO = "OpenScheduledWO";
     String jobScheduleWOStatusChange = "ScheduleWOStatusChange";
+    String jobRemoveDeletedPreOpenWorkOrdersJob = "RemoveDeletedPreOpenWorkOrdersJob";
 
     // SQL Queries
-    String qForPMv1JobCheck = "SELECT COUNT(*) as res FROM Jobs WHERE JOBNAME = ? AND EXECUTION_ERROR_COUNT = 0 AND STATUS = 3 AND ORGID IN (?);";
-    String qForOneTimeRecordWisePMv1JobCheck = "SELECT COUNT(*) as res FROM Jobs WHERE JOBNAME = ? AND EXECUTION_ERROR_COUNT > 0 AND ORGID IN (?);";
+    String qForPMv1JobCheck = "SELECT COUNT(*) as res FROM Jobs WHERE ORGID IN (?) AND JOBNAME = ? AND EXECUTION_ERROR_COUNT > 0;";
+    String qForOneTimeRecordWisePMv1JobCheck = "SELECT COUNT(*) as res FROM Jobs WHERE ORGID IN (?) AND JOBNAME = ? AND EXECUTION_ERROR_COUNT > 0;";
     String qForCheckingWO_GENERATION_STATUS = "SELECT COUNT(*) as res FROM Preventive_Maintenance where WO_GENERATION_STATUS = 1 AND ORGID IN (?);";
-    String qToFetchLastMeta = "SELECT * FROM Monitoring_Tool_Meta WHERE FEATURE = ? ORDER BY TTIME DESC LIMIT 1;";
+    String qToFetchLastMeta = "SELECT * FROM Monitoring_Tool_Meta WHERE ORGID IN (?) AND FEATURE = ? ORDER BY TTIME DESC LIMIT 1;";
+    String qToFetchMetaOrgEntries = "SELECT * FROM Monitoring_Tool_Meta WHERE FEATURE = ? AND TTIME > ? AND TTIME < ?;";
+    String qToFetchSingleSitePMCount = "SELECT ORGID, COUNT(ORGID) FROM Preventive_Maintenance WHERE PM_CREARTION_TYPE = 1 GROUP BY ORGID;";
+    String qToFetchMultipleSitePMCount = "SELECT ORGID, COUNT(ORGID) FROM Preventive_Maintenance WHERE PM_CREARTION_TYPE = 2 GROUP BY ORGID;";
 %>
 
 <%
@@ -64,6 +64,7 @@
     List<String> jobNames = new ArrayList<>();
     jobNames.add(jobPMNewScheduler);
     jobNames.add(jobScheduleWOStatusChange);
+    jobNames.add(jobRemoveDeletedPreOpenWorkOrdersJob);
 
     List<String> oneTimeRecordWisePMv1JobNames = new ArrayList<>();
     // one-time record wise jobs
@@ -72,13 +73,13 @@
     oneTimeRecordWisePMv1JobNames.add(jobOpenScheduledWO);
 
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
-    Map<String,Long> orgDBMap = new HashMap<>();
+    Map<Long,String> orgDBMap = new HashMap<>();
     List<Long> activeOrgIds = new ArrayList<>();
     if (CollectionUtils.isNotEmpty(orgs)) {
         for (Organization _org : orgs) {
             if (_org.getOrgId() > 0) {
 
-                orgDBMap.put(_org.getDataSource(), _org.getId());
+                orgDBMap.put(_org.getId(), _org.getName());
                 activeOrgIds.add(_org.getOrgId());
             }
         }
@@ -133,31 +134,35 @@
     int failedScheduleNewPMJobCount = -1;
     int failedOpenScheduledWOJobCount = -1;
     int failedScheduleWOStatusChangeJobCount = -1;
+    int failedRemoveDeletedPreOpenWorkOrdersJob = -1;
 
     for(String jobName: jobNames) {
         try {
             PreparedStatement pStmt = conn.prepareStatement(qForPMv1JobCheck);
-            pStmt.setString(1, jobName);
-            pStmt.setString(2, StringUtils.join(activeOrgIds, ","));
+            pStmt.setString(1, StringUtils.join(activeOrgIds, ","));
+            pStmt.setString(2, jobName);
             ResultSet rs = pStmt.executeQuery();
             //response.getWriter().println("pStmt -- "+ pStmt + "\n");
             while (rs.next()){
                 int count = rs.getInt("res");
                 //response.getWriter().println("count -- "+count);
-                int countDifference = activeOrgIds.size() - count;
+                //int countDifference = activeOrgIds.size() - count;
                 switch (jobName){
                     case "PMNewScheduler":
-                        failedNightlySchedulerJobCount = countDifference;
+                        failedNightlySchedulerJobCount = count;
                         break;
                     case "ScheduleWOStatusChange":
-                        failedScheduleWOStatusChangeJobCount = countDifference;
+                        failedScheduleWOStatusChangeJobCount = count;
+                        break;
+                    case "RemoveDeletedPreOpenWorkOrdersJob":
+                        failedRemoveDeletedPreOpenWorkOrdersJob = count;
                         break;
                 }
             }
 
         }
         catch (Exception e) {
-            response.getWriter().println("pStmt error -- " + e);
+            response.getWriter().println("1. pStmt error -- " + e);
             e.printStackTrace();
         }
     }
@@ -165,8 +170,8 @@
     for(String jobName: oneTimeRecordWisePMv1JobNames) {
         try {
             PreparedStatement pStmt = conn.prepareStatement(qForOneTimeRecordWisePMv1JobCheck);
-            pStmt.setString(1, jobName);
-            pStmt.setString(2, StringUtils.join(activeOrgIds, ","));
+            pStmt.setString(1, StringUtils.join(activeOrgIds, ","));
+            pStmt.setString(2, jobName);
             ResultSet rs = pStmt.executeQuery();
             //response.getWriter().println("pStmt -- "+ pStmt + "\n");
             while (rs.next()){
@@ -187,7 +192,7 @@
 
         }
         catch (Exception e) {
-            response.getWriter().println("pStmt error -- " + e);
+            response.getWriter().println("2. pStmt error -- " + e);
             e.printStackTrace();
         }
     }
@@ -211,6 +216,11 @@
     <tr>
         <td>Failed Nightly Scheduler Count</td>
         <td><%=failedNightlySchedulerJobCount %></td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>Failed RemoveDeletedPreOpenWorkOrdersJob Count</td>
+        <td><%=failedRemoveDeletedPreOpenWorkOrdersJob %></td>
         <td>0</td>
     </tr>
 
@@ -249,37 +259,7 @@
     </tr>
 </table>
 
-<br>
-<br>
-<h4 style="margin-top:40px;">2. Execution Meta:</h4>
-<textarea readonly style="width: 1000px;height:400px;overflow-y:auto;">
-<%
-    //
-
-    try {
-        PreparedStatement pStmt = conn.prepareStatement(qToFetchLastMeta);
-        pStmt.setInt(1, MonitoringFeature.PM_V1.getVal());
-        ResultSet rs = pStmt.executeQuery();
-        String meta = null;
-        Long ttime = null;
-        while(rs.next()) {
-            ttime = rs.getLong("TTIME");
-            meta = rs.getString("META");
-        }
-        if(ttime!=null && meta!=null){
-            String formatedTime = DateTimeUtil.getFormattedTime(ttime);
-            meta = formatedTime + "\n\n\n" + meta;
-        }
-        out.println(meta);
-    } catch(Exception e) {
-        response.getWriter().println("pStmt error -- "+e+"<br>");
-        e.printStackTrace();
-    }
-
-%>
-</textarea>
-
-<h4 style="margin-top:40px;">3. Enter ORG ID to check more details.</h4>
+<h4 style="margin-top:40px;">2. Enter ORG ID to check more details.</h4>
 <%
     String orgid = request.getParameter("orgid");
 
@@ -298,6 +278,28 @@
     <p><%=org%></p>
 </div>
 </form>
+<%
+    String orgEntriesInMeta = "";
+    try{
+        long currentTime = System.currentTimeMillis();
+        PreparedStatement pStmt = conn.prepareStatement(qToFetchMetaOrgEntries);
+        pStmt.setInt(1, MonitoringFeature.PM_V1.getVal());
+        pStmt.setLong(2, currentTime - 86400000);
+        pStmt.setLong(3, currentTime);
+        ResultSet rs = pStmt.executeQuery();
+
+        HashSet<Long> orgIds = new HashSet<>();
+        while (rs.next()){
+            orgIds.add(rs.getLong("ORGID"));
+        }
+
+        orgEntriesInMeta = "ORG entries in past 24 hours: " + orgIds;
+    }catch (Exception e){
+        response.getWriter().println("error -- "+e+"<br>");
+        e.printStackTrace();
+    }
+%>
+<p><%=orgEntriesInMeta%></p>
 <%
     long countOfPreOpenWorkOrdersForPast24Hours = 0;
     long countOfPreOpenWorkOrdersForNext24Hours = 0;
@@ -345,7 +347,7 @@
 
         }
         catch (Exception e) {
-            response.getWriter().println("pStmt error -- " + e);
+            response.getWriter().println("3. pStmt error -- " + e);
             e.printStackTrace();
         }
 %>
@@ -375,6 +377,124 @@
 
 </table>
 
+
+<textarea readonly style="width: 1000px;height:400px;overflow-y:auto;">
+<%
+    if(org != null) {
+
+        try {
+            PreparedStatement pStmt = conn.prepareStatement(qToFetchLastMeta);
+            pStmt.setLong(1, org.getOrgId());
+            pStmt.setInt(2, MonitoringFeature.PM_V1.getVal());
+            ResultSet rs = pStmt.executeQuery();
+            StringBuilder metaStringBuilder = new StringBuilder();
+            String meta = null;
+            Long ttime = null;
+            while(rs.next()) {
+                ttime = rs.getLong("TTIME");
+                meta = rs.getString("META");
+            }
+            if(ttime!=null && meta!=null){
+                String formatedTime = DateTimeUtil.getFormattedTime(ttime);
+                metaStringBuilder.append(formatedTime).append("\n\n\n").append(meta);
+            }
+            out.println(metaStringBuilder.toString());
+        } catch(Exception e) {
+            response.getWriter().println("4. pStmt error -- "+e+"<br>");
+            e.printStackTrace();
+        }
+
+    }
+
+%>
+</textarea>
+<br>
+<br>
+
 <% } // end of  if(org != null) :274 %>
+
+<h4 style="margin-top:40px;">3. Single/Multiple Site PMs Count:</h4>
+<%
+    try {
+        // Single Site PM count
+        PreparedStatement pStmt = conn.prepareStatement(qToFetchSingleSitePMCount);
+        ResultSet rs = pStmt.executeQuery();
+        List<Map<Long, Long>> singleSitePMCount = new ArrayList<>();
+
+        while (rs.next()){
+            Map<Long, Long> count = new HashMap<>();
+            count.put(rs.getLong("ORGID"), rs.getLong("COUNT(ORGID)"));
+            singleSitePMCount.add(count);
+        }
+%>
+<table style=" margin-top:40px;" class="table table-bordered">
+    <tr>
+        <th style="text-align:center">ORG ID</th>
+        <th style="text-align:center">COUNT OF PMs</th>
+    </tr>
+    <tr style="text-align: center; font-weight: bold; background-color: #e0e0e0">
+        <td colspan=3>
+            Single Site PMs
+        </td>
+    </tr>
+<%
+    for (Map<Long, Long> singleSitePM: singleSitePMCount){
+        if(!(singleSitePM.keySet()!= null && singleSitePM.keySet().toArray().length >  0)){
+            continue;
+        }
+
+        Long orgId = (Long) singleSitePM.keySet().toArray()[0];
+        String orgName = orgId +" " + orgDBMap.get(orgId);
+        Long pmCount = singleSitePM.get(orgId);
+%>
+    <tr>
+        <td><%=orgName%></td>
+        <td><%=pmCount %></td>
+    </tr>
+<%
+    }
+%>
+    <tr style="text-align: center; font-weight: bold; background-color: #e0e0e0">
+        <td colspan=3>
+            Multiple Site PMs
+        </td>
+    </tr>
+<%
+        // Multiple site PM count
+        pStmt = conn.prepareStatement(qToFetchMultipleSitePMCount);
+        rs = pStmt.executeQuery();
+        List<Map<Long, Long>> multipleSitePMCount = new ArrayList<>();
+
+        while (rs.next()){
+            Map<Long, Long> count = new HashMap<>();
+            count.put(rs.getLong("ORGID"), rs.getLong("COUNT(ORGID)"));
+            multipleSitePMCount.add(count);
+        }
+
+        for (Map<Long, Long> multipleSitePM: multipleSitePMCount){
+            if(!(multipleSitePM.keySet()!= null && multipleSitePM.keySet().toArray().length >  0)){
+                continue;
+            }
+
+            Long orgId = (Long) multipleSitePM.keySet().toArray()[0];
+            String orgName = orgId +" " + orgDBMap.get(orgId);
+            Long pmCount = multipleSitePM.get(orgId);
+%>
+    <tr>
+        <td><%=orgName%></td>
+        <td><%=pmCount %></td>
+    </tr>
+<%
+        }
+
+
+    }catch(Exception e) {
+        response.getWriter().println("5. pStmt error -- "+e+"<br>");
+        e.printStackTrace();
+    }
+%>
+
+</table>
+
 </body>
 </html>

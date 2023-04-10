@@ -656,7 +656,7 @@ public class PreventiveMaintenanceAPI {
 				(pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) &&
 				(pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
 
-			if ((nextExecutionTime.getLeft() * 1000) < currentTime || nextExecutionTime.getLeft() < minTime) {
+			if ((nextExecutionTime.getLeft() * 1000) < currentTime || nextExecutionTime.getLeft() > pm.getWoGeneratedUpto() || nextExecutionTime.getLeft() < minTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 					break;
