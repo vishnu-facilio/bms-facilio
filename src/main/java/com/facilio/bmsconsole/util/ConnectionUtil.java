@@ -172,7 +172,7 @@ public class ConnectionUtil {
 
 			LOGGER.debug("update refresh token : "+connectionContext.getRefreshToken());
 
-			NewTransactionService.newTransaction(()->ConnectionUtil.updateConnectionContext(connectionContext),true);
+			ConnectionUtil.updateConnectionContext(connectionContext);
 		}
 		else {
 			throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
