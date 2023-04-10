@@ -1086,6 +1086,7 @@ public class TransactionChainFactory {
 			FacilioChain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());
+			c.addCommand(new UpdateResourceForSiteImportCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());
 			c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
 			c.addCommand(new SendEmailCommand());
