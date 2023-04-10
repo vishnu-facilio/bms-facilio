@@ -55,7 +55,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Asset_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Asset_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenants" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","IN_TIME","OUT_TIME"));
-		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE","SCHEDULED_START","ESTIMATED_START","ESTIMATED_END","ACTUAL_WORK_START","ACTUAL_WORK_END"));
+//		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE","SCHEDULED_START","ESTIMATED_START","ESTIMATED_END","ACTUAL_WORK_START","ACTUAL_WORK_END"));
 		tablesContainsDateField.put("Ticket_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Ticket_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("WorkOrderRequests" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4"));
@@ -76,7 +76,7 @@ public class DemoRollUpUtil {
 //		tablesContainsDateField.put("Preventive_Maintenance" , Arrays.asList("CREATION_TIME","LAST_MODIFIED_TIME","END_TIME"));
 		tablesContainsDateField.put("Approval_Steps" , Arrays.asList("ACTION_TIME"));
 //		tablesContainsDateField.put("PM_Triggers" , Arrays.asList("START_TIME"));
-		tablesContainsDateField.put("WorkOrders" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+//		tablesContainsDateField.put("WorkOrders" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("WorkOrderTimeLog" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("User_Workhour_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Ticket_Activity" , Arrays.asList("MODIFIED_TIME"));

@@ -66,7 +66,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 			
 				chain.execute();
 			}
-			
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
@@ -81,25 +81,24 @@ public class ScheduleWOStatusChange extends FacilioJob {
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
 					.andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
 					.skipModuleCriteria();
-			
+
 			List<Map<String, Object>> workOrderProps = selectRecordsBuilder.getAsProps();
 
 			List<Long> workOrderIds = workOrderProps.stream()
-														.map(map -> (Long) map.get("id"))
-														.collect(Collectors.toList());
+					.map(map -> (Long) map.get("id"))
+					.collect(Collectors.toList());
 			LOGGER.info("execute() -> workOrderProps size: " + workOrderIds.size() + ". WorkOrder IDs = " + workOrderIds);
 
 			List<WorkOrderContext> workOrderContexts = new ArrayList<>();
 
-			for (Map<String, Object> workOrderProp: workOrderProps) {
+			for (Map<String, Object> workOrderProp : workOrderProps) {
 				workOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, WorkOrderContext.class));
 			}
 
-			handlePMV1Scheduling(workOrderContexts); // This is PM V1 version
+			handlePMV1Scheduling(workOrderContexts);// This is PM V1 version
 		} catch (Exception e) {
 			CommonCommandUtil.emailException("ScheduleWOStatusChange", ""+jc.getJobId(), e);
 			LOGGER.error("PM Execution failed: ", e);
-			throw e;
 		}
 	}
 
