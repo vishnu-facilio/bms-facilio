@@ -25,11 +25,11 @@ public class FilterRetakeExpiryForSurvey extends FacilioCommand {
                 List<ResponseContext> responseContext = (List<ResponseContext>) recordMap.get(moduleName);
                 if(responseContext!=null && !responseContext.isEmpty()) {
                     responseContext.removeIf(response ->(
-                            !(response.getExpiryDate() > DateTimeUtil.getCurrenTime() && response.getResStatus() == ResponseContext.ResponseStatus.NOT_ANSWERED)
+                            (response.getExpiryDate() < DateTimeUtil.getCurrenTime() && (response.getResStatus() == ResponseContext.ResponseStatus.NOT_ANSWERED || response.getResStatus() == ResponseContext.ResponseStatus.PARTIALLY_ANSWERED))
                                     ||
-                            !(response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED && response.getIsRetakeAllowed() && response.getRetakeExpiry()!=null && response.getRetakeExpiry() > DateTimeUtil.getCurrenTime())
+                            (response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED && response.getIsRetakeAllowed() && response.getRetakeExpiry()!=null && response.getRetakeExpiry() < DateTimeUtil.getCurrenTime())
                                     ||
-                            (response.getExpiryDate() < DateTimeUtil.getCurrenTime() && response.getResStatus() == ResponseContext.ResponseStatus.PARTIALLY_ANSWERED)
+                            (response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED && !response.getIsRetakeAllowed())
                         )
                     );
                 }
