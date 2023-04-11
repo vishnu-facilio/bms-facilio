@@ -17,6 +17,7 @@ import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class DeleteNoteCommand extends FacilioCommand implements PostTransaction
 				idsToUpdateCount = parentIds;
 			}
 			
-			List<NoteContext> noteListContext = NotesAPI.fetchNotes(noteId, moduleName);
+			List<NoteContext> noteListContext = NotesAPI.fetchNotes(noteId, -1 , moduleName,false);
 			if (noteListContext != null && noteListContext.size() > 0) {
 				if (noteListContext.get(0).getCreatedBy() != null && noteListContext.get(0).getCreatedBy().getId() != AccountUtil.getCurrentUser().getId()) {
 					throw new IllegalArgumentException("No access to delete this comment");

@@ -30,8 +30,6 @@ import org.json.simple.JSONObject;
 import com.facilio.util.MarkDownUtil;
 
 import java.util.*;
-
-
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Set<Long> idsToUpdateCount;

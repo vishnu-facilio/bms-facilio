@@ -70,10 +70,18 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
                 title.setDefault(true);
                 fields.add(title);
 
+                LookupField parentNote = (LookupField) FieldFactory.getField("parentNote", "Parent Note", "PARENT_NOTE", subModule, FieldType.LOOKUP);
+                parentNote.setLookupModule(subModule);
+                parentNote.setDefault(true);
+                fields.add(parentNote);
+
+                FacilioField bodyHTML =  FieldFactory.getField("bodyHTML", "Body HTML", "BODY_HTML", subModule, FieldType.STRING);
+                bodyHTML.setDefault(true);
+                fields.add(bodyHTML);
+
                 FacilioField body =  FieldFactory.getField("body", "Body", "BODY", subModule, FieldType.STRING);
                 body.setDefault(true);
                 fields.add(body);
-
 
                 FacilioField notifyRequester =  FieldFactory.getField("notifyRequester", "Notify Requester", "NOTIFY_REQUESTER", subModule, FieldType.BOOLEAN);
                 notifyRequester.setDisplayType(5);

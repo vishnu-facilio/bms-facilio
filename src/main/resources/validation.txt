@@ -1716,8 +1716,7 @@
 /api/v2/tasks/:v2viewTask
 /api/v2/tasks/parent/:v2taskList
 /api/v2/tasks/parent/closeAllTask
-/api/v2/notes/add
-/api/v2/notes/delete
+/api/v2/notes/:crud
 /api/v2/notes/parent/:v2noteList
 /api/v2/notes/parent/noteList
 /api/v2/attachments/add

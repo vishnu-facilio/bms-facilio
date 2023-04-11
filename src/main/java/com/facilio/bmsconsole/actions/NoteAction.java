@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -37,39 +36,39 @@ public class NoteAction extends FacilioAction {
 	}
 
 	public String addTicketNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.TICKET_NOTES);
+		return saveNote(FacilioConstants.ContextNames.TICKET_NOTES, false);
 	}
 	
 	public String addSpaceNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.BASE_SPACE_NOTES);
+		return saveNote(FacilioConstants.ContextNames.BASE_SPACE_NOTES, false);
 	}
 	
 	public String addAssetNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.ASSET_NOTES);
+		return saveNote(FacilioConstants.ContextNames.ASSET_NOTES, false);
 	}
 	
 	public String addItemTypeNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.ITEM_TYPES_NOTES);
+		return saveNote(FacilioConstants.ContextNames.ITEM_TYPES_NOTES, false);
 	}
 	
 	public String addToolTypeNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.TOOL_TYPES_NOTES);
+		return saveNote(FacilioConstants.ContextNames.TOOL_TYPES_NOTES, false);
 	}
 	
 	public String addItemNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.ITEM_NOTES);
+		return saveNote(FacilioConstants.ContextNames.ITEM_NOTES, false);
 	}
 	
 	public String addToolNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.TOOL_NOTES);
+		return saveNote(FacilioConstants.ContextNames.TOOL_NOTES, false);
 	}
 	
 	public String addStoreRoomNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.STORE_ROOM_NOTES);
+		return saveNote(FacilioConstants.ContextNames.STORE_ROOM_NOTES, false);
 	}
 	
 	public String addNote() throws Exception {
-		return addNote(module);
+		return saveNote(module, false);
 	}
 
 	public String deleteNote() throws Exception {
@@ -98,7 +97,7 @@ public class NoteAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private String addNote(String moduleName) throws Exception {
+	private String saveNote(String moduleName, Boolean isEdit) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
@@ -118,14 +117,21 @@ public class NoteAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
 		updateCurrentActivity(context, moduleName);
-		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
-		addNote.execute(context);
+		FacilioChain saveNote;
+		if (isEdit) {
+			saveNote = TransactionChainFactory.getUpdateNotesChain();
+		} else {
+			saveNote = TransactionChainFactory.getAddNotesChain();
+		}
+
+		saveNote.execute(context);
 		setResult("note", note);
 		setResult("noteId", note.getId());
 		setNoteId(note.getId());
-		
+
 		return SUCCESS;
 	}
+
 
 	private void updateCurrentActivity(FacilioContext context, String moduleName) throws Exception {
 		if (moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_NOTES)) {
@@ -250,6 +256,27 @@ public class NoteAction extends FacilioAction {
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
+
+	public long parentNoteId = -1;
+
+	public long getParentNoteId() {
+		return parentNoteId;
+	}
+
+	public void setParentNoteId(long parentNoteId) {
+		this.parentNoteId = parentNoteId;
+	}
+
+	public Boolean onlyFetchParentNotes = false;
+
+	public Boolean getOnlyFetchParentNotes() {
+		return onlyFetchParentNotes;
+	}
+
+	public void setOnlyFetchParentNotes(Boolean onlyFetchParentNotes) {
+		this.onlyFetchParentNotes = onlyFetchParentNotes;
+	}
+
 	public String getTicketNotes() throws Exception {
 		return getNotesList(FacilioConstants.ContextNames.TICKET_NOTES);
 	}
@@ -319,6 +346,8 @@ public class NoteAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.NOTE_IDS, notesIds);
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.PARENT_NOTE_ID,parentNoteId);
+		context.put("onlyFetchParentNotes",onlyFetchParentNotes);
 
 		if (this.module.equals("cmdnotes")) {
 			String customModuleNotes = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.NOTES);
@@ -352,6 +381,13 @@ public class NoteAction extends FacilioAction {
 	
 	public String v2addNote() throws Exception {
 		addNote();
+		setResult(FacilioConstants.ContextNames.NOTE, noteId);
+		setResult("Notes", note);
+		return SUCCESS;
+	}
+
+	public String v2updateNote() throws Exception {
+		saveNote(module, true);
 		setResult(FacilioConstants.ContextNames.NOTE, noteId);
 		setResult("Notes", note);
 		return SUCCESS;

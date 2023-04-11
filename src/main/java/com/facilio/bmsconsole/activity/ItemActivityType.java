@@ -74,6 +74,13 @@ public enum ItemActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return "added item types";
 		}
+	},
+	ITEM_NOTES_UPDATED(117) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "updated item notes";
+		}
 	};
 
 	private ItemActivityType(int value) {

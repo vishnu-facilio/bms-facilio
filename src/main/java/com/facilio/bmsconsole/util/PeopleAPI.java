@@ -1,10 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
@@ -15,7 +12,6 @@ import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -34,11 +30,9 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -1225,6 +1219,53 @@ public class PeopleAPI {
 			}
 		}
 		return ouid;
+	}
+
+	public static List<Map<String, Object>> getOrgUserAndApplicationMap(long peopleId) throws Exception{
+		List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		ArrayList<FacilioField> selectFields = new ArrayList<>(Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.OUID),fieldMap.get(FacilioConstants.ContextNames.APPLICATION_ID)));
+		selectFields.add(FieldFactory.getField(FacilioConstants.ContextNames.USER,"ORG_Users.ORG_USERID",FieldType.NUMBER));
+		return getOrgUserAppsForPeople(peopleId,selectFields);
+	}
+
+	public static List<Map<String, Object>> getOrgUserAppsForPeople(long peopleId, List<FacilioField> selectFields) throws Exception{
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		return props;
+	}
+	public static Map<Long, Map<String, Object>> getPeopleNameForUserIds(List<Long> ouIds) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("id","ID",FieldType.NUMBER));
+		fields.add(FieldFactory.getField("name","NAME", FieldType.STRING));
+		return getPeopleForUserIds(ouIds,fields);
+	}
+	public static Map<Long, Map<String, Object>> getPeopleForUserIds(List<Long> ouIds, Collection<FacilioField> selectFields) throws Exception {
+		if(ouIds == null || ouIds.isEmpty()){
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+
+		selectFields.add(FieldFactory.getField("ouid","ORG_Users.ORG_USERID",FieldType.NUMBER));
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table(module.getTableName())
+				.innerJoin("ORG_Users")
+				.on("ORG_Users.PEOPLE_ID = People.ID")
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID","ouid",String.valueOf(StringUtils.join(ouIds, ",")),NumberOperators.EQUALS));
+
+		List<Map<String, Object>> peopleList = selectRecordBuilder.get();
+		Map<Long,Map<String,Object>> peopleForOUIdMap = new HashMap<>();
+		for(Map<String, Object> people : peopleList){
+			peopleForOUIdMap.put((Long) people.get("ouid"),people);
+		}
+		return peopleForOUIdMap;
 	}
 
 	private static void addPermissionSetsForPeople(List<Long> permissionSets, long peopleId,String linkName) throws Exception{
