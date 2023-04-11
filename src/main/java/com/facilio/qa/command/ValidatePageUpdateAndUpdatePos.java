@@ -23,11 +23,9 @@ public class ValidatePageUpdateAndUpdatePos extends FacilioCommand {
             List<PageContext> positionToBeUpdated = new ArrayList<>();
             for (PageContext page : list) {
                 PageContext oldPage = oldPagesMap.get(page.getId());
-                V3Util.throwRestException(page.getParent() != null && page.getParent().getId() > 0 && page.getParent().getId() != oldPage.getParent().getId(), ErrorCode.VALIDATION_ERROR, "errors.qa.validatePageUpdateAndUpdatePos.parentTemplateUpdateCheck",true,null);
-                //V3Util.throwRestException(page.getParent() != null && page.getParent().getId() > 0 && page.getParent().getId() != oldPage.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Cannot update parent template of page",true,null);
+                V3Util.throwRestException(page.getParent() != null && page.getParent().getId() > 0 && page.getParent().getId() != oldPage.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Cannot update parent template of page");
                 if (page.getPosition() != oldPage.getPosition()) {
-                    V3Util.throwRestException(page.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.validatePageUpdateAndUpdatePos.invalidPositionPageCheck",true,null);
-                   //V3Util.throwRestException(page.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for page",true,null);
+                    V3Util.throwRestException(page.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for page");
                     positionToBeUpdated.add(page);
                 }
             }

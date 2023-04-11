@@ -37,8 +37,7 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
     @Override
     public AnswerContext deSerialize(MultiFileUploadAnswerContext answer, QuestionContext question) throws Exception {
         boolean isRemarksEnabled = StringUtils.isNotEmpty(((MultiFileUploadQuestionContext) question).getIndividualRemarksLabel());
-        V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "errors.qa.multiFileUploadHandler.fileIdCheckMultiple",true,null);
-        //V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "File IDs cannot be empty while adding file upload answer",true,null);
+        V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "File IDs cannot be empty while adding file upload answer");
         List<MultiFileAnswerContext> multiAnswers = answer.getAnswer().stream()
                                                         .map(a -> constructMultiFileAnswerContext(a, isRemarksEnabled))
                                                         .collect(Collectors.toList());
@@ -49,8 +48,7 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
 
     @SneakyThrows
     private MultiFileAnswerContext constructMultiFileAnswerContext (MultiFileUploadAnswerContext.MultiFileAnswer answer, boolean isRemarksEnabled) {
-        V3Util.throwRestException(answer.getId() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.multiFileUploadHandler.fileIdCheck",true,null); //Assuming we'll upload file first and send only id
-        //V3Util.throwRestException(answer.getId() == null, ErrorCode.VALIDATION_ERROR, "File ID cannot be null while adding file answers",true,null); //Assuming we'll upload file first and send only id
+        V3Util.throwRestException(answer.getId() == null, ErrorCode.VALIDATION_ERROR, "File ID cannot be null while adding file answers"); //Assuming we'll upload file first and send only id
         MultiFileAnswerContext answerContext = new MultiFileAnswerContext();
         answerContext.setFileAnswerId(answer.getId());
         if (isRemarksEnabled) {

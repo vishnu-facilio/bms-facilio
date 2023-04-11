@@ -25,14 +25,11 @@ public class FetchAnswersOfAQuestionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long questionId = (long) context.get(FacilioConstants.QAndA.Command.QUESTION_ID);
-        V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchAnswerOfAQuestionCommand.questionCheck",true,null);
-        //V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers",true,null);
+        V3Util.throwRestException(questionId <= 0, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
         DateRange range = (DateRange) context.get(FacilioConstants.QAndA.Command.ANSWER_RANGE);
-        V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "errors.qa.fetchAnswerOfAQuestionCommand.timeCheck",true,null);
-        //V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "Invalid startTime/ endTime specified for fetching answers",true,null);
+        V3Util.throwRestException(range.getStartTime() <= 0 || range.getEndTime() <= 0 || range.getEndTime() < range.getStartTime(), ErrorCode.VALIDATION_ERROR, "Invalid startTime/ endTime specified for fetching answers");
         QuestionContext question = QAndAUtil.fetchQuestionWithProps(questionId);
-        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchAnswerOfAQuestionCommand.questionIdCheck",true,null);
-        //V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers",true,null);
+        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
 
         QAndAUtil.populateAnswersForQuestions(Collections.singletonMap(questionId, question), getCriteria(question.getParent().getId(), range), false);
         context.put(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST, question.getAnswers());

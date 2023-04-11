@@ -44,8 +44,7 @@ public class MatrixQuestionHandler extends BaseMatrixQuestionHandler implements 
 	         
 	         if(question.getRows() != null) {
 	        	 for(MatrixQuestionRow row : question.getRows()) {
-	        		 V3Util.throwRestException(row.getName() == null || row.getName().isEmpty(), ErrorCode.VALIDATION_ERROR, "errors.qa.matrixQuestionHandler.rowNameCheck",true,null);
-					 //V3Util.throwRestException(row.getName() == null || row.getName().isEmpty(), ErrorCode.VALIDATION_ERROR, "Row name cannot be empty",true,null);
+	        		 V3Util.throwRestException(row.getName() == null || row.getName().isEmpty(), ErrorCode.VALIDATION_ERROR, "Row name cannot be empty");
 	        	 }
 	         }
 		}

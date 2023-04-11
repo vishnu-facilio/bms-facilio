@@ -62,8 +62,7 @@ public enum MCQRuleHandler implements RuleHandler {
         for (Map<String, Object> prop : conditionProps) {
             Long value = (Long) prop.remove("option");
             MCQOptionContext option = options.get(value);
-            V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, "errors.qa.mcqRuleHandler.optionValidator",true,null);
-            //V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding MCQ Rule",true,null);
+            V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding MCQ Rule");
             RuleCondition condition = FieldUtil.getAsBeanFromMap(prop, type.getRuleConditionClass());
             condition.setOperatorEnum(PickListOperators.IS);
             condition.setValue(value.toString());

@@ -31,8 +31,7 @@ public class FetchDisplayLogicListCommand extends FacilioCommand {
 		}
 		else {
 			Long pageId = (Long) context.get(DisplayLogicUtil.PAGE_ID);
-			V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchDisplayLogicListCommand.pageQuestionIdCheck",true,null);
-			//V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "both pageId and questionid cannot be empty during rules fetch",true,null);
+			V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "both pageId and questionid cannot be empty during rules fetch");
 			
 			Criteria criteria = new Criteria();
 			

@@ -34,27 +34,23 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         JSONObject answerData = (JSONObject) context.get(FacilioConstants.QAndA.Command.ANSWER_DATA);
         ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
         List<Map<String, Object>> answers = answerData == null ? null : (List<Map<String, Object>>) answerData.get("answers");
-        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "errors.qa.constructAnswerPOJOsCommand.answerEmptyCheck",true,null);
-        //V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty while add or updating answers",true,null);
+        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty while add or updating answers");
 
         List<Long> questionIds = answers.stream().map(this::fetchQuestionId).collect(Collectors.toList());
         Map<Long, QuestionContext> questions = QAndAUtil.fetchExtendedQuestionMap(questionIds, true);
 
         List<ClientAnswerContext> answerContextList = new ArrayList<>();
         Map<Long, AnswerContext> questionVsAnswer = new HashMap<>();
-        Map<String, Long> errorParams = new HashMap<>();
         for (Map<String, Object> prop : answers) {
             try {
                 Long questionId = (Long) prop.get("question");
                 QuestionContext question = questions.get(questionId);
-                V3Util.throwRestException(question == null || (!onlyValidate && question.getParent().getId() != response.getParent().getId()), ErrorCode.VALIDATION_ERROR, "errors.qa.constructAnswerPOJOsCommand.questionValidate",true,null);
-//                V3Util.throwRestException(question == null || (!onlyValidate && question.getParent().getId() != response.getParent().getId()), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers",true,null);
+                V3Util.throwRestException(question == null || (!onlyValidate && question.getParent().getId() != response.getParent().getId()), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers");
                 AnswerHandler handler = question.getQuestionType().getAnswerHandler();
                 handler.validateAnswer(prop);
                 ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
-                errorParams.put("questionId", questionId);
-                V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.constructAnswerPOJOsCommand.answerCheck",true,errorParams);
-                //V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer cannot be null for question : {0}", questionId),true,errorParams);
+                V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
+
                 AnswerContext answerContext = handler.deSerialize(answer, question);
                 answerContext.setQuestion(question);
                 answerContext.setParent(question.getParent());
@@ -121,8 +117,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
     @SneakyThrows
     private Long fetchQuestionId (Map<String, Object> answer)  {
         Long questionId = (Long) answer.get("question");
-        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "errors.qa.constructAnswerPOJOsCommand.questionNullCheck",true,null);
-        //V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer",true,null);
+        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer");
         return questionId;
     }
 }

@@ -58,8 +58,7 @@ public enum RatingRuleHandler implements RuleHandler {
         List<RuleCondition> conditions = new ArrayList<>();
         for (Map<String, Object> prop : conditionProps) {
             Long value = (Long) prop.remove("option");
-            V3Util.throwRestException((value == null || value > ratingScale), ErrorCode.VALIDATION_ERROR, "errors.qa.ratingRuleHandler.ratingOptionCheck",true,null);
-            //V3Util.throwRestException((value == null || value > ratingScale), ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding Rating Rule",true,null);
+            V3Util.throwRestException((value == null || value > ratingScale), ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding Rating Rule");
             RuleCondition condition = FieldUtil.getAsBeanFromMap(prop, type.getRuleConditionClass());
             condition.setOperatorEnum(NumberOperators.EQUALS);
             condition.setValue(value.toString());

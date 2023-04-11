@@ -32,8 +32,7 @@ public class ValidatePageCapacity extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuestionContext question : list) {
                 Long pageId = question.getPage() == null ? null : question.getPage().getId();
-                V3Util.throwRestException(pageId==null, ErrorCode.VALIDATION_ERROR, "errors.qa.validatePageCapacity.pageIdCheck",true,null);
-                //V3Util.throwRestException(pageId==null, ErrorCode.VALIDATION_ERROR, "Page ID is mandatory",true,null);
+                V3Util.throwRestException(pageId==null, ErrorCode.VALIDATION_ERROR, "Page ID is mandatory");
                 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                         .select(FieldFactory.getCountField())
                         .table("Q_And_A_Questions")
@@ -43,8 +42,7 @@ public class ValidatePageCapacity extends FacilioCommand {
                 Map<String, Object> modulesMap = builder.fetchFirst();
                 long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
 
-                V3Util.throwRestException(count>=50, ErrorCode.VALIDATION_ERROR, "errors.qa.validatePageCapacity.questionCountCheck",true,null);
-                //V3Util.throwRestException(count>=50, ErrorCode.VALIDATION_ERROR, "Only 50 questions can be added to a single page",true,null);
+                V3Util.throwRestException(count>=50, ErrorCode.VALIDATION_ERROR, "Only 50 questions can be added to a single page");
             }
         }
         return false;

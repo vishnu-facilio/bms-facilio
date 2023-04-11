@@ -296,12 +296,12 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
-
+		
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
 
 		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
-		setResult("groupViews", context.get(FacilioConstants.ContextNames.GROUP_VIEWS));    // TODO remove
+		setResult("groupViews", context.get(FacilioConstants.ContextNames.GROUP_VIEWS));	// TODO remove
 
 		return SUCCESS;
 	}

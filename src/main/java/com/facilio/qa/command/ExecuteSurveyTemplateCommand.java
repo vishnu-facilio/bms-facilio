@@ -22,7 +22,10 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class ExecuteSurveyTemplateCommand extends FacilioCommand{
@@ -31,19 +34,15 @@ public class ExecuteSurveyTemplateCommand extends FacilioCommand{
 
 		String moduleName = Constants.getModuleName(context);
 		FacilioModule module = Constants.getModBean().getModule(moduleName);
-		Map<String, Object> errorParams = new HashMap<>();
-		errorParams.put("moduleName", moduleName);
-		V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, "errors.qa.executeSurveyTemplateCommand.moduleQACheck.msg",true,errorParams);
-		//V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid Q And A Module ({0}) specified while executing template", moduleName),true,errorParams);
+		V3Util.throwRestException(module == null || module.getTypeEnum() != FacilioModule.ModuleType.Q_AND_A, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid Q And A Module ({0}) specified while executing template", moduleName));
 		Long id = Constants.getRecordId(context);
 		QAndAType type = QAndAType.getQAndATypeFromTemplateModule(moduleName);
 
 		FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList(id));
 
 		WorkOrderSurveyTemplateContext template = (WorkOrderSurveyTemplateContext) Objects.requireNonNull(Constants.getRecordListFromContext(summaryContext, moduleName)).get(0);
-		errorParams.put("id", id);
-		V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR,"errors.qa.executeSurveyTemplateCommand.idTemplateCheck",true,errorParams);
-		//V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id),true,errorParams);
+
+		V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id));
 
 		WorkOrderSurveyResponseContext response = template.constructResponse();
 

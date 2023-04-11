@@ -10,7 +10,6 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Map;
 
 public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
@@ -30,14 +29,8 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
     public AnswerContext deSerialize(NumberAnswerContext answer, QuestionContext question) throws Exception {
         Long minValue = ((NumberQuestionContext) question).getMinValue();
         Long maxValue = ((NumberQuestionContext) question).getMaxValue();
-        Map<String, Object> errorParams = new HashMap<>();
-        errorParams.put("answer",answer.getAnswer());
-        errorParams.put("minValue",minValue);
-        errorParams.put("maxValue",maxValue);
-        V3Util.throwRestException(minValue != null && answer.getAnswer() < minValue, ErrorCode.VALIDATION_ERROR, "errors.qa.numberAnswerHandler.minCheck",true,errorParams);
-        V3Util.throwRestException(maxValue != null && answer.getAnswer() > maxValue, ErrorCode.VALIDATION_ERROR, "errors.qa.numberAnswerHandler.maxCheck",true,errorParams);
-        //V3Util.throwRestException(minValue != null && answer.getAnswer() < minValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), minValue),true,errorParams);
-        //V3Util.throwRestException(maxValue != null && answer.getAnswer() > maxValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), maxValue),true,errorParams);
+        V3Util.throwRestException(minValue != null && answer.getAnswer() < minValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), minValue));
+        V3Util.throwRestException(maxValue != null && answer.getAnswer() > maxValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), maxValue));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setNumberAnswer(answer.getAnswer());
         return answerContext;
@@ -46,8 +39,7 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
     @Override
     public void validateAnswer(Map<String, Object> props) throws Exception {
         String answer = (String) props.get("answer");
-        V3Util.throwRestException(!StringUtils.isNumeric(answer), ErrorCode.VALIDATION_ERROR, "errors.qa.numberAnswerHandler.numberCheck",true,null);
-        //V3Util.throwRestException(!StringUtils.isNumeric(answer), ErrorCode.VALIDATION_ERROR, "Not a valid number format",true,null);
+        V3Util.throwRestException(!StringUtils.isNumeric(answer), ErrorCode.VALIDATION_ERROR, "Not a valid number format");
     }
 
     @Override

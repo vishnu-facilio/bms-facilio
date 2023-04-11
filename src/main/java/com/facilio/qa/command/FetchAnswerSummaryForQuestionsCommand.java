@@ -44,8 +44,7 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
                 if (fetchSummary) {
                     Object startTimeObj = Constants.getQueryParam(context, "startTime");
                     Object endTimeObj = Constants.getQueryParam(context, "endTime");
-                    V3Util.throwRestException(startTimeObj == null || endTimeObj == null, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchAnswerSummaryForQuestionsCommand.timeEntryCheck",true,null);
-                    //V3Util.throwRestException(startTimeObj == null || endTimeObj == null, ErrorCode.VALIDATION_ERROR, "startTime/ endTime is mandatory to fetch summary of responses",true,null);
+                    V3Util.throwRestException(startTimeObj == null || endTimeObj == null, ErrorCode.VALIDATION_ERROR, "startTime/ endTime is mandatory to fetch summary of responses");
 
                     try {
                         DateRange range = new DateRange(FacilioUtil.parseLong(startTimeObj), FacilioUtil.parseLong(endTimeObj));

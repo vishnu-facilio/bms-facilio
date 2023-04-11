@@ -1,7 +1,10 @@
 package com.facilio.qa.context.questions.handler;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
@@ -42,20 +45,15 @@ public class BaseMatrixQuestionHandler {
 	public static final int MAX_COLUMN_LABEL_LENGTH = 150;
 
 	protected static <E extends BaseMatrixQuestionContext> void commonValidate(List<E> questions) throws RESTException {
-		Map<String, Object> errorParams = new HashMap<>();
+
 		for (BaseMatrixQuestionContext q : questions) {
 			String question = q.getQuestion();
 
 			if (StringUtils.isNotEmpty(question)) {
 
 				int maxLen = question.length();
-				if(maxLen > MAX_STRING_LENGTH){
-					errorParams.put("maxLength",maxLen);
-					errorParams.put("maxStringLength",MAX_STRING_LENGTH);
-				}
 
-				V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, "errors.qa.baseMatrixQuestionHandler.questionLengthCheck",true,errorParams);
-				//V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, MAX_STRING_LENGTH),true,errorParams);
+				V3Util.throwRestException(maxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question Length ({0}) cannot be greater than ({1})", maxLen, MAX_STRING_LENGTH));
 
 				List<MatrixQuestionColumn> columns = q.getColumns();
 
@@ -64,12 +62,7 @@ public class BaseMatrixQuestionHandler {
 					for (MatrixQuestionColumn column : columns) {
 
 						int colLength = column.getName().length();
-						if(colLength > MAX_COLUMN_LABEL_LENGTH){
-							errorParams.put("colLength",colLength);
-							errorParams.put("maxColLabelLength",MAX_COLUMN_LABEL_LENGTH);
-						}
-						V3Util.throwRestException(colLength > MAX_COLUMN_LABEL_LENGTH, ErrorCode.VALIDATION_ERROR, "errors.qa.baseMatrixQuestionHandler.columnLabelLengthCheck",true,errorParams);
-						//V3Util.throwRestException(colLength > MAX_COLUMN_LABEL_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Column label Length ({0}) cannot be greater than ({1})", colLength, MAX_COLUMN_LABEL_LENGTH),true,errorParams);
+						V3Util.throwRestException(colLength > MAX_COLUMN_LABEL_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Column label Length ({0}) cannot be greater than ({1})", colLength, MAX_COLUMN_LABEL_LENGTH));
 
 						FacilioField field = column.getField();
 
@@ -88,11 +81,7 @@ public class BaseMatrixQuestionHandler {
 										if (StringUtils.isNotEmpty(pickListQuestion)) {
 
 											int pickListMaxLen = pickListQuestion.length();
-											if(pickListMaxLen > MAX_STRING_LENGTH){
-												errorParams.put("pickListMaxLen",pickListMaxLen);
-											}
-											V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, "errors.qa.baseMatrixQuestionHandler.picklistLabelLengthCheck",true,errorParams);
-											//V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Label Length ({0}) cannot be greater than ({1})", pickListMaxLen, MAX_STRING_LENGTH),true,errorParams);
+											V3Util.throwRestException(pickListMaxLen > MAX_STRING_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("PickList Label Length ({0}) cannot be greater than ({1})", pickListMaxLen, MAX_STRING_LENGTH));
 										}
 									}
 								}
@@ -130,10 +119,8 @@ public class BaseMatrixQuestionHandler {
         if(question.getColumns() != null) {
        	 for(MatrixQuestionColumn column : question.getColumns()) {
        		 
-       		 V3Util.throwRestException(column.getField() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.baseMatrixQuestionHandler.fieldCheck",true,null);
-       		 V3Util.throwRestException(column.getName() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.baseMatrixQuestionHandler.columnNameCheck",true,null);
-			 //V3Util.throwRestException(column.getField() == null, ErrorCode.VALIDATION_ERROR, "Field cannot be empty in matrix column",true,null);
-			 //V3Util.throwRestException(column.getName() == null, ErrorCode.VALIDATION_ERROR, "Column name cannot be empty",true,null);
+       		 V3Util.throwRestException(column.getField() == null, ErrorCode.VALIDATION_ERROR, "Field cannot be empty in matrix column");
+       		 V3Util.throwRestException(column.getName() == null, ErrorCode.VALIDATION_ERROR, "Column name cannot be empty");
        		 answerFields.add(column.getField());
        	 }
         }

@@ -27,13 +27,11 @@ public class ValidateQuestionUpdateAndUpdatePos extends FacilioCommand {
             Map<Long, QuestionContext> oldQuestionsMap = Constants.getOldRecordMap(context, FacilioConstants.QAndA.QUESTION);
             for (QuestionContext question : list) {
                 QuestionContext oldQuestion = oldQuestionsMap.get(question.getId());
-                V3Util.throwRestException(question.getParent() != null && question.getParent().getId() > 0 && question.getParent().getId() != question.getParent().getId(), ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionUpdateAndUpdatePos.parentCheck",true,null);
-                //V3Util.throwRestException(question.getParent() != null && question.getParent().getId() > 0 && question.getParent().getId() != question.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Cannot update parent template of question",true,null);
+                V3Util.throwRestException(question.getParent() != null && question.getParent().getId() > 0 && question.getParent().getId() != question.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Cannot update parent template of question");
                 if ((question.getPosition() != null && question.getPosition() != oldQuestion.getPosition()) ||
                         (question.getPage() != null && question.getPage().getId() > 0 && question.getPage().getId() != oldQuestion.getPage().getId())
                 ) {
-                    V3Util.throwRestException(question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionUpdateAndUpdatePos.positionCheck",true,null);
-                    //V3Util.throwRestException(question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question",true,null);
+                    V3Util.throwRestException(question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question");
                     positionToBeUpdated.add(question);
                 }
             }
@@ -71,15 +69,8 @@ public class ValidateQuestionUpdateAndUpdatePos extends FacilioCommand {
         for (QuestionContext question : questions) {
             if (question.getPage() != null && question.getPage().getId() > 0) {
                 PageContext page = pages.get(question.getPage().getId());
-                Map<String, Object> errorParams = new HashMap<>();
-                errorParams.put("questionPageId", question.getPage().getId());
-                errorParams.put("questionId", question.getId());
-                errorParams.put("pageId", page.getId());
-                errorParams.put("pageParentId", page.getParent().getId());
-                V3Util.throwRestException(question.getParent().getId() != page.getParent().getId(), ErrorCode.VALIDATION_ERROR,"errors.qa.validateQuestionUpdateAndUpdatePos.pageTemplateCheck",true,errorParams);
-                V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, "errors.qa.validateQuestionUpdateAndUpdatePos.parentQuestionCheck",true,errorParams);
-                //V3Util.throwRestException(question.getParent().getId() != page.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid page ({0}) from another template ({1}) specified for question ({2})", page.getId(), page.getParent().getId(), question.getId()),true,errorParams);
-                //V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid page ({0}) specified for question ({1})", question.getPage().getId(), question.getId()),true,errorParams);
+                V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid page ({0}) specified for question ({1})", question.getPage().getId(), question.getId()));
+                V3Util.throwRestException(question.getParent().getId() != page.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid page ({0}) from another template ({1}) specified for question ({2})", page.getId(), page.getParent().getId(), question.getId()));
             }
         }
     }

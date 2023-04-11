@@ -22,8 +22,7 @@ public class FetchResponsesForStatusUpdateOnAnswerDelete extends FacilioCommand 
         List<Long> recordIds = Constants.getRecordIds(context);
         if (CollectionUtils.isNotEmpty(recordIds)) {
             List<AnswerContext> answers = V3RecordAPI.getRecordsList(FacilioConstants.QAndA.ANSWER, recordIds);
-            V3Util.throwRestException(CollectionUtils.isEmpty(answers) || recordIds.size() != answers.size(), ErrorCode.VALIDATION_ERROR, "errors.qa.fetchResponsesForStatusUpdateOnAnswerDelete.answerIdCheck",true,null);
-            //V3Util.throwRestException(CollectionUtils.isEmpty(answers) || recordIds.size() != answers.size(), ErrorCode.VALIDATION_ERROR, "Invalid answer ID given for deletion",true,null);
+            V3Util.throwRestException(CollectionUtils.isEmpty(answers) || recordIds.size() != answers.size(), ErrorCode.VALIDATION_ERROR, "Invalid answer ID given for deletion");
 
             List<Long> responseIds = answers.stream().map(AnswerContext::getResponseId).collect(Collectors.toList());
             List<ResponseContext> responses = V3RecordAPI.getRecordsList(FacilioConstants.QAndA.RESPONSE, responseIds);

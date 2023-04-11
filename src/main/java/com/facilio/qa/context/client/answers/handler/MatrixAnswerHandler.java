@@ -22,7 +22,6 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,19 +53,16 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 
 		Map<Long, FieldType> columnIdVsFieldType = columns.stream().collect(Collectors.toMap(column->column.getId(), column->column.getField().getDataTypeEnum()));
 		List<MatrixAnswerContext.ColumnAnswer> columnAnswers= (answer.getAnswer().getRowAnswer().stream().map(row->row.getColumnAnswer()).collect(Collectors.toList())).stream().flatMap(collist->collist.stream()).collect(Collectors.toList());
-		Map<String, Number> errorParams = new HashMap<>();
+
 		for(MatrixAnswerContext.ColumnAnswer columnAnswer:columnAnswers) {
 			if(columnAnswer.getAnswer()!=null) {
 				FieldType fieldType = columnIdVsFieldType.get(columnAnswer.getColumn());
 				switch (fieldType) {
 					case STRING:
-						errorParams.put("columnAnswerLength",columnAnswer.getAnswer().toString().length());
-						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, "errors.qa.matrixAnswerHandler.columnAnswerLengthCheck",true,errorParams);
-						//V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length 255 allowed",columnAnswer.getAnswer().toString().length()),true,errorParams);
+						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length 255 allowed",columnAnswer.getAnswer().toString().length()));
 						break;
 					case NUMBER:
-						V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, "errors.qa.matrixAnswerHandler.numberCheck.msg",true,null);
-						//V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, "Not a valid number format",true,null);
+						V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, "Not a valid number format");
 						break;
 					default:
 						break;

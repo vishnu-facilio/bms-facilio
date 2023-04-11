@@ -96,8 +96,7 @@ public class AddInductionTriggersCommand extends FacilioCommand {
 					trigger.setScheduleId(scheduleTrigger.getId());
 				}
 				else if (trigger.getType() == InductionTriggerContext.TriggerType.USER.getVal()) {
-					V3Util.throwRestException(isManualTriggerFound, ErrorCode.VALIDATION_ERROR, "errors.qa.addInductionTriggers.manualTriggerCheck",true,null);
-					//V3Util.throwRestException(isManualTriggerFound, ErrorCode.VALIDATION_ERROR, "Inspection should have only one manual trigger",true,null);
+					V3Util.throwRestException(isManualTriggerFound, ErrorCode.VALIDATION_ERROR, "Induction should have only one manual trigger");
 					isManualTriggerFound = true;
 				}
 			}

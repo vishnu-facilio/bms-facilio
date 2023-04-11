@@ -21,8 +21,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         QAndARuleType type = (QAndARuleType) context.get(Constants.Command.RULE_TYPE);
-        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "errors.qa.fetchAndSerializeRulesOfAPage.typeCheck.msg",true,null);
-        //V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Type cannot be empty while fetching rules",true,null);
+        V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Type cannot be empty while fetching rules");
         List<QuestionContext> questions = (List<QuestionContext>) context.get(FacilioConstants.QAndA.Command.QUESTION_LIST);
         Long templateId = Objects.requireNonNull((Long) context.get(FacilioConstants.QAndA.Command.TEMPLATE_ID), "Template cannot be null");
         if (CollectionUtils.isNotEmpty(questions)) {

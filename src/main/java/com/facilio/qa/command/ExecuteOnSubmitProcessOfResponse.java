@@ -19,7 +19,6 @@ import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,14 +31,10 @@ public class ExecuteOnSubmitProcessOfResponse extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(responses)) {
             Map<Long, ? extends ResponseContext> oldResponseMap = Constants.getOldRecordMap(context);
-            Map<String, Long> errorParams = new HashMap<>();
             for (ResponseContext response : responses) {
                 ResponseContext oldResponse = oldResponseMap.get(response.getId());
-                errorParams.put("responseId", response.getId());
-                V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, "errors.qa.executeOnSubmitProcessOfResponse.actionValidation",true,errorParams);
-                V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, "errors.qa.executeOnSubmitProcessOfResponse.parentUpdationValidation",true,errorParams);
-//                V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response ID ({0}) is specified for updating", response.getId()),true,errorParams);
-//                V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot update parent of response : {0}", response.getId()),true,errorParams);
+                V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response ID ({0}) is specified for updating", response.getId()));
+                V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot update parent of response : {0}", response.getId()));
                 if (response.getResStatus() != oldResponse.getResStatus() && response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED) {
 
 					QAndAUtil.validateResponseExpiry(response);

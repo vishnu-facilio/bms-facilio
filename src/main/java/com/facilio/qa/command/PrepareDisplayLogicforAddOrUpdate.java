@@ -39,24 +39,19 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 
 		DisplayLogicContext displaylogic = (DisplayLogicContext) context.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT);
 		
-		V3Util.throwRestException(displaylogic.getDisplayLogicTypeEnum() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.displayLogicTypeCheck",true,null);
-		V3Util.throwRestException(displaylogic.getTemplateId() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.templateCheck",true,null);
-		V3Util.throwRestException(displaylogic.getPageId() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.pageCheck",true,null);
-		//V3Util.throwRestException(displaylogic.getDisplayLogicTypeEnum() == null, ErrorCode.VALIDATION_ERROR, "Display Logic Type cannot be empty during save",true,null);
-		//V3Util.throwRestException(displaylogic.getTemplateId() == null, ErrorCode.VALIDATION_ERROR, "Template cannot be empty during save",true,null);
-		//V3Util.throwRestException(displaylogic.getPageId() == null, ErrorCode.VALIDATION_ERROR, "Page cannot be empty during save",true,null);
+		V3Util.throwRestException(displaylogic.getDisplayLogicTypeEnum() == null, ErrorCode.VALIDATION_ERROR, "Display Logic Type cannot be empty during save");
+		V3Util.throwRestException(displaylogic.getTemplateId() == null, ErrorCode.VALIDATION_ERROR, "Template cannot be empty during save");
+		V3Util.throwRestException(displaylogic.getPageId() == null, ErrorCode.VALIDATION_ERROR, "Page cannot be empty during save");
 		Predicate<DisplayLogicAction> predicate = (action) -> { return action == null; };
-		V3Util.throwRestException((displaylogic.getActions() == null || displaylogic.getActions().isEmpty() || !displaylogic.getActions().stream().filter(predicate).collect(Collectors.toList()).isEmpty()), ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.actionCheck",true,null);
-		//V3Util.throwRestException((displaylogic.getActions() == null || displaylogic.getActions().isEmpty() || !displaylogic.getActions().stream().filter(predicate).collect(Collectors.toList()).isEmpty()), ErrorCode.VALIDATION_ERROR, "Actions cannot be empty during save",true,null);
+		V3Util.throwRestException((displaylogic.getActions() == null || displaylogic.getActions().isEmpty() || !displaylogic.getActions().stream().filter(predicate).collect(Collectors.toList()).isEmpty()), ErrorCode.VALIDATION_ERROR, "Actions cannot be empty during save");
 		
 		QAndATemplateContext template = (QAndATemplateContext) Constants.getRecordList(V3Util.getSummary(FacilioConstants.QAndA.Q_AND_A_TEMPLATE, Collections.singletonList(displaylogic.getTemplateId()))).get(0);
 		QAndAUtil.populatePagesAndQuestionsInTemplates(Collections.singletonList(template));
 		Predicate<PageContext> pagePredicate = (page) -> displaylogic.getPageId().equals(page.getId());
 		PageContext page = (PageContext) template.getPages().stream().filter(pagePredicate).findFirst().get();
 		
-		V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.pageCheck",true,null);
-		//V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, "Page cannot be empty during save",true,null);
-
+		V3Util.throwRestException(page == null, ErrorCode.VALIDATION_ERROR, "Page cannot be empty during save");
+		
 		displaylogic.setPage(page);
 		
 		List<PageContext> pages = template.getPages();
@@ -72,9 +67,8 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 		Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
 		
 		if(displaylogic.getDisplayLogicTypeEnum().isQuestionDependent()) {
-			V3Util.throwRestException(displaylogic.getQuestionId() == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.questionCheck",true,null);
-			//V3Util.throwRestException(displaylogic.getQuestionId() == null, ErrorCode.VALIDATION_ERROR, "Question cannot be empty during save",true,null);
-
+			V3Util.throwRestException(displaylogic.getQuestionId() == null, ErrorCode.VALIDATION_ERROR, "Question cannot be empty during save");
+			
 			displaylogic.setQuestion(questionMap.get(displaylogic.getQuestionId()));
 		}
 
@@ -102,17 +96,14 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 				
 				QuestionContext criteriaQuestion = questionMap.get(questionId);
 				
-				V3Util.throwRestException(criteriaQuestion == null, ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.questionTemplateCheck",true,null);
-				//V3Util.throwRestException(criteriaQuestion == null, ErrorCode.VALIDATION_ERROR, "Question used should be under current template",true,null);
-
+				V3Util.throwRestException(criteriaQuestion == null, ErrorCode.VALIDATION_ERROR, "Question used should be under current template");
+				
 				if(displaylogic.getDisplayLogicTypeEnum().isQuestionDependent()) {
-					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() > displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.questionCriteriaCheck",true,null);
-					//V3Util.throwRestException(criteriaQuestion.getPage().getPosition() > displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question",true,null);
+					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() > displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question");
 					//V3Util.throwRestException(criteriaQuestion.getPage().getPosition() == displaylogic.getPage().getPosition() && criteriaQuestion.getPosition() >= displaylogic.getQuestion().getPosition() , ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current question");
 				}
 				else {
-					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() >=  displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "errors.qa.prepareDisplayLogicForAddOrUpdate.questionPageCriteriaCheck",true,null);
-					//V3Util.throwRestException(criteriaQuestion.getPage().getPosition() >=  displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current page",true,null);
+					V3Util.throwRestException(criteriaQuestion.getPage().getPosition() >=  displaylogic.getPage().getPosition(), ErrorCode.VALIDATION_ERROR, "Question used in criteria should be above the current page");
 				}
 				
 				displaylogic.addDisplayLogicTriggerQuestions(new DisplayLogicTriggerQuestions(criteriaQuestion.getId()));
