@@ -1008,6 +1008,7 @@ public class AddInspectionModules extends BaseModuleConfig {
                                                 );
         
         module.setStateFlowEnabled(Boolean.TRUE);
+		module.setDescription("Scheduling and Execution of Inspections.");
 
         List<FacilioField> fields = new ArrayList<>();
         
@@ -1118,7 +1119,7 @@ public class AddInspectionModules extends BaseModuleConfig {
         );
         
         module.setStateFlowEnabled(Boolean.TRUE);
-        
+        module.setDescription("Inspection allows evaluating the site, building, or asset performance, assessing their conditions against the compliance guidelines.");
         Criteria criteria = new Criteria();
         
         criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.ISN_T));

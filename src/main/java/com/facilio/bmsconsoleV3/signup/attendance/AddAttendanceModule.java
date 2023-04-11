@@ -127,6 +127,9 @@ public class AddAttendanceModule extends SignUpData {
                 "Attendance",
                 FacilioModule.ModuleType.BASE_ENTITY
         );
+
+        attendanceMod.setDescription("To keep a tab on the available workforce.");
+
         List<FacilioField> fields = new ArrayList<>();
 
         FacilioField dayField = FieldFactory.getDefaultField("day", "Day", "DAY", FieldType.DATE_TIME);

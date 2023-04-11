@@ -145,6 +145,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 true);
         module.setHideFromParents(true);
         module.setOrgId(orgId);
+        module.setDescription("Schedule planned maintenance work orders to mitigate unexpected failures.");
 
         /**
          * Construct fields plannedmaintenance Module

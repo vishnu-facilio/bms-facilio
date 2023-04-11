@@ -584,7 +584,8 @@ public class AddInductionModules extends BaseModuleConfig {
         );
         
         module.setStateFlowEnabled(Boolean.TRUE);
-        
+        module.setDescription("Induction is a process of introducing and familiarizing new employees with the organization.");
+
         Criteria criteria = new Criteria();
         
         criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", InductionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.ISN_T));

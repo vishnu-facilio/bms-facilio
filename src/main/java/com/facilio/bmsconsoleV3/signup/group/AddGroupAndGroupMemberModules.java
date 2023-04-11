@@ -47,6 +47,8 @@ public class AddGroupAndGroupMemberModules extends SignUpData {
                 FacilioModule.ModuleType.BASE_ENTITY,
                 true);
 
+        module.setDescription("Organize and manage groups of users with shared access as part of a team.");
+
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(FieldFactory.getDefaultField("groupId","Group Id","GROUPID", FieldType.NUMBER));

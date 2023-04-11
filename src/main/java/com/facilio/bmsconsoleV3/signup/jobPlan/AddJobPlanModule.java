@@ -350,7 +350,9 @@ public class AddJobPlanModule extends BaseModuleConfig{
                                                 "JobPlan",
                                                 FacilioModule.ModuleType.BASE_ENTITY
                                                 );
-        
+
+        module.setDescription("Create and manage templates that defines maintenance tasks, required planned inventory, labor to ensure safe, efficient, and effective execution of maintenance activities for planned work orders.");
+
         List<FacilioField> fields = new ArrayList<>();
         
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
