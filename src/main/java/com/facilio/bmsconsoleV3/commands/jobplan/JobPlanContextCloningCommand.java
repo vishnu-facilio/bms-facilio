@@ -63,6 +63,7 @@ public class JobPlanContextCloningCommand extends FacilioCommand {
                 if(isCloning){
                     jobPlanContext.setGroup(null);
                     jobPlanContext.setJobPlanVersion(0.0);
+                    jobPlanContext.setName("Copy Of "+jobPlanContext.getName());
                 }
         }
         if(recordMap.containsKey(FacilioConstants.ContextNames.JOB_PLAN)){
@@ -74,7 +75,7 @@ public class JobPlanContextCloningCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.RECORD_MAP,recordMap);
         return false;
     }
-    public Double getJobPlanVersionNumber(List<JobPlanContext> jobPlanContextList){
+    public Double getJobPlanVersionNumber(List<JobPlanContext> jobPlanContextList) {
         Double version = 1.0;
         if(jobPlanContextList == null || jobPlanContextList.isEmpty()){
             return version;

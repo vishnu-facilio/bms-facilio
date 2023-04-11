@@ -36,12 +36,17 @@ public class SwapJobPlanDetailsCommand extends FacilioCommand {
         }
         List<JobPlanContext> jobPlanListToBePublished = new ArrayList<>();
         for(JobPlanContext jobPlanContext : jobPlanContextList){
+            if(jobPlanContext.getJpStatusEnum() == JobPlanContext.JPStatus.REVISED){
+                throw new IllegalArgumentException("Revised Job Plan with id #"+jobPlanContext.getId()+" cannot be published");
+            }
             Long jobPlanId = jobPlanContext.getId();
             Long groupId = jobPlanContext.getGroup().getId();
             if(jobPlanId != groupId){
                 JobPlanContext oldJobplan = JobPlanAPI.getJobPlan(groupId);
                 oldJobplan.setJobplansection(JobPlanAPI.setJobPlanDetails(groupId));
                 oldJobplan.setId(jobPlanId);
+                oldJobplan.setJpStatusEnum(JobPlanContext.JPStatus.REVISED);
+                oldJobplan.setJpStatus(JobPlanContext.JPStatus.REVISED.getVal());
                 updateJobplan(oldJobplan);
                 jobPlanContext.setId(groupId);
                 updateJobplan(jobPlanContext);

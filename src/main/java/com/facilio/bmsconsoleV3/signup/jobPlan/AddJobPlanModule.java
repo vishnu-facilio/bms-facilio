@@ -440,6 +440,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
     }
 
     private static FacilioView getAllJobPlanView() {
+        Criteria criteria = getAllJobPlanCriteria();
 
         FacilioModule module = ModuleFactory.getJobPlanModule();
 
@@ -448,6 +449,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Job Plans");
+        allView.setCriteria(criteria);
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
         allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
@@ -516,6 +518,13 @@ public class AddJobPlanModule extends BaseModuleConfig{
         criteria.setPattern("(1)");
         return criteria;
     }
+    public static Criteria getAllJobPlanCriteria(){
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.ACTIVE.getVal()),NumberOperators.EQUALS));
+        criteria.addOrCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.IN_ACTIVE.getVal()),NumberOperators.EQUALS));
+        criteria.setPattern("(1 or 2)");
+        return criteria;
+    }
 
     public static Condition getJobPlanBooleanCondition(String fieldName, String columnName, String conditionValue) {
         FacilioModule module = ModuleFactory.getJobPlanModule();
@@ -562,6 +571,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         jpStatus.setHideField(Boolean.TRUE);
         jpStatus.setIsDisabled(Boolean.TRUE);
         jobPlanModuleFormDefaultFields.add(jpStatus);
+
+        FormField version = new FormField("jobPlanVersion",FieldDisplayType.DECIMAL,"Version",FormField.Required.OPTIONAL,6,1);
+        version.setHideField(Boolean.TRUE);
+        version.setIsDisabled(Boolean.TRUE);
+        jobPlanModuleFormDefaultFields.add(version);
 
         List<FormField> taskFields = new ArrayList<>();
         taskFields.add(new FormField("jobplansection", FacilioField.FieldDisplayType.JP_TASK, "Tasks", FormField.Required.REQUIRED, 5, 1));

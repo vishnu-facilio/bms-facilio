@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -55,6 +56,15 @@ public class JobPlanAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getPublishJobPlanChain();
         chain.setContext(context);
         chain.execute();
+        Map<String ,Object> result = new HashMap<>();
+        Map<String,Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+        if(recordMap != null && recordMap.containsKey(FacilioConstants.ContextNames.JOB_PLAN_LIST)){
+            List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) recordMap.get(FacilioConstants.ContextNames.JOB_PLAN_LIST);
+            if(jobPlanContextList != null && !jobPlanContextList.isEmpty()){
+                result.put("groupId",jobPlanContextList.get(0).getGroup().getId());
+            }
+        }
+        setData("result",result);
         return SUCCESS;
     }
     public String bulkPublishJobPlan() throws Exception{
@@ -84,12 +94,27 @@ public class JobPlanAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getJobPlanCloneChain();
         chain.setContext(context);
         chain.execute();
+        Map<String ,Object> result = new HashMap<>();
+        Map<String,Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+        if(recordMap != null && recordMap.containsKey(FacilioConstants.ContextNames.JOB_PLAN_LIST)){
+            List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) recordMap.get(FacilioConstants.ContextNames.JOB_PLAN_LIST);
+            if(jobPlanContextList != null && !jobPlanContextList.isEmpty()){
+                result.put(FacilioConstants.JOB_PLAN.JOB_PLAN_ID,jobPlanContextList.get(0).getId());
+            }
+        }
+        setData("result",result);
         return SUCCESS;
     }
     public String fetchAssociatedRecords() throws Exception{
         long id = jobPlanId;
         List<Map<String,Object>> pmResourcePlannerList = PlannedMaintenanceAPI.getPPmDetailsAssociatedWithJobPlan(id);
         setData("result",pmResourcePlannerList);
+        return SUCCESS;
+    }
+    public String getJobPlanGroupAndVersion() throws Exception{
+        long id = jobPlanId;
+        Map<String,Object> recordMap = JobPlanAPI.getJobPlanGroupAndVersion(jobPlanId);
+        setData("result",recordMap);
         return SUCCESS;
     }
 }

@@ -1456,6 +1456,7 @@
         <action name="versionHistory" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchVersionHistory"></action>
         <action name="cloneJobPlan" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="cloneJobPlan"></action>
         <action name="fetchAssociatedRecords" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchAssociatedRecords"></action>
+        <action name="getGroupAndVersion" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="getJobPlanGroupAndVersion"></action>
     </package>
     <package name="jobPlanItems" namespace="/api/v3/jobPlanItems"
              extends="v3Api">

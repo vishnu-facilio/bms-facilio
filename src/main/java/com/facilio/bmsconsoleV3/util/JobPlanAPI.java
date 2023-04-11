@@ -89,14 +89,14 @@ public class JobPlanAPI {
         List<JobPlanTaskSectionContext> sections = builder.get();
         if (CollectionUtils.isNotEmpty(sections)) {
             for (JobPlanTaskSectionContext section : sections) {
-            	
-            	if (section.getInputTypeEnum().equals(TaskContext.InputType.RADIO)) {		
+
+                if (section.getInputTypeEnum().equals(TaskContext.InputType.RADIO)) {
                     List<Map<String, Object>> options = fetchSectionInputOptions(modBean, section);
                     if (options != null) {
-                    	section.setInputOptions(options);
+                        section.setInputOptions(options);
                     }
                 }
-            	
+
                 List<JobPlanTasksContext> splitList = getTasks(section.getId());
                 if (CollectionUtils.isNotEmpty(splitList)) {
 //                    List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, JobPlanTasksContext.class);
@@ -124,18 +124,18 @@ public class JobPlanAPI {
 
         List<JobPlanTasksContext> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
-        	
-        	for(JobPlanTasksContext jobPlanTask : list) {
-        		if (jobPlanTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
+
+            for(JobPlanTasksContext jobPlanTask : list) {
+                if (jobPlanTask.getInputTypeEnum().equals(V3TaskContext.InputType.RADIO)) {
                     List<Map<String, Object>> optionsMap = fetchTaskInputOptions(modBean, jobPlanTask);
                     List<TaskInputOptionsContext> taskInputOptions = FieldUtil.getAsBeanListFromMapList(optionsMap, TaskInputOptionsContext.class);
 
                     List<String> options = taskInputOptions.stream().map(TaskInputOptionsContext::getValue).collect(Collectors.toList());
                     if (options != null) {
-                    	jobPlanTask.setOptions(options);
+                        jobPlanTask.setOptions(options);
                     }
                 }
-        	}
+            }
             return list;
         }
         return null;
@@ -378,62 +378,62 @@ public class JobPlanAPI {
         
         if (initalTaskSections != null) {
             for (JobPlanTaskSectionContext initalTaskSection : initalTaskSections) {
-            	
-            	List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
-            	
-            	if(CollectionUtils.isNotEmpty(sectionResourceList)) {
-            		
-            		for(ResourceContext sectionResource : sectionResourceList) {
-                		
-                		JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
-                		updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
-                		updatedTaskSection.setResource(sectionResource);
-                		updatedTaskSections.add(updatedTaskSection);
-                	}
-            	}
+
+                List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
+
+                if(CollectionUtils.isNotEmpty(sectionResourceList)) {
+
+                    for(ResourceContext sectionResource : sectionResourceList) {
+
+                        JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
+                        updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
+                        updatedTaskSection.setResource(sectionResource);
+                        updatedTaskSections.add(updatedTaskSection);
+                    }
+                }
            }
             int taskUniqueId = 1;
             if(CollectionUtils.isNotEmpty(updatedTaskSections)) {
-            	
-            	for (JobPlanTaskSectionContext sectionContext : updatedTaskSections) {
-             	   
-            		if (sectionContext.getTasks() != null) {
+
+                for (JobPlanTaskSectionContext sectionContext : updatedTaskSections) {
+
+                    if (sectionContext.getTasks() != null) {
 
                         List<V3TaskContext> tasks = new ArrayList<>();
 
                         for (JobPlanTasksContext jobPlanTask : sectionContext.getTasks()) {
-                        	
-                        	List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
-                        	
-                        	if(CollectionUtils.isNotEmpty(taskResourceList)) {
-                        		
-                        		for (ResourceContext taskResource : taskResourceList) {
-                        			V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
-                        			task.setResource(taskResource);
-                        			task.setUniqueId(taskUniqueId++);
-                            		tasks.add(task);
-                            	}
-                        	}
+
+                            List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
+
+                            if(CollectionUtils.isNotEmpty(taskResourceList)) {
+
+                                for (ResourceContext taskResource : taskResourceList) {
+                                    V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
+                                    task.setResource(taskResource);
+                                    task.setUniqueId(taskUniqueId++);
+                                    tasks.add(task);
+                                }
+                            }
                         }
                         
                         String sectionName = sectionContext.getName();
                         
                         if(CollectionUtils.isNotEmpty(tasks)) {
-                        	for(V3TaskContext task : tasks) {
+                            for(V3TaskContext task : tasks) {
                                 if (isPreRequest) {
-                                	task.setPreRequest(true);
+                                    task.setPreRequest(true);
                                     task.setInputType(V3TaskContext.InputType.BOOLEAN.getVal());
                                 }
-                        	}
+                            }
                         }
-                        	
+
                         if (sectionName != null && CollectionUtils.isNotEmpty(tasks)) {
                             allTasks.put(sectionName, tasks);
                         }
                     }
-             	   
+
                 }
-            	
+
             }
         }
         return allTasks;
@@ -496,5 +496,21 @@ public class JobPlanAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("group"),String.valueOf(groupId),NumberOperators.EQUALS))
                 .orderBy(fieldMap.get("jobPlanVersion").getCompleteColumnName()+ " DESC");
         return builder.get();
+    }
+    public static Map<String,Object> getJobPlanGroupAndVersion(long jobPlanId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        List<FacilioField> fieldList = new ArrayList<>();
+
+        fieldList.add(fieldMap.get("group"));
+        fieldList.add(fieldMap.get("jobPlanVersion"));
+
+        SelectRecordsBuilder<JobPlanContext> builder = new SelectRecordsBuilder<JobPlanContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(jobPlanId,module));
+        return builder.getAsProps().get(0);
     }
 }

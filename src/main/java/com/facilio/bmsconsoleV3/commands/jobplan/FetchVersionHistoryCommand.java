@@ -1,10 +1,17 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import org.apache.commons.chain.Context;
 import org.apache.kafka.common.protocol.types.Field;
 
@@ -32,6 +39,13 @@ public class FetchVersionHistoryCommand extends FacilioCommand {
                 throw new IllegalArgumentException("No Groups Available");
             }
             jobPlanGroupList.addAll(JobPlanAPI.getJobPlanFromGroupId(jobPlanContext.getGroup().getId()));
+            for(JobPlanContext jobPlan : jobPlanGroupList){
+                IAMUser iAmUser = jobPlan.getSysCreatedBy();
+                UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+                User user = userBean.getUser(iAmUser.getUid(),false);
+                iAmUser.setName(user.getName());
+                iAmUser.setEmail(user.getEmail());
+            }
         }
         recordMap.put(FacilioConstants.ContextNames.JOB_PLAN_LIST,jobPlanGroupList);
         context.put(FacilioConstants.ContextNames.RECORD_MAP,recordMap);
