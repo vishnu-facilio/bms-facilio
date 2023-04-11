@@ -2754,11 +2754,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchInviteAcceptedUsersCommand());
         return c;
     }
-    public static FacilioChain getPeopleFromRecordFieldsChain(){
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new getPeopleFromRecordFieldsCommand());
-        return c;
-    }
 
     public static FacilioChain createSpaceBookingChain() {
         FacilioChain c = getDefaultChain();

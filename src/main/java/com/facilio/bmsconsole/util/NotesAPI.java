@@ -4,10 +4,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.CommentMentionContext;
 import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -15,7 +13,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -29,19 +26,16 @@ import java.util.stream.Collectors;
 
 public class NotesAPI {
 	
-	public static List<NoteContext> fetchNotes(long parentId,long parentNoteId, String moduleName,Boolean onlyFetchParentNotes) throws Exception {
-		List<NoteContext> noteListContext = getListBuilder(parentId,parentNoteId, moduleName, onlyFetchParentNotes).get();
+	public static List<NoteContext> fetchNotes(long parentId, String moduleName) throws Exception {
+		List<NoteContext> noteListContext = getListBuilder(parentId, moduleName).get();
 		return getNotes(Collections.singletonList(parentId), moduleName, noteListContext);
 	}
 	
 	
-	public static long fetchNotesCount(long parentId,long parentNoteId, String moduleName) throws Exception {
+	public static long fetchNotesCount(long parentId, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		SelectRecordsBuilder<NoteContext> builder = getListBuilder(parentId,parentNoteId, moduleName,false);
+		SelectRecordsBuilder<NoteContext> builder = getListBuilder(parentId, moduleName);
 		builder.select(FieldFactory.getCountField(modBean.getModule(moduleName)));
-		if(parentNoteId > 0){
-			builder.groupBy("PARENT_NOTE");
-		}
 		List<Map<String, Object>> props = builder.getAsProps();
 		long count = 0;
 		if (props != null && !props.isEmpty()) {
@@ -75,15 +69,11 @@ public class NotesAPI {
 		
 	}
 	
-	private static SelectRecordsBuilder<NoteContext> getListBuilder (long parentId,long parentNoteId, String moduleName,Boolean onlyFetchParentNotes) throws Exception {
+	private static SelectRecordsBuilder<NoteContext> getListBuilder (long parentId, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
-		Boolean isReply = false;
-		if(parentNoteId > 0){
-			isReply = true;
-		}
 
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -94,7 +84,7 @@ public class NotesAPI {
 				.beanClass(NoteContext.class)
 				.maxLevel(0);
 
-		if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS) && !isReply) {
+		if (currentApp != null && currentApp.getAppCategoryEnum().equals(ApplicationContext.AppCategory.PORTALS)) {
 			selectBuilder.leftJoin(commentsSharingModule.getTableName())
 					.on(module.getTableName() + ".ID=" + commentsSharingModule.getTableName() + ".PARENT_ID AND "
 							+ module.getTableName() + ".MODULEID=" + commentsSharingModule.getTableName() + ".PARENT_MODULE_ID"
@@ -111,26 +101,6 @@ public class NotesAPI {
 				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
 			}
 
-			if (!criteria.isEmpty()) {
-				selectBuilder.andCriteria(criteria);
-			}
-		}
-
-		if (isReply) {
-			Criteria criteria = new Criteria();
-			if(fieldMap.containsKey("parentNote")) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentNote"), String.valueOf(parentNoteId), NumberOperators.EQUALS));
-			}
-			if (!criteria.isEmpty()) {
-				selectBuilder.andCriteria(criteria);
-			}
-		}
-		if(onlyFetchParentNotes){
-			Criteria criteria = new Criteria();
-			if(fieldMap.containsKey("parentNote")) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentNote"), "0" ,NumberOperators.LESS_THAN_EQUAL));
-				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("parentNote"), CommonOperators.IS_EMPTY));
-			}
 			if (!criteria.isEmpty()) {
 				selectBuilder.andCriteria(criteria);
 			}
@@ -248,26 +218,7 @@ public class NotesAPI {
 			}
 		}
 	}
-	public static List<CommentMentionContext> getNoteMentions(long noteId, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
 
-		FacilioModule commentMentionsModule = ModuleFactory.getCommentMentionsModule();
-		List<FacilioField> allFields = FieldFactory.getCommentMentionsFields(commentMentionsModule);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(allFields)
-				.table(commentMentionsModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentID"), String.valueOf(noteId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleID"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<CommentMentionContext> commentsMentionsContexts = null;
-		if (props != null && !props.isEmpty()) {
-			commentsMentionsContexts = FieldUtil.getAsBeanListFromMapList(props, CommentMentionContext.class);
-		}
-		return commentsMentionsContexts;
-
-	}
 	public static List<CommentSharingContext> getNoteSharing(long noteId, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -319,52 +270,5 @@ public class NotesAPI {
 				commentsSharingBuilder.addRecords(addCommentSharingList);
 				commentsSharingBuilder.save();
 			}
-	}
-	public static void deleteCommentSharing(NoteContext note, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule module = modBean.getModule(moduleName);
-		FacilioModule commentsSharingModule = ModuleFactory.getCommentsSharingModule();
-
-		List<FacilioField> allFields = FieldFactory.getCommentsSharingFields(commentsSharingModule);
-		Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(allFields);
-
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(commentsSharingModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("parentId"), String.valueOf(note.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(sharingFieldMap.get("parentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		builder.delete();
-	}
-
-	public static void deleteCommentMentions(NoteContext note, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule module = modBean.getModule(moduleName);
-		FacilioModule commentMentions = ModuleFactory.getCommentMentionsModule();
-
-		List<FacilioField> allFields = FieldFactory.getCommentMentionsFields(commentMentions);
-		Map<String, FacilioField> mentionsFieldMap = FieldFactory.getAsMap(allFields);
-
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(commentMentions.getTableName())
-				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentID"), String.valueOf(note.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentModuleID"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		builder.delete();
-	}
-
-	public static void deleteCommentAttachments(NoteContext note, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule module = modBean.getModule(moduleName);
-		FacilioModule commentAttachments = modBean.getModule(FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
-
-		List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
-		Map<String, FacilioField> attachmentsFieldMap = FieldFactory.getAsMap(allFields);
-
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(commentAttachments.getTableName())
-				.andCondition(CriteriaAPI.getCondition(attachmentsFieldMap.get("parent"), String.valueOf(note.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(attachmentsFieldMap.get("commentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		builder.delete();
 	}
 }

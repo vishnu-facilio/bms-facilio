@@ -12,7 +12,6 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public class FillNewsRelatedModuleDataInListCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(newsList)) {
             for(NewsAndInformationContext news : newsList) {
-                news.setNewsandinformationnotes(NotesAPI.fetchNotes(news.getId(), -1 ,FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_NOTES,false));
+                news.setNewsandinformationnotes(NotesAPI.fetchNotes(news.getId(), FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_NOTES));
                 news.setNewsandinformationattachments(AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, news.getId(), false));
                 List<CommunitySharingInfoContext> list = null;
                 if(news.getAudience() != null){

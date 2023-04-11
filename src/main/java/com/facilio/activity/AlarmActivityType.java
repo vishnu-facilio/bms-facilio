@@ -42,14 +42,6 @@ public enum AlarmActivityType implements ActivityType {
             return " added a Comment ";
         }
     },
-    UPDATE_COMMENT(120) {
-        @Override
-        public String constructMessage(JSONObject json) {
-            // TODO Auto-generated method stub
-            return " updated a Comment ";
-        }
-    },
-
     CLOSE_RELATED_WO(55) {
         @Override
         public String constructMessage(JSONObject json) {

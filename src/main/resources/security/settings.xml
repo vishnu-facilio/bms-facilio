@@ -1047,6 +1047,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/v2/employee/addfromPortal">
         <requestbody type="object">
             <property name="employees" type="array">
@@ -1621,12 +1622,6 @@
             <property name="importId" type="number"/>
         </urlparams>
     </request>
-    <request path="/api/v3/people/util/recordPeople">
-        <requestbody type="object">
-            <property name="moduleName" type="string" mandatory="true"/>
-            <property name="recordId" type="number" mandatory="true"/>
-        </requestbody>s
-    </request>
     <request path="/api/v3/multiImport/abortImport">
         <urlparams>
             <property name="importId" type="number"/>
@@ -1722,14 +1717,5 @@
     </request>
     <request path="/api/v3/readingrule/actions/updateRuleWo">
         <requestbody type="object"></requestbody>
-    </request>
-    <request path="/api/v2/portals/getLicensedPortals" method="GET"/>
-
-    <request path="/api/v3/readingrule/fetchImpact">
-        <requestbody type="object">
-            <property name="ruleId" type="number" />
-            <property name="parentId" type="number" />
-            <property name="isCostImpact" type="boolean" />
-        </requestbody>
     </request>
 </config>

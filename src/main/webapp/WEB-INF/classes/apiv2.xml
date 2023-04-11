@@ -2074,9 +2074,6 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
 		</action>
-		<action name="update"
-				class="com.facilio.bmsconsole.actions.NoteAction" method="v2updateNote">
-		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
 		</action>

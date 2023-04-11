@@ -1531,9 +1531,6 @@
     <package name="peoplefilter" namespace="/api/v3/people/filters" extends="v3Api">
         <action name="filter" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchActivePeoples"/>
     </package>
-    <package name="peopleUtils" namespace="/api/v3/people/util" extends="v3Api">
-        <action name="recordPeople" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields"/>
-    </package>
 
     <package name="workflowApiV3" namespace="/api/v3/script" extends="v3Api">
         <action name="execute/*" class="com.facilio.bmsconsoleV3.actions.V3WorkflowAction" method="runWorkflow">

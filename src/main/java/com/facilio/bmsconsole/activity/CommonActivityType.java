@@ -14,14 +14,6 @@ public enum CommonActivityType implements ActivityType {
             return " added a Comment ";
         }
     },
-    UPDATE_NOTES(116) {
-        @Override
-        public String constructMessage(JSONObject json) {
-            // TODO Auto-generated method stub
-            return " updated a Comment ";
-        }
-    },
-
     ADD_ATTACHMENT(66) {
         @Override
         public String constructMessage(JSONObject json) {

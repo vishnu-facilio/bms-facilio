@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.util;
 
 import java.text.MessageFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.facilio.bmsconsole.context.CommentAttachmentContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.modules.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +16,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -25,6 +27,11 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -62,23 +69,6 @@ public class AttachmentsAPI {
 		
 		attachmentBuilder.save();
 	}
-
-	public static final void addCommentAttachments(List<CommentAttachmentContext> attachments, String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-
-		if (AccountUtil.getCurrentOrg().getId() == 155) {
-			LOGGER.info("Inserting rel for attachments : "+attachments);
-		}
-
-		InsertRecordBuilder<CommentAttachmentContext> attachmentBuilder = new InsertRecordBuilder<CommentAttachmentContext>()
-				.module(module)
-				.fields(modBean.getAllFields(moduleName))
-				.addRecords(attachments);
-
-		attachmentBuilder.save();
-	}
-
 	
 	public static final List<AttachmentContext> getAttachments(String moduleName, long parentId, Boolean... fetchDeleted) throws Exception {
 		return fetchAttachments(moduleName, parentId, fetchDeleted != null && fetchDeleted.length == 1 && fetchDeleted[0]);
@@ -127,52 +117,7 @@ public class AttachmentsAPI {
 		}
 		return count;
 	}
-
-	public static Map<Long, List<CommentAttachmentContext>> getCommentAttachments(List<NoteContext> notes, String notesModuleName) throws Exception {
-		String moduleName = FacilioConstants.ContextNames.COMMENT_ATTACHMENTS;
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		if(module == null){
-			return null;
-		}
-		FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
-		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
-		fields.addAll(modBean.getAllFields(moduleName));
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
-		SelectRecordsBuilder<CommentAttachmentContext> selectBuilder = new SelectRecordsBuilder<CommentAttachmentContext>()
-				.beanClass(CommentAttachmentContext.class)
-				.select(fields)
-				.module(module)
-				.innerJoin(namespaceConfig.getTableName())
-				.on(MessageFormat.format("{0}.FILE_ID = {1}.FILE_ID", namespaceConfig.getTableName(), module.getTableName()));
-		long commentModuleId = modBean.getModule(notesModuleName).getModuleId();
-		List<Long> noteIds = notes.stream()
-				.map(NoteContext::getId)
-				.collect(Collectors.toList());
-
-		if (noteIds != null && !noteIds.isEmpty() && commentModuleId > 0) {
-			List<CommentAttachmentContext> attachments;
-			Criteria criteria = new Criteria();
-			if (fieldMap.containsKey("commentModuleId")) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("commentModuleId"), String.valueOf(commentModuleId), NumberOperators.EQUALS));
-			}
-			if (fieldMap.containsKey("parent")) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), noteIds, NumberOperators.EQUALS));
-			}
-			if(!criteria.isEmpty()){
-				selectBuilder.andCriteria(criteria);
-			}
-			attachments = selectBuilder.get();
-			Map<Long, List<CommentAttachmentContext>> attachmentsMap = attachments.stream()
-					.collect(Collectors.groupingBy(obj -> obj.getParent()));
-			return attachmentsMap;
-		} else {
-			return null;
-		}
-
-	}
-
+	
 	private static List<AttachmentContext> fetchAttachments(String moduleName, Long parentId, boolean fetchDeleted, List<Long>... attachmentIds) throws Exception {
 		return getListBuilder(moduleName, parentId, fetchDeleted, attachmentIds).get();
 	}

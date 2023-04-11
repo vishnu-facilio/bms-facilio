@@ -580,9 +580,7 @@ public class AccountUtil {
 		PENDO_TENANT(129,getExponentValue(2),LicenseMapping.GROUP3LICENSE),//2^2
 		IMPORT_DATA(130,getExponentValue(3),LicenseMapping.GROUP3LICENSE),//2^3
 
-		PERMISSION_SET(131,getExponentValue(4),LicenseMapping.GROUP3LICENSE),//2^4
-		NEW_COMMENTS(132,getExponentValue(5),LicenseMapping.GROUP3LICENSE);//2^5
-
+		PERMISSION_SET(131,getExponentValue(4),LicenseMapping.GROUP3LICENSE);//2^3
 
 		public int featureId;
 		private long license;

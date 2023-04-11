@@ -155,17 +155,6 @@ public class AddJobPlanModule extends BaseModuleConfig{
                 false, false, true, false,orgId);
         fields.add(bodyField);
 
-        StringField bodyHtmlField = SignupUtil.getStringField(jobPlanNotesModule,
-                "bodyHTML", "Body HTML", "BODY_HTML", FacilioField.FieldDisplayType.TEXTAREA,
-                false, false, true, false,orgId);
-        fields.add(bodyHtmlField);
-
-        LookupField parentNote = SignupUtil.getLookupField(jobPlanNotesModule, jobPlanNotesModule, "parentNote", "Parent Note",
-                "PARENT_NOTE", null, FacilioField.FieldDisplayType.LOOKUP_POPUP,
-                false, false, true, orgId);
-        fields.add(parentNote);
-
-
         jobPlanNotesModule.setFields(fields);
         
         SignupUtil.addModules(jobPlanNotesModule);

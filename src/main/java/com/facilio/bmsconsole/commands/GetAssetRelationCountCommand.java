@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class GetAssetRelationCountCommand extends FacilioCommand {
 			
 			countMap.put("readings", ReadingsAPI.getReadingDataMetaCount(assetContext.getId(), true, null));
 			countMap.put("attachments", AttachmentsAPI.fetchAttachmentsCount(FacilioConstants.ContextNames.ASSET_ATTACHMENTS, assetContext.getId()));
-			countMap.put("notes", NotesAPI.fetchNotesCount(assetContext.getId(),-1,FacilioConstants.ContextNames.ASSET_NOTES));
+			countMap.put("notes", NotesAPI.fetchNotesCount(assetContext.getId(), FacilioConstants.ContextNames.ASSET_NOTES));
 			
 			context.put(FacilioConstants.ContextNames.RELATIONS_COUNT, countMap);
 		}

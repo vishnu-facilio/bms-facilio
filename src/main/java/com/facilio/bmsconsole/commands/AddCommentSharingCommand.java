@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.command.FacilioCommand;
