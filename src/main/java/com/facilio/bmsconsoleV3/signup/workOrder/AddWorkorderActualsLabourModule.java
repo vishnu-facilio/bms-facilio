@@ -101,7 +101,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         duration.setRequired(true);
         fields.add(duration);
 
-        LookupField labour = FieldFactory.getDefaultField("labour","Labour","LABOUR", FieldType.LOOKUP);
+        LookupField labour = FieldFactory.getDefaultField("labour","Labour","LABOUR", FieldType.LOOKUP,true);
         labour.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.LABOUR),"Labour module doesn't exists."));
         fields.add(labour);
 
@@ -351,7 +351,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
             fields.add(new FormField(fieldMap.get("craft").getFieldId(), "craft", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Craft", FormField.Required.OPTIONAL, ++seq, 1));
             fields.add(new FormField(fieldMap.get("skill").getFieldId(), "skill", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Skill", FormField.Required.OPTIONAL, ++seq, 1));
             FormField formField= new FormField(fieldMap.get("type").getFieldId(), "type", FacilioField.FieldDisplayType.SELECTBOX, "Type", FormField.Required.OPTIONAL, ++seq, 1);
-            formField.setValue("3");
+            formField.setValue("4");
             fields.add(formField);
 
             fields.add(new FormField(fieldMap.get("startTime").getFieldId(), "startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.OPTIONAL, ++seq, 1));
