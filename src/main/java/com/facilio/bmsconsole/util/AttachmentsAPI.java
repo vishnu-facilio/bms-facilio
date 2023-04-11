@@ -132,6 +132,9 @@ public class AttachmentsAPI {
 		String moduleName = FacilioConstants.ContextNames.COMMENT_ATTACHMENTS;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		if(module == null){
+			return null;
+		}
 		FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
 		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		fields.addAll(modBean.getAllFields(moduleName));
