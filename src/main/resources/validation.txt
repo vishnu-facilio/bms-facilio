@@ -2753,3 +2753,13 @@
 /api/v3/unrelated/:parentModuleName/fetch/:moduleName/:id
 /api/v3/weather/migrateWeatherStation
 /api/v1/setup/permissionSet/:module/getGroupItems
+
+/api/v3/plannedmaintenance/publish
+/api/v3/jobPlan/fetchAssociatedRecords
+/api/v3/jobPlan/cloneJobPlan
+/api/v3/jobPlan/versionHistory
+/api/v3/jobPlan/bulkPublish
+/api/v3/jobPlan/publish
+/api/v3/jobPlan/revise
+/api/v3/jobPlan/getGroupAndVersion
+/api/v3/plannedmaintenance/deactivate
