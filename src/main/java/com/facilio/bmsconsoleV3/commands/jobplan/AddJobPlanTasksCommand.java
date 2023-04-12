@@ -45,12 +45,14 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                 }
 
                 JobPlanAPI.deleteJobPlanTasks( section.getId());
+                int sequence = 1;
                 for(JobPlanTasksContext task : taskList) {
                     // deletion of  JobPlan Task Input option will be done automatically as Cascade delete is given
                     task.setTaskSection(new JobPlanTaskSectionContext(section.getId()));
                     task.setJobPlan(section.getJobPlan());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
                     task.setCreatedTime(System.currentTimeMillis());
+                    task.setSequence(sequence++);
                 }
                 LOGGER.error("task map  ---- "+FieldUtil.getAsJSONArray(taskList, JobPlanTasksContext.class));
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);

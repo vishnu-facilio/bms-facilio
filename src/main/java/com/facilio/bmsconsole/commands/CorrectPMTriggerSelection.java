@@ -421,7 +421,7 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                 Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
                 if(woTemplateResourceId > 0) {
                     Long currentTriggerId = pmTrigger.getId();
-                    taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
+                    taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(clonedWoTemplate, context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
                 }
             } else {
                 taskMapForNewPmExecution = clonedWoTemplate.getTasks();
@@ -434,6 +434,10 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             if (taskMap != null) {
                 Set<String> keys = taskMap.keySet();
                 result.add(Triple.of(pmTrigger.getId(), nextExecutionTime, keys));
+            }
+
+            if (taskMap != null && CollectionUtils.isNotEmpty(clonedWoTemplate.getSectionNameList())) {
+                wo.setSectionNameList(clonedWoTemplate.getSectionNameList());
             }
 
             Map<String, List<TaskContext>> preRequestMap = null;

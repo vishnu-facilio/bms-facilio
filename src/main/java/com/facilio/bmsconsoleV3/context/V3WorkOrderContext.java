@@ -781,4 +781,8 @@ public class V3WorkOrderContext extends V3TicketContext {
     @Setter
     private RoutesContext route;
 
+    @Getter
+    @Setter
+    private List<String> sectionNameList;
+
 }

@@ -12,6 +12,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
@@ -24,6 +25,10 @@ public class AddTaskSectionsV3 extends FacilioCommand {
         V3WorkOrderContext workorder = wos.get(0);
 
         Map<String, List<V3TaskContext>> taskMap = workorder.getTasksString();
+        List<String> sectionNameList = workorder.getSectionNameList();
+        if(CollectionUtils.isEmpty(sectionNameList)){
+            return false;
+        }
         Map<String, List<TaskContext>> preRequestMap = (Map<String, List<TaskContext>>)
                 context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP);
 
@@ -33,11 +38,11 @@ public class AddTaskSectionsV3 extends FacilioCommand {
                     .fields(FieldFactory.getTaskSectionFields());
             int sequence = 1;
             List<TaskSectionContext> sections = new ArrayList<>();
-            for (Map.Entry<String, List<V3TaskContext>> entry : taskMap.entrySet()) {
-                if (!entry.getKey().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+            for (String sectionName : sectionNameList) {
+                if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
                     TaskSectionContext section = new TaskSectionContext();
                     section.setParentTicketId(workorder.getId());
-                    section.setName(entry.getKey());
+                    section.setName(sectionName);
                     section.setSequenceNumber(sequence++);
                     section.setPreRequest(Boolean.FALSE);
                     insertBuilder.addRecord(FieldUtil.getAsProperties(section));
