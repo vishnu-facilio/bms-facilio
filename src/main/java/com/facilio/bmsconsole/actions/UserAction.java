@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -468,7 +469,7 @@ public class UserAction extends FacilioAction {
 			AppDomain appDomain = null;
 			//temp handling
 			if(appId <= 0) {
-				String linkname = isPortal ? FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP : FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+				String linkname = isPortal ? FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP : SignupUtil.maintenanceAppSignup() ? FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP : FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
 				appId = ApplicationApi.getApplicationIdForLinkName(linkname);
 			}
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
