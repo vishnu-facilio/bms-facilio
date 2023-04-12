@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.facilio.scriptengine.systemfunctions.FacilioDBFunction;
@@ -260,9 +259,9 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
             		else {																				// system functions	
             			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
                     	wfFunctionContext.setFunctionName(functionCall.VAR().getText());
-
+                    	
                     	boolean isDataTypeSpecificFunction = false;
-
+                    	
                     	if(value.asObject() instanceof List) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.LIST.getName());
                     		isDataTypeSpecificFunction = true;
@@ -326,17 +325,11 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 							wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace.DATABASE_CONNECTION.getName())));
 							isDataTypeSpecificFunction = true;
 						}
-
-						Object nameSpaceObject = ScriptUtil.getNameSpaceInstanceOf(wfFunctionContext.getNameSpace());
-						Method method = nameSpaceObject.getClass().getMethod(functionName, Map.class,Object[].class);
-
-						List<Object> params = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
-						Object[] objects = new Object[params.size()];
-						for (int j=0;j< params.size();j++){
-							objects[j] = params.get(j);
-						}
-						Object result = method.invoke(nameSpaceObject, getGlobalParam(),objects);
-						value =  new Value(result);
+                    	
+                    	List<Object> paramValues = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
+                    	
+                    	Object result = WorkflowUtil.evalSystemFunctions(getGlobalParam(),wfFunctionContext, paramValues);
+                    	value = new Value(result); 
             		}
     			}
     			else if (functionCall.OPEN_BRACKET() != null && functionCall.CLOSE_BRACKET() != null) {				// list here

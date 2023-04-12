@@ -1,85 +1,167 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.scriptengine.annotation.ScriptNameSpace;
-import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
-import java.util.*;
+public enum FacilioControlFunctions implements FacilioWorkflowFunctionInterface  {
 
-@ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CONTROLS_FUNCTION)
-public class FacilioControlFunctions {
-	public Object setValue(Map<String, Object> globalParam, Object... objects) throws Exception {
-		// TODO Auto-generated method stub
+	SET_VALUE(1,"setValue") {
 
-		Map<String, Object> value = new HashMap<>();
-		value.put(AgentConstants.RESOURCE_ID, objects[0]);
-		value.put(AgentConstants.FIELD_ID, objects[1]);
-		value.put(AgentConstants.VALUE, objects[2]);
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			Map<String, Object> value = new HashMap<>();
+			value.put(AgentConstants.RESOURCE_ID, objects[0]);
+			value.put(AgentConstants.FIELD_ID, objects[1]);
+			value.put(AgentConstants.VALUE, objects[2]);
 
-		setValues(Collections.singletonList(value), null, true);
+			setValues(Collections.singletonList(value), null, true);
+			
+			return null;
+		}
+		
+	},
+	SET_VALUES(1,"setValues") {
 
-		return null;
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			setValues((List<Map<String, Object>>) objects[0], null, true);
+			return null;
+		}
+		
+	},
+
+	AUTO(2,"auto") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			Map<String, Object> value = new HashMap<>();
+			value.put(AgentConstants.RESOURCE_ID, objects[0]);
+			value.put(AgentConstants.FIELD_ID, objects[1]);
+			value.put(AgentConstants.ACTION_NAME, AUTO.functionName);
+
+			setValues(Collections.singletonList(value), AUTO.functionName, false);
+
+			return null;
+		}
+
+	},
+
+	EMERGENCY_AUTO(3,"emergencyAuto") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			Map<String, Object> value = new HashMap<>();
+			value.put(AgentConstants.RESOURCE_ID, objects[0]);
+			value.put(AgentConstants.FIELD_ID, objects[1]);
+			value.put(AgentConstants.ACTION_NAME, EMERGENCY_AUTO.functionName);
+
+			setValues(Collections.singletonList(value), EMERGENCY_AUTO.functionName, false);
+
+			return null;
+		}
+
+	},
+
+	OVERRIDE(4,"override") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			Map<String, Object> value = new HashMap<>();
+			value.put(AgentConstants.RESOURCE_ID, objects[0]);
+			value.put(AgentConstants.FIELD_ID, objects[1]);
+			value.put(AgentConstants.VALUE, objects[2]);
+			value.put(AgentConstants.ACTION_NAME, OVERRIDE.functionName);
+
+			setValues(Collections.singletonList(value), OVERRIDE.functionName, true);
+
+			return null;
+		}
+
+	},
+
+	EMERGENCY_OVERRIDE(3,"emergencyOverride") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			Map<String, Object> value = new HashMap<>();
+			value.put(AgentConstants.RESOURCE_ID, objects[0]);
+			value.put(AgentConstants.FIELD_ID, objects[1]);
+			value.put(AgentConstants.VALUE, objects[2]);
+			value.put(AgentConstants.ACTION_NAME, EMERGENCY_OVERRIDE.functionName);
+
+			setValues(Collections.singletonList(value), EMERGENCY_OVERRIDE.functionName, true);
+
+			return null;
+		}
+
 	}
-
-	public Object setValues(Map<String, Object> globalParam, Object... objects) throws Exception {
-		setValues((List<Map<String, Object>>) objects[0], null, true);
-		return null;
+	;;
+	private Integer value;
+	private String functionName;
+	private String namespace = "control";
+	private String params;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.CONTROLS;
+	
+	public Integer getValue() {
+		return value;
 	}
-
-	public Object auto(Map<String, Object> globalParam, Object... objects) throws Exception {
-
-		Map<String, Object> value = new HashMap<>();
-		value.put(AgentConstants.RESOURCE_ID, objects[0]);
-		value.put(AgentConstants.FIELD_ID, objects[1]);
-		value.put(AgentConstants.ACTION_NAME, "auto");
-
-		setValues(Collections.singletonList(value), "auto", false);
-
-		return null;
+	public void setValue(Integer value) {
+		this.value = value;
 	}
-
-	public Object emergencyAuto(Map<String, Object> globalParam, Object... objects) throws Exception {
-
-		Map<String, Object> value = new HashMap<>();
-		value.put(AgentConstants.RESOURCE_ID, objects[0]);
-		value.put(AgentConstants.FIELD_ID, objects[1]);
-		value.put(AgentConstants.ACTION_NAME, "emergencyAuto");
-
-		setValues(Collections.singletonList(value), "emergencyAuto", false);
-
-		return null;
+	public String getFunctionName() {
+		return functionName;
 	}
-
-	public Object override(Map<String, Object> globalParam, Object... objects) throws Exception {
-
-		Map<String, Object> value = new HashMap<>();
-		value.put(AgentConstants.RESOURCE_ID, objects[0]);
-		value.put(AgentConstants.FIELD_ID, objects[1]);
-		value.put(AgentConstants.VALUE, objects[2]);
-		value.put(AgentConstants.ACTION_NAME, "override");
-
-		setValues(Collections.singletonList(value), "override", true);
-
-		return null;
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
 	}
-
-	public Object emergencyOverride(Map<String, Object> globalParam, Object... objects) throws Exception {
-
-		Map<String, Object> value = new HashMap<>();
-		value.put(AgentConstants.RESOURCE_ID, objects[0]);
-		value.put(AgentConstants.FIELD_ID, objects[1]);
-		value.put(AgentConstants.VALUE, objects[2]);
-		value.put(AgentConstants.ACTION_NAME, "emergencyOverride");
-
-		setValues(Collections.singletonList(value), "emergencyOverride", true);
-
-		return null;
+	public String getNamespace() {
+		return namespace;
+	}
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+	public String getParams() {
+		return params;
+	}
+	public void setParams(String params) {
+		this.params = params;
+	}
+	FacilioControlFunctions(Integer value,String functionName) {
+		this.value = value;
+		this.functionName = functionName;
+	}
+	public static Map<String, FacilioControlFunctions> getAllFunctions() {
+		return CONTROL_FUNCTIONS;
+	}
+	public static FacilioControlFunctions getFacilioControlFunctions(String functionName) {
+		return CONTROL_FUNCTIONS.get(functionName);
+	}
+	static final Map<String, FacilioControlFunctions> CONTROL_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, FacilioControlFunctions> initTypeMap() {
+		Map<String, FacilioControlFunctions> typeMap = new HashMap<>();
+		for(FacilioControlFunctions type : FacilioControlFunctions.values()) {
+			typeMap.put(type.getFunctionName(), type);
+		}
+		return typeMap;
 	}
 
 	private static void setValues(List<Map<String, Object>> values, String actionName, boolean setValue) throws Exception {
