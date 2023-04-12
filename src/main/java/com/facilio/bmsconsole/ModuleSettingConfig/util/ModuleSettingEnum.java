@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ModuleSettingEnum {
-    STATE_FLOW(FacilioConstants.SettingConfigurationContextNames.STATE_FLOW,"State Flow",null,true,null),
+    STATE_FLOW(FacilioConstants.SettingConfigurationContextNames.STATE_FLOW,"State Flow","Configure a workflow to streamline a process",true,null),
     Glimpse(FacilioConstants.ContextNames.GLIMPSE,"Glimpse","Configure fields to enable quick access to this module",true, GlimpseConfiguration.class);
 
 

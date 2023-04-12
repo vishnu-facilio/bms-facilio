@@ -203,6 +203,9 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	
 	private void setValidations(FormField formField) {
 		setMaxLength(formField);
+		if(formField.getDisplayTypeEnum() == FieldDisplayType.EMAIL) {
+			formField.setEmailValidation();
+		}
 	}
 	
 	private void setMaxLength(FormField formField) {

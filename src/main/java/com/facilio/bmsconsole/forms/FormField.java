@@ -386,4 +386,8 @@ public class FormField implements Serializable {
 	public void setMaxLength(int maxLength) {
 		addValidation("maxLength", maxLength);
 	}
+
+	public void setEmailValidation(){
+		addValidation("emailRegexPattern","^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
+	}
 }
