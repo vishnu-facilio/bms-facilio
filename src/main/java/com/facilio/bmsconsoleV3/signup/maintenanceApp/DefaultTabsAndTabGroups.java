@@ -111,15 +111,18 @@ public class DefaultTabsAndTabGroups {
             new WebTabContext("Client","client",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT)), null, 33,null,appId),
             new WebTabContext("Client Contact","clientcontact",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT_CONTACT)), null, 33,null,appId),
             new WebTabContext("Reports", "clientreports", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT,FacilioConstants.ContextNames.CLIENT_CONTACT)), "{\"type\": \"module_reports\"}", 33,null,appId),
-            new WebTabContext("Preventive Maintenance","preventive-maintenance",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)), null, 81,null,appId)
+            new WebTabContext("Preventive Maintenance","preventive-maintenance",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)), null, 81,null,appId),
+            new WebTabContext("Shift","shift",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SHIFT)), null, 61,null,appId),
+            new WebTabContext("Shift Planner","shiftplanner",WebTabContext.Type.SHIFT_PLANNER,null, null, 61,null,appId),
+            new WebTabContext("Break","break",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.BREAK)), null, 120,null,appId),
+            new WebTabContext("Attendance","attendance",WebTabContext.Type.ATTENDANCE,null, null, 120,null,appId)
+
         );
         for(WebTabContext webTab : tabs){
             tabsMap.put(webTab.getRoute(),webTab);
         }
         return tabsMap;
     }
-
-
 
 
     public List<WebTabGroupContext> getWebTabGroups(long appId,long layoutId) throws Exception {
@@ -135,7 +138,9 @@ public class DefaultTabsAndTabGroups {
             new WebTabGroupContext(Arrays.asList(tabsMap.get("purchaserequest"),tabsMap.get("rfq"),tabsMap.get("purchaseorder"),tabsMap.get("receivables"),tabsMap.get("termsandconditions"),tabsMap.get("purchasereports")), "Procurement", "procurement", 25, 8, 56l,layoutId,IconType.procurement),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("vendors"),tabsMap.get("vendorcontact"),tabsMap.get("certificateofinsurance"),tabsMap.get("vendorreports")), "Vendor", "vendor", 26, 9, 57l,layoutId,IconType.vendor),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit"),tabsMap.get("quote"),tabsMap.get("tenantreports")), "Tenant", "tenant", 12, 10, 16l,layoutId,IconType.tenant),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact"),tabsMap.get("clientreports")), "Client", "client", 17, 11, 33l,layoutId,IconType.client)
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact"),tabsMap.get("clientreports")), "Client", "client", 17, 11, 33l,layoutId,IconType.client),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("shift"),tabsMap.get("shiftplanner")), "Shift & Planner", "shiftplanner", 17, 12, 61L,layoutId,IconType.client),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("break"),tabsMap.get("attendance")), "Attendance", "attendance", 17, 13, 120L,layoutId,IconType.people)
 
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("purchase"),tabsMap.get("leaserental"),tabsMap.get("warranty"),tabsMap.get("labourcontracts"),tabsMap.get("termsandconditions"),tabsMap.get("contractreports")), "Contracts", "contracts", 18, 4, 21l,layoutId),
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("announcement"),tabsMap.get("newsandinformation"),tabsMap.get("neighbourhood"),tabsMap.get("dealsandoffers"),tabsMap.get("audience")), "Community", "community", 21, 8, 16l,layoutId),

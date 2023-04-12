@@ -2932,6 +2932,7 @@ public class APIv3Config {
         return () -> new V3Config(AttendanceTransaction.class, null)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getAttendanceTxnBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getAttendanceTxnAfterSaveChain())
                 .afterTransaction(TransactionChainFactoryV3.getAttendanceTxnAfterTransactionChain())
                 .list()
                 .summary()

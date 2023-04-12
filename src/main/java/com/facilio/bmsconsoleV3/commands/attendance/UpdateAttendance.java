@@ -43,6 +43,9 @@ public class UpdateAttendance extends FacilioCommand {
         AttendanceSettings settings = AttendanceAPI.getAttendanceSettings();
 
         List<AttendanceTransaction> transactions = AttendanceAPI.getAttendanceTxnsForGivenDay(date, peopleID);
+        if (transactions.size() < 2){
+            return false;
+        }
         fillBreaks(transactions);
         Attendance reducedAttendance = AttendanceAPI.reduceAttendanceTransactions(settings, transactions);
         reducedAttendance.setPeople(transaction.getPeople());

@@ -3047,6 +3047,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateAttendanceTransactionCommand());
         return c;
     }
+    public static Command getAttendanceTxnAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddPlaceholderAttendanceCommand());
+        return c;
+    }
 
     public static FacilioChain getAttendanceListChain() {
         FacilioChain c = getDefaultChain();

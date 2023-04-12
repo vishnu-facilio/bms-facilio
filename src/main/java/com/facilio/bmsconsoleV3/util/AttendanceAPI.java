@@ -18,6 +18,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import com.facilio.bmsconsoleV3.context.shift.Break;
@@ -136,14 +137,9 @@ public class AttendanceAPI {
         if (txns.size() < 2) {
             throw new Exception("insufficient attendance transactions to reduce");
         }
-
-        V3PeopleContext people = txns.get(0).getPeople();
-        Shift peopleShift = ShiftAPI.getPeopleShiftForDay(people.getId(), ShiftAPI.getTodayEpochDate());
-
         Attendance attendance = new Attendance();
-        attendance.setShift(peopleShift);
-        computeBreaksConsumed(attendance, txns);
-        computeWorkingHoursAndDay(attendance, txns);
+        Pair<Long, Long> surplus = computeBreaksConsumed(attendance, txns);
+        computeWorkingHoursAndDay(attendance, txns, surplus);
         computeAttendanceStatus(settings, attendance);
         return attendance;
     }
@@ -188,7 +184,11 @@ public class AttendanceAPI {
         return cal.getTimeInMillis();
     }
 
-    private static void computeWorkingHoursAndDay(Attendance attendance, List<AttendanceTransaction> txns) {
+    private static void computeWorkingHoursAndDay(Attendance attendance, List<AttendanceTransaction> txns, Pair<Long, Long> surplus) {
+
+        long paidSurplus = surplus.getLeft();
+        long unpaidSurplus = surplus.getRight();
+
         AttendanceTransaction firstCheckInTransaction = txns.get(0);
         attendance.setDay(stripTime(firstCheckInTransaction.getTransactionTime()));
         attendance.setCheckInTime(firstCheckInTransaction.getTransactionTime());
@@ -197,37 +197,75 @@ public class AttendanceAPI {
         attendance.setCheckOutTime(lastCheckOutTransaction.getTransactionTime());
 
         Long clockedHours = lastCheckOutTransaction.getTransactionTime() - firstCheckInTransaction.getTransactionTime();
-        attendance.setWorkingHours(clockedHours - attendance.getTotalUnpaidBreakHrs());
+
+        clockedHours -= attendance.getTotalUnpaidBreakHrs();
+        clockedHours -= paidSurplus;
+        clockedHours -= unpaidSurplus;
+
+        attendance.setWorkingHours(attendance.getWorkingHours() + clockedHours);
     }
 
-    private static void computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
+    private static Pair<Long, Long> computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
+
+        Map<Long, Long> breakTimeCounter = new HashMap<>();
+        Long paidBreakSurplus = 0L;
+        Long unpaidBreakSurplus = 0L;
+
         for (int ix = 0; ix < txns.size(); ix++) {
             AttendanceTransaction txn = txns.get(ix);
             if (!isBreakTransaction(txn)) {
                 continue;
             }
             AttendanceTransaction resumeWorkTxn = txns.get(ix + 1);
-
-            long breakTimeElapsed = resumeWorkTxn.getTransactionTime() - txn.getTransactionTime();
+            long breakTimeElapsedInMillis = resumeWorkTxn.getTransactionTime() - txn.getTransactionTime();
             Break associatedBreak = txn.getShiftBreak();
 
-            if (isPaidBreak(associatedBreak)) {
+            if (!breakTimeCounter.containsKey(associatedBreak.getId())){
                 long allowedTime = associatedBreak.getBreakTime();
                 long allowedTimeInMillis = allowedTime * 1000;
-                if (breakTimeElapsed > allowedTimeInMillis) {
-                    long extraBreakTimeConsumed = breakTimeElapsed - allowedTimeInMillis;
-                    attendance.setWorkingHours(attendance.getWorkingHours() - extraBreakTimeConsumed);
+                breakTimeCounter.put(associatedBreak.getId(), allowedTimeInMillis);
+            }
+
+            long availableBreakTimeMillis = breakTimeCounter.get(associatedBreak.getId());
+
+            if (isPaidBreak(associatedBreak)) {
+
+                if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
+
+                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
+                    paidBreakSurplus += extraBreakTimeConsumedInMillis;
+
+                    breakTimeCounter.put(associatedBreak.getId(), 0L);
+
+                    long allowedTime = associatedBreak.getBreakTime();
+                    long allowedTimeInMillis = allowedTime * 1000;
                     attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + allowedTimeInMillis);
                 } else {
-                    attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + breakTimeElapsed);
+                    breakTimeCounter.put(associatedBreak.getId(), breakTimeCounter.get(associatedBreak.getId()) - breakTimeElapsedInMillis);
+                    attendance.setTotalPaidBreakHrs(attendance.getTotalPaidBreakHrs() + breakTimeElapsedInMillis);
                 }
-                continue;
+
+            } else {
+                if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
+                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
+                    unpaidBreakSurplus += extraBreakTimeConsumedInMillis;
+
+                    breakTimeCounter.put(associatedBreak.getId(), 0L);
+
+                    long allowedTime = associatedBreak.getBreakTime();
+                    long allowedTimeInMillis = allowedTime * 1000;
+                    attendance.setTotalUnpaidBreakHrs(attendance.getTotalUnpaidBreakHrs() + allowedTimeInMillis);
+
+                } else {
+                    breakTimeCounter.put(associatedBreak.getId(), breakTimeCounter.get(associatedBreak.getId()) - breakTimeElapsedInMillis);
+                    attendance.setTotalUnpaidBreakHrs(attendance.getTotalUnpaidBreakHrs() + breakTimeElapsedInMillis);
+                }
             }
-            // handling for unpaid break
-            attendance.setWorkingHours(attendance.getWorkingHours() - breakTimeElapsed);
-            attendance.setTotalUnpaidBreakHrs(attendance.getTotalUnpaidBreakHrs() + breakTimeElapsed);
         }
+
+        return Pair.of(paidBreakSurplus, unpaidBreakSurplus);
     }
+
 
     private static boolean isPaidBreak(Break associatedBreak) {
         return associatedBreak.getBreakType().equals(Break.Type.PAID);
@@ -419,7 +457,7 @@ public class AttendanceAPI {
 
         Long peopleID = tx.getPeople().getId();
         Long time = tx.getTransactionTime();
-            AttendanceTransaction.Type newTxType = tx.getTransactionType();
+        AttendanceTransaction.Type newTxType = tx.getTransactionType();
 
         AttendanceTransaction previousTxn = getPriorAttendanceTxn(peopleID, time);
         if (previousTxn == null) {
@@ -434,6 +472,16 @@ public class AttendanceAPI {
                 }
                 break;
             case CHECK_OUT:
+                if (oldTxType == AttendanceTransaction.Type.CHECK_OUT) {
+                    if (updatingLastTransactionOfTheDay(tx)){
+                        return false;
+                    }
+                    return true;
+                }
+                if (oldTxType == AttendanceTransaction.Type.BREAK) {
+                    return true;
+                }
+                break;
             case BREAK:
                 if (oldTxType == AttendanceTransaction.Type.CHECK_OUT) {
                     return true;
@@ -449,6 +497,17 @@ public class AttendanceAPI {
                 break;
         }
         return false;
+    }
+
+    private static boolean updatingLastTransactionOfTheDay(AttendanceTransaction tx) throws Exception {
+
+        Long peopleID = tx.getPeople().getId();
+        Long time = tx.getTransactionTime();
+
+        List<AttendanceTransaction> txns = getAttendanceTxnsForGivenDay(stripTime(time), peopleID);
+        AttendanceTransaction lastTxn = txns.get(txns.size() - 1);
+
+        return lastTxn.getId() == tx.getId();
     }
 
     public static void markAttendanceForPreviousDay() throws Exception {
