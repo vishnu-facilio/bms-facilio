@@ -3303,6 +3303,7 @@
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.FileAction"
 				method="previewFile">
+			<param name="deprecated">true</param>
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 		</action>
@@ -3328,6 +3329,30 @@
 			<param name="permission">READ</param>
 		</action>
 	</package>
+
+	<package name="moduleFilePreview"
+			 namespace="/api/v3/files/preview" extends="filePreview,v2Api">
+		<action name="/module/*/token"
+				class="com.facilio.bmsconsole.actions.V3FileAction"
+				method="previewFile">
+			<param name="permission">READ</param>
+			<param name="q">{1}</param>
+		</action>
+	</package>
+
+
+	<package name="moduleFileDownload"
+			 namespace="/api/v3/files/download" extends="fileDownload,v2Api">
+		<action name="/module/*/token"
+				class="com.facilio.bmsconsole.actions.V3FileAction"
+				method="previewFile">
+			<param name="permission">READ</param>
+			<param name="q">{1}</param>
+			<param name="isDownload">true</param>
+
+		</action>
+	</package>
+
 	<package name="newFileDownloadApiv2"
 			 namespace="/api/v3/files/download" extends="fileDownload,v2Api">
 		<action name="app"
@@ -3358,6 +3383,7 @@
 			class="com.facilio.bmsconsole.actions.FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 			<param name="fileID">{1}</param>
 			<param name="isDownload">true</param>
 		</action>

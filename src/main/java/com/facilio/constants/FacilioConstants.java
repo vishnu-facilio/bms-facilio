@@ -2569,6 +2569,7 @@ public class FacilioConstants {
 
 		public static final String READ_PERMISSION = "READ";
 
+		public static final String READ_PERMISSIONS = "READ,READ_TEAM,READ_OWN";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
 		private static Map<String, Class> initClassMap() {
@@ -3020,6 +3021,9 @@ public class FacilioConstants {
 
 		public static final String DELETE_TYPE = "deleteType";
 		public static final Object LAST_EXECUTION_TIME = "lastExecutionTime";
+
+		public static final String FETCH_ORIGINAL = "fetchOriginal";
+
 	}
 
 	public static class Inspection {

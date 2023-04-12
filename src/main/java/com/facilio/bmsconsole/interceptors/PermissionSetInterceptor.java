@@ -33,17 +33,19 @@ public class PermissionSetInterceptor extends AbstractInterceptor {
                     Parameter permissionSet = ActionContext.getContext().getParameters().get("permissionSet");
                     if(permissionSet != null) {
                         String permissionSetType = permissionSet.getValue();
-                        PermissionSetType.Type typeEnum = PermissionSetType.Type.valueOf(permissionSetType);
-                        if(typeEnum != null) {
-                            Parameter permissionFieldParam = ActionContext.getContext().getParameters().get("permissionValue");
-                            if (permissionFieldParam != null) {
-                                PermissionFieldEnum permissionField = PermissionFieldEnum.valueOf(permissionFieldParam.getValue());
-                                Map<String, String> requiredParamsMap = getRequiredHTTPParamsMap(typeEnum);
-                                PermissionSetGroupHandler handler = typeEnum.getHandler();
-                                Map<String, Long> resolvedParamsValueMap = handler.paramsResolver(requiredParamsMap);
-                                boolean hasPermission = PermissionSetUtil.hasPermission(typeEnum,resolvedParamsValueMap,permissionField);
-                                if(!hasPermission) {
-                                    return ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+                        if(permissionSetType != null) {
+                            PermissionSetType.Type typeEnum = PermissionSetType.Type.valueOf(permissionSetType);
+                            if (typeEnum != null) {
+                                Parameter permissionFieldParam = ActionContext.getContext().getParameters().get("permissionValue");
+                                if (permissionFieldParam != null) {
+                                    PermissionFieldEnum permissionField = PermissionFieldEnum.valueOf(permissionFieldParam.getValue());
+                                    Map<String, String> requiredParamsMap = getRequiredHTTPParamsMap(typeEnum);
+                                    PermissionSetGroupHandler handler = typeEnum.getHandler();
+                                    Map<String, Long> resolvedParamsValueMap = handler.paramsResolver(requiredParamsMap);
+                                    boolean hasPermission = PermissionSetUtil.hasPermission(typeEnum, resolvedParamsValueMap, permissionField);
+                                    if (!hasPermission) {
+                                        return ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+                                    }
                                 }
                             }
                         }

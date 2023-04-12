@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
+import com.facilio.bmsconsoleV3.commands.ValidateFilePermission;
 import com.facilio.bmsconsoleV3.commands.bulkActions.DeleteModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.bulkActions.UpdateModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
@@ -2311,6 +2312,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getV3FilePreview() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new V3FilePreviewCommad());
+		chain.addCommand(new ValidateFilePermission());
 		return chain;
 	}
 

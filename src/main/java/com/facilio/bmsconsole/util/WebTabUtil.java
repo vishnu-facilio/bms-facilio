@@ -58,9 +58,7 @@ public class WebTabUtil {
     public static boolean checkModulePermission(String action,String moduleName,boolean isV3Permission) throws Exception {
         Role role = AccountUtil.getCurrentUser().getRole();
         //portfolio is handled for space module - check for facilio main app
-        if(moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor")) {
-            moduleName = "space";
-        }
+        moduleName = getSpecialModule(moduleName);
         boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
         if(isV3Permission) {
             if (PermissionUtil.permCheckSysModules().contains(moduleName)) {
@@ -78,12 +76,26 @@ public class WebTabUtil {
         return true;
     }
 
+
+    public static String getSpecialModule(String moduleName) {
+        if(moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor")) {
+            return "space";
+        }
+        if(moduleName.equals(FacilioConstants.ContextNames.TICKET)) {
+            return FacilioConstants.ContextNames.WORK_ORDER;
+        }
+        return moduleName;
+    }
+
 //    Temp Solution
     public static boolean checkModulePermissionForTab(String action,String moduleName) throws Exception {
         Role role = AccountUtil.getCurrentUser().getRole();
+        if(role != null && role.isPrevileged()) {
+            return true;
+        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         //portfolio is handled for portfolio tab
-
+        moduleName = getSpecialModule(moduleName);
         FacilioModule module = modBean.getModule(moduleName);
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
 

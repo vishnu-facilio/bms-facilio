@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.services.filestore.PublicFileUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
@@ -107,7 +111,11 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				return builder.toString();
 			}
 			FileStore fs = FacilioFactory.getFileStore();
-			previewUrl = fs.getPrivateUrl(this.fileId);
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+				previewUrl = getFileUrl(false);
+			} else {
+				previewUrl = fs.getPrivateUrl(this.fileId);
+			}
 		}
 		return previewUrl;
 	}
@@ -116,14 +124,46 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
-			downloadUrl = fs.getDownloadUrl(this.fileId);
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+				downloadUrl = getFileUrl(true);
+			} else {
+				downloadUrl = fs.getDownloadUrl(this.fileId);
+			}
 		}
 		return downloadUrl;
+	}
+
+	private String getFileUrl(boolean isDownload) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(getModuleId());
+		FileStore fs = FacilioFactory.getFileStore();
+		if(module != null) {
+			FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+			if(parentModule != null) {
+				long recordId = -1;
+				if(parentId > 0) {
+					recordId = parentId;
+				} else if(getParent() != null){
+					recordId = getParent().getId();
+				}
+				if(recordId > -1) {
+					if(isDownload) {
+						return fs.getDownloadUrl(parentModule.getModuleId(), recordId, this.fileId);
+					} else {
+						return fs.getPrivateUrl(parentModule.getModuleId(), recordId, this.fileId);
+					}
+				}
+			}
+		}
+		return null;
 	}
 	public String getOriginalUrl() throws Exception {
 		if (this.originalUrl == null && this.fileId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
 			originalUrl = fs.orginalFileUrl(this.fileId);
+		}
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			originalUrl = null;
 		}
 		return originalUrl;
 	}

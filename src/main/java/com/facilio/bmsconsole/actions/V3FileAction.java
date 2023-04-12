@@ -77,7 +77,23 @@ public class V3FileAction extends FacilioAction {
 	public void setHeigth(int height) {
 		this.height = height;
 	}
-	
+
+	private Boolean fetchOriginal;
+	public Boolean getFetchOriginal() {
+		return fetchOriginal;
+	}
+	public void setFetchOriginal(Boolean fetchOriginal) {
+		this.fetchOriginal = fetchOriginal;
+	}
+	private boolean isFetchOriginal() {
+		if (this.getIsDownload() == true) {
+			return true;
+		}
+		if (this.fetchOriginal == null) {
+			return false;
+		}
+		return this.fetchOriginal;
+	}
 	InputStream downloadStream;
 	public InputStream getDownloadStream() {
 		return downloadStream;
@@ -92,6 +108,7 @@ public class V3FileAction extends FacilioAction {
 			FacilioContext context = chain.getContext();
 			context.put(FacilioConstants.ContextNames.FILE_TOKEN_STRING, q);
 			context.put(FacilioConstants.ContextNames.IS_DOWNLOAD, isDownload);
+			context.put(FacilioConstants.ContextNames.FETCH_ORIGINAL, isFetchOriginal());
 			chain.execute();
 			setContentType((String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE));
 			if (context.get(FacilioConstants.ContextNames.FILE_NAME) != null) {
@@ -102,7 +119,8 @@ public class V3FileAction extends FacilioAction {
 				setDownloadStream((InputStream) context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM));
 			}
 			int responseStatusCode = (int) context.getOrDefault(FacilioConstants.ContextNames.FILE_RESPONSE_STATUS, 200);
-			if (responseStatusCode == 404) {
+			Boolean isValidRequest = (Boolean) context.get("isValidRequest");
+			if (responseStatusCode == 404 || isValidRequest == null || !isValidRequest) {
 				return ERROR;
 			} else if (responseStatusCode == 304) {
 				return NONE;

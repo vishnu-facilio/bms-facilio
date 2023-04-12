@@ -369,4 +369,14 @@ public class V3RecordAPI {
         return batchUpdateRec;
     }
 
+    public static String getModuleName(Long moduleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if(moduleId != null) {
+            FacilioModule module = modBean.getModule(moduleId);
+            if(module != null) {
+                return module.getName();
+            }
+        }
+        return null;
+    }
 }

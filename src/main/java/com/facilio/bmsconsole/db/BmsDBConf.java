@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.db.util.DBConf;
@@ -13,15 +14,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.iam.accounts.util.IAMUtil;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
@@ -268,14 +267,8 @@ public class BmsDBConf extends DBConf {
     @Override
     public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds, Connection conn) throws Exception {
         FileStore fs = FacilioFactory.getFileStore();
-
+        boolean throwNoPermissionLicense = AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB);
         // TODO get filePrivateUrl in bulk
-        Map<Long, String> fileUrls = new HashMap<>();
-        Map<Long, String> downloadUrls = new HashMap<>();
-        for(Long fileId: fileIds) {
-            fileUrls.put(fileId, fs.getPrivateUrl(fileId));
-            downloadUrls.put(fileId, fs.getDownloadUrl(fileId));
-        }
         Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
         Map<Long, Object> orgUserMap = new HashMap<>();
         for(Map<String, Object> record: records) {
@@ -284,9 +277,19 @@ public class BmsDBConf extends DBConf {
                     try {
                         Long id = (Long) record.get(field.getName() + "Id");
                         FileInfo info = files.get(id);
+                        String url = null,downloadUrl = null;
+                        if(throwNoPermissionLicense && record != null && record.containsKey("id") && record.containsKey("moduleId")) {
+                            Long recordId = (Long) record.get("id");
+                            Long moduleId = (Long) record.get("moduleId");
+                            url = fs.getPrivateUrl(moduleId,recordId,id);
+                            downloadUrl = fs.getDownloadUrl(moduleId,recordId,id);
+                        } else {
+                            url = fs.getPrivateUrl(id);
+                            downloadUrl = fs.getDownloadUrl(id);
+                        }
                         if (info != null) {
-                            record.put(field.getName() + "Url", fileUrls.get(id));
-                            record.put(field.getName() + "DownloadUrl", downloadUrls.get(id));
+                            record.put(field.getName() + "Url", url);
+                            record.put(field.getName() + "DownloadUrl", downloadUrl);
                             record.put(field.getName() + "FileName", info.getFileName());
                             record.put(field.getName() + "ContentType", info.getContentType());
                             if (field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")) {

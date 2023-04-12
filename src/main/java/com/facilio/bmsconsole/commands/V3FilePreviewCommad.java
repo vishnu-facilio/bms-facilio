@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.ServletActionContext;
@@ -22,6 +23,8 @@ public class V3FilePreviewCommad extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String token = (String) context.get(FacilioConstants.ContextNames.FILE_TOKEN_STRING);
+		Boolean fetchOriginal = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_ORIGINAL);
+
 		if (token != null) {
 			InputStream downloadStream;
 			boolean isDownload = false;
@@ -34,15 +37,25 @@ public class V3FilePreviewCommad extends FacilioCommand {
 			Map<String, String> decodedjwtClaims = FileJWTUtil.validateJWT(token);
 			if (decodedjwtClaims != null && !decodedjwtClaims.isEmpty()) {
 				long expiresAt = Long.valueOf(decodedjwtClaims.get("expiresAt"));
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+					Boolean isModuleFile = Boolean.valueOf(decodedjwtClaims.get("moduleFile"));
+					if(isModuleFile != null && isModuleFile) {
+						context.put("isModuleFile",true);
+						context.put(FacilioConstants.ContextNames.FILE_ID,Long.valueOf(decodedjwtClaims.get("fileId")));
+						context.put(FacilioConstants.ContextNames.MODULE_ID,Long.valueOf(decodedjwtClaims.get("moduleId")));
+						context.put(FacilioConstants.ContextNames.RECORD_ID,Long.valueOf(decodedjwtClaims.get("recordId")));
+					}
+				}
 				if(expiresAt == -1 || expiresAt > System.currentTimeMillis()) {
 					String namespace = decodedjwtClaims.get("namespace");
 					fileID = Long.valueOf(decodedjwtClaims.get("fileId"));
 					String modifiedHeader = request.getHeader("If-Modified-Since"); 
 					if (modifiedHeader == null) {
 						if (fileID > 0) {
+							context.put(FacilioConstants.ContextNames.FILE_ID,fileID);
 							FileStore fs = FacilioFactory.getFileStore();
 							FileInfo fileInfo;
-							fileInfo = namespace == null ? fs.getFileInfo(fileID) : fs.getFileInfo(namespace, fileID);
+							fileInfo = namespace == null ? fs.getFileInfo(fileID, fetchOriginal) : fs.getFileInfo(namespace, fileID, fetchOriginal);
 //							if (width > 0 || height > 0) {
 //								if (height < 0) {
 //									fileInfo = fs.getResizedFileInfo(fileID, width, width);

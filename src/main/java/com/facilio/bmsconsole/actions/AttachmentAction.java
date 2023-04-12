@@ -234,8 +234,9 @@ public class AttachmentAction  extends FacilioAction {
 				setRecordId(parentAnnouncementId);
 			}
 		}
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME,parentModuleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
-		FacilioChain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
+		FacilioChain getAttachmentsChain = FacilioChainFactory.getModuleAttachmentsChain();
 		getAttachmentsChain.execute(context);
 		
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
@@ -252,6 +253,10 @@ public class AttachmentAction  extends FacilioAction {
 					attachment.setRecordId(recordId);
 				});
 			}
+		}
+		Boolean isValidRequest = (Boolean) context.get("isValidRequest");
+		if(isValidRequest == null || !isValidRequest) {
+			return "unauthorized";
 		}
 		setAttachments(attachmentList);
 		return SUCCESS;

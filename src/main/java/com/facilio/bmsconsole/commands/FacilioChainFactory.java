@@ -1142,6 +1142,13 @@ public class FacilioChainFactory {
 		c.addCommand(new GetAttachmentsCommand());
 		return c;
 	}
+
+	public static FacilioChain getModuleAttachmentsChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ValidateModuleAttachments());
+		c.addCommand(new GetAttachmentsCommand());
+		return c;
+	}
 	
 	public static FacilioChain getDeleteAttachmentChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

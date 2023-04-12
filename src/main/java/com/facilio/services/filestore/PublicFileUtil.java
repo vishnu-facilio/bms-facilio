@@ -5,7 +5,9 @@ import java.io.FileWriter;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PublicFileContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -16,6 +18,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.facilio.services.filestore.FileStore.DEFAULT_NAMESPACE;
 
@@ -74,6 +78,16 @@ public class PublicFileUtil {
 		return FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", DEFAULT_NAMESPACE, publicFile.getFileId(), publicFile.getExpiresOn(), publicFile.getId(), orgId);
 	}
 
+	public static String createFileUrlForOrg(long moduleId, long recordId, long fileId, boolean isDownload) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() > 0 ) {
+			ApplicationContext currentApp = AccountUtil.getCurrentApp();
+			if(currentApp != null) {
+				return FileStoreFactory.getInstance().getFileStore().getFileUrlForOrg(currentApp, moduleId, recordId, DEFAULT_NAMESPACE, fileId, -1, isDownload);
+			}
+		}
+		return null;
+	}
+
 	private static String insertPublicFile(long orgId, File file, String fileName, String fileType, String contentType, long expiresOn) throws Exception {
 		PublicFileContext publicFile = addPublicFile(orgId, FacilioFactory.getFileStore().addFile(fileName, file, contentType), expiresOn);
 		return FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", publicFile.getFileId(), publicFile.getExpiresOn());
@@ -130,6 +144,14 @@ public class PublicFileUtil {
 		return publicFileContext;
 	}
 
+	public static PublicFileContext getPublicFile(long publicFileId, long orgId) throws Exception {
+		Map<String,Object> prop = getPublicFileObj(publicFileId,orgId);
+		if(MapUtils.isNotEmpty(prop)) {
+			PublicFileContext publicFileContext = FieldUtil.getAsBeanFromMap(prop,PublicFileContext.class);
+			return publicFileContext;
+		}
+		return null;
+	}
 	public static Map<String, Object> getPublicFileObj(long publicFileId, long orgId) throws Exception {
 
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
