@@ -1,5 +1,6 @@
 package com.facilio.filters;
 
+import com.amazonaws.regions.Regions;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -56,6 +57,16 @@ public class AccessLogFilter implements Filter {
         Span.current().setAttribute("thread", threadName);
     }
 
+    public static boolean isGetAvailableRequest(HttpServletRequest request) {
+        return
+                Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion())
+                        && StringUtils.isNotEmpty(request.getRequestURI())
+                        && (
+                                request.getRequestURI().contains("getAvailableButtons")
+                                        || request.getRequestURI().contains("getAvailableState")
+                        )
+                ;
+    }
 
     public void doFilter ( ServletRequest servletRequest,ServletResponse servletResponse,FilterChain filterChain ) throws IOException, ServletException {
 
@@ -67,7 +78,15 @@ public class AccessLogFilter implements Filter {
 //        System.out.println("Access log filter called : "+request.getRequestURI()+"::"+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
 
             if(ENABLE_FHR) {
-                response = new FacilioHttpResponse(response);
+                if (isGetAvailableRequest(request)) {
+                    response = new FacilioDebugHttpResponse(response);
+                }
+                else {
+                    response = new FacilioHttpResponse(response);
+                }
+            }
+            else if (isGetAvailableRequest(request)) {
+                response = new FacilioDebugHttpResponse(response);
             }
 
             long startTime = System.currentTimeMillis();

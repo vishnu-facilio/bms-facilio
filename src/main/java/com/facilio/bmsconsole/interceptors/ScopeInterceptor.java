@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
+import com.facilio.filters.AccessLogFilter;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
@@ -488,9 +489,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
         AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Scope interceptor done with return {0}", invoke != null ? "(invoking will happen. no return)" : returnStr), request);
         String resp = invoke == null ? ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION) : invoke.invoke();
-        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
-                (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
-        ) {
+        if (AccessLogFilter.isGetAvailableRequest(request)) {
             LOGGER.info("Scope interceptor Done for url : "+request.getRequestURI()+AuthInterceptor.getResponseCode());
         }
         return resp;

@@ -13,6 +13,7 @@ import com.amazonaws.regions.Regions;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.filters.AccessLogFilter;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.util.RequestUtil;
@@ -164,9 +165,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 		logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Auth interceptor done", request);
 		String resp = arg0.invoke();
-		if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
-				(request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
-		) {
+		if (AccessLogFilter.isGetAvailableRequest(request)) {
 			LOGGER.info("Auth interceptor done for url : "+request.getRequestURI()+AuthInterceptor.getResponseCode());
 		}
 		return resp;

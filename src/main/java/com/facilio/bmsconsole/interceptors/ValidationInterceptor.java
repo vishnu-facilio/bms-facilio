@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.interceptors;
 import com.amazonaws.regions.Regions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.filters.AccessLogFilter;
 import com.facilio.security.requestvalidator.Executor;
 import com.facilio.security.requestvalidator.NodeError;
 import com.facilio.util.FacilioUtil;
@@ -54,9 +55,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
         }
 
         String resp = invocation.invoke();
-        if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && StringUtils.isNotEmpty(request.getRequestURI()) &&
-                (request.getRequestURI().contains("getAvailableButtons") || request.getRequestURI().contains("getAvailableState"))
-        ) {
+        if (AccessLogFilter.isGetAvailableRequest(request)) {
             LOGGER.info("Validation interceptor done for url : "+request.getRequestURI()+AuthInterceptor.getResponseCode());
         }
         return resp;
