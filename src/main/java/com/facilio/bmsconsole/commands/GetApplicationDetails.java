@@ -162,6 +162,9 @@ public class GetApplicationDetails extends FacilioCommand {
 					}
 
 					//to be removed once new resp structure is changed in client
+					if(CollectionUtils.isNotEmpty(webTabGroups)) {
+						webTabGroups.removeIf(group -> CollectionUtils.isEmpty(group.getWebTabs()));
+					}
 					application.setWebTabGroups(webTabGroups);
 					application.setLayoutType(appLayouts.get(0).getAppLayoutType());
 

@@ -43,7 +43,7 @@ public class AddPermissionsCommand extends FacilioCommand {
 			}
 		}
 		else {
-			throw new IllegalArgumentException("Permission Object cannot be null");
+//			throw new IllegalArgumentException("Permission Object cannot be null");
 		}
 		return false;
 	}

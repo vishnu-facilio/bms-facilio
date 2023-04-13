@@ -39,7 +39,7 @@ public class AddNewPermissionsForRoleCommand extends FacilioCommand {
 				roleBean.addNewPermission(roleId, permission);
 			}
 		} else {
-			throw new IllegalArgumentException("Permission Object cannot be null");
+//			throw new IllegalArgumentException("Permission Object cannot be null");
 		}
 		return false;
 	}
