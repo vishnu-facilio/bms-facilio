@@ -1527,13 +1527,27 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
-    <request path="/api/v3/readingKpi/fetchReadings"></request>
-    <request path="/api/v3/readingKpi/fetchAssetNames"></request>
-    <request path="/api/v3/readingKpi/fetchKpiNames"></request>
-    <request path="/api/v1/setup/kpiLogger/crud"></request>
-    <request path="/api/v1/setup/readingkpi/crud"></request>
-    <request path="/api/v3/readingKpi/historical/run"></request>
-    <request path="/api/v3/readingKpi/historical/fetchAssetDetails"></request>
+    <request path="/api/v3/readingKpi/fetchReadings">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v3/readingKpi/fetchAssetNames">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v3/readingKpi/fetchKpiNames">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v1/setup/kpiLogger">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v1/setup/readingkpi">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v3/readingKpi/historical/run">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v3/readingKpi/historical/fetchAssetDetails">
+        <requestbody type="object"/>
+    </request>
 
     <request path="/api/v3/internal/dc/getConnectedDevice">
         <urlparams>
@@ -1781,6 +1795,10 @@
         <requestbody type="object"/>
     </request>
     <request path="/api/v3/readingrule/actions/updateRuleWo">
-        <requestbody type="object"></requestbody>
+        <requestbody type="object"/>
+    </request>
+
+    <request path="/api/v1/setup/faultImpact">
+        <requestbody type="object"/>
     </request>
 </config>

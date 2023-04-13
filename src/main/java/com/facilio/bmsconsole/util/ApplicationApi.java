@@ -2776,7 +2776,9 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext( "Energy Analytics","energyanalytics", layout.getId(),2, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Kpi Templates","kpi", WebTabContext.Type.NEW_KPI_TEMPLATES,null,appId,null,AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
+            webTabs.add(new WebTabContext("KPI Templates","kpi", WebTabContext.Type.NEW_KPI_TEMPLATES,null,appId,null,AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
+            webTabs.add(new WebTabContext("Fault Impact","faultimpact", WebTabContext.Type.FAULT_IMPACT_TEMPLATE,null,appId,null));
+
 
             groupNameVsWebTabsMap.put("energyanalytics", webTabs);
 
