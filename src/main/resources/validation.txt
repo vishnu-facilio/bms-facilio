@@ -593,6 +593,7 @@
 /dsso/metadata/:moduleName
 /sso/metadata/:modulename
 /api/v2/portals/getLicensedPortals
+/api/v3/people/util/recordPeople
 /api/v2/portal/visitor/addMe
 /api/v2/portal/visitor/add
 /api/v2/portal/visitor/addVisitor

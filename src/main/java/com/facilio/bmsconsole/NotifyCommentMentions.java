@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,16 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
 
         if (sendNotificationByDefault) {
             List<NoteContext> notes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
+            if (notes == null) {
+                NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
+                if (note != null) {
+                    notes = Collections.singletonList(note);
+                    context.put(FacilioConstants.ContextNames.NOTE_LIST, notes);
+                }
+            }
+            if(notes == null || notes.isEmpty()){
+                return false;
+            }
             for (NoteContext note : notes) {
                 List<CommentMentionContext> mentions = note.getMentions();
                 if(mentions == null || mentions.isEmpty()) {
