@@ -90,9 +90,20 @@ sources:
       auth: true
       iot.rule.disabled: true
 
-  - name: msk-oci #ae region
+  - name: msk-oci #oracle uk region
     type: kafka
     configs:
-      broker: hfuihb6rx2oq.streaming.uk-london-1.oci.oraclecloud.com:9092 
+      broker: hfuihb6rx2oq.streaming.uk-london-1.oci.oraclecloud.com:9092
       auth: true
       mechanism: PLAIN
+
+  - name: msk-sg1 #Singapore Region
+    type: kafka
+    configs:
+      broker:  b-1.sgmsk.fldc1q.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sgmsk.fldc1q.c3.kafka.ap-southeast-1.amazonaws.com:9096
+      auth: true
+      iot.rule.arn: arn:aws:iot:ap-southeast-1:668907905219:ruledestination/vpc/e92af44f-eae2-4cce-8609-9acb4bed5d7b
+      iot.rule.security.protocol: SASL_SSL
+      iot.rule.sasl.mechanism: SCRAM-SHA-512
+      iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+      iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
