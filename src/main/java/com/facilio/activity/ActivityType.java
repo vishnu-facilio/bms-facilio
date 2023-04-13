@@ -54,7 +54,7 @@ public interface ActivityType {
 		for (ActivityType type: RequestForQuotationActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 115
+		// Last number = 120
 
 		return activityMap;
 	}

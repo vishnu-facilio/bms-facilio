@@ -1767,7 +1767,9 @@ public class FacilioChainFactory {
 	public static FacilioChain getNotesChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetNotesCommand());
+		c.addCommand(new FetchCommentMentionsCommand());
 		c.addCommand(new FetchCommentSharingCommand());
+		c.addCommand(new FetchCommentAttachmentsCommand());
 		return c;
 	}
 	

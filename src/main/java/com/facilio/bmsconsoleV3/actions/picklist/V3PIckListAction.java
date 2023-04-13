@@ -17,7 +17,6 @@ public class V3PIckListAction extends V3Action {
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
             List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
-            
             setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, page, perPage, search, filters, _default));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 

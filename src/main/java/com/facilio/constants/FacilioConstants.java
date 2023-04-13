@@ -73,6 +73,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -528,6 +529,7 @@ public class FacilioConstants {
 		public static final String STARTING_NUMBER = "startingNumber";
 		public static final String LINK_NAME = "linkName";
 		public static final String PARENT_ID = "parentId";
+		public static final String PARENT_NOTE_ID = "parentNoteId";
 		public static final String PREV_PARENT_ID = "prevParentId";
 		public static final String PARENT_ID_LIST = "parentIds";
 
@@ -950,6 +952,7 @@ public class FacilioConstants {
 		public static final String NOTE = "note";
 		public static final String NOTE_ID = "noteId";
 		public static final String NOTE_LIST = "notes";
+		public static final String COMMENT_ATTACHMENTS = "commentattachments";
 		public static final String NEED_COMMENT_SHARING = "needCommentSharing";
 		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
@@ -1184,6 +1187,7 @@ public class FacilioConstants {
 		public static final String USERS = "users";
 		public static final String ORGUSERS = "orgusers";
 		public static final String ORG_USER_ID = "orgUserId";
+		public static final String OUID = "ouid";
 
 		public static final String GROUPS = "groups";
 

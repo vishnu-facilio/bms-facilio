@@ -592,6 +592,7 @@
 /sso/acs/:moduleName
 /dsso/metadata/:moduleName
 /sso/metadata/:modulename
+/api/v2/portals/getLicensedPortals
 /api/v2/portal/visitor/addMe
 /api/v2/portal/visitor/add
 /api/v2/portal/visitor/addVisitor
@@ -1716,8 +1717,7 @@
 /api/v2/tasks/:v2viewTask
 /api/v2/tasks/parent/:v2taskList
 /api/v2/tasks/parent/closeAllTask
-/api/v2/notes/add
-/api/v2/notes/delete
+/api/v2/notes/:crud
 /api/v2/notes/parent/:v2noteList
 /api/v2/notes/parent/noteList
 /api/v2/attachments/add

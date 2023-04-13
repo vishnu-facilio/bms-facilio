@@ -16,6 +16,7 @@ import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigurationCommand;
+import com.facilio.bmsconsole.NotifyCommentMentions;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -61,6 +62,7 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.logging.FacilioLogHandler;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
@@ -84,6 +86,8 @@ import org.apache.commons.chain.Context;
 import java.util.Collections;
 
 public class TransactionChainFactory {
+
+	private static NotifyCommentMentions command;
 
 	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
@@ -149,10 +153,27 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
+			c.addCommand(new AddMentionsCommand());
 			c.addCommand(new AddCommentSharingCommand());
+			c.addCommand(new AddCommentAttachmentsCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteNoteWorkflowCommand())
+					.addCommand(new NotifyCommentMentions()));
+			c.addCommand(new AddActivitiesCommand());
+			return c;
+		}
+		public static FacilioChain getUpdateNotesChain(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateNotesCommand());
+			c.addCommand(new setUpdateNoteActivitiesCommand());
+			c.addCommand(new deleteAllNoteSubordinates());
+			c.addCommand(new AddMentionsCommand());
+			c.addCommand(new AddCommentSharingCommand());
+			c.addCommand(new AddCommentAttachmentsCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteNoteWorkflowCommand()));
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new NotifyCommentMentions());
 			return c;
 		}
 

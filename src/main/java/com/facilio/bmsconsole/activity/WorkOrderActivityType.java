@@ -191,7 +191,14 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " deleted Task Attachment";
 		}	
-	}
+	},
+	UPDATE_COMMENT(118) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated a Comment ";
+		}
+	},
 	;
 	private int value;
 

@@ -35,6 +35,13 @@ public enum AssetActivityType implements ActivityType {
 			return " added a Comment ";
 		}
 	},
+	ASSET_NOTES_UPDATE(119) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added a Comment ";
+		}
+	},
 	ADD_ATTACHMENT(30) {
 		@Override
 		public String constructMessage(JSONObject json) {
