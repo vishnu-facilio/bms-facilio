@@ -202,6 +202,20 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         }
         return showInOccupantPortal;
     }
+    private Boolean showInClientPortal;
+    public Boolean getShowInClientPortal() {
+        return showInClientPortal;
+    }
+    public void setShowInClientPortal(Boolean showInClientPortal) {
+        this.showInClientPortal = showInClientPortal;
+    }
+    public Boolean isShowInClientPortal() {
+        if (this.showInClientPortal == null) {
+            return false;
+        }
+        return showInClientPortal;
+    }
+
 
     protected abstract void executeTrue(Object record, Context context, Map<String, Object> placeHolders) throws Exception;
 

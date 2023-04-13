@@ -281,14 +281,36 @@ public class AssetPageFactory extends PageFactory {
 		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
 			addClassificationTab(page);
 		}
+		if(!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 
-		Tab tab10 = page.new Tab("history", "history");
-		page.addTab(tab10);
-		
-		Section tab10Sec1 = page.new Section();
-		tab10.addSection(tab10Sec1);
-		
-		addHistoryWidget(tab10Sec1);
+			Tab tab10 = page.new Tab("history", "history");
+			page.addTab(tab10);
+
+			Section tab10Sec1 = page.new Section();
+			tab10.addSection(tab10Sec1);
+
+			addHistoryWidget(tab10Sec1);
+		}
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
+			Tab tab11 = page.new Tab("Related");
+			List<Long> moduleIds = new ArrayList<>();
+			moduleIds.add(module.getModuleId());
+			if (asset.getCategory() != null) {
+				V3AssetCategoryContext category = V3RecordAPI.getRecord(ContextNames.ASSET_CATEGORY, asset.getCategory().getId(), V3AssetCategoryContext.class);
+				if (category != null) {
+					moduleIds.add(category.getAssetModuleID());
+				}
+			}
+			FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
+
+			boolean isRelationshipAdded = addRelationshipSection(page, tab11, moduleIds);
+
+			Section tab11Sec1 = getRelatedListSectionObj(page);
+			tab11.addSection(tab11Sec1);
+
+			addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
+			page.addTab(tab11);
+		}
 		
 		return page;
 	}

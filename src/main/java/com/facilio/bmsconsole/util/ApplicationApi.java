@@ -3217,6 +3217,9 @@ public class ApplicationApi {
                 else if (portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)) {
                     portalApplications.add(portal);
                 }
+                else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT_PORTAL) && portal.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
+                    portalApplications.add(portal);
+                }
             }
         }
         return portalApplications;
