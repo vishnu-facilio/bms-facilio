@@ -37,6 +37,7 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     // Following props are just for client response
     private String question;
     private QuestionType questionType;
+    private String questionDescription;
     private List<Map<String, Object>> conditions;
 
     public void beforeSaveHook(QuestionContext question) {

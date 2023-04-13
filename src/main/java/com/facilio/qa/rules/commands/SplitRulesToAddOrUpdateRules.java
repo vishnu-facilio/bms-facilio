@@ -1,12 +1,10 @@
 package com.facilio.qa.rules.commands;
 
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.bean.QAndARuleBean;
-import com.facilio.qa.rules.pojo.QAndARule;
-import com.facilio.qa.rules.pojo.QAndARuleType;
-import com.facilio.qa.rules.pojo.RuleCondition;
-import com.facilio.qa.rules.pojo.ScoringRule;
+import com.facilio.qa.rules.pojo.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -14,6 +12,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SplitRulesToAddOrUpdateRules extends FacilioCommand {
     @Override
@@ -32,6 +31,15 @@ public class SplitRulesToAddOrUpdateRules extends FacilioCommand {
                 ScoringRule scoringRule = null;
                 if(type == QAndARuleType.SCORING){
                     scoringRule =(ScoringRule) rule;
+                }
+                if(type == QAndARuleType.WORKFLOW) {
+                    int sequence = (oldRule != null && CollectionUtils.isNotEmpty(oldRule.getRuleConditions())) ? ((RuleCondition) oldRule.getRuleConditions().stream().max(Comparator.comparing(RuleCondition::getSequence)).get()).getSequence() : 0;
+                    int i = 1;
+                    for (RuleCondition ruleCondition : (List<RuleCondition>) rule.getRuleConditions()) {
+                        ruleCondition.setSequence(sequence + i);
+                        i++;
+                    }
+
                 }
                 if (oldRule == null) {
                     if (CollectionUtils.isNotEmpty(rule.getRuleConditions()) || (scoringRule!=null && Objects.nonNull(scoringRule) && scoringRule.getWorkflowId()!=null) ) { // Preventing empty rules getting added

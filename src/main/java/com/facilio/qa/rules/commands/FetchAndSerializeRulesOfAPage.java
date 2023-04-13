@@ -83,6 +83,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
             rule.setQuestionId(question.getId());
             rule.setQuestion(question.getQuestion());
             rule.setQuestionType(question.getQuestionType());
+            rule.setQuestionDescription(question.getDescription());
             rule.setRuleConditions(null);
             rule.setTemplateId(null);
             rule.setType(null);
@@ -94,6 +95,5 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
     private void removeUnnecessaryProps (RuleCondition condition) {
         condition.setCriteriaId(null);
         condition.setRuleId(null);
-        condition.setSequence(null);
     }
 }
