@@ -360,7 +360,7 @@ public class NoteAction extends FacilioAction {
 		FacilioChain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
 		getRelatedNoteChain.execute(context);
 		if (notesIds != null && !notesIds.isEmpty()) {
-			setNotesLists((Map<Long, List<NoteContext>>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
+			setNotesLists((Map<Long, List<NoteContext>>) context.get(FacilioConstants.ContextNames.NOTE_MAP));
 
 		} else {
 			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));

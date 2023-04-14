@@ -951,6 +951,7 @@ public class FacilioConstants {
 
 		public static final String NOTE = "note";
 		public static final String NOTE_ID = "noteId";
+		public static final String NOTE_MAP = "notesMap";
 		public static final String NOTE_LIST = "notes";
 		public static final String COMMENT_ATTACHMENTS = "commentattachments";
 		public static final String NEED_COMMENT_SHARING = "needCommentSharing";

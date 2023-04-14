@@ -4,12 +4,12 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.NotesAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetNotesCommand extends FacilioCommand {
 
@@ -25,24 +25,20 @@ public class GetNotesCommand extends FacilioCommand {
 			notesIds = (List<Long>) context.get(FacilioConstants.ContextNames.NOTE_IDS);
 			List<NoteContext> noteListContext = new ArrayList<NoteContext>();
 			if (notesIds != null && !notesIds.isEmpty()) {
-			    noteListContext = NotesAPI.fetchNote(notesIds, moduleName);
+
+				noteListContext = NotesAPI.fetchNote(notesIds, moduleName);
 				setRepliesCount(noteListContext,moduleName);
-			    Map<Long, List<NoteContext>> map = new HashMap<>();
-			    for (int j = 0; j < noteListContext.size(); j++) {
-					if (!(noteListContext.get(j).getCreatedBy().getEmail().contains("system+"))) {
-					if (map.containsKey(noteListContext.get(j).getParentId())){
-						map.get(noteListContext.get(j).getParentId()).add(noteListContext.get(j));
-					}
-					else {
-						List<NoteContext> temp = new ArrayList<>();
-						temp.add(noteListContext.get(j));
-						map.put(noteListContext.get(j).getParentId(), temp);
-					}
+				Map<Long, List<NoteContext>> map = new HashMap<>();
+
+				for (NoteContext note : noteListContext) {
+					if (!(note.getCreatedBy().getEmail().contains("system+"))) {
+						map.computeIfAbsent(note.getParentId(), k -> new ArrayList<>()).add(note);
 					}
 				}
-			    context.put(FacilioConstants.ContextNames.NOTE_LIST, map);
+				context.put(FacilioConstants.ContextNames.NOTE_MAP, map);
+				context.put(FacilioConstants.ContextNames.NOTE_LIST, map.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
 				context.put(FacilioConstants.ContextNames.NEED_COMMENT_SHARING, false);
-			    
+
 			}
 			else {
 				
