@@ -3468,7 +3468,6 @@
 		</action>
 		<action name="addDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardTab">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
@@ -3476,7 +3475,6 @@
 		</action>
 		<action name="updateDashboardTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsList">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardTabContexts,dashboardTabContexts\[\d+\],dashboardTabContexts\[\d+\].*</param>
@@ -3489,7 +3487,6 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
@@ -3497,7 +3494,6 @@
 		</action>
 		<action name="enableDashboardTabs" class="com.facilio.bmsconsole.actions.DashboardAction" method="enableDashboardTabs">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">PUT:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
@@ -3506,7 +3502,6 @@
 		
 		<action name="updateTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabWithWidgets">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
@@ -3514,7 +3509,6 @@
 		</action>
 		<action name="updateTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsListWithWidgets">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
@@ -3537,7 +3531,6 @@
 		</action>
 		<action name="deleteDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboard">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardId</param>
@@ -3549,7 +3542,6 @@
 		</action>
 		<action name="deleteDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardTab">
 			<param name="checkTabPermission">true</param>
-			<param name="moduleName">dashboard</param>
 			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardTabId</param>

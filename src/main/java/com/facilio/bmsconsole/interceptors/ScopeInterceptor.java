@@ -396,7 +396,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             return logAndReturn("unauthorized", null, startTime, request);
                         }
 
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
+                        if (action != null && action.getValue() != null && (isTabPermision || (moduleName != null && moduleName.getValue() != null)) && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
                             if (isSetupPermission || isV3Permission || isTabPermision) {
                                 if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
                                     return logAndReturn("unauthorized", null, startTime, request);

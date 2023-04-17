@@ -1154,7 +1154,6 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="update">
         <param name="checkTabPermission">true</param>
-        <param name="moduleName">dashboard</param>
         <param name="permission">POST:EDIT</param>
         </action>
         <action name="*"
