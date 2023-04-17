@@ -1210,9 +1210,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
-			);
+			c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
 //			c.addCommand(new AddAlarmFollowersCommand());
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
@@ -3804,7 +3802,7 @@ public class TransactionChainFactory {
 						return false;
 					}
 				});
-				c.addCommand((new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION)));
+				c.addCommand((new ExecuteAllWorkflowsCommand(false, RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION)));
 			} else {
 				c.addCommand(new ExecuteAutomatedRuleHistoryWorkflowsCommand());
 			}
@@ -3821,7 +3819,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READINGRULE_WO_ACTION_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 		return c;
 	}

@@ -541,10 +541,10 @@ public class WorkflowRuleContext implements Serializable {
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
 		READING_RULE(false, false, false, true, false), // reading
-		WORKORDER_AGENT_NOTIFICATION_RULE,
-		WORKORDER_REQUESTER_NOTIFICATION_RULE, //3
-		
-		ALARM_NOTIFICATION_RULE,
+		WORKORDER_AGENT_NOTIFICATION_RULE(false,false,false, false, true),
+		WORKORDER_REQUESTER_NOTIFICATION_RULE(false,false,false, false, true), //3
+
+		ALARM_NOTIFICATION_RULE(false,false,false, false, true),
 		SLA_RULE (true),	// Not in use
 		ASSIGNMENT_RULE (true), //6
 		
