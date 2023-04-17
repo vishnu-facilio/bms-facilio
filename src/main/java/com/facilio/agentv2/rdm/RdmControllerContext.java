@@ -6,7 +6,6 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import lombok.Data;
@@ -81,7 +80,7 @@ public class RdmControllerContext extends Controller {
 
     @Override
     public String getIdentifier() throws Exception {
-        return device + ":" + getHost(url);
+        return getName();
     }
 
     private String getHost(String url) throws URISyntaxException {

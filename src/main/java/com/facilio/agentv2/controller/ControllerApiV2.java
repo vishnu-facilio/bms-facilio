@@ -105,10 +105,6 @@ public class ControllerApiV2 {
                     rtuNetworkContext.setAgentId(agent.getId());
                     context.put(FacilioConstants.ContextNames.RTU_NETWORK, rtuNetworkContext);
                 }
-                if (controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
-                    RdmControllerContext rdmControllerContext = (RdmControllerContext) controller;
-                    controller.setName(RdmControllerContext.getKey(rdmControllerContext));
-                }
                 String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);

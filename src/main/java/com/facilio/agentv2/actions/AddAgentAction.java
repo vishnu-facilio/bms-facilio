@@ -55,7 +55,9 @@ public class AddAgentAction extends AgentActionV2
     private String displayName;
     private WorkflowContext workflow;
     private int agentType=-1;
-
+    private String userName;
+    private String password;
+    private String url;
     private int partitionId = 0;
 
 	public String createAgent() {
@@ -87,6 +89,11 @@ public class AddAgentAction extends AgentActionV2
                 case CLOUD:
                 case CUSTOM:
                     agent.setConnected(true);
+                    break;
+                case RDM:
+                    agent.setUrl(getUrl());
+                    agent.setUserName(getUserName());
+                    agent.setPassword(getPassword());
                     break;
             }
             context.put(AgentConstants.AGENT,agent);

@@ -735,6 +735,8 @@
 /api/v2/point/makeWritable
 /api/v2/point/disableWritable
 /api/v2/point/export
+/api/v3/point/count
+/api/v3/point/list
 /api/v2/device/list
 /api/v2/device/getlist
 /api/v2/device/add

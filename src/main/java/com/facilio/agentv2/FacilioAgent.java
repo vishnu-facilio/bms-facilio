@@ -50,7 +50,10 @@ public class FacilioAgent implements Serializable {
     private long messageSourceId = -1;
     private String subscribeTopics;
     private int commandMaxRetryCount = -1;
-    
+    private String url;
+    private String userName;
+    private String password;
+
     Map<String, Object> params;
 
     private long workflowId = -1;
