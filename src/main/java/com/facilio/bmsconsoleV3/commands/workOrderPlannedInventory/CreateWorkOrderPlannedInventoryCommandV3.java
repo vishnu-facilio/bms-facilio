@@ -159,8 +159,8 @@ public class CreateWorkOrderPlannedInventoryCommandV3 extends FacilioCommand {
             workOrderPlannedLabour.setSkill(jobPlanLabour.getSkill());
             workOrderPlannedLabour.setQuantity(jobPlanLabour.getQuantity());
             workOrderPlannedLabour.setDuration(jobPlanLabour.getDuration());
-//            workOrderPlannedLabour.setRate(jobPlanLabour.getRate());
-//            workOrderPlannedLabour.setTotalPrice(jobPlanLabour.getTotalPrice());
+            workOrderPlannedLabour.setRate(jobPlanLabour.getRate());
+           workOrderPlannedLabour.setTotalPrice(jobPlanLabour.getTotalPrice());
 
             workOrderPlannedLabours.add(workOrderPlannedLabour);
         }

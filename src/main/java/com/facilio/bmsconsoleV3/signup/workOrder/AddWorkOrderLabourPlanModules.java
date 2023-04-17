@@ -311,6 +311,7 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForSkillOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForWorkOrderPlannedLabour(defaultForm, fieldMap, formFieldMap);
+            addRuleForEdit(defaultForm, fieldMap, formFieldMap);
             addFieldDisableRule(defaultForm, fieldMap, formFieldMap);
         }
     }
@@ -667,6 +668,59 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
         chain.execute();
     }
 
+    public void addRuleForEdit(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Edit scoping");
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setFormId(defaultForm.getId());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+        
+        long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
+
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+        FormRuleActionContext showAction = new FormRuleActionContext();
+        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
+        String workflowString = "List getActions(Map formData) {\n" +
+                "resultList = [];\n" +
+                "if(formData.craft != null && formData.id != null) {\n" +
+                " valueMap = {};\n" +
+                "conditionMap = {};\n" +
+                "conditionMap.operatorId = 36;\n"+
+                "conditionMap.fieldName = \"parentId\";\n" +
+                "conditionMap.value = formData.craft.id;\n" +
+                "conditionsMap = {};\n" +
+                "conditionsMap.put(\"1\", conditionMap);\n" +
+                "valueMap.put(\"conditions\", conditionsMap);\n" +
+                "valueMap.put(\"pattern\", \"(1)\");\n" +
+                "actionMap = {};\n" +
+                "actionMap.value = valueMap;\n" +
+                "actionMap.actionName = \"filter\" ;\n" +
+                "result = {}; \n" +
+                "result.action = actionMap;\n" +
+                "result.fieldId ="+skillFormFieldId+";\n" +
+                "resultList.add(result);\n" +
+                "}\n" +
+                "return resultList;\n" +
+                "\n" +
+                "}";
+
+        WorkflowContext workflowScript = new WorkflowContext();
+        workflowScript.setWorkflowV2String(workflowString);
+        workflowScript.setIsV2Script(true);
+        showAction.setWorkflow(workflowScript);
+        actions.add(showAction);
+        singleRule.setActions(actions);
+
+        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+        Context context = chain.getContext();
+        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+        chain.execute();
+
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -256,8 +256,8 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             fields.add(new FormField(fieldMap.get("skill").getFieldId(), "skill", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Skill", FormField.Required.OPTIONAL, ++seq, 1));
             fields.add(new FormField(fieldMap.get("quantity").getFieldId(), "quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seq, 1));
             fields.add(new FormField(fieldMap.get("duration").getFieldId(), "duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seq, 1));
-            //fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.CURRENCY, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1));
-            //fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1));
+            fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.CURRENCY, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1,true));
+            fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1,true));
 
 
             section.setFields(fields);
@@ -269,6 +269,8 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             FormsAPI.createForm(defaultForm, jobPlanLaboursModule);
             Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
+            addRuleForEdit(defaultForm, fieldMap, formFieldMap);
+            addRuleForCost(defaultForm, fieldMap, formFieldMap);
         }
     }
     public void addRuleForCraftOnUpdate(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
@@ -288,7 +290,7 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         singleRule.setTriggerFields(triggerFieldList);
 
         long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
-        //long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
+        long rateFormFieldId = formFieldMap.get(fieldMap.get("rate").getId()).getId();
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
         FormRuleActionContext showAction = new FormRuleActionContext();
@@ -312,6 +314,25 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "result.action = actionMap;\n" +
                 "result.fieldId ="+skillFormFieldId+";\n" +
                 "resultList.add(result);\n" +
+                "craft = Module(\"crafts\").fetchFirst([id == formData.craft.id]);\n" +
+                "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+                "if(formData.id != null ){\n" +
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "if(formData.id == null ){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
+                "actionMap1 = {};\n" +
+                "actionMap1.value = valueMap;\n" +
+                "actionMap1.actionName = \"set\" ;\n" +
+                "result1 = {};\n" +
+                "result1.action = actionMap1;\n" +
+                "result1.fieldId = "+rateFormFieldId+";\n" +
+                "resultList.add(result1);\n" +
                 "actionMap2 = {};\n" +
                 "actionMap2.value = null;\n" +
                 "actionMap2.actionName = \"set\" ;\n" +
@@ -320,7 +341,161 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "result2.fieldId = "+skillFormFieldId+";\n" +
                 "resultList.add(result2);\n" +
                 "}\n" +
+                "if(formData.craft != null && formData.skill != null){\n" +
+                "craft = Module(\"craftSkill\").fetchFirst([id == formData.skill.id]);\n" +
+                "ratePerHour = craft.standardRate;\n" +
+                "valueMap = {};\n"+
+                "if(formData.id != null ){\n" +
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "if(formData.id == null ){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = ratePerHour;\n" +
+                "actionMap1 = {};\n" +
+                "actionMap1.value = valueMap;\n" +
+                "actionMap1.actionName = \"set\" ;\n" +
+                "result1 = {};\n" +
+                "result1.action = actionMap1;\n" +
+                "result1.fieldId ="+rateFormFieldId+";\n" +
+                "resultList.add(result1);\n" +
+                "}\n" +
                 "return resultList;\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "}";
+
+        WorkflowContext workflowScript = new WorkflowContext();
+        workflowScript.setWorkflowV2String(workflowString);
+        workflowScript.setIsV2Script(true);
+        showAction.setWorkflow(workflowScript);
+        actions.add(showAction);
+        singleRule.setActions(actions);
+
+        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+        Context context = chain.getContext();
+        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+        chain.execute();
+
+    }
+
+    public void addRuleForEdit(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Edit scoping");
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setFormId(defaultForm.getId());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+
+
+        long skillFormFieldId = formFieldMap.get(fieldMap.get("skill").getId()).getId();
+
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+        FormRuleActionContext showAction = new FormRuleActionContext();
+        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
+        String workflowString = "List getActions(Map formData) {\n" +
+                "resultList = [];\n" +
+                "if(formData.craft != null && formData.id != null) {\n" +
+                " valueMap = {};\n" +
+                "conditionMap = {};\n" +
+                "conditionMap.operatorId = 36;\n"+
+                "conditionMap.fieldName = \"parentId\";\n" +
+                "conditionMap.value = formData.craft.id;\n" +
+                "conditionsMap = {};\n" +
+                "conditionsMap.put(\"1\", conditionMap);\n" +
+                "valueMap.put(\"conditions\", conditionsMap);\n" +
+                "valueMap.put(\"pattern\", \"(1)\");\n" +
+                "actionMap = {};\n" +
+                "actionMap.value = valueMap;\n" +
+                "actionMap.actionName = \"filter\" ;\n" +
+                "result = {}; \n" +
+                "result.action = actionMap;\n" +
+                "result.fieldId ="+skillFormFieldId+";\n" +
+                "resultList.add(result);\n" +
+                "}\n" +
+                "return resultList;\n" +
+                "\n" +
+                "}";
+
+        WorkflowContext workflowScript = new WorkflowContext();
+        workflowScript.setWorkflowV2String(workflowString);
+        workflowScript.setIsV2Script(true);
+        showAction.setWorkflow(workflowScript);
+        actions.add(showAction);
+        singleRule.setActions(actions);
+
+        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+        Context context = chain.getContext();
+        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+        chain.execute();
+
+    }
+    public void addRuleForCost(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Compute Cost");
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setFormId(defaultForm.getId());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("duration"), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rate"), CommonOperators.IS_NOT_EMPTY));
+        singleRule.setCriteria(criteria);
+
+        List<FormRuleTriggerFieldContext> triggerFieldList= new ArrayList<>();
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldId(formFieldMap.get(fieldMap.get("duration").getId()).getId());
+        triggerFieldList.add(triggerField);
+        FormRuleTriggerFieldContext triggerField2 = new FormRuleTriggerFieldContext();
+        triggerField2.setFieldId(formFieldMap.get(fieldMap.get("rate").getId()).getId());
+        triggerFieldList.add(triggerField2);
+        FormRuleTriggerFieldContext triggerField3 = new FormRuleTriggerFieldContext();
+        triggerField3.setFieldId(formFieldMap.get(fieldMap.get("quantity").getId()).getId());
+        triggerFieldList.add(triggerField3);
+
+        singleRule.setTriggerFields(triggerFieldList);
+
+        long costFormFieldId = formFieldMap.get(fieldMap.get("totalPrice").getId()).getId();
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+        FormRuleActionContext showAction = new FormRuleActionContext();
+        showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
+        String workflowString = "List getActions(Map formData) {\n" +
+                "result = [];\n" +
+                "duration = formData.duration;\n" +
+                "duartionInHours = new NameSpace(\"date\").secToHour(duration);\n" +
+                "rate= formData.rate;\n" +
+                "currencyValue = rate.currencyValue;\n"+
+                "ratePerHour = new NameSpace(\"number\").intValue(currencyValue);\n" +
+                //"ratePerHour = currencyValue.intValue();\n"+
+                "cost = formData.quantity*duartionInHours*ratePerHour;\n" +
+                "valueMap = {};\n"+
+                "if(formData.id != null ){\n" +
+                "rates= formData.rate;\n"+
+                "code = rates.currencyCode;\n"+
+                "valueMap.currencyCode = code;\n" +
+                "}\n" +
+                "if(formData.id == null ){\n" +
+                "valueMap.currencyCode = null;\n" +
+                "}\n" +
+                "valueMap.currencyValue = cost;\n" +
+                "temp = {};\n" +
+                "action = {};\n" +
+                "action.actionName = \"set\";\n" +
+                "action.value = valueMap;\n" +
+                "temp.action = action;  \n" +
+                "temp.fieldId ="+costFormFieldId+";\n" +
+                "result.push(temp);\n" +
+                "return result;\n" +
                 "\n" +
                 "\n" +
                 "\n" +

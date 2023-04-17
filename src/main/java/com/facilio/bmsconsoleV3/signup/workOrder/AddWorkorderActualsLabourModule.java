@@ -388,6 +388,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
             addRuleForCraftOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForSkillOnUpdate(defaultForm, fieldMap, formFieldMap);
             addRuleForWorkOrderLabour(defaultForm, fieldMap, formFieldMap);
+            addFieldDisableRule(defaultForm, fieldMap, formFieldMap);
         }
     }
 
@@ -640,15 +641,15 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "resultList.add(result);\n" +
 
                 "}\n" +
-//                "if(formData.skill == null ){\n" +
-//                "actionMap2 = {};\n" +
-//                "actionMap2.value = null;\n" +
-//                "actionMap2.actionName = \"set\" ;\n" +
-//                "result2 = {};\n" +
-//                "result2.action = actionMap2;\n" +
-//                "result2.fieldId = "+labourFormFieldId+";\n" +
-//                "resultList.add(result2);\n" +
-//                "}\n" +
+                "if(formData.skill == null ){\n" +
+                "actionMap2 = {};\n" +
+                "actionMap2.value = null;\n" +
+                "actionMap2.actionName = \"set\" ;\n" +
+                "result2 = {};\n" +
+                "result2.action = actionMap2;\n" +
+                "result2.fieldId = "+labourFormFieldId+";\n" +
+                "resultList.add(result2);\n" +
+                "}\n" +
                 "return resultList;\n" +
                 "\n" +
                 "\n" +
@@ -745,6 +746,51 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
         chain.execute();
 
+    }
+    private void addFieldDisableRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception{
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Fields Disable");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setFormId(defaultForm.getId());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+        FormRuleActionContext disableAction = new FormRuleActionContext();
+        disableAction.setActionType(FormActionType.DISABLE_FIELD.getVal());
+
+        List<FormRuleActionFieldsContext> fieldList = new ArrayList<>();
+
+        FormRuleActionFieldsContext craftField = new FormRuleActionFieldsContext();
+        craftField.setFormFieldId(formFieldMap.get(fieldMap.get("craft").getId()).getId());
+        fieldList.add(craftField);
+
+        FormRuleActionFieldsContext skillField = new FormRuleActionFieldsContext();
+        skillField.setFormFieldId(formFieldMap.get(fieldMap.get("skill").getId()).getId());
+        fieldList.add(skillField);
+
+        FormRuleActionFieldsContext rateField = new FormRuleActionFieldsContext();
+        rateField.setFormFieldId(formFieldMap.get(fieldMap.get("rate").getId()).getId());
+        fieldList.add(rateField);
+
+        FormRuleActionFieldsContext totalAmount = new FormRuleActionFieldsContext();
+        totalAmount.setFormFieldId(formFieldMap.get(fieldMap.get("totalAmount").getId()).getId());
+        fieldList.add(totalAmount);
+
+
+        disableAction.setFormRuleActionFieldsContext(fieldList);
+
+        actions.add(disableAction);
+
+        singleRule.setActions(actions);
+
+        FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+        Context context = chain.getContext();
+
+        context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+
+        chain.execute();
     }
 
     @Override
