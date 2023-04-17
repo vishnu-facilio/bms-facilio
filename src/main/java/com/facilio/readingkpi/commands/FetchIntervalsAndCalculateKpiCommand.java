@@ -16,6 +16,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.ReadingKpiLoggerAPI;
@@ -108,6 +109,7 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                 .table(readingModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), Collections.singletonList(resourceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField("moduleId", "MODULEID", readingModule, FieldType.NUMBER), Collections.singletonList(readingModuleId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("ttime"), startTime + "," + endTime, DateOperators.BETWEEN));
         deleteRecordBuilder.delete();
     }
