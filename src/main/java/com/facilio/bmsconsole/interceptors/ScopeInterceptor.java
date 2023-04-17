@@ -355,6 +355,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
                         Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
                         Boolean deprecated = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("deprecated")));
+                        Boolean checkTabPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkTabPermission")));
 
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
@@ -370,8 +371,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         String method = request.getMethod();
                         boolean isV3Permission = false;
-                        if(checkPermission != null && checkPermission && action != null && action.getValue() != null) {
-                            isV3Permission = true;
+                        boolean isTabPermision = false;
+
+                        if(((checkPermission != null && checkPermission) || (checkTabPermission != null && checkTabPermission)) && action != null && action.getValue() != null) {
+                            if(checkPermission != null && checkPermission) {
+                                isV3Permission = true;
+                            } else if(checkTabPermission != null && checkTabPermission) {
+                                isTabPermision = true;
+                            }
                             Parameter v3PermissionActions = action;
                             action = null;
                             String actions = v3PermissionActions.toString();
@@ -389,8 +396,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             return logAndReturn("unauthorized", null, startTime, request);
                         }
 
-                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, method)) {
-                            if (isSetupPermission || isV3Permission) {
+                        if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
+                            if (isSetupPermission || isV3Permission || isTabPermision) {
                                 if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
                                     return logAndReturn("unauthorized", null, startTime, request);
                                 }
@@ -515,7 +522,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,String method) throws Exception {
+    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,boolean isTabPermision, String method) throws Exception {
 
         if (action == null || "".equals(action.trim())) {
             return true;
@@ -560,6 +567,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
 //                  This is a temporary solution but logs will be added
                     if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
+                        if(isTabPermision) {
+                            return hasPerm;
+                        }
                         if (isV3Permission) {
                             return WebTabUtil.checkModulePermissionForTab(action, moduleName);
                         }

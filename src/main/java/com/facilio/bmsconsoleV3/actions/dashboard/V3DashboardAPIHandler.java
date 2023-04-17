@@ -781,6 +781,10 @@ public class V3DashboardAPIHandler {
             if(selected_values != null && selected_values.size() > 0 && (!"".equals(selected_values.get(0)) && !"all".equals(selected_values.get(0))))
             {
                 FacilioField applied_widget_field = widget_and_field.getValue();
+                if(operatorId == null && applied_widget_field !=null && applied_widget_field.getName() != null &&
+                        applied_widget_field.getName().equals(FacilioConstants.ContextNames.RESOURCE)){
+                    operatorId = BuildingOperator.BUILDING_IS.getOperatorId();
+                }
                 Operator operator = Operator.getOperator(operatorId != null && operatorId > 0 ? operatorId : 36);
                 Condition condition = new Condition();
                 condition.setField(applied_widget_field);

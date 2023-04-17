@@ -95,6 +95,7 @@ public class V3DashboardAction extends V3Action {
         if(cloned_json.get("folder_id") != null && (Long) cloned_json.get("folder_id") >0 ){
             context.put("folder_id", (Long) cloned_json.get("folder_id"));
         }
+        context.put("isFilterCloneNeeded",Boolean.TRUE);
     }
 
     public String move_dashboard()throws Exception
