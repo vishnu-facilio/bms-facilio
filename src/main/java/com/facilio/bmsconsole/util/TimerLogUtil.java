@@ -50,7 +50,7 @@ public class TimerLogUtil {
 	public static void addOrUpdate(FacilioModule m, TimelogContext timeLogProp) throws Exception {
 		if (timeLogProp.getId() > 0) {
 			V3Util.processAndUpdateSingleRecord(m.getName(), timeLogProp.getId(),FieldUtil.getAsProperties(timeLogProp),null,
-						null, null, null, null,null,null);
+						null, null, null, null,null,null, null);
 		} else {
 			V3Util.createRecord(m,FieldUtil.getAsProperties(timeLogProp));
 		}

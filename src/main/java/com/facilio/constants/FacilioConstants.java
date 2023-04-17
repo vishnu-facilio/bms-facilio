@@ -1656,6 +1656,7 @@ public class FacilioConstants {
 		public static final String FOR_CREATE = "forCreate";
 		public static final String QR_VALUE = "qrValue";
 		public static final String LOCATION_VALUE = "locationValue";
+		public static final String CURRENT_LOCATION = "currentLocation";
 		public static final String MAP_QR = "mapqr";
 
 		public static final String PUBLISH_DATA = "publishData";

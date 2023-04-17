@@ -39,7 +39,7 @@ public class V3AddOrUpdateCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(updateRecordList)) {
             List<ModuleBaseWithCustomFields> oldRecords =
                     (List<ModuleBaseWithCustomFields>) context.get(ImportAPI.ImportProcessConstants.OLD_RECORDS);
-            V3Util.processAndUpdateBulkRecords(module, oldRecords, updateRecordList, null, null, null, null, null, null, null, true);
+            V3Util.processAndUpdateBulkRecords(module, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true);
         }
         return false;
     }

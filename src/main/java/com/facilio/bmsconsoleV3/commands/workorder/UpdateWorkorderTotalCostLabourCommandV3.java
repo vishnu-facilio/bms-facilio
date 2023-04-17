@@ -54,7 +54,7 @@ public class UpdateWorkorderTotalCostLabourCommandV3 extends FacilioCommand {
 
                 V3WorkOrderContext workorder = (V3WorkOrderContext) V3Util.getRecord("workorder", parentIds,null);
                 workorder.setTotalCost(totalcost);
-                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.WORK_ORDER, parentIds, FieldUtil.getAsJSON(workorder), null, null, null, null, null,null,null);
+                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.WORK_ORDER, parentIds, FieldUtil.getAsJSON(workorder), null, null, null, null, null,null,null, null);
 
             }
 

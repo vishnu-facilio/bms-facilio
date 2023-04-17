@@ -133,7 +133,7 @@ public class TimelineAction extends RESTAPIHandler {
 		}
 		removeRestrictedFields(data, this.getModuleName(), true);
 
-		JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue(), this.getLocationValue());
+		JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue(), this.getLocationValue(), this.getCurrentLocation());
 
 		String message = "Record {%s} of module %s has been "
 				+ (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")

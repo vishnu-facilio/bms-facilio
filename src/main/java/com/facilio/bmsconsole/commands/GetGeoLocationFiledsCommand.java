@@ -1,13 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -23,30 +20,23 @@ public class GetGeoLocationFiledsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule locationModule = modBean.getModule(FacilioConstants.ContextNames.LOCATION);
 
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("DISPLAY_TYPE","displayTypeInt", String.valueOf(FacilioField.FieldDisplayType.GEO_LOCATION.getIntValForDB()), PickListOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("DATA_TYPE","dataType",String.valueOf(FieldType.STRING.getTypeAsInt()),PickListOperators.IS));
-
-        Criteria fetchLookUpCriteria = new Criteria();
-        fetchLookUpCriteria.addAndCondition(CriteriaAPI.getCondition("DATA_TYPE","dataType",String.valueOf(FieldType.LOOKUP.getTypeAsInt()),PickListOperators.IS));
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(modBean.getAllFields(moduleName, null, null, criteria));
-        List<FacilioField> lookupFields = modBean.getAllFields(moduleName,null,null,fetchLookUpCriteria);
-        fields.addAll(lookupFields);
+        List<FacilioField> fields = modBean.getAllFields(moduleName).stream().filter(f-> (f.getDataTypeEnum().equals(FieldType.LOOKUP) || (f.getDataTypeEnum().equals(FieldType.STRING) && f.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION)))).collect(Collectors.toList());
         List<Map<String,Object>> allFields = getFields(fields);
 
-
         Map<String, Object> moduleNameVsFieldsMap = new HashMap<>();
-        for(FacilioField lookupField:lookupFields){
-            List<FacilioField> lookUpLocationFields = modBean.getAllFields(((LookupField) lookupField).getLookupModule().getName(),null,null,criteria);
-            if(LookupSpecialTypeUtil.isSpecialType(((LookupField) lookupField).getLookupModule().getName())){
-                lookUpLocationFields = lookUpLocationFields.stream().filter(field -> (field.getDataTypeEnum() != null && field.getDisplayType() != null) && (field.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION))).collect(Collectors.toList());
-            }
-            List<Map<String, Object>> moduleFields = getFields(lookUpLocationFields);
-            if(CollectionUtils.isNotEmpty(moduleFields)){
-                moduleNameVsFieldsMap.put(((LookupField) lookupField).getLookupModule().getName(),moduleFields);
+        for(FacilioField lookupField:fields){
+            if(lookupField instanceof LookupField) {
+                if (moduleNameVsFieldsMap.get(((LookupField) lookupField).getLookupModule().getName()) != null) {
+                    continue;
+                }
+                List<FacilioField> lookUpLocationFields = modBean.getAllFields(((LookupField) lookupField).getLookupModule().getName()).stream().filter(f -> (f instanceof LookupField && ((LookupField) f).getLookupModule() != null && ((LookupField) f).getLookupModule().equals(locationModule)) || (f.getDataTypeEnum().equals(FieldType.STRING) && (f.getDisplayType()!=null && f.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION)))).collect(Collectors.toList());
+
+                List<Map<String, Object>> moduleFields = getFields(lookUpLocationFields);
+                if (CollectionUtils.isNotEmpty(moduleFields)) {
+                    moduleNameVsFieldsMap.put(((LookupField) lookupField).getLookupModule().getName(), moduleFields);
+                }
             }
         }
 

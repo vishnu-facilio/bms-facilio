@@ -50,7 +50,7 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
                         reservation.setIssuedQuantity(issuedQuantity);
                         reservation.setBalanceReservedQuantity(balanceReservedQuantity);
 
-                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.INVENTORY_RESERVATION, reservation.getId(), FieldUtil.getAsJSON(reservation), null, null, null, null, null,null,null);
+                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.INVENTORY_RESERVATION, reservation.getId(), FieldUtil.getAsJSON(reservation), null, null, null, null, null,null,null, null);
 
                     }
                 }

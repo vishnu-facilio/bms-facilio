@@ -77,11 +77,13 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 
 	public void validateLocationField(FacilioField locationField,ModuleBean moduleBean,StateflowTransitionContext stateTransition) throws Exception {
 		if(locationField instanceof LookupField){
-			 locationField = moduleBean.getField(stateTransition.getLocationLookupFieldId(),((LookupField) locationField).getLookupModule().getModuleId());
+			if(stateTransition.getLocationLookupFieldId()>0){
+				locationField = moduleBean.getField(stateTransition.getLocationLookupFieldId(),((LookupField) locationField).getLookupModule().getModuleId());
+			}
 		}
 		FacilioUtil.throwIllegalArgumentException(locationField == null,"Location field cannot be empty ");
 
-		if(locationField.getDataTypeEnum() != FieldType.STRING || !(locationField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION))){
+		if((locationField.getDataTypeEnum() != FieldType.STRING || !(locationField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION))) && (locationField.getDataTypeEnum() != FieldType.LOOKUP || !((LookupField) locationField).getLookupModule().equals(moduleBean.getModule(FacilioConstants.ContextNames.LOCATION)))){
 			throw new IllegalArgumentException("Invalid field type");
 		}
 

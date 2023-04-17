@@ -113,6 +113,9 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	@Getter @Setter
 	private String locationValue;
 
+	@Getter @Setter
+	private JSONObject currentLocation;
+
 	private String filters;
 
 	public String getFilters() {
