@@ -1501,12 +1501,20 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="list">
         </action>
+        <action name="forActuals"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
+                method="getPlannedToolForActuals">
+        </action>
     </package>
     <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
              extends="v3Api">
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
                 method="list">
+        </action>
+        <action name="forActuals"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
+                method="getPlannedServiceForActuals">
         </action>
     </package>
     <package name="workOrderPlansCost" namespace="/api/v3/workOrderPlansCost"

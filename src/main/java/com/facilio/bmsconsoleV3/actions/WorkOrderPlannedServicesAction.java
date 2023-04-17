@@ -27,6 +27,16 @@ public class WorkOrderPlannedServicesAction  extends V3Action {
 
     private String serviceIds;
 
+    private Long plannedServiceId;
+
+    public Long getPlannedServiceId() {
+        return plannedServiceId;
+    }
+
+    public void setPlannedServiceId(Long plannedServiceId) {
+        this.plannedServiceId = plannedServiceId;
+    }
+
     public String getServiceIds() {
         return serviceIds;
     }
@@ -42,6 +52,14 @@ public class WorkOrderPlannedServicesAction  extends V3Action {
         context.put(FacilioConstants.ContextNames.SERVICE, serviceIds);
         chain.execute();
         setData(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, FieldUtil.getAsJSONArray((List) context.get(FacilioConstants.ContextNames.WO_PLANNED_SERVICES), WorkOrderPlannedServicesContext.class));
+        return V3Action.SUCCESS;
+    }
+    public String getPlannedServiceForActuals() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getPlannedServiceForActualsChainV3();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, plannedServiceId);
+        chain.execute();
+        setData(FacilioConstants.ContextNames.WO_SERVICE,FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WO_SERVICE)));
         return V3Action.SUCCESS;
     }
 }

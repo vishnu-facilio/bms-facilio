@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
@@ -275,5 +276,23 @@ public class V3ToolsApi {
             return tools.get(0);
         }
         throw new IllegalArgumentException("Tool(s) not available in selected store");
+    }
+
+    public static V3ToolContext getTool(Long toolTypeId, Long storeRoomId) throws Exception{
+        V3ToolContext tool = new V3ToolContext();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String toolModuleName = FacilioConstants.ContextNames.TOOL;
+        FacilioModule module = modBean.getModule(toolModuleName);
+        List<FacilioField> fields = modBean.getAllFields(toolModuleName);
+        if(toolTypeId != null && toolTypeId >=0 && storeRoomId != null && storeRoomId >=0) {
+            SelectRecordsBuilder<V3ToolContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ToolContext>()
+                    .module(module)
+                    .beanClass(V3ToolContext.class)
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+            tool = selectRecordsBuilder.fetchFirst();
+        }
+        return tool;
     }
 }

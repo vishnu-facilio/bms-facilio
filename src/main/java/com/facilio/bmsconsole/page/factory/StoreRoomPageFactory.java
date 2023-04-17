@@ -120,7 +120,6 @@ public class StoreRoomPageFactory extends PageFactory{
 
         return purchasedItemsWidget;
     }
-
     private static void addSecondaryDetailsWidget(Page.Section section) {
         PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         detailsWidget.addToLayoutParams(section, 24, 7);

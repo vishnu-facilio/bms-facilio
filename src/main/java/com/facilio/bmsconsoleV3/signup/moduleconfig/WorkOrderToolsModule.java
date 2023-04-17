@@ -96,6 +96,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WORKORDER_TOOLS);
             FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WORKORDER_TOOLS);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WORKORDER_TOOLS);
+            FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_SERVICE);
 
             CustomPageWidget pageWidget1 = new CustomPageWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
@@ -103,6 +104,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
 
             groupField11.setName(sysCreatedByField.getName());
             groupField11.setDisplayName(sysCreatedByField.getDisplayName());
@@ -118,7 +120,6 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
             groupField12.setColIndex(3);
             groupField12.setColSpan(2);
 
-
             groupField13.setName(sysModifiedTimeField.getName());
             groupField13.setDisplayName(sysModifiedTimeField.getDisplayName());
             groupField13.setFieldId(sysModifiedTimeField.getId());
@@ -126,10 +127,18 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
             groupField13.setColIndex(1);
             groupField13.setColSpan(2);
 
+            groupField14.setName(sysModifiedByField.getName());
+            groupField14.setDisplayName(sysModifiedByField.getDisplayName());
+            groupField14.setFieldId(sysModifiedByField.getId());
+            groupField14.setRowIndex(2);
+            groupField14.setColIndex(3);
+            groupField14.setColSpan(2);
+
             List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
             groupOneFields.add(groupField11);
             groupOneFields.add(groupField12);
             groupOneFields.add(groupField13);
+            groupOneFields.add(groupField14);
 
 
             widgetGroup1.setName("moreDetails");
@@ -147,6 +156,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
             pageWidget1.setGroups(widgetGroupList);
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
+
         }
     }
 

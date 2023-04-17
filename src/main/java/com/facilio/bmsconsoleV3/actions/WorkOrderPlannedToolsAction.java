@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -26,6 +25,16 @@ public class WorkOrderPlannedToolsAction extends V3Action {
 
     private String toolTypeIds;
 
+    public Long getPlannedToolId() {
+        return plannedToolId;
+    }
+
+    public void setPlannedToolId(Long plannedToolId) {
+        this.plannedToolId = plannedToolId;
+    }
+
+    private Long plannedToolId;
+
     public String getToolTypeIds() {
         return toolTypeIds;
     }
@@ -40,6 +49,15 @@ public class WorkOrderPlannedToolsAction extends V3Action {
         context.put(FacilioConstants.ContextNames.TOOL_TYPES, toolTypeIds);
         chain.execute();
         setData(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, FieldUtil.getAsJSONArray((List) context.get(FacilioConstants.ContextNames.WO_PLANNED_TOOLS), WorkOrderPlannedToolsContext.class));
+        return V3Action.SUCCESS;
+    }
+    public String getPlannedToolForActuals() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getPlannedToolForActualsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
+        context.put(FacilioConstants.ContextNames.TOOL, plannedToolId);
+        chain.execute();
+        setData(FacilioConstants.ContextNames.WORKORDER_TOOLS,FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS)));
         return V3Action.SUCCESS;
     }
 }

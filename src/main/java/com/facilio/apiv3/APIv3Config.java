@@ -59,6 +59,7 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
@@ -1719,6 +1720,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadPlannedToolsExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
+                .afterFetch(new LoadPlannedToolsForActualsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
@@ -1770,11 +1772,13 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"inventoryReservation")
                 .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"inventoryReservation")
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderItemsChainV3())
                 .build();
@@ -2182,7 +2186,7 @@ public class APIv3Config {
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.INVENTORY_REQUEST_ACTIVITY))
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
-                .afterSave(new IssueInvRequestCommandV3())
+                .afterSave(TransactionChainFactoryV3.getIRAfterSaveChain())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.INVENTORY_REQUEST_ACTIVITY))
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getIRBeforeFetchChain())
@@ -2206,7 +2210,7 @@ public class APIv3Config {
                 .beforeDelete(new ValidateInventoryRequestLineItemBeforeDeleteCommandV3())
                 .afterDelete(new InventoryRequestLineItemAfterDeleteCommandV3())
                 .list()
-                .beforeFetch(new LoadInventoryRequestLineItemsExtraFieldsCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getLineItemsBeforeFetchChain())
                 .afterFetch(TransactionChainFactoryV3.getAfterFetchInventoryRequestLineItemsChain())
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "itemType")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "storeRoom")

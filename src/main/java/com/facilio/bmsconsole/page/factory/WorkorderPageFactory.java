@@ -333,16 +333,14 @@ public class WorkorderPageFactory extends PageFactory {
         toolsRelatedList.put("summaryWidgetName","workorderToolsWidget");
         toolsWidget.setRelatedList(toolsRelatedList);
 
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
-            PageWidget serviceWidget = new PageWidget();
-            serviceWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_SERVICE);
-            actualsPageWidgetGroup.addToWidget(serviceWidget);
-            serviceWidget.setName("Service");
-            serviceWidget.setTitle("Service");
-            JSONObject servicesRelatedList = new JSONObject();
-            servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
-            serviceWidget.setRelatedList(servicesRelatedList);
-        }
+        PageWidget serviceWidget = new PageWidget();
+        serviceWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_SERVICE);
+        actualsPageWidgetGroup.addToWidget(serviceWidget);
+        serviceWidget.setName("Service");
+        serviceWidget.setTitle("Service");
+        JSONObject servicesRelatedList = new JSONObject();
+        servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
+        serviceWidget.setRelatedList(servicesRelatedList);
     }
 
     private static void addFailureReportTab(Page page){

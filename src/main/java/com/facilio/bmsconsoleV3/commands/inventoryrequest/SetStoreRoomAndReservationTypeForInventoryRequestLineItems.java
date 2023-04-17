@@ -33,8 +33,8 @@ public class SetStoreRoomAndReservationTypeForInventoryRequestLineItems extends 
                 if (CollectionUtils.isNotEmpty(inventoryRequestLineItems)) {
                     for (V3InventoryRequestLineItemContext inventoryRequestLineItem : inventoryRequestLineItems) {
                         Long inventoryRequestLineItemId = inventoryRequestLineItem.getId();
-                        // setting storeroom for inventory request line item form inventory request
-                        if (inventoryRequestStoreRoom != null && inventoryRequestLineItem.getStoreRoom() == null) {
+                        // setting storeroom for inventory request line item from inventory request
+                        if (inventoryRequestStoreRoom != null) {
                             setStoreRoomForLineItem(inventoryRequestLineItemId, inventoryRequestStoreRoom);
                         }
                         // setting inventory request line item reservation type default to soft temporarily..

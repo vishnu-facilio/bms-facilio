@@ -64,6 +64,10 @@ public class InventoryRequestPageFactory extends PageFactory {
 		purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.INVENTORY_REQUEST_LINE_ITEMS);
 		section.addWidget(purchasedItemsWidget);
 
+		JSONObject lineItemsRelatedList = new JSONObject();
+		lineItemsRelatedList.put("summaryWidgetName","inventoryRequestLineItemsSummaryWidget");
+		purchasedItemsWidget.setRelatedList(lineItemsRelatedList);
+
 		return purchasedItemsWidget;
 	}
 }

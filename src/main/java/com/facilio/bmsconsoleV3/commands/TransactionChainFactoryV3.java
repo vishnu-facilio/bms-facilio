@@ -12,6 +12,10 @@ import com.facilio.bmsconsoleV3.commands.attendance.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.FilterItemTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.IncludeServingSiteFilterCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
@@ -1479,6 +1483,20 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getIRAfterSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new IssueInvRequestCommandV3());
+        chain.addCommand(new SetStoreRoomAndReservationTypeForInventoryRequestLineItems());
+        return chain;
+    }
+
+    public static FacilioChain getLineItemsBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadInventoryRequestLineItemsExtraFieldsCommandV3());
+        chain.addCommand(new LoadExtraFieldsCommandV3());
+        return chain;
+    }
+
 
     public static FacilioChain getInventoryRequestLineItemsAfterUpdateChain() {
         FacilioChain chain = getDefaultChain();
@@ -2659,9 +2677,22 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new GetWorkOrderItemFromReservationCommandV3());
         return chain;
     }
+
     public static FacilioChain getWorkOrderItemFromIssuedItemChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetWorkOrderItemFromIssuedItemCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getPlannedToolForActualsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetPlannedToolForActualsCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getPlannedServiceForActualsChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetPlannedServiceForActualsCommandV3());
         return chain;
     }
     public static FacilioChain getWorkOrderToolChainV3() {
