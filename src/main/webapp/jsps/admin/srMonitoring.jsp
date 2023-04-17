@@ -83,9 +83,8 @@ function showLicense() {
 <%
 	int failedSrMailCount = 0;
 	try {
-	    String failedSrMail = "select count(*) as res from WorkOrderRequest_EMail where state=2 and orgid in (?)";
+	    String failedSrMail = "select count(*) as res from WorkOrderRequest_EMail where state=2";
 		PreparedStatement pStmt = conn.prepareStatement(failedSrMail);
-		pStmt.setString(1, StringUtils.join(activeOrgIds, ","));
 		ResultSet rs = pStmt.executeQuery();
 		response.getWriter().println("pStmt -- "+pStmt+"<br>");
 		while(rs.next()) {
