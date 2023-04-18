@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import com.beust.ah.A;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
@@ -660,6 +661,9 @@ public abstract class FileStore {
 	}
 
 	public String getDownloadUrl(long fileId) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			return getUrl (-1, -1, fileId, true, -1, -1,false);
+		}
 		return getUrl(fileId, true, -1, -1);
 	}
 
@@ -984,8 +988,8 @@ public abstract class FileStore {
 		return addFile(fileName, file, contentType);
 	}
 
-	public String getFileUrlForOrg(ApplicationContext app, long moduleId, long recordId, String namespace, long fileId, long expiryTime, boolean isDownload){
-		String token = getToken(moduleId,recordId,namespace,fileId,expiryTime,-1);
+	public String getFileUrlForOrg(ApplicationContext app, long moduleId, long recordId, String namespace, long fileId, long expiryTime, boolean isDownload, boolean isModuleFile){
+		String token = getToken(moduleId,recordId,namespace,fileId,expiryTime,-1,isModuleFile);
 		StringBuilder url = new StringBuilder();
 		if(!(AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile())) {
 			url.append("/");
@@ -1004,7 +1008,7 @@ public abstract class FileStore {
 	}
 
 
-	private String getToken(long moduleId, long recordId, String namespace, long fileId, long expiryTime,long publicFileId){
+	private String getToken(long moduleId, long recordId, String namespace, long fileId, long expiryTime,long publicFileId,boolean isModuleFile){
 		Objects.requireNonNull(moduleId, "Module Id cannot be null for url generation");
 		Objects.requireNonNull(namespace, "Namespace cannot be null for url generation");
 		Map<String, String> claims = new HashMap<>();
@@ -1013,7 +1017,7 @@ public abstract class FileStore {
 		claims.put("fileId", String.valueOf(fileId));
 		claims.put("expiresAt", String.valueOf(expiryTime));
 		claims.put("recordId",String.valueOf(recordId));
-		claims.put("moduleFile",String.valueOf(true));
+		claims.put("moduleFile",String.valueOf(isModuleFile));
 		if(publicFileId>0){
 			claims.put("publicFileId",String.valueOf(publicFileId));
 		}
@@ -1021,22 +1025,22 @@ public abstract class FileStore {
 	}
 
 
-	public String getPrivateUrl(long moduleId, long recordId, long fileId) throws Exception {
-		return getUrl(moduleId, recordId, fileId, false, -1, -1);
+	public String getPrivateUrl(long moduleId, long recordId, long fileId,boolean isModuleFile) throws Exception {
+		return getUrl(moduleId, recordId, fileId, false, -1, -1,isModuleFile);
 	}
 
-	public String getDownloadUrl(Long moduleId, long recordId, long fileId) throws Exception {
-		return getUrl(moduleId, recordId, fileId, true, -1, -1);
+	public String getDownloadUrl(Long moduleId, long recordId, long fileId, boolean isModuleFile) throws Exception {
+		return getUrl(moduleId, recordId, fileId, true, -1, -1,isModuleFile);
 	}
 
 
-	private String getUrl (long moduleId, long recordId, long fileId, boolean isDownload, int width, int height) throws Exception {
+	private String getUrl (long moduleId, long recordId, long fileId, boolean isDownload, int width, int height,boolean isModuleFile) throws Exception {
 		StringBuilder url = new StringBuilder();
 		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
 			if(FacilioProperties.isDevelopment()) {
 				url.append(FacilioProperties.getClientAppUrl());
 			}
-			url.append(PublicFileUtil.createFileUrlForOrg(moduleId, recordId, fileId, isDownload));
+			url.append(PublicFileUtil.createFileUrlForOrg(moduleId, recordId, fileId, isDownload, isModuleFile));
 			return url.toString();
 		}
 		return null;

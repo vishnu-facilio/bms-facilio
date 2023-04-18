@@ -148,9 +148,9 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				}
 				if(recordId > -1) {
 					if(isDownload) {
-						return fs.getDownloadUrl(parentModule.getModuleId(), recordId, this.fileId);
+						return fs.getDownloadUrl(parentModule.getModuleId(), recordId, this.fileId,true);
 					} else {
-						return fs.getPrivateUrl(parentModule.getModuleId(), recordId, this.fileId);
+						return fs.getPrivateUrl(parentModule.getModuleId(), recordId, this.fileId,true);
 					}
 				}
 			}

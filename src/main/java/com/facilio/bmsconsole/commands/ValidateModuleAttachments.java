@@ -17,15 +17,24 @@ public class ValidateModuleAttachments extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         boolean isValidRequest = true;
         if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             isValidRequest = false;
             Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
             String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
             String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+            if(StringUtils.isEmpty(parentModuleName) && StringUtils.isNotEmpty(moduleName)) {
+                FacilioModule attachmentModule = modBean.getModule(moduleName);
+                if(attachmentModule != null) {
+                    FacilioModule attachmentParentModule = modBean.getParentModule(attachmentModule.getModuleId());
+                    if(attachmentParentModule != null) {
+                        parentModuleName = attachmentParentModule.getName();
+                    }
+                }
+            }
             if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
                 parentModuleName = FacilioConstants.ContextNames.TICKET;
             }
             if(recordId != null && StringUtils.isNotEmpty(moduleName) && StringUtils.isNotEmpty(parentModuleName)) {
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule attachmentModule = modBean.getModule(moduleName);
                 FacilioModule parentModule = modBean.getModule(parentModuleName);
                 FacilioModule recordModule = modBean.getModule(WebTabUtil.getSpecialModule(parentModuleName));

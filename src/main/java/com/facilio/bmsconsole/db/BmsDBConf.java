@@ -281,8 +281,8 @@ public class BmsDBConf extends DBConf {
                         if(throwNoPermissionLicense && record != null && record.containsKey("id") && record.containsKey("moduleId")) {
                             Long recordId = (Long) record.get("id");
                             Long moduleId = (Long) record.get("moduleId");
-                            url = fs.getPrivateUrl(moduleId,recordId,id);
-                            downloadUrl = fs.getDownloadUrl(moduleId,recordId,id);
+                            url = fs.getPrivateUrl(moduleId,recordId,id,true);
+                            downloadUrl = fs.getDownloadUrl(moduleId,recordId,id,true);
                         } else {
                             url = fs.getPrivateUrl(id);
                             downloadUrl = fs.getDownloadUrl(id);

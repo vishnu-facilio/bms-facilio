@@ -78,11 +78,11 @@ public class PublicFileUtil {
 		return FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", DEFAULT_NAMESPACE, publicFile.getFileId(), publicFile.getExpiresOn(), publicFile.getId(), orgId);
 	}
 
-	public static String createFileUrlForOrg(long moduleId, long recordId, long fileId, boolean isDownload) throws Exception {
+	public static String createFileUrlForOrg(long moduleId, long recordId, long fileId, boolean isDownload, boolean isModuleFile) throws Exception {
 		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() > 0 ) {
 			ApplicationContext currentApp = AccountUtil.getCurrentApp();
 			if(currentApp != null) {
-				return FileStoreFactory.getInstance().getFileStore().getFileUrlForOrg(currentApp, moduleId, recordId, DEFAULT_NAMESPACE, fileId, -1, isDownload);
+				return FileStoreFactory.getInstance().getFileStore().getFileUrlForOrg(currentApp, moduleId, recordId, DEFAULT_NAMESPACE, fileId, -1, isDownload,isModuleFile);
 			}
 		}
 		return null;
