@@ -1,0 +1,7 @@
+pdf_pages:
+  dashboard:
+    url: "/pdf/dashboard/${linkname}"
+  modulereport:
+    url: "/pdf/modulereport/${reportId}"
+  recordsummary:
+    url: "/pdf/record/${module}/${id}"

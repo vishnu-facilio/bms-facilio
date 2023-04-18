@@ -9,8 +9,10 @@ import org.json.simple.JSONObject;
 import java.io.File;
 
 public class LocalPDFService extends PDFService {
+
     @Override
-    public long exportAppURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception {
+    public long exportPage(String fileName, String appLinkName, String pageName, JSONObject pageParams, ExportType exportType, ExportOptions exportOptions) throws Exception {
+        String pageURL = constructPageURL(appLinkName, pageName, pageParams);
         FileInfo.FileFormat fileFormat = FileInfo.FileFormat.PDF;
         if (exportType == ExportType.SCREENSHOT) {
             fileFormat = FileInfo.FileFormat.IMAGE;

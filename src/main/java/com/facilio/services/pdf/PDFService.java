@@ -4,12 +4,36 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.util.FacilioUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class PDFService {
+
+    private static final String PDF_CONFIG_FILE = FacilioUtil.normalizePath("conf/pdfconfig.yml");
+
+    private static Map<String, Map<String,String>> pdfPages = new HashMap<>();
+
+    static  {
+        init();
+    }
+
+    public static void init() {
+        Map<String, Object> configs = null;
+        try {
+            configs = FacilioUtil.loadYaml(PDF_CONFIG_FILE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        pdfPages = (Map<String, Map<String,String>>) configs.get("pdf_pages");
+    }
 
     private long orgId;
     private long userId;
@@ -34,6 +58,18 @@ public abstract class PDFService {
         this.userId = userId;
     }
 
+    protected String constructPageURL(String appLinkName, String pageName, JSONObject pageParams) throws Exception {
+        if (StringUtils.isEmpty(pageName) || !pdfPages.containsKey(pageName)) {
+            throw new IllegalArgumentException("No pdf page has been configured for pageName: "+pageName);
+        }
+        if (pageParams == null) {
+            pageParams = new JSONObject();
+        }
+        String templatePageURL = "/" + appLinkName + pdfPages.get(pageName).get("url");
+        String pageURL = StringSubstitutor.replace(templatePageURL, pageParams);
+        return pageURL;
+    }
+
     protected String getUserToken() {
         if (AccountUtil.getCurrentUser().isPortalUser()) {
             HttpServletRequest request = ServletActionContext.getRequest();
@@ -50,11 +86,11 @@ public abstract class PDFService {
     }
 
     /**
-     * Export any facilio app url as PDF/Screenshot
+     * Export any facilio app page as PDF/Screenshot
      *
      * @return fileId
      */
-    public abstract long exportAppURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception;
+    public abstract long exportPage(String fileName, String appLinkName, String pageName, JSONObject pageParams, ExportType exportType, ExportOptions exportOptions) throws Exception;
 
     /**
      * Export connected app widget as PDF/Screenshot

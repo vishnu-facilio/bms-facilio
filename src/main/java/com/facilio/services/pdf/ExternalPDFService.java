@@ -51,7 +51,8 @@ public class ExternalPDFService extends PDFService {
     }
 
     @Override
-    public long exportAppURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception {
+    public long exportPage(String fileName, String appLinkName, String pageName, JSONObject pageParams, ExportType exportType, ExportOptions exportOptions) throws Exception {
+        String pageURL = constructPageURL(appLinkName, pageName, pageParams);
         String apiURL = getApiURL(exportType, "page");
         JSONObject options = (exportOptions != null) ? FieldUtil.getAsJSON(exportOptions) : new JSONObject();
 

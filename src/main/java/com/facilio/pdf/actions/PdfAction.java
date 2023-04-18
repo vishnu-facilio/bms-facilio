@@ -2,9 +2,12 @@ package com.facilio.pdf.actions;
 
 import java.io.InputStream;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.services.pdf.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -95,6 +98,13 @@ public class PdfAction extends FacilioAction {
 		this.fileName = fileName;
 	}
 
+	@Getter
+	@Setter
+	private String pageName;
+	@Getter
+	@Setter
+	private JSONObject pageParams;
+
 	public String generatePdf() throws Exception {
 
 		if (fileName == null) {
@@ -104,7 +114,7 @@ public class PdfAction extends FacilioAction {
 			options = new JSONObject();
 		}
 		PDFOptions pdfOptions = (PDFOptions) FieldUtil.getAsBeanFromJson(options, PDFOptions.class);
-		long fileId = PDFServiceFactory.getPDFService().exportAppURL(fileName, getUrl(), PDFService.ExportType.PDF, pdfOptions);
+		long fileId = PDFServiceFactory.getPDFService().exportPage(fileName, AccountUtil.getCurrentApp().getLinkName(), getPageName(), getPageParams(), PDFService.ExportType.PDF, pdfOptions);
 
 		String fileUrl = null;
 		if (fileId > 0) {
@@ -124,7 +134,7 @@ public class PdfAction extends FacilioAction {
 			fileName = "download-" + System.currentTimeMillis() + "." + (screenshotOptions.getFormat() != null ? screenshotOptions.getFormat() : "png");
 		}
 
-		long fileId = PDFServiceFactory.getPDFService().exportAppURL(fileName, getUrl(), PDFService.ExportType.SCREENSHOT, screenshotOptions);
+		long fileId = PDFServiceFactory.getPDFService().exportPage(fileName, AccountUtil.getCurrentApp().getLinkName(), getPageName(), getPageParams(), PDFService.ExportType.SCREENSHOT, screenshotOptions);
 
 		String fileUrl = null;
 		if (fileId > 0) {
