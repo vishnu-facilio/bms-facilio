@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.V3ClientContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
@@ -54,7 +56,8 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
         try {
             if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
                 return getAccessibleSites();
-            } else if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+            }
+            else if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
                 V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (tenant != null) {
                     if (tenant.getSiteId() > 0) {
@@ -86,8 +89,32 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
                     return getAccessibleSites();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            else if (appType == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
+                V3ClientContext client = V3PeopleAPI.getClientForUser(AccountUtil.getCurrentUser().getId(), true);
+                if (client != null) {
+                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+                        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+                        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+                        SelectRecordsBuilder<V3SiteContext> selectBuilder = new SelectRecordsBuilder<V3SiteContext>()
+                                .select(fields)
+                                .table(module.getTableName())
+                                .moduleName(module.getName())
+                                .beanClass(V3SiteContext.class)
+                         		.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(client.getId()), NumberOperators.EQUALS));
+                        List<V3SiteContext> clienSiteList = selectBuilder.get();
+                        if(CollectionUtils.isNotEmpty(clienSiteList)) {
+                            List<Long> siteIDs = new ArrayList<>();
+                            for (V3SiteContext clientsite :clienSiteList) {
+                                siteIDs.add(clientsite.getId());
+                            }
+                            return StringUtils.join(siteIDs, ",");
+                        }
+
+                }
+            }
+        } catch (Exception e) {e.printStackTrace();
         }
 
         return null;

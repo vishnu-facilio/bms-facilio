@@ -440,6 +440,24 @@ public class V3PeopleAPI {
         return getTenantForUser(ouId, false);
     }
 
+
+
+    public static V3ClientContext getClientForUser(long ouId, boolean skipScoping) throws Exception {
+        long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
+        if(pplId <= 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
+        }
+        V3ClientContactContext tc = (V3ClientContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, pplId, V3ClientContactContext.class, skipScoping);
+        if (tc != null && tc.getClient() != null && tc.getClient().getId() > 0) {
+            return (V3ClientContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT, tc.getClient().getId(), V3ClientContext.class, skipScoping);
+        }
+        return null;
+    }
+
+    public static V3ClientContext getClientForUser(long ouId) throws Exception {
+        return getClientForUser(ouId, false);
+    }
+
     public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
         V3PeopleContext peopleExisiting = getPeople(people.getEmail());
         if(peopleExisiting != null && people.getId() != peopleExisiting.getId()) {

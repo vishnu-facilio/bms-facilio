@@ -9137,6 +9137,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("showInTenantPortal", "SHOW_IN_TENANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInOccupantPortal", "SHOW_IN_OCCUPANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
+        list.add(getField("showInClientPortal", "SHOW_IN_CLIENT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getNumberField("qrFieldId", "QRFIELD_ID", stageRuleModule));
         list.add(getNumberField("qrLookupFieldId", "QRLOOKUPFIELD_ID", stageRuleModule));
         list.add(getNumberField("locationFieldId","LOCATION_FIELD_ID",stageRuleModule));
