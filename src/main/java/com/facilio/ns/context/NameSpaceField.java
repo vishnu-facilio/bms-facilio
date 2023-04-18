@@ -71,7 +71,10 @@ public class NameSpaceField implements Cloneable, Serializable {
 
     @JsonIgnore
     public AggregationType getRelAggregationTypeEnum(){
-        return AggregationType.valueOf(relAggregationType);
+        if(relAggregationType != null) {
+            return AggregationType.valueOf(relAggregationType);
+        }
+        return null;
     }
 
     boolean isEnabledCompaction;

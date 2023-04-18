@@ -88,9 +88,9 @@ public class ReadingKpiAction extends V3Action {
         if (kpi == null) {
             throw new IllegalArgumentException("Invalid kpi ID for historical kpi calculation");
         }
-        if (LogsInProgress()) {
-            throw new IllegalArgumentException("Historical cannot be started, other historical in progress");
-        }
+//        if (LogsInProgress()) {
+//            throw new IllegalArgumentException("Historical cannot be started, other historical in progress");
+//        }
         return kpi;
     }
 
