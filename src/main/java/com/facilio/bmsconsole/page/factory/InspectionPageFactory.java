@@ -217,6 +217,11 @@ public class InspectionPageFactory extends PageFactory {
 		JSONArray fieldList = new JSONArray();
 		
 		fieldList.add("creationType");
+		fieldList.add("sysCreatedTime");
+		fieldList.add("sysCreatedBy");
+		fieldList.add("sysModifiedTime");
+		fieldList.add("sysModifiedBy");
+		
 		if(record.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
 			fieldList.add("siteId");
 			fieldList.add("resource");
