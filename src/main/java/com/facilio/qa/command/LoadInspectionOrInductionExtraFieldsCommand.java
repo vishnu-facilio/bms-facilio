@@ -45,6 +45,10 @@ public class LoadInspectionOrInductionExtraFieldsCommand extends FacilioCommand 
                     FacilioField nameField = allFieldsAsMap.get("name");
                     extraInspectionTemplateFields.add(nameField);
                 }
+                if (!viewFieldsMap.containsKey("sysCreatedTime")) {
+                    FacilioField createdTimeField = allFieldsAsMap.get("sysCreatedTime");
+                    extraInspectionTemplateFields.add(createdTimeField);
+                }
             }
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraInspectionTemplateFields);
         }
