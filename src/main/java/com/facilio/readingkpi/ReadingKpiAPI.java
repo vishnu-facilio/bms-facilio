@@ -440,8 +440,9 @@ public class ReadingKpiAPI {
             Double reading = fetchAggregatedReading(field.getFieldId(), resourceId, interval.getStartTime(), interval.getEndTime(), field.getAggregation());
             if (reading != null) {
                 scriptParams.add(reading);
+                LOGGER.info("nsId: " + field.getNsId() + " resourceId: " + resourceId + " variable: " + field.getVarName() + " value: " + reading);
             } else {
-                LOGGER.info("Variable " + field.getVarName() + "with fieldID " + field.getField() + " field does not have data, for resource" + resourceId);
+                LOGGER.info("Variable " + field.getVarName() + " with fieldID " + field.getField() + " field does not have data, for resource" + resourceId);
                 return null;
             }
         }
@@ -472,6 +473,7 @@ public class ReadingKpiAPI {
             selectRecordBuilder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime + "," + endTime, DateOperators.BETWEEN));
         }
         List<Map<String, Object>> props = Objects.requireNonNull(applyAggregate(selectRecordBuilder, aggregationType, resultField)).get();
+        LOGGER.info("select query of fieldId : " + fieldId + " for resource: " + resourceId + " qry: " + selectRecordBuilder );
         return CollectionUtils.isNotEmpty(props) ? (Double) props.get(0).get("reading") : null;
     }
 
