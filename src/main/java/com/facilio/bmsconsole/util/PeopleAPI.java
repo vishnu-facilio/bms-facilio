@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -152,6 +153,9 @@ public class PeopleAPI {
 		if (user.getGroups() != null) {
 			updatePeopleIdInGroupMembers(pplId, user.getOuid());
 		}
+		if (CollectionUtils.isNotEmpty(user.getAccessibleSpace())) {
+			AccessibleSpacesUtil.addAccessibleSpace(user.getOuid(),pplId, user.getAccessibleSpace());
+		}
 	}
 
 	public static void updatePeopleOnUserUpdate(User user) throws Exception {
@@ -227,19 +231,15 @@ public class PeopleAPI {
 					if (user.getGroups() != null) {
 						updatePeopleIdInGroupMembers(pplId, user.getOuid());
 					}
+					if (CollectionUtils.isNotEmpty(user.getAccessibleSpace())) {
+						AccessibleSpacesUtil.addAccessibleSpace(user.getOuid(),pplId, user.getAccessibleSpace());
+					}
 				}
 
 			}
 		} catch (Exception e) {
 			log.error("Exception " + e);
 		}
-//		else {
-//			PeopleContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), PeopleContext.class);
-//			emp.setIsOccupantPortalAccess(true);
-//			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
-//			pplId = emp.getId();
-//		}
-//		updatePeopleIdInOrgUsers(pplId, user.getOuid());
 
 
 	}
@@ -290,6 +290,26 @@ public class PeopleAPI {
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("people", pplId);
+			updateBuilder.update(props);
+		} catch (Exception e) {
+			log.error("Exception while inviting user" + e);
+		}
+
+	}
+	public static void updatePeopleIdInAccessibleSpaces(long pplId, long ouId) throws Exception {
+		try {
+			FacilioModule module = ModuleFactory.getAccessibleSpaceModule();
+			Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAccessbileSpaceFields());
+
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(module.getTableName())
+					.fields(Collections.singletonList(fieldMap.get(FacilioConstants.ContextNames.PEOPLE_ID)));
+
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
+
+			Map<String, Object> props = new HashMap<>();
+			props.put(FacilioConstants.ContextNames.PEOPLE_ID, pplId);
+
 			updateBuilder.update(props);
 		} catch (Exception e) {
 			log.error("Exception while inviting user" + e);

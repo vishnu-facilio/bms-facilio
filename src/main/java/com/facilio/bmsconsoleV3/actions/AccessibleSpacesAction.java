@@ -32,11 +32,22 @@ public class AccessibleSpacesAction extends V3Action {
         this.ouId = ouId;
     }
 
+    private Long peopleId;
+
+    public Long getPeopleId() {
+        return peopleId;
+    }
+
+    public void setPeopleId(Long peopleId) {
+        this.peopleId = peopleId;
+    }
+
     public String add() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getAddAccessibleSpaceChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, spaceIds);
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouId);
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID, peopleId);
 
         chain.execute();
         setData("message", "Added Successfully!");
@@ -48,6 +59,7 @@ public class AccessibleSpacesAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, spaceIds);
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouId);
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID, peopleId);
 
         chain.execute();
         setData("message", "Deleted Successfully!");
@@ -59,6 +71,7 @@ public class AccessibleSpacesAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getFetchAccessibleSpaceChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouId);
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID, peopleId);
 
         JSONObject pagination = new JSONObject();
         pagination.put("page",getPage());

@@ -1332,6 +1332,13 @@ public class AccountConstants {
 		orgUserId.setModule(module);
 		fields.add(orgUserId);
 
+		FacilioField peopleId = new FacilioField();
+		peopleId.setName("peopleId");
+		peopleId.setColumnName("PEOPLE_ID");
+		peopleId.setDataType(FieldType.NUMBER);
+		peopleId.setModule(module);
+		fields.add(peopleId);
+
 		FacilioField bsid = new FacilioField();
 		bsid.setName("bsid");
 		bsid.setColumnName("BS_ID");

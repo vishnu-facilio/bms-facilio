@@ -15,6 +15,7 @@ import java.util.Set;
 import com.facilio.accounts.dto.*;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
@@ -95,7 +96,7 @@ public class UserBeanImpl implements UserBean {
 
 		if(user.getAccessibleSpace() != null) {
 			deleteAccessibleSpace(user.getOuid());
-			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			AccessibleSpacesUtil.addAccessibleSpace(user.getOuid(),user.getPeopleId(), user.getAccessibleSpace());
 		}
 		if(user.getGroups() != null) {
 			deleteAccessibleGroups(user.getOuid());
@@ -359,9 +360,6 @@ public class UserBeanImpl implements UserBean {
 
 
 	public void addUserDetail(User user) throws Exception {
-		if (CollectionUtils.isNotEmpty(user.getAccessibleSpace())) {
-			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		}
 		if(user.getAppDomain() != null && user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			if (user.getGroups() != null) {
 				addAccessibleTeam(user.getOuid(), user.getPeopleId(), user.getGroups());

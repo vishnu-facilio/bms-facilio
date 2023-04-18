@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.accessibleSpaces;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -8,12 +9,11 @@ import org.json.simple.JSONObject;
 
 import java.util.List;
 
-import static com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil.*;
-
 public class FetchAccessibleSpacesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long ouId = (Long) context.get(FacilioConstants.ContextNames.ORG_USER_ID);
+        Long peopleId = (Long) context.get(FacilioConstants.ContextNames.PEOPLE_ID);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         String searchQuery = (String) context.get(FacilioConstants.ContextNames.SEARCH);
         Boolean fetchCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
@@ -27,12 +27,9 @@ public class FetchAccessibleSpacesCommand extends FacilioCommand {
                 offset = 0;
             }
         }
-        List<BaseSpaceContext> baseSpaces = null;
-        if (ouId != null && ouId > 0) {
-            baseSpaces = getAccessibleSpaceList(ouId, perPage, offset, searchQuery);
-        }
+        List<BaseSpaceContext> baseSpaces = AccessibleSpacesUtil.getAccessibleSpaceList(ouId,peopleId, perPage, offset, searchQuery);
         if (fetchCount != null) {
-            Long baseSpacesCount = getAccessibleSpaceCount(ouId, searchQuery);
+            Long baseSpacesCount = AccessibleSpacesUtil.getAccessibleSpaceCount(ouId,peopleId,searchQuery);
             context.put(FacilioConstants.ContextNames.COUNT, baseSpacesCount);
         }
         context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, baseSpaces);

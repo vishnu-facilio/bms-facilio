@@ -19,6 +19,10 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String email;
 	private String phone;
 	private String language;
+	@Getter @Setter
+	private String mobile;
+	@Getter @Setter
+	private String timezone;
 	public String getName() {
 		return name;
 	}

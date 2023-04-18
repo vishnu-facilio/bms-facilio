@@ -20,6 +20,10 @@ public class V3PeopleContext extends V3Context {
     private String email;
     private String phone;
     private String language;
+    @Getter @Setter
+    private String mobile;
+    @Getter @Setter
+    private String timezone;
 
     public String getName() {
         return name;
