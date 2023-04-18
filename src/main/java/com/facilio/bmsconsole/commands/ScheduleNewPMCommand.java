@@ -74,7 +74,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                     schedulePM(pm, context, action, endTime);
                 } catch (Exception e) {
                     String msg = "Exception scheduling: " + e.getMessage() + "PM ID: " + pm.getId() + "; ORG ID" + pm.getOrgId();
-                    LOGGER.log(Level.ERROR, msg);
+                    LOGGER.error(msg, e);
                     SendEmailAlert(msg, pm.getOrgId());
                     CommonCommandUtil.emailException("Exception scheduling ", "PM ID " + pm.getId(), e);
                     throw e;
