@@ -125,7 +125,8 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(3), "VIEW_BOOKING_DEPARTMENT", "View Booking Department", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(4), "VIEW_BOOKING_OWN", "View Booking Own", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(5), "EDIT", "Edit", PermissionMapping.GROUP2PERMISSION),
-            new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION));
+            new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION),
+            new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Update Task", PermissionMapping.GROUP2PERMISSION));
 
     private static long getExponentValue(int exponent) {
         return (long) Math.pow(2, (exponent - 1));
@@ -170,6 +171,7 @@ public class AppModulePermissionUtil {
                 permissionMap.get("UPDATE_CHANGE_OWNERSHIP"),
                 permissionMap.get("UPDATE_CLOSE_WORKORDER"),
                 permissionMap.get("UPDATE_TASK"),
+                permissionMap.get("UPDATE_WORKORDER_TASK"),
                 new PermissionGroup("Delete", Arrays.asList(deletePerm, deleteOwnPerm, deleteTeamPerm)),
                 permissionMap.get("EXPORT")
         );

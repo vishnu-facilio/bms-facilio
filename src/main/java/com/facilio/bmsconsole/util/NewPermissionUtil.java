@@ -73,6 +73,7 @@ public class NewPermissionUtil {
         moduleTabType.put("UPDATE_TASK", 4096);
         moduleTabType.put("DELETE_TEAM", 8192);
         moduleTabType.put("DELETE_OWN", 16384);
+        moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
         return moduleTabType;
     }
 
@@ -295,6 +296,7 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Update", updateGroup));
         permissions.add(new Permission("UPDATE_CHANGE_OWNERSHIP", "Change Ownership", moduleTabType.get("UPDATE_CHANGE_OWNERSHIP"), null));
         permissions.add(new Permission("UPDATE_CLOSE_WORKORDER", "Close Workorder", moduleTabType.get("UPDATE_CLOSE_WORKORDER"), null));
+        permissions.add(new Permission("UPDATE_WORKORDER_TASK", "Update Task", moduleTabType.get("UPDATE_WORKORDER_TASK"), null));
         permissions.add(new Permission("UPDATE_TASK", "Add Task", moduleTabType.get("UPDATE_TASK"), null));
         List<Permission> deleteGroup = new ArrayList<>();
         deleteGroup.add(new Permission("DELETE", "All", moduleTabType.get("DELETE"), null));
