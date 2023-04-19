@@ -1493,6 +1493,8 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadBudgetLookupCommandV3())
                 .afterFetch(new FillBudgetDetailsCommandV3())
+                .delete()
+                .afterDelete(new DeleteBudgetSubModuleRecordsCommandV3())
                 .build();
     }
 

@@ -1754,6 +1754,9 @@ public class FacilioConstants {
 		public static final String TENANT_NOTES = "tenantnotes";
 
 		public static final String BUDGET = "budget";
+		public static final String BUDGET_AMOUNT = "budgetamount";
+		public static final String BUDGET_MONTHLY_AMOUNT = "budgetmonthlyamount";
+
 
 		public static final String SHOW_TOOLS_FOR_RETURN = "showToolsForReturn";
 		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
