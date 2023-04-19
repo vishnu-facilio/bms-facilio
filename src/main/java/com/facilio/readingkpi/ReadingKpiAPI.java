@@ -67,14 +67,14 @@ public class ReadingKpiAPI {
                 .select(Arrays.asList(fieldMap.get("readingFieldId")))
                 .module(kpiModule)
                 .beanClass(ReadingKPIContext.class)
-                .andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(kpiId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(kpiId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(true), BooleanOperators.IS));
 
         List<ReadingKPIContext> kpis = builder.get();
         if (CollectionUtils.isEmpty(kpis)) {
             throw new Exception("Invalid kpi ID");
         }
-        for(ReadingKPIContext kpi: kpis){
+        for (ReadingKPIContext kpi : kpis) {
             ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, modBean.getField(kpi.getReadingFieldId()));
             return (Double) rdm.getValue();
         }
@@ -114,7 +114,7 @@ public class ReadingKpiAPI {
         if (CollectionUtils.isEmpty(kpis)) {
             return null;
         }
-        LOGGER.info("Active KPI Ids: " + kpis.stream().map(x->x.getId()).collect(Collectors.toList()));
+        LOGGER.info("Active KPI Ids: " + kpis.stream().map(x -> x.getId()).collect(Collectors.toList()));
 
         return getIndepAndDepKpisWithGraph(kpis);
 
@@ -462,18 +462,21 @@ public class ReadingKpiAPI {
         FacilioModule readingsModule = modBean.getModule(readingField.getModuleId());
         Map<String, FacilioField> readingsModuleFieldsMap = FieldFactory.getAsMap(modBean.getAllFields(readingsModule.getName()));
         FacilioField resultField = FieldFactory.getField("reading", readingField.getColumnName(), FieldType.NUMBER);
+        FacilioField moduleIdField = FieldFactory.getField("moduleId", "MODULEID", FieldType.NUMBER);
         FacilioField resourceIdField = readingsModuleFieldsMap.get("parentId");
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(readingsModule.getTableName())
                 .select(new HashSet<>())
-                .andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(readingsModule.getModuleId()), NumberOperators.EQUALS));
 
         if (aggregationType != AggregationType.LATEST) {
             selectRecordBuilder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime + "," + endTime, DateOperators.BETWEEN));
         }
+
         List<Map<String, Object>> props = Objects.requireNonNull(applyAggregate(selectRecordBuilder, aggregationType, resultField)).get();
-        LOGGER.info("select query of fieldId : " + fieldId + " for resource: " + resourceId + " qry: " + selectRecordBuilder );
+        LOGGER.info("select query of fieldId : " + fieldId + " for resource: " + resourceId + " qry: " + selectRecordBuilder);
         return CollectionUtils.isNotEmpty(props) ? (Double) props.get(0).get("reading") : null;
     }
 
