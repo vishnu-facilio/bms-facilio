@@ -1322,6 +1322,8 @@
 /api/v3/report/delete
 /api/v3/report/execute
 /api/v3/report/folders
+/api/v3/report/foldersNew
+/api/v3/report/reportListView
 /api/v3/report/fields
 /api/v3/report/sub_modules/list
 /api/v3/report/folder/create

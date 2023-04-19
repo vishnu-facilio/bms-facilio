@@ -4,25 +4,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
-import com.amazonaws.services.dynamodbv2.xspec.NULL;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction;
-import com.facilio.bmsconsoleV3.actions.report.V3ReportAction;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
-import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,25 +43,15 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
-import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportFactory.ModuleType;
-import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.facilio.report.context.ReportFolderContext.FolderType;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
@@ -74,7 +59,6 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.google.gson.JsonObject;
 
 public class ReportUtil {
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ReportUtil.class.getName());
@@ -545,6 +529,35 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return reports;
 	}
+	public static List<ReportContext> getReportsFromFolderIdNew(long folderId) throws Exception {
+
+		FacilioModule module = ModuleFactory.getReportModule();
+
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReport1Fields())
+				.table(module.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
+				;
+
+		List<Map<String, Object>> props = select.get();
+		List<ReportContext> reports = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			int i = 0;
+			for(Map<String, Object> prop :props) {
+				try {
+					ReportContext report = getReportContextFromProps(prop);
+					reports.add(report);
+				}
+				catch (Exception e) {
+					LOGGER.info("Error in report conversion, folderId:" + folderId +", index: " + i, e);
+					throw e;
+				}
+				i++;
+			}
+		}
+		return reports;
+	}
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields) throws Exception {
 		return getReportsFromFolderId(folderId, selectFields, true, false);
 	}
@@ -600,7 +613,6 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 
 
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields, boolean isMainApp, boolean isPivot) throws Exception {
-		
 		FacilioModule module = ModuleFactory.getReportModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
@@ -648,6 +660,109 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 		}
 		return reports;
+	}
+	public static List<ReportContext> getReportsFromFolderIdNew(long folderId, List<FacilioField> selectFields, boolean isMainApp, Context context) throws Exception {
+
+		boolean isWithCount = (boolean) context.get(Constants.WITH_COUNT);
+				FacilioModule module = ModuleFactory.getReportModule();
+		List<ReportContext> reports = new ArrayList<>();
+		GenericSelectRecordBuilder selectBuilder = getSelectRecordsBuilder(isMainApp, selectFields, context);
+		if(isWithCount){
+			GenericSelectRecordBuilder countSelect = getSelectRecordsBuilder(isMainApp, selectFields, context);
+			countSelect.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+			List<Map<String, Object>> countRecord = countSelect.get();
+			context.put(Constants.COUNT, countRecord.get(0).get("id"));
+		}
+		else {
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				int i = 0;
+				for (Map<String, Object> prop : props) {
+					try {
+						ReportContext report = getReportContextFromProps(prop);
+						if (report != null && report.getModuleId() > 0) {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							module = modBean.getModule(report.getModuleId());
+							report.setModuleName(module.getDisplayName());
+						}
+						Boolean isUserPrevileged = AccountUtil.getCurrentUser().getRole().getIsPrevileged();
+						if (isUserPrevileged == null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.REPORT_SHARE)) {
+							getReportSharingPermission(reports, report);
+						} else {
+							reports.add(report);
+						}
+					} catch (Exception e) {
+						LOGGER.info("Error in report conversion, folderId:" + folderId + ", index: " + i, e);
+						throw e;
+					}
+					i++;
+				}
+			}
+		}
+			return reports;
+
+	}
+	private static GenericSelectRecordBuilder getSelectRecordsBuilder(boolean isMainApp, List<FacilioField> selectFields, Context context) throws Exception{
+
+		boolean isWithCount = (boolean) context.get(Constants.WITH_COUNT);
+		boolean isPivot = (boolean) context.get("isPivot");
+		long folderId = (long) context.get("folderId");
+		String searchText = (String) context.get("searchText");
+		FacilioModule module = ModuleFactory.getReportModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+
+				.table(module.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
+				;
+		if(!isWithCount){
+			select.select(selectFields);
+		}
+		else{
+			select.select(new HashSet<>());
+		}
+		if(isMainApp)
+		{
+			select.andCriteria(ReportUtil.getReportAppIdCriteria(fieldMap, AccountUtil.getCurrentUser().getApplicationId()));
+		}
+		else if(!isMainApp && isPivot){
+			select.andCondition(CriteriaAPI.getCondition(module.getTableName()+".APP_ID", "appId", AccountUtil.getCurrentUser().getApplicationId()+"", NumberOperators.EQUALS));
+		}
+		if(!isMainApp && !isPivot){
+			Criteria appIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, AccountUtil.getCurrentUser().getApplicationId());
+			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			if(mainAppId > 0) {
+				appIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
+			}
+			select.andCriteria(appIdCriteria);
+		}
+		if (searchText != null && !searchText.isEmpty()) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+			select.andCriteria(criteria);
+		}
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+
+		int perPage;
+		int page;
+		if (pagination != null) {
+			page = (int) (pagination.get("page") == null ? 1 : pagination.get("page"));
+			perPage = (int) (pagination.get("perPage") == null ? 50 : pagination.get("perPage"));
+		} else {
+			page = 1;
+			perPage = 50;
+		}
+		int offset = ((page-1) * perPage);
+		if (offset < 0) {
+			offset = 0;
+		}
+
+		select.offset(offset);
+		select.limit(perPage);
+		String orderBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + "desc";
+		select.orderBy(orderBy);
+		return select;
 	}
 	
 	public static List<ReportContext> getReports(String moduleName, String searchText) throws Exception {
@@ -1216,6 +1331,72 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return getFilteredReport(reportFolders);
 	}
+	public static List<ReportFolderContext> getAllCustomModuleReportFolderNew(String searchText) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> moduleIds = new ArrayList<Long>();
+
+		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
+		FacilioModule modulesmodule = ModuleFactory.getModuleModule();
+		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String,FacilioField> moduleFieldMap = FieldFactory.getAsMap(moduleFields);
+
+		GenericSelectRecordBuilder selectModules = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(moduleFieldMap.get("moduleId")))
+				.table(modulesmodule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("type"),String.valueOf(FacilioModule.ModuleType.BASE_ENTITY.getValue()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS));
+
+		List<Map<String, Object>> moduleprops = selectModules.get();
+
+		LOGGER.info("MODULEBUILDER" + selectModules);
+		LOGGER.info("MODULEPROPS" + moduleprops);
+
+		if(moduleprops != null && !moduleprops.isEmpty()) {
+			for(Map<String, Object> moduleprop :moduleprops) {
+				moduleIds.add((Long) moduleprop.get("moduleId"));
+			}
+
+		}
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS) == null)
+		{
+			return reportFolders;
+		}
+
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(reportFoldermodule.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+						String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
+
+		List<Map<String, Object>> props = select.get();
+		if(props != null && !props.isEmpty()) {
+
+			for(Map<String, Object> prop :props) {
+
+				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+				reportFolders.add(folder);
+			}
+
+		}
+		Map<Long, SharingContext<SingleSharingContext>> map = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
+		for (int i = 0; i < reportFolders.size(); i++) {
+
+			if (map.containsKey(reportFolders.get(i).getId())) {
+
+				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));;
+			}
+		}
+		return getFilteredReport(reportFolders);
+	}
 	public static Long createFolder(String name, Integer folderType, long appid, String module) throws Exception{
 		ReportFolderContext reportFolder = new ReportFolderContext();
 		reportFolder.setName(name);
@@ -1428,5 +1609,156 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 		}
 		return xField;
+	}
+	public static List<ReportFolderContext> getAllReportFolderNew(String moduleName, String searchText, Boolean isPivot, Long webTabId, Context contexts) throws Exception {
+		String name = AccountUtil.getCurrentApp().getLinkName();
+		boolean isMainApp =  name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		long appId = (long) contexts.get(FacilioConstants.ContextNames.APP_ID);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if(isMainApp) {
+			FacilioModule module = modBean.getModule(moduleName);
+			reportFolders.addAll(ReportUtil.getReportsFoldersNew(module.getModuleId(), searchText, true, isPivot, appId));
+		}
+		else
+		{
+			Boolean isAnalyticsReport = false;
+			List<Long> moduleIds = new ArrayList<>();
+			if(webTabId != null && webTabId > 0)
+			{
+				WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+				WebTabContext webTabContext = tabBean.getWebTab(webTabId);
+				JSONObject config = webTabContext.getConfigJSON();
+				if(config != null && config.containsKey("type") && config.get("type").equals("module_reports"))
+				{
+					List<Long> webtab_moduleIds = ApplicationApi.getModuleIdsForTab(webTabContext.getId());
+					if(webtab_moduleIds != null && webtab_moduleIds.size() > 0)
+					{
+						for(Long moduleId : webtab_moduleIds)
+						{
+							FacilioModule module = modBean.getModule(moduleId);
+							if(module != null && !module.isCustom())
+							{
+								Set<FacilioModule> subModules = ReportFactoryFields.getSubModulesList(module.getName());
+								if(subModules != null){
+									moduleIds.addAll(subModules.stream().map(m -> m.getModuleId()).collect(Collectors.toList()));
+								}
+							}
+							if(module != null) {
+								moduleIds.add(moduleId);
+							}
+						}
+					}
+				}
+				else if((config != null && config.containsKey("type") && config.get("type").equals("analytics_reports")) || isPivot){
+					FacilioModule energyData = modBean.getModule("energydata");
+					moduleIds.add(energyData.getModuleId());
+					isAnalyticsReport = true;
+				}
+			}
+			else if(isPivot)
+			{
+				FacilioModule energyData = modBean.getModule("energydata");
+				moduleIds.add(energyData.getModuleId());
+			}
+			else if( appId != 0 )
+			{
+				if(moduleName != null && (moduleName.equals("energydata") || moduleName.equals("energyData"))){
+					FacilioModule energyData = modBean.getModule("energydata");
+					moduleIds.add(energyData.getModuleId());
+					isAnalyticsReport = true;
+				}
+				else
+				{
+					List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
+					for (WebTabContext webtab : webtabs) {
+						if (webtab.getTypeEnum() == WebTabContext.Type.MODULE) {
+							moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
+						} else if (!isPivot && webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
+								webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("analytics_reports"))) {
+							isAnalyticsReport = true;
+						}
+					}
+				}
+			}
+			if(moduleIds != null && !moduleIds.isEmpty())
+			{
+				FacilioChain chain = ReadOnlyChainFactory.getAutomationModules();
+				FacilioContext context = chain.getContext();
+				chain.execute();
+				List<FacilioModule> modules = (ArrayList) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				List<Long> moduleIds_list = new ArrayList<>();
+				for(FacilioModule module_obj : modules){
+					moduleIds_list.add(module_obj.getModuleId());
+				}
+				if(isPivot || isAnalyticsReport)
+				{
+					FacilioModule energyData = modBean.getModule("energydata");
+					moduleIds_list.add(energyData.getModuleId());
+				}
+				List<Long> newList = moduleIds.stream().distinct().collect(Collectors.toList());
+				for(long moduleId : newList)
+				{
+					if(moduleIds_list != null && moduleIds_list.contains(moduleId)) {
+						reportFolders.addAll(ReportUtil.getReportsFoldersNew(moduleId, searchText, false, isPivot, appId));
+					}
+				}
+			}
+		}
+		return getFilteredReport(reportFolders);
+	}
+
+	public static List<ReportFolderContext> getReportsFoldersNew(Long moduleId, String searchText, Boolean isMainApp, Boolean isPivot, long appId)throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule othermodule = modBean.getModule(moduleId);
+		List<FacilioField> otherfields = FieldFactory.getReport1FolderFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(otherfields);
+
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(otherfields)
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(othermodule.getModuleId()), NumberOperators.EQUALS));
+
+		if(isPivot)
+		{
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"), String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.IS));
+			if(isMainApp){
+				select.andCriteria(ReportUtil.getReportAppIdCriteria(fieldMap, appId));
+			} else{
+				select.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(appId), NumberOperators.EQUALS));
+			}
+		}
+		else
+		{
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"), String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+			Criteria addAppIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, appId);
+			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			if(mainAppId > 0) {
+				addAppIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
+			}
+			select.andCriteria(addAppIdCriteria);
+		}
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
+
+		List<Map<String, Object>> otherprops = select.get();
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if (otherprops != null && !otherprops.isEmpty()) {
+
+			for (Map<String, Object> prop : otherprops) {
+				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+				reportFolders.add(folder);
+			}
+		}
+		Map<Long, SharingContext<SingleSharingContext>> othermap = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
+		for (int i = 0; i < reportFolders.size(); i++) {
+
+			if (othermap.containsKey(reportFolders.get(i).getId())) {
+				reportFolders.get(i).setReportSharing(othermap.get(reportFolders.get(i).getId()));
+			}
+		}
+		return reportFolders;
 	}
 }

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.actions.report;
 import java.util.*;
 import java.util.function.Function;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -14,10 +15,12 @@ import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
 import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleReportActionContext;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.wmsv2.handler.AuditLogHandler;
@@ -48,6 +51,7 @@ public class V3ReportAction extends V3Action {
     public String tabularState;
     private int moduleType = -1;
     String moduleName;
+    private long moduleId;
     private JSONObject dateField;
     private String baseLines;
     private JSONObject xField;
@@ -70,11 +74,13 @@ public class V3ReportAction extends V3Action {
     private Long webTabId;
     private ReportFolderContext reportFolder;
     private long folderId = -1;
+    private long appId = -1;
     private FileInfo.FileFormat fileFormat;
     private Boolean showAlarms;
     private int analyticsType = -1;
     private Boolean showSafeLimit;
     private String scatterConfig;
+    private String searchText;
     private long dashboardId;
     private String hmAggr = null;
     private boolean newFormat = false;
@@ -90,6 +96,10 @@ public class V3ReportAction extends V3Action {
     private AggregateOperator groupByTimeAggr;
     private ReportTemplateContext template;
     private List<Long> ids;
+    private int page;
+    private int perPage;
+    private boolean withCount;
+
 
 
     public List<SingleSharingContext> getReportShareInfo() {
@@ -456,6 +466,62 @@ public class V3ReportAction extends V3Action {
         setData("reportFolders", reportFolders);
         if(moduleName != null && !moduleName.equals("custommodule")){
             setData("moduleName", moduleName);
+        }
+        return SUCCESS;
+    }
+    public String foldersNew() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getFoldersListChainNew();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put("isWithReport", getIsWithReport());
+        context.put("webTabId", webTabId);
+        context.put("isCustomModule", false);
+        if(moduleName != null && moduleName.equals("custommodule")){
+            context.put("isCustomModule", true);
+        }else{
+            context.put("moduleName", moduleName);
+            context.put("isPivot", isPivot);
+        }
+        chain.execute();
+        List<ReportFolderContext> reportFolders = (List<ReportFolderContext>)context.get("folders");
+        setData("reportFolders", reportFolders);
+        if(moduleName != null && !moduleName.equals("custommodule")){
+            setData("moduleName", moduleName);
+        }
+        return SUCCESS;
+    }
+
+    public String reportListView() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getReportsListViewChain();
+        FacilioContext context = chain.getContext();
+        context.put("isCustomModule", false);
+        if(moduleName != null && moduleName.equals("custommodule")){
+            context.put("isCustomModule", true);
+        }else{
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleId);
+            context.put("moduleName", module.getName());
+        }
+        context.put("searchText",searchText);
+        context.put("folderId",folderId);
+        context.put("isPivot", isPivot);
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", page);
+        pagination.put("perPage", perPage);
+
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(Constants.WITH_COUNT, withCount);
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,"desc");
+
+        chain.execute(context);
+        List<ReportContext> reportsList = (List<ReportContext>)context.get("reportsList");
+        if(context.containsKey(Constants.WITH_COUNT) && context.get(Constants.WITH_COUNT).equals(Boolean.TRUE)) {
+            setData("count", context.get(Constants.COUNT) );
+        }
+        else{
+            setData("reportsList", reportsList);
         }
         return SUCCESS;
     }

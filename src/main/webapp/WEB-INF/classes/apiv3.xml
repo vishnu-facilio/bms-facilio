@@ -869,6 +869,14 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="folders">
         </action>
+        <action name="foldersNew"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="foldersNew">
+        </action>
+        <action name="reportListView"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="reportListView">
+        </action>
         <action name="fields"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="getFields">

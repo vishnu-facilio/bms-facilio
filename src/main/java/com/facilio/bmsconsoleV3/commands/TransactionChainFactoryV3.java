@@ -1815,6 +1815,16 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetReportFoldersCommand());
         return c;
     }
+    public static FacilioChain getFoldersListChainNew() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetReportFoldersNewCommand());
+        return c;
+    }
+    public static FacilioChain getReportsListViewChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetReportListViewCommand());
+        return c;
+    }
 
     public static FacilioChain addMLServiceChain() {
         FacilioChain c = getDefaultChain();

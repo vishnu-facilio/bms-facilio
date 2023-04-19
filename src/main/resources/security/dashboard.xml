@@ -365,5 +365,24 @@
             <property name="withTabs" type="boolean" />
         </urlparams>
     </request>
+    <request path="/api/v3/report/foldersNew" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="webTabId" type="number" mandatory="false"/>
+            <property name="appId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/report/reportListView" method="GET">
+        <urlparams>
+            <property name="folderId" type="number" mandatory="true"></property>
+            <property name="appId" type="number" mandatory="true"></property>
+            <property name="moduleId" type="number" mandatory="true"></property>
+            <property name="page" type="number" mandatory="true"></property>
+            <property name="perPage" type="number" mandatory="true"></property>
+            <property name="withCount" type="boolean" mandatory="true"></property>
+            <property name="isPivot" type="boolean" mandatory="true"></property>
+            <property name="searchText" type="string" mandatory="false"></property>
+        </urlparams>
+    </request>
 
 </config>
