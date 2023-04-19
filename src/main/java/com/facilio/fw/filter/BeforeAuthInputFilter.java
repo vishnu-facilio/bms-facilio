@@ -71,7 +71,7 @@ public class BeforeAuthInputFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
 
-        if(FacilioProperties.isApiRateLimiterEnabled() && (FacilioProperties.getEnvironment().equals("stage") || FacilioProperties.getEnvironment().equals("stage2")) ){
+        if(FacilioProperties.isApiRateLimiterEnabled()){
             if(rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
                 try {
                     APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();

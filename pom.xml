@@ -159,7 +159,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.589</version>
+            <version>1.0.590</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>

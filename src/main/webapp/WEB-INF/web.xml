@@ -77,30 +77,6 @@
 		</init-param>
 	</filter>
 
-	<filter>
-		<filter-name>InputValidationFilter</filter-name>
-		<filter-class>com.facilio.security.InputValidationFilter</filter-class>
-		<init-param>
-			<param-name>config</param-name>
-			<param-value>conf/security/security-asset.xml</param-value>
-		</init-param>
-		<init-param>
-			<param-name>antisamy-policy</param-name>
-			<param-value>conf/antisamy-facilio.xml</param-value>
-		</init-param>
-		<init-param>
-			<param-name>throw403</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>exclude</param-name>
-			<param-value>/api/v3/modules/data/files,/api/v3/modules/data/list,/api/attachment/add,/api/v2/workflow/getDefaultWorkflowResult,/api/v2/workorders/close,/api/v2/workorders/update,/api/reading/updatesetupreading,/api/reading/addsetupreading,/internal/addFromMail,/api/v2/alarm/rules/updateNew,/api/v2/alarm/rules/addNew,/api/v2/graphics/update,/api/dashboard/update,/api/v2/parseftl,/api/v2/module/data/customUpload,/api/v2/setup/scheduledaction/add,/api/v2/workflow/updateUserFunction,/api/v2/integ/pdf/create,/api/reading/addformula,/api/reading/updateformula,/api/v3/bundle/installBundle,/api/v2/import/upload,/api/v3/modules/emailConversationThreading,/api/import/multiImport/importFileUpload,/api/v2/connectedApps/add</param-value>
-		</init-param>
-		<init-param>
-			<param-name>allowed-upload-types</param-name>
-			<param-value>application/x-tika-msoffice,image/bmp,image/gif,image/jpeg,image/png,image/svg+xml,image/tiff,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document</param-value>
-		</init-param>
-	</filter>
 
 	<filter>
 		<filter-name>api-struts2</filter-name>
@@ -156,10 +132,7 @@
 	</filter-mapping>
 
 	<!-- The following will not be called if url is parsed properly in UrlFilter. These two are mainly for loading index.jsp for any url -->
-	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+
 	<filter-mapping>
 		<filter-name>global-struts2</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -187,11 +160,6 @@
 	</filter-mapping>
 
 	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
-		<url-pattern>/api/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	<filter-mapping>
 		<filter-name>api-struts2</filter-name>
 		<url-pattern>/api/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
@@ -206,11 +174,7 @@
 		<url-pattern>/auth/api/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
-	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
-		<url-pattern>/auth/api/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
+
 	<filter-mapping>
 		<filter-name>api-struts2</filter-name>
 		<url-pattern>/auth/api/*</url-pattern>
@@ -226,11 +190,7 @@
 		<url-pattern>/sso/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
-	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
-		<url-pattern>/sso/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
+
 	<filter-mapping>
 		<filter-name>api-struts2</filter-name>
 		<url-pattern>/sso/*</url-pattern>
