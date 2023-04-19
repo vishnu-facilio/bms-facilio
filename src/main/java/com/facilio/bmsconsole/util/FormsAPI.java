@@ -1202,7 +1202,6 @@ public class FormsAPI {
 					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
 					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 10, 1));
 					fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 11, 1));
-					fields.add(new FormField("sourceType", FieldDisplayType.NUMBER, "Source Type", Required.OPTIONAL, 12, 1));
 					fields.add(new FormField("affectedPerson", FieldDisplayType.LOOKUP_SIMPLE, "Affected Person", Required.OPTIONAL,"people", 15, 1));
 					fields.add(new FormField("reportedDate", FieldDisplayType.DATETIME, "Reported Date", Required.OPTIONAL, 16, 1));
 					fields.add(new FormField("affectedDate", FieldDisplayType.DATETIME, "Affected Date", Required.OPTIONAL, 17, 1));

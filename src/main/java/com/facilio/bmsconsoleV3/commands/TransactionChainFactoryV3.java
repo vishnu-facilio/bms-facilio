@@ -27,6 +27,7 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
+import com.facilio.bmsconsoleV3.commands.servicerequest.SetAppIdForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
@@ -841,6 +842,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddRequesterForServiceRequestCommandV3());
         c.addCommand(new SetIsNewForServiceRequestCommandV3());
+        c.addCommand(new SetAppIdForServiceRequestCommandV3());
         return c;
     }
 

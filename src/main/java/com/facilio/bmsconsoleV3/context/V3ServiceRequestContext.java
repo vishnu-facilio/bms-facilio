@@ -176,5 +176,12 @@ public class V3ServiceRequestContext extends V3Context{
 	}
 	private PeopleContext affectedPerson;
 	private Long reportedDate,affectedDate,actualStartDate,actualFinishDate,responseDueDate  ;
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+	private long appId;
 
 }
