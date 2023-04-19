@@ -71,7 +71,7 @@ public class VendorDocumentsModule extends BaseModuleConfig{
         vendorDocumentForm.setName("default_vendorDocuments_web");
         vendorDocumentForm.setModule(vendorDocumentsModule);
         vendorDocumentForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        vendorDocumentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        vendorDocumentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> vendorDocumentFormFields = new ArrayList<>();
         vendorDocumentFormFields.add(new FormField("documentName", FacilioField.FieldDisplayType.TEXTBOX, "Document Name", FormField.Required.REQUIRED, 1, 1));

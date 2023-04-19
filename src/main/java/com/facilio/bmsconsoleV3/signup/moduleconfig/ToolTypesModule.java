@@ -85,7 +85,7 @@ public class ToolTypesModule extends BaseModuleConfig{
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         toolTypesFormFields.add(field);
-        toolTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.NUMBER, "Selling Price Per Hour", FormField.Required.OPTIONAL,  5, 2));
+        toolTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.DECIMAL, "Selling Price Per Hour", FormField.Required.OPTIONAL,  5, 2));
         toolTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
         toolTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
         toolTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 6, 3));

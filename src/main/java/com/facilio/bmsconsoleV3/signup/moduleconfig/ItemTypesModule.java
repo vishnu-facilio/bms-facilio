@@ -85,7 +85,7 @@ public class ItemTypesModule extends BaseModuleConfig{
         field.setAllowCreateOptions(true);
         field.addToConfig("canShowLookupWizard",true);
         itemTypesFormFields.add(field);
-        itemTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.NUMBER, "Selling Price", FormField.Required.OPTIONAL,  5, 2));
+        itemTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.DECIMAL, "Selling Price", FormField.Required.OPTIONAL,  5, 2));
         itemTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
         itemTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
         itemTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 7, 3));
