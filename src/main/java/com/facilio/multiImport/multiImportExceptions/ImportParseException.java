@@ -30,6 +30,9 @@ public class ImportParseException extends FacilioException {
 		else if (e instanceof ImportLookupModuleValueNotFoundException) {
 			exceptionString.append(((ImportLookupModuleValueNotFoundException)e).getClientMessage());
 		}
+		else if (e instanceof IllegalArgumentException){
+			exceptionString.append(e.getMessage());
+		}
 		else if (e instanceof ImportTimeColumnParseException){
 			exceptionString.append(((ImportTimeColumnParseException)e).getClientMessage());
 		}

@@ -30,6 +30,7 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
 
     ImportDataDetails importDataDetails = null;
     Long importId = null;
+    Integer processedRowCount = 0;
 
     private static final List<FacilioField> IMPORT_SHEET_UPDATE_FIELDS = Collections.unmodifiableList(getSheetUpdateFields());
 
@@ -47,12 +48,12 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
 
             List<ImportFileSheetsContext> importSheets = MultiImportApi.getSortedImportSheetsFromAllFiles(importFiles);
             HashMap<Long, AbstractImportFileReader> importFileIdVsImportReaderMap = getImportFiledIdVsImportReaderMap(importFiles);
-
+            importDataDetails.setTotalRecords(MultiImportApi.getImportTotalRecordsCount(importFiles));
 
 
             LOGGER.info("Parsing started for ImportId:" + importId); //parsing status updated in parseAndImportData API
             //parsing
-            parseImportSheet(importId,importDataDetails,importFileIdVsImportReaderMap, importSheets);
+            parseImportSheet(importFileIdVsImportReaderMap, importSheets);
 
             importDataDetails.setStatus(ImportDataStatus.PARSING_COMPLETED);
 
@@ -76,7 +77,7 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
 
     }
 
-    private static void parseImportSheet(Long importId,ImportDataDetails importDataDetails,Map<Long, AbstractImportFileReader> importFileIdVsImportReaderMap, List<ImportFileSheetsContext> importSheets) throws Exception {
+    private void parseImportSheet(Map<Long, AbstractImportFileReader> importFileIdVsImportReaderMap, List<ImportFileSheetsContext> importSheets) throws Exception {
         for (ImportFileSheetsContext importSheet : importSheets) {
             try {
                 FacilioModule module = importSheet.getModule();
@@ -94,9 +95,11 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
                 parseContext.put(FacilioConstants.ContextNames.IMPORT_SHEET, importSheet);
                 parseContext.put(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS,importDataDetails);
                 parseContext.put(FacilioConstants.ContextNames.IMPORT_FILE_READERS_MAP,importFileIdVsImportReaderMap);
+                parseContext.put(FacilioConstants.ContextNames.PROCESSED_ROW_COUNT,processedRowCount);
                 chain.execute();
 
                 updateSheetDetails(importSheet);
+                processedRowCount =(int)parseContext.get(FacilioConstants.ContextNames.PROCESSED_ROW_COUNT);
             } catch (Exception e) {
                 String message = e.getMessage();
                 importSheet.setStatus(ImportDataStatus.PARSING_FAILED);

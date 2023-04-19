@@ -1,6 +1,7 @@
 package com.facilio.multiImport.util;
 
 
+import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -117,22 +118,24 @@ public class MultiImportChainUtil {
 
         Command beforeImportCommand = null;
         Command afterImportCommand = null;
-        Command afterInsertCommand = null;
+        Command afterDataProcessCommand = null;
 
 
         RowFunction beforeProcessRowFunction = null;
         RowFunction afterProcessRowFunction = null;
         Map<String, List<String>> lookupUniqueFieldsMap = null;
+        Map<String,List<String>> loadLookUpExtraSelectFields = null;
 
         if (importConfig != null) {
             ImportHandler importHandler = importConfig.getImportHandler();
             if (importHandler != null) {
                 beforeImportCommand = importHandler.getBeforeImportCommand();
                 afterImportCommand = importHandler.getAfterImportCommand();
-                afterInsertCommand = importHandler.getAfterInsertCommand();
+                afterDataProcessCommand = importHandler.getAfterDataProcessCommand();
                 beforeProcessRowFunction = importHandler.getBeforeProcessRowFunction();
                 afterProcessRowFunction = importHandler.getAfterProcessRowFunction();
                 lookupUniqueFieldsMap = importHandler.getLookupUniqueFieldsMap();
+                loadLookUpExtraSelectFields = importHandler.getLoadLookUpExtraSelectFields();
             }
         }
 
@@ -140,15 +143,16 @@ public class MultiImportChainUtil {
         addIfNotNull(chain, beforeImportCommand);
         chain.addCommand(new V3ProcessMultiImportCommand());
         chain.addCommand(new FilterMultiImportDataCommand());
-        addIfNotNull(chain, afterImportCommand);
+        addIfNotNull(chain,afterDataProcessCommand);
         addCreateAndPatchChainsBySettings(chain,setting,moduleName);
         chain.addCommand(new UpdateRowStatusCommand());
-        addIfNotNull(chain, afterInsertCommand);
+        addIfNotNull(chain, afterImportCommand);
 
         FacilioContext context = chain.getContext();
         context.put(MultiImportApi.ImportProcessConstants.BEFORE_PROCESS_ROW_FUNCTION, beforeProcessRowFunction);
         context.put(MultiImportApi.ImportProcessConstants.AFTER_PROCESS_ROW_FUNCTION, afterProcessRowFunction);
         context.put(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP, lookupUniqueFieldsMap);
+        context.put(MultiImportApi.ImportProcessConstants.LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP,loadLookUpExtraSelectFields);
         return chain;
     }
 
@@ -166,7 +170,6 @@ public class MultiImportChainUtil {
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
-        Command activitySaveCommand = null;
 
         if (importConfig != null) {
             CreateHandler createHandler = importConfig.getCreateHandler();
@@ -177,9 +180,6 @@ public class MultiImportChainUtil {
                 beforeSaveCommand = createHandler.getBeforeSaveCommand();
                 afterSaveCommand = createHandler.getAfterSaveCommand();
                 afterTransactionCommand = createHandler.getAfterTransactionCommand();
-                if (createHandler.getActivitySaveCommand() != null) {
-                    activitySaveCommand = createHandler.getActivitySaveCommand();
-                }
             }
         }
 
@@ -187,11 +187,8 @@ public class MultiImportChainUtil {
 
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
-
         transactionChain.addCommand(new ImportSaveCommand(module));
-
         addIfNotNull(transactionChain, afterSaveCommand);
-        addIfNotNull(transactionChain, activitySaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         return transactionChain;
@@ -205,7 +202,6 @@ public class MultiImportChainUtil {
         Command beforeUpdateCommand = null;
         Command afterUpdateCommand = null;
         Command afterTransactionCommand = null;
-        Command activitySaveCommand = null;
 
         if (importConfig != null) {
             UpdateHandler updateHandler = importConfig.getUpdateHandler();
@@ -216,7 +212,6 @@ public class MultiImportChainUtil {
                 beforeUpdateCommand = updateHandler.getBeforeUpdateCommand();
                 afterUpdateCommand = updateHandler.getAfterUpdateCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();
-                activitySaveCommand = updateHandler.getActivitySaveCommand();
             }
         }
 
@@ -224,11 +219,8 @@ public class MultiImportChainUtil {
 
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeUpdateCommand);
-
         transactionChain.addCommand(new ImportUpdateCommand(module));
-
         addIfNotNull(transactionChain, afterUpdateCommand);
-        addIfNotNull(transactionChain, activitySaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
         return transactionChain;
     }

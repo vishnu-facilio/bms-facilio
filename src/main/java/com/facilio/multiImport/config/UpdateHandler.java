@@ -9,7 +9,6 @@ public class UpdateHandler {
     private Command beforeUpdateCommand;
     private Command afterUpdateCommand;
     private Command afterTransactionCommand;
-    private Command activitySaveCommand;
 
     public Command getInitCommand() {
         return initCommand;
@@ -27,16 +26,12 @@ public class UpdateHandler {
         return afterTransactionCommand;
     }
 
-    public Command getActivitySaveCommand() {
-        return activitySaveCommand;
-    }
 
     private UpdateHandler(UpdateHandler.UpdateHandlerBuilder updateHandlerBuilder) {
         this.initCommand = updateHandlerBuilder.initCommand;
         this.beforeUpdateCommand = updateHandlerBuilder.beforeUpdateCommand;
         this.afterUpdateCommand = updateHandlerBuilder.afterUpdateCommand;
         this.afterTransactionCommand = updateHandlerBuilder.afterTransactionCommand;
-        this.activitySaveCommand = updateHandlerBuilder.activitySaveCommand;
     }
 
     public static class UpdateHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -45,7 +40,6 @@ public class UpdateHandler {
         private Command beforeUpdateCommand;
         private Command afterUpdateCommand;
         private Command afterTransactionCommand;
-        private Command activitySaveCommand;
 
         public UpdateHandlerBuilder initCommand(Command... initCommand) {
             this.initCommand = buildTransactionChain(initCommand);
@@ -66,12 +60,6 @@ public class UpdateHandler {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
             return this;
         }
-
-        public UpdateHandlerBuilder activitySaveCommand(Command... activitySaveCommand) {
-            this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
-            return this;
-        }
-
         public UpdateHandlerBuilder(ImportConfig.ImportConfigBuilder parent) {
             super(parent);
         }

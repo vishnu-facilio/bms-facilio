@@ -11,22 +11,26 @@ import java.util.Map;
 public class ImportHandler {
     private Command beforeImportCommand;
     private Command afterImportCommand;
-    private Command afterInsertCommand;
+    private Command afterDataProcessCommand;
     private RowFunction beforeProcessRowFunction;
     private RowFunction afterProcessRowFunction;
     public Map<String, List<String>> lookupUniqueFieldsMap;
+    public Map<String,List<String>> loadLookUpExtraSelectFields;
     public Command getBeforeImportCommand() {
         return beforeImportCommand;
     }
     public Command getAfterImportCommand() {
         return afterImportCommand;
     }
-    public Command getAfterInsertCommand() {
-        return afterInsertCommand;
+    public Command getAfterDataProcessCommand() {
+        return afterDataProcessCommand;
     }
     public RowFunction getBeforeProcessRowFunction() {
         return beforeProcessRowFunction;
     }
+
+    public Map<String, List<String>> getLoadLookUpExtraSelectFields() { return loadLookUpExtraSelectFields;}
+
     public RowFunction getAfterProcessRowFunction() {
         return afterProcessRowFunction;
     }
@@ -37,20 +41,22 @@ public class ImportHandler {
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
-        this.afterInsertCommand = importHandlerBuilder.afterInsertCommand;
+        this.afterDataProcessCommand = importHandlerBuilder.afterDataProcessCommand;
         this.beforeProcessRowFunction = importHandlerBuilder.beforeProcessRowFunction;
         this.afterProcessRowFunction = importHandlerBuilder.afterProcessRowFunction;
         this.lookupUniqueFieldsMap = importHandlerBuilder.lookupUniqueFieldsMap;
+        this.loadLookUpExtraSelectFields = importHandlerBuilder.loadLookUpExtraSelectFields;
     }
 
     public static class ImportHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
         private Command beforeImportCommand;
         private Command afterImportCommand;
-        private Command afterInsertCommand;
+        private Command afterDataProcessCommand;
         private RowFunction beforeProcessRowFunction;
         private RowFunction afterProcessRowFunction;
         private Map<String, List<String>> lookupUniqueFieldsMap;
 
+        private Map<String, List<String>> loadLookUpExtraSelectFields;
         public ImportHandlerBuilder beforeImportCommand(Command... command) {
             this.beforeImportCommand = buildTransactionChain(command);
             return this;
@@ -59,8 +65,8 @@ public class ImportHandler {
             this.afterImportCommand =  buildTransactionChain(command);
             return this;
         }
-        public ImportHandlerBuilder afterInsertCommand(Command... command) {
-            this.afterInsertCommand =  buildTransactionChain(command);
+        public ImportHandlerBuilder afterDataProcessCommand(Command... command) {
+            this.afterDataProcessCommand =  buildTransactionChain(command);
             return this;
         }
         public ImportHandlerBuilder beforeProcessRowFunction(RowFunction rowFunction) {
@@ -76,6 +82,13 @@ public class ImportHandler {
                 lookupUniqueFieldsMap = new HashMap<>();
             }
             lookupUniqueFieldsMap.put(moduleName, fieldNames);
+            return this;
+        }
+        public ImportHandlerBuilder loadLookUpExtraSelectFields(String moduleName, List<String> fieldNames) {
+            if (loadLookUpExtraSelectFields == null) {
+                loadLookUpExtraSelectFields = new HashMap<>();
+            }
+            loadLookUpExtraSelectFields.put(moduleName, fieldNames);
             return this;
         }
         public ImportHandlerBuilder(ImportConfig.ImportConfigBuilder parent) {

@@ -2,6 +2,7 @@ package com.facilio.multiImport.constants;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
@@ -25,6 +26,7 @@ public class ImportConstants{
     public static final String INSERT_RECORDS_COUNT = "insertRecordsCount";
     public static final String UPDATE_RECORDS_COUNT = "updateRecordsCount";
     public static final String SKIP_RECORDS_COUNT = "skipRecordsCount";
+    public static final String IMPORT_FIELDS="importFields";
 
     public static Collection<Pair<Long,Map<String,Object>>> getInsertRecords(Context context) {
         return (Collection<Pair<Long,Map<String,Object>>>) context.get(INSERT_RECORDS);
@@ -74,5 +76,11 @@ public class ImportConstants{
     }
     public static ImportDataDetails getImportDataDetails(Context context){
         return (ImportDataDetails) context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
+    }
+    public static void setImportFields(Context context, List<FacilioField> fields){
+        context.put(IMPORT_FIELDS,fields);
+    }
+    public static List<FacilioField> getImportFields(Context context){
+        return (List<FacilioField>) context.get(IMPORT_FIELDS);
     }
 }

@@ -28,6 +28,7 @@ import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsExcept
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.endpoint.SessionManager;
@@ -986,22 +987,11 @@ public class MultiImportApi {
             }
         }
     }
-    public static ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
-        ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> allFields = modBean.getAllFields(moduleName);
-        for (FacilioField field : allFields) {
-            if (field.isRequired()) {
-                fields.add(field);
-            }
-        }
-        return fields;
-    }
     public static List<FacilioField> getImportFields(Context context, String moduleName) throws Exception {
 
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
         if (org.apache.commons.collections.CollectionUtils.isEmpty(fields)) {
-            fields = Constants.getModBean().getAllFields(moduleName);
+            fields = getFields(moduleName);
         }
         if (org.apache.commons.collections.CollectionUtils.isEmpty(fields)) {
             throw new IllegalArgumentException("Fields not found for module " + moduleName);
@@ -1013,18 +1003,15 @@ public class MultiImportApi {
         sendMultiImportProgressToClient(importDataDetails,null);
     }
     public static void sendMultiImportProgressToClient(ImportDataDetails importDataDetails,Map<String,Object> clientJson) throws Exception {
-        float totalImportRecordsCount = importDataDetails.getTotalRecords();
-        float processedRecordsCount = importDataDetails.getProcessedRecordsCount();
-
-        float completePercentage = (processedRecordsCount / totalImportRecordsCount) * 100;
-
         Long importId = importDataDetails.getId();
         JSONObject json = new JSONObject();
         json.put("id",importId);
-        json.put("percentage",completePercentage);
 
         if(clientJson!=null){
             json.putAll(clientJson);
+        }else {
+            float completePercentage = getImportCompletePercentage(importDataDetails);
+            json.put("percentage",completePercentage);
         }
 
         long ouid = importDataDetails.getCreatedBy();
@@ -1036,6 +1023,20 @@ public class MultiImportApi {
         message.setOrgId(user.getOrgId());
         message.setSessionType(LiveSession.LiveSessionType.APP);
         SessionManager.getInstance().sendMessage(message);
+    }
+    public static float getImportCompletePercentage(ImportDataDetails importDataDetails){
+        float totalImportRecordsCount = importDataDetails.getTotalRecords();
+        float processedRecordsCount = importDataDetails.getProcessedRecordsCount();
+
+        float completePercentage = (processedRecordsCount / totalImportRecordsCount) * 100;
+        return completePercentage;
+    }
+    public static int getOnePercentageRecordsCount(ImportDataDetails importDataDetails){
+        int one_percentage_records = Math.round(importDataDetails.getTotalRecords()/100);
+        if(one_percentage_records==0){
+            one_percentage_records=1;
+        }
+        return one_percentage_records;
     }
     public static void sendMultiImportErrorRecordsDownloadingToClient(ImportDataDetails importDataDetails,Map<String,Object> clientJson) throws Exception {
         Long importId = importDataDetails.getId();
@@ -1054,12 +1055,87 @@ public class MultiImportApi {
         message.setSessionType(LiveSession.LiveSessionType.APP);
         SessionManager.getInstance().sendMessage(message);
     }
+    public static List<MultiImportField> getMultiImportFieldsList(String moduleName) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+
+        FacilioUtil.throwIllegalArgumentException(module == null ,"Module not found");
+
+        List<FacilioField> facilioFields = modBean.getAllFields(moduleName);
+
+        if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,
+                FacilioConstants.ContextNames.TENANT,
+                FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST,
+                FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
+            facilioFields.add(FieldFactory.getSiteIdField());
+        }
+
+        List<MultiImportField> multiImportFields = new ArrayList<>();
+
+        List<String> mandatoryFieldsNames = getMandatoryFieldNames(moduleName);
+        for(FacilioField facilioField : facilioFields){
+            String fieldName = facilioField.getName();
+            MultiImportField importField =  new MultiImportField();
+            importField.setField(facilioField);
+            if(CollectionUtils.isNotEmpty(mandatoryFieldsNames)){
+                if(mandatoryFieldsNames.contains(fieldName)) {
+                    importField.setMandatory(true);
+                }
+            }else if(facilioField.isRequired()){
+                importField.setMandatory(true);
+            }
+            multiImportFields.add(importField);
+        }
+        return multiImportFields;
+    }
+    public static List<FacilioField> getFields(String moduleName) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+
+        FacilioUtil.throwIllegalArgumentException(module == null ,"Module not found");
+
+        List<FacilioField> facilioFields = modBean.getAllFields(moduleName);
+        if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,
+                FacilioConstants.ContextNames.TENANT,
+                FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST,
+                FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
+            facilioFields.add(FieldFactory.getSiteIdField(module));
+        }
+        return facilioFields;
+
+    }
+    public static List<String> getMandatoryFieldNames(String moduleName){
+        switch (moduleName){
+            case FacilioConstants.ContextNames.WORK_ORDER:
+                return Arrays.asList("subject","siteId","moduleState");
+            case FacilioConstants.ContextNames.SITE:
+                return Arrays.asList("name");
+            case FacilioConstants.ContextNames.BUILDING:
+            case FacilioConstants.ContextNames.SPACE:
+                return Arrays.asList("name","site");
+            case FacilioConstants.ContextNames.FLOOR:
+                return Arrays.asList("name","site","building");
+            default:
+                return null;
+        }
+    }
+    public static ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
+        ArrayList<FacilioField> mandatoryFields = new ArrayList<FacilioField>();
+        List<MultiImportField> allImportFields = getMultiImportFieldsList(moduleName);
+        for (MultiImportField importField : allImportFields) {
+             if(importField.isMandatory()){
+                 mandatoryFields.add(importField.getField());
+             }
+        }
+        return mandatoryFields;
+    }
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";
         public static final String ROW_FUNCTION = "rowFunction";
         public static final String BEFORE_PROCESS_ROW_FUNCTION = "beforeProcessRowFunction";
         public static final String AFTER_PROCESS_ROW_FUNCTION = "afterProcessRowFunction";
         public static final String LOOKUP_UNIQUE_FIELDS_MAP = "lookupUniqueFieldsMap";
+        public static final String LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP = "loadLookUpExtraSelectFields";
         public static final String INSERT_RECORDS = "insertRecords";
         public static final String UPDATE_RECORDS = "updateRecords";
         public static final String OLD_RECORDS = "oldRecords";

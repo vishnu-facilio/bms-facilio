@@ -116,7 +116,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             recordsProcessedCount += currentRecordsInChunk;
 
 
-            LOGGER.info(i + "/" + splitSize + " batch started");
+            LOGGER.info(i + "/" + splitSize + " batch started------start time:"+System.currentTimeMillis());
             LOGGER.info("currentRecordsInChunk:" + currentRecordsInChunk);
 
             FacilioChain chain = MultiImportChainUtil.getImportChain(moduleName,importSheet.getImportSettingEnum());        //import the sheet data
@@ -134,7 +134,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             chain.execute();
 
             LOGGER.info("recordsProcessedCount out of 25000:" + recordsProcessedCount);
-            LOGGER.info(i + "/" + splitSize + " batch completed");
+            LOGGER.info(i + "/" + splitSize + " batch completed------completed time:"+System.currentTimeMillis());
             updateSheetDetails(importSheet, context);
 
         }
@@ -209,6 +209,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
                 clientJson.put("importStartTime",importDataDetails.getImportStartTime());
                 clientJson.put("importEndTime",importDataDetails.getImportEndTime());
                 clientJson.put("hasErrorRecords",importDataDetails.isHasErrorRecords());
+                clientJson.put("percentage",100);
                 MultiImportApi.sendMultiImportProgressToClient(importDataDetails,clientJson);
 
                 long ouid = importDataDetails.getCreatedBy();               //send email if import completed

@@ -1215,6 +1215,7 @@ public class FacilioConstants {
 		public static final String IMPORT_SHEETS = "importSheets";
 		public static final String IMPORT_ROW_CONTEXT_LIST = "importRowContextList";
 		public static final String CHUNK_LIMIT = "chunkLimit";
+		public static final String PROCESSED_ROW_COUNT="processedRowCount";
 
 		public static final String CONFIG = "config";
 		public static final String RESULT = "result";

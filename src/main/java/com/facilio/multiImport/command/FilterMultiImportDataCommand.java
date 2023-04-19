@@ -15,6 +15,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.multiImport.constants.ImportConstants;
+import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
@@ -30,9 +31,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class FilterMultiImportDataCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(FilterMultiImportDataCommand.class.getName());
+
+    ImportDataDetails importDataDetails = null;
+    Long importId = null;
     ImportFileSheetsContext importSheet = null;
     List<FacilioField> requiredFields = null;
     String moduleName = null;
@@ -40,9 +46,11 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        LOGGER.info("FilterMultiImportDataCommand started time:"+System.currentTimeMillis());
         List<ImportRowContext> allRows = ImportConstants.getRowContextList(context);
 
-        Long importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
+        importDataDetails = ImportConstants.getImportDataDetails(context);
+        importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
         importSheet = (ImportFileSheetsContext) context.get(FacilioConstants.ContextNames.IMPORT_SHEET);
         beanClass = (Class) context.get(Constants.BEAN_CLASS);
 
@@ -174,6 +182,9 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
             ImportConstants.setOldRecordsMap(context,oldRecords);
 
         }
+
+        LOGGER.info("FilterMultiImportDataCommand completed time:"+System.currentTimeMillis());
+
         return false;
     }
 

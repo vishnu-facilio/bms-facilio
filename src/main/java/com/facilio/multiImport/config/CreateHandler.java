@@ -9,7 +9,6 @@ public class CreateHandler {
     private Command beforeSaveCommand;
     private Command afterSaveCommand;
     private Command afterTransactionCommand;
-    private Command activitySaveCommand;
 
     public Command getInitCommand() {
         return initCommand;
@@ -27,16 +26,11 @@ public class CreateHandler {
         return afterTransactionCommand;
     }
 
-    public Command getActivitySaveCommand() {
-        return activitySaveCommand;
-    }
-
     private CreateHandler(CreateHandler.CreateHandlerBuilder createHandlerBuilder) {
       this.initCommand = createHandlerBuilder.initCommand;
       this.beforeSaveCommand = createHandlerBuilder.beforeSaveCommand;
       this.afterSaveCommand = createHandlerBuilder.afterSaveCommand;
       this.afterTransactionCommand = createHandlerBuilder.afterTransactionCommand;
-      this.activitySaveCommand = createHandlerBuilder.activitySaveCommand;
     }
 
     public static class CreateHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -45,7 +39,6 @@ public class CreateHandler {
         private Command beforeSaveCommand;
         private Command afterSaveCommand;
         private Command afterTransactionCommand;
-        private Command activitySaveCommand;
 
         public CreateHandlerBuilder initCommand(Command... initCommand) {
             this.initCommand = buildTransactionChain(initCommand);
@@ -64,11 +57,6 @@ public class CreateHandler {
 
         public CreateHandlerBuilder afterTransactionCommand(Command... afterTransactionCommand) {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
-            return this;
-        }
-
-        public CreateHandlerBuilder activitySaveCommand(Command... activitySaveCommand) {
-            this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
             return this;
         }
 

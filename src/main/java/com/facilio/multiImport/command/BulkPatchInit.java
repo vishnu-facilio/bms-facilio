@@ -25,12 +25,17 @@ public class BulkPatchInit extends FacilioCommand {
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         String moduleName = Constants.getModuleName(context);
 
-        Map<String, List<Pair<Long, ModuleBaseWithCustomFields>>> recordMap = new HashMap<>();
-        List<Pair<Long, ModuleBaseWithCustomFields>> records = new ArrayList<>();
+        Map<String, List<Pair<Long, ModuleBaseWithCustomFields>>> updateRecordMap = new HashMap<>();
+        List<Pair<Long, ModuleBaseWithCustomFields>> updateRecordsPair = new ArrayList<>();
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        List<ModuleBaseWithCustomFields> records = new LinkedList<>();
 
         if(CollectionUtils.isEmpty(updateRecords)){
+            updateRecordMap.put(moduleName,updateRecordsPair);
             recordMap.put(moduleName,records);
-            ImportConstants.setUpdateRecordMap(context, recordMap);
+            ImportConstants.setUpdateRecordMap(context, updateRecordMap);
+            Constants.setRecordMap(context,recordMap);
             return false;
         }
 
@@ -53,12 +58,16 @@ public class BulkPatchInit extends FacilioCommand {
             ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(oldRecordJson, beanClass);
             Pair logIdVsReordPair = new MutablePair(logId, record);
 
-            records.add(logIdVsReordPair);
+            updateRecordsPair.add(logIdVsReordPair);
+            records.add(record);
+
         }
 
-        recordMap.put(moduleName, records);
+        updateRecordMap.put(moduleName,updateRecordsPair);
+        recordMap.put(moduleName,records);
 
-        ImportConstants.setUpdateRecordMap(context, recordMap);
+        ImportConstants.setUpdateRecordMap(context, updateRecordMap);
+        Constants.setRecordMap(context,recordMap);
         return false;
     }
 }

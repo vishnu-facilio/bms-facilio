@@ -21,11 +21,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j
 public class ImportSaveCommand extends FacilioCommand {
     private FacilioModule module;
+    private Context context;
     private int totalCount = 0;
 
     public ImportSaveCommand(FacilioModule module) {
@@ -34,20 +34,21 @@ public class ImportSaveCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        this.context = context;
         Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> insertRecordMap = ImportConstants.getInsertRecordMap(context);
         Map<Long, ImportRowContext> logIdVsRowContext = ImportConstants.getLogIdVsRowContextMap(context);
-        removeErrorRecordsFromRecordMap(insertRecordMap,logIdVsRowContext);
+        Map<String,List<ModuleBaseWithCustomFields>> recordMap = removeErrorRecordsFromInsertRecordMap(insertRecordMap,logIdVsRowContext);
 
         SaveOptions defaultOptions = SaveOptions.of((FacilioContext) context);
         Set<String> extendedModules = Constants.getExtendedModules(context); //For adding extended module which has module entry only for base module. Like Assets
         if (CollectionUtils.isEmpty(extendedModules)) {
-            Map<Long, List<UpdateChangeSet>> changeSet = insertData(module.getName(), defaultOptions, null, insertRecordMap.get(module.getName()));
+            Map<Long, List<UpdateChangeSet>> changeSet = insertData(module.getName(), defaultOptions, null, recordMap.get(module.getName()));
             CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, module.getName());
         }
         else {
             for (String extendedModule : extendedModules) {
                 SaveOptions saveOptions = Constants.getExtendedSaveOption(context, extendedModule);
-                Map<Long, List<UpdateChangeSet>> changeSet = insertData(extendedModule, defaultOptions, saveOptions, insertRecordMap.get(extendedModule));
+                Map<Long, List<UpdateChangeSet>> changeSet = insertData(extendedModule, defaultOptions, saveOptions, recordMap.get(extendedModule));
                 CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, extendedModule); // For automation of this module
                 CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, module.getName()); // For automation of parent module
             }
@@ -57,13 +58,12 @@ public class ImportSaveCommand extends FacilioCommand {
         return false;
     }
 
-    private Map<Long, List<UpdateChangeSet>> insertData(String moduleName, SaveOptions defaultOptions, SaveOptions options, List<Pair<Long,ModuleBaseWithCustomFields>> logIdVsRecords) throws Exception {
+    private Map<Long, List<UpdateChangeSet>> insertData(String moduleName, SaveOptions defaultOptions, SaveOptions options, List<ModuleBaseWithCustomFields> records) throws Exception {
         try {
 
-            if (CollectionUtils.isEmpty(logIdVsRecords)) {
+            if (CollectionUtils.isEmpty(records)) {
                 return Collections.EMPTY_MAP;
             }
-            List<ModuleBaseWithCustomFields> records = logIdVsRecords.stream().map(p->p.getRight()).collect(Collectors.toList());
 
             ModuleBean modBean = Constants.getModBean();
             FacilioModule module = modBean.getModule(moduleName);
@@ -116,14 +116,25 @@ public class ImportSaveCommand extends FacilioCommand {
     private boolean isSetLocalId (SaveOptions options) {
         return options != null && options.isSetLocalId();
     }
-    private void removeErrorRecordsFromRecordMap(Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> insertRecordMap, Map<Long, ImportRowContext> logIdVsRowContext){
+    private Map<String,List<ModuleBaseWithCustomFields>> removeErrorRecordsFromInsertRecordMap(Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> insertRecordMap, Map<Long, ImportRowContext> logIdVsRowContext){
         List<Pair<Long,ModuleBaseWithCustomFields>> records = insertRecordMap.get(module.getName());
+
+        List<ModuleBaseWithCustomFields> importRecords = new LinkedList<>();
         records.removeIf(pair -> {
             long logId = pair.getKey();
-            if (logIdVsRowContext.get(logId).isErrorOccurredRow()){
+            ImportRowContext importRowContext = logIdVsRowContext.get(logId);
+            if (importRowContext.isErrorOccurredRow()){
+                importRowContext.setRowStatus(ImportRowContext.RowStatus.ADDING_FAILED);
                 return true;
             }
+            importRecords.add(pair.getValue());
             return false;
         });
+
+        Map<String,List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        recordMap.put(module.getName(), importRecords);
+        Constants.setRecordMap(context,recordMap);
+
+        return recordMap;
     }
 }

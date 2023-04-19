@@ -46,6 +46,7 @@ import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCo
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
+import com.facilio.bmsconsoleV3.commands.workorder.multi_import.AddWorkOrderCommandV3Import;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
@@ -607,6 +608,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWorkOrderCommandV3());
         c.addCommand(new AddFailureClassFromResource());
         c.addCommand(new TrimWorkOrderDescriptionCommandV3());
+        return c;
+    }
+    public static FacilioChain getWorkOrderBeforeCreateImportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddWorkOrderCommandV3Import());
+        c.addCommand(new SetLocalIdCommandV3());
         return c;
     }
 

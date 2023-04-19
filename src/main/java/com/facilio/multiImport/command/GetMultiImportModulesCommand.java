@@ -49,18 +49,19 @@ public class GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.ANNOUNCEMENT,
             FacilioConstants.ContextNames.JOB_PLAN,
             FacilioConstants.ContextNames.ATTENDANCE,
-            FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+            FacilioConstants.PeopleGroup.PEOPLE_GROUP,
+            FacilioConstants.ContextNames.LOCATION);
 
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
         ModuleBean modBean = Constants.getModBean();
-        List<FacilioModule> sytemModules = new ArrayList<>();
+        List<FacilioModule> systemModules = new ArrayList<>();
 
         for(String moduleName: MODULES) {
             if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
-                sytemModules.add(modBean.getModule(moduleName));
+                systemModules.add(modBean.getModule(moduleName));
             }
         }
 
@@ -68,7 +69,7 @@ public class GetMultiImportModulesCommand extends FacilioCommand {
         customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         Map<String, List<FacilioModule>> modules = new HashMap<String, List<FacilioModule>>();
-        modules.put("systemModules", sytemModules);
+        modules.put("systemModules", systemModules);
         modules.put("customModules", customModules);
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);

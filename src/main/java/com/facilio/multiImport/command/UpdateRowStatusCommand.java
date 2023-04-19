@@ -14,21 +14,20 @@ import com.facilio.multiImport.context.ImportRowContext;
 import com.facilio.multiImport.util.MultiImportApi;
 import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class UpdateRowStatusCommand extends FacilioCommand {
-
+    private static final Logger LOGGER = Logger.getLogger(UpdateRowStatusCommand.class.getName());
     private static final List<FacilioField> IMPORT_LOG_UPDATE_FIELDS = Collections.unmodifiableList(geImportLogtUpdateField());
-
+    ImportDataDetails importDataDetails = null;
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        LOGGER.info("UpdateRowStatusCommand started time:"+System.currentTimeMillis());
 
         List<ImportRowContext> rowContextList = ImportConstants.getRowContextList(context);
         ImportFileSheetsContext importSheet = ImportConstants.getImportSheet(context);
-        ImportDataDetails importDataDetails = ImportConstants.getImportDataDetails(context);
+        importDataDetails = ImportConstants.getImportDataDetails(context);
 
         boolean hasErrorRecords = importDataDetails.isHasErrorRecords();  //old value
 
@@ -60,6 +59,8 @@ public class UpdateRowStatusCommand extends FacilioCommand {
          importDataDetails.setHasErrorRecords(true);  // update has error record for error sheet download in ui
          MultiImportApi.updateImportDataDetails(importDataDetails);
         }
+
+        LOGGER.info("UpdateRowStatusCommand completed time:"+System.currentTimeMillis());
         return false;
     }
 

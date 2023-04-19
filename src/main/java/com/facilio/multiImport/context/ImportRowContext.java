@@ -67,7 +67,9 @@ public class ImportRowContext implements Serializable {
     public enum RowStatus{
         ADDED,
         UPDATED,
-        SKIPPED;
+        SKIPPED,
+        ADDING_FAILED,
+        UPDATING_FAILED;
 
         public int getValue(){
             return ordinal()+1;

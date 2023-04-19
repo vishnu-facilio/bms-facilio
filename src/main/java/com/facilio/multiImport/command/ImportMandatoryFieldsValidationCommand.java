@@ -1,9 +1,7 @@
 package com.facilio.multiImport.command;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsException;
@@ -42,7 +40,7 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
         }catch (Exception e){
             if(e instanceof ImportMandatoryFieldsException){
                 String clientMessage = ((ImportMandatoryFieldsException)e).getClientMessage();
-                context.put("errorMessage",clientMessage);
+                throw new IllegalArgumentException(clientMessage);
             }
             throw e;
         }
@@ -58,7 +56,7 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
         ArrayList<String> missingColumns = new ArrayList<String>();
 
         FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName),"Module name cannot be empty for field mapping");
-        List<FacilioField> requiredFields = getRequiredFields(importSheet.getModuleName());
+        List<FacilioField> requiredFields = MultiImportApi.getRequiredFields(importSheet.getModuleName());
 
         if (CollectionUtils.isNotEmpty(requiredFields)) {
             for (FacilioField field : requiredFields) {
@@ -71,17 +69,6 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
            throw  new ImportMandatoryFieldsException(null, missingColumns, new Exception());
         }
 
-    }
-    private ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
-        ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> allFields = modBean.getAllFields(moduleName);
-        for (FacilioField field : allFields) {
-            if (field.isRequired()) {
-                fields.add(field);
-            }
-        }
-        return fields;
     }
 
 
