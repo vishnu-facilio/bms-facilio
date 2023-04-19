@@ -196,13 +196,31 @@ public class AttendanceAPI {
         AttendanceTransaction lastCheckOutTransaction = getLastCheckoutTxn(txns);
         attendance.setCheckOutTime(lastCheckOutTransaction.getTransactionTime());
 
-        Long clockedHours = lastCheckOutTransaction.getTransactionTime() - firstCheckInTransaction.getTransactionTime();
+        long clockedHours = 0L;
+        long startTime = 0;
+        for (AttendanceTransaction tx: txns) {
+            if (checkInOrBreakTransaction(tx)){
+                startTime = tx.getTransactionTime();
+                continue;
+            }
 
-        clockedHours -= attendance.getTotalUnpaidBreakHrs();
-        clockedHours -= paidSurplus;
-        clockedHours -= unpaidSurplus;
+            if (checkOutOrBreakTransaction(tx)){
+                Long txTime = tx.getTransactionTime();
+                clockedHours +=  (txTime - startTime);
+            }
 
-        attendance.setWorkingHours(attendance.getWorkingHours() + clockedHours);
+        }
+        attendance.setWorkingHours(clockedHours);
+    }
+
+    private static boolean checkOutOrBreakTransaction(AttendanceTransaction tx) {
+        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT) ||
+                tx.getTransactionType().equals(AttendanceTransaction.Type.BREAK);
+    }
+
+    private static boolean checkInOrBreakTransaction(AttendanceTransaction tx) {
+        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN) ||
+                tx.getTransactionType().equals(AttendanceTransaction.Type.RESUME_WORK);
     }
 
     private static Pair<Long, Long> computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
@@ -467,6 +485,12 @@ public class AttendanceAPI {
 
         switch (newTxType) {
             case CHECK_IN:
+                if (oldTxType == AttendanceTransaction.Type.CHECK_IN) {
+                    if (updatingFirstTransactionOfTheDay(tx)){
+                        return false;
+                    }
+                    return true;
+                }
                 if (oldTxType != AttendanceTransaction.Type.CHECK_OUT) {
                     return true;
                 }
@@ -508,6 +532,17 @@ public class AttendanceAPI {
         AttendanceTransaction lastTxn = txns.get(txns.size() - 1);
 
         return lastTxn.getId() == tx.getId();
+    }
+
+    private static boolean updatingFirstTransactionOfTheDay(AttendanceTransaction tx) throws Exception {
+
+        Long peopleID = tx.getPeople().getId();
+        Long time = tx.getTransactionTime();
+
+        List<AttendanceTransaction> txns = getAttendanceTxnsForGivenDay(stripTime(time), peopleID);
+        AttendanceTransaction firstTxn = txns.get(0);
+
+        return firstTxn.getId() == tx.getId();
     }
 
     public static void markAttendanceForPreviousDay() throws Exception {

@@ -49,7 +49,7 @@ class AttendanceAPITest {
 
         assertEquals(1000,attendance.getCheckInTime());
         assertEquals(5000, attendance.getCheckOutTime());
-        assertEquals(4000, attendance.getWorkingHours());
+        assertEquals(3000, attendance.getWorkingHours());
         assertEquals(Attendance.Status.PRESENT, attendance.getStatus());
         assertEquals(1000, attendance.getTotalPaidBreakHrs());
         assertEquals(0,attendance.getTotalUnpaidBreakHrs());
@@ -72,7 +72,7 @@ class AttendanceAPITest {
 
         assertEquals(1000,attendance.getCheckInTime());
         assertEquals(5000, attendance.getCheckOutTime());
-        assertEquals(4000, attendance.getWorkingHours());
+        assertEquals(2000, attendance.getWorkingHours());
         assertEquals(Attendance.Status.PRESENT, attendance.getStatus());
         assertEquals(2000, attendance.getTotalPaidBreakHrs());
         assertEquals(0,attendance.getTotalUnpaidBreakHrs());
@@ -96,7 +96,7 @@ class AttendanceAPITest {
 
         assertEquals(1000,attendance.getCheckInTime());
         assertEquals(6000, attendance.getCheckOutTime());
-        assertEquals(4000, attendance.getWorkingHours());
+        assertEquals(2000, attendance.getWorkingHours());
         assertEquals(Attendance.Status.PRESENT, attendance.getStatus());
         assertEquals(2000, attendance.getTotalPaidBreakHrs());
         assertEquals(0,attendance.getTotalUnpaidBreakHrs());
@@ -122,7 +122,7 @@ class AttendanceAPITest {
 
         assertEquals(1000,attendance.getCheckInTime());
         assertEquals(6000, attendance.getCheckOutTime());
-        assertEquals(5000, attendance.getWorkingHours());
+        assertEquals(3000, attendance.getWorkingHours());
         assertEquals(Attendance.Status.PRESENT, attendance.getStatus());
         assertEquals(2000, attendance.getTotalPaidBreakHrs());
         assertEquals(0,attendance.getTotalUnpaidBreakHrs());
