@@ -259,7 +259,11 @@ public class IotMessageApiV2 {
         } else if (agent.getAgentTypeEnum().isAgentService()) {
             publishToAgentService(agent, client, object, (KafkaMessageSource) messageSource);
         } else {
-            publishToAwsIot(client, object);
+            String topic = client + "/msgs";
+            if (agent.getAgentTypeEnum() == AgentType.CUSTOM && object.containsKey("topic")) {
+                topic = (String) object.remove("topic");
+            }
+            publishToAwsIot(client, topic, object);
         }
     }
     
@@ -313,8 +317,7 @@ public class IotMessageApiV2 {
             }
     }
 
-    public static void publishToAwsIot(String client, JSONObject object) throws Exception {
-        String topic = client+"/msgs";
+    public static void publishToAwsIot(String client, String topic, JSONObject object) throws Exception {
         LOGGER.info(FacilioProperties.getIotEndPoint() +" " + "facilio-"+client + " " + topic + " " + object);
         AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), "facilio-"+client, FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
         try {
