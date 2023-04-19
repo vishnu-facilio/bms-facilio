@@ -1816,4 +1816,8 @@
         <requestbody type="object">
         </requestbody>
     </request>
+    <request path="/api/v3/modules/bulkPatch/:moduleName">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

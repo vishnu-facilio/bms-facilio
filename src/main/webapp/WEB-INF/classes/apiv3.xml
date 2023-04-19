@@ -1675,4 +1675,13 @@
             <param name="checkPermission">true</param>
         </action>
     </package>
+    <package name="bulkPatchAPI" extends="v3Api" namespace="/api/v3/modules/bulkPatch">
+        <action name="*"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkPatch">
+            <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
 </struts>
