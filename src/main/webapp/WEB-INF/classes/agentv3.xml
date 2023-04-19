@@ -55,5 +55,7 @@
         </action>
         <action name="export" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPoints">
         </action>
+        <action name="exportV2" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPointsV2">
+        </action>
     </package>
 </struts>

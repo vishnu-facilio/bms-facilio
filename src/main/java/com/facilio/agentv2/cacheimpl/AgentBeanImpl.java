@@ -188,7 +188,7 @@ public class AgentBeanImpl implements AgentBean {
 
     private boolean validateWorkflows(FacilioAgent agent, String name) {
         AgentType agentType = agent.getAgentTypeEnum();
-        if (agentType == AgentType.FACILIO || agentType == AgentType.NIAGARA) {
+        if (!name.equals(AgentConstants.TRANSFORM_WORKFLOW) && (agentType == AgentType.FACILIO || agentType == AgentType.NIAGARA)) {
             return false;
         }
         if (name.equals(AgentConstants.WORKFLOW) && agentType != AgentType.CLOUD && agentType != AgentType.CLOUD_ON_SERVICE) {

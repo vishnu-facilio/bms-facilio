@@ -3,6 +3,7 @@ package com.facilio.agentv2.bacnet;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.Point;
+import com.facilio.bacnet.BACNetUtil;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,7 +18,7 @@ public class BacnetIpPointContext extends Point  implements Serializable {
 
 
     private long instanceNumber = -1;
-    private int instanceType = -1;
+    private BACNetUtil.InstanceType instanceType;
     private String actualUnit;
 
     public String getActualUnit() {
@@ -55,10 +56,16 @@ public class BacnetIpPointContext extends Point  implements Serializable {
     }
 
     public int getInstanceType() {
-        return instanceType;
+        if (instanceType != null) {
+            return instanceType.getIndex();
+        }
+        return -1;
     }
     public void setInstanceType(int instanceType) {
-        this.instanceType = instanceType;
+        this.instanceType = BACNetUtil.InstanceType.valueOf(instanceType);
+    }
+    public BACNetUtil.InstanceType getInstanceTypeEnum() {
+        return instanceType;
     }
 
     /**
@@ -91,7 +98,7 @@ public class BacnetIpPointContext extends Point  implements Serializable {
         bacnetPointJSON.put(AgentConstants.ID,getId());
         bacnetPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
         bacnetPointJSON.put(AgentConstants.INSTANCE_NUMBER,instanceNumber);
-        bacnetPointJSON.put(AgentConstants.INSTANCE_TYPE,instanceType);
+        bacnetPointJSON.put(AgentConstants.INSTANCE_TYPE,getInstanceType());
         bacnetPointJSON.put(AgentConstants.ACTUAL_UNIT, actualUnit);
 
         return bacnetPointJSON;

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -62,17 +64,25 @@ public class EditRDMWritableableCommand extends FacilioCommand {
 	private List<Map<String, Object>> getOnlyMappedPoints(Context context) throws Exception {
 		Long controllerId = (Long) context.get(AgentConstants.CONTROLLER_ID);
 		Criteria pointIds = (Criteria) context.get(AgentConstants.POINT_IDS);
-		FacilioModule module = ModuleFactory.getPointModule();
-		List<FacilioField> fields = FieldFactory.getPointFields();
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField> fields = new ArrayList<>();
+		if (pointModule == null) {
+			pointModule = ModuleFactory.getPointModule();
+			fields = FieldFactory.getPointFields();
+		}
+		else {
+			fields = moduleBean.getAllFields(AgentConstants.POINT);
+		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
-		builder.select(fields).table(module.getTableName())
-		.andCondition(CriteriaAPI.getCondition(FieldFactory.getPointResourceIdField(module),CommonOperators.IS_NOT_EMPTY))
-		.andCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(module),CommonOperators.IS_NOT_EMPTY));
+		builder.select(fields).table(pointModule.getTableName())
+		.andCondition(CriteriaAPI.getCondition(FieldFactory.getPointResourceIdField(pointModule),CommonOperators.IS_NOT_EMPTY))
+		.andCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule),CommonOperators.IS_NOT_EMPTY));
 		if(pointIds != null && !pointIds.isEmpty()) {
 			builder.andCriteria(pointIds);
 		}
 		if(controllerId != null && controllerId > 0) {
-			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(module), String.valueOf(controllerId),NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId),NumberOperators.EQUALS));
 		}
 		return builder.get();
 	}

@@ -1,9 +1,13 @@
 package com.facilio.agentv2.point;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.UpdateRecordBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,9 +41,19 @@ public class EditPointCommand extends FacilioCommand {
             if (containsAndNotNull(context, AgentConstants.UPDATE_CHILD)) {
                 alterChildtable = (boolean) context.get(AgentConstants.UPDATE_CHILD);
             }
+            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule pointModule = AgentConstants.getPointModule();
+            List<FacilioField>fields = new ArrayList<>();
+            if (pointModule == null){
+                pointModule = ModuleFactory.getPointModule();
+                fields = FieldFactory.getPointFields();
+            }
+            else {
+                fields = moduleBean.getAllFields("Point");
+            }
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(ModuleFactory.getPointModule().getTableName())
-                    .fields(FieldFactory.getPointFields());
+                    .table(pointModule.getTableName())
+                    .fields(fields);
             if (containsAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
                 builder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
                 rowsUpdated = builder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));

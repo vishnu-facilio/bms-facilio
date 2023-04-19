@@ -356,7 +356,7 @@ public class ControllerBeanImpl implements ControllerBean {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0) {
-                return getCount(null,null,null);
+                return getCount(null,null,null, null);
             } else {
                 LOGGER.info("Exception while getting controller count, orgId can't be null or empty  ->" + orgId);
             }
@@ -370,7 +370,7 @@ public class ControllerBeanImpl implements ControllerBean {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0 && (agentIds != null) && (!agentIds.isEmpty())) {
-                return getCount(agentIds,null,null);
+                return getCount(agentIds,null,null, null);
             } else {
                 LOGGER.info("Exception while getting controller count, agentId and orgId can't be null or empty -> " + agentIds + " ->" + orgId);
             }
@@ -384,10 +384,12 @@ public class ControllerBeanImpl implements ControllerBean {
     public long getControllersCount(FacilioContext context) {
         Long agentIds = (Long) context.get(AgentConstants.AGENT_ID);
         Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
-        return getCount(Collections.singletonList(agentIds), controllerType,(String)context.get(AgentConstants.SEARCH_KEY));
+        Criteria filterCriteria = context.containsKey(ContextNames.FILTER_CRITERIA)?(Criteria) context.get(ContextNames.FILTER_CRITERIA):null;
+        String searchKey = context.containsKey(AgentConstants.SEARCH_KEY)?(String)context.get(AgentConstants.SEARCH_KEY):null;
+        return getCount(Collections.singletonList(agentIds), controllerType,searchKey,filterCriteria);
     }
 
-    private long getCount(List<Long> agentIds,Integer controllerType , String querySearch) {
+    private long getCount(List<Long> agentIds, Integer controllerType, String querySearch, Criteria filterCriteria) {
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(CONTROLLER_MODULE.getTableName())
@@ -403,6 +405,9 @@ public class ControllerBeanImpl implements ControllerBean {
             }
             if(querySearch != null && !querySearch.trim().isEmpty()) {
                 builder.andCustomWhere(RESOURCE_MODULE.getTableName()+".NAME = ?  OR  "+RESOURCE_MODULE.getTableName()+".NAME LIKE ?",querySearch,"%"+querySearch+"%");
+            }
+            if (filterCriteria != null && !filterCriteria.isEmpty()){
+                builder.andCriteria(filterCriteria);
             }
             return (long) builder.fetchFirst().getOrDefault(AgentConstants.ID, 0L);
         } catch (Exception e) {
@@ -521,7 +526,7 @@ public class ControllerBeanImpl implements ControllerBean {
     @Override
     public JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
         JSONObject controlleCountData = new JSONObject();
-        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null));
+        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null,null));
         return controlleCountData;
     }
 
@@ -550,17 +555,20 @@ public class ControllerBeanImpl implements ControllerBean {
         }
         FacilioControllerType controllerType = FacilioControllerType.valueOf(controllerTypeValue);
         FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
-        String moduleName = getControllerModuleName(controllerType);
-        if (moduleName == null) {
-            throw new IllegalArgumentException(" module name is null for " + controllerType.asString());
-        }
         FacilioContext context = getControllerChain.getContext();
         context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
         context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(AgentConstants.AGENT_ID, agentId);
         context.put(AgentConstants.CONTROLLER_ID, controllerId);
         context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+        context.put(ContextNames.FILTER_CRITERIA,contextProps.get(ContextNames.FILTER_CRITERIA));
+        if (!context.containsKey(AgentConstants.MODULE_NAME)) {
+            String moduleName = getControllerModuleName(controllerType);
+            if (moduleName == null) {
+                throw new IllegalArgumentException(" module name is null for " + controllerType.asString());
+            }
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        }
         try {
             getControllerChain.execute();
             controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

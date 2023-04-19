@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -27,8 +30,10 @@ public class GetCommissioningPointsCommand extends FacilioCommand {
 		long controllerId = (long) context.get(ContextNames.CONTROLLER_ID);
 		boolean fetchMapped = (boolean) context.get(ContextNames.FETCH_MAPPED);
 		FacilioControllerType controllerType = (FacilioControllerType) context.get("controllerType");
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields =  (pointModule == null ? FieldFactory.getPointFields() : moduleBean.getAllFields(AgentConstants.POINT));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()

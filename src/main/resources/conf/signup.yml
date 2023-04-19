@@ -395,6 +395,21 @@ classes:
 
     #Adding Inventory Request Stateflow
   - com.facilio.bmsconsoleV3.signup.inventory.InventoryRequestDefaultStateFlow
+  # Add Point Module
+  - com.facilio.bmsconsoleV3.signup.Point.AddPointModule
+  # Adding all types of points
+  - com.facilio.bmsconsoleV3.signup.Point.AddMiscPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddBacnetIpPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddNiagaraPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddModbusTcpPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddModbusRtuPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddOpcXmlDAPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddOpcUaPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddLonWorksPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddSystemPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddRDMPointModule
+  - com.facilio.bmsconsoleV3.signup.Point.AddE2PointModule
+
 
   - com.facilio.backgroundactivity.util.AddBackgroundActivityModule
 

@@ -562,7 +562,7 @@ public class IoTMessageAPI {
 	public static PublishData setReadingValue(long resourceId, long fieldId, Object value) throws Exception {
 		if(AccountUtil.getCurrentOrg()!= null){
 			Criteria criteria = new Criteria();
-			FacilioModule pointModule = ModuleFactory.getPointModule();
+			FacilioModule pointModule = AgentConstants.getPointModule()==null?ModuleFactory.getPointModule():AgentConstants.getPointModule();
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(fieldId),NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointResourceIdField(pointModule), String.valueOf(resourceId), NumberOperators.EQUALS));
 			GetPointRequest getPointRequest = new GetPointRequest()

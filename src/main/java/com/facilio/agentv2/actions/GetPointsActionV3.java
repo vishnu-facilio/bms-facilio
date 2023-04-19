@@ -40,6 +40,8 @@ public class GetPointsActionV3 extends V3Action {
     private Long agentId;
     private String filters;
     private int type=-1;
+    private String moduleName;
+    private Integer viewLimit = -1;
     /**
      * Get the Point count.Based on the Point filter. e.g.UNCONFIGURED..etc.
      *
@@ -54,7 +56,7 @@ public class GetPointsActionV3 extends V3Action {
         context.put("status",status);
         context.put("controllerIds",controllerIds);
         context.put("controllerType",controllerType);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         context.put("agentId",agentId);
         chain.execute();
         setData("count",context.get("pointsCount"));
@@ -74,7 +76,7 @@ public class GetPointsActionV3 extends V3Action {
         context.put("status",status);
         context.put("controllerIds",controllerIds);
         context.put("controllerType",controllerType);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         context.put("agentId",agentId);
         chain.execute();
         setData("data",context.get("data"));
@@ -95,6 +97,26 @@ public class GetPointsActionV3 extends V3Action {
         context.put(AgentConstants.CONTROLLERIDS,controllerIds);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
         exportModule.execute();
+        String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
+        setData("fileUrl", fileUrl);
+        return SUCCESS;
+    }
+    public String exportPointsV2() throws Exception{
+        FacilioChain chain = TransactionChainFactory.getExportPointsV2Chain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileInfo.FileFormat.getFileFormat(type));
+        context.put(AgentConstants.AGENT_ID,agentId);
+        context.put(AgentConstants.CONTROLLER_TYPE,controllerType);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.FILTERS,filters);
+        context.put(FacilioConstants.ContextNames.VIEW_NAME,getViewName());
+        if (viewLimit != -1 && viewLimit > 5000){
+            context.put(FacilioConstants.ContextNames.VIEW_LIMIT,viewLimit);
+        }
+        if(!controllerIds.isEmpty()) {
+            context.put(AgentConstants.CONTROLLERIDS, controllerIds);
+        }
+        chain.execute();
         String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
         setData("fileUrl", fileUrl);
         return SUCCESS;

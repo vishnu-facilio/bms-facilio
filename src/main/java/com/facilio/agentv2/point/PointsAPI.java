@@ -21,6 +21,7 @@ import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.agentv2.rdm.RdmPointContext;
 import com.facilio.agentv2.system.SystemPointContext;
 import com.facilio.bacnet.BACNetUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -44,7 +45,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,37 +52,73 @@ public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
 
     public static FacilioModule getPointModule(FacilioControllerType controllerType) throws Exception {
-        switch (controllerType) {
-
-            case OPC_XML_DA:
-                return ModuleFactory.getOPCXmlDAPointModule();
-            case MODBUS_RTU:
-                return ModuleFactory.getModbusRtuPointModule();
-            case MODBUS_IP:
-                return ModuleFactory.getModbusTcpPointModule();
-            case BACNET_IP:
-                return ModuleFactory.getBACnetIPPointModule();
-            case NIAGARA:
-                return ModuleFactory.getNiagaraPointModule();
-            case MISC:
-                return ModuleFactory.getMiscPointModule();
-            case OPC_UA:
-                return ModuleFactory.getOPCUAPointModule();
-            case SYSTEM:
-                return ModuleFactory.getSystemPointModule();
-            case LON_WORKS:
-            	return AgentModuleFactory.getLonWorksPointModule();
-            case RDM:
-                return AgentModuleFactory.getRdmPointModule();
-            case E2:
-                return AgentModuleFactory.getE2PointModule();
-            case REST:
-            case CUSTOM:
-            case BACNET_MSTP:
-            case KNX:
-                throw new Exception(" No implementation for " + controllerType.asString() + " points");
-            default:
-                throw new Exception("No such implementation " + controllerType);
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        if (pointModule == null) {
+            switch (controllerType) {
+                case OPC_XML_DA:
+                    return ModuleFactory.getOPCXmlDAPointModule();
+                case MODBUS_RTU:
+                    return ModuleFactory.getModbusRtuPointModule();
+                case MODBUS_IP:
+                    return ModuleFactory.getModbusTcpPointModule();
+                case BACNET_IP:
+                    return ModuleFactory.getBACnetIPPointModule();
+                case NIAGARA:
+                    return ModuleFactory.getNiagaraPointModule();
+                case MISC:
+                    return ModuleFactory.getMiscPointModule();
+                case OPC_UA:
+                    return ModuleFactory.getOPCUAPointModule();
+                case SYSTEM:
+                    return ModuleFactory.getSystemPointModule();
+                case LON_WORKS:
+                    return AgentModuleFactory.getLonWorksPointModule();
+                case RDM:
+                    return AgentModuleFactory.getRdmPointModule();
+                case E2:
+                    return AgentModuleFactory.getE2PointModule();
+                case REST:
+                case CUSTOM:
+                case BACNET_MSTP:
+                case KNX:
+                    throw new Exception(" No implementation for " + controllerType.asString() + " points");
+                default:
+                    throw new Exception("No such implementation " + controllerType);
+            }
+        }
+        else {
+            switch (controllerType) {
+                case OPC_XML_DA:
+                    return moduleBean.getModule(AgentConstants.OPC_XML_DA_POINT_MODULE);
+                case MODBUS_RTU:
+                    return moduleBean.getModule(AgentConstants.MODBUS_RTU_POINT_MODULE);
+                case MODBUS_IP:
+                    return moduleBean.getModule(AgentConstants.MODBUS_TCP_POINT_MODULE);
+                case BACNET_IP:
+                    return moduleBean.getModule(AgentConstants.BACNET_IP_POINT_MODULE);
+                case NIAGARA:
+                    return moduleBean.getModule(AgentConstants.NIAGARA_POINT_MODULE);
+                case MISC:
+                    return moduleBean.getModule(AgentConstants.MISC_POINT_MODULE);
+                case OPC_UA:
+                    return moduleBean.getModule(AgentConstants.OPC_UA_POINT_MODULE);
+                case SYSTEM:
+                    return moduleBean.getModule(AgentConstants.SYSTEM_POINT_MODULE_NAME);
+                case LON_WORKS:
+                    return moduleBean.getModule(AgentConstants.LON_WORKS_POINT_MODULE);
+                case RDM:
+                    return moduleBean.getModule(AgentConstants.RDM_POINT_MODULE);
+                case E2:
+                    return moduleBean.getModule(AgentConstants.E2_POINT_MODULE);
+                case REST:
+                case CUSTOM:
+                case BACNET_MSTP:
+                case KNX:
+                    throw new Exception(" No implementation for " + controllerType.asString() + " points");
+                default:
+                    throw new Exception("No such implementation " + controllerType);
+            }
         }
     }
     
@@ -91,36 +127,73 @@ public class PointsAPI {
     }
 
     public static List<FacilioField> getChildPointFields(FacilioControllerType controllerType, boolean fetchExtended) throws Exception {
-        switch (controllerType) {
-            case OPC_XML_DA:
-                return FieldFactory.getOPCXmlDAPointFields(fetchExtended);
-            case MODBUS_RTU:
-                return FieldFactory.getModbusRtuPointFields(fetchExtended);
-            case MODBUS_IP:
-                return FieldFactory.getModbusTcpPointFields(fetchExtended);
-            case BACNET_IP:
-                return FieldFactory.getBACnetIPPointFields(fetchExtended);
-            case NIAGARA:
-                return FieldFactory.getNiagaraPointFields(fetchExtended);
-            case MISC:
-                return FieldFactory.getMiscPointFields(fetchExtended);
-            case OPC_UA:
-                return FieldFactory.getOPCUAPointFields(fetchExtended);
-            case SYSTEM:
-                return FieldFactory.getSystemPointFields(fetchExtended);
-            case LON_WORKS:
-            	return AgentFieldFactory.getLonWorksPointFields(fetchExtended);
-            case RDM:
-                return AgentFieldFactory.getRdmPointFields(fetchExtended);
-            case E2:
-                return AgentFieldFactory.getE2PointFields(fetchExtended);
-            case REST:
-            case CUSTOM:
-            case BACNET_MSTP:
-            case KNX:
-                throw new Exception(" No implementation for " + controllerType.asString() + " points");
-            default:
-                throw new Exception("No such implementation " + controllerType);
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        if (pointModule == null) {
+            switch (controllerType) {
+                case OPC_XML_DA:
+                    return FieldFactory.getOPCXmlDAPointFields(fetchExtended);
+                case MODBUS_RTU:
+                    return FieldFactory.getModbusRtuPointFields(fetchExtended);
+                case MODBUS_IP:
+                    return FieldFactory.getModbusTcpPointFields(fetchExtended);
+                case BACNET_IP:
+                    return FieldFactory.getBACnetIPPointFields(fetchExtended);
+                case NIAGARA:
+                    return FieldFactory.getNiagaraPointFields(fetchExtended);
+                case MISC:
+                    return FieldFactory.getMiscPointFields(fetchExtended);
+                case OPC_UA:
+                    return FieldFactory.getOPCUAPointFields(fetchExtended);
+                case SYSTEM:
+                    return FieldFactory.getSystemPointFields(fetchExtended);
+                case LON_WORKS:
+                    return AgentFieldFactory.getLonWorksPointFields(fetchExtended);
+                case RDM:
+                    return AgentFieldFactory.getRdmPointFields(fetchExtended);
+                case E2:
+                    return AgentFieldFactory.getE2PointFields(fetchExtended);
+                case REST:
+                case CUSTOM:
+                case BACNET_MSTP:
+                case KNX:
+                    throw new Exception(" No implementation for " + controllerType.asString() + " points");
+                default:
+                    throw new Exception("No such implementation " + controllerType);
+            }
+        }
+        else {
+            switch (controllerType) {
+                case OPC_XML_DA:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.OPC_XML_DA_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.OPC_XML_DA_POINT_MODULE);
+                case MODBUS_RTU:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.MODBUS_RTU_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.MODBUS_RTU_POINT_MODULE);
+                case MODBUS_IP:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.MODBUS_TCP_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.MODBUS_TCP_POINT_MODULE);
+                case BACNET_IP:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.BACNET_IP_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.BACNET_IP_POINT_MODULE);
+                case NIAGARA:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.NIAGARA_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.NIAGARA_POINT_MODULE);
+                case MISC:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.MISC_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.MISC_POINT_MODULE);
+                case OPC_UA:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.OPC_UA_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.OPC_UA_POINT_MODULE);
+                case SYSTEM:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.SYSTEM_POINT_MODULE_NAME) : moduleBean.getModuleFields(AgentConstants.SYSTEM_POINT_MODULE_NAME);
+                case LON_WORKS:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.LON_WORKS_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.LON_WORKS_POINT_MODULE);
+                case RDM:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.RDM_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.RDM_POINT_MODULE);
+                case E2:
+                    return fetchExtended ? moduleBean.getAllFields(AgentConstants.E2_POINT_MODULE) : moduleBean.getModuleFields(AgentConstants.E2_POINT_MODULE);
+                case REST:
+                case CUSTOM:
+                case BACNET_MSTP:
+                case KNX:
+                    throw new Exception(" No implementation for " + controllerType.asString() + " points");
+                default:
+                    throw new Exception("No such implementation " + controllerType);
+            }
         }
     }
 
@@ -340,7 +413,10 @@ public class PointsAPI {
     }
 
     private static boolean updatePointSubsctiptionComplete(long controllerId,List<String> pointNames) throws Exception {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+        }
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext context = editChain.getContext();
@@ -410,15 +486,21 @@ public class PointsAPI {
         return UpdatePointsUnConfigured(Collections.singletonList(pointId));
     }
 
-    public static Criteria getIdCriteria(List<Long> pointIds) {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+    public static Criteria getIdCriteria(List<Long> pointIds) throws Exception {
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if(pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+        }
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
         return criteria;
     }
 
-    public static Criteria getNameCriteria(List<String> pointNames) {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+    public static Criteria getNameCriteria(List<String> pointNames) throws Exception {
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+        }
         Criteria criteria = new Criteria();
         pointNames = pointNames.stream().map(p -> p.replace(",", StringOperators.DELIMITED_COMMA)).collect(Collectors.toList());
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule), StringUtils.join(pointNames, ","), StringOperators.IS));
@@ -431,8 +513,11 @@ public class PointsAPI {
     }
 
 
-    public static long getPointsCount(long controllerId, long deviceId) {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+    public static long getPointsCount(long controllerId, long deviceId) throws Exception{
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = pointModule == null ? FieldFactory.getPointFields() : moduleBean.getAllFields(AgentConstants.POINT);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         try {
             Criteria criteria = new Criteria();
             if (controllerId > 0L) {
@@ -452,8 +537,17 @@ public class PointsAPI {
     }
 
     private static long getPointsCount(Criteria criteria) throws Exception {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        //1
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        Map<String, FacilioField> fieldMap;
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+            fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        }
+        else {
+            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+        }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
                 .select(new HashSet<>())
@@ -512,13 +606,22 @@ public class PointsAPI {
         return false;
     }
 
-    public static boolean executeDeletePoints(List<Long> pointIds) throws SQLException {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+    public static boolean executeDeletePoints(List<Long> pointIds) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+            fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+        }
         //TODO -
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(pointModule.getTableName())
-                    .fields(FieldFactory.getPointFields())
+                    .fields(fields)
                     .andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
             Map<String, Object> toUpdateMap = new HashMap<>();
             toUpdateMap.put(AgentConstants.DELETED_TIME, System.currentTimeMillis());
@@ -544,11 +647,20 @@ public class PointsAPI {
         return false;
     }
 
-    public static boolean resetConfiguredPoints(Long controllerId) throws SQLException {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+    public static boolean resetConfiguredPoints(Long controllerId) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null) {
+             pointModule = ModuleFactory.getPointModule();
+             fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+        }
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(pointModule.getTableName())
-                .fields(FieldFactory.getPointFields())
+                .fields(fields)
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
         Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
@@ -592,11 +704,14 @@ public class PointsAPI {
 
     public static List<Map<String, Object>> getPointsFromDb(List<String> pointNames, Controller controller) throws Exception {
         Criteria criteria = new Criteria();
-
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+        }
         if (controller != null) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controller.getId()), NumberOperators.EQUALS));
         } else {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), CommonOperators.IS_EMPTY));
         }
         criteria.addAndCondition(getNameCondition(pointNames));
         List<Map<String, Object>> pointsFromDb = getPointData(criteria);
@@ -604,9 +719,22 @@ public class PointsAPI {
     }
 
     private static List<Map<String, Object>> getPointData(Criteria criteriaList) throws Exception {
+        //1
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+            fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+            fields.add(FieldFactory.getIdField(pointModule));
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
-                .select(FieldFactory.getPointFields())
+                .table(pointModule.getTableName())
+                .select(fields)
                 .andCriteria(criteriaList);
         List<Map<String, Object>> res = builder.get();
         return res;
@@ -628,10 +756,19 @@ public class PointsAPI {
 
     private static List<MiscPoint> getControllerPointsSuperficial(List<Long> controllerIds) throws Exception {
         AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+            fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+        }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
-                .select(FieldFactory.getPointFields())
+                .select(fields)
                 .andCondition(agentBean.getDeletedTimeNullCondition(pointModule));
         if( ! controllerIds.isEmpty()){
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
@@ -735,7 +872,10 @@ public class PointsAPI {
     }
 
     public static List<Point> getPointData(Collection<Pair<Long, Long>> assetFieldPairs) throws Exception {
-		FacilioModule pointModule = ModuleFactory.getPointModule();
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+        }
 		FacilioField readingField = FieldFactory.getPointFieldIdField(pointModule);
 		FacilioField resourceField = FieldFactory.getPointResourceIdField(pointModule);
 		Criteria criteriaList = new Criteria();
@@ -752,7 +892,17 @@ public class PointsAPI {
     }
 
     public static void updatePointsValue(List<Point> points, boolean updateDataMissing) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        Map<String, FacilioField> fieldMap = new HashMap<>();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+            fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 
+        }
+        else {
+            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+        }
         List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
 
         for (Point point : points) {
@@ -766,7 +916,6 @@ public class PointsAPI {
             batchUpdateList.add(batchValue);
         }
 
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_VALUE));
         updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_TIME));
@@ -776,7 +925,7 @@ public class PointsAPI {
 
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
+                .table(pointModule.getTableName())
                 .fields(updateFields);
 
         updateBuilder.batchUpdateById(batchUpdateList);

@@ -3,6 +3,7 @@
  */
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -238,7 +239,7 @@ public class CommissionAction extends FacilioAction{
 
 		List<Map<String, Object>> readingInputValues;
 		if(pointId != -1){
-			readingInputValues = ReadingsAPI.getReadingInputValues(pointId);
+			readingInputValues = ReadingsAPI.getReadingInputValues(Collections.singletonList(pointId));
 		} else {
 			readingInputValues = ReadingsAPI.getReadingInputValues(resourceId, fieldId);
 		}

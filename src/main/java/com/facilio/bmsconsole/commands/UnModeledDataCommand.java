@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -11,6 +12,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -79,11 +81,21 @@ public class UnModeledDataCommand extends FacilioCommand {
 	}
 
 	private long getPointIdWithNullController(String pointName) throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields = new ArrayList<>();
+		if (pointModule == null){
+			pointModule = ModuleFactory.getPointModule();
+			fields = FieldFactory.getPointFields();
+		}
+		else {
+			fields = moduleBean.getAllFields(AgentConstants.POINT);
+		}
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getPointModule().getTableName())
-				.select(FieldFactory.getPointFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()),pointName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
+				.table(pointModule.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule),pointName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> rows = selectRecordBuilder.get();
 		if (rows.size()>0){
 			if(rows.get(0).containsKey(AgentConstants.ID))
@@ -106,11 +118,21 @@ public class UnModeledDataCommand extends FacilioCommand {
 		return -1;
 	}
 	private long getPointId(Long controllerId, String pointName) throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields = new ArrayList<>();
+		if (pointModule == null){
+			pointModule = ModuleFactory.getPointModule();
+			fields = FieldFactory.getPointFields();
+		}
+		else {
+			fields = moduleBean.getAllFields(AgentConstants.POINT);
+		}
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getPointModule().getTableName())
-				.select(FieldFactory.getPointFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()),pointName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), Collections.singleton(controllerId),NumberOperators.EQUALS));
+				.table(pointModule.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule),pointName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), Collections.singleton(controllerId),NumberOperators.EQUALS));
 		List<Map<String, Object>> rows = selectRecordBuilder.get();
 		if (rows.size()>0){
 			if(rows.get(0).containsKey(AgentConstants.ID))

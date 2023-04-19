@@ -4,9 +4,9 @@ import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -14,6 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -30,8 +31,11 @@ public class PointsConfigurationCompleteCommand extends AgentV2Command{
         List<String>pointNames = (List<String>) context.get(AgentConstants.POINT_NAMES);
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
         FacilioAgent agent = controller.getAgent();
-
-        FacilioModule pointModule = ModuleFactory.getPointModule();
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        if (pointModule == null) {
+             pointModule = ModuleFactory.getPointModule();
+        }
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext editChainContext = editChain.getContext();

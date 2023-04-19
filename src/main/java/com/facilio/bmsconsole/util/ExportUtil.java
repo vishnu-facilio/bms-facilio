@@ -768,7 +768,7 @@ public class ExportUtil {
 		return exportDataAsFileId(fileFormat, modBean.getModule(moduleName), viewFields, records);
 	}
 
-	private static void prepareExportModuleConfig(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean specialFields, Integer viewLimit, List<ViewField> viewFields, List<ModuleBaseWithCustomFields> records) throws Exception {
+	public static void prepareExportModuleConfig(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean specialFields, Integer viewLimit, List<ViewField> viewFields, List<ModuleBaseWithCustomFields> records) throws Exception {
 		FacilioChain listChain = ChainUtil.getListChain(moduleName);
 		FacilioContext context = listChain.getContext();
 

@@ -5,6 +5,7 @@ import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -76,6 +77,16 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private String actionName;
     @Getter @Setter
     private Long overrideTimeInMillis = 0L;
+
+    public Long getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    private Long moduleId;
 
     public boolean isAgentWritable() {
         return agentWritable;

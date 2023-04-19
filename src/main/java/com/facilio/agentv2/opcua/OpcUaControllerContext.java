@@ -8,6 +8,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
@@ -33,10 +34,10 @@ public class OpcUaControllerContext extends Controller {
     private String certPath;
 
     @JsonInclude
-    private int securityMode = -1;
+    private SecurityMode securityMode;
 
     @JsonInclude
-    private int securityPolicy = -1;
+    private SecurityPolicy securityPolicy ;
 
 
     public OpcUaControllerContext() {
@@ -61,18 +62,32 @@ public class OpcUaControllerContext extends Controller {
     }
 
     public void setSecurityMode(int securityMode) {
-        this.securityMode = securityMode;
+        this.securityMode = SecurityMode.valueOf(securityMode);
     }
 
     public int getSecurityMode() {
+        if (securityMode != null) {
+            return securityMode.getIndex();
+        }
+        return -1;
+    }
+
+    public SecurityMode getSecurityModeEnum(){
         return securityMode;
     }
 
     public void setSecurityPolicy(int securityPolicy) {
-        this.securityPolicy = securityPolicy;
+        this.securityPolicy = SecurityPolicy.valueOf(securityPolicy);
     }
 
     public int getSecurityPolicy() {
+        if (securityPolicy != null) {
+            return securityPolicy.getIndex();
+        }
+        return -1;
+    }
+
+    public SecurityPolicy getSecurityPolicyEnum(){
         return securityPolicy;
     }
 
@@ -91,8 +106,8 @@ public class OpcUaControllerContext extends Controller {
         JSONObject controllerJSON = new JSONObject();
         controllerJSON.put(AgentConstants.URL, this.url);
         controllerJSON.put(AgentConstants.CERT_PATH, this.certPath);
-        controllerJSON.put(AgentConstants.SECURITY_MODE, securityMode);
-        controllerJSON.put(AgentConstants.SECURITY_POLICY, securityPolicy);
+        controllerJSON.put(AgentConstants.SECURITY_MODE, getSecurityMode());
+        controllerJSON.put(AgentConstants.SECURITY_POLICY, getSecurityPolicy());
         return controllerJSON;
     }
 
@@ -100,17 +115,17 @@ public class OpcUaControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        if (fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && (securityMode > -1)) {
+        if (fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && (getSecurityMode() > -1)) {
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL), getUrl(), StringOperators.IS));
-            if((fieldsMap.containsKey(AgentConstants.SECURITY_MODE) && (fieldsMap.get(AgentConstants.SECURITY_MODE) != null) && (securityPolicy > -1) )){
+            if((fieldsMap.containsKey(AgentConstants.SECURITY_MODE) && (fieldsMap.get(AgentConstants.SECURITY_MODE) != null) && (getSecurityPolicy() > -1) )){
                 conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_MODE), String.valueOf(getSecurityMode()), NumberOperators.EQUALS));
             }else {
-                LOGGER.info(securityMode+" fieldsmap is missing sm "+fieldsMap);
+                LOGGER.info(getSecurityMode()+" fieldsmap is missing sm "+fieldsMap);
             }
             if((fieldsMap.containsKey(AgentConstants.SECURITY_POLICY) && (fieldsMap.get(AgentConstants.SECURITY_POLICY) != null))){
                 conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_POLICY), String.valueOf(getSecurityPolicy()), NumberOperators.EQUALS));
             }else {
-                LOGGER.info(securityPolicy+" fieldsmap is missing sp "+fieldsMap);
+                LOGGER.info(getSecurityPolicy()+" fieldsmap is missing sp "+fieldsMap);
             }
         } else {
             LOGGER.info("Error while getting conditions");
@@ -133,6 +148,66 @@ public class OpcUaControllerContext extends Controller {
             return this.getSecurityMode()==obj.getSecurityMode() && this.getSecurityPolicy()==obj.getSecurityPolicy() && this.getUrl().equals(obj.getUrl()) && super.equals(obj);
         }else{
             return false;
+        }
+    }
+
+    public enum SecurityMode implements FacilioIntEnum {
+        NONE(0, "None"),
+        SIGN(1, "Sign"),
+        SIGN_AND_ENCRYPT(2, "Sign and encrypt");
+
+        private int value;
+        private String name;
+
+        SecurityMode(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+        public static SecurityMode valueOf(int value) {
+            if (value >= 0 && value <= values().length) {
+                return values()[value];
+            }
+            return null;
+        }
+        @Override
+        public Integer getIndex(){
+            return value;
+        }
+        @Override
+        public String getValue(){
+            return name;
+        }
+    }
+
+    public enum SecurityPolicy implements FacilioIntEnum {
+        NONE(0, "None"),
+        Basic128Rsa15(1, "Basic128Rsa15"),
+        Basic256(2, "Basic256"),
+        Basic256Sha256(3, "Basic256Sha256"),
+        Aes128_Sha256_RsaOaep(4, "Aes128_Sha256_RsaOaep"),
+        Aes256_Sha256_RsaPss(5, "Aes256_Sha256_RsaPss");
+
+        private int value;
+        private String name;
+
+        SecurityPolicy(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public static SecurityPolicy valueOf(int value) {
+            if (value >= 0 && value <= values().length) {
+                return values()[value];
+            }
+            return null;
+        }
+        @Override
+        public Integer getIndex(){
+            return value;
+        }
+        @Override
+        public String getValue(){
+            return name;
         }
     }
 }

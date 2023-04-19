@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
@@ -67,7 +68,20 @@ public class AddPointCommand extends FacilioCommand {
     }
 
     private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception {
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
-        return builder.insert(toInsertMap);
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null) {
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
+            return builder.insert(toInsertMap);
+        }
+        else {
+            InsertRecordBuilder builder = new InsertRecordBuilder()
+                    .module(module)
+                    .table(module.getTableName())
+                    .fields(fields)
+                    .addRecordProp(toInsertMap);
+            builder.save();
+            long id = (long) toInsertMap.get("id");
+            return id;
+        }
     }
 }

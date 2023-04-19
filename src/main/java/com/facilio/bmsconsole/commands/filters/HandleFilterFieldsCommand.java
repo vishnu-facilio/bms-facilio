@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands.filters;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -216,7 +217,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     private static final String WORKORDER_TENANT_FIELD = "tenant";
     private static final String WORKORDER_VENDOR_FIELD = "vendor";
     private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) throws Exception {
-        if (AssetsAPI.isAssetsModule(module)) {
+        if (AssetsAPI.isAssetsModule(module) && !module.instanceOf(AgentConstants.CONTROLLER)) {
             return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.ASSET_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
         }
         else {
@@ -260,6 +261,21 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.BREAK_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case ContextNames.WORKFLOW_RULE_LOGS:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.WORKFLOW_RULE_LOGS_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case ContextNames.CONTROLLER:
+                case ContextNames.MISC_CONTROLLER_MODULE_NAME:
+                case ContextNames.BACNET_IP_CONTROLLER_MODULE_NAME:
+                case ContextNames.E2_CONTROLLER_MODULE_NAME:
+                case ContextNames.OPC_UA_CONTROLLER_MODULE_NAME:
+                case ContextNames.OPC_XML_DA_CONTROLLER_MODULE_NAME:
+                case ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME:
+                case ContextNames.MODBUS_TCP_CONTROLLER_MODULE_NAME:
+                case ContextNames.RDM_CONTROLLER_MODULE_NAME:
+                case ContextNames.NIAGARA_CONTROLLER_MODULE_NAME:
+                case ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME:
+                case ContextNames.CUSTOM_CONTROLLER_MODULE_NAME:
+                case ContextNames.REST_CONTROLLER_MODULE_NAME:
+                case ContextNames.SYSTEM_CONTROLLER_MODULE_NAME:
+                    return FieldFactory.Fields.filterOutFields(fields,FieldFactory.Fields.CONTROLLER_FIELDS_EXCLUDE, FieldFactory.Fields.FilterType.EXCLUDE);
                 default:
                     return fields;
             }

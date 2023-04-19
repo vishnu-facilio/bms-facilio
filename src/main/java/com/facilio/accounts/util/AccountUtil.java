@@ -761,7 +761,6 @@ public class AccountUtil {
 	}
 
 
-	
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();
 		List<FacilioField> fields = FieldFactory.getServicePortalFields();

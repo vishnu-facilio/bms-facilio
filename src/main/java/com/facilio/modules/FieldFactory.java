@@ -568,6 +568,66 @@ public class FieldFactory extends BaseFieldFactory {
                 "parentRecordId"
         }).collect(Collectors.toList()));
 
+        public static final List<String> CONTROLLER_FIELDS_EXCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
+                "description",
+                "photoId",
+                "resourceType",
+                "space",
+                "controllerId",
+                "qrVal",
+                "operatingHour",
+                "sourceType",
+                "sourceId",
+                "failureClass",
+                "state",
+                "type",
+                "category",
+                "parentAssetId",
+                "department",
+                "manufacturer",
+                "model",
+                "serialNumber",
+                "tagNumber",
+                "partNumber",
+                "unitPrice",
+                "supplier",
+                "purchasedDate",
+                "retireDate",
+                "warrantyExpiryDate",
+                "localId",
+                "hideToCustomer",
+                "geoLocation",
+                "currentLocation",
+                "boundaryRadius",
+                "designatedLocation",
+                "distanceMoved",
+                "geoLocationEnabled",
+                "identifiedLocation",
+                "rotatingItem",
+                "rotatingTool",
+                "purchaseOrder",
+                "isUsed",
+                "connected",
+                "downtimeStatus",
+                "lastDowntimeId",
+                "moduleState",
+                "stateFlowId",
+                "salvageAmount",
+                "currentPrice",
+                "approvalStatus",
+                "approvalFlowId",
+                "classification",
+                "agentId",
+                "lastIssuedToUser",
+                "lastIssuedToWo",
+                "lastIssuedTime",
+                "moveApprovalNeeded",
+                "currentSpaceId",
+                "controllerType",
+                "commissionedTime",
+                "decommission"
+        }).collect(Collectors.toList()));
+
     }
 
     public static List<FacilioField> getFormFields() {
@@ -940,6 +1000,25 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static FacilioField getPointsCount() {
         return getField(AgentConstants.POINTS, "COUNT(" + ModuleFactory.getPointModule().getTableName() + ".ID) ", FieldType.NUMBER);
+    }
+    public static FacilioField getSubscribedPointCountConditionField(FacilioModule module) throws Exception {
+        return getField(AgentConstants.SUBSCRIBED_COUNT, "SUM(IF(" + module.getTableName() + ".SUBSCRIBE_STATUS = 3, 1, 0))", FieldType.NUMBER);
+    }
+
+    public static FacilioField getSubscriptionInProgressPointCountConditionField(FacilioModule module) throws Exception {
+        return getField(AgentConstants.SUBSCRIPTION_COUNT, "SUM(IF(" + module.getTableName() + ".SUBSCRIBE_STATUS = 2, 1, 0))", FieldType.NUMBER);
+    }
+
+    public static FacilioField getConfiguredPointCountConditionField(FacilioModule module) throws Exception{
+        return getField(AgentConstants.CONFIGURED_COUNT, "SUM(IF(" + module.getTableName() + ".CONFIGURE_STATUS = 3, 1, 0))", FieldType.NUMBER);
+    }
+
+    public static FacilioField getConfigurationInProgressPointCountConditionField(FacilioModule module) throws Exception{
+        return getField(AgentConstants.CONFIGURATION_INPROGRESS_COUNT, "SUM(IF(" + module.getTableName() + ".CONFIGURE_STATUS = 2, 1, 0))", FieldType.NUMBER);
+    }
+
+    public static FacilioField getPointsCount(FacilioModule module) throws Exception{
+        return getField(AgentConstants.POINTS, "COUNT(" + module.getTableName() + ".ID) ", FieldType.NUMBER);
     }
 
     public static FacilioField getCountOfDistinctField(FacilioField facilioField, String key) {

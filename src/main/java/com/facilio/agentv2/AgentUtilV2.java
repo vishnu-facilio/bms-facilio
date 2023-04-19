@@ -235,10 +235,19 @@ public class AgentUtilV2
     }
 
     private static long checkDataMissingIsFalse(FacilioAgent agent) throws Exception {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        Map<String,FacilioField>fieldMap = new HashMap<>();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+            fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        }
+        else {
+            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+        }
 
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
+                .table(pointModule.getTableName())
                 .select(new ArrayList<>())
                 .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DATA_MISSING), String.valueOf(1), StringOperators.IS))
@@ -278,10 +287,20 @@ public class AgentUtilV2
     }
 
     public static Collection<Long> getPointsDataMissing(FacilioAgent agent) throws Exception {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+            fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+        }
+        Map<String,FacilioField>fieldMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
-                .select(FieldFactory.getPointFields())
+                .table(pointModule.getTableName())
+                .select(fields)
                 .andCriteria(getPointsDataMissingCriteria(fieldMap, agent.getId(), agent));
 
         List<Map<String, Object>> rows = select.get();
@@ -514,12 +533,23 @@ public class AgentUtilV2
         if(controllerIds.isEmpty()){
             return false;
         }
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null){
+            pointModule = ModuleFactory.getPointModule();
+            fields = FieldFactory.getPointFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+        }
+        Map<String,FacilioField>fieldMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(POINT_MODULE.getTableName())
-                .select(POINT_FIELDS)
-                .andCondition(agentBean.getDeletedTimeNullCondition(POINT_MODULE))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), CONFIGURED_STATUS, NumberOperators.EQUALS))
+                .table(pointModule.getTableName())
+                .select(fields)
+                .andCondition(agentBean.getDeletedTimeNullCondition(pointModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), CONFIGURED_STATUS, NumberOperators.EQUALS))
                 .limit(1);
         Map<String,Object> map = builder.fetchFirst();
         return (map!= null && !map.isEmpty()) ;

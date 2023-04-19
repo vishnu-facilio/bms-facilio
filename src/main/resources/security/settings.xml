@@ -3167,6 +3167,7 @@
         </requestbody>
     </request>
 
+
     <request path="/api/v1/setup/customButton/get" method="GET">
        <requestbody type="object">
            <property name="ruleId" type="number"/>
@@ -3177,5 +3178,44 @@
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
+    </request>
+    <request path="/api/v3/point/list" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" />
+            <property name="controllerIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="page" type="number" mandatory="true" />
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="filters" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/point/count" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" />
+            <property name="controllerIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="filters" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/point/exportV2" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="type" type="number" mandatory="true"/>
+            <property name="viewLimit" type="number" />
+            <property name="controllerIds" type="array" >
+                <items type="number"/>
+            </property>
+            <property name="filters" type="string"/>
+        </requestbody>
     </request>
 </config>

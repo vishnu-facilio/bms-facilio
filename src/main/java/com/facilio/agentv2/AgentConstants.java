@@ -1,9 +1,14 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.cacheimpl.ControllerBean;
-import com.facilio.fw.BeanFactory;
 
 public class AgentConstants
 {
@@ -334,5 +339,32 @@ public class AgentConstants
     }
     public static ControllerBean getControllerBean() throws Exception {
         return (ControllerBean) BeanFactory.lookup("ControllerBean");
+    }
+    //point modules
+    public static final String OPC_XML_DA_POINT_MODULE = "opcXmlDAPoint";
+    public static final String MODBUS_RTU_POINT_MODULE = "modbusRtuPoint";
+    public static final String MODBUS_TCP_POINT_MODULE = "modbusTcpPoint";
+    public static final String NIAGARA_POINT_MODULE = "niagaraPoint";
+    public static final String MISC_POINT_MODULE = "miscPoint";
+    public static final String OPC_UA_POINT_MODULE = "opcUAPoint";
+    public static final String LON_WORKS_POINT_MODULE = "lonworksPoint";
+    public static final String RDM_POINT_MODULE = "rdmPoint";
+    public static final String E2_POINT_MODULE = "e2Point";
+    public static final String BACNET_IP_POINT_MODULE = "bacnetIpPoint";
+
+    public static class PointConfigStatus{
+        public static final String UNCONFIGURED = "unconfigured";
+        public static final String CONFIGURED = "configured";
+        public static final String COMMISSIONED = "commissioned";
+        public static final String SUBSCRIBED = "subscribed";
+    }
+
+    public static FacilioModule getPointModule() throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        return moduleBean.getModule(POINT);
+    }
+    public static List<FacilioField> getPointFields() throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        return moduleBean.getAllFields(POINT);
     }
 }

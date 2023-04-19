@@ -5,12 +5,15 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bacnet.BACNetUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
@@ -18,9 +21,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.agentv2.AgentConstants.getPointFields;
 
 
 public class GetPointsdataCommand extends FacilioCommand {
@@ -31,26 +36,6 @@ public class GetPointsdataCommand extends FacilioCommand {
     Long agentId;
     String status;
     Long controllerId;
-    
-    private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields(true));
-    private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
-    static {
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_INPUT.ordinal());//0
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_OUTPUT.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_VALUE.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_INPUT.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_OUTPUT.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_VALUE.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.CALENDAR.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.COMMAND.ordinal());//7
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_INPUT.ordinal());//13
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_OUTPUT.ordinal());
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.ACCUMULATOR.ordinal());//23
-        FILTER_INSTANCES.add(BACNetUtil.InstanceType.PULSE_CONVERTER.ordinal());//24
-    }
-
-    private static final String FILETR_JOIN = StringUtils.join(FILTER_INSTANCES, ",");
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -106,11 +91,8 @@ public class GetPointsdataCommand extends FacilioCommand {
                 point.withControllerId(controllerId);
             }
         }
-        Criteria criteria = new Criteria();
         if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),
-                    FILETR_JOIN, NumberOperators.EQUALS));
-            point.withCriteria(criteria);
+            point.withCriteria(BACNetUtil.getBacnetInstanceTypeCriteria());
         }
         if(agentId != null && controllerIds.isEmpty()){
             point.withAgentId(agentId);

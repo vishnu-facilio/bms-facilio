@@ -96,15 +96,21 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<Long> controllerIds = log.getControllerIds();
 		FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
-		FacilioModule pointModule = ModuleFactory.getPointModule();
+		FacilioModule pointModule = AgentConstants.getPointModule();
+
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 
 		List<FacilioField> allFields = new ArrayList<>();
-//		allFields.addAll(modBean.getModuleFields(controllerModule.getName()));
 		allFields.add(FieldFactory.getIdField(controllerModule));
-//		allFields.add(FieldFactory.getPointsCount());
-		allFields.add(FieldFactory.getConfiguredPointCountConditionField());
-		allFields.add(FieldFactory.getSubscribedPointCountConditionField());
+		if (pointModule == null) {
+			pointModule = ModuleFactory.getPointModule();
+			allFields.add(FieldFactory.getConfiguredPointCountConditionField());
+			allFields.add(FieldFactory.getSubscribedPointCountConditionField());
+		}
+		else {
+			allFields.add(FieldFactory.getConfiguredPointCountConditionField(pointModule));
+			allFields.add(FieldFactory.getSubscribedPointCountConditionField(pointModule));
+		}
 		allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
 
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()

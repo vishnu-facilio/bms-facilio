@@ -29,15 +29,22 @@ public class ModbusTcpPointContext extends Point  implements Serializable {
 
 
     private long registerNumber = -1;
-    private long registerType = -1;
+    private ModbusUtils.RegisterType registerType;
     @NotNull
     private Long modbusDataType ;
 
     public long getRegisterNumber() { return registerNumber; }
     public void setRegisterNumber(long registerNumber) { this.registerNumber = registerNumber; }
 
-    public long getRegisterType() { return registerType; }
-    public void setRegisterType(long registerType) { this.registerType = registerType; }
+    public long getRegisterType() {
+        return registerType.getIndex();
+    }
+    public ModbusUtils.RegisterType getRegisterTypeEnum(){
+        return registerType;
+    }
+    public void setRegisterType(long registerType) {
+        this.registerType = ModbusUtils.RegisterType.valueOf(Math.toIntExact(registerType));
+    }
 
     public Long getModbusDataType() { return modbusDataType; }
     public void setModbusDataType(Long modbusDataType) { this.modbusDataType = modbusDataType; }

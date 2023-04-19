@@ -781,6 +781,11 @@ public class TransactionChainFactory {
 			c.addCommand(new ExportPointsCommand());
 			return c;
 		}
+		public static FacilioChain getExportPointsV2Chain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExportPointsCommandV2());
+			return c;
+		}
 
 
 		public static FacilioChain sendModuleMailChain () {

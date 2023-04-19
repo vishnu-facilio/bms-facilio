@@ -5,17 +5,13 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.iotmessage.IotData;
-import com.facilio.agentv2.iotmessage.IotMessage;
-import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlActionCommandContext.Status;
 import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -58,7 +54,7 @@ public class UpdateDataCommandStatus extends AgentV2Command {
                 FacilioField statusField = fieldMap.get("status");
                 FacilioField retriedCountField = fieldMap.get("retriedCount");
 
-                List<ControlActionCommandContext> commands= getPointFieldsWithPointName(modbean,controlActionModule, fields, statusField, controlIds);
+                List<ControlActionCommandContext> commands= getPointFieldsWithPointName(controlActionModule, fields, statusField, controlIds);
                 List<ControlActionCommandContext> commandsToRetry = new ArrayList<ControlActionCommandContext>();
 
                 List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
@@ -127,17 +123,20 @@ public class UpdateDataCommandStatus extends AgentV2Command {
         return false;
     }
 
-    public List<ControlActionCommandContext> getPointFieldsWithPointName(ModuleBean modbean, FacilioModule controlActionModule, List<FacilioField> fields, FacilioField statusField, JSONArray controlIds) throws Exception {
-
-        fields.add(FieldFactory.getField("name","Name",ModuleFactory.getPointModule(), FieldType.STRING));
+    public List<ControlActionCommandContext> getPointFieldsWithPointName(FacilioModule controlActionModule, List<FacilioField> fields, FacilioField statusField, JSONArray controlIds) throws Exception {
+        FacilioModule pointModule = AgentConstants.getPointModule();
+        if (pointModule == null){
+           pointModule = ModuleFactory.getPointModule();
+        }
+        fields.add(FieldFactory.getField("name","Name",pointModule, FieldType.STRING));
         List<Long> statusList = Arrays.asList((long)ControlActionCommandContext.Status.SENT.getIntVal(), (long)ControlActionCommandContext.Status.RETRYING.getIntVal());
         
         SelectRecordsBuilder<ControlActionCommandContext> selectBuilder = new SelectRecordsBuilder<ControlActionCommandContext>()
                 .select(fields)
                 .module(controlActionModule)
                 .beanClass(ControlActionCommandContext.class)
-                .innerJoin(ModuleFactory.getPointModule().getTableName())
-                .on(controlActionModule.getTableName()+".RESOURCE_ID="+ModuleFactory.getPointModule().getTableName()+".RESOURCE_ID AND "+controlActionModule.getTableName()+".FIELD_ID="+ModuleFactory.getPointModule().getTableName()+".FIELD_ID")
+                .innerJoin(pointModule.getTableName())
+                .on(controlActionModule.getTableName()+".RESOURCE_ID="+pointModule.getTableName()+".RESOURCE_ID AND "+controlActionModule.getTableName()+".FIELD_ID="+pointModule.getTableName()+".FIELD_ID")
                 .andCondition(CriteriaAPI.getIdCondition(controlIds, controlActionModule))
                 .andCondition(CriteriaAPI.getCondition(statusField, statusList,NumberOperators.EQUALS));
 

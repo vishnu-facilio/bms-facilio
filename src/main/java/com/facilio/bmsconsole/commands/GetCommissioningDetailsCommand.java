@@ -4,6 +4,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
@@ -12,6 +13,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -83,8 +85,17 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	private void setPoints(CommissioningLogContext log, boolean isNiagra) throws Exception {
-		FacilioModule module = ModuleFactory.getPointModule();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+		//1
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = moduleBean.getModule(AgentConstants.POINT);
+		Map<String,FacilioField>fieldMap = new HashMap<>();
+		if (module == null) {
+			 module = ModuleFactory.getPointModule();
+			 fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+		}
+		else {
+			fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+		}
 		FacilioField orderBy = isNiagra ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterPointsForCommissioning()

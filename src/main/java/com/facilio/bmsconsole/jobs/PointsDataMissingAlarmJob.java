@@ -4,6 +4,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -14,7 +15,6 @@ import com.facilio.taskengine.job.JobContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class PointsDataMissingAlarmJob extends FacilioJob {
@@ -49,9 +49,17 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
         }
     }
 
-    private void updatePointsDataMissing(long agentId, Collection<Long> pointIds) throws SQLException {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-
+    private void updatePointsDataMissing(long agentId, Collection<Long> pointIds) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+        Map<String, FacilioField> fieldMap = new HashMap<>();
+        if (pointModule == null) {
+            pointModule = ModuleFactory.getPointModule();
+            fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        }
+        else {
+            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+        }
         /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getPointModule().getTableName())
                 .fields(FieldFactory.getPointFields())
@@ -76,7 +84,7 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
         whereFields.add(fieldMap.get(AgentConstants.AGENT_ID));
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
+                .table(pointModule.getTableName())
                 .fields(Collections.singletonList(fieldMap.get(AgentConstants.DATA_MISSING)));
 
         updateBuilder.batchUpdate(whereFields, batchUpdateList);

@@ -229,8 +229,21 @@ public class PointsUtil
     }
 
     public static void addPoints(FacilioControllerType controllerType, List<Map<String,Object>>points) throws Exception {
+        FacilioModule pointModule = AgentConstants.getPointModule();
         List<FacilioField> fields = PointsAPI.getChildPointFields(controllerType);
-        DBUtil.insertValuesWithJoin(PointsAPI.getPointModule(controllerType),fields, FieldUtil.getAsMapList(points,PointsAPI.getPointType(controllerType)));
+        if (pointModule == null) {
+            DBUtil.insertValuesWithJoin(PointsAPI.getPointModule(controllerType), fields, FieldUtil.getAsMapList(points, PointsAPI.getPointType(controllerType)));
+        }
+        else {
+            FacilioModule childPointModule = PointsAPI.getPointModule(controllerType);
+            InsertRecordBuilder builder = new InsertRecordBuilder<>()
+                    .table(childPointModule.getTableName())
+                    .fields(fields)
+                    .module(childPointModule)
+                    .addRecordProps(points);
+            builder.save();
+
+        }
 
     }
 }

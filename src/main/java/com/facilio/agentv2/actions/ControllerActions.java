@@ -43,9 +43,9 @@ public class ControllerActions extends AgentActionV2 {
         this.controllerId = controllerId;
     }
 
-	public String getControllerUsingId() {
+    public String getControllerUsingId() {
         try {
-            List<Map<String, Object>> controller = AgentConstants.getControllerBean().getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
+            List<Map<String, Object>> controller = AgentConstants.getControllerBean().getControllerData(null, getControllerId(), constructListContext(new FacilioContext()));
             if (controller != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();
@@ -95,65 +95,65 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getConfiguredPoints(){
-            GetPointRequest getPointRequest = new GetPointRequest()
-                    .filterConfigurePoints();
-            try {
-                getPointRequest.withControllerId(getControllerId());
-                List<Map<String, Object>> points = getPointRequest.getPointsData();
-                setResult(AgentConstants.DATA,points);
-                ok();
-            } catch (Exception e) {
-                LOGGER.info("Exception  occurred while getting points ",e);
-                setResult(AgentConstants.EXCEPTION,e.getMessage());
-                internalError();
-            }
+    public String getConfiguredPoints() throws Exception {
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterConfigurePoints();
+        try {
+            getPointRequest.withControllerId(getControllerId());
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA, points);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
         return SUCCESS;
     }
 
-    public String getSubscribedPoints(){
+    public String getSubscribedPoints() throws Exception {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterSubscribedPoints();
         try {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             ok();
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
         }
         return SUCCESS;
     }
 
-    public String getUnconfiguredPoints(){
+    public String getUnconfiguredPoints() throws Exception {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterUnConfigurePoints();
         try {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             ok();
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
         }
         return SUCCESS;
     }
 
-    public String getCommissionedPoints(){
+    public String getCommissionedPoints() throws Exception {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterCommissionedPoints();
         try {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             ok();
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
         }
         return SUCCESS;

@@ -1375,8 +1375,8 @@ public class ReadingsAPI {
 		return getReadingInputValueProps(Collections.singletonList(rdm.getId()), "rdmId");
 	}
 
-	public static List<Map<String, Object>> getReadingInputValues(long pointId) throws Exception {
-		return getReadingInputValueProps(Collections.singletonList(pointId), "pointId");
+	public static List<Map<String, Object>> getReadingInputValues(List<Long> pointIds) throws Exception {
+		return getReadingInputValueProps(pointIds, "pointId");
 	}
 
 	public static Map<Long,Map<Integer, String>> getReadingIdxVsValuesMap(List<Long> rdmIds) throws Exception {

@@ -1267,7 +1267,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		if (point != null) {
 			Map<String, Object> toInsertMap = point.getPointJSON();
 			LOGGER.info(" point as map " + toInsertMap);
-			FacilioModule pointModule = ModuleFactory.getPointModule();
+			FacilioModule pointModule = AgentConstants.getPointModule();
+			if (pointModule == null) {
+				pointModule = ModuleFactory.getPointModule();
+			}
 			FacilioContext context = new FacilioContext();
 			context.put(ContextNames.MODULE, pointModule);
 		}

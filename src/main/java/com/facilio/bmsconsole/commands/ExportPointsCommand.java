@@ -9,14 +9,13 @@ import java.util.*;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.bacnet.BACNetUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -40,7 +39,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
-import org.apache.kafka.common.protocol.types.Field;
 
 
 public class ExportPointsCommand extends FacilioCommand {
@@ -128,9 +126,11 @@ public class ExportPointsCommand extends FacilioCommand {
 	}
 	
 	private List<Map<String, Object>> fetchPoints(Map<String, Object> controller, FacilioControllerType controllerType) throws Exception {
-		
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+		//1
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields = pointModule == null ? FieldFactory.getPointFields():moduleBean.getAllFields(AgentConstants.POINT);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField orderBy = isNiagara ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.ofType(controllerType)

@@ -288,9 +288,12 @@ public class CommissioningApi {
 		
 		List<Point> points = log.getPointList();
 		List<Long> pointIds = points.stream().map(Point::getId).collect(Collectors.toList());
-		FacilioModule module = ModuleFactory.getPointModule();
+		FacilioModule pointModule = AgentConstants.getPointModule();
+		if (pointModule == null){
+			pointModule = ModuleFactory.getPointModule();
+		}
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, module));
+		criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
 		
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.ofType(oldLog.getControllerTypeEnum())

@@ -45,9 +45,7 @@ import java.util.stream.Collectors;
 public class PublishCommissioningCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	private static List<Map<String, Object>> migrationPoints;
-	
-	private FacilioModule module = ModuleFactory.getPointModule();
-	private List<FacilioField> fields = FieldFactory.getPointFields();
+
 	
 	Map<String, ReadingDataMeta> rdmMap;
 
@@ -219,7 +217,17 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 
 	@SuppressWarnings("unchecked")
 	private List<Map<String, Object>> getDbPoints(CommissioningLogContext log) throws Exception {
-		
+		//1
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields = new ArrayList<>();
+		if (pointModule == null){
+			pointModule = ModuleFactory.getPointModule();
+			fields = FieldFactory.getPointFields();
+		}
+		else {
+			fields = moduleBean.getAllFields(AgentConstants.POINT);
+		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		List<Long> ids = (List<Long>) log.getPoints().stream().map(point -> (long) ((Map<String, Object>)point).get("id"))
 				.collect(Collectors.toList());
@@ -230,7 +238,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		mappedOrWritableCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.WRITABLE), Boolean.TRUE.toString(), BooleanOperators.IS));
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
+		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, pointModule));
 		criteria.andCriteria(mappedOrWritableCriteria);
 		
 		GetPointRequest getPointRequest = new GetPointRequest()
@@ -273,6 +281,16 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (batchUpdateList.isEmpty()) {
 			return;
 		}
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
+		List<FacilioField>fields = new ArrayList<>();
+		if (pointModule == null){
+			pointModule = ModuleFactory.getPointModule();
+			fields = FieldFactory.getPointFields();
+		}
+		else {
+			fields = moduleBean.getAllFields(AgentConstants.POINT);
+		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		List<FacilioField> updateFields = new ArrayList<>();
 		updateFields.add(fieldMap.get(AgentConstants.ASSET_CATEGORY_ID));
@@ -283,7 +301,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
+				.table(pointModule.getTableName())
 				.fields(updateFields)
 				;
 		

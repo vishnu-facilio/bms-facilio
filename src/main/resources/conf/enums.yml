@@ -365,3 +365,28 @@ enums:
 
   - name: VirtualMeterTemplateStatus
     enumClassName: com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext$VMTemplateStatus
+
+
+  - name: BacnetPointInstanceType
+    enumClassName: com.facilio.bacnet.BACNetUtil$InstanceType
+
+  - name: ModbusPointRegisterType
+    enumClassName: com.facilio.agentv2.modbustcp.ModbusUtils$RegisterType
+
+  - name: E2PointPropMode
+    enumClassName: com.facilio.agentv2.E2.E2PointContext$PropMode
+
+  - name: E2PointPropType
+    enumClassName: com.facilio.agentv2.E2.E2PointContext$PropType
+
+  - name: E2PointPropDataType
+    enumClassName: com.facilio.agentv2.E2.E2PointContext$PropDataType
+
+  - name: E2PointParentType
+    enumClassName: com.facilio.agentv2.E2.E2PointContext$ParentType
+
+  - name: SecurityMode
+    enumClassName: com.facilio.agentv2.opcua.OpcUaControllerContext$SecurityMode
+
+  - name: SecurityPolicy
+    enumClassName: com.facilio.agentv2.opcua.OpcUaControllerContext$SecurityPolicy

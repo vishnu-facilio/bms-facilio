@@ -4865,7 +4865,7 @@ public class ModuleFactory {
 
 	public static FacilioModule getSystemPointModule() {
 		FacilioModule facilioModule = new FacilioModule();
-		facilioModule.setTableName(AgentConstants.SYSTEM_POINT_MODULE_NAME);
+		facilioModule.setName(AgentConstants.SYSTEM_POINT_MODULE_NAME);
 		facilioModule.setTableName("System_Point");
 		facilioModule.setDisplayName("System Point");
 		facilioModule.setExtendModule(getPointModule());

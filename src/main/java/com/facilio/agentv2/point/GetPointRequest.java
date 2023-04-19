@@ -11,8 +11,15 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.bacnet.BacnetIpPointContext;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,12 +49,23 @@ public class GetPointRequest {
     private static final FacilioModule POINT_MODULE = ModuleFactory.getPointModule();
     private static final  Map<String, FacilioField> POINT_MAP = FieldFactory.getAsMap(POINT_FIELDS);
 
+
+    private static List<FacilioField> M_POINT_FIELDS ;
+    private static  Map<String, FacilioField> M_POINT_MAP ;
+    private static  FacilioModule M_POINT_MODULE ;
+
     private Criteria criteria = new Criteria();
     private FacilioControllerType controllerType = null;
     private int limit = 50 ;
     private int offset = 0;
     private String orderBy;
     private boolean fetchCount = false;
+
+    public GetPointRequest() throws Exception {
+        M_POINT_FIELDS = AgentConstants.getPointFields();
+        M_POINT_MODULE = AgentConstants.getPointModule();
+        M_POINT_MAP = FieldFactory.getAsMap(M_POINT_FIELDS);
+    }
 
 	public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
         if (controllerType != null) {
@@ -73,25 +91,49 @@ public class GetPointRequest {
     }
 
     public GetPointRequest withControllerIds ( Collection<Long> controllerIds ) throws Exception {
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE),controllerIds,NumberOperators.EQUALS));
+        if (M_POINT_MODULE == null) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS));
+        }
+        else {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(M_POINT_MODULE), controllerIds, NumberOperators.EQUALS));
+
+        }
         return this;
     }
     
     public GetPointRequest withAgentId ( long agentId ) throws Exception {
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(POINT_MODULE),String.valueOf(agentId), NumberOperators.EQUALS));
+        if (M_POINT_MODULE == null) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(POINT_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        else {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(M_POINT_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+
+        }
         return this;
     }
     
     public GetPointRequest withLogicalControllers(long agentId) throws Exception {
-    		Set<Long> controllersIds = AgentConstants.getControllerBean().getControllerIds(Collections.singletonList(agentId));
-		if (CollectionUtils.isNotEmpty(controllersIds)) {
-			criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
-					String.valueOf(true), BooleanOperators.IS));
-			withControllerIds(controllersIds);
-			return this;
-		} else {
-			throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
-		}
+        Set<Long> controllersIds = AgentConstants.getControllerBean().getControllerIds(Collections.singletonList(agentId));
+        if (M_POINT_MODULE == null) {
+            if (CollectionUtils.isNotEmpty(controllersIds)) {
+                criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
+                        String.valueOf(true), BooleanOperators.IS));
+                withControllerIds(controllersIds);
+                return this;
+            } else {
+                throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
+            }
+        }
+        else {
+            if (CollectionUtils.isNotEmpty(controllersIds)) {
+                criteria.addAndCondition(CriteriaAPI.getCondition(M_POINT_MAP.get(AgentConstants.LOGICAL),
+                        String.valueOf(true), BooleanOperators.IS));
+                withControllerIds(controllersIds);
+                return this;
+            } else {
+                throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
+            }
+        }
     }
 
     public GetPointRequest filterConfigurePoints() {
@@ -171,17 +213,22 @@ public class GetPointRequest {
     }
 
     public List<Map<String, Object>> getPointsData() throws Exception {
-    	GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(POINT_MODULE.getTableName());
+    	GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+        if (M_POINT_MODULE == null){
+            selectRecordBuilder.table(POINT_MODULE.getTableName());
+        }
+        else {
+            selectRecordBuilder.table(M_POINT_MODULE.getTableName());
+        }
 		if (controllerType != null) {
 			joinExtendedTable(selectRecordBuilder);
 		}
-		else if (fetchCount) {
-			setCountAggregate(selectRecordBuilder);
-		}
-		else {
-			selectRecordBuilder.select(new ArrayList<>(POINT_FIELDS));
-		}
-    	
+        else if (fetchCount) {
+            setCountAggregate(selectRecordBuilder);
+        }
+        else {
+            selectRecordBuilder.select(new ArrayList<>(POINT_FIELDS));
+        }
         if(criteria.getConditions() != null && !criteria.getConditions().isEmpty()){
             selectRecordBuilder.andCriteria(criteria);
         }
@@ -234,13 +281,24 @@ public class GetPointRequest {
         	FacilioControllerType pointControllerType = entry.getKey();
     		List<Long> pointIds = entry.getValue();
     		FacilioModule pointModule = PointsAPI.getPointModule(pointControllerType);
-    		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-    				.table(pointModule.getTableName())
-    				.select(PointsAPI.getChildPointFields(pointControllerType, false))
-    				.andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule))
-    				;
-    		
-    		List<Map<String, Object>> props = builder.get();
+            List<Map<String, Object>> props = new ArrayList<>();
+            if (M_POINT_MODULE == null) {
+                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                        .table(pointModule.getTableName())
+                        .select(PointsAPI.getChildPointFields(pointControllerType, false))
+                        .andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
+
+                props = builder.get();
+            }
+            else {
+                SelectRecordsBuilder builder = new SelectRecordsBuilder()
+                        .module(pointModule)
+                        .table(pointModule.getTableName())
+                        .select(PointsAPI.getChildPointFields(pointControllerType, false))
+                        .andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
+
+                props = builder.getAsProps();
+            }
     		extendedProps.putAll(props.stream().collect(Collectors.toMap(prop -> (long)prop.get("id"), prop -> prop)));
         }
         return extendedProps;
@@ -273,7 +331,11 @@ public class GetPointRequest {
         builder.innerJoin(extendedModule.getTableName())
         	.on(AgentConstants.POINTS_TABLE + ".ID=" + extendedModule.getTableName() + ".ID");
         if (!fetchCount) {
-        	builder.select(PointsAPI.getChildPointFields(controllerType));
+            List<FacilioField>fields = PointsAPI.getChildPointFields(controllerType);
+            if (M_POINT_MODULE != null){
+                fields.add(FieldFactory.getIdField(M_POINT_MODULE));
+            }
+        	builder.select(fields);
         }
         else {
         	setCountAggregate(builder);
@@ -321,7 +383,7 @@ public class GetPointRequest {
             int pointInstanceType = (int) prop.get(AgentConstants.INSTANCE_TYPE);
             BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf(pointInstanceType);
             if(instanceType.isMultiState()){
-                List<Map<String, Object>> readingInputValueAndLabelProps = ReadingsAPI.getReadingInputValues((Long) prop.get(AgentConstants.ID));
+                List<Map<String, Object>> readingInputValueAndLabelProps = ReadingsAPI.getReadingInputValues(Collections.singletonList((Long) prop.get(AgentConstants.ID)));
                 JSONObject inputValueVsLabel = new JSONObject();
                 for (Map<String, Object> readingInputValueAndLabelProp : readingInputValueAndLabelProps) {
                     if(readingInputValueAndLabelProp.containsKey("inputLabel") && readingInputValueAndLabelProp.get("inputLabel") != null && readingInputValueAndLabelProp.containsKey("inputValue") && readingInputValueAndLabelProp.get("inputValue") != null){

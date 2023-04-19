@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -30,6 +32,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.parser.JSONParser;
 
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
@@ -105,6 +108,28 @@ public class AgentIdAction extends AgentActionV2 {
 		this.count = count;
 	}
 
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    @Override
+    public String getFilters() {
+        return filters;
+    }
+
+    @Override
+    public void setFilters(String filters) {
+        this.filters = filters;
+    }
+
+    private String filters;
+
+    private String moduleName;
+
 	public String getDeviceOrControllersData() {
 
 		try {
@@ -148,9 +173,17 @@ public class AgentIdAction extends AgentActionV2 {
 
 	public String getControllersData() { 
 		try {
-			FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
+            FacilioChain chain = ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+			FacilioContext context = chain.getContext();
+            context.put(AgentConstants.MODULE_NAME,moduleName);
+            if (filters != null) {
+                JSONParser parser = new JSONParser();
+                JSONObject json = (JSONObject) parser.parse(getFilters());
+                context.put(FacilioConstants.ContextNames.FILTERS, json);;
+            }
+            chain.execute();
+            context.put(AgentConstants.AGENT_ID, getAgentId());
+            context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 

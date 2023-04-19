@@ -2,6 +2,7 @@ package com.facilio.agentv2.modbusrtu;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -17,7 +18,7 @@ public class ModbusRtuPointContext extends Point  implements Serializable {
 
 
     private long registerNumber = -1;
-    private long registerType = -1;
+    private ModbusUtils.RegisterType registerType ;
     private Long modbusDataType ;
 
     public ModbusRtuPointContext(long agentId, long controllerId) {
@@ -37,10 +38,19 @@ public class ModbusRtuPointContext extends Point  implements Serializable {
         System.out.println("setting rn");
         this.registerNumber = registerNumber; }
 
-    public long getRegisterType() { return registerType; }
+    public long getRegisterType() {
+        if (registerType != null) {
+            return registerType.getIndex();
+        }
+        return -1;
+    }
+    public ModbusUtils.RegisterType getRegisterTypeEnum() {
+        return registerType;
+    }
     public void setRegisterType(long registerType) {
         System.out.println("setting fc");
-        this.registerType = registerType; }
+        this.registerType = ModbusUtils.RegisterType.valueOf(Math.toIntExact(registerType));
+    }
 
     public Long getModbusDataType() { return modbusDataType; }
     public void setModbusDataType(Long modbusDatatype) {
