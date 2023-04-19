@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,6 +21,7 @@ import com.facilio.bmsconsole.forms.FormRuleActionContext;
 import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
+import com.facilio.bmsconsole.forms.FormRuleContext.ExecuteType;
 import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -53,6 +55,7 @@ public class FormRuleAPI {
 	public static final String IS_SUB_FORM_TRIGGER_FIELD = "isSubFormTriggerField";
 	
 	public static final String FORM_RULE_TRIGGER_TYPE = "formRuleTriggerType";
+	public static final String FORM_RULE_EXECUTE_TYPE = "formRuleExecuteType";
 	
 	public static final String SUB_FORM_DATA_KEY = "relations";
 	public static final String SUB_FORM_DATA_ACTIONS_KEY = "actions";
@@ -76,7 +79,10 @@ public class FormRuleAPI {
 	
 	
 	public static void addFormRuleContext(FormRuleContext formRuleContext) throws Exception {
-		
+
+		if(formRuleContext.getExecuteTypeEnum()==null){
+			formRuleContext.setExecuteType(ExecuteType.CREATE_AND_EDIT.getIntVal());
+		}
 		formRuleContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getFormRuleModule().getTableName())
@@ -229,6 +235,19 @@ public class FormRuleAPI {
 			formRuleActionFields.setOrgId(AccountUtil.getCurrentOrg().getId());
 			
 			if(formRuleActionFields.getCriteria() != null) {
+
+				long formFieldId = formRuleActionFields.getFormFieldId();
+				FormField formField = null;
+				FacilioForm facilioForm = null;
+				if(formFieldId>0) {
+					formField = FormsAPI.getFormFieldFromId(formFieldId);
+				}
+				if(formField!=null && formField.getFormId()>0) {
+					facilioForm = FormsAPI.getFormFromDB(formField.getFormId());
+				}
+				if(facilioForm != null && facilioForm.getModule().getName()!=null) {
+					CriteriaAPI.updateConditionField(facilioForm.getModule().getName(), formRuleActionFields.getCriteria());
+				}
 				long id = CriteriaAPI.addCriteria(formRuleActionFields.getCriteria(), AccountUtil.getCurrentOrg().getId());
 				formRuleActionFields.setCriteriaId(id);
 			}
@@ -318,7 +337,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return null;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContext(Long formId,TriggerType triggerType, Map<String, Object> formData) throws Exception {
+	public static List<FormRuleContext> getFormRuleContext(Long formId,TriggerType triggerType, Map<String, Object> formData,ExecuteType executeType) throws Exception {
 		if(formId == null || formId <=0) {
 			throw new IllegalArgumentException("Form Cannot Be Null");
 		}
@@ -327,12 +346,16 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		triggerValues.add((long) triggerType.getIntVal());
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
+
+		Criteria executeTypeCriteria = getExecuteTypeCriteria(fieldMap,executeType);
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormRuleFields())
 				.table(ModuleFactory.getFormRuleModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), StringUtils.join(triggerValues, ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), StringUtils.join(triggerValues, ","), NumberOperators.EQUALS))
+				.andCriteria(executeTypeCriteria);
 		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -346,7 +369,15 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		}
 		return formRuleContexts;
 	}
-	
+
+	private static Criteria getExecuteTypeCriteria(Map<String, FacilioField> fieldMap,ExecuteType executeType){
+
+		Criteria executeTypeCriteria = new Criteria();
+		executeTypeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("executeType"), ""+executeType.getIntVal(), NumberOperators.EQUALS));
+		executeTypeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("executeType"), String.valueOf(ExecuteType.CREATE_AND_EDIT.getIntVal()), NumberOperators.EQUALS));
+
+		return executeTypeCriteria;
+	}
 	public static List<FormRuleContext> getSubFormRuleContext(Long formId,Long subformId,TriggerType triggerType) throws Exception {
 		if(formId == null || formId <=0) {
 			throw new IllegalArgumentException("Form Cannot Be Null");
@@ -377,7 +408,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return formRuleContexts;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContext(Long formId,List<Long> formFieldId,TriggerType triggerType) throws Exception {
+	public static List<FormRuleContext> getFormRuleContext(Long formId,List<Long> formFieldId,TriggerType triggerType,ExecuteType executeType) throws Exception {
 		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId.isEmpty())) {
 			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
 		}
@@ -387,7 +418,9 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleTriggerFieldFields());
 		fieldMap.putAll(FieldFactory.getAsMap(FieldFactory.getFormRuleFields()));
-		
+
+		Criteria executeTypeCriteria = getExecuteTypeCriteria(fieldMap, executeType);
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormRuleFields())
 				.table(ModuleFactory.getFormRuleModule().getTableName())
@@ -397,6 +430,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+StringUtils.join(formFieldId, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS))
+				.andCriteria(executeTypeCriteria)
 				.orderBy("RULE_EXECUTION_ORDER");
 		
 		

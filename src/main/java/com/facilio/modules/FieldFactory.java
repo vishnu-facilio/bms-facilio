@@ -645,6 +645,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("formOnLoadRuleType", "FORM_ON_LOAD_RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         fields.add(getField("isDefault", "IS_DEFAULT_RULE", module, FieldType.BOOLEAN));
+        fields.add(getField("executeType", "EXECUTE_TYPE", module, FieldType.NUMBER));
 
 
         return fields;

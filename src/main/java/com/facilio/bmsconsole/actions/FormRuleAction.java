@@ -22,6 +22,16 @@ public class FormRuleAction extends FacilioAction {
 	 private long subFormId = -1;
 	 private long formFieldId;
 	 private int triggerType;
+
+	public int getExecuteType() {
+		return executeType;
+	}
+
+	public void setExecuteType(int executeType) {
+		this.executeType = executeType;
+	}
+
+	private int executeType = -1;
 	 private boolean fetchOnlySubformRules;
 	 Map<String,Object> formData;
 	 String moduleName;
@@ -163,7 +173,10 @@ public class FormRuleAction extends FacilioAction {
 	}
 
 	public String executeFormActionRules() throws Exception {
-		
+
+		 if(executeType<0){
+			 executeType = FormRuleContext.ExecuteType.CREATE_AND_EDIT.getIntVal();
+		 }
 		FacilioChain c = TransactionChainFactory.getExecuteFormActionRules();
 		
 		Context context = c.getContext();
@@ -172,6 +185,7 @@ public class FormRuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SUB_FORM_ID, this.getSubFormId());
 		context.put(FacilioConstants.ContextNames.FORM_FIELD_ID, this.getFormFieldId());
 		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
+		context.put(FormRuleAPI.FORM_RULE_EXECUTE_TYPE,FormRuleContext.ExecuteType.getAllExecuteType().get(getExecuteType()));
 		context.put(FormRuleAPI.FORM_DATA,formData);
 		
 		c.execute();

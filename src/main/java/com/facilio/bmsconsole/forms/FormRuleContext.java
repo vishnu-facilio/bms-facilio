@@ -29,6 +29,17 @@ public class FormRuleContext {
 	Criteria criteria;
 	FormRuleType type;
 	TriggerType triggerType;
+	ExecuteType executeType;
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	String moduleName;
 	Form_On_Load_Rule_Type formOnLoadRuleType;
 	RuleType ruleType;
 	
@@ -453,4 +464,59 @@ public class FormRuleContext {
 	public void setSubFormCriteriaId(long subFormCriteriaId) {
 		this.subFormCriteriaId = subFormCriteriaId;
 	}
+
+	public int getExecuteType() {
+		if (executeType != null) {
+			return executeType.getIntVal();
+		}
+		return -1;
+	}
+
+	public ExecuteType getExecuteTypeEnum() {
+		return executeType;
+	}
+	public void setExecuteType(int executeTypeInt) {
+		this.executeType = ExecuteType.getAllExecuteType().get(executeTypeInt);
+	}
+
+	public enum ExecuteType{
+		CREATE(1,"Create"),
+		EDIT(2,"Edit"),
+		CREATE_AND_EDIT(3,"Create And Edit");
+		int intVal;
+		String name;
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public void setIntVal(int intVal) {
+			this.intVal = intVal;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		private ExecuteType(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, ExecuteType> executeType = Collections.unmodifiableMap(initExecuteTypeMap());
+
+
+		private static Map<Integer, ExecuteType> initExecuteTypeMap() {
+			Map<Integer, ExecuteType> executeTypeMap = new HashMap<>();
+			for (ExecuteType executeType: values()) {
+				executeTypeMap.put(executeType.getIntVal(), executeType);
+			}
+			return executeTypeMap;
+		}
+
+		public static Map<Integer, ExecuteType> getAllExecuteType() {
+			return executeType;
+		}
+	}
+
 }

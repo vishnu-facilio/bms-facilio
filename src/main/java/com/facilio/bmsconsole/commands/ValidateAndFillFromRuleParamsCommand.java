@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
+import com.facilio.bmsconsole.forms.FormRuleContext.ExecuteType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +32,11 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		Long subFormId = (Long) context.get(FacilioConstants.ContextNames.SUB_FORM_ID);
 		Long formFieldId = (Long) context.get(FacilioConstants.ContextNames.FORM_FIELD_ID);
 		Map<String, Object> formData = (Map<String,Object>) context.get(FormRuleAPI.FORM_DATA);
+		ExecuteType executeType = (ExecuteType) context.get(FormRuleAPI.FORM_RULE_EXECUTE_TYPE);
 
+		if(executeType == null){
+			executeType = ExecuteType.CREATE_AND_EDIT;
+		}
 		if(triggerType == null) {
 			throw new IllegalArgumentException("Trigger Type Cannot be null during Form Action Evaluation");
 		}
@@ -45,7 +50,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		case FORM_ON_LOAD:
 			if (formData != null) {
 				// An initial unnecessary call without formdata is done from client and this causes unknown problems.
-				formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData);
+				formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData,executeType);
 			}
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
@@ -53,7 +58,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			if(formData == null) {
 				throw new IllegalArgumentException("Form Data Cannot be null during Form On Submit Action Evaluation");
 			}
-			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData);
+			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData, executeType);
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 			
@@ -64,7 +69,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			if(formFieldId == null) {
 				throw new IllegalArgumentException("Form Field Cannot be null during Form Field Action Evaluation");
 			}
-			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, Collections.singletonList(formFieldId), triggerType);
+			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, Collections.singletonList(formFieldId), triggerType,executeType);
 			
 			FormField formField = FormsAPI.getFormFieldFromId(formFieldId);
 			
@@ -180,7 +185,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			
 		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {
 			if (triggerFieldIds != null && !triggerFieldIds.isEmpty()) {
-				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE);
+				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE,executeType);
 				if (updateFormRuleContexts != null && !updateFormRuleContexts.isEmpty()) {
 					formRuleContexts.addAll(updateFormRuleContexts);
 				}

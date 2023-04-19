@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,7 +18,16 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
-		
+
+		FacilioForm form = null;
+		if(formRule.getFormId()>0){
+			form = FormsAPI.getFormFromDB(formRule.getFormId());
+		}
+		if(form!=null && form.getModule().getName()!=null){
+			Criteria formRuleCriteria = formRule.getCriteria();
+			CriteriaAPI.updateConditionField(form.getModule().getName(), formRuleCriteria);
+		}
+
 		long oldCriteriaId = formRule.getCriteriaId();
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 		formRule.setCriteriaId(id);
