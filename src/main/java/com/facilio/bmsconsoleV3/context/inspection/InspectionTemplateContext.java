@@ -172,7 +172,7 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 		}
 		else {
 			DateRange range = new DateRange(0l, DateTimeUtil.getCurrenTime());
-			responses = new InspectionScheduler().getResponses(this, null, Collections.singletonList(range));
+			responses = InspectionUtil.getResponses(this, null, Collections.singletonList(range));
 		}
 		return responses;
 	}

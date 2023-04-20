@@ -25,25 +25,25 @@ public class BaseSchedulerJob extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(BaseSchedulerJob.class.getName());
 	Long jobId;
-	
+
 	@Override
 	public void execute(JobContext jc) throws Exception {
-		
+
 		try {
 			jobId = (Long) jc.getJobId();
 			String jobName = (String) jc.getJobName();
 			List<BaseScheduleContext> baseSchedules = getBaseSchedules(jobId);
 
 			JSONObject jobProps = BmsJobUtil.getJobProps(jobId, jobName);
-		    Boolean isUpdate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("isUpdate", false) : false;
-		    Boolean saveAsV3 = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3", false) : false;
-		    Boolean saveAsV3PreCreate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3PreCreate", false) : false;
+			Boolean isUpdate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("isUpdate", false) : false;
+			Boolean saveAsV3 = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3", false) : false;
+			Boolean saveAsV3PreCreate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("saveAsV3PreCreate", false) : false;
 
 			if(baseSchedules != null && !baseSchedules.isEmpty()) {
 				for(BaseScheduleContext baseScheduleContext: baseSchedules) {
 					try {
 						List<Map<String, Object>> parentRecordProps = baseScheduleContext.fetchParent();
-						List<? extends ModuleBaseWithCustomFields> childRecords = baseScheduleContext.getScheduleTypeEnum().getSchedulerTypeHandler().createRecords(baseScheduleContext, isUpdate, parentRecordProps, false);	
+						List<? extends ModuleBaseWithCustomFields> childRecords = baseScheduleContext.getScheduleTypeEnum().getSchedulerTypeHandler().createRecords(baseScheduleContext, isUpdate, parentRecordProps, false);
 						if(childRecords != null && !childRecords.isEmpty()) {
 							if(saveAsV3) {
 								baseScheduleContext.saveAsV3Records(childRecords);
@@ -59,31 +59,31 @@ public class BaseSchedulerJob extends FacilioJob {
 						LOGGER.log(Level.SEVERE, "Exception while base scheduling job " +jobName+ " ,jobId: "+jobId+ " baseScheduleContext: "+baseScheduleContext,e);
 						CommonCommandUtil.emailException("Exception while base scheduling job " +jobName, "JobId: "+jobId+ " baseScheduleContext: "+baseScheduleContext,e);
 					}
-				}		
+				}
 			}
 		}
 		catch(Exception e) {
 			LOGGER.severe("Error occurred in BaseSchedulerJob for jobId: "+jobId+ " Exception: " +e);
 		}
 	}
-	
-	private List<BaseScheduleContext> getBaseSchedules(long jobId) throws Exception {	   
-	   GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+
+	private List<BaseScheduleContext> getBaseSchedules(long jobId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getBaseSchedulerFields())
 				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("SCHEDULE_TYPE", "scheduleType", ""+jobId, NumberOperators.EQUALS));
-			
-	   	Criteria subCriteria = new Criteria();
+
+		Criteria subCriteria = new Criteria();
 		subCriteria.addOrCondition(CriteriaAPI.getCondition("END_TIME", "endTime", "" + System.currentTimeMillis(), NumberOperators.GREATER_THAN));
 		subCriteria.addOrCondition(CriteriaAPI.getCondition("END_TIME", "endTime", "-1", CommonOperators.IS_EMPTY));
 		selectBuilder.andCriteria(subCriteria);
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {			
-			List<BaseScheduleContext> baseSchedules = FieldUtil.getAsBeanListFromMapList(props, BaseScheduleContext.class);	
+		if (props != null && !props.isEmpty()) {
+			List<BaseScheduleContext> baseSchedules = FieldUtil.getAsBeanListFromMapList(props, BaseScheduleContext.class);
 			return baseSchedules;
 		}
 		return null;
 	}
-	
+
 }
