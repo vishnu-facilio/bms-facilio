@@ -19,7 +19,7 @@ public class FetchSpaceBookingCommand extends FacilioCommand {
         long startTime =  (long) context.get(FacilioConstants.ContextNames.START_TIME);
         long endTime =  (long) context.get(FacilioConstants.ContextNames.END_TIME);
 
-        List<V3SpaceBookingContext> bookingList = V3SpaceBookingApi.getBookingListFromSpaceIds(spaceIds, startTime, endTime);
+        List<V3SpaceBookingContext> bookingList = V3SpaceBookingApi.getActiveBookingListFromSpaceIds(spaceIds, startTime, endTime);
 
         context.put(FacilioConstants.ContextNames.SpaceBooking.SPACE_BOOKING_LIST,bookingList);
 

@@ -1820,4 +1820,14 @@
         <requestbody type="object">
         </requestbody>
     </request>
+
+     <request path="/api/v3/spacebooking/action" method="POST">
+        <requestbody type="object">
+            <property name="action" type="string" mandatory="true"/>
+             <property name="extendTime" type="number"/>
+            <property name="spaceBookingIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
 </config>

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.amazonaws.services.dynamodbv2.xspec.NULL;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
@@ -8,6 +9,8 @@ import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppConte
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingFormRelationContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,6 +53,32 @@ public class V3SpaceBookingApi {
         criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingStartTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL));
         criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingEndTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
         criteria.addAndCondition(CriteriaAPI.getCondition(map.get("space"), StringUtils.join(spaceIds, ","), NumberOperators.EQUALS));
+
+        List<SupplementRecord> supplementRecords = new ArrayList<>();
+        supplementRecords.add((SupplementRecord)map.get("host"));
+        supplementRecords.add((SupplementRecord)map.get("space"));
+
+        List<V3SpaceBookingContext> bookingList =  V3RecordAPI.getRecordsListWithSupplements(module.getName(), null, V3SpaceBookingContext.class, criteria, supplementRecords);
+
+        if (bookingList != null) {
+            return bookingList;
+        }
+        return new ArrayList<>();
+    }
+
+    public static List<V3SpaceBookingContext> getActiveBookingListFromSpaceIds(List<Long> spaceIds, Long startTime, Long endTime) throws Exception {
+
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_BOOKING);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> map = FieldFactory.getAsMap(fields);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingStartTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL));
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("bookingEndTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("space"), StringUtils.join(spaceIds, ","), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(map.get("isCancelled"), CommonOperators.IS_EMPTY));
 
         List<SupplementRecord> supplementRecords = new ArrayList<>();
         supplementRecords.add((SupplementRecord)map.get("host"));
