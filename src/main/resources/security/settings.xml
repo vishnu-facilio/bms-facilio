@@ -1841,5 +1841,17 @@
     </request>
     <request path="/api/v3/commentPreferences/sharingOptions" method="GET"/>
     <request path="/api/v3/commentPreferences/clear" method="GET"/>
+    <request path="/api/v3/workOrderLabour/actuals">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderLabour/plans">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/jobPlanLabours/plans">
+    <requestbody type="object">
+    </requestbody>
+    </request>
 
 </config>

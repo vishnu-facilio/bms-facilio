@@ -97,7 +97,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         endTime.setRequired(true);
         fields.add(endTime);
 
-        NumberField duration = FieldFactory.getDefaultField("duration","duration","DURATION", FieldType.DECIMAL);
+        NumberField duration = FieldFactory.getDefaultField("duration","duration","DURATION", FieldType.NUMBER,FacilioField.FieldDisplayType.DURATION);
         duration.setRequired(true);
         fields.add(duration);
 
@@ -365,6 +365,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
             FormField totalField = new FormField(fieldMap.get("totalAmount").getFieldId(), "totalAmount", FacilioField.FieldDisplayType.CURRENCY, "Total Cost", FormField.Required.REQUIRED, ++seq, 1);
             totalField.setIsDisabled(true);
+            totalField.setValue("0");
             fields.add(totalField);
 
 
@@ -446,7 +447,12 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "else if( code == null){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -474,7 +480,12 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "else if( code == null){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -540,7 +551,12 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "else if( code == null){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -552,11 +568,13 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "if(formData.craft != null && formData.skill != null){\n" +
                 "labourList = [];\n" +
                 "labourCrafts = Module(\"labourCraftSkill\").fetch([skill == formData.skill.id && craft == formData.craft.id]);\n" +
+                "if(labourCrafts != null ){\n" +
                 "for each index,value in labourCrafts {\n"+
                 "labourCraft= value;\n"+
                 "labours = labourCraft.labour;\n" +
                 "labour = labours.id+\"\";\n"+
                 "labourList.add(labour);\n" +
+                "}\n" +
                 "}\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
@@ -589,7 +607,12 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "else if( code == null){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n"+
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -597,8 +620,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "result1.action = actionMap1;\n" +
                 " result1.fieldId = "+rateFormFieldId+";\n" +
                 "resultList.add(result1);\n" +
-
-                " valueMap = {};\n" +
+                "valueMap = {};\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
                 "conditionMap.fieldName = \"parentId\";\n" +
@@ -614,14 +636,15 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "result.action = actionMap;\n" +
                 "result.fieldId ="+skillFormFieldId+";\n" +
                 "resultList.add(result);\n" +
-
                 "labourList = [];\n" +
                 "labourCrafts = Module(\"labourCraftSkill\").fetch([craft == formData.craft.id]);\n" +
+                "if(labourCrafts != null ){\n" +
                 "for each index,value in labourCrafts {\n"+
                 "labourCraft= value;\n"+
                 "labours = labourCraft.labour;\n" +
                 "labour = labours.id+\"\";\n"+
                 "labourList.add(labour);\n" +
+                "}\n" +
                 "}\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
@@ -641,15 +664,15 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "resultList.add(result);\n" +
 
                 "}\n" +
-                "if(formData.skill == null ){\n" +
-                "actionMap2 = {};\n" +
-                "actionMap2.value = null;\n" +
-                "actionMap2.actionName = \"set\" ;\n" +
-                "result2 = {};\n" +
-                "result2.action = actionMap2;\n" +
-                "result2.fieldId = "+labourFormFieldId+";\n" +
-                "resultList.add(result2);\n" +
-                "}\n" +
+//                "if(formData.skill == null ){\n" +
+//                "actionMap2 = {};\n" +
+//                "actionMap2.value = null;\n" +
+//                "actionMap2.actionName = \"set\" ;\n" +
+//                "result2 = {};\n" +
+//                "result2.action = actionMap2;\n" +
+//                "result2.fieldId = "+labourFormFieldId+";\n" +
+//                "resultList.add(result2);\n" +
+//                "}\n" +
                 "return resultList;\n" +
                 "\n" +
                 "\n" +
@@ -704,11 +727,22 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
         String workflowString = "List getActions(Map formData) {\n" +
                 "result = [];\n" +
+                "if(formData.duration != null ){\n" +
                 "duration = formData.duration;\n" +
                 "duartionInHours = new NameSpace(\"date\").secToHour(duration);\n" +
+                "}\n" +
+                "if(formData.duration == null ){\n" +
+                "duartionInHours = 0;\n" +
+                "}\n" +
                 "rate= formData.rate;\n" +
                 "currencyValue = rate.currencyValue;\n"+
-                "ratePerHour = new NameSpace(\"number\").intValue(currencyValue);\n" +
+                "ratePerHours = new NameSpace(\"number\").intValue(currencyValue);\n" +
+                "if(ratePerHours != null ){\n" +
+                "ratePerHour = ratePerHours;\n" +
+                "}\n" +
+                "if(ratePerHours == null ){\n" +
+                "ratePerHour = 0;\n" +
+                "}\n" +
                 "cost = duartionInHours*ratePerHour;\n" +
                 "valueMap = {};\n"+
                 "rates= formData.rate;\n"+
@@ -719,7 +753,12 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "else if( code == null){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(cost != null ){\n" +
                 "valueMap.currencyValue = cost;\n" +
+                "}\n" +
+                "else if( cost == null){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "temp = {};\n" +
                 "action = {};\n" +
                 "action.actionName = \"set\";\n" +

@@ -72,11 +72,13 @@ public class WorkOrderActualsLabourCommandV3 extends FacilioCommand {
         if (moduleName.equals(FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN)) {
         V3WorkOrderLabourPlanContext woLabourplan = V3RecordAPI.getRecord(moduleName, recordId);
         V3WorkOrderLabourContext woLabour = new V3WorkOrderLabourContext();
-        woLabour.setCraft(woLabourplan.getCraft());
-        woLabour.setSkill(woLabourplan.getSkill());
-        woLabour.setDuration(woLabourplan.getDuration());
-        woLabour.setRate(woLabourplan.getRate());
-        woLabour.setTotalAmount(woLabourplan.getTotalPrice());
+
+            woLabour.setCraft(woLabourplan.getCraft());
+            woLabour.setSkill(woLabourplan.getSkill());
+            woLabour.setDuration(woLabourplan.getDuration());
+            woLabour.setRate(woLabourplan.getRate());
+            woLabour.setTotalAmount(woLabourplan.getTotalPrice());
+
         context.put(FacilioConstants.ContextNames.WO_LABOUR, woLabour);
     }
 }

@@ -16,9 +16,9 @@ public class V3WorkOrderLabourContext extends V3Context {
     private double cost = -1;
     private Map<String,Object> totalAmount;
     private Map<String,Object> rate;
-    private long startTime = -1;
-    private long endTime = -1;
-    private double duration = 0;
+    private Long startTime;
+    private Long endTime ;
+    private Long duration ;
     private Long parentId;
     private LabourContextV3 labour;
     private V3WorkOrderContext parent;

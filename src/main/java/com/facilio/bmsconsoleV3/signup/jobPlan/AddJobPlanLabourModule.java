@@ -257,7 +257,12 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             fields.add(new FormField(fieldMap.get("quantity").getFieldId(), "quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seq, 1));
             fields.add(new FormField(fieldMap.get("duration").getFieldId(), "duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, ++seq, 1));
             fields.add(new FormField(fieldMap.get("rate").getFieldId(), "rate", FacilioField.FieldDisplayType.CURRENCY, "Rate per Hour", FormField.Required.OPTIONAL, ++seq, 1,true));
-            fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1,true));
+
+            FormField totalField = new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.REQUIRED, ++seq, 1,true);
+            totalField.setIsDisabled(true);
+            totalField.setValue("0");
+            fields.add(totalField);
+            //fields.add(new FormField(fieldMap.get("totalPrice").getFieldId(), "totalPrice", FacilioField.FieldDisplayType.CURRENCY, "Total Amount", FormField.Required.OPTIONAL, ++seq, 1,true));
 
 
             section.setFields(fields);
@@ -325,7 +330,12 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "if(formData.id == null ){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -353,7 +363,12 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "if(formData.id == null ){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(ratePerHour != null ){\n" +
                 "valueMap.currencyValue = ratePerHour;\n" +
+                "}\n" +
+                "if(ratePerHour == null ){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "actionMap1 = {};\n" +
                 "actionMap1.value = valueMap;\n" +
                 "actionMap1.actionName = \"set\" ;\n" +
@@ -447,8 +462,8 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         singleRule.setFormId(defaultForm.getId());
         singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("duration"), CommonOperators.IS_NOT_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rate"), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("quantity"), CommonOperators.IS_NOT_EMPTY));
+       // criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rate"), CommonOperators.IS_NOT_EMPTY));
         singleRule.setCriteria(criteria);
 
         List<FormRuleTriggerFieldContext> triggerFieldList= new ArrayList<>();
@@ -471,13 +486,30 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
         showAction.setActionType(FormActionType.EXECUTE_SCRIPT.getVal());
         String workflowString = "List getActions(Map formData) {\n" +
                 "result = [];\n" +
+                "if(formData.duration != null ){\n" +
                 "duration = formData.duration;\n" +
                 "duartionInHours = new NameSpace(\"date\").secToHour(duration);\n" +
+                "}\n" +
+                "if(formData.duration == null ){\n" +
+                "duartionInHours = 0;\n" +
+                "}\n" +
                 "rate= formData.rate;\n" +
                 "currencyValue = rate.currencyValue;\n"+
-                "ratePerHour = new NameSpace(\"number\").intValue(currencyValue);\n" +
+                "ratePerHours = new NameSpace(\"number\").intValue(currencyValue);\n" +
                 //"ratePerHour = currencyValue.intValue();\n"+
-                "cost = formData.quantity*duartionInHours*ratePerHour;\n" +
+                "if(ratePerHours != null ){\n" +
+                "ratePerHour = ratePerHours;\n" +
+                "}\n" +
+                "if(ratePerHours == null ){\n" +
+                "ratePerHour = 0;\n" +
+                "}\n" +
+                "if(formData.quantity != null ){\n" +
+                "qty = formData.quantity;\n" +
+                "}\n" +
+                "if(formData.quantity == null ){\n" +
+                "qty = 0;\n" +
+                "}\n" +
+                "cost = qty*duartionInHours*ratePerHour;\n" +
                 "valueMap = {};\n"+
                 "if(formData.id != null ){\n" +
                 "rates= formData.rate;\n"+
@@ -487,7 +519,12 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
                 "if(formData.id == null ){\n" +
                 "valueMap.currencyCode = null;\n" +
                 "}\n" +
+                "if(cost != null ){\n" +
                 "valueMap.currencyValue = cost;\n" +
+                "}\n" +
+                "else if( cost == null){\n" +
+                "valueMap.currencyValue = 0;\n" +
+                "}\n" +
                 "temp = {};\n" +
                 "action = {};\n" +
                 "action.actionName = \"set\";\n" +
