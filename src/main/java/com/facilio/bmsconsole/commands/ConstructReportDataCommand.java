@@ -134,7 +134,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     xVal = prop.containsKey("right") ? prop.get("right") : null;
                 }
                 if (xVal != null) {
-                    xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
+                    xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine, report.getxAggrEnum());
                     Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap, dpMultiLookUpMap);
                     Object yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
                     Object minYVal = null, maxYVal = null;
@@ -215,14 +215,19 @@ public class ConstructReportDataCommand extends FacilioCommand {
     protected String getxAlias(ReportContext report) {
         return report.getxAlias() == null ? FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS : report.getxAlias();
     }
-
     protected Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
+        return getBaseLineAdjustedXVal(xVal, xAxis, baseLine, null);
+    }
+    protected Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine, AggregateOperator aggr) throws Exception {
         if (baseLine != null) {
             switch (xAxis.getField().getDataTypeEnum()) {
                 case DATE:
                 case DATE_TIME:
                     BaseLineContext.AdjustType adjustType = baseLine.getAdjustTypeEnum();
-                    if(adjustType != null && adjustType == BaseLineContext.AdjustType.FULL_MONTH_DATE)
+                    if(adjustType != null && adjustType == BaseLineContext.AdjustType.FULL_MONTH_DATE &&
+                            aggr != null && aggr instanceof DateAggregateOperator &&
+                            (((DateAggregateOperator) aggr) == DateAggregateOperator.MONTHANDYEAR)
+                    )
                     {
                         ZonedDateTime xValZdt = DateTimeUtil.getDateTime((long)xVal);
                         xValZdt = xValZdt.plusMonths(1);
