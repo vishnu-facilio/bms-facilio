@@ -28,7 +28,16 @@ public class ValidateAttendanceTransactionCommand extends FacilioCommand {
             }
 
             if (AttendanceAPI.transactionIsNotCausallyValid(tx)){
-                throw new IllegalArgumentException("transaction is causally invalid");
+                switch (tx.getTransactionType()){
+                    case CHECK_IN:
+                        throw new IllegalArgumentException("Check-In can be done only after Check-Out");
+                    case CHECK_OUT:
+                        throw new IllegalArgumentException("Check-Out can be done only after Check-In & Resume Work");
+                    case BREAK:
+                        throw new IllegalArgumentException("Break can be done only after Check-In & Resume Work");
+                    case RESUME_WORK:
+                        throw new IllegalArgumentException("Resume Work can be done only after Break");
+                }
             }
 
             if (malformedBreakTransaction(tx)){
