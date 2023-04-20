@@ -27,7 +27,7 @@ public class LoadInvitesExtraFieldsCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
-            String[] extraFieldNames = new String[]{"visitorName"};
+            String[] extraFieldNames = new String[]{"visitorName","visitorType"};
                 for (String fieldName : extraFieldNames) {
                         extraReceivableFields.add((allFieldsAsMap.get(fieldName)));
             }
