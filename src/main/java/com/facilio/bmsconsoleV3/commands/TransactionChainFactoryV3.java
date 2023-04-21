@@ -3182,6 +3182,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddJobPlanGroupCommand());
         c.addCommand(new SwapJobPlanDetailsCommand());
         c.addCommand(new PublishJobPlanCommand());
+        c.addCommand(new UnPublishAndRepublishPPM());
         return c;
     }
     public static FacilioChain fetchJobPlanVersionHistoryChain(){
