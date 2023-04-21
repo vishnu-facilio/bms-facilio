@@ -3289,6 +3289,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchPageTabsCommand());
 		c.addCommand(new FetchPageColumnsCommand());
 		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new FetchPageSectionWidgetsCommand());
 		c.addCommand(new OrderPageComponents());
 		return c;
 	}
@@ -3297,6 +3298,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetPageTabCommand());
 		c.addCommand(new FetchPageColumnsCommand());
 		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new FetchPageSectionWidgetsCommand());
 		c.addCommand(new OrderPageComponents());
 		return c;
 	}

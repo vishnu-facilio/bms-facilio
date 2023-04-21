@@ -6804,6 +6804,11 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPageSectionCommand());
 		return c;
 	}
+	public static FacilioChain getCreatePageSectionWidgetsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddPageSectionWidgetCommand());
+		return c;
+	}
 	public static FacilioChain getPatchCustomPageChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PatchCustomPageCommand());
@@ -6867,6 +6872,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getChangeDefaultPageChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ChangeDefaultPageCommand());
+		return chain;
+	}
+
+	public static FacilioChain getRearrangeWidgetsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdatePageWidgetPositionsCommand());
 		return chain;
 	}
 

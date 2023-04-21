@@ -16,5 +16,5 @@ public class PageSectionContext {
     private Long sysCreatedTime;
     private Long sysModifiedBy;
     private Long sysModifiedTime;
-//    private List<PageSectionWidgetsContext> widgets;
+    private List<PageSectionWidgetContext> widgets;
 }

@@ -7433,6 +7433,24 @@
 		</action>
 	</package>
 
+	<package name="PageSectionWidgets" namespace="/api/v2/customPage/widget" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="createWidget">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidget">
+		</action>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="updateWidget">
+		</action>
+		<action name="rearrange"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="deleteWidget">
+		</action>
+	</package>
+
 	<package name="vendorkiosk" namespace="/api/v2/customkiosk/vendor" extends="v2Api">
 		<action name="checkout"
 				class="com.facilio.bmsconsole.actions.VendorCustomKioskAction"

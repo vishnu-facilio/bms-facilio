@@ -5582,6 +5582,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return module;
 	}
 
+	public static FacilioModule getPageSectionWidgetsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageSectionWidgets");
+		module.setDisplayName("PageSectionWidgets");
+		module.setTableName("Page_Section_Widgets");
+		return module;
+	}
+
 
 	public static FacilioModule getAttendanceSettingsPseudoModule() {
 		FacilioModule attendanceSettings = new FacilioModule();

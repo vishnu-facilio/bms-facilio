@@ -3955,8 +3955,10 @@ public class FacilioConstants {
 		public static final String PAGE_SECTIONS = "sections";
 		public static final String SECTION_ID = "sectionId";
 		public static final String SECTION_IDS = "sectionIds";
-		public static final String PAGE_SECTION_WIDGET = "widget";
+		public static final String PAGE_SECTION_WIDGET = "pageSectionWidget";
+		public static final String PAGE_SECTION_WIDGET_ID = "pageSectionWidgetId";
 		public static final String PAGE_SECTION_WIDGETS = "widgets";
+		public static final String PAGE_SECTION_WIDGETS_POSITIONS = "pageSectionWidgetsPosition";
 		public static final String WIDGETGROUP = "widgetGroup";
 		public static final String WIDGETGROUPS = "widgetGroups";
 		public static final String WIDGETGROUP_ID = "widgetGroupId";
@@ -3971,7 +3973,6 @@ public class FacilioConstants {
 		public static final String WIDGETGROUP_WIDGET_ID = "widgetGroupWidgetId";
 		public static final String WIDGETGROUP_WIDGET_IDS = "widgetGroupWidgetIds";
 		public static final String MESSAGE = "message";
-		public static final String PAGE_SECTION_WIDGET_ID = "widgetId";
 		public static final String PAGE_SECTION_WIDGET_IDS = "widgetIds";
 		public static final String TAB_NAME = "tabName";
 		public static final String IS_BUILDER_REQUEST = "isBuilderRequest";
@@ -3984,6 +3985,9 @@ public class FacilioConstants {
         public static final String EXCLUDE_TABS = "excludeTabs";
 		public static final String EXCLUDE_COLUMNS = "excludeColumns";
 		public static final String COLUMN_WIDTHS = "columnWidths";
+		public static final String WIDGET_TYPE = "widgetType";
+		public static final String WIDGET_DETAIL = "widgetDetail";
+		public static final String WIDGET_DETAIL_TYPE = "widgetDetailType";
     }
 
 }
