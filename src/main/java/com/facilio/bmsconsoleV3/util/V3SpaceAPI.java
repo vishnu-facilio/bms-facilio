@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -15,10 +16,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,5 +136,50 @@ public class V3SpaceAPI {
             return spacesChildren.values().stream().collect(Collectors.toList());
         }
         return null;
+    }
+    public static Map<String,Object> getUpdateBaseSpacePropForImport(V3BaseSpaceContext space) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> updateProp = new HashMap<>();
+        switch(space.getSpaceTypeEnum()) {
+            case SITE:
+                updateProp.put("site",space.getId());
+                space.setSiteId(space.getId());
+                break;
+            case BUILDING:
+                updateProp.put("building",space.getId());
+                space.setBuildingId(space.getId());
+                break;
+            case FLOOR:
+                updateProp.put("floor",space.getId());
+                space.setFloorId(space.getId());
+                break;
+            case SPACE:
+                updateProp.put("space",space.getId());
+                space.setSpaceId(space.getId());
+                break;
+            default:
+                break;
+        }
+        updateProp.put("space",space.getId());
+        space.setSpaceId(space.getId());
+
+        return updateProp;
+    }
+    public static void batchUpdateBaseSpaceHelperFields(List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdatesBaseSpace, List<FacilioField> updateFields) throws Exception {
+
+        if(CollectionUtils.isEmpty(batchUpdatesBaseSpace)){
+            return;
+        }
+
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule baseModule = bean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+        FacilioModule resourceModule = bean.getModule(FacilioConstants.ContextNames.RESOURCE);
+
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(baseModule.getTableName())
+                .innerJoin(resourceModule.getTableName())
+                .on(baseModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
+                .fields(updateFields);
+        updateRecordBuilder.batchUpdateById(batchUpdatesBaseSpace);
+
     }
 }
