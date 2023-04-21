@@ -39,6 +39,24 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+
+		<action name="updateFeatureLock" class="com.facilio.featureAccess.FeatureLockAction" method="updateFeatureLock">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
+
+		<action name="featureLock" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/featureLock.jsp</result>
+		</action>
+
 		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>

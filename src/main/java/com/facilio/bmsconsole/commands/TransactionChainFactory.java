@@ -1298,6 +1298,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getUpdateFeatureLockChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateFeatureLockCommand());
+			return c;
+		}
+
 		public static FacilioChain getModuleRecordsDuplicateChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(ReadOnlyChainFactory.fetchModuleDataDetailsChain());

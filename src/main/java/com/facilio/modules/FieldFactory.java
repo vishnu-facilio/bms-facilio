@@ -577,7 +577,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("primaryForm", "PRIMARY_FORM", module, FieldType.BOOLEAN));
         fields.add(getField("isSystemForm", "IS_SYSTEM_FORM", module, FieldType.BOOLEAN));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
-
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
 
         return fields;
     }
@@ -1568,6 +1568,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
         fields.add(getField("exportable","IS_EXPORTABLE",module,FieldType.BOOLEAN));
 
         return fields;
@@ -1595,7 +1596,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getBooleanField("deleted", "IS_DELETED", module));
         fields.add(getNumberField("deletedBy", "DELETED_BY", module));
         fields.add(getNumberField("deletedTime", "DELETED_TIME", module));
-
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
         fields.add(getBooleanField("exportable","IS_EXPORTABLE",module));
         return fields;
     }
@@ -2085,6 +2086,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
         fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
         fields.add(getField("lastScheduleRuleExecutedTime", "LAST_SCHEDULE_RULE_EXECUTED_TIME", module, FieldType.NUMBER));
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
 
         fields.add(getModuleIdField(module));
 

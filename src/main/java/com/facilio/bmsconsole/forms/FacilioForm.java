@@ -228,7 +228,16 @@ public class FacilioForm implements Serializable {
 	public void setStateFlowId(long stateFlowId) {
 		this.stateFlowId = stateFlowId;
 	}
-	
+
+	private boolean locked;
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 	private Boolean ignoreCustomFields;
 	@JsonIgnore
 	@JSON(serialize=false)

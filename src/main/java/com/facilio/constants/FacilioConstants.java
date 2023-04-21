@@ -149,6 +149,13 @@ public class FacilioConstants {
 		public static final String SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK = "skipExistingModuleWithSameNameCheck";
 	}
 
+	public static class FeatureAccessConstants {
+		public static final String FEATURE = "feature";
+		public static final String RECORD_IDS = "recordIds";
+		public static final String FEATURE_ENUM = "featureEnum";
+		public static final String ACCESS_PERMISSION = "accessPermission";
+	}
+
 	public static class ViewConstants {
 		public static final String PARENT_VIEW_OBJECT = "parentViewObject";
 		public static final String SCHEDULED_VIEW = "scheduledView";

@@ -435,6 +435,15 @@ public class WorkflowRuleContext implements Serializable {
 		this.versionNumber = versionNumber;
 	}
 
+	private boolean locked;
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 	private Boolean latestVersion;
 	public Boolean getLatestVersion() {
 		return latestVersion;
