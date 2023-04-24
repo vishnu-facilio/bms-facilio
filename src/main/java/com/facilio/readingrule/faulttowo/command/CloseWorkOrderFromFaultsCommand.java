@@ -3,12 +3,10 @@ package com.facilio.readingrule.faulttowo.command;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -23,16 +21,12 @@ import org.json.simple.JSONObject;
 public class CloseWorkOrderFromFaultsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        WorkflowRuleContext workflowRuleContext=(WorkflowRuleContext)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+        ReadingRuleWorkOrderRelContext workflowRuleContext=(ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
         BaseAlarmContext baseAlarmContext=(BaseAlarmContext)context.get(FacilioConstants.ContextNames.BASE_ALARM);
         if(baseAlarmContext!=null && workflowRuleContext!=null) {
             JSONObject template= (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
-            ReadingRuleWorkOrderRelContext ruleWorkOrderContext = RuleWoAPI.getRuleWoDetails(workflowRuleContext.getId(), ((ReadingAlarm) baseAlarmContext).getRule().getId());
-            ruleWorkOrderContext.setCriteria(CriteriaAPI.getCriteria(ruleWorkOrderContext.getCriteriaId()));
-            if (ruleWorkOrderContext == null) {
-                return false;
-            }
-            WorkOrderContext workOrderContext= WorkOrderAPI.getWorkOrderByCriteria(baseAlarmContext.getLastWoId(),ruleWorkOrderContext.getCriteria());
+            workflowRuleContext.setCriteria(CriteriaAPI.getCriteria(workflowRuleContext.getWoCriteriaId()));
+            WorkOrderContext workOrderContext= WorkOrderAPI.getWorkOrderByCriteria(baseAlarmContext.getLastWoId(),workflowRuleContext.getCriteria());
             if(workOrderContext!=null){
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET);
@@ -42,21 +36,22 @@ public class CloseWorkOrderFromFaultsCommand extends FacilioCommand {
                 FacilioStatus status= TicketAPI.getStatus(statusVal);
                 if(workOrderContext.getStatus()!=status) {
                     StateFlowRulesAPI.updateState(workOrderContext, module, status, false, context);
-                    addWoStateChangeNotes(ruleWorkOrderContext, context, workOrderContext.getId());
+                    NoteContext note = addWoStateChangeNotes(workflowRuleContext, baseAlarmContext, workOrderContext.getId());
+                    RuleWoAPI.addWorkOrderNotesFromAlarms(note,context);
                 }
             }
         }
         return false;
     }
-    private void addWoStateChangeNotes(ReadingRuleWorkOrderRelContext readingRuleWo,Context ctx,Long woId) throws Exception {
+    private NoteContext addWoStateChangeNotes(ReadingRuleWorkOrderRelContext readingRuleWo,BaseAlarmContext baseAlarm,Long woId) throws Exception {
         JSONObject comments = readingRuleWo.getComments();
         NoteContext note = new NoteContext();
         String closeComment = (String) comments.get("close");
         if (closeComment != null) {
+            closeComment=RuleWoAPI.getPlaceholderForRuleAndOccurrence(closeComment,baseAlarm);
             note.setBody(closeComment);
             note.setParentId(woId);
         }
-        RuleWoAPI.addWorkOrderNotesFromAlarms(note,ctx);
-
+        return (note.getBody()!=null)?note:null;
     }
 }

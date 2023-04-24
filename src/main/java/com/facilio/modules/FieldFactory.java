@@ -2221,13 +2221,12 @@ public class FieldFactory extends BaseFieldFactory {
     public static  List<FacilioField> getReadingRuleWorkOrderFields(){
         List<FacilioField> fields=new ArrayList<>();
         FacilioModule module =ModuleFactory.getReadingRuleWorkOrderModule();
-        fields.add(getIdField(module));
 
         fields.add(getField("ruleId","RULEID",module,FieldType.NUMBER));
-        fields.add(getField("workFlowRuleId","WORKFLOW_RULE_ID",module,FieldType.LOOKUP ));
+        fields.add(getField("id","ID",module,FieldType.LOOKUP ));
         fields.add(getField("commentsJsonStr","COMMENTS",module,FieldType.STRING));
         fields.add(getField("isSkip","IS_SKIP",module,FieldType.BOOLEAN));
-        fields.add(getField("criteriaId","CRITERIA_ID",module,FieldType.LOOKUP));
+        fields.add(getField("woCriteriaId","CRITERIA_ID",module,FieldType.LOOKUP));
 
         return fields;
     }

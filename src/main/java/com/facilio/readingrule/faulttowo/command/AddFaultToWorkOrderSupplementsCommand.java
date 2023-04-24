@@ -16,7 +16,7 @@ public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        WorkflowRuleContext workflowRuleContext=(WorkflowRuleContext)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+        ReadingRuleWorkOrderRelContext workflowRuleContext=(ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
         BaseAlarmContext baseAlarmContext=(BaseAlarmContext)context.get(FacilioConstants.ContextNames.BASE_ALARM);
         AlarmOccurrenceContext alarmOccurrence=baseAlarmContext.getLastOccurrence();
         Boolean createNewWo = false;
@@ -26,37 +26,31 @@ public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
                 Long woId = alarmOccurrence.getWoId();
                 createNewWo = (woId == -1);
             }
-            ReadingRuleWorkOrderRelContext ruleWorkOrderContext = RuleWoAPI.getRuleWoDetails(workflowRuleContext.getId(), ((ReadingAlarm) baseAlarmContext).getRule().getId());
-            if (ruleWorkOrderContext == null) {
-                return false;
-            }
 
             Long lastWoId = baseAlarmContext.getLastWoId();
             boolean isSkip=false;
-            if (ruleWorkOrderContext.getIsSkip() && lastWoId!=-1) {
+                if (workflowRuleContext.getIsSkip() && lastWoId != -1) {
                     WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
                     FacilioStatus moduleState = workOrder.getModuleState();
                     FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
                     if (workOrder != null) {
-                        if(status.getType() == FacilioStatus.StatusType.CLOSED){
-                            createNewWo=true;
+                        if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+                            createNewWo = true;
+                        } else {
+                            workflowRuleContext.setWoCriteria(CriteriaAPI.getCriteria(workflowRuleContext.getWoCriteriaId()));
+                            createNewWo = evaluateRecordForSkip(workflowRuleContext, workOrder.getId());
+                            isSkip = true;
                         }
-                        else {
-                            ruleWorkOrderContext.setCriteria(CriteriaAPI.getCriteria(ruleWorkOrderContext.getCriteriaId()));
-                            createNewWo = evaluateRecordForSkip(ruleWorkOrderContext, workOrder.getId());
-                            isSkip=true;
-                        }
-                    }
+                }
             }
             context.put(FacilioConstants.ContextNames.FOR_CREATE, createNewWo);
-            context.put(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER, ruleWorkOrderContext);
             context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,isSkip);
         }
         return false;
     }
 
     private boolean evaluateRecordForSkip(ReadingRuleWorkOrderRelContext ruleToWo, Long woId) throws Exception {
-        WorkOrderContext workOrder = WorkOrderAPI.getWorkOrderByCriteria(woId, ruleToWo.getCriteria());
+        WorkOrderContext workOrder = WorkOrderAPI.getWorkOrderByCriteria(woId, ruleToWo.getWoCriteria());
         return (workOrder!=null)?true:false;
     }
 

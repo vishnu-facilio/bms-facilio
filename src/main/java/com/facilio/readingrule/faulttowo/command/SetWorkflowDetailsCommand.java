@@ -20,10 +20,9 @@ public class SetWorkflowDetailsCommand extends FacilioCommand {
         List<ReadingRuleWorkOrderRelContext> ruleWoDetails = (List<ReadingRuleWorkOrderRelContext>) context.get(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER);
         if (CollectionUtils.isNotEmpty(ruleWoDetails)) {
             for (ReadingRuleWorkOrderRelContext ruleCtx : ruleWoDetails) {
-                if (ruleCtx.getWorkFlowRuleId() != null) {
-                    WorkflowRuleContext wfCtx=getWorkflowRuleAndAction(ruleCtx.getWorkFlowRuleId());
-                    ruleCtx.setWorkflowRule(wfCtx);
-                    ActionContext action=wfCtx.getActions().get(0);
+                if (ruleCtx.getId() != -1) {
+                    getWorkflowRuleAndAction(ruleCtx.getId(),ruleCtx);
+                    ActionContext action=ruleCtx.getActions().get(0);
                     if(action.getActionTypeEnum().equals(ActionType.CREATE_WO_FROM_ALARM)){
                         context.put("woCreation",ruleCtx);
                     }
@@ -32,15 +31,14 @@ public class SetWorkflowDetailsCommand extends FacilioCommand {
                     }
                 }
             }
+            context.remove(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER);
         }
-
         return false;
     }
 
-    private WorkflowRuleContext getWorkflowRuleAndAction(Long workflowRuleId) throws Exception {
-        WorkflowRuleContext wfRuleCtx = WorkflowRuleAPI.getWorkflowRule(workflowRuleId);
+    private WorkflowRuleContext getWorkflowRuleAndAction(Long workflowRuleId,ReadingRuleWorkOrderRelContext ruleWorkOrderRelContext) throws Exception {
         List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), workflowRuleId);
-        wfRuleCtx.setActions(actions);
-        return wfRuleCtx;
+        ruleWorkOrderRelContext.setActions(actions);
+        return ruleWorkOrderRelContext;
     }
 }

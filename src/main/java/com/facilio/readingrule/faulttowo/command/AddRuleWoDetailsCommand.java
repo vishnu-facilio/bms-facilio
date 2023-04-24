@@ -27,18 +27,15 @@ public class AddRuleWoDetailsCommand extends FacilioCommand {
            for(Map.Entry prop:ruleWorkOrder.entrySet()){
                Map<String,Object> ruleWoDetail= (Map<String, Object>) prop.getValue();
                if(ruleWoDetail!=null) {
-                   ReadingRuleWorkOrderRelContext ruleWoCtx = FieldUtil.getAsBeanFromMap((Map<String, Object>) ruleWoDetail.get("ruleToWo"), ReadingRuleWorkOrderRelContext.class);
-                   if (ruleWoDetail.get(FacilioConstants.ContextNames.WORKFLOW_RULE) != null) {
-                       WorkflowRuleContext wfRule = FieldUtil.getAsBeanFromMap((Map<String, Object>) ruleWoDetail.get(FacilioConstants.ContextNames.WORKFLOW_RULE), WorkflowRuleContext.class);
-                       ruleWoCtx.setWorkFlowRuleId(addWorkFlowDetails(wfRule));
-                 }
-                   RuleWoAPI.addRuleWoDetails(ruleWoCtx,ruleId);
+                   ReadingRuleWorkOrderRelContext ruleWoCtx = FieldUtil.getAsBeanFromMap(ruleWoDetail, ReadingRuleWorkOrderRelContext.class);
+                   RuleWoAPI.updateRuleWoDependencies(ruleWoCtx,ruleId);
+                   addWorkFlowDetails(ruleWoCtx);
                }
            }
        }
         return false;
     }
-    private Long addWorkFlowDetails(WorkflowRuleContext wfRule) throws Exception {
+    private Long addWorkFlowDetails(ReadingRuleWorkOrderRelContext wfRule) throws Exception {
 
         FacilioChain chain = TransactionChainFactory.getAddModuleWorkflowRuleChain();
         FacilioContext addWorkflowContext = chain.getContext();

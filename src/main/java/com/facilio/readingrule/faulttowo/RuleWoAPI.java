@@ -1,28 +1,27 @@
 package com.facilio.readingrule.faulttowo;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RuleWoAPI {
     public static ReadingRuleWorkOrderRelContext getRuleWoDetails(Long workflowId,Long ruleId) throws Exception {
@@ -39,10 +38,10 @@ public class RuleWoAPI {
         return null;
     }
     public static void updateRuleWoDependencies(ReadingRuleWorkOrderRelContext ruleWo, Long ruleId) throws Exception {
-        if(ruleWo.getCriteria()!=null){
-            NewReadingRuleAPI.setModuleNameForCriteria(ruleWo.getCriteria(), FacilioConstants.ContextNames.WORK_ORDER);
-            Long criteriaId=CriteriaAPI.addCriteria(ruleWo.getCriteria());
-            ruleWo.setCriteriaId(criteriaId);
+        if(ruleWo.getWoCriteria()!=null){
+            NewReadingRuleAPI.setModuleNameForCriteria(ruleWo.getWoCriteria(), FacilioConstants.ContextNames.WORK_ORDER);
+            Long criteriaId=CriteriaAPI.addCriteria(ruleWo.getWoCriteria());
+            ruleWo.setWoCriteriaId(criteriaId);
         }
         ruleWo.setRuleId(ruleId);
     }
@@ -56,14 +55,10 @@ public class RuleWoAPI {
 
     }
 
-    public static void updateWoDetails(ReadingRuleWorkOrderRelContext ruleWoCtx) throws Exception{
-
-        Map<String,Object> ruleWoProp=FieldUtil.getAsProperties(ruleWoCtx);
-        GenericUpdateRecordBuilder updateRecordBuilder=new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getReadingRuleWorkOrderModule().getTableName())
-                .fields(FieldFactory.getReadingRuleWorkOrderFields())
-                .andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(ruleWoCtx.getId()),NumberOperators.EQUALS));
-        updateRecordBuilder.update(ruleWoProp);
+    public static ReadingRuleWorkOrderRelContext updateWoDetails(ReadingRuleWorkOrderRelContext rule,ReadingRuleWorkOrderRelContext oldRule) throws Exception{
+        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule,oldRule);
+        WorkflowRuleAPI.updateExtendedRule(rule,ModuleFactory.getReadingRuleWorkOrderModule(),FieldFactory.getReadingRuleWorkOrderFields());
+        return rule;
     }
 
     public static List<ReadingRuleWorkOrderRelContext> getRuleWoDetailsFromId(Long ruleWoId) throws Exception {
@@ -79,36 +74,29 @@ public class RuleWoAPI {
         return null;
     }
 
-    public static void checkAndUpdateRuleWoDetails(ReadingRuleWorkOrderRelContext record,ReadingRuleWorkOrderRelContext oldRecord) throws Exception {
-        if(oldRecord.getCriteria()!=record.getCriteria()){
-            if(oldRecord.getCriteriaId()!=null) {
-                CriteriaAPI.deleteCriteria(oldRecord.getCriteriaId());
-            }
-            updateRuleWoDependencies(record,record.ruleId);
-        }
-        updateWoDetails(record);
-    }
-    public static ReadingRuleWorkOrderRelContext getRuleWoDetails(Long workflowId) throws Exception {
+    public static Map<String,Object> getRuleWoDetails(Long workflowId) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getReadingRuleWorkOrderModule().getTableName())
                 .select(FieldFactory.getReadingRuleWorkOrderFields())
-                .andCondition(CriteriaAPI.getCondition("WORKFLOW_RULE_ID", "workFlowRuleId", String.valueOf(workflowId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(workflowId), NumberOperators.EQUALS));
         List<Map<String, Object>> prop= selectRecordBuilder.get();
         if(CollectionUtils.isNotEmpty(prop)) {
-            ReadingRuleWorkOrderRelContext ruleWoCtx = FieldUtil.getAsBeanFromMap(prop.get(0), ReadingRuleWorkOrderRelContext.class);
-            return ruleWoCtx;
+            return prop.get(0);
         }
-        return null;
+        return new HashMap<>();
     }
-    public static List<ReadingRuleWorkOrderRelContext> getRuleWoDetailsFromRuleId(Long ruleWoId) throws Exception {
+    public static List<Long> getRuleWoDetailsFromRuleId(Long ruleWoId) throws Exception {
+        List<FacilioField> fields = FieldFactory.getReadingRuleWorkOrderFields();
+        List<Long> workflowIds;
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getReadingRuleWorkOrderModule().getTableName())
-                .select(FieldFactory.getReadingRuleWorkOrderFields())
+                .select(fields)
                 .andCondition(CriteriaAPI.getCondition("ruleId","RULEID",String.valueOf(ruleWoId),NumberOperators.EQUALS));
         List<Map<String, Object>> prop= selectRecordBuilder.get();
         if(CollectionUtils.isNotEmpty(prop)) {
             List<ReadingRuleWorkOrderRelContext> ruleWoCtx = FieldUtil.getAsBeanListFromMapList(prop, ReadingRuleWorkOrderRelContext.class);
-            return ruleWoCtx;
+            workflowIds=ruleWoCtx.stream().map(m->m.getId()).collect(Collectors.toList());
+            return workflowIds;
         }
         return null;
     }
@@ -123,6 +111,13 @@ public class RuleWoAPI {
         noteContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 
         addNote.execute();
-
     }
+    public static String getPlaceholderForRuleAndOccurrence(String placeholderString, BaseAlarmContext baseAlarmContext) throws Exception{
+        Long ruleId=((ReadingAlarm)baseAlarmContext).getRule().getId();
+        NewReadingRuleContext readingRule= NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
+        placeholderString= WorkflowRuleAPI.replacePlaceholders(FacilioConstants.ReadingRules.NEW_READING_RULE,readingRule,placeholderString);
+        placeholderString= WorkflowRuleAPI.replacePlaceholders(FacilioConstants.ContextNames.NEW_READING_ALARM,baseAlarmContext,placeholderString);
+        return placeholderString;
+    }
+
 }

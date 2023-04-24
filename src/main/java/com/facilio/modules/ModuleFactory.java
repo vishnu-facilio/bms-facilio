@@ -5530,9 +5530,9 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 	}
 	public static FacilioModule getReadingRuleWorkOrderModule(){
 		FacilioModule ruleWoModule = new FacilioModule();
-		ruleWoModule.setName("readingrulewo");
-		ruleWoModule.setDisplayName("ReadingRule_WorkOrder");
-		ruleWoModule.setTableName("ReadingRule_WO_Rel");
+		ruleWoModule.setName("newreadingrulewo");
+		ruleWoModule.setDisplayName("NewReadingRule_WorkOrder");
+		ruleWoModule.setTableName("NewReadingRule_Wo_WorkflowRule");
 		return ruleWoModule;
 
 	}

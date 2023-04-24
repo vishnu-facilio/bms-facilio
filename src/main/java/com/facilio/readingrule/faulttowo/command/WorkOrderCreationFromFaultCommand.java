@@ -28,14 +28,14 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Boolean createWo=(Boolean) context.get(FacilioConstants.ContextNames.FOR_CREATE);
+        ReadingRuleWorkOrderRelContext workflowRule=(ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
         JSONObject template= (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
-        ReadingRuleWorkOrderRelContext ruleWoRel= (ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER);
         BaseAlarmContext baseAlarm=(BaseAlarmContext) context.get(FacilioConstants.ContextNames.BASE_ALARM);
         Boolean isSkip=(Boolean) context.get(FacilioConstants.ContextNames.SKIP_WO_CREATION);
         if(createWo!=null && createWo) {
             AlarmOccurrenceContext lastOccurrence=baseAlarm.getLastOccurrence();
-            NoteContext note = constructNote(baseAlarm,ruleWoRel,isSkip);
-            if(ruleWoRel.getIsSkip() && isSkip){
+            NoteContext note = constructNote(baseAlarm,workflowRule,isSkip);
+            if(workflowRule.getIsSkip() && isSkip){
                 RuleWoAPI.addWorkOrderNotesFromAlarms(note,context);
             }else {
                 FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
@@ -74,29 +74,22 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
     private  NoteContext constructNote(BaseAlarmContext baseAlarmContext, ReadingRuleWorkOrderRelContext woRelContext,Boolean isSkip) throws Exception {
         JSONObject comments=woRelContext.getComments();
         NoteContext note =new NoteContext();
-        if(woRelContext.getIsSkip() && isSkip){
-            String skipComment= (String) comments.get("skip");
-            if(skipComment!=null){
-                skipComment=getPlaceholderForRuleAndOccurrence(skipComment,baseAlarmContext);
-                note.setBody(skipComment);
-                note.setParentId(baseAlarmContext.getLastWoId());
+            if(woRelContext.getIsSkip() && isSkip) {
+                String skipComment = (String) comments.get("skip");
+                if (skipComment != null) {
+                    skipComment = RuleWoAPI.getPlaceholderForRuleAndOccurrence(skipComment, baseAlarmContext);
+                    note.setBody(skipComment);
+                    note.setParentId(baseAlarmContext.getLastWoId());
+                }
             }
-        }
         else{
             String createComment= (String) comments.get("create");
             if(createComment!=null){
-                createComment=getPlaceholderForRuleAndOccurrence(createComment,baseAlarmContext);
+                createComment=RuleWoAPI.getPlaceholderForRuleAndOccurrence(createComment,baseAlarmContext);
                 note.setBody(createComment);
             }
         }
-
         return (note.getBody()!=null)?note:null;
     }
-    private String getPlaceholderForRuleAndOccurrence(String placeholderString,BaseAlarmContext baseAlarmContext) throws Exception{
-        Long ruleId=((ReadingAlarm)baseAlarmContext).getRule().getId();
-        NewReadingRuleContext readingRule= NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
-        placeholderString= WorkflowRuleAPI.replacePlaceholders(FacilioConstants.ReadingRules.NEW_READING_RULE,readingRule,placeholderString);
-        placeholderString= WorkflowRuleAPI.replacePlaceholders(FacilioConstants.ContextNames.ALARM_OCCURRENCE,baseAlarmContext.getLastOccurrence(),placeholderString);
-        return placeholderString;
-    }
+
 }

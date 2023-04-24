@@ -748,7 +748,8 @@ public class ActionAPI {
 			woTemplate.setName(rule.getName()+"_WO_Template");
 		}
 		action.setTemplate(woTemplate);
-		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
+		woTemplate.setWorkflow(TemplateAPI.getWorkflow(woTemplate));
+//		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
 	}
 	public static ActionContext getDefaultPropsForDowntimeAction(ActionType actionType){
 		ActionContext action=new ActionContext();

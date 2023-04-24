@@ -332,7 +332,7 @@ public class IotMessageApiV2 {
             LOGGER.info("Connected successfully");
             if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
                 LOGGER.info("Publishing message");
-                mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
+                mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS1, object.toJSONString()));
             }
         } catch (AWSIotException e) {
             LOGGER.error("Excetion message : " + e.getMessage() + " : " + e.getErrorCode());

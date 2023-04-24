@@ -8,6 +8,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
+import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import org.apache.commons.chain.Context;
 
 public class UpdateWorkflowRuleCommand extends FacilioCommand {
@@ -85,7 +87,10 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 			rule = ApprovalRulesAPI.updateSystemButtonRuleWithChildren((SystemButtonRuleContext) rule,(SystemButtonRuleContext) oldRule);
 		}
 		else if(rule instanceof TransactionRuleContext){
-			rule = WorkflowRuleAPI.updateTransactionRuleWithChildren((TransactionRuleContext) rule,(TransactionRuleContext) oldRule);
+			WorkflowRuleAPI.updateTransactionRuleWithChildren((TransactionRuleContext) rule,(TransactionRuleContext) oldRule);
+		}
+		else if(rule instanceof ReadingRuleWorkOrderRelContext){
+			rule= RuleWoAPI.updateWoDetails((ReadingRuleWorkOrderRelContext)rule,(ReadingRuleWorkOrderRelContext)oldRule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);

@@ -26,6 +26,8 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
+import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
@@ -196,6 +198,9 @@ public class WorkflowRuleAPI {
 				break;
 			case SURVEY_ACTION_RULE:
 				addExtendedProps(ModuleFactory.getSurveyResponseRuleModule(),FieldFactory.getSurveyResponseRuleFields(),ruleProps);
+				break;
+			case READINGRULE_WO_ACTION_RULE:
+                addExtendedProps(ModuleFactory.getReadingRuleWorkOrderModule(),FieldFactory.getReadingRuleWorkOrderFields(),ruleProps);
 				break;
 			default:
 				break;
@@ -927,6 +932,10 @@ public class WorkflowRuleAPI {
 						case SURVEY_ACTION_RULE:
 							prop.putAll (typeWiseExtendedProps.get (ruleType).get (prop.get ("id")));
 							rule = FieldUtil.getAsBeanFromMap (prop, SurveyResponseRuleContext.class);
+							break;
+						case READINGRULE_WO_ACTION_RULE:
+							 prop.putAll(RuleWoAPI.getRuleWoDetails((Long)prop.get ("id")));
+							 rule=FieldUtil.getAsBeanFromMap (prop, ReadingRuleWorkOrderRelContext.class);
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

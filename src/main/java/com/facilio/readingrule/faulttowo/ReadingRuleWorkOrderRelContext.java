@@ -1,7 +1,14 @@
 package com.facilio.readingrule.faulttowo;
 
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,20 +17,23 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @Log4j
 @Getter
 @Setter
 
-public class ReadingRuleWorkOrderRelContext extends V3Context {
+public class ReadingRuleWorkOrderRelContext extends WorkflowRuleContext {
 
     JSONObject comments;
     Long ruleId;
-    WorkflowRuleContext workflowRule;
-    Long workFlowRuleId;
     Long ruleWoId;
-    Long criteriaId;
-    Criteria criteria;
     Boolean isSkip;
+    Long woCriteriaId;
+    Criteria woCriteria;
 
     public JSONObject  getComments(){
         return comments;
@@ -42,6 +52,14 @@ public class ReadingRuleWorkOrderRelContext extends V3Context {
             JSONParser parser = new JSONParser();
             comments = (JSONObject) parser.parse(jsonStr);
         }
+    }
+    public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+        BaseAlarmContext baseAlarm=(BaseAlarmContext)record;
+        Long ruleId=((ReadingAlarm)baseAlarm).getRule().getId();
+        NewReadingRuleContext newReadingRule= NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
+        recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(FacilioConstants.ReadingRules.NEW_READING_RULE,newReadingRule,recordPlaceHolders);
+        Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
+        return rulePlaceHolders;
     }
 
 }

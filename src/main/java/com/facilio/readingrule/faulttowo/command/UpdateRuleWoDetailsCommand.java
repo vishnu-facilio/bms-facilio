@@ -18,21 +18,15 @@ public class UpdateRuleWoDetailsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, Object> ruleWorkOrder = (Map<String, Object>) context.get(FacilioConstants.ReadingRules.FAULT_TO_WORKORDER);
-
         Long ruleId = (Long) context.get(FacilioConstants.ContextNames.RULE_ID);
+
         if (MapUtils.isNotEmpty(ruleWorkOrder)) {
             for (Map.Entry prop : ruleWorkOrder.entrySet()) {
                 Map<String, Object> ruleWoDetail = (Map<String, Object>) prop.getValue();
-
                 if (ruleWoDetail != null) {
-                    ReadingRuleWorkOrderRelContext ruleWoCtx = FieldUtil.getAsBeanFromMap((Map<String, Object>) ruleWoDetail.get("ruleToWo"), ReadingRuleWorkOrderRelContext.class);
-                    ReadingRuleWorkOrderRelContext oldRecord=RuleWoAPI.getRuleWoDetailsFromId(ruleWoCtx.getId()).get(0);
-                    if (ruleWoDetail.get("ruleToWo") != null) {
-                        WorkflowRuleContext wfRule = FieldUtil.getAsBeanFromMap((Map<String, Object>) ruleWoDetail.get(FacilioConstants.ContextNames.WORKFLOW_RULE), WorkflowRuleContext.class);
-                        wfRule.setId(ruleWoCtx.getWorkFlowRuleId());
-                        updateWorkFlowDetails(wfRule);
-                    }
-                    RuleWoAPI.checkAndUpdateRuleWoDetails(ruleWoCtx,oldRecord);
+                    ReadingRuleWorkOrderRelContext ruleWoCtx = FieldUtil.getAsBeanFromMap(ruleWoDetail, ReadingRuleWorkOrderRelContext.class);
+                    RuleWoAPI.updateRuleWoDependencies(ruleWoCtx,ruleId);
+                    updateWorkFlowDetails(ruleWoCtx);
                 }
             }
         }

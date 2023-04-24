@@ -16,10 +16,10 @@ public class FaultToWorkorderStatusChangeCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long ruleId = (Long) context.get(FacilioConstants.ContextNames.RULE_ID);
         if (ruleId != null) {
-            List<ReadingRuleWorkOrderRelContext> ruleWoDetails = RuleWoAPI.getRuleWoDetailsFromRuleId(ruleId);
+            List<Long> ruleWoDetails = RuleWoAPI.getRuleWoDetailsFromRuleId(ruleId);
             if (CollectionUtils.isNotEmpty(ruleWoDetails)) {
-                for (ReadingRuleWorkOrderRelContext ruleWo : ruleWoDetails) {
-                    WorkflowRuleContext wfRule =WorkflowRuleAPI.getWorkflowRule(ruleWo.getWorkFlowRuleId());
+                for (Long ruleWo : ruleWoDetails) {
+                    WorkflowRuleContext wfRule =WorkflowRuleAPI.getWorkflowRule(ruleWo);
                     wfRule.setStatus(!wfRule.getStatus());
                     WorkflowRuleAPI.updateWorkflowRule(wfRule);
                 }
