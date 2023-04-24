@@ -174,6 +174,8 @@ public class AgentConstants
     public static final String ACTION_NAME = "actionName";
     public static final String OVERRIDE = "override";
     public static final String EMERGENCY_OVERRIDE = "emergencyOverride";
+    public static final String OVERRIDE_MILLIS = "overrideMillis";
+    public static final String OVERRIDE_SECONDS = "overrideSeconds";
 
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";

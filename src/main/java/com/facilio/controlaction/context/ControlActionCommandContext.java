@@ -1,16 +1,10 @@
 package com.facilio.controlaction.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlScheduleContext;
@@ -46,7 +40,17 @@ public class ControlActionCommandContext extends V3Context {
 	ControlScheduleExceptionContext exception;
 	ControlGroupRoutineContext routine;
 	Integer retriedCount;
-	
+
+	public Long getOverrideTimeInMillis() {
+		return overrideTimeInMillis;
+	}
+
+	public void setOverrideTimeInMillis(Long overrideTimeInMillies) {
+		this.overrideTimeInMillis = overrideTimeInMillies;
+	}
+
+	Long overrideTimeInMillis = 0L;
+
 	public ControlActionCommandContext() {
 		
 	}

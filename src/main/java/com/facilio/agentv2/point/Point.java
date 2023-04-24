@@ -70,8 +70,10 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private Integer commandRetryCount;
 
     private boolean dataMissing;
-
+    //TODO remove actionName and overrideMillis (redundant in ControlActionCommandContext.java)
     private String actionName;
+    @Getter @Setter
+    private Long overrideTimeInMillis = 0L;
 
     public boolean isAgentWritable() {
         return agentWritable;

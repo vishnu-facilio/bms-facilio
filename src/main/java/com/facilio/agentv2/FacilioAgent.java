@@ -54,6 +54,26 @@ public class FacilioAgent implements Serializable {
     private String userName;
     private String password;
 
+    private Integer port;
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    private String ipAddress;
+
     Map<String, Object> params;
 
     private long workflowId = -1;

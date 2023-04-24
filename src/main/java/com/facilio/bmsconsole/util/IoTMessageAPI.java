@@ -193,24 +193,23 @@ public class IoTMessageAPI {
 			if (!pingAgent.equals(agent)) {
 				return;
 			}
-			
+
 			if (isExecuted) {
 				acknowdledgeData(id, "pingAckTime");
 				PublishData publishData = getPublishData(id, true);
 				publishIotMessage(publishData, -1);
 			}
-		}
-		else {
+		} else {
 			updateMessageAckTime(id, isExecuted ? "responseAckTime" : "acknowledgeTime");
 			if (isExecuted) {
 				handlePublishDataOnMessageAck(id, commandType);
 			}
 		}
 	}
-	
+
 	private static void updateMessageAckTime(long id, String fieldName) throws SQLException {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
-		
+
 		new GenericUpdateRecordBuilder()
         .table(module.getTableName())
         .fields(FieldFactory.getPublishMessageFields())
@@ -218,14 +217,14 @@ public class IoTMessageAPI {
         .update(Collections.singletonMap(fieldName, System.currentTimeMillis()))
         ;
 	}
-	
+
 	public static PublishData getPublishData(long id, boolean fetchMessages) throws Exception {
 		FacilioModule module = ModuleFactory.getPublishDataModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getPublishDataFields())
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
-				;
+		;
 		Map<String, Object> prop = builder.fetchFirst();
 		PublishData data = FieldUtil.getAsBeanFromMap(prop, PublishData.class);
 		if (fetchMessages) {
@@ -233,43 +232,41 @@ public class IoTMessageAPI {
 			data.setMessages(messages);
 		}
 		return data;
-		
+
 	}
-	
+
 	public static List<PublishMessage> getPublishMessages(long parentId) throws Exception {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(fields)
-														.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
-														;
+				.table(module.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
 		List<Map<String, Object>> props = builder.get();
 		if (props != null && !props.isEmpty()) {
 			return FieldUtil.getAsBeanListFromMapList(props, PublishMessage.class);
 		}
 		return null;
 	}
-	
+
 	private static void handlePublishDataOnMessageAck(long messageId, IotCommandType command) throws Exception {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(fields)
+				.table(module.getTableName())
+				.select(fields)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(messageId, module))
-														;
+				.andCondition(CriteriaAPI.getIdCondition(messageId, module));
 		Map<String, Object> prop = builder.fetchFirst();
 		if (prop != null && !prop.isEmpty()) {
 			PublishMessage message = FieldUtil.getAsBeanFromMap(prop, PublishMessage.class);
 			handlePublishMessageSuccess(command, message);
-			
-			
+
+
 			List<FacilioField> selectFields = FieldFactory.getCountField(module);
 			long parentId = message.getParentId();
 			builder = new GenericSelectRecordBuilder()
@@ -278,7 +275,7 @@ public class IoTMessageAPI {
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("responseAckTime"), CommonOperators.IS_EMPTY))
-					;
+			;
 			prop = builder.fetchFirst();
 			long count = (long) prop.get("count");
 			if (count == 0) {
@@ -288,32 +285,31 @@ public class IoTMessageAPI {
 					if (data.getCommandEnum() != null && data.getCommandEnum() == IotCommandType.SET) {
 						publishGetData(data.getControllerId(), message);
 					}
-				}
-				catch(Exception e) {
+				} catch(Exception e) {
 					LOGGER.error("Exception while publishing get ", e);
 				}
-				
+
 				sendPublishNotification(data, null);
 			}
 		}
 	}
-	
+
 	// Get called after setting
 	private static void publishGetData(long controllerId, PublishMessage message) throws Exception {
 		JSONObject msg = message.getData();
 		JSONArray points = (JSONArray) msg.get("points");
 		JSONObject pointInstance = (JSONObject) points.get(0);
-		
+
 		Map<String, Object> instance = new HashMap<>(pointInstance);
 		instance.put("controllerId", controllerId);
-		
+
 		IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
 	}
-	
+
 	private static void addPublishData (PublishData data) throws Exception {
 		data.setOrgId(AccountUtil.getCurrentOrg().getId());
 		data.setCreatedTime(System.currentTimeMillis());
-		
+
 		Map<String, Object> props = FieldUtil.getAsProperties(data);
 		new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPublishDataModule().getTableName())
@@ -321,83 +317,81 @@ public class IoTMessageAPI {
 				.insert(props);
 		data.setId((long) props.get("id"));
 	}
-	
+
 	private static void addPublishMessage(long parentId, List<PublishMessage> messages) throws Exception {
 		GenericInsertRecordBuilder msgBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPublishMessageModule().getTableName())
-				.fields(FieldFactory.getPublishMessageFields())
-				;
+				.fields(FieldFactory.getPublishMessageFields());
 		List<Map<String, Object>> records = new ArrayList<>();
 		for (PublishMessage msg : messages) {
 			msg.setOrgId(AccountUtil.getCurrentOrg().getId());
 			msg.setSentTime(System.currentTimeMillis());
 			msg.setParentId(parentId);
-			
+
 			Map<String, Object> record = FieldUtil.getAsProperties(msg);
 			records.add(record);
-			
+
 		}
 		msgBuilder.addRecords(records);
 		msgBuilder.save();
-		 
+
 		for(int i = 0; i < records.size(); i++) {
 			messages.get(i).setId((long)records.get(0).get("id"));
 		}
 	}
-	
+
 	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command) throws Exception {
 		PublishData data = constructIotMessage(instances, command);
 		return addAndPublishData(data);
 	}
-	
+
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command) throws Exception {
 		PublishData data = constructIotMessage(controllerId, command);
 		return addAndPublishData(data);
 	}
-	
+
 	public static PublishData publishIotMessage(long controllerId, JSONObject property) throws Exception {
 		PublishData data = constructIotMessage(controllerId, property);
 		return addAndPublishData(data);
 	}
-	
-	
+
+
 	private static PublishData addAndPublishData(PublishData data) throws Exception {
-		
+
 		addPublishData(data);
 		addPublishMessage(data.getId(), data.getMessages());
-		
+
 		if (data.getCommandEnum() != IotCommandType.GET) {
 			// Pinging device to check if it is active
 			PublishData pingData = constructIotMessage(data.getControllerId(), IotCommandType.PING);
 			pingData.setId(data.getId());
 			publishIotMessage(pingData, data.getId());
-		}
-		else {
+		} else {
 			publishIotMessage(data, -1);
 		}
-		
+
 		return data;
 	}
-	
+
 	private static void publishIotMessage(PublishData data, long msgId) throws Exception {
 		for(PublishMessage message : data.getMessages()) {
 			message.getData().put("msgid", msgId != -1 ? msgId : message.getId());
 			publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), message.getData());
-			
+
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
 			FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);
 		}
 	}
-	
+
 	public static void publishMessagesDirectly (Collection<PublishMessage> collection) throws Exception {
 		for (PublishMessage msg : collection) {
 			msg.getData().put("msgid", msg.getId());
 			publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), msg.getData());
 		}
 	}
-	
- 	private static void publishIotMessage(String client, JSONObject object) throws Exception {
+
+	private static void publishIotMessage(String client, JSONObject object) throws Exception {
 		if (!FacilioProperties.isProduction()) {
 			return;
 		}
@@ -461,72 +455,72 @@ public class IoTMessageAPI {
 			}
 		}
 	}
-	
+
 	private static void handlePublishMessageSuccess(IotCommandType command, PublishMessage message) throws Exception {
 		if (command == null) {
 			return;
 		}
-		
+
 		List<Long> ids = getPointIdsFromMessage(message);
 		if (ids.isEmpty()) {
 			return;
 		}
-		
+
 		switch(command) {
 			case CONFIGURE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
 				break;
-				
+
 			case UNCONFIGURE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
 				break;
-				
+
 			case SUBSCRIBE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
 				break;
-				
+
 			case UNSUBSCRIBE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
 				break;
 		}
 	}
-	
+
 	public static void handlePublishMessageFailure(PublishData data) throws Exception {
 		for(PublishMessage message : data.getMessages()) {
 			handlePublishMessageFailure(data.getCommandEnum(), message);
 		}
 		sendFailureNotification(data);
 	}
-	
+
 	private static void handlePublishMessageFailure(IotCommandType command, PublishMessage message) throws Exception {
 		if (command == null) {
 			return;
 		}
-		
+
 		List<Long> ids = getPointIdsFromMessage(message);
 		if (ids.isEmpty()) {
 			return;
 		}
-		
+
 		switch(command) {
 			case CONFIGURE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
 				break;
-				
+
 			case UNCONFIGURE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
 				break;
-				
+
 			case SUBSCRIBE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
 				break;
-				
+
 			case UNSUBSCRIBE:
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
 				break;
 		}
 	}
-	
+
 	private static List<Long> getPointIdsFromMessage(PublishMessage message) {
 		List<Long> ids = new ArrayList<>();
 		JSONObject obj = message.getData();
@@ -545,30 +539,28 @@ public class IoTMessageAPI {
 		return ids;
 	}
 
- 	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
+	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
 
 		try {
 			WmsPublishResponse data = new WmsPublishResponse();
 			data.publish(publishData, info);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.error("Error occurred while sending publish notification", e);
 		}
 	}
 
- 	public static void sendFailureNotification(PublishData publishData) {
+	public static void sendFailureNotification(PublishData publishData) {
 
 		try {
 			WmsPublishResponse data = new WmsPublishResponse();
 			data.publishFailure(publishData);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.error("Error occurred while sending publish notification", e);
 		}
 	}
- 	
- 	public static PublishData setReadingValue(long resourceId, long fieldId, Object value) throws Exception {
- 		if(AccountUtil.getCurrentOrg()!= null){
+
+	public static PublishData setReadingValue(long resourceId, long fieldId, Object value) throws Exception {
+		if(AccountUtil.getCurrentOrg()!= null){
 			Criteria criteria = new Criteria();
 			FacilioModule pointModule = ModuleFactory.getPointModule();
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(fieldId),NumberOperators.EQUALS));
@@ -594,12 +586,12 @@ public class IoTMessageAPI {
 			LOGGER.info("Exception occurred current org is null");
 		}
 		return null;
- 		
- 	}
- 	
- 	public static void setReadingValue(List<ControlActionCommandContext> commands) throws Exception {
- 		Set<Pair<Long, Long>> pairs = new HashSet<>();
- 		Map<String, ControlActionCommandContext> commandMap = new HashMap<>();
+
+	}
+
+	public static void setReadingValue(List<ControlActionCommandContext> commands) throws Exception {
+		Set<Pair<Long, Long>> pairs = new HashSet<>();
+		Map<String, ControlActionCommandContext> commandMap = new HashMap<>();
 		for (ControlActionCommandContext command: commands) {
 			pairs.add(Pair.of(command.getResource().getId(), command.getFieldId()));
 			commandMap.put(ReadingsAPI.getRDMKey(command.getResource().getId(), command.getRdm().getField()), command);
@@ -616,6 +608,9 @@ public class IoTMessageAPI {
 			if(command.getActionName() == null  || command.getActionName().equals(AgentConstants.OVERRIDE) || command.getActionName().equals(AgentConstants.EMERGENCY_OVERRIDE))  {
 				point.setValue(command.getConvertedValue() != null ? command.getConvertedValue() : command.getValue());
 			}
+			if(command.getOverrideTimeInMillis()!=0){
+				point.setOverrideTimeInMillis(command.getOverrideTimeInMillis());
+			}
 			point.setControlActionId(command.getId());
 			point.setCommandRetryCount(command.getRetriedCount());
 			if (command.getActionName() != null) {
@@ -623,45 +618,46 @@ public class IoTMessageAPI {
 			}
 			pointList.add(point);
 		}
-		
+
 		for(Map.Entry<Long, List<Point>> entry: pointControllerMap.entrySet()) {
 			ControllerMessenger.setValue(entry.getValue());
 		}
-		
- 	}
- 	
- 	
- 	public enum IotCommandType {
- 		// Maintain the index. Always add at the bottom
- 		CONFIGURE("configure"),	// 1
- 		SET("set"),
- 		GET("get"),
- 		PROPERTY("property"),	// 4
- 		DISCOVER("discoverPoints"),
- 		SUBSCRIBE("subscribe"),
- 		UNSUBSCRIBE("unsubscribe"),
- 		UNCONFIGURE("unconfigure"), // 8
- 		PING("ping")
- 		;
- 		
- 		private String name;
- 		IotCommandType(String name) {
- 			this.name = name;
- 		}
- 		
- 		public String getName() {
+
+	}
+
+
+	public enum IotCommandType {
+		// Maintain the index. Always add at the bottom
+		CONFIGURE("configure"),    // 1
+		SET("set"),
+		GET("get"),
+		PROPERTY("property"),    // 4
+		DISCOVER("discoverPoints"),
+		SUBSCRIBE("subscribe"),
+		UNSUBSCRIBE("unsubscribe"),
+		UNCONFIGURE("unconfigure"), // 8
+		PING("ping");
+
+		private String name;
+
+		IotCommandType(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
 			return name;
 		}
- 		
- 		public int getValue() {
+
+		public int getValue() {
 			return ordinal() + 1;
 		}
- 		
- 		public static IotCommandType getCommandType(String name) {
- 			return COMMAND_MAP.get(name);
- 		}
- 		
- 		private static final Map<String, IotCommandType> COMMAND_MAP = Collections.unmodifiableMap(initCommandMap());
+
+		public static IotCommandType getCommandType(String name) {
+			return COMMAND_MAP.get(name);
+		}
+
+		private static final Map<String, IotCommandType> COMMAND_MAP = Collections.unmodifiableMap(initCommandMap());
+
 		private static Map<String, IotCommandType> initCommandMap() {
 			Map<String, IotCommandType> typeMap = new HashMap<>();
 			for(IotCommandType command : values()) {
@@ -669,38 +665,38 @@ public class IoTMessageAPI {
 			}
 			return typeMap;
 		}
-		
+
 		public static IotCommandType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
 			return null;
 		}
- 	}
- 	
- 	public enum ThresholdOperator {
- 		SUM,		// 1
- 		SUBTRACTION,
- 		MULTIPLICATION,
- 		DIVISION,
- 		GREATER_THAN,
- 		LESS_THAN,
- 		GREATER_THAN_EQUALS,
- 		LESS_THAN_EQUALS,
- 		EQUALS,
- 		PERCENTAGE,
- 		CONSTANT		// 11
- 		;
- 		
- 		public int getValue() {
+	}
+
+	public enum ThresholdOperator {
+		SUM,        // 1
+		SUBTRACTION,
+		MULTIPLICATION,
+		DIVISION,
+		GREATER_THAN,
+		LESS_THAN,
+		GREATER_THAN_EQUALS,
+		LESS_THAN_EQUALS,
+		EQUALS,
+		PERCENTAGE,
+		CONSTANT        // 11
+		;
+
+		public int getValue() {
 			return ordinal() + 1;
 		}
-		
+
 		public static ThresholdOperator valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
 			return null;
 		}
- 	}
+	}
 }

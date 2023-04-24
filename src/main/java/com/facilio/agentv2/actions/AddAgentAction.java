@@ -59,6 +59,8 @@ public class AddAgentAction extends AgentActionV2
     private String password;
     private String url;
     private int partitionId = 0;
+    private Integer port;
+    private String ipAddress;
 
 	public String createAgent() {
         try {
@@ -94,6 +96,10 @@ public class AddAgentAction extends AgentActionV2
                     agent.setUrl(getUrl());
                     agent.setUserName(getUserName());
                     agent.setPassword(getPassword());
+                    break;
+                case E2:
+                    agent.setPort(getPort());
+                    agent.setIpAddress(getIpAddress());
                     break;
             }
             context.put(AgentConstants.AGENT,agent);

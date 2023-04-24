@@ -9,9 +9,7 @@ import java.util.Map;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.wms.message.Message;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -130,6 +128,9 @@ public class ControllerMessenger {
                             String actionName = point.getActionName();
                             if(actionName == null || actionName.equals(AgentConstants.OVERRIDE) || actionName.equals(AgentConstants.EMERGENCY_OVERRIDE)) {
                                 pointdatum.put(AgentConstants.VALUE, point.getValue());
+                            }
+                            if(point.getOverrideTimeInMillis()!=0){
+                                pointdatum.put(AgentConstants.OVERRIDE_MILLIS, point.getOverrideTimeInMillis());
                             }
 	            			pointdatum.put("controlId", point.getControlActionId());
 	            			if(point.getCommandRetryCount() != null) {

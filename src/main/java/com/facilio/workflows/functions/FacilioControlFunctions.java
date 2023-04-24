@@ -63,7 +63,9 @@ public class FacilioControlFunctions {
 		value.put(AgentConstants.FIELD_ID, objects[1]);
 		value.put(AgentConstants.VALUE, objects[2]);
 		value.put(AgentConstants.ACTION_NAME, "override");
-
+		if(objects.length > 3 && objects[3]!=null){
+			value.put(AgentConstants.OVERRIDE_SECONDS, objects[3]);
+		}
 		setValues(Collections.singletonList(value), "override", true);
 
 		return null;
@@ -96,6 +98,9 @@ public class FacilioControlFunctions {
 			}
 			if (setValue) {
 				controlActionCommand.setValue(value.get(AgentConstants.VALUE) != null ? value.get(AgentConstants.VALUE).toString() : null );
+			}
+			if(value.containsKey(AgentConstants.OVERRIDE_SECONDS)){
+				controlActionCommand.setOverrideTimeInMillis(Long.parseLong(value.get(AgentConstants.OVERRIDE_SECONDS).toString()) * 1000);
 			}
 
 			commands.add(controlActionCommand);
