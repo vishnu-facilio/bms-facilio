@@ -1638,8 +1638,6 @@
             <param name="id">{2}</param>
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
-            <param name="permissionSet">RELATED_LIST</param>
-            <param name="permissionValue">RELATED_LIST_READ_PERMISSION</param>
         </action>
     </package>
     <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
