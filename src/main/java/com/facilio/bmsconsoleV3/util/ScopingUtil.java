@@ -110,7 +110,7 @@ public class ScopingUtil {
                     if (CollectionUtils.isNotEmpty(fieldsList)) {
                         for (FacilioField field : fieldsList) {
                             if (field != null) {
-                                if ((field instanceof BaseLookupField && ((((BaseLookupField) field).getLookupModule().getName().equals(lookupModuleName)) || (((BaseLookupField) field).getLookupModule().getName().equals("resource"))))) {
+                                if ((field instanceof BaseLookupField && ((((BaseLookupField) field).getLookupModule().getName().equals(lookupModuleName))))) {
                                     Map<String, Object> fieldsMap = new HashMap<>();
                                     fieldsMap.put("name", field.getName());
                                     fieldsMap.put("displayName", field.getDisplayName());
