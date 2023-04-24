@@ -2,10 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.GlobalScopeBean;
-import com.facilio.beans.ModuleBean;
-import com.facilio.beans.UserScopeBean;
-import com.facilio.beans.ValueGeneratorBean;
+import com.facilio.beans.*;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
@@ -29,6 +26,7 @@ import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -485,5 +483,40 @@ public class ScopingUtil {
             List<Long> criteriaIds = props.stream().map(i->(Long)i.get("criteriaId")).collect(Collectors.toList());
             CriteriaAPI.batchDeleteCriteria(criteriaIds);
         }
+    }
+
+    public static String constructLinkName(String linkName, String displayName) throws Exception {
+        UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+        List<ScopingContext> existingUserScopingList = userScopeBean.getUserScopingList(null,-1,-1);
+        if (CollectionUtils.isEmpty(existingUserScopingList)) {
+            if (StringUtils.isNotEmpty(linkName)) {
+                return linkName;
+            }
+            if (StringUtils.isNotEmpty(displayName)) {
+                return displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+            }
+        }
+        if (CollectionUtils.isNotEmpty(existingUserScopingList)) {
+            List<String> existingNames = existingUserScopingList.stream().map(ScopingContext::getLinkName).collect(Collectors.toList());
+            String foundName = null;
+            if (StringUtils.isNotEmpty(linkName)) {
+                foundName = linkName;
+            } else if (StringUtils.isNotEmpty(displayName)) {
+                foundName = displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+            }
+            if (StringUtils.isEmpty(foundName)) {
+                throw new IllegalArgumentException("Unable to construct link name for user scoping");
+            }
+            int i = 0;
+            String constructedName = foundName;
+            while (true) {
+                if (existingNames.contains(constructedName)) {
+                    constructedName = foundName + "_" + (++i);
+                } else {
+                    return constructedName;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Unable to construct link name for user scoping");
     }
 }

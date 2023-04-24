@@ -10477,7 +10477,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
         fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
-
+        fields.add(FieldFactory.getStringField("linkName", "LINK_NAME", module));
         fields.add(getNumberField("createdBy", "CREATED_BY", module));
         fields.add(getNumberField("modifiedBy", "MODIFIED_BY", module));
         fields.add(getNumberField("createdTime", "CREATED_TIME", module));

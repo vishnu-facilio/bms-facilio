@@ -500,7 +500,9 @@ public class ApplicationApi {
     }
 
     public static int deleteUserFromApp(User user, long appId) throws Exception {
-        return AccountUtil.getUserBean().deleteUserFromApps(user, appId);
+        int val = AccountUtil.getUserBean().deleteUserFromApps(user, appId);
+        PeopleAPI.deletePermissionSetsForPeople(user.getPeopleId());
+        return val;
     }
 
     public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {

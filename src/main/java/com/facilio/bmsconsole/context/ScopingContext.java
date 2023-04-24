@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,6 +23,8 @@ public class ScopingContext implements Serializable {
 	private long modifiedTime = -1l;
 	private long createdBy;
 	private long modifiedBy;
+	@Setter @Getter
+	private String linkName;
 
 	public boolean isStatus() {
 		return status;

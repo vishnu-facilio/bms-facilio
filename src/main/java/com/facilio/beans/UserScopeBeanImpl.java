@@ -96,6 +96,7 @@ public class UserScopeBeanImpl implements UserScopeBean {
     public void addUserScoping(ScopingContext userScoping) throws Exception {
         userScoping.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
         userScoping.setCreatedTime(System.currentTimeMillis());
+        userScoping.setLinkName(ScopingUtil.constructLinkName(userScoping.getLinkName(),userScoping.getScopeName()));
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
                 .fields(FieldFactory.getScopingFields());
@@ -106,9 +107,10 @@ public class UserScopeBeanImpl implements UserScopeBean {
     public void updateUserScoping(ScopingContext userScoping) throws Exception {
         userScoping.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
         userScoping.setModifiedTime(System.currentTimeMillis());
+        List<FacilioField> fields = FieldFactory.getScopingFields().stream().filter(f -> !f.getName().equals("linkName")).collect(Collectors.toList());
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
-                .fields(FieldFactory.getScopingFields())
+                .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(userScoping.getId(), ModuleFactory.getScopingModule()));
         builder.update(FieldUtil.getAsProperties(userScoping));
     }
@@ -303,6 +305,21 @@ public class UserScopeBeanImpl implements UserScopeBean {
             }
         }
         return false;
+    }
+
+    @Override
+    public ScopingContext getScopingForLinkname(String linkName) throws Exception {
+        if(StringUtils.isNotEmpty(linkName)) {
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getScopingFields())
+                    .table(ModuleFactory.getScopingModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", linkName, StringOperators.IS));
+            Map<String, Object> props = selectRecordBuilder.fetchFirst();
+            if (MapUtils.isNotEmpty(props)) {
+                return FieldUtil.getAsBeanFromMap(props, ScopingContext.class);
+            }
+        }
+        return null;
     }
 
 }

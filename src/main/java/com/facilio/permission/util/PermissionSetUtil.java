@@ -2,6 +2,7 @@ package com.facilio.permission.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.PermissionSetBean;
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -15,11 +16,13 @@ import com.facilio.permission.factory.PermissionSetFieldFactory;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.facilio.bmsconsole.util.AuditLogUtil.sendAuditLogs;
 
@@ -84,19 +87,21 @@ public class PermissionSetUtil {
         if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
             return true;
         }
-        if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isSuperAdmin()) {
-            return true;
-        }
-        List<Long> permissionSetIds = AccountUtil.getPermissionSets();
+        List<PermissionSetContext> permissionSets = AccountUtil.getPermissionSets();
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
-        if(CollectionUtils.isNotEmpty(permissionSetIds)) {
-            for(Long permissionSetId : permissionSetIds) {
-                List<Map<String, Object>> propsList = permissionSetBean.getPermissionValues(type, queryProp, permissionFieldEnum, permissionSetId);
-                if (CollectionUtils.isNotEmpty(propsList)) {
-                    for (Map<String, Object> prop : propsList) {
-                        Boolean perm = (Boolean) prop.get("permission");
-                        if (perm != null && perm) {
-                            return true;
+        if(CollectionUtils.isNotEmpty(permissionSets)) {
+            for(PermissionSetContext permissionSet : permissionSets) {
+                if(permissionSet.isPrivileged()) {
+                    return true;
+                }
+                if(permissionSet != null) {
+                    List<Map<String, Object>> propsList = permissionSetBean.getPermissionValues(type, queryProp, permissionFieldEnum, permissionSet.getId());
+                    if (CollectionUtils.isNotEmpty(propsList)) {
+                        for (Map<String, Object> prop : propsList) {
+                            Boolean perm = (Boolean) prop.get("permission");
+                            if (perm != null && perm) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -134,5 +139,40 @@ public class PermissionSetUtil {
                     }).apply(null))
             );
         }
+    }
+
+    public static String constructLinkName(String linkName, String displayName) throws Exception {
+        PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
+        List<PermissionSetContext> existingPermissionSetList = permissionSetBean.getPermissionSetsList(-1,-1,null,true);
+        if (CollectionUtils.isEmpty(existingPermissionSetList)) {
+            if (StringUtils.isNotEmpty(linkName)) {
+                return linkName;
+            }
+            if (StringUtils.isNotEmpty(displayName)) {
+                return displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+            }
+        }
+        if (CollectionUtils.isNotEmpty(existingPermissionSetList)) {
+            List<String> existingNames = existingPermissionSetList.stream().map(PermissionSetContext::getLinkName).collect(Collectors.toList());
+            String foundName = null;
+            if (StringUtils.isNotEmpty(linkName)) {
+                foundName = linkName;
+            } else if (StringUtils.isNotEmpty(displayName)) {
+                foundName = displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+            }
+            if (StringUtils.isEmpty(foundName)) {
+                throw new IllegalArgumentException("Unable to construct link name for permission set");
+            }
+            int i = 0;
+            String constructedName = foundName;
+            while (true) {
+                if (existingNames.contains(constructedName)) {
+                    constructedName = foundName + "_" + (++i);
+                } else {
+                    return constructedName;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Unable to construct link name for permission set");
     }
 }

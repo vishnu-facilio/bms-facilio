@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.permission.context.BasePermissionContext;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.util.PermissionSetUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,6 +24,10 @@ public class UpdatePermissionsForPermissionSetCommand extends FacilioCommand {
                 permissionSetBean.addPermissionsForPermissionSet((Map<String, Object>) permission);
             }
             BasePermissionContext permission = FieldUtil.getAsBeanFromMap((Map<String, Object>) permissions.get(0),BasePermissionContext.class);
+            PermissionSetContext ps = permissionSetBean.getPermissionSet(permission.getPermissionSetId());
+            if(ps != null && ps.isPrivileged()) {
+                throw new IllegalArgumentException("Privileged permission set cannot be created or updated");
+            }
             PermissionSetUtil.addAuditLogs(permission.getPermissionSetId(),"updated");
         }
         return false;

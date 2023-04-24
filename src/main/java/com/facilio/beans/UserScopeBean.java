@@ -37,4 +37,7 @@ public interface UserScopeBean {
     Long getPeopleScoping(Long peopleId) throws Exception;
 
     public boolean scopingHasPeople(Long scopingId) throws Exception;
+
+    ScopingContext getScopingForLinkname(String linkName) throws Exception;
+
 }

@@ -122,8 +122,20 @@ public class PageFactory {
 			if (page == null) {
 				return null;
 			}
+			boolean hasRelatedTab = false;
+			if(CollectionUtils.isNotEmpty(page.getTabs())) {
+				List<Page.Tab> tabs = new ArrayList<>();
+				for(Page.Tab tab : page.getTabs()) {
+					if(tab.getName().equalsIgnoreCase("related")) {
+						hasRelatedTab = true;
+					}
+					else {
+						tabs.add(tab);
+					}
+				}
+				page.setTabs(tabs);
+			}
 			Page.Tab tab = page.new Tab("Related");
-			page.setTabs(page.getTabs().stream().filter(t -> !t.getName().equalsIgnoreCase("related")).collect(Collectors.toList()));
 			List<Long> moduleIds = new ArrayList<>();
 			moduleIds.add(module.getModuleId());
 			if (module.getName().equals(ContextNames.ASSET) && ((AssetContext) record).getCategory() != null) {
@@ -136,9 +148,10 @@ public class PageFactory {
 
 			Section relatedListSection = getRelatedListSectionObj(page);
 			tab.addSection(relatedListSection);
-
-			addRelatedListWidgets(relatedListSection, module.getModuleId());
-			addOtherRelatedList(module, page, tab, relatedListSection, record, false);
+			if(hasRelatedTab) {
+				addRelatedListWidgets(relatedListSection, module.getModuleId());
+				addOtherRelatedList(module, page, tab, relatedListSection, record, false);
+			}
 			if ((relatedListSection.getWidgets() != null && !relatedListSection.getWidgets().isEmpty()) || isRelationshipAdded) {
 				page.addTab(tab);
 			}

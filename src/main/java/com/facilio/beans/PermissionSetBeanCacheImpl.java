@@ -16,26 +16,22 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 
 public class PermissionSetBeanCacheImpl extends PermissionSetBeanImpl implements PermissionSetBean {
-    public List<Long> getUserPermissionSetIds(long peopleId) throws Exception {
-        FacilioCache<String, List<Long>> userPermissionSets = LRUCache.getPeoplePermissionSets();
+    public List<PermissionSetContext> getUserPermissionSetIds(long peopleId) throws Exception {
+        FacilioCache<String, List<PermissionSetContext>> userPermissionSets = LRUCache.getPeoplePermissionSets();
         String key = CacheUtil.PERMISSION_SET_KEY(AccountUtil.getCurrentOrg().getId(), peopleId);
-        List<Long> permissionSetIds = FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(userPermissionSets, key, () -> {
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(userPermissionSets, key, () -> {
             return super.getUserPermissionSetIds(peopleId);
         });
-        if (permissionSetIds != null) {
-            return Collections.unmodifiableList(permissionSetIds);
-        }
-        return null;
     }
 
     public void updateUserPermissionSets(long peopleId, List<Long> permissionSetIds) throws Exception {
-        FacilioCache<String, List<Long>> userPermissionSets = LRUCache.getPeoplePermissionSets();
+        FacilioCache<String, List<PermissionSetContext>> userPermissionSets = LRUCache.getPeoplePermissionSets();
         String key = CacheUtil.PERMISSION_SET_KEY(AccountUtil.getCurrentOrg().getId(), peopleId);
         super.updateUserPermissionSets(peopleId, permissionSetIds);
         userPermissionSets.remove(key);
     }
     public long addPermissionSet(PermissionSetContext permissionSet) throws Exception {
-        FacilioCache<String, List<Long>> userPermissionSets = LRUCache.getPeoplePermissionSets();
+        FacilioCache<String, List<PermissionSetContext>> userPermissionSets = LRUCache.getPeoplePermissionSets();
         String key = CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId());
         long id = super.addPermissionSet(permissionSet);
         userPermissionSets.removeStartsWith(key);
@@ -43,7 +39,7 @@ public class PermissionSetBeanCacheImpl extends PermissionSetBeanImpl implements
     }
 
     public void updatePermissionSet(PermissionSetContext permissionSet) throws Exception {
-        FacilioCache<String, List<Long>> userPermissionSets = LRUCache.getPeoplePermissionSets();
+        FacilioCache<String, List<PermissionSetContext>> userPermissionSets = LRUCache.getPeoplePermissionSets();
         String key = CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId());
         super.updatePermissionSet(permissionSet);
         userPermissionSets.removeStartsWith(key);

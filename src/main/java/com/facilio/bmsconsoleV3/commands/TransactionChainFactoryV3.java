@@ -38,14 +38,11 @@ import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupComma
 import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingStatusCommand;
+import com.facilio.bmsconsoleV3.commands.userScoping.*;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.userScoping.AddOrUpdateUserScopingCommand;
-import com.facilio.bmsconsoleV3.commands.userScoping.DeleteUserScopingCommand;
-import com.facilio.bmsconsoleV3.commands.userScoping.UpdateUserScopingConfigCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -768,7 +765,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
-        c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
         return c;
     }
 
@@ -784,7 +781,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
-        c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
         return c;
     }
 
@@ -799,6 +796,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
         c.addCommand(new AssignDefaultShift());
+        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
         return c;
     }
 
@@ -821,7 +819,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
-        c.addCommand(new UpdateScopingForPeopleCommandV3());
+        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
         return c;
     }
 

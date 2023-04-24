@@ -37,6 +37,8 @@ public class PermissionSetFieldFactory {
         fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
         fields.add(FieldFactory.getSystemField("sysModifiedBy", module));
         fields.add(FieldFactory.getBooleanField("status", "STATUS", module));
+        fields.add(FieldFactory.getBooleanField("isPrivileged", "IS_PRIVILEGED", module));
+        fields.add(FieldFactory.getStringField("linkName", "LINK_NAME", module));
         fields.add(FieldFactory.getIsDeletedField(module));
         fields.add(FieldFactory.getSysDeletedByField(module));
         fields.add(FieldFactory.getSysDeletedTimeField(module));

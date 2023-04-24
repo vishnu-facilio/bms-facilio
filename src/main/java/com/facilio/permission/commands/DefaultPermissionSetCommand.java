@@ -2,6 +2,7 @@ package com.facilio.permission.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.PermissionSetBean;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -19,10 +20,7 @@ import com.facilio.permission.handlers.item.ModuleGroupItemHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DefaultPermissionSetCommand extends FacilioCommand {
     @Override
@@ -30,34 +28,20 @@ public class DefaultPermissionSetCommand extends FacilioCommand {
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
 
         PermissionSetContext permissionSet = new PermissionSetContext();
-        permissionSet.setDisplayName("Default Permission Set");
-        permissionSet.setDescription("Default Permission Set");
+        permissionSet.setDisplayName("Privileged Permission Set");
+        permissionSet.setDescription("Privileged Permission Set");
         permissionSet.setStatus(true);
+        permissionSet.setIsPrivileged(true);
         permissionSet.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
         permissionSet.setSysCreatedTime(System.currentTimeMillis());
         permissionSet.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
         permissionSet.setSysModifiedTime(System.currentTimeMillis());
         long permissionSetId = permissionSetBean.addPermissionSet(permissionSet);
 
+        long ouid = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+        long peopleId = PeopleAPI.getPeopleIdForUser(ouid);
+        permissionSetBean.updateUserPermissionSets(peopleId, Collections.singletonList(permissionSetId));
 
-        ModuleGroupItemHandler moduleGroupItemHandler = new ModuleGroupItemHandler();
-        List<PermissionSetGroupingItemContext> permissionSetGroupingItemsContext = moduleGroupItemHandler.getGroupItems();
-        if(CollectionUtils.isNotEmpty(permissionSetGroupingItemsContext)) {
-            for(PermissionSetGroupingItemContext item : permissionSetGroupingItemsContext) {
-                RelatedRecordsPermissionSetHandler handler = new RelatedRecordsPermissionSetHandler();
-                List<RelatedListPermissionSet> relatedListPermissionSet = handler.getPermissions(item.getId());
-                if(CollectionUtils.isNotEmpty(relatedListPermissionSet)) {
-                    for(RelatedListPermissionSet perm : relatedListPermissionSet) {
-                        perm.setPermissionSetId(permissionSetId);
-                        perm.setPermission(true);
-                        perm.setType(PermissionSetType.Type.RELATED_LIST);
-                        perm.setPermissionType(PermissionFieldEnum.RELATED_LIST_READ_PERMISSION);
-                        Map<String,Object> permProp = FieldUtil.getAsProperties(perm);
-                        permissionSetBean.addPermissionsForPermissionSet(permProp);
-                    }
-                }
-            }
-        }
         return false;
     }
 }

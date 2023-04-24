@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class AddOrUpdatePermissionSetsForPeopleCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
             try {
                 User user = (User) context.get(FacilioConstants.ContextNames.USER);

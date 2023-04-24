@@ -21,4 +21,13 @@ public class PermissionSetContext implements Serializable {
     private Long sysModifiedBy;
     private Long sysDeletedBy;
     private Boolean status;
+    private Boolean isPrivileged;
+    @Setter @Getter
+    private String linkName;
+    public boolean isPrivileged() {
+        if(isPrivileged == null) {
+            return false;
+        }
+        return isPrivileged;
+    }
 }

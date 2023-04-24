@@ -229,13 +229,9 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
         }
     }
 
-    public List<Long> getUserPermissionSetIds(long peopleId) throws Exception {
+    public List<PermissionSetContext> getUserPermissionSetIds(long peopleId) throws Exception {
         List<PermissionSetContext> permissionSets = getUserPermissionSetMapping(peopleId,true);
-        List<Long> permissionSetIds = null;
-        if (CollectionUtils.isNotEmpty(permissionSets)) {
-            permissionSetIds = permissionSets.stream().map(PermissionSetContext::getId).collect(Collectors.toList());
-        }
-        return permissionSetIds;
+        return permissionSets;
     }
     public List<PermissionSetContext> getUserPermissionSetMapping(long peopleId,boolean fetchOnlyActive) throws Exception {
         List<FacilioField> fieldsList = new ArrayList<>();
@@ -343,6 +339,7 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
 
     @Override
     public long addPermissionSet(PermissionSetContext permissionSet) throws Exception {
+        permissionSet.setLinkName(PermissionSetUtil.constructLinkName(permissionSet.getLinkName(),permissionSet.getDisplayName()));
         GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
                 .table(PermissionSetModuleFactory.getPermissionSetModule().getTableName())
                 .fields(PermissionSetFieldFactory.getPermissionSetFields());
@@ -353,9 +350,10 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
     public void updatePermissionSet(PermissionSetContext permissionSet) throws Exception {
         permissionSet.setSysModifiedTime(System.currentTimeMillis());
         permissionSet.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
+        List<FacilioField> fields = PermissionSetFieldFactory.getPermissionSetFields().stream().filter(f -> !f.getName().equals("linkName")).collect(Collectors.toList());
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(PermissionSetModuleFactory.getPermissionSetModule().getTableName())
-                .fields(PermissionSetFieldFactory.getPermissionSetFields())
+                .fields(fields)
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(PermissionSetModuleFactory.getPermissionSetModule()),String.valueOf(permissionSet.getId()), NumberOperators.EQUALS));
         updateRecordBuilder.update(FieldUtil.getAsProperties(permissionSet));
     }
@@ -371,5 +369,19 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<PermissionSetContext> getPermissionSet(List<String> linkNames) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(PermissionSetFieldFactory.getPermissionSetFields())
+                .table(PermissionSetModuleFactory.getPermissionSetModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",StringUtils.join(linkNames,","),StringOperators.IS));
+        List<Map<String,Object>> props = selectRecordBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            List<PermissionSetContext> permissionSets = FieldUtil.getAsBeanListFromMapList(props,PermissionSetContext.class);
+            return permissionSets;
+        }
+        return null;
     }
 }

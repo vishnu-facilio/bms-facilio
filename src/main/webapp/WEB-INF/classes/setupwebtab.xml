@@ -215,6 +215,8 @@
             <param name="permission">ALL</param>
             <param name="setupTab">DATA_SHARING</param>
         </action>
+        <action name="userList" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="list">
+        </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="delete" >
             <param name="permission">ALL</param>
             <param name="setupTab">DATA_SHARING</param>
@@ -276,8 +278,6 @@
             <param name="setupTab">DATA_SHARING</param>
         </action>
         <action name="userList" class="com.facilio.permission.action.PermissionSetAction" method="list">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
         </action>
         <action name="delete" class="com.facilio.permission.action.PermissionSetAction" method="delete">
             <param name="permission">ALL</param>

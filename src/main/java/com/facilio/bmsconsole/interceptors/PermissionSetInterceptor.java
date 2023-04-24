@@ -74,6 +74,7 @@ public class PermissionSetInterceptor extends AbstractInterceptor {
 
     private void setPermissionSetForAccount() throws Exception {
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
-        AccountUtil.setPermissionSets(permissionSetBean.getUserPermissionSetIds(AccountUtil.getCurrentUser().getPeopleId()));
+        List<PermissionSetContext> permissionSetContexts = permissionSetBean.getUserPermissionSetIds(AccountUtil.getCurrentUser().getPeopleId());
+        AccountUtil.setPermissionSets(permissionSetContexts);
     }
 }

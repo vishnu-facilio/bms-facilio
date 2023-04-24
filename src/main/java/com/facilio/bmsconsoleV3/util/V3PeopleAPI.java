@@ -602,7 +602,7 @@ public class V3PeopleAPI {
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
-                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkName);
+                            addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkName);
                         }
                     }
                     else {
@@ -647,7 +647,7 @@ public class V3PeopleAPI {
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false);
                         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
-                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkName);
+                            addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkName);
                         }
                     }
                     else {
@@ -702,7 +702,7 @@ public class V3PeopleAPI {
                         V3PeopleAPI.enableUser(user);
                         ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
-                            addPermissionSetsForPeople(existingPeople.getPermissionSets(), person.getId(), linkname);
+                            addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkname);
                         }
                     }
                     else {
@@ -736,6 +736,7 @@ public class V3PeopleAPI {
     }
     //temp handling should be removed soon
     public static boolean disableUser(long peopleId,User user) throws Exception {
+        PeopleAPI.deletePermissionSetsForPeople(peopleId);
         V3TenantContactContext tc = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT,peopleId,V3TenantContactContext.class);
         if(user.getUserStatus() != null && user.getUserStatus() == true) {
             if (tc != null && !tc.isTenantPortalAccess()) {
@@ -807,6 +808,9 @@ public class V3PeopleAPI {
                         user.setApplicationId(appId);
                         user.setRoleId(roleId);
                         ApplicationApi.addUserInApp(user, false);
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                            addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkName);
+                        }
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(), roleId);

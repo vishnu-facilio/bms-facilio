@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.GroupMember;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
@@ -414,6 +411,9 @@ public class PeopleAPI {
 						//resetting email, bcz email is set null in updateUser method. email is required for sending invite email.
 						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+						if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+							addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkname);
+						}
 
 					} else {
 						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
@@ -608,6 +608,9 @@ public class PeopleAPI {
 						V3PeopleAPI.enableUser(user);
 						user.setEmail(email);
 						ApplicationApi.addUserInApp(user, false);
+						if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+							addPermissionSetsForPeople(person.getPermissionSets(), person.getId(), linkName);
+						}
 					} else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(),false, roleId, -1,person.getPermissionSets());
 					}
@@ -1272,6 +1275,22 @@ public class PeopleAPI {
 			peopleForOUIdMap.put((Long) people.get("ouid"),people);
 		}
 		return peopleForOUIdMap;
+	}
+
+	public static void deletePermissionSetsForPeople(long peopleId) throws Exception{
+		PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
+		List<Long> ouIds = PeopleAPI.getUserIdForPeople(peopleId);
+		if(CollectionUtils.isNotEmpty(ouIds)) {
+			for(Long ouId : ouIds) {
+				List<Map<String, Object>> userApps = AccountUtil.getOrgBean().getOrgUserApps(ouId);
+				if(CollectionUtils.isNotEmpty(userApps)) {
+					return;
+				}
+			}
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+			permissionSetBean.updateUserPermissionSets(peopleId,new ArrayList<>());
+		}
 	}
 
 	private static void addPermissionSetsForPeople(List<Long> permissionSets, long peopleId,String linkName) throws Exception{

@@ -25,6 +25,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
@@ -192,13 +193,13 @@ public class AccountUtil {
 		}
 		return -1;
 	}
-	public static void setPermissionSets(List<Long> permissionSets) {
+	public static void setPermissionSets(List<PermissionSetContext> permissionSets) {
 		if (currentAccount.get() != null) {
 			currentAccount.get().setPermissionSets(permissionSets);
 		}
 	}
 
-	public static List<Long> getPermissionSets() {
+	public static List<PermissionSetContext> getPermissionSets() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getPermissionSets();
 		}

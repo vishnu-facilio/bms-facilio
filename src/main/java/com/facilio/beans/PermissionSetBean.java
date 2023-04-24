@@ -28,10 +28,12 @@ public interface PermissionSetBean {
     List<PermissionSetContext> getUserPermissionSetMapping(long peopleId,boolean fetchOnlyActive) throws Exception;
     void deletePermissionSet(long id) throws Exception;
     PermissionSetContext getPermissionSet(long id) throws Exception;
-    List<Long> getUserPermissionSetIds(long peopleId) throws Exception;
+    List<PermissionSetContext> getUserPermissionSetIds(long peopleId) throws Exception;
     List<PermissionSetContext> getPermissionSetsList(int page, int perPage, String searchQuery, boolean fetchDeleted) throws Exception;
     public long getPermissionSetsCount(String searchQuery) throws Exception;
     long addPermissionSet(PermissionSetContext permissionSetContext) throws Exception;
     void updatePermissionSet(PermissionSetContext permissionSetContext) throws Exception;
     boolean permissionSetHasPeopleAssociation(long permissionSetId) throws Exception;
+    List<PermissionSetContext> getPermissionSet(List<String> linkNames) throws Exception;
+
 }

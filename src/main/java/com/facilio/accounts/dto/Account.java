@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.logging.FacilioLogHandler;
+import com.facilio.permission.context.PermissionSetContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	private Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues;
 
 	@Getter @Setter
-	private List<Long> permissionSets;
+	private List<PermissionSetContext> permissionSets;
 	private Boolean shouldApplySwitchScope;
 
 	@Getter @Setter

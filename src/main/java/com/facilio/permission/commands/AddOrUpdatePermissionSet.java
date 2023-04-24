@@ -29,12 +29,17 @@ public class AddOrUpdatePermissionSet extends FacilioCommand {
         PermissionSetContext permissionSet = (PermissionSetContext) context.getOrDefault(FacilioConstants.ContextNames.RECORD,null);
         long id = -1;
         if(permissionSet != null) {
+            boolean restrict = false;
             PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
             List<FacilioField> fields = PermissionSetFieldFactory.getPermissionSetFields();
             if(permissionSet.getId() > 0) {
                 List<String> fieldsNames = Arrays.asList("sysCreatedTime","sysCreatedBy","sysDeletedBy","sysDeletedTime");
                 fields.removeIf(f -> fieldsNames.contains(f.getName()));
                 id = permissionSet.getId();
+                PermissionSetContext ps = permissionSetBean.getPermissionSet(id);
+                if(ps != null && ps.isPrivileged()) {
+                    restrict = true;
+                }
                 permissionSetBean.updatePermissionSet(permissionSet);
             } else {
                 List<String> fieldsNames = Arrays.asList("sysDeletedBy","sysDeletedTime");
@@ -44,6 +49,13 @@ public class AddOrUpdatePermissionSet extends FacilioCommand {
                 permissionSet.setSysModifiedTime(System.currentTimeMillis());
                 permissionSet.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
                 id = permissionSetBean.addPermissionSet(permissionSet);
+                PermissionSetContext ps = permissionSetBean.getPermissionSet(id);
+                if(ps != null && ps.isPrivileged()) {
+                    restrict = true;
+                }
+            }
+            if(restrict) {
+                throw new IllegalArgumentException("Privileged permission set cannot be updated");
             }
         }
         context.put(FacilioConstants.ContextNames.ID,id);
