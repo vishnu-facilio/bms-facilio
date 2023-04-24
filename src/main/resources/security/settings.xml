@@ -1830,4 +1830,16 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/commentPreferences/update" method="POST">
+        <requestbody type="object">
+            <property name="commentSharingPreferences" type="array">
+                <items type="object">
+                    <property name="appId" type="number"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/commentPreferences/sharingOptions" method="GET"/>
+    <request path="/api/v3/commentPreferences/clear" method="GET"/>
+
 </config>

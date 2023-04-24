@@ -958,6 +958,10 @@ public class FacilioConstants {
 		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
 		public static final String NOTIFY_REQUESTER = "notifyRequester";
+		public static final String COMMENT_SHARING_PREFERENCES = "commentSharingPreferences";
+		public static final String COMMENT_SHARING_OPTIONS = "commentSharingOptions";
+
+		public static final String LICENSED_PORTAL_APPS = "licensedPortalApps";
 
 		public static final String NOTIFICATION_TYPE = "notificationType";
 		public static final String NOTIFICATION_OBJECT = "notificationObject";

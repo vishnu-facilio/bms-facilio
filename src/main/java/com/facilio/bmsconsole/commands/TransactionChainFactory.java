@@ -15,6 +15,8 @@ import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
+import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
+import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigurationCommand;
 import com.facilio.bmsconsole.NotifyCommentMentions;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
@@ -25,14 +27,11 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
-import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
-import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.GetCustomPageWidgetCommand;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
@@ -62,7 +61,6 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.logging.FacilioLogHandler;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
@@ -70,9 +68,11 @@ import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
 import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
-import com.facilio.readingrule.command.*;
+import com.facilio.readingrule.command.DeleteReadingRuleActionsCommand;
+import com.facilio.readingrule.command.DeleteReadingRuleCommand;
+import com.facilio.readingrule.command.FetchRuleRootCauseCommand;
+import com.facilio.readingrule.command.GetRulesForRootCauseCommand;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
-import com.facilio.readingrule.faulttowo.command.AddFaultToWorkOrderSupplementsCommand;
 import com.facilio.readingrule.faulttowo.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
@@ -86,8 +86,6 @@ import org.apache.commons.chain.Context;
 import java.util.Collections;
 
 public class TransactionChainFactory {
-
-	private static NotifyCommentMentions command;
 
 	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
@@ -171,9 +169,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCommentSharingCommand());
 			c.addCommand(new AddCommentAttachmentsCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteNoteWorkflowCommand()));
+					.addCommand(new ExecuteNoteWorkflowCommand())
+					.addCommand(new NotifyCommentMentions()));
 			c.addCommand(new AddActivitiesCommand());
-			c.addCommand(new NotifyCommentMentions());
+
 			return c;
 		}
 

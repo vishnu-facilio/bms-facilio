@@ -593,7 +593,6 @@
 /dsso/metadata/:moduleName
 /sso/metadata/:modulename
 /api/v2/portals/getLicensedPortals
-/api/v3/people/util/recordPeople
 /api/v2/portal/visitor/addMe
 /api/v2/portal/visitor/add
 /api/v2/portal/visitor/addVisitor
@@ -775,6 +774,7 @@
 /api/v2/agent/integration/altair/addIntegration
 /api/v2/agent/inboundConnections/add
 /api/agent/inbound/wegot/events
+/api/v3/people/util
 /api/v3/iot/data/push
 /api/v3/agent/:fetchAgent
 /api/v3/agent/connections
@@ -2751,6 +2751,5 @@
 /api/v3/resource/qr
 /api/v3/unrelated/:parentModuleName/fetchAll/:moduleName
 /api/v3/unrelated/:parentModuleName/fetch/:moduleName/:id
-
 /api/v3/weather/migrateWeatherStation
 /api/v1/setup/permissionSet/:module/getGroupItems

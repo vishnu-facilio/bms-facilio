@@ -11196,15 +11196,22 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getCommentsSharingPreferenceFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCommentsSharingPreferenceModule();
+        fields.add(getIdField("id", "ID", module));
+        fields.add(getField("appId", "APP_ID", module, FieldType.LOOKUP));
+        return fields;
+    }
+
     public static List<FacilioField> getCommentMentionsFields(FacilioModule module) {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField("id", "ID", module));
-        fields.add(getField("parentID", "PARENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("mentionedModuleID", "MENTIONED_MODULE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("mentionedRecordID","MENTIONED_RECORD_ID",module,FieldType.NUMBER));
-        fields.add(getField("parentModuleID", "PARENT_MODULE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("mentionedModuleId", "MENTIONED_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("mentionedRecordId","MENTIONED_RECORD_ID",module,FieldType.NUMBER));
+        fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("mentionType","MENTION_TYPE",module,FieldType.SYSTEM_ENUM));
-
         return fields;
     }
     public static List<FacilioField> getCustomPageWidgetFields() {

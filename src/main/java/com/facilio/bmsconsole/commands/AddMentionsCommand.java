@@ -4,13 +4,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommentMentionContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
@@ -58,13 +57,24 @@ public class AddMentionsCommand extends FacilioCommand {
                 if (commentMentions.getMentionedModuleName() != null) {
                     String mentionedModuleName = commentMentions.getMentionedModuleName();
                     FacilioModule mentionedMod = modBean.getModule(mentionedModuleName);
-                    commentMentions.setMentionedModuleID(mentionedMod.getModuleId());
+                    commentMentions.setMentionedModuleId(mentionedMod.getModuleId());
                 }
-                commentMentions.setParentID(noteContext.getId());
-                commentMentions.setParentModuleID(notesModule.getModuleId());
+                commentMentions.setParentId(noteContext.getId());
+                commentMentions.setParentModuleId(notesModule.getModuleId());
                 commentMentions.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+                if(commentMentions.getMentionTypeEnum() == CommentMentionContext.MentionType.PEOPLE){
+                    setPeopleRecordForMention(commentMentions);
+                }
                 addCommentMentionsList.add(commentMentions);
             }
+        }
+    }
+
+    private static void setPeopleRecordForMention(CommentMentionContext commentMentions) throws Exception {
+        if(commentMentions.getMentionedRecordId() > 0){
+            long pplId = commentMentions.getMentionedRecordId();
+            V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, pplId, V3PeopleContext.class);
+            commentMentions.setRecordObj(pplRecord);
         }
     }
 }

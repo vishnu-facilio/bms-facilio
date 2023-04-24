@@ -99,6 +99,9 @@ public class getPeopleFromRecordFieldsCommand extends FacilioCommand {
                     continue;
                 }
                 V3PeopleContext peopleTypeRecord = FieldUtil.getAsBeanFromMap((Map<String, Object>) recordProp.get(field.getName()),V3PeopleContext.class);
+                if(peopleTypeRecord == null){
+                    continue;
+                }
                 if(peopleFieldsPicklist.containsKey(peopleTypeRecord.getId())){
                     PeopleTypeField ppl = peopleFieldsPicklist.get(peopleTypeRecord.getId());
                     List<String> fieldsList = ppl.getFields();

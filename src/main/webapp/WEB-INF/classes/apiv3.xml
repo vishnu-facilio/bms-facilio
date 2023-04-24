@@ -1552,6 +1552,18 @@
         </action>
     </package>
 
+    <package name="commentPreferences" namespace="/api/v3/commentPreferences" extends="v3Api">
+        <action name="sharingOptions" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="getSharingOptions">
+        </action>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="updateSharingPreferences">
+        </action>
+        <action name="clear" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="clearSharingPreferences">
+        </action>
+    </package>
+
     <!--    this is temp we will remove it soon -->
     <package name="spaceCategoryformRelation" namespace="/api/v3/formrelation" extends="v3Api">
         <action name="list"

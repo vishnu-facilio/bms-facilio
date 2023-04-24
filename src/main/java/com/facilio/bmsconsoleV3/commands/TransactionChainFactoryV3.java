@@ -852,6 +852,23 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getCommentSharingOptionsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetCommentSharingOptionsCommand());
+        return c;
+    }
+
+    public static FacilioChain getCommentSharingPreferencesUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateCommentPreferencesChain());
+        return c;
+    }
+    public static FacilioChain getClearCommentSharingPreferencesUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new deleteCommentPreferencesChain());
+        return c;
+    }
+
     public static FacilioChain getTenantUnitAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateHelperFieldsCommandV3());

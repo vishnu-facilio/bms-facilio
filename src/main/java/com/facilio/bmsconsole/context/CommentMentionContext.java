@@ -9,11 +9,12 @@ import lombok.Setter;
 public class CommentMentionContext extends ModuleBaseWithCustomFields {
     private static final long serialVersionUID = 1L;
 
-    private long parentID = -1;
-    private long parentModuleID = -1;
-    private long mentionedModuleID = -1;
-    private long mentionedRecordID = -1;
+    private long parentId = -1;
+    private long parentModuleId = -1;
+    private long mentionedModuleId = -1;
+    private long mentionedRecordId = -1;
     private String mentionedModuleName;
+    private Object recordObj;
     private MentionType mentionType;
     public int getMentionType() {
         if (mentionType != null) {

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -10,6 +11,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -23,6 +25,8 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -258,8 +262,8 @@ public class NotesAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(allFields)
 				.table(commentMentionsModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentID"), String.valueOf(noteId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleID"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(noteId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<CommentMentionContext> commentsMentionsContexts = null;
 		if (props != null && !props.isEmpty()) {
@@ -347,8 +351,8 @@ public class NotesAPI {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(commentMentions.getTableName())
-				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentID"), String.valueOf(note.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentModuleID"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentId"), String.valueOf(note.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(mentionsFieldMap.get("parentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		builder.delete();
 	}
 
@@ -367,4 +371,51 @@ public class NotesAPI {
 				.andCondition(CriteriaAPI.getCondition(attachmentsFieldMap.get("commentModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		builder.delete();
 	}
+
+	public static ArrayList<CommentSharingContext> fetchDefaultCommentSharingApps() throws Exception {
+		ArrayList<CommentSharingContext> defaultSharingApps = new ArrayList<>();
+		FacilioModule sharingPreferenceModule = ModuleFactory.getCommentsSharingPreferenceModule();
+		List<FacilioField> fields = FieldFactory.getCommentsSharingPreferenceFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(sharingPreferenceModule.getTableName());
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()){
+			for (Map<String, Object> prop:props) {
+				Object appId = prop.get(FacilioConstants.ContextNames.APP_ID);
+				if(appId != null){
+					CommentSharingContext sharingPreference = new CommentSharingContext();
+					sharingPreference.setAppId( (Long) appId);
+					defaultSharingApps.add(sharingPreference);
+				}
+			}
+		}
+		return defaultSharingApps;
+	}
+
+	public static void deleteDefaultCommentSharingApps() throws Exception {
+		FacilioModule sharingPreferenceModule = ModuleFactory.getCommentsSharingPreferenceModule();
+		FacilioField orgIdField = AccountConstants.getOrgIdField();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(sharingPreferenceModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(orgIdField, Collections.singleton(orgId), NumberOperators.EQUALS));
+		builder.delete();
+	}
+
+	public static void AddDefaultCommentSharingApps( List<CommentSharingContext> sharingInfos) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
+		FacilioModule sharingModule = ModuleFactory.getCommentsSharingPreferenceModule();
+		List<FacilioField> fields = FieldFactory.getCommentsSharingPreferenceFields();
+		if(sharingInfos == null || sharingInfos.isEmpty()){
+			return;
+		}
+		List<CommentSharingContext> props = sharingInfos.stream().collect(Collectors.toList());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(sharingModule.getTableName())
+				.fields(fields);
+		insertBuilder.addRecords(FieldUtil.getAsMapList(props,CommentSharingContext.class));
+		insertBuilder.save();
+	}
+
+
 }

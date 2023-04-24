@@ -5409,6 +5409,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return commentsSharing;
 	}
 
+	public static FacilioModule getCommentsSharingPreferenceModule() {
+		FacilioModule commentsSharing = new FacilioModule();
+		commentsSharing.setName("commentsSharingPreference");
+		commentsSharing.setDisplayName("Comments Sharing Preference");
+		commentsSharing.setTableName("Comments_Sharing_Preferences");
+		return commentsSharing;
+	}
+
 	public static FacilioModule getCommentMentionsModule() {
 		FacilioModule commentMentions = new FacilioModule();
 		commentMentions.setName("commentMentions");

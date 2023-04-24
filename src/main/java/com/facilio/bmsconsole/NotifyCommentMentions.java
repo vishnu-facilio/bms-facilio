@@ -62,7 +62,7 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
         ArrayList<Map<String,Object>> usersToSendNotification = new ArrayList<>();
         for (CommentMentionContext mention: mentions) {
             if(mention.getMentionTypeEnum() == CommentMentionContext.MentionType.PEOPLE){
-                long peopleID = mention.getMentionedRecordID();
+                long peopleID = mention.getMentionedRecordId();
                 if(peopleID != -1){
                     List<Map<String, Object>> orgUsers = PeopleAPI.getOrgUserAndApplicationMap(peopleID);
                     if(orgUsers != null && !orgUsers.isEmpty()){
