@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -86,6 +87,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     int pointer=0;
     boolean ignoreProgressSendingToClient;
     int one_percentage_records;
+    ModuleBean moduleBean = null;
     private static final float ratio = 10f/7;
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -162,6 +164,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         if(module!=null){
             defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(module);
         }
+        moduleBean = Constants.getModBean();
     }
 
     private void validateRow(ImportRowContext rowContext) throws Exception {
@@ -336,7 +339,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 Map<String, Object> nameVsIds = lookupMap.get(field);
                 for (String s : split) {
                     String name = s.trim();
-                    String lookUpValueKey = getLookUKeyValueFromSheet(uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, true);
+                    String lookUpValueKey = getLookUKeyValueFromSheet((BaseLookupField) field,uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, true);
 
                     if (!lookUpValueKey.isEmpty()) {
                         name = name + VALUES_SEPERATOR + lookUpValueKey;
@@ -358,7 +361,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String lookUpModuleName = ((BaseLookupField) field).getLookupModule().getName();
                 Map<String, Object> nameVsIds = lookupMap.get(field);
                 List<FacilioField> uniqueFields = getImportLookupUniqueFields(Constants.getModBean(), context, ((BaseLookupField) field).getLookupModule().getName());
-                String lookUpValueKey = getLookUKeyValueFromSheet(uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, true);
+                String lookUpValueKey = getLookUKeyValueFromSheet((BaseLookupField) field,uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, true);
                 String name = cellValue.toString().trim();
                 if (!lookUpValueKey.isEmpty()) {
                     name = name + VALUES_SEPERATOR + lookUpValueKey;
@@ -385,11 +388,18 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 break;
             }
-            case ID:
+            case BOOLEAN: {
+                String cellValueString = cellValue.toString();
+                boolean booleanValue = FacilioUtil.parseBoolean(cellValueString);
+                props.put(field.getName(), booleanValue);
+                break;
+            }
+            case ID: {
                 String cellValueString = cellValue.toString();
                 long id = (long) Double.parseDouble(cellValueString);
-                props.put(field.getName(),id);
+                props.put(field.getName(), id);
                 break;
+            }
             default: {
                 if (!props.containsKey(field.getName())) {
                     props.put(field.getName(), cellValue);
@@ -399,9 +409,9 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     }
 
     // TODO check unique field handling behaviour for lookup record fetch
-    private String getLookUKeyValueFromSheet(List<FacilioField> uniqueFields, Map<Long, String> fieldIdVsSheetColumnNameMap, Map<String, String> fieldNameVsSheetColumnNameMap, ImportRowContext rowContext, boolean validate) throws ImportFieldValueMissingException {
+    private String getLookUKeyValueFromSheet(BaseLookupField parentLookUpField,List<FacilioField> uniqueFields, Map<Long, String> fieldIdVsSheetColumnNameMap, Map<String, String> fieldNameVsSheetColumnNameMap, ImportRowContext rowContext, boolean validate) throws ImportFieldValueMissingException {
         StringBuilder keyValue = new StringBuilder();
-
+        Set<String> canBeEmptyFieldNames = getCanBeEmptyFieldNames(parentLookUpField);
         if(uniqueFields.size()==1){
             return keyValue.toString();
         }
@@ -412,11 +422,14 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             FacilioField uniqueField = uniqueFields.get(i);
             Long uniqueFieldId = uniqueField.getFieldId();
             String uniqueFieldName = uniqueField.getName();
-            String uniqueFieldSheetColumnName = uniqueFieldId != -1l ? fieldIdVsSheetColumnNameMap.get(uniqueFieldId) : fieldNameVsSheetColumnNameMap.get(uniqueFieldName);
+            String uniqueFieldSheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet,uniqueField);
+            if(uniqueFieldSheetColumnName == null && uniqueFieldName!=null && uniqueFieldName.equals("site")){
+                uniqueFieldSheetColumnName = fieldNameVsSheetColumnNameMap.get("siteId");
+            }
             Object uniqueCellValue = rowVal.get(uniqueFieldSheetColumnName);
             if (isEmpty(uniqueCellValue)) {
                 uniqueCellValue = "null";
-                if (validate) {
+                if (validate && !canBeEmptyFieldNames.contains(uniqueFieldName)) {
                     throw new ImportFieldValueMissingException((int) rowContext.getRowNumber(), uniqueFieldSheetColumnName, new Exception());
                 }
             }
@@ -478,7 +491,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
 
                 List<FacilioField> uniqueFields = getImportLookupUniqueFields(Constants.getModBean(), context, lookupField.getLookupModule().getName());
-                String keyValue = getLookUKeyValueFromSheet(uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, false);
+                String keyValue = getLookUKeyValueFromSheet(lookupField,uniqueFields, fieldIdVsSheetColumnNameMap, fieldNameVsSheetColumnNameMap, rowContext, false);
 
                 lookupMap.put(lookupField, numberIdPairList);
 
@@ -535,8 +548,21 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         for (int i = 0; i < uniqueFields.size(); i++) {
             FacilioField field = uniqueFields.get(i);
             String fieldName = field.getName();
-            String value = prop.get(fieldName).toString();
-            if (FacilioUtil.isNumeric(value)) {
+            Object value = prop.get(fieldName);
+            if(value==null){
+                value="null";
+            }
+            if(field instanceof SupplementRecord && value instanceof Map){
+                try {
+                    FacilioField primaryField = Constants.getModBean().getPrimaryField(((BaseLookupField)field).getLookupModule().getName());
+                    if(primaryField!=null){
+                        value = ((Map)value).get(primaryField.getName());
+                    }
+                }catch (Exception ignored){
+                    value=null;
+                }
+            }
+            else if (FacilioUtil.isNumeric(value.toString())) {
                 value = ((Double) FacilioUtil.parseDouble(value)).toString();
             }
             uniqueKey.append(value);
@@ -584,18 +610,18 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
         selectBuilder.andCondition(CriteriaAPI.getCondition(primaryField, StringUtils.join(set, ","), StringOperators.IS));
 
-        Criteria uniqueFieldsCriteria = getCriteriaForLoadLookUpMap(uniqueFields, nameIdMap);
+        Criteria uniqueFieldsCriteria = getCriteriaForLoadLookUpMap(uniqueFields, nameIdMap,selectBuilder,lookupField);
         if (!uniqueFieldsCriteria.isEmpty()) {
             selectBuilder.andCriteria(uniqueFieldsCriteria);
         }
         return selectBuilder;
     }
 
-    private Criteria getCriteriaForLoadLookUpMap(List<FacilioField> uniqueFields, Map<String, Object> nameIdMap) {
-
+    private Criteria getCriteriaForLoadLookUpMap(List<FacilioField> uniqueFields, Map<String, Object> nameIdMap,SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,BaseLookupField parentLookUpField) throws Exception {
         Criteria criteria = new Criteria();
+        List<SupplementRecord> supplementRecords= new ArrayList<>();
+        Set<String> canBeEmptyFieldNames = getCanBeEmptyFieldNames(parentLookUpField);
         for (int i = 1; i < uniqueFields.size(); i++) {
-
             Condition condition = new Condition();
             Set<String> set = new HashSet<>();
 
@@ -603,6 +629,8 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             condition.setField(field);
             condition.setOperator(StringOperators.IS);
 
+            StringBuilder tableAlias = new StringBuilder(parentLookUpField.getName());
+            tableAlias.append("_").append(field.getName());
 
             for (String uniqueValues : nameIdMap.keySet()) {
                 String uniqueValue = uniqueValues.split(VALUES_SEPERATOR)[i];
@@ -612,9 +640,36 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 set.add(uniqueValue);
             }
-            condition.setValue(StringUtils.join(set, ","));
-            criteria.addAndCondition(condition);
+            if(CollectionUtils.isEmpty(set)){
+                continue;
+            }
+            if(field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum()==FieldType.MULTI_LOOKUP){
+                BaseLookupField childLookupField = (BaseLookupField)field;
+                FacilioField primaryField = Constants.getModBean().getPrimaryField(childLookupField.getLookupModule().getName());
+                FacilioField idField = FieldFactory.getIdField(childLookupField.getLookupModule());
+                if(canBeEmptyFieldNames.contains(field.getName())){
+                    String primaryValue = StringUtils.join(set, ",");
+                    selectBuilder.leftJoin(primaryField.getTableName()).alias(tableAlias.toString())
+                            .on(tableAlias+".ID="+childLookupField.getCompleteColumnName());
+                    Criteria canBeEmptyCriteria = new Criteria();
+                    canBeEmptyCriteria.addAndCondition(CriteriaAPI.getCondition(tableAlias+".ID", idField.getName(),"", CommonOperators.IS_EMPTY));
+                    canBeEmptyCriteria.addOrCondition(CriteriaAPI.getCondition(tableAlias+"."+primaryField.getName(),primaryField.getName(),primaryValue,StringOperators.IS));
+                    selectBuilder.andCriteria(canBeEmptyCriteria);
+                }else{
+                    set = appendSingleQuotesTString(set);
+                    String primaryValue = StringUtils.join(set, ",");
+                    selectBuilder.innerJoin(primaryField.getTableName()).alias(tableAlias.toString())
+                            .on(tableAlias+".ID="+childLookupField.getCompleteColumnName()+" AND "+tableAlias+"."+primaryField.getName()+" IN ("+primaryValue+")");
+                }
+                supplementRecords.add((SupplementRecord) field);
 
+            }else{
+                condition.setValue(StringUtils.join(set, ","));
+                criteria.addAndCondition(condition);
+            }
+        }
+        if(CollectionUtils.isNotEmpty(supplementRecords)){
+            selectBuilder.fetchSupplements(supplementRecords);
         }
         return criteria;
     }
@@ -625,6 +680,9 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         if (MapUtils.isNotEmpty(lookupMainFieldMap) && lookupMainFieldMap.containsKey(moduleName)) {
             List<String> fieldNames = lookupMainFieldMap.get(moduleName);
             for (String fieldName : fieldNames) {
+                if(fieldName.startsWith("*")){
+                    fieldName = fieldName.substring(1,fieldName.length());
+                }
                 FacilioField uniqueField = modBean.getField(fieldName, moduleName);
                 uniqueFields.add(uniqueField);
             }
@@ -634,6 +692,22 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             uniqueFields.add(primaryField);
         }
         return uniqueFields;
+    }
+    private Set<String> getCanBeEmptyFieldNames(BaseLookupField lookupField){
+        Map<String, List<String>> lookupMainFieldMap = (Map<String, List<String>>) context.get(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP);
+        Set<String> canBeEmptyFieldNames = new HashSet<>();
+        String lookUpModuleName = lookupField.getLookupModule().getName();
+        if (MapUtils.isNotEmpty(lookupMainFieldMap) && lookupMainFieldMap.containsKey(lookUpModuleName)) {
+            List<String> fieldNames = lookupMainFieldMap.get(lookUpModuleName);
+            for (String fieldName : fieldNames) {
+                if(fieldName.startsWith("*")){
+                    canBeEmptyFieldNames.add(fieldName.substring(1,fieldName.length()));
+                }
+            }
+        }
+
+        return canBeEmptyFieldNames;
+
     }
 
     private boolean isEmpty(Object cellValue) {
@@ -835,6 +909,12 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         }
 
         return loadLookUpExtraSelectFields;
+    }
+    private Set<String> appendSingleQuotesTString(Set<String> set){
+        if(CollectionUtils.isEmpty(set)){
+            return set;
+        }
+        return set.stream().map(s->"\'"+s+"\'").collect(Collectors.toSet());
     }
 
 }

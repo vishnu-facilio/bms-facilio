@@ -861,7 +861,7 @@ public class MultiImportApi {
         String fieldName = field.getName();
 
         String sheetColumnName = null;
-        if (fieldIdVsSheetColumnNameMap != null && fieldIdVsSheetColumnNameMap.containsKey(fieldId)) {
+        if (fieldIdVsSheetColumnNameMap != null && fieldId!=-1l && fieldIdVsSheetColumnNameMap.containsKey(fieldId)) {
             sheetColumnName = fieldIdVsSheetColumnNameMap.get(fieldId);
         } else if (fieldNameVsSheetColumnNameMap != null && fieldNameVsSheetColumnNameMap.containsKey(fieldName)) {
             sheetColumnName = fieldNameVsSheetColumnNameMap.get(fieldName);
@@ -1069,6 +1069,16 @@ public class MultiImportApi {
                 FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
             facilioFields.add(FieldFactory.getSiteIdField());
         }
+        if(moduleName.equals("asset")){
+            Map<String,FacilioField> baseSpaceFieldsMap = FieldFactory.getAsMap(modBean.getAllFields("basespace"));
+            List<String> fieldNames = Arrays.asList("building","floor","space1","space2","space3","space4","space5");
+            for (String fieldName:fieldNames){
+                if(baseSpaceFieldsMap.containsKey(fieldName)){
+                    facilioFields.add(baseSpaceFieldsMap.get(fieldName));
+                }
+            }
+           // facilioFields.addAll(FieldFactory.getImportFieldMappingDisplayFields(module));
+        }
 
         List<MultiImportField> multiImportFields = new ArrayList<>();
 
@@ -1112,9 +1122,20 @@ public class MultiImportApi {
                 return Arrays.asList("name");
             case FacilioConstants.ContextNames.BUILDING:
             case FacilioConstants.ContextNames.SPACE:
+            case FacilioConstants.ContextNames.TENANT_UNIT_SPACE:
                 return Arrays.asList("name","site");
             case FacilioConstants.ContextNames.FLOOR:
                 return Arrays.asList("name","site","building");
+            case FacilioConstants.ContextNames.ASSET:
+                return Arrays.asList("category","siteId","name");
+            case FacilioConstants.ContextNames.VENDORS:
+                return Arrays.asList("name","primaryContactName","primaryContactPhone");
+            case FacilioConstants.ContextNames.VENDOR_CONTACT:
+                return Arrays.asList("name","vendor");
+            case FacilioConstants.ContextNames.TENANT:
+                return Arrays.asList("name","site","primaryContactName","primaryContactPhone");
+            case FacilioConstants.ContextNames.TENANT_CONTACT:
+                return Arrays.asList("name","tenant");
             default:
                 return null;
         }
