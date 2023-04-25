@@ -522,7 +522,7 @@ public class V3PeopleAPI {
                         }
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId, person.getPermissionSets());
                     }
                 }
                 else {
@@ -537,11 +537,11 @@ public class V3PeopleAPI {
             }
         }
     }
-    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
-        return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
+    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, long roleId,List<Long> permissionSetIds) throws Exception {
+        return addPortalAppUser(existingPeople, linkName, identifier, false, roleId, permissionSetIds);
     }
 
-    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, Long roleId) throws Exception {
+    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, Long roleId, List<Long> permissionSetIds) throws Exception {
         if(StringUtils.isEmpty(linkName)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid link name");
         }
@@ -563,7 +563,7 @@ public class V3PeopleAPI {
         user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
         AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
-            addPermissionSetsForPeople(existingPeople.getPermissionSets(), existingPeople.getId(), linkName);
+            addPermissionSetsForPeople(permissionSetIds, existingPeople.getId(), linkName);
         }
         return user;
     }
@@ -606,7 +606,7 @@ public class V3PeopleAPI {
                         }
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId);
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId, person.getPermissionSets());
                     }
                 }
                 else {
@@ -651,7 +651,7 @@ public class V3PeopleAPI {
                         }
                     }
                     else {
-                        User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
+                        User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId, person.getPermissionSets());
                         newUser.setAppDomain(appDomain);
                     }
                 }
@@ -813,7 +813,7 @@ public class V3PeopleAPI {
                         }
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(), roleId);
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(), roleId, person.getPermissionSets());
                     }
                 }
                 else {
