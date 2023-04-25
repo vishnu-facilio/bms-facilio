@@ -14,15 +14,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
@@ -230,6 +225,13 @@ public class BaseMatrixQuestionHandler {
 					;
 			
 			delete.markAsDelete();
+
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+
+			deleteRecordBuilder.table(ModuleFactory.getQAndADisplayLogicModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.filterField(FieldFactory.getQAndADisplayLogicFields(), "columnId"),columnIdsToBeDeleted,NumberOperators.EQUALS));
+
+			deleteRecordBuilder.delete();
 		}
 	}
 

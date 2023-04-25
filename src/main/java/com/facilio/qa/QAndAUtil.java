@@ -398,7 +398,9 @@ public class QAndAUtil {
         clientAnswer.setFullScore(answer.getFullScore());
         clientAnswer.setScore(answer.getScore());
         clientAnswer.setComments(answer.getComments());
+        clientAnswer.setResponse(answer.getResponse());
         clientAnswer.setResponseId(answer.getResponseId());
+        clientAnswer.setParent(answer.getParent());
         clientAnswer.setScorePercent(answer.getScorePercent());
         clientAnswer.setAttachmentList(answer.getAttachmentList());
         return clientAnswer;
