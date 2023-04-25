@@ -46,3 +46,4 @@ do
     fi
 done
 find $APP_HOME/temp/* -mmin +1440 -delete
+find . -name $APP_HOME/temp/* -print0 | xargs -0 rm

@@ -171,28 +171,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "sp-production-user" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-scheduler" ]; then
-    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
-    cp $FACILIO_HOME/deployment-files/awsprops-syd-scheduler.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
-    cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
-    cp $FACILIO_HOME/deployment-files/log4j-syd-scheduler.properties $CLASSES_DIR/log4j.properties
-    cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
-    cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
-    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
-fi
-
-if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user" ]; then
-    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
-    cp $FACILIO_HOME/deployment-files/awsprops-syd-user.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
-    cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
-    cp $FACILIO_HOME/deployment-files/log4j-syd-user.properties $CLASSES_DIR/log4j.properties
-    cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
-    cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
-    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
-fi
-
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-kafka" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-syd-kafka.properties $CONF_DIR/awsprops.properties
@@ -212,6 +190,17 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user-critical" ]; then
    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
        cp $FACILIO_HOME/deployment-files/awsprops-syd-user.properties $CONF_DIR/awsprops.properties
+       cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
+       cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
+       cp $FACILIO_HOME/deployment-files/log4j-syd-user.properties $CLASSES_DIR/log4j.properties
+       cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
+       cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
+       echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "production-user-int" ]; then
+   echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+       cp $FACILIO_HOME/deployment-files/awsprops-syd-user-int.properties $CONF_DIR/awsprops.properties
        cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
        cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
        cp $FACILIO_HOME/deployment-files/log4j-syd-user.properties $CLASSES_DIR/log4j.properties

@@ -83,10 +83,6 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler-app.properties
     destination: /home/facilio/deployment-files/
-  - source: /log4j-syd-user.properties
-    destination: /home/facilio/deployment-files/
-  - source: /log4j-syd-scheduler.properties
-    destination: /home/facilio/deployment-files/
   - source: /log4j-syd-user-critical.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-scheduler-critical.properties
@@ -125,13 +121,11 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-user.properties
     destination: /home/facilio/deployment-files/
-  - source: /awsprops-syd-scheduler.properties
-    destination: /home/facilio/deployment-files/
-  - source: /awsprops-syd-user.properties
-    destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler-critical.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user-critical.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-user-int.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ff-scheduler.properties
     destination: /home/facilio/deployment-files/    
