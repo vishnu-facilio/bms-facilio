@@ -95,6 +95,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        tab1.addSection(tab1Sec4);
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
+			if (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 				addSafetyPlanTab(page);
@@ -113,6 +114,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 			    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
 			    tab2Sec1.addWidget(activityWidget);
 
+			}
 		}
 
         return page;
@@ -141,6 +143,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3,module, building);
+		if (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			addSafetyPlanTab(page);
@@ -157,6 +160,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.BUILDING_ACTIVITY);
 	    tab2Sec1.addWidget(activityWidget);
+		}
 	    
 		return page;
 	}
@@ -185,7 +189,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, module, floor);
-
+		if (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			addSafetyPlanTab(page);
 		}
@@ -201,6 +205,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.FLOOR_ACTIVITY);
 	    tab3Sec1.addWidget(activityWidget);
+		}
 		return page;
 	}
 
@@ -228,6 +233,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, module, space);
 		tab1.addSection(tab1Sec3);
+		if (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 
 		Tab tab2 = page.new Tab("Related");
 		page.addTab(tab2);
@@ -269,6 +275,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SPACE_ACTIVITY);
 	    tab3Sec1.addWidget(activityWidget);
+		}
 
 		return page;
 	}

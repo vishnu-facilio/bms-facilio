@@ -37,8 +37,10 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-
-		if (requestFromMainApp()) {
+        if (AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
+            addTasksTab(page);
+        }
+         if (requestFromMainApp()) {
 
 			Tab relatedRecordsTab = page.new Tab("Related");
 			page.addTab(relatedRecordsTab);
@@ -61,13 +63,14 @@ public class TenantWorkRequestPageFactory extends PageFactory {
             Section tab1Sec3 = page.new Section();
             tab1.addSection(tab1Sec3);
             addCommentsAttachmentSubModuleGroup(tab1Sec3);
-
-            if (!(isATRE() && isTenantApp())) {
+             if (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
+                 if (!(isATRE() && isTenantApp())) {
                 Tab tab2 = page.new Tab("History");
                 page.addTab(tab2);
                 Section tab2Sec1 = page.new Section();
                 tab2.addSection(tab2Sec1);
                 addActivityWidget(tab2Sec1);
+                 }
             }
 
         }
@@ -125,6 +128,19 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 
 		return subModuleGroup;
 	}
+    private static void addTasksTab(Page page) {
+        Page.Tab tasksTab = page.new Tab("tasks");
+        page.addTab(tasksTab);
+
+        Page.Section tasksSection = page.new Section();
+        tasksTab.addSection(tasksSection);
+
+        // tasks monolith widget
+        PageWidget tasksMonolith = new PageWidget(PageWidget.WidgetType.TASKS_MONOLITH);
+        tasksMonolith.addToLayoutParams(tasksSection, 24, 18);
+        tasksMonolith.addToWidgetParams("hideBg", true);
+        tasksSection.addWidget(tasksMonolith);
+    }
 
 
 }

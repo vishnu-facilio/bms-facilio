@@ -16,6 +16,20 @@ import java.util.Arrays;
 public class NewSpaceManagementPageFactory extends PageFactory {
     public static Page getSitePage(SiteContext site, FacilioModule module) throws Exception {
         Page page = new Page();
+        if(AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)){
+            Page.Tab tab1 = page.new Tab("summary");
+            page.addTab(tab1);
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+            Page.Section tab1Sec1 = page.new Section();
+            tab1.addSection(tab1Sec1);
+            addSecondaryDetailsWidget(tab1Sec1);
+            addBuildingsWidget(site.getId(), tab1Sec1,modBean);
+            addSpacesWidget(tab1Sec1,modBean);
+            addCommonSubModuleWidget(tab1Sec1, module, site);
+
+        }
+        else{
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -61,6 +75,7 @@ public class NewSpaceManagementPageFactory extends PageFactory {
         activityWidget.addToLayoutParams(tab5Sec1, 24, 3);
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
         tab5Sec1.addWidget(activityWidget);
+        }
 
         return page;
     }
