@@ -46,17 +46,16 @@ public class JobPlanPageFactory extends PageFactory {
         tab1Sec2.addWidget(taskWidget);
 
         //Inventory tab
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY) ) {
-            addInventoryTab(page);
-        }
+//        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY) ) {
+//            addInventoryTab(page);
+//        }
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
         //Plans Tab
-        // temporarily hiding plans tab
-//        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
-//                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
-//            addPlansTab(page);
-//        }
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)
+                && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY)) {
+            addPlansTab(page);
+        }
         
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
@@ -153,7 +152,7 @@ public class JobPlanPageFactory extends PageFactory {
 
 
         PageWidget plansPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
-        plansPageWidgetGroup.addToLayoutParams(plansSection, 24, 12);
+        plansPageWidgetGroup.addToLayoutParams(plansSection, 24, 10);
         plansPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         plansSection.addWidget(plansPageWidgetGroup);
 

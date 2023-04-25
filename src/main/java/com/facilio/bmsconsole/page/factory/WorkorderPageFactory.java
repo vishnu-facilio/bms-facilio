@@ -522,7 +522,7 @@ public class WorkorderPageFactory extends PageFactory {
         plans.addSection(planSection);
 
         PageWidget plansWidget = new PageWidget(PageWidget.WidgetType.PLANS);
-        plansWidget.addToLayoutParams(planSection, 24, 12);
+        plansWidget.addToLayoutParams(planSection, 24, 10);
         JSONObject lineitemJson = new JSONObject();
         lineitemJson.put("summaryWidgetName", "plansWidget");
         plansWidget.setWidgetParams(lineitemJson);

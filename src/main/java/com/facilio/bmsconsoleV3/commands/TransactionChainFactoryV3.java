@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemToolTransactionsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
@@ -57,6 +58,7 @@ import com.facilio.permission.commands.AddOrUpdatePermissionSet;
 import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
+import com.facilio.readingrule.faulttowo.command.FaultToWorkorderStatusChangeCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -2033,6 +2035,24 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new LoadItemTypesExtraFields());
         return chain;
     }
+    public static FacilioChain getBeforeFetchJobPlanItemsListChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new LoadJobPlanItemsLookupCommandV3());
+        c.addCommand(new LoadJobPlanItemsExtraFieldsCommandV3());
+        return c;
+    }
+    public static FacilioChain getBeforeFetchJobPlanToolsListChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new LoadJobPlanToolsLookupCommandV3());
+        c.addCommand(new LoadJobPlanToolsExtraFieldsCommandV3());
+        return c;
+    }
+    public static FacilioChain getBeforeFetchJobPlanServicesListChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new LoadJobPlanServicesCommandV3());
+        c.addCommand(new LoadJobPlanServicesExtraFieldsCommandV3());
+        return c;
+    }
     public static FacilioChain getBeforeFetchToolTypesListChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadToolTypesLookUpCommandV3());
@@ -2664,36 +2684,18 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getUnsavedJobPlanItemsListChainV3() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new JobPlanItemsUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return chain;
-    }
-
     public static FacilioChain getUnsavedSparePartsSelectionChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SparePartsSelectionCommand());
         return chain;
     }
 
-    public static FacilioChain getUnsavedJobPlanToolsListChainV3() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new JobPlanToolsUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return chain;
-    }
     public static FacilioChain getJobPlanLabourChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new JobPlanPlannedLabourCommandV3());
         return c;
     }
-    public static FacilioChain getUnsavedJobPlanServicesListChainV3() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new JobPlanServicesUnsavedListCommandV3());
-        chain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return chain;
-    }
+
     //    public static FacilioChain getUnReserveItemsChainV3(){
 //        FacilioChain c = getDefaultChain();
 //        c.addCommand(new UnReserveItemsCommandV3());

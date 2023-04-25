@@ -1476,30 +1476,6 @@
         <action name="getGroupAndVersion" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="getJobPlanGroupAndVersion"></action>
         <action name="getJobPlanId" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="getJobPlanIdFromGroupAndVersion"></action>
     </package>
-    <package name="jobPlanItems" namespace="/api/v3/jobPlanItems"
-             extends="v3Api">
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.JobPlanItemsAction"
-                method="list">
-        </action>
-    </package>
-
-    <package name="jobPlanTools" namespace="/api/v3/jobPlanTools"
-             extends="v3Api">
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.JobPlanToolsAction"
-                method="list">
-        </action>
-    </package>
-
-    <package name="jobPlanServices" namespace="/api/v3/jobPlanServices"
-             extends="v3Api">
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.JobPlanServicesAction"
-                method="list">
-        </action>
-    </package>
-
     <package name="jobPlanLabours" namespace="/api/v3/jobPlanLabours" extends="v3Api">
         <action name="plans" class="com.facilio.bmsconsoleV3.actions.FetchJobPlanLabourAction" method="jobPlanLabour">
         </action>
