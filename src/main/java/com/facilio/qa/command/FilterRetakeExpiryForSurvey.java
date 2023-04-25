@@ -14,7 +14,6 @@ public class FilterRetakeExpiryForSurvey extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<Object>> queryParameters = (Map<String, List<Object>>) context.get(Constants.QUERY_PARAMS);
-        Long count = (Long) context.get(Constants.COUNT);
         String moduleName = Constants.getModuleName(context);
 
         List<Object> viewAllSurveyParams = queryParameters.getOrDefault("isViewAllSurvey",null);
@@ -33,8 +32,8 @@ public class FilterRetakeExpiryForSurvey extends FacilioCommand {
                             (response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED && !response.getIsRetakeAllowed())
                         )
                     );
+                    context.put(Constants.COUNT,Long.valueOf(responseContext.size()));
                 }
-                count = Long.valueOf(responseContext.size());
             }
         }
         return false;
