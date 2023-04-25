@@ -9186,6 +9186,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("locationFieldId","LOCATION_FIELD_ID",stageRuleModule));
         list.add(getNumberField("radius","RADIUS",stageRuleModule));
         list.add(getNumberField("locationLookupFieldId","LOCATION_LOOKUP_FIELD_ID",stageRuleModule));
+        list.add(getField("isOffline","IS_OFFLINE",stageRuleModule,FieldType.BOOLEAN));
         return list;
     }
 

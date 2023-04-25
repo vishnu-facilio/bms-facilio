@@ -840,6 +840,7 @@ public class FacilioConstants {
 		public static final String KPI_CATEGORY = "kpiCategory";
 		public static final String FORK_POST_READING_PROCESSING = "forkPostReadingProcessing";
 		public static final String TIMELOGS = "Timelogs";
+		public static final String OFFLINE_STATE_TRANSITION = "offlineStateTransition";
 
 		public static final String DASHBOARD = "dashboard";
 		public static final String IS_FROM_REPORT = "isFromReport";

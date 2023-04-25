@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.fw.BeanFactory;
@@ -23,18 +24,23 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 		if (stateTransition != null) {
 			FacilioChain chain;
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			if(stateTransition.getQrFieldId() > 0){
+
+			if(stateTransition.isOffline() != null && stateTransition.isOffline()){
+				stateTransition = StateFlowRulesAPI.resetStateTransitionBeforeAndDuringActions(stateTransition);
+			}
+
+			if (stateTransition.getQrFieldId() > 0) {
 				FacilioField qrField = modBean.getField(stateTransition.getQrFieldId());
-				validateQrField(modBean,stateTransition.getModuleName(),qrField,stateTransition);
+				validateQrField(modBean, stateTransition.getModuleName(), qrField, stateTransition);
 				stateTransition.setQrField(qrField);
 			}
 
-			if(stateTransition.getLocationFieldId() > 0){
+			if (stateTransition.getLocationFieldId() > 0) {
 				FacilioField locationField = modBean.getField(stateTransition.getLocationFieldId());
-				validateLocationField(locationField,modBean,stateTransition);
+				validateLocationField(locationField, modBean, stateTransition);
 				stateTransition.setLocationField(locationField);
 
-				FacilioUtil.throwIllegalArgumentException(stateTransition.getRadius() == null,"radius cannot be empty");
+				FacilioUtil.throwIllegalArgumentException(stateTransition.getRadius() == null, "radius cannot be empty");
 			}
 
 			if (stateTransition.getId() < 0) {

@@ -703,6 +703,16 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
 	</package>
 
+
+	<package name="statetransition" extends="v2Api" namespace="/api/v2/module">
+		<action name="*/*/statetransition/getOfflineStateTransition"
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="getOfflineStateTransition"
+		>
+			<param name="moduleName">{1}</param>
+			<param name="id">{2}</param>
+		</action>
+	</package>
+
 	<package name="auditLogs" extends="v2Api" namespace="/api/v2/auditLogs">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.AuditLogAction" method="getAuditLogs">

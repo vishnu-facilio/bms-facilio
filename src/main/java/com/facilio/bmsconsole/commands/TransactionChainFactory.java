@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
+import com.facilio.bmsconsole.workflow.rule.GetOfflineStateTransitionCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
@@ -3198,6 +3199,12 @@ public class TransactionChainFactory {
 			c.addCommand(new GetMatchedConfirmationDialogCommand());
 			return c;
 		}
+
+	public static FacilioChain getOfflineStateTransitionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetOfflineStateTransitionCommand());
+		return c;
+	}
 
 		public static FacilioChain getAddOrUpdateStateFlowTransition() {
 			FacilioChain c = getDefaultChain();

@@ -55,9 +55,45 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	@Getter@Setter
 	public long locationLookupFieldId = -1;
 
+	public Boolean getIsOffline() {
+		return isOffline;
+	}
+	public void setIsOffline(Boolean offline) {
+		this.isOffline = offline;
+	}
+	public Boolean isOffline(){
+		if(isOffline != null){
+			return isOffline;
+		}
+		return false;
+	}
+	public Boolean isOffline;
+
+	@Override
+	public boolean evaluateSite (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if(isOffline != null && isOffline){
+			return true;
+		}
+
+		return super.evaluateSite(moduleName, record, placeHolders, context);
+	}
+
+	@Override
+	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if(isOffline != null && isOffline){
+			return true;
+		}
+
+		return super.evaluateCriteria(moduleName, record, placeHolders, context);
+	}
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 								FacilioContext context) throws Exception {
+		if(isOffline != null && isOffline){
+			return true;
+		}
+
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 		return evaluateStateFlow(moduleRecord.getStateFlowId(), moduleRecord.getModuleState(), moduleName, record, placeHolders, context);
 	}

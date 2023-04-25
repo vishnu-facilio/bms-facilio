@@ -1911,5 +1911,6 @@
     <request path="/api/orgLogo">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v2/module/:moduleName/:id/statetransition/getOfflineStateTransition" method="GET" />
 
 </config>

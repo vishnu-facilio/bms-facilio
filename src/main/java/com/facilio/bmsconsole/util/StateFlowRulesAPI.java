@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.TimelogContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
@@ -806,5 +807,21 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			scheduledFieldChainContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleContext);
 			scheduledFieldChain.execute();
 		}
+	}
+
+	public static StateflowTransitionContext resetStateTransitionBeforeAndDuringActions(StateflowTransitionContext stateTransition){
+		stateTransition.setQrLookupFieldId(null);
+		stateTransition.setQrFieldId(-99);
+		stateTransition.setLocationFieldId(-99);
+		stateTransition.setFormId(-99);
+		stateTransition.setCriteriaId(-99);
+		stateTransition.setCriteria(null);
+		stateTransition.setValidations(null);
+		stateTransition.setConfirmationDialogs(null);
+		stateTransition.setApprovers(new SharingContext());
+		stateTransition.setFormModuleName(null);
+		stateTransition.setForm(null);
+
+		return stateTransition;
 	}
 }
