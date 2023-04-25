@@ -203,6 +203,11 @@ public class ConnectedAppAction extends FacilioAction {
 			}
 		}
 		if(connectedAppWidget.getCriteria() != null){
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(connectedAppWidget.getEntityId());
+			if(module!=null){
+				CriteriaAPI.updateConditionField(module.getName(),connectedAppWidget.getCriteria());
+			}
 			long criteriaId = CriteriaAPI.addCriteria(connectedAppWidget.getCriteria());
 			connectedAppWidget.setCriteriaId(criteriaId);
 		}
