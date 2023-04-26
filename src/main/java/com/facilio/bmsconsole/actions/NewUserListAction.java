@@ -64,4 +64,35 @@ public class NewUserListAction extends FacilioAction{
         return SUCCESS;
         }
 
+    public String newUserListSetUpApi() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getUserList();
+        FacilioContext context = chain.getContext();
+        setSetup(SetupLayout.getUsersListLayout());
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", page);
+        pagination.put("perPage", perPage);
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.DEFAULT_IDS,defaultIds);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,"people");
+        if(getSearch() != null)
+        {
+            context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        }
+        context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS,inviteAcceptStatus);
+        if(getFilters() != null)
+        {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, json);
+        }
+
+        //If appId not set then showing only service portal user list
+        if(appId <= 0){
+            appId = AccountUtil.getCurrentApp().getId();
+        }
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        chain.execute();
+        setResult("users",context.get(FacilioConstants.ContextNames.USERS));
+        return SUCCESS;
+    }
 }

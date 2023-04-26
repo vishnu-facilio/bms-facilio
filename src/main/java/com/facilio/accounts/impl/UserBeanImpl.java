@@ -140,8 +140,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	
-	
-	
+
 	@Override
 	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded, boolean isSelfSignup) throws Exception {
 		try {
@@ -157,6 +156,9 @@ public class UserBeanImpl implements UserBean {
 				if(ApplicationApi.checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) == null) {
 					createUserEntry(orgId, user, isSelfSignup, isEmailVerificationNeeded);
 				}
+				else if(!user.isUserVerified()){
+					throw new AccountException(ErrorCode.USER_ALREADY_INVITED, "This user has already been invited");
+				}
 				else {
 					throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_APP, "User already exists in app");
 				}
@@ -165,7 +167,9 @@ public class UserBeanImpl implements UserBean {
 		catch(Exception e) {
 			if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
 				throw e;
-			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof AccountException) {
+			}else if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_INVITED) {
+				throw e;
+			}else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof AccountException) {
 				throw (AccountException) ((InvocationTargetException) e).getTargetException();
 			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof IAMUserException) {
 				throw (IAMUserException) ((InvocationTargetException) e).getTargetException();

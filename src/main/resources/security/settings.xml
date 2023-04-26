@@ -1248,6 +1248,14 @@
             <property name="filters" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/newUserList">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
     <request path="/api/v2/forms/formSharing/addOrUpdate">
         <requestbody type="object">
             <property name="form" type="object">
@@ -1852,6 +1860,9 @@
     <request path="/api/v3/jobPlanLabours/plans">
     <requestbody type="object">
     </requestbody>
+    </request>
+    <request path="/api/orgLogo">
+        <requestbody type="object"></requestbody>
     </request>
 
 </config>

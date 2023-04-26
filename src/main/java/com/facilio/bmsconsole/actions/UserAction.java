@@ -449,6 +449,8 @@ public class UserAction extends FacilioAction {
 					throw new IllegalArgumentException("This user already exists in the app of your organization.");
 				} else if (ae.getErrorCode().equals(AccountException.ErrorCode.DUPLICATE_USER)) {
 					throw new IllegalArgumentException("User already exists in app.");
+				}else if(ae.getErrorCode().equals(AccountException.ErrorCode.USER_ALREADY_INVITED)){
+					throw new IllegalArgumentException("This user has already been invited");
 				}
 			} else if (e.getCause() != null && e.getCause() instanceof IAMUserException) {
 				IAMUserException ame = (IAMUserException) e.getCause();

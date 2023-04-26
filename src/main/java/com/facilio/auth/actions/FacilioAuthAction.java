@@ -1,15 +1,13 @@
 package com.facilio.auth.actions;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +35,11 @@ import com.google.common.base.Throwables;
 import lombok.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -2933,6 +2936,33 @@ public class FacilioAuthAction extends FacilioAction {
 		setResult("id",orgId);
 		return SUCCESS;
 	}
+
+	public String getLogo() throws Exception {
+		String domain = getDomain();
+		Organization org = IAMOrgUtil.getOrg(domain);
+		String logoURL = null;
+		if (org != null) {
+			logoURL = org.getLogoUrl();
+			if(logoURL != null && !logoURL.isEmpty()){
+				CloseableHttpClient c = HttpClients.createDefault();
+				try{
+					CloseableHttpResponse resp = c.execute(new HttpGet(logoURL));
+					HttpEntity entity = resp.getEntity();
+					setContentType("application/octet-image");
+					if(entity != null){
+						resultStream = entity.getContent();
+					}
+				} catch (Exception e){
+					throw e;
+				}
+				return SUCCESS;
+			}
+		}
+		return ERROR;
+	}
+	@Getter
+	@Setter
+	private InputStream resultStream;
 
 	public String fetchPrivacyPolicy() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();

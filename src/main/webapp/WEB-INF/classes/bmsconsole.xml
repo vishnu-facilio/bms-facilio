@@ -342,6 +342,15 @@
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
+		<action name="orgLogo" class="com.facilio.auth.actions.FacilioAuthAction" method="getLogo">
+			<param name="auth">false</param>
+			<result name="success" type="stream">
+					<param name="inputName">resultStream</param>
+			</result>
+			<result name="error" type="httpheader">
+				<param name="status">404</param>
+			</result>
+		</action>
 	</package>
 	<package name="tvApi" namespace="/api/tv" extends="homeApi">
 		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">

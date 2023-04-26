@@ -287,54 +287,56 @@ public class OrgBeanImpl implements OrgBean {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			AppDomain appDomain = null;
-			if(appId > 0) {
-				appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
-			}
-			RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
-
-			List<Role> roles = roleBean.getRolesForApps(appId > 0 ? Collections.singletonList(appId) : null);
-
-			Map<Long, Role> roleMap = new HashMap<>();
-			for(Role role : roles){
-				roleMap.put(role.getId(), role);
-			}
-
-			Map<Long, ScopingContext> scopingMap = new HashMap<>();
-			if(CollectionUtils.isNotEmpty(scopingList)) {
-				for (ScopingContext scoping : scopingList) {
-					scopingMap.put(scoping.getId(), scoping);
+			if(props != null && !props.isEmpty()){
+				if(appId > 0) {
+					appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
 				}
-			}
+				RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
 
-			Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
-			Map<Long, List<Long>> accessibleGroupListMap = UserBeanImpl.getAllUsersAccessibleGroupList();
+				List<Role> roles = roleBean.getRolesForApps(appId > 0 ? Collections.singletonList(appId) : null);
 
-			for(Map<String, Object> prop : props) {
-				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
-				user.setId((long)prop.get("ouid"));
-				if(prop.get("applicationId") != null){
-					if(appDomain != null) {
-						user.setAppType(appDomain.getAppType());
-						user.setAppDomain(appDomain);
-						user.setAppType(appDomain.getAppType());
-					}
-					user.setApplicationId((long)prop.get("applicationId"));
-					if(user.getScopingId() != null && user.getScopingId() > 0){
-						user.setScoping(scopingMap.get(user.getScopingId()));
+				Map<Long, Role> roleMap = new HashMap<>();
+				for(Role role : roles){
+					roleMap.put(role.getId(), role);
+				}
+
+				Map<Long, ScopingContext> scopingMap = new HashMap<>();
+				if(CollectionUtils.isNotEmpty(scopingList)) {
+					for (ScopingContext scoping : scopingList) {
+						scopingMap.put(scoping.getId(), scoping);
 					}
 				}
-				if(user.getRoleId() > 0){
-					user.setRole(roleMap.get(user.getRoleId()));
+
+				Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
+				Map<Long, List<Long>> accessibleGroupListMap = UserBeanImpl.getAllUsersAccessibleGroupList();
+
+				for(Map<String, Object> prop : props) {
+					User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+					user.setId((long)prop.get("ouid"));
+					if(prop.get("applicationId") != null){
+						if(appDomain != null) {
+							user.setAppType(appDomain.getAppType());
+							user.setAppDomain(appDomain);
+							user.setAppType(appDomain.getAppType());
+						}
+						user.setApplicationId((long)prop.get("applicationId"));
+						if(user.getScopingId() != null && user.getScopingId() > 0){
+							user.setScoping(scopingMap.get(user.getScopingId()));
+						}
+					}
+					if(user.getRoleId() > 0){
+						user.setRole(roleMap.get(user.getRoleId()));
+					}
+					if(accessibleSpaceListMap != null) {
+						user.setAccessibleSpace(accessibleSpaceListMap.get(user.getOuid()));
+					}
+					if(accessibleGroupListMap != null) {
+						user.setGroups(accessibleGroupListMap.get(user.getOuid()));
+					}
+					users.add(user);
 				}
-				if(accessibleSpaceListMap != null) {
-					user.setAccessibleSpace(accessibleSpaceListMap.get(user.getOuid()));
-				}
-				if(accessibleGroupListMap != null) {
-					user.setGroups(accessibleGroupListMap.get(user.getOuid()));
-				}
-				users.add(user);
+				return users;
 			}
-			return users;
 		}
 		return null;
 	}

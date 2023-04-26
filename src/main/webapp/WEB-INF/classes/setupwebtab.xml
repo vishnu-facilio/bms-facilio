@@ -316,4 +316,11 @@
             <param name="setupTab">FAULT_IMPACT_TEMPLATE</param>
         </action>
     </package>
+    <package name="userListApi" namespace="/api/v1/setup" extends="v2Api">
+        <action name="newUserList" class="com.facilio.bmsconsole.actions.NewUserListAction" method="newUserListSetUpApi">
+            <param name="moduleName">setup</param>
+            <param name="cache">org</param>
+            <param name="permission">USER_MANAGEMENT,REQUESTERS</param>
+        </action>
+    </package>
 </struts>
