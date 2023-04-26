@@ -33,6 +33,7 @@
         boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
         String googleAuthClientId = com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
         String datadogClientID = com.facilio.aws.util.FacilioProperties.getDatadogClientID();
+        String identityServerURL = com.facilio.aws.util.FacilioProperties.getIdentityServerURL();
         boolean isGoogleAnalytics = false;
         boolean isProductionEnabled = FacilioProperties.isProduction();
         boolean isOnpremise = FacilioProperties.isOnpremise();
@@ -137,6 +138,7 @@
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);
         placeHolderParams.put("dataDogClientId", datadogClientID);
+        placeHolderParams.put("identityServerURL", identityServerURL);
         placeHolderParams.put("isGoogleAnalytics", Boolean.toString(isGoogleAnalytics));
 
 

@@ -142,6 +142,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             if (application != null) {
                                 appId = application.getId();
                             } else {
+                                String orgInitStatus = AccountUtil.handleOrgSignup(iamAccount.getOrg(), iamAccount.getUser());
+                                if (orgInitStatus != null) {
+                                    LOGGER.warn("Org Signup Chain not completed yet, please wait...");
+                                    return orgInitStatus;
+                                }
                                 return ErrorUtil.sendError(ErrorUtil.Error.PAGE_NOT_FOUND);
                             }
                         }
@@ -175,6 +180,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     if (relaxedAccess) {
                         user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), null);
                         if (user == null) {
+                            // handling for org which signed up using new identity service
+                            String orgInitStatus = AccountUtil.handleOrgSignup(iamAccount.getOrg(), iamAccount.getUser());
+                            if (orgInitStatus != null) {
+                                LOGGER.warn("Org Signup Chain not completed yet, please wait...");
+                                return orgInitStatus;
+                            }
                             return logAndReturn("unauthorized", null, startTime, request);
                         }
                         //fetching permissible  apps for this user corresponding to this domain
@@ -244,7 +255,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
         HttpServletResponse response = ServletActionContext.getResponse();
         try {
             Account currentAccount = AccountUtil.getCurrentAccount();
-            if (currentAccount != null) {
+            if (currentAccount != null && request.getRequestURI().equalsIgnoreCase("/api/v2/orgsetup")) {
+                // dont remove this if check, this is for bypassing site level scope handling
+                LOGGER.info("/api/v2/orgsetup api called");
+            }
+            else if (currentAccount != null) {
             	String shouldApplySwitchScope = ActionContext.getContext().getParameters().get("shouldApplySwitchScope").getValue();
             	if(StringUtils.isEmpty(shouldApplySwitchScope) || shouldApplySwitchScope.equals("true")) {
             		AccountUtil.setShouldApplySwitchScope(true);

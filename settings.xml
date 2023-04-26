@@ -84,5 +84,15 @@
             <username>AKIAZXPQEUDBT7OV3CEN</username>
             <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
         </server>
+        <server>
+            <id>facilio-identity-client-s3-release-repo</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
+        <server>
+            <id>facilio-identity-client-s3-snapshot-repo</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
     </servers>
 </settings>

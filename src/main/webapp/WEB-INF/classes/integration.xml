@@ -59,6 +59,9 @@
 			<result name="resourcenotfound" type="httpheader">
 				<param name="status">404</param>
 			</result>
+			<result name="orgsetup" type="httpheader">
+				<param name="status">202</param>
+			</result>
 			<result name="sessionexpired" type="httpheader">
 				<param name="status">440</param>
 			</result>

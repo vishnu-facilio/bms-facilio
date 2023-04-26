@@ -98,6 +98,14 @@
             <id>facilio-scheduler-s3-snapshot-repo</id>
             <url>s3://repo.facilio/facilio-scheduler/snapshot</url>
         </repository>
+        <repository>
+            <id>facilio-identity-client-s3-release-repo</id>
+            <url>s3://repo.facilio/facilio-identity-client/release/</url>
+        </repository>
+        <repository>
+            <id>facilio-identity-client-s3-snapshot-repo</id>
+            <url>s3://repo.facilio/facilio-identity-client/snapshot/</url>
+        </repository>
     </repositories>
     <dependencyManagement>
         <dependencies>
@@ -191,6 +199,12 @@
             <groupId>com.facilio.security</groupId>
             <artifactId>security</artifactId>
             <version>2.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.facilio</groupId>
+            <artifactId>identity-client</artifactId>
+            <version>1.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>

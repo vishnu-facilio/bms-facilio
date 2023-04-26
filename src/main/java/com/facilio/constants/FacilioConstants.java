@@ -2250,6 +2250,8 @@ public class FacilioConstants {
 		public static final String TRANSACTION = "transaction";
 
 		public static final String ORGID = "orgId";
+		public static final String IAM_USER_ID = "iamUserId";
+		public static final String ORG_INITIALIZATION_STATUS = "OrgInitializationStatus";
 		public static final String TIME_ZONE = "timezone";
 		public static final String WEATHER_STATION_ID = "weatherStationId";
 

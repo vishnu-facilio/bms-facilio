@@ -27,6 +27,10 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().rollbackSignUpOrg(orgId, superAdminId));
 	}
 
+	public static boolean rollBackSignedUpOrgv2(long orgId, long superAdminId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().rollbackSignUpOrgv2(orgId, superAdminId));
+	}
+
 	public static boolean updateOrg(long orgId, Organization org) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().updateOrgv2(orgId, org));
 	}

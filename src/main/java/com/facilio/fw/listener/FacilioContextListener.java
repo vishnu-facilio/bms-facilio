@@ -32,6 +32,7 @@ import com.facilio.client.app.util.ClientAppUtil;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.validators.*;
 import com.facilio.fw.validators.Date;
+import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.security.requestvalidator.type.TypeFactory;
@@ -155,6 +156,8 @@ public class FacilioContextListener implements ServletContextListener {
 //			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();
 
+			IdentityClient.init(FacilioProperties.getIdentityServerURL(), FacilioProperties.getRegion());
+			
 			/*HashMap customDomains = getCustomDomains();
 			if(customDomains!=null) {
 				event.getServletContext().setAttribute("custom domains", customDomains);

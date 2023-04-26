@@ -32,6 +32,9 @@
 			<result name="resourcenotfound" type="httpheader">
 				<param name="status">404</param>
 			</result>
+			<result name="orgsetup" type="httpheader">
+				<param name="status">202</param>
+			</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, correctiveAction, isErrorGeneralized,isVisible, errorData, stackTrace</param>
@@ -97,6 +100,9 @@
 		<default-interceptor-ref
 			name="defaultInterceptor" />
 
+		<action name="orgsetup" class="com.facilio.auth.actions.FacilioAuthAction" method="initOrgSetup">
+			<param name="authorise">false</param>
+		</action>
 		<action name="account"
 			class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">

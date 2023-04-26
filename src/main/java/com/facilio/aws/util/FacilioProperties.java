@@ -135,6 +135,8 @@ public class FacilioProperties {
     private static String iamAddDCUserUrl;
     private static String iamregion;
 
+    private static String identityServerURL;
+
     private static String passwordHashingFunction;
 
     private static String incomingEmailS3Bucket;
@@ -347,6 +349,8 @@ public class FacilioProperties {
             secretManager = PROPERTIES.getProperty("secretmanger");
             iamregion = PROPERTIES.getProperty("iamregion");
 
+            identityServerURL = PROPERTIES.getProperty("identity.service.url");
+
             cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
 
             service = PROPERTIES.getProperty("service");
@@ -462,6 +466,8 @@ public class FacilioProperties {
         }
 
     }
+
+    public static String getIdentityServerURL() { return identityServerURL; }
 
     public static String getIamregion() { return iamregion; }
 

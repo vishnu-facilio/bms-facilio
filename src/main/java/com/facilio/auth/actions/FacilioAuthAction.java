@@ -8,6 +8,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.instant.jobs.OrgSignupJob;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.iam.accounts.context.SecurityPolicy;
@@ -3030,5 +3033,31 @@ public class FacilioAuthAction extends FacilioAction {
 		} else if (appdomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
 			setLookUpType("vendor");
 		}
+	}
+
+	public String initOrgSetup() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		boolean retry = "true".equalsIgnoreCase(request.getParameter("retry"));
+		String orgInitStatus = null;
+		try {
+			orgInitStatus = CommonCommandUtil.getOrgInfo(FacilioConstants.ContextNames.ORG_INITIALIZATION_STATUS, "");
+			if (StringUtils.isEmpty(orgInitStatus) || ("failed".equalsIgnoreCase(orgInitStatus) && retry)) {
+				try {
+					AccountUtil.getFeatureLicense();
+				} catch (Exception exception) {
+					executor.execute(new OrgSignupJob(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getUid(), retry));
+					orgInitStatus = "scheduled";
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Exception in org init. ", e);
+			executor.shutdownNow();
+		}
+		finally {
+			executor.shutdown();
+		}
+		setResult("status", orgInitStatus);
+		return SUCCESS;
 	}
 }

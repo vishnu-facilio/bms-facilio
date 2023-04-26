@@ -1,3 +1,4 @@
+/api/v2/orgsetup
 /auth/api/dclookup
 /auth/api/verifyEmailRegistration
 /auth/emailregistration

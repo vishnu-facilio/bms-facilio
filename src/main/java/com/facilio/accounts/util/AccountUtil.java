@@ -1,12 +1,10 @@
 package com.facilio.accounts.util;
 
 import com.facilio.accounts.bean.*;
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.UserScopeBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
@@ -848,5 +846,28 @@ public class AccountUtil {
 		}
 			return hostname;
 	}
-	
+
+	public static String handleOrgSignup(Organization org, IAMUser iamUser) throws Exception {
+		if (org == null || iamUser == null) {
+			return null;
+		}
+		LOGGER.warn("handleOrgSignup >> org created time: "+org.getCreatedTime());
+		if (org.getCreatedTime() > 1683026905073l) { // after identity release date only, it will check whether you need to run the org signup chain
+			String orgInitStatus = CommonCommandUtil.getOrgInfo(FacilioConstants.ContextNames.ORG_INITIALIZATION_STATUS, "");
+			if (StringUtils.isEmpty(orgInitStatus)) {
+				try {
+					AccountUtil.getFeatureLicense();
+				} catch (Exception exception) {
+					// check if the org has feature license entry. if it throws exception, the org signup chain not invoked yet
+					LOGGER.warn("No feature license entry for this org, so returning org signup status as scheduled.");
+					orgInitStatus = "scheduled";
+				}
+			}
+			if (!"completed".equalsIgnoreCase(orgInitStatus)) {
+				// org signup chain not yet completed
+				return "orgsetup";
+			}
+		}
+		return null;
+	}
 }

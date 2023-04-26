@@ -39,6 +39,9 @@
 			<result name="usernotinapp" type="httpheader">
 				<param name="status">409</param>
 			</result>
+			<result name="orgsetup" type="httpheader">
+				<param name="status">202</param>
+			</result>
 			<result name="sessionexpired" type="httpheader">
 				<param name="status">440</param>
 			</result>

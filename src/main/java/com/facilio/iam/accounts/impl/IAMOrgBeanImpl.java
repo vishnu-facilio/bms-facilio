@@ -360,6 +360,13 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean rollbackSignUpOrgv2(long orgId, long superAdminUserId) throws Exception {
+		// TODO Auto-generated method stub
+		IAMUtil.getUserBean().deleteDefaultAppDomains(orgId);
+		return true;
+	}
 	
 	private boolean deleteSignedUpOrgv2(long orgId) throws Exception {
 		List<FacilioField> fields = new ArrayList<FacilioField>();
