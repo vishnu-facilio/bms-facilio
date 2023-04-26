@@ -365,7 +365,9 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 	Map<String, List<String>> moduleVsFields = ImmutableMap.<String, List<String>>builder()
 			.put(ContextNames.WORK_ORDER, Arrays.asList(new String[] {
-					"actualWorkEnd"
+					"actualWorkEnd",
+					"requester",
+					"createdBy"
 			}))
 			.put(ContextNames.TENANT_UNIT_SPACE, Arrays.asList(new String[] {
 					"site",
