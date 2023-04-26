@@ -362,7 +362,7 @@ public class JobPlanAPI {
 
     /**
      * Methods with {@link V3WorkOrderContext}
-     * @param workOrderContext 
+     * @param workOrderContext
      */
 
     public static Map<String, List<V3TaskContext>> getScopedTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest, V3WorkOrderContext workOrderContext) throws Exception {
@@ -517,5 +517,19 @@ public class JobPlanAPI {
                 .beanClass(JobPlanContext.class)
                 .andCondition(CriteriaAPI.getIdCondition(jobPlanId,module));
         return builder.getAsProps().get(0);
+    }
+    public static Long getJobPlanIdFromGroupAndVersion(long groupId, long version) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<JobPlanContext> builder = new SelectRecordsBuilder<JobPlanContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("group"),String.valueOf(groupId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlanVersion"),String.valueOf(version),NumberOperators.EQUALS));
+        return builder.fetchFirst().getId();
     }
 }

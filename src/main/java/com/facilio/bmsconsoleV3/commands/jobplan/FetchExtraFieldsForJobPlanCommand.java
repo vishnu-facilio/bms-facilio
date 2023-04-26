@@ -23,6 +23,10 @@ public class FetchExtraFieldsForJobPlanCommand extends FacilioCommand {
             List<FacilioField> extraFields = new ArrayList<>();
             FacilioField jpStatus = allFieldsAsMap.get("jpStatus");
             extraFields.add(jpStatus);
+            FacilioField version = allFieldsAsMap.get("jobPlanVersion");
+            extraFields.add(version);
+            FacilioField group = allFieldsAsMap.get("group");
+            extraFields.add(group);
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS, extraFields);
         }
         return false;

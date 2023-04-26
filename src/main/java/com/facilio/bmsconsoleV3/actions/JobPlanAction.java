@@ -32,6 +32,25 @@ public class JobPlanAction extends V3Action {
     public List<Long> getJobPlanIds(){
         return jobPlanIds;
     }
+    private long groupId;
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+    private long jobPlanVersion;
+
+    public long getJobPlanVersion() {
+        return jobPlanVersion;
+    }
+
+    public void setJobPlanVersion(long jobPlanVersion) {
+        this.jobPlanVersion = jobPlanVersion;
+    }
+
     public String reviseJobPlan() throws Exception{
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.JOB_PLAN.JOB_PLAN_ID,jobPlanId);
@@ -45,6 +64,8 @@ public class JobPlanAction extends V3Action {
             List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) recordMap.get(FacilioConstants.ContextNames.JOB_PLAN_LIST);
             if(jobPlanContextList != null && !jobPlanContextList.isEmpty()){
                 result.put(FacilioConstants.JOB_PLAN.JOB_PLAN_ID,jobPlanContextList.get(0).getId());
+                result.put("groupId",jobPlanContextList.get(0).getGroup().getId());
+                result.put("jobPlanVersion",jobPlanContextList.get(0).getJobPlanVersion());
             }
         }
         setData("result",result);
@@ -62,6 +83,7 @@ public class JobPlanAction extends V3Action {
             List<JobPlanContext> jobPlanContextList = (List<JobPlanContext>) recordMap.get(FacilioConstants.ContextNames.JOB_PLAN_LIST);
             if(jobPlanContextList != null && !jobPlanContextList.isEmpty()){
                 result.put("groupId",jobPlanContextList.get(0).getGroup().getId());
+                result.put("jobPlanVersion",jobPlanContextList.get(0).getJobPlanVersion());
             }
         }
         setData("result",result);
@@ -115,6 +137,13 @@ public class JobPlanAction extends V3Action {
         long id = jobPlanId;
         Map<String,Object> recordMap = JobPlanAPI.getJobPlanGroupAndVersion(jobPlanId);
         setData("result",recordMap);
+        return SUCCESS;
+    }
+    public String getJobPlanIdFromGroupAndVersion() throws Exception{
+        long group = groupId;
+        long vesrion = jobPlanVersion;
+        long jobPlanId = JobPlanAPI.getJobPlanIdFromGroupAndVersion(group,vesrion);
+        setData("result",jobPlanId);
         return SUCCESS;
     }
 }

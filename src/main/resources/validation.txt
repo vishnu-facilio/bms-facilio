@@ -2761,5 +2761,6 @@
 /api/v3/jobPlan/bulkPublish
 /api/v3/jobPlan/publish
 /api/v3/jobPlan/revise
+/api/v3/jobPlan/getJobPlanId
 /api/v3/jobPlan/getGroupAndVersion
 /api/v3/plannedmaintenance/deactivate
