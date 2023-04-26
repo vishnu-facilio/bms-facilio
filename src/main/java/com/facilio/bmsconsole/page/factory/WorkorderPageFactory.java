@@ -302,7 +302,7 @@ public class WorkorderPageFactory extends PageFactory {
 
 
         PageWidget actualsPageWidgetGroup = new PageWidget(PageWidget.WidgetType.GROUP);
-        actualsPageWidgetGroup.addToLayoutParams(actualsSection,18,10);
+        actualsPageWidgetGroup.addToLayoutParams(actualsSection,24,10);
         actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         actualsSection.addWidget(actualsPageWidgetGroup);
 
@@ -344,10 +344,6 @@ public class WorkorderPageFactory extends PageFactory {
             servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
             serviceWidget.setRelatedList(servicesRelatedList);
         }
-
-        PageWidget actualsCostWidget = new PageWidget(PageWidget.WidgetType.ACTUALS_COST);
-        actualsCostWidget.addToLayoutParams(actualsSection,6,8);
-        actualsSection.addWidget(actualsCostWidget);
     }
 
     private static void addFailureReportTab(Page page){
