@@ -6073,6 +6073,8 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
+
 
 		return c;
 	}
@@ -6084,6 +6086,8 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
+
 
 		return c;
 	}

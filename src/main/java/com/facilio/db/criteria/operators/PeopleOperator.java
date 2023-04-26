@@ -1,13 +1,14 @@
 package com.facilio.db.criteria.operators;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.util.LookupCriteriaUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -18,8 +19,10 @@ import lombok.extern.log4j.Log4j;
 import org.apache.log4j.LogManager;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.Logger;
+import com.facilio.db.criteria.operators.NumberOperators;
 
 import java.util.List;
+import java.util.Map;
 
 @Log4j
 public enum PeopleOperator implements Operator<String> {
@@ -35,6 +38,39 @@ public enum PeopleOperator implements Operator<String> {
         }
     },
     NOT_CURRENT_USER(129, "Not Logged In User") {
+        @Override
+        public String getWhereClause(String fieldName, String value) {
+            return getWhereClauseForType(fieldName, true);
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicateForType(fieldName, true);
+        }
+    },
+    CURRENT_TENANT(130, "Logged In Tenant") {
+        @Override
+        public String getWhereClause(String fieldName, String value) {
+            return getWhereClauseForType(fieldName, true);
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicateForType(fieldName, true);
+        }
+    },
+    CURRENT_CLIENT(131, "Logged In Client") {
+        @Override
+        public String getWhereClause(String fieldName, String value) {
+            return getWhereClauseForType(fieldName, false);
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicateForType(fieldName, false);
+        }
+    },
+    CURRENT_VENDOR(132, "Logged In Vendor") {
         @Override
         public String getWhereClause(String fieldName, String value) {
             return getWhereClauseForType(fieldName, true);
@@ -106,6 +142,7 @@ public enum PeopleOperator implements Operator<String> {
     private static Long getPeopleOrUserId(String fieldName) throws Exception {
         FacilioField field = getField(fieldName);
         Long peopleOrUserId = null;
+        Long currentId=null;
         if (field != null) {
             if (field instanceof BaseLookupField) {
                 BaseLookupField baseLookupField = (BaseLookupField) field;
@@ -117,6 +154,37 @@ public enum PeopleOperator implements Operator<String> {
                         } else if (lookupModule.getName().equals(FacilioConstants.ContextNames.PEOPLE)) {
                             peopleOrUserId = AccountUtil.getCurrentUser().getPeopleId();
                         }
+                        else if (lookupModule.getName().equals(FacilioConstants.ContextNames.CLIENT)) {
+                            currentId = AccountUtil.getCurrentUser().getPeopleId();
+                            List<FacilioField> fields = FieldFactory.getClientContactFields();
+                            GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder().select(fields).table("Client_Contacts").andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(currentId),NumberOperators.EQUALS));
+                            List<Map<String, Object>> ClientContact = builder.get();
+                            for(Map<String, Object> props : ClientContact){
+                                peopleOrUserId = (Long) props.get("client");
+                            }
+
+                        }
+                        else if (lookupModule.getName().equals(FacilioConstants.ContextNames.TENANT)) {
+                            currentId = AccountUtil.getCurrentUser().getPeopleId();
+                            List<FacilioField> fields = FieldFactory.getTenantContactFields();
+                            GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder().select(fields).table("Tenant_Contacts").andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(currentId),NumberOperators.EQUALS));
+                            List<Map<String, Object>> TenantContact = builder.get();
+                            for(Map<String, Object> props : TenantContact){
+                                peopleOrUserId = (Long) props.get("tenant");
+                            }
+
+                        }
+                        else if (lookupModule.getName().equals(FacilioConstants.ContextNames.VENDOR)) {
+                            currentId = AccountUtil.getCurrentUser().getPeopleId();
+                            List<FacilioField> fields = FieldFactory.getVendorContactFields();
+                            GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder().select(fields).table("Vendor_Contacts").andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(currentId),NumberOperators.EQUALS));
+                            List<Map<String, Object>> VendorContact = builder.get();
+                            for(Map<String, Object> props : VendorContact){
+                                peopleOrUserId = (Long) props.get("vendor");
+                            }
+
+                        }
+
                     }
                 }
             }

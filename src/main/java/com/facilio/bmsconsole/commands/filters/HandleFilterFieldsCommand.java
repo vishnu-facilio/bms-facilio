@@ -171,6 +171,30 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                                    true
                             )));
                     break;
+                case ContextNames.TENANT:
+                    field.setOperators(Arrays.asList(
+                            new FilterOperator(
+                                    PeopleOperator.CURRENT_TENANT,
+                                    "Logged In Tenant",
+                                    true
+                            )));
+                    break;
+                case ContextNames.CLIENT:
+                    field.setOperators(Arrays.asList(
+                            new FilterOperator(
+                                    PeopleOperator.CURRENT_CLIENT,
+                                    "Logged In Client",
+                                    true
+                            )));
+                    break;
+                case ContextNames.VENDOR:
+                    field.setOperators(Arrays.asList(
+                            new FilterOperator(
+                                    PeopleOperator.CURRENT_VENDOR,
+                                    "Logged In Vendor",
+                                    true
+                            )));
+                    break;
             }
         }
     }
