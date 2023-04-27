@@ -43,6 +43,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
         List<String> appLinkNamesForSummaryWidget = new ArrayList<>();
         appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule vendorQuotesModule = moduleBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
