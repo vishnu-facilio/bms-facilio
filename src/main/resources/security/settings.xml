@@ -1861,6 +1861,12 @@
     <requestbody type="object">
     </requestbody>
     </request>
+    <request path="/api/v2/lookupFields/list">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="OneLevelFields" type="boolean"/>
+        </urlparams>
+    </request>
     <request path="/api/orgLogo">
         <requestbody type="object"></requestbody>
     </request>
