@@ -11,25 +11,28 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.BooleanUtils;
 
 public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        ReadingRuleWorkOrderRelContext workflowRuleContext=(ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-        BaseAlarmContext baseAlarmContext=(BaseAlarmContext)context.get(FacilioConstants.ContextNames.BASE_ALARM);
-        AlarmOccurrenceContext alarmOccurrence=baseAlarmContext.getLastOccurrence();
+        ReadingRuleWorkOrderRelContext workflowRuleContext = (ReadingRuleWorkOrderRelContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+        BaseAlarmContext baseAlarmContext = (BaseAlarmContext) context.get(FacilioConstants.ContextNames.BASE_ALARM);
+        AlarmOccurrenceContext alarmOccurrence = baseAlarmContext.getLastOccurrence();
         Boolean createNewWo = false;
 
-        if(baseAlarmContext!=null) {
-            if(alarmOccurrence!=null) {
-                Long woId = alarmOccurrence.getWoId();
-                createNewWo = (woId == -1);
-            }
+        if (baseAlarmContext != null) {
+            Long ruleId = ((ReadingAlarm) baseAlarmContext).getRule().getId();
+            if (ruleId == workflowRuleContext.getRuleId()) {
+                if (alarmOccurrence != null) {
+                    Long woId = alarmOccurrence.getWoId();
+                    createNewWo = (woId == -1);
+                }
 
-            Long lastWoId = baseAlarmContext.getLastWoId();
-            boolean isSkip=false;
-                if (workflowRuleContext.getIsSkip() && lastWoId != -1) {
+                Long lastWoId = baseAlarmContext.getLastWoId();
+                boolean isSkip = false;
+                if (BooleanUtils.isTrue(workflowRuleContext.getIsSkip()) && lastWoId != -1) {
                     WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
                     FacilioStatus moduleState = workOrder.getModuleState();
                     FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
@@ -41,17 +44,18 @@ public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
                             createNewWo = evaluateRecordForSkip(workflowRuleContext, workOrder.getId());
                             isSkip = true;
                         }
+                    }
                 }
+                context.put(FacilioConstants.ContextNames.FOR_CREATE, createNewWo);
+                context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION, isSkip);
             }
-            context.put(FacilioConstants.ContextNames.FOR_CREATE, createNewWo);
-            context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,isSkip);
         }
         return false;
     }
 
     private boolean evaluateRecordForSkip(ReadingRuleWorkOrderRelContext ruleToWo, Long woId) throws Exception {
         WorkOrderContext workOrder = WorkOrderAPI.getWorkOrderByCriteria(woId, ruleToWo.getWoCriteria());
-        return (workOrder!=null)?true:false;
+        return (workOrder != null) ? true : false;
     }
 
 }

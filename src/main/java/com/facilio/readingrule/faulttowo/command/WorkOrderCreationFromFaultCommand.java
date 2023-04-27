@@ -16,6 +16,7 @@ import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.BooleanUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -35,7 +36,7 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
         if(createWo!=null && createWo) {
             AlarmOccurrenceContext lastOccurrence=baseAlarm.getLastOccurrence();
             NoteContext note = constructNote(baseAlarm,workflowRule,isSkip);
-            if(workflowRule.getIsSkip() && isSkip){
+            if(BooleanUtils.isTrue(workflowRule.getIsSkip()) && isSkip){
                 RuleWoAPI.addWorkOrderNotesFromAlarms(note,context);
             }else {
                 FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
@@ -74,7 +75,7 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
     private  NoteContext constructNote(BaseAlarmContext baseAlarmContext, ReadingRuleWorkOrderRelContext woRelContext,Boolean isSkip) throws Exception {
         JSONObject comments=woRelContext.getComments();
         NoteContext note =new NoteContext();
-            if(woRelContext.getIsSkip() && isSkip) {
+            if(BooleanUtils.isTrue(woRelContext.getIsSkip()) && isSkip) {
                 String skipComment = (String) comments.get("skip");
                 if (skipComment != null) {
                     skipComment = RuleWoAPI.getPlaceholderForRuleAndOccurrence(skipComment, baseAlarmContext);

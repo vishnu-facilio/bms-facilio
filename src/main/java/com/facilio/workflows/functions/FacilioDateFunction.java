@@ -22,7 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-@ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.DATE_FUNCTION)
+//@ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.DATE_FUNCTION)
+/*date function is moved to script engine*/
 public class FacilioDateFunction {
 	public Object minsToHour(Map<String, Object> globalParam, Object... objects) throws Exception {
 
