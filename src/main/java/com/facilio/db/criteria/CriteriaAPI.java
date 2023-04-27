@@ -62,7 +62,9 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 		for (String key : criteria.getConditions().keySet()){
 			Condition condition = criteria.getConditions().get(key);
 			FacilioField field = moduleBean.getField(condition.getFieldName(),moduleName);
-			condition.setField(field);
+			if(field!=null) {
+				condition.setField(field);
+			}
 		}
 
 	}
