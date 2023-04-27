@@ -731,10 +731,6 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		if(!isMainApp && !isPivot){
 			Criteria appIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, AccountUtil.getCurrentUser().getApplicationId());
-			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-			if(mainAppId > 0) {
-				appIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
-			}
 			select.andCriteria(appIdCriteria);
 		}
 		if (searchText != null && !searchText.isEmpty()) {
@@ -760,7 +756,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 
 		select.offset(offset);
 		select.limit(perPage);
-		String orderBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + "desc";
+		String orderBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + (String) context.get(FacilioConstants.ContextNames.ORDER_TYPE);
 		select.orderBy(orderBy);
 		return select;
 	}
@@ -1619,6 +1615,10 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		if(isMainApp) {
 			FacilioModule module = modBean.getModule(moduleName);
 			reportFolders.addAll(ReportUtil.getReportsFoldersNew(module.getModuleId(), searchText, true, isPivot, appId));
+			if(moduleName != null && (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm"))){
+				FacilioModule newmodule = modBean.getModule("alarm");
+				reportFolders.addAll(ReportUtil.getReportFolders(newmodule.getModuleId(), searchText, isMainApp, isPivot));
+			}
 		}
 		else
 		{
@@ -1696,6 +1696,18 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 					FacilioModule energyData = modBean.getModule("energydata");
 					moduleIds_list.add(energyData.getModuleId());
 				}
+				if(moduleName != null && moduleName.equals("alarm")){
+					FacilioModule alarm_module = modBean.getModule(moduleName);
+					if(alarm_module != null){
+						moduleIds.add(alarm_module.getModuleId());
+						moduleIds_list.add(alarm_module.getModuleId());
+						FacilioModule new_alarm_module = modBean.getModule("newreadingalarm");
+						if(new_alarm_module != null && !moduleIds.contains(new_alarm_module.getModuleId()))
+						{
+							moduleIds.add(new_alarm_module.getModuleId());
+						}
+					}
+				}
 				List<Long> newList = moduleIds.stream().distinct().collect(Collectors.toList());
 				for(long moduleId : newList)
 				{
@@ -1733,10 +1745,6 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		{
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"), String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
 			Criteria addAppIdCriteria = ReportUtil.getReportAppIdCriteria(fieldMap, appId);
-			long mainAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-			if(mainAppId > 0) {
-				addAppIdCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(mainAppId), NumberOperators.EQUALS));
-			}
 			select.andCriteria(addAppIdCriteria);
 		}
 		if (searchText != null) {

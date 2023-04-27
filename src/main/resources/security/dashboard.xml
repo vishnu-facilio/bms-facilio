@@ -382,6 +382,7 @@
             <property name="withCount" type="boolean" mandatory="true"></property>
             <property name="isPivot" type="boolean" mandatory="true"></property>
             <property name="searchText" type="string" mandatory="false"></property>
+            <property name="orderType" type="string" mandatory="true"></property>
         </urlparams>
     </request>
 

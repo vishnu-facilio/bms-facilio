@@ -502,6 +502,8 @@ public class ReportFactoryFields {
 				if (     
 						field.getDataTypeEnum() == FieldType.ID 
 						||field.getDataTypeEnum() == FieldType.NUMBER
+						||field.getDataTypeEnum() == FieldType.DECIMAL
+						||field.getDataTypeEnum() == FieldType.CURRENCY_FIELD
 						|| field.getDataTypeEnum() == FieldType.ENUM 
 						|| field.getDataTypeEnum() == FieldType.LOOKUP
 						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 

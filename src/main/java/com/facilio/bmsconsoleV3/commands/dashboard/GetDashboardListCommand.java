@@ -31,11 +31,8 @@ public class GetDashboardListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception
     {
-        Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getId(), "DASHBOARD_PUBLISHING_MIG");
-        boolean isMigrationDone = false;
-        if(orgInfo != null && orgInfo.containsKey("name") && orgInfo.get("name") != null && orgInfo.get("name").equals("DASHBOARD_PUBLISHING_MIG")){
-            isMigrationDone = true;
-        }
+
+        boolean isMigrationDone = true;
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
         dashboard_list_prop.setMigrationDone(isMigrationDone);
         List<DashboardContext> dashboard_list = new ArrayList<>();

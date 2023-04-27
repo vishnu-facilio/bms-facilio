@@ -99,6 +99,7 @@ public class V3ReportAction extends V3Action {
     private int page;
     private int perPage;
     private boolean withCount;
+    private String orderType;
 
 
 
@@ -513,7 +514,7 @@ public class V3ReportAction extends V3Action {
 
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(Constants.WITH_COUNT, withCount);
-        context.put(FacilioConstants.ContextNames.ORDER_TYPE,"desc");
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE, orderType);
 
         chain.execute(context);
         List<ReportContext> reportsList = (List<ReportContext>)context.get("reportsList");
