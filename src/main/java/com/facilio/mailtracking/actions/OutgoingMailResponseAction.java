@@ -4,7 +4,6 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
 import com.facilio.modules.FieldUtil;
-import com.facilio.security.SecurityRequestWrapper;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.constants.Topics;
@@ -102,7 +101,7 @@ public class OutgoingMailResponseAction extends ActionSupport {
     private JSONObject parseRequestData() throws Exception {
         JSONObject requestJson;
         HttpServletRequest request = ServletActionContext.getRequest();
-        ((SecurityRequestWrapper)((org.apache.struts2.dispatcher.StrutsRequestWrapper) request).getRequest()).reset();
+//        ((SecurityRequestWrapper)((org.apache.struts2.dispatcher.StrutsRequestWrapper) request).getRequest()).reset();
         try(InputStreamReader data = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8)) {
             JSONParser jsonParser = new JSONParser();
             requestJson = (JSONObject)jsonParser.parse(data);
