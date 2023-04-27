@@ -698,7 +698,6 @@ public enum ActionType {
 					long lastWoId = baseAlarm.getLastWoId();
 					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm(baseAlarm);
 					String moduleName=NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum());
-					LOGGER.info("Action Type CREATE_WO_FROM_ALARM"+"baseAlarm"+baseAlarm +"workflowRule"+currentRule + Thread.currentThread());
 					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) && baseAlarm.getIsNewReadingRule()){
 						faultWorkorderCreation(obj,(ReadingRuleWorkOrderRelContext) currentRule,baseAlarm);
 					}

@@ -35,7 +35,6 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
         if(createWo!=null && createWo) {
             AlarmOccurrenceContext lastOccurrence=baseAlarm.getLastOccurrence();
             NoteContext note = constructNote(baseAlarm,workflowRule,isSkip);
-            LOGGER.info("isSkip "+isSkip );
             if(BooleanUtils.isTrue(workflowRule.getIsSkip()) && isSkip){
                 RuleWoAPI.addWorkOrderNotesFromAlarms(note,context);
             }else {

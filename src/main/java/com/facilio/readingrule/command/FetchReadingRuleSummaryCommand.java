@@ -1,11 +1,14 @@
 package com.facilio.readingrule.command;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -21,6 +24,8 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 
 public class FetchReadingRuleSummaryCommand extends FacilioCommand {
     @Override
@@ -37,6 +42,7 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
                     rule.setAssets(namespaceContext.getIncludedAssetIds());
                 }
                 rule.setModuleName(FacilioConstants.ReadingRules.NEW_READING_RULE);
+                setReadingfldAndModuleName(rule);
             }
         }
         return false;
@@ -52,6 +58,16 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
             RuleAlarmDetails alarmDetails = FieldUtil.getAsBeanFromMap(props, RuleAlarmDetails.class);
             alarmDetails.setSeverity(AlarmAPI.getAlarmSeverity(alarmDetails.getSeverityId()).getSeverity());
             readingRule.setAlarmDetails(alarmDetails);
+        }
+    }
+
+    private void setReadingfldAndModuleName(NewReadingRuleContext rule) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if(!Objects.isNull(rule.getReadingFieldId())){
+            rule.setReadingFieldName(modBean.getField(rule.getReadingFieldId()).getDisplayName());
+        }
+        if(!Objects.isNull(rule.getReadingModuleId())){
+            rule.setReadingModuleName(modBean.getModule(rule.getReadingModuleId()).getDisplayName());
         }
     }
 }

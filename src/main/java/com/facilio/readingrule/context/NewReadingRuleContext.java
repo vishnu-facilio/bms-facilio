@@ -81,6 +81,9 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
 
     Long readingFieldId;
 
+    String readingFieldName;
+    String readingModuleName;
+
     public void setNullForResponse() {
         setMatchedResources(null);
         setReadingField(null);
