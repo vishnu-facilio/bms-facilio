@@ -335,6 +335,7 @@ public class AttendanceAPI {
                 .module(module)
                 .select(attendanceFields)
                 .andCondition(peopleCondition)
+                .orderBy(fieldMap.get("day").getCompleteColumnName() + " DESC")
                 .andCriteria(timeCriteria);
 
         List<Attendance> attendances = builder.get();

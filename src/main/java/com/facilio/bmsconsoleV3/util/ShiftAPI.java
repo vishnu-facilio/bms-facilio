@@ -36,7 +36,7 @@ import static com.facilio.modules.ModuleFactory.getShiftPeopleRelPseudoModule;
 
 public class ShiftAPI {
 
-    private static final Logger LOGGER = LogManager.getLogger(MalwareInterceptor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ShiftAPI.class.getName());
 
     public static final long UNLIMITED_PERIOD = -2;
     public final static long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
@@ -93,8 +93,11 @@ public class ShiftAPI {
                 .andCondition(defaultShiftCondition);
 
         List<Shift> shifts = builder.get();
-        if (shifts.size() != 1) {
-            throw new Exception("more than one or no default shift found");
+        if (shifts.size() == 0) {
+            throw new Exception("No default shift found");
+        }
+        if (shifts.size() > 1 ) {
+            LOGGER.warn("More than 1 default shift found");
         }
         return shifts.get(0);
     }
