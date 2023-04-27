@@ -177,11 +177,11 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
 
         List<FormField> plannedToolsFormFields = new ArrayList<>();
         plannedToolsFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool type", FormField.Required.REQUIRED,"toolTypes", 1, 1));
-        plannedToolsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 2, 1));
+        plannedToolsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
-        plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.NUMBER, "Rate", FormField.Required.OPTIONAL, 4, 1));
+        plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.DECIMAL, "Rate", FormField.Required.OPTIONAL, 4, 1));
         plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 5, 1));
-//        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.OPTIONAL, 6, 3);
+//        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.DECIMAL, "Total Cost", FormField.Required.OPTIONAL, 6, 3);
 //        totalCost.setIsDisabled(true);
 //        plannedToolsFormFields.add(totalCost);
         plannedToolsForm.setFields(plannedToolsFormFields);
