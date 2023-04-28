@@ -107,3 +107,14 @@ sources:
       iot.rule.sasl.mechanism: SCRAM-SHA-512
       iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
       iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+
+  - name: msk-uk1 #London Region
+    type: kafka
+    configs:
+      broker: b-2.ukmsk.hhu5x3.c2.kafka.eu-west-2.amazonaws.com:9096,b-1.ukmsk.hhu5x3.c2.kafka.eu-west-2.amazonaws.com:9096,b-3.ukmsk.hhu5x3.c2.kafka.eu-west-2.amazonaws.com:9096
+      auth: true
+      iot.rule.arn: arn:aws:iot:eu-west-2:668907905219:ruledestination/vpc/71296c96-0655-4b51-96b1-ed88e018bfea
+      iot.rule.security.protocol: SASL_SSL
+      iot.rule.sasl.mechanism: SCRAM-SHA-512
+      iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+      iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
