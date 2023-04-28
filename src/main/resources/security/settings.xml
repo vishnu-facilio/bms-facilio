@@ -1918,5 +1918,12 @@
         <requestbody type="object"></requestbody>
     </request>
     <request path="/api/v2/module/:moduleName/:id/statetransition/getOfflineStateTransition" method="GET" />
-
+    <request path="/api/v3/oldAppMigration/migrateTabs" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/oldAppMigration/appRedirection" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

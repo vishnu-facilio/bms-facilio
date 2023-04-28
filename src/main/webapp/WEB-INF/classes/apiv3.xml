@@ -1697,4 +1697,8 @@
             <param name="checkPermission">true</param>
         </action>
     </package>
+   <package name="oldAppMigration" extends="v3Api" namespace="/api/v3/oldAppMigration">
+       <action name="migrateTabs" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="oldAppMigration"/>
+       <action name="appRedirection" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="getProperRedirectUrl"/>
+   </package>
 </struts>

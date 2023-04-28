@@ -2668,7 +2668,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new GetWorkOrderItemCommandV3());
         return chain;
     }
-    
+
     public static FacilioChain getWorkorderItemFromReservationChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetWorkOrderItemFromReservationCommandV3());
@@ -3184,7 +3184,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetAttendanceSettingsUpdateCommand());
         return c;
     }
-
     public static FacilioChain getAttendanceSettingsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAttendanceSettingsCommand());
@@ -3248,11 +3247,22 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePermissionsForPermissionSetCommand());
         return c;
     }
-    
+
     public static FacilioChain getStoreroomBeforeSaveChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocationObjectFromSiteV3());
         c.addCommand(new UpdateServingSitesinStoreRoomCommandV3());
         return c;
+    }
+
+    //	should be removed after old app migration
+    public static FacilioChain getOldAppMigrationChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new UpdateLayoutCommand());
+        chain.addCommand(new AddMobileLayoutTabsCommand());
+        chain.addCommand(new AddWebLayoutTabsCommand());
+        chain.addCommand(new AddSetupLayoutTabsCommand());
+        chain.addCommand(new AddRelatedApplicationsForMigratingAppCommand());
+        return chain;
     }
 }
