@@ -137,11 +137,9 @@ public class JobPlanPageFactory extends PageFactory {
         itemsAndLaborSection.addWidget(tools);
 
         // services
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
             PageWidget services = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_SERVICES);
             services.addToLayoutParams(5, yOffset, 19, 7);
             itemsAndLaborSection.addWidget(services);
-        }
     }
     private static void addPlansTab(Page page) throws Exception{
         Page.Tab plansTab = page.new Tab("Plans");

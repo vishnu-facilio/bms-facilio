@@ -273,12 +273,11 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += 7;
 
         // services
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
             PageWidget services = new PageWidget(PageWidget.WidgetType.INVENTORY_SERVICES);
             services.addToLayoutParams(0, yOffset, 16, 7);
             itemsAndLaborSection.addWidget(services);
             yOffset += 7;
-        }
+
 
         // labor
         PageWidget labor = new PageWidget(PageWidget.WidgetType.INVENTORY_LABOR);
