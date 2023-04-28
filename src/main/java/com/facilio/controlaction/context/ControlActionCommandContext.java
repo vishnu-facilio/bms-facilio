@@ -187,7 +187,7 @@ public class ControlActionCommandContext extends V3Context {
 	ControlActionMode controlActionMode;
 	public int getControlActionMode() {
 		if(controlActionMode != null) {
-			return controlActionMode.getValue();
+			return controlActionMode.getIntVal();
 		}
 		return -1;
 	}

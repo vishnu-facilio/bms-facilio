@@ -76,7 +76,7 @@ public class UpdateControllableTypeForSpace extends FacilioCommand {
 			for(Map<String, Object> prop : props) {
 				
 				ReadingDataMeta rdm = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
-				rdm.setControlActionMode(controlActionMode.getValue());
+				rdm.setControlActionMode(controlActionMode.getIntVal());
 				metas.add(rdm);
 			}
 		}

@@ -87,7 +87,7 @@ public class ControlActionAction extends FacilioAction {
 
 	public int getControlActionMode() {
 		if(controlActionMode != null) {
-			return controlActionMode.getValue();
+			return controlActionMode.getIntVal();
 		}
 		return -1;
 	}

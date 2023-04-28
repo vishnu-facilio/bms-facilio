@@ -24,7 +24,7 @@ public class PublishIOTMessageControlActionCommand extends FacilioCommand {
 
 		List<ControlActionCommandContext> commands = (List<ControlActionCommandContext>)context.get(ControlActionUtil.CONTROL_ACTION_COMMANDS);
 		
-		List<ControlActionCommandContext> liveCommands = commands.stream().filter(command -> command.getControlActionMode() == ReadingDataMeta.ControlActionMode.LIVE.getValue())
+		List<ControlActionCommandContext> liveCommands = commands.stream().filter(command -> command.getControlActionMode() == ReadingDataMeta.ControlActionMode.LIVE.getIntVal())
 				.collect(Collectors.toList());
 		if (!liveCommands.isEmpty()) {
 			IoTMessageAPI.setReadingValue(liveCommands);

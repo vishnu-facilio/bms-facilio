@@ -317,3 +317,6 @@ enums:
 
   - name: AwardStatus
     enumClassName: com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext$AwardStatus
+
+  - name: ControlActionMode
+    enumClassName: com.facilio.bmsconsole.context.ReadingDataMeta$ControlActionMode

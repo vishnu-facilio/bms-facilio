@@ -36,7 +36,7 @@ public class ControlGroupContext {
 	}
 	public int getMode() {
 		if(mode != null) {
-			return mode.getValue();
+			return mode.getIntVal();
 		}
 		return -1;
 	}

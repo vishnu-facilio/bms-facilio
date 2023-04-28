@@ -172,7 +172,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         rdm.setInputType(ReadingDataMeta.ReadingInputType.WEB);
         rdm.setReadingType(ReadingDataMeta.ReadingType.READ);
         rdm.setIsControllable(false);
-        rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.SANDBOX.getValue());
+        rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.SANDBOX.getIntVal());
         ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 
     }

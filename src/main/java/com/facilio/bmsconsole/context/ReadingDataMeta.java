@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 
@@ -150,7 +151,7 @@ public class ReadingDataMeta implements Serializable {
 	ControlActionMode controlActionMode;
 	public int getControlActionMode() {
 		if(controlActionMode != null) {
-			return controlActionMode.getValue();
+			return controlActionMode.getIntVal();
 		}
 		return -1;
 	}
@@ -230,20 +231,41 @@ public class ReadingDataMeta implements Serializable {
 		}
  	}
 	
-	public static enum ControlActionMode {
-		SANDBOX,
-		LIVE
+	public enum ControlActionMode implements FacilioIntEnum {
+		SANDBOX(1,"Sandbox"),
+		LIVE(2,"Live")
 		;
-		
-		public int getValue() {
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		ControlActionMode(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+		@Override
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
-		public static ControlActionMode valueOf (int value) {
+
+		public static ControlActionMode valueOf(int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
 			}
 			return null;
 		}
+		@Override
+		public String getValue() {
+			return getName();
+		}
+
  	}
 	
 	@Override

@@ -1,13 +1,11 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -132,111 +130,93 @@ public class AddControlActionCommandModule extends BaseModuleConfig {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        //executedBy
         LookupField executedBy = FieldFactory.getDefaultField("executedBy","Executed By","EXECUTED_BY",module, FieldType.LOOKUP);
         executedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
         executedBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.USERS));
         executedBy.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(executedBy);
 
-        //executedMode
         SystemEnumField executedMode = FieldFactory.getDefaultField("executedMode","Executed Mode","EXECUTED_MODE",FieldType.SYSTEM_ENUM);
         executedMode.setEnumName("ControlActionExecuteMode");
         executedMode.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(executedMode);
 
-        //executedTime
         DateField executedTime = FieldFactory.getDefaultField("executedTime","Executed Time","EXECUTED_TIME",FieldType.DATE_TIME);
         executedTime.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(executedTime);
 
-        //controlActionMode
-        NumberField controlActionMode = FieldFactory.getDefaultField("controlActionMode","Control Action Command","CONTROL_ACTION_MODE",FieldType.NUMBER);
-        controlActionMode.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
+        SystemEnumField controlActionMode = FieldFactory.getDefaultField("controlActionMode","Control Action Mode","CONTROL_ACTION_MODE",FieldType.SYSTEM_ENUM);
+        executedMode.setEnumName("ControlActionMode");
+        executedMode.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(controlActionMode);
 
-        //command
         StringField command = FieldFactory.getDefaultField("command","Command","COMMAND",FieldType.STRING);
         command.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(command);
 
-        //resource
         LookupField resource = FieldFactory.getDefaultField("resource","Asset","RESOURCE_ID",FieldType.LOOKUP);
         resource.setLookupModuleId(modBean.getModule("resource").getModuleId());
         resource.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         resource.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(resource);
 
-        //fieldId
         NumberField fieldId = FieldFactory.getDefaultField("fieldId","Field Id","FIELD_ID",FieldType.NUMBER);
         fieldId.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(fieldId);
 
-        //value
         StringField value = FieldFactory.getDefaultField("value","Value","VALUE",FieldType.STRING);
         value.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(value);
 
-        //status
         SystemEnumField status = FieldFactory.getDefaultField("status","Status","STATUS",FieldType.SYSTEM_ENUM);
         status.setEnumName("CommandStatus");
         status.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(status);
 
-        //iotMessageId
         NumberField iotMessageId = FieldFactory.getDefaultField("iotMessageId","IOT Message Id","IOT_MESSAGE_ID",FieldType.NUMBER);
         iotMessageId.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(iotMessageId);
 
-        //schedule
         LookupField schedule = FieldFactory.getDefaultField("schedule","Control Schedule","SCHEDULE_ID",FieldType.LOOKUP);
         schedule.setLookupModule(controlSchedule);
         schedule.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(schedule);
 
-        // group
         LookupField group = FieldFactory.getDefaultField("group","Control Group","GROUP_ID",FieldType.LOOKUP);
         group.setLookupModule(controlGroup);
         group.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(group);
 
-        //exception
         LookupField exception = FieldFactory.getDefaultField("exception","Control Exception","EXCEPTION_ID",FieldType.LOOKUP);
         exception.setLookupModule(controlException);
         exception.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(exception);
 
-        //routine
         LookupField routine = FieldFactory.getDefaultField("routine","Control Routine","ROUTINE_ID",FieldType.LOOKUP);
         routine.setLookupModule(controlRoutine);
         routine.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(routine);
 
-        //sysCreatedBy
         LookupField sysCreatedBy = FieldFactory.getDefaultField("sysCreatedBy","Created By","SYS_CREATED_BY",FieldType.LOOKUP);
         sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
         sysCreatedBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.USERS));
         sysCreatedBy.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(sysCreatedBy);
 
-        //sysModifiedBy
         LookupField sysModifiedBy = FieldFactory.getDefaultField("sysModifiedBy","Modified By","SYS_MODIFIED_BY",FieldType.LOOKUP);
         sysModifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
         sysModifiedBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.USERS));
         sysModifiedBy.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(sysModifiedBy);
 
-        //sysCreatedTime
         DateField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime","Created Time","SYS_CREATED_TIME",FieldType.DATE_TIME);
         sysCreatedTime.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(sysCreatedTime);
 
-        //sysModifiedTime
         DateField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime","Modified Time","SYS_MODIFIED_TIME",FieldType.DATE_TIME);
         sysModifiedTime.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(sysModifiedTime);
 
-        //retriedCount
         NumberField retriedCount = FieldFactory.getDefaultField("retriedCount","Retried Count","RETRIED_COUNT",FieldType.NUMBER);
         retriedCount.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(retriedCount);
@@ -247,7 +227,6 @@ public class AddControlActionCommandModule extends BaseModuleConfig {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain.execute();
 
-        //add subModules
         modBean.addSubModule(controlSchedule.getModuleId(),module.getModuleId());
         modBean.addSubModule(controlGroup.getModuleId(),module.getModuleId());
         modBean.addSubModule(controlException.getModuleId(),module.getModuleId());
@@ -261,5 +240,4 @@ public class AddControlActionCommandModule extends BaseModuleConfig {
         }
         return result;
     }
-
 }

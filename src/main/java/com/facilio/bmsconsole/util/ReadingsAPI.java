@@ -139,7 +139,7 @@ public class ReadingsAPI {
 		
 		if (rdm.getReadingTypeEnum() != null && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
 			rdm.setIsControllable(true);
-			rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.LIVE.getValue());
+			rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.LIVE.getIntVal());
 		}
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -247,7 +247,7 @@ public class ReadingsAPI {
 	private static void setControllableprop(Map<String, Object> prop, boolean isWritable) {
 		if (isWritable) {
 			prop.put("isControllable", true);
-			prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
+			prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getIntVal());
 		}
 		else {
 			prop.put("isControllable", false);
@@ -1363,7 +1363,7 @@ public class ReadingsAPI {
 		rdm.setInputType(ReadingInputType.WEB);
 		rdm.setReadingType(ReadingType.READ);
 		rdm.setIsControllable(false);
-		rdm.setControlActionMode(ControlActionMode.SANDBOX.getValue());
+		rdm.setControlActionMode(ControlActionMode.SANDBOX.getIntVal());
 		
 		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}
