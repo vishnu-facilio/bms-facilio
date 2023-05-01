@@ -1448,6 +1448,10 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkorderItemFromReservation">
         </action>
+        <action name="getWorkOrderItemFromIssuedItem"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="getWorkOrderItemFromIssuedItem">
+        </action>
     </package>
 
     <package name="workorderTools" namespace="/api/v3/workorderTools"

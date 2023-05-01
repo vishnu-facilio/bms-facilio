@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadItemToolTransactionsLookupCommandV3 extends FacilioCommand {
+public class LoadItemTransactionsLookupCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -28,6 +28,10 @@ public class LoadItemToolTransactionsLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionalLookup = new ArrayList<LookupField>();
         additionalLookup.add((LookupField) fieldsAsMap.get("storeRoom"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("itemType"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("item"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("issuedTo"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("workorder"));
 
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {

@@ -924,7 +924,7 @@ public class APIv3Config {
                 .afterSave(new UpdateToolTransactionsCommandV3())
                 .update()
                 .list()
-                .beforeFetch(new LoadItemToolTransactionsLookupCommandV3())
+                .beforeFetch(new LoadToolTransactionsLookupCommandV3())
                 .summary()
                 .build();
     }

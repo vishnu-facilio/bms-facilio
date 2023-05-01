@@ -122,7 +122,7 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(4), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("parentTransactionId"),
-					"", CommonOperators.IS_EMPTY));
+					String.valueOf(0), NumberOperators.LESS_THAN));
 			Criteria criteriaIssue = new Criteria();
 			criteriaIssue.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));

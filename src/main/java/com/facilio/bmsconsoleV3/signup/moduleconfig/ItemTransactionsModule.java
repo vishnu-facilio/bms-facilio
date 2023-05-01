@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -29,6 +30,7 @@ public class ItemTransactionsModule extends BaseModuleConfig{
         ArrayList<FacilioView> itemTransaction = new ArrayList<FacilioView>();
         itemTransaction.add(getItemPendingApproval().setOrder(order++));
         itemTransaction.add(getAllItemApproval().setOrder(order++));
+        itemTransaction.add(getAllIssuedItems().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -38,6 +40,37 @@ public class ItemTransactionsModule extends BaseModuleConfig{
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
+    }
+
+    private FacilioView getAllIssuedItems() {
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getItemTransactionsModule());
+
+        FacilioView allView = new FacilioView();
+        allView.setName("issued-items");
+        allView.setDisplayName("Issued Items");
+
+        allView.setFields(getAllIssuedItemsViewColumns());
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
+    }
+
+    private List<ViewField> getAllIssuedItemsViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("item","Item"));
+        columns.add(new ViewField("storeRoom","Storeroom"));
+        columns.add(new ViewField("quantity","Quantity"));
+        columns.add(new ViewField("remainingQuantity","Remaining Quantity"));
+        columns.add(new ViewField("issuedTo","Issued To"));
+        return columns;
     }
 
     private static FacilioView getItemPendingApproval() {

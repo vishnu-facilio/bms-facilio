@@ -16,6 +16,7 @@ public class WorkOrderItemsActionV3 extends V3Action {
 
     private Long reservationId;
     private Long itemId;
+    private Long itemTransactionId;
 
     public Long getReservationId() {
         return reservationId;
@@ -41,6 +42,14 @@ public class WorkOrderItemsActionV3 extends V3Action {
         this.workOrderId = workOrderId;
     }
 
+    public Long getItemTransactionId() {
+        return itemTransactionId;
+    }
+
+    public void setItemTransactionId(Long itemTransactionId) {
+        this.itemTransactionId = itemTransactionId;
+    }
+
     public String getWorkorderItem() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getWorkOrderItemChainV3();
         FacilioContext context = chain.getContext();
@@ -55,6 +64,15 @@ public class WorkOrderItemsActionV3 extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getWorkorderItemFromReservationChainV3();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.INVENTORY_RESERVATION,reservationId);
+        chain.execute();
+        setData(FacilioConstants.ContextNames.WORKORDER_ITEMS, FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS)));
+        return V3Action.SUCCESS;
+    }
+    public String getWorkOrderItemFromIssuedItem() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getWorkOrderItemFromIssuedItemChainV3();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_ID,itemTransactionId);
+        context.put(FacilioConstants.ContextNames.WORK_ORDER,workOrderId);
         chain.execute();
         setData(FacilioConstants.ContextNames.WORKORDER_ITEMS, FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_ITEMS)));
         return V3Action.SUCCESS;
