@@ -4,8 +4,6 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -14,9 +12,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.readingrule.faulttowo.RuleWoAPI;
-import com.facilio.readingrule.util.NewReadingRuleAPI;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -36,6 +35,7 @@ public class WorkOrderCreationFromFaultCommand extends FacilioCommand {
         if(createWo!=null && createWo) {
             AlarmOccurrenceContext lastOccurrence=baseAlarm.getLastOccurrence();
             NoteContext note = constructNote(baseAlarm,workflowRule,isSkip);
+            LOGGER.info("isSkip "+isSkip );
             if(BooleanUtils.isTrue(workflowRule.getIsSkip()) && isSkip){
                 RuleWoAPI.addWorkOrderNotesFromAlarms(note,context);
             }else {

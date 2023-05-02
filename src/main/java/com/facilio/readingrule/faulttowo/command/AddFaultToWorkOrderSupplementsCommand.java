@@ -9,10 +9,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
-import com.facilio.readingrule.faulttowo.RuleWoAPI;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang.BooleanUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
+@Log4j
 public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -24,6 +24,7 @@ public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
 
         if (baseAlarmContext != null) {
             Long ruleId = ((ReadingAlarm) baseAlarmContext).getRule().getId();
+            LOGGER.info("workflowRuleContext "+workflowRuleContext.getRuleId()+"ruleId "+ruleId);
             if (ruleId == workflowRuleContext.getRuleId()) {
                 if (alarmOccurrence != null) {
                     Long woId = alarmOccurrence.getWoId();
