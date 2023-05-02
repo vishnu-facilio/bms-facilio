@@ -16,7 +16,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class AddTaskSectionsCommand extends FacilioCommand {
 
@@ -33,15 +32,11 @@ public class AddTaskSectionsCommand extends FacilioCommand {
 															;
 			int sequence = 1;
 			List<TaskSectionContext> sections = new ArrayList<>();
-			List<String> sectionNameList = workOrder.getSectionNameList();
-			if(CollectionUtils.isEmpty(sectionNameList)){
-				return false;
-			}
-			for(String sectionName : sectionNameList) {
-				if(!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+			for(Map.Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
+				if(!entry.getKey().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
 					TaskSectionContext section = new TaskSectionContext();
 					section.setParentTicketId(workOrder.getId());
-					section.setName(sectionName);
+					section.setName(entry.getKey());
 					section.setSequenceNumber(sequence++);
 					section.setPreRequest(Boolean.FALSE);
 					insertBuilder.addRecord(FieldUtil.getAsProperties(section));

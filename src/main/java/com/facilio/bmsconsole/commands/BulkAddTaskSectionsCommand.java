@@ -46,19 +46,15 @@ public class BulkAddTaskSectionsCommand extends FacilioCommand {
 			int sequence = 1;
 			WorkOrderContext workOrder = bulkWorkOrderContext.getWorkOrderContexts().get(i);
 			Map<String, List<TaskContext>> taskMap = bulkWorkOrderContext.getTaskMaps().get(i);
-			List<String> sectionNamesList = bulkWorkOrderContext.getWorkOrderContexts().get(i).getSectionNameList();
 			if (taskMap == null) {
 				continue;
 			}
-			if(sectionNamesList == null){
-				LOGGER.severe("sectionNamesList is null" + workOrder.getResource());
-			}
-			for(String sectionName : sectionNamesList) {
-				if(!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+			for(Map.Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
+				if(!entry.getKey().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
 					isRecordPresent = true;
 					TaskSectionContext section = new TaskSectionContext();
 					section.setParentTicketId(workOrder.getId());
-					section.setName(sectionName);
+					section.setName(entry.getKey());
 					section.setSequenceNumber(sequence++);
 					section.setPreRequest(Boolean.FALSE);
 					insertBuilder.addRecord(FieldUtil.getAsProperties(section));

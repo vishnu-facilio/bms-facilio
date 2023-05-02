@@ -53,7 +53,6 @@ public class ValidateTasksCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int maxUniqueId = 0;
-		int maxSequenceId = 0;
 		List<TaskContext> tasks = null;
 		Map<TaskContext,TaskTemplate> taskvsTemplateMap= null;
 		
@@ -77,8 +76,7 @@ public class ValidateTasksCommand extends FacilioCommand {
 					TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 					if(task != null) {
 						tasks = Collections.singletonList(task);
-						maxUniqueId = getMaxColumnValueFromExistingTasks(task.getParentTicketId(), FieldFactory.getField("uniqueId", "MAX(UNIQUE_ID)", FieldType.NUMBER));
-						maxSequenceId = getMaxColumnValueFromExistingTasks(task.getParentTicketId(), FieldFactory.getField("sequence", "MAX(SEQUENCE)", FieldType.NUMBER));
+						maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
 						 WorkOrderContext wo = WorkOrderAPI.getWorkOrder(task.getParentTicketId(), Collections.singletonList("moduleState"));
 						 context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(wo));
 					}
@@ -107,7 +105,6 @@ public class ValidateTasksCommand extends FacilioCommand {
 				PreventiveMaintenance oldPm = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)).get(0);
 				if (oldPm.getWoTemplate() != null) {
 					maxUniqueId = getMaxUniqueIdFromTemplate(oldPm.getWoTemplate().getId());
-					maxSequenceId = getMaxSequenceIdFromTemplate(oldPm.getWoTemplate().getId());
 				}
 			}
 
@@ -115,9 +112,6 @@ public class ValidateTasksCommand extends FacilioCommand {
 				validateSiteSpecificData(task);
 				if (task.getUniqueId() == -1) {
 					task.setUniqueId(++maxUniqueId);
-				}
-				if(task.getSequence() == -1){
-					task.setSequence(++maxSequenceId);
 				}
 				if (task.getInputTypeEnum() == null) {
 					task.setInputType(TaskContext.InputType.NONE);
@@ -214,32 +208,17 @@ public class ValidateTasksCommand extends FacilioCommand {
 		}
 		return maxUniqueId;
 	}
-
-	private static int getMaxSequenceIdFromTemplate (long templateId) throws Exception {
-		int maxSequenceId = 0;
-		WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-		if (woTemplate.getTaskTemplates() != null) {
-
-			for(TaskTemplate template: woTemplate.getTaskTemplates()) {
-				TaskContext task = template.getTask();
-				if (task.getSequence() > maxSequenceId) {
-					maxSequenceId = task.getSequence();
-				}
-			}
-		}
-		return maxSequenceId;
-	}
 	
-	private int getMaxColumnValueFromExistingTasks(long parentId, FacilioField field) throws Exception {
+	private int getMaxUniqueIdFromExistingTasks (long parentId) throws Exception {
 		int maxId = 0;
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getTasksModule().getTableName())
-				.select(Collections.singletonList(field))
+				.select(Collections.singletonList(FieldFactory.getField("uniqueId", "MAX(UNIQUE_ID)", FieldType.NUMBER)))
 				.andCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId", String.valueOf(parentId), NumberOperators.EQUALS));
-
+		
 		List<Map<String, Object>> props = builder.get();
 		if (props != null && !props.isEmpty()) {
-			maxId = (int) props.get(0).get(field.getName());
+			maxId = (int) props.get(0).get("uniqueId");
 		}
 		return maxId;
 	}

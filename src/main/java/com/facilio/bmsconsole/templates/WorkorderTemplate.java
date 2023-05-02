@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -474,8 +472,4 @@ public class WorkorderTemplate extends Template {
 	public void setJobPlanTaskSections(List<TaskSectionTemplate> jobPlanTaskSections) {
 		this.jobPlanTaskSections = jobPlanTaskSections;
 	}
-
-	@Getter
-	@Setter
-	private List<String> sectionNameList;
 }

@@ -24,7 +24,6 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -345,7 +344,7 @@ public class FailedPMNewScheduler {
 				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 				if(woTemplateResourceId > 0) {
 					Long currentTriggerId = pmTrigger.getId();
-					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(clonedWoTemplate, context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
+					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
 				}
 			} else {
 				taskMapForNewPmExecution = clonedWoTemplate.getTasks();
@@ -353,9 +352,6 @@ public class FailedPMNewScheduler {
 
 			if(taskMapForNewPmExecution != null) {
 				taskMap = taskMapForNewPmExecution;
-			}
-			if (taskMap != null && CollectionUtils.isNotEmpty(clonedWoTemplate.getSectionNameList())) {
-				wo.setSectionNameList(clonedWoTemplate.getSectionNameList());
 			}
 
 			Map<String, List<TaskContext>> preRequestMap = null;

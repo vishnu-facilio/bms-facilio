@@ -311,22 +311,12 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(Context context, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
-		return getTaskMapForNewPMExecution(null, context, sectiontemplates, woResourceId, triggerId, isMultiSite);
-	}
 	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
-		return getTaskMapForNewPMExecution(null, new FacilioContext(), sectiontemplates, woResourceId, triggerId, isMultiSite);
+		return getTaskMapForNewPMExecution(new FacilioContext(), sectiontemplates, woResourceId, triggerId, isMultiSite);
 	}
 
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(WorkorderTemplate workorderTemplate, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
-		return getTaskMapForNewPMExecution(workorderTemplate, new FacilioContext(), sectiontemplates, woResourceId, triggerId, isMultiSite);
-	}
-
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(WorkorderTemplate workorderTemplate, Context context, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(Context context, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
 		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
-		List<String> sectionNameList = new ArrayList<>();
-		int uniqueId = 1;
-		int sequenceId = 1;
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 			if (triggerId != null && triggerId > -1) {
 				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
@@ -346,8 +336,7 @@ public class PreventiveMaintenanceAPI {
 
 			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts(), isMultiSite);
 			if (isMultiSite && CollectionUtils.isEmpty(resourceIds)) {
-				//return taskMap; // returning taskMap here (when the section has no resources in scope), neglects the section next to the current section which are in scope.
-				continue;
+				return taskMap;
 			}
 
 			if (CollectionUtils.isEmpty(resourceIds)) {
@@ -404,17 +393,11 @@ public class PreventiveMaintenanceAPI {
 					 	TaskContext task = taskTemplate.getTask();
 					 	task.setResource(taskResource);
 					 	task.setSiteId(taskResource.getSiteId());
-						 task.setUniqueId(uniqueId++);
-						 task.setSequence(sequenceId++);
 					 	tasks.add(task);
 					 }
 				 }
 				 taskMap.put(sectionName, tasks);
-				 sectionNameList.add(sectionName);
 			 }
-		}
-		if(workorderTemplate != null) {
-			workorderTemplate.setSectionNameList(sectionNameList);
 		}
 		return taskMap;
 	}
@@ -851,7 +834,7 @@ public class PreventiveMaintenanceAPI {
 				if(woTemplateResourceId > 0) {
 					Long currentTriggerId = pmTrigger.getId();
 					boolean isMultiSite = pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE;
-					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(clonedWoTemplate, context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, isMultiSite);
+					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, isMultiSite);
 				}
 			} else {
 				taskMapForNewPmExecution = clonedWoTemplate.getTasks();
@@ -859,10 +842,6 @@ public class PreventiveMaintenanceAPI {
 
 			if(taskMapForNewPmExecution != null) {
 				taskMap = taskMapForNewPmExecution;
-			}
-
-			if (taskMap != null && CollectionUtils.isNotEmpty(clonedWoTemplate.getSectionNameList())) {
-				wo.setSectionNameList(clonedWoTemplate.getSectionNameList());
 			}
 
 			Map<String, List<TaskContext>> preRequestMap = null;
@@ -925,7 +904,7 @@ public class PreventiveMaintenanceAPI {
 			Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 			if(woTemplateResourceId > 0) {
 				Long currentTriggerId = pmTrigger.getId();
-				taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate, woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
+				taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 			}
 		} else {
 			taskMapForNewPmExecution = woTemplate.getTasks();
@@ -938,10 +917,6 @@ public class PreventiveMaintenanceAPI {
 		if(taskMapForNewPmExecution != null) {
 			taskMap = taskMapForNewPmExecution;
 		}
-		if (taskMap != null && CollectionUtils.isNotEmpty(woTemplate.getSectionNameList())) {
-			wo.setSectionNameList(woTemplate.getSectionNameList());
-		}
-
 		Map<String, List<TaskContext>> preRequestMap = null;
 		Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null;
 		isNewPmType = false;

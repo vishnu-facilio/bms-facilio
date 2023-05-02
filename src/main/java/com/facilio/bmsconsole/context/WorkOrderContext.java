@@ -659,8 +659,4 @@ public class WorkOrderContext extends TicketContext {
 	@Getter
     @Setter
     private RoutesContext route;
-
-	@Getter
-	@Setter
-	private List<String> sectionNameList;
 }

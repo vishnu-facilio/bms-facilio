@@ -1071,7 +1071,7 @@ public class TemplateAPI {
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
 		woTemplate.setPrerequisiteApproverTemplates(getPrerequisiteApproversTemplateFromWOTemplate(woTemplate));
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null); // task section sequences change when it's converted to map
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null);
 		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, null));
 		woTemplate.setPreRequests(getPreRequestsFromWOTemplate(woTemplate, sectionMap));
 		woTemplate.setPrerequisiteApprovers(getPrerequisiteApproversFromWOTemplate(woTemplate));
@@ -1297,11 +1297,9 @@ public class TemplateAPI {
 			if (woTemplate != null) {
 				woTemplate.setPreRequestTemplates(preRequestTemplates);
 				woTemplate.setTaskTemplates(taskTemplates);
-				if(CollectionUtils.isEmpty(woTemplate.getSectionTemplates())) {
-					LOGGER.warn("Section Templates is empty.");
-					// commented this out as section-template is already been updated in getTaskSectionTemplatesFromWOTemplate()
-					//List<TaskSectionTemplate> taskSectionlist= sectionMap.entrySet().stream().map(Entry::getValue).filter(sec->!sec.isPreRequestSection()).collect(Collectors.toList());
-					//woTemplate.setSectionTemplates(taskSectionlist);
+				if(sectionMap != null) {
+					List<TaskSectionTemplate> taskSectionlist= sectionMap.entrySet().stream().map(Entry::getValue).filter(sec->!sec.isPreRequestSection()).collect(Collectors.toList());
+					woTemplate.setSectionTemplates(taskSectionlist);
 				}
 			}
 			else {

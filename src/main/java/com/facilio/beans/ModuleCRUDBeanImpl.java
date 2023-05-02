@@ -245,7 +245,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			for (Long resourceId : resourceIds) {
 
 				Map<String, List<TaskContext>> taskMap = null;
-				List<String> sectionNameList = new ArrayList<>();
 
 				if (resourcePlanners != null && resourcePlanners.containsKey(resourceId)) {
 					PMResourcePlannerContext resourcePlanner = resourcePlanners.get(resourceId);
@@ -282,12 +281,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 							isNewPmType = true;
 						}
 					}
-
-					// if this seems to be duplicate, will be removed later
-					for (TaskSectionTemplate sectionTemplate : workorderTemplate.getSectionTemplates()) {
-						sectionNameList.add(sectionTemplate.getName());
-					}
-					wo.setSectionNameList(sectionNameList);
 				}
 
 				PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
@@ -300,7 +293,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						if (pmTrigger != null) {
 							currentTriggerId = pmTrigger.getId();
 						}
-						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate, workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
+						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 					}
 				} else {
 					taskMapForNewPmExecution = workorderTemplate.getTasks();
@@ -308,12 +301,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if (taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
 				}
-
-				if (taskMap != null && CollectionUtils.isNotEmpty(workorderTemplate.getSectionNameList())) {
-					sectionNameList = workorderTemplate.getSectionNameList();
-				}
-				wo.setSectionNameList(sectionNameList);
-
 				Map<String, List<TaskContext>> preRequestMap = workorderTemplate.getPreRequests();
 
 				Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null;

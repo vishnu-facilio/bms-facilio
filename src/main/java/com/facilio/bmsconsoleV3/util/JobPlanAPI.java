@@ -374,7 +374,6 @@ public class JobPlanAPI {
         List<JobPlanTaskSectionContext> initalTaskSections = setJobPlanDetails(jobPlan.getId());
         
         List<JobPlanTaskSectionContext> updatedTaskSections = new ArrayList<>();
-        List<String> sectionNameList = new ArrayList<>();
         
         
         if (initalTaskSections != null) {
@@ -390,13 +389,9 @@ public class JobPlanAPI {
                         updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
                         updatedTaskSection.setResource(sectionResource);
                         updatedTaskSections.add(updatedTaskSection);
-                        sectionNameList.add(updatedTaskSection.getName());  // update sectionName in sectionNameList
                     }
                 }
            }
-
-            workOrderContext.setSectionNameList(sectionNameList); // update sectionNameList in workorder
-
             int taskUniqueId = 1;
             if(CollectionUtils.isNotEmpty(updatedTaskSections)) {
 
