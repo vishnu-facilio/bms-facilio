@@ -117,7 +117,7 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 
 public class PageFactory {
 	public static Page getPage(FacilioModule module, Object record, boolean isApproval) throws Exception {
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET) && module.getModuleId() > 0) {
 			Page page = getPageValue(module, record, isApproval);
 			if (page == null) {
 				return null;
