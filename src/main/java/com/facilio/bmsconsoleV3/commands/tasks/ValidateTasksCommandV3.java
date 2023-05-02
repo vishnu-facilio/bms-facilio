@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.tasks;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -33,6 +35,7 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         int maxUniqueId = 0;
+        int maxSequenceId = 0;
         List<V3TaskContext> tasks = null;
         Map<V3TaskContext, V3TaskTemplate> taskvsTemplateMap = null;
 
@@ -61,10 +64,9 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                     V3TaskContext task = (V3TaskContext) context.get(FacilioConstants.ContextNames.TASK);
                     if (task != null) {
                         tasks = Collections.singletonList(task);
-                        maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
-                        WorkOrderContext wo =
-                                WorkOrderAPI.getWorkOrder(task.getParentTicketId(),
-                                        Collections.singletonList("moduleState"));
+                        maxUniqueId = getMaxColumnValueFromExistingTasks(task.getParentTicketId(), FieldFactory.getField("uniqueId", "MAX(UNIQUE_ID)", FieldType.NUMBER));
+                        maxSequenceId = getMaxColumnValueFromExistingTasks(task.getParentTicketId(), FieldFactory.getField("sequence", "MAX(SEQUENCE)", FieldType.NUMBER));
+                        WorkOrderContext wo = WorkOrderAPI.getWorkOrder(task.getParentTicketId(), Collections.singletonList("moduleState"));
                         context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(wo));
                     }
                 }
@@ -91,6 +93,7 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                         context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)).get(0);
                 if (oldPm.getWoTemplate() != null) {
                     maxUniqueId = getMaxUniqueIdFromTemplate(oldPm.getWoTemplate().getId());
+                    maxSequenceId = getMaxSequenceIdFromTemplate(oldPm.getWoTemplate().getId());
                 }
             }
 
@@ -98,6 +101,9 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                 validateSiteSpecificData(task);
                 if (task.getUniqueId() == -1) {
                     task.setUniqueId(++maxUniqueId);
+                }
+                if(task.getSequence() == -1){
+                    task.setSequence(++maxSequenceId);
                 }
                 if (task.getInputTypeEnum() == null) {
                     task.setInputType(V3TaskContext.InputType.NONE.getVal());
@@ -192,16 +198,31 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
         return maxUniqueId;
     }
 
-    private int getMaxUniqueIdFromExistingTasks(long parentId) throws Exception {
+    private static int getMaxSequenceIdFromTemplate (long templateId) throws Exception {
+        int maxSequenceId = 0;
+        WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+        if (woTemplate.getTaskTemplates() != null) {
+
+            for(TaskTemplate template: woTemplate.getTaskTemplates()) {
+                TaskContext task = template.getTask();
+                if (task.getSequence() > maxSequenceId) {
+                    maxSequenceId = task.getSequence();
+                }
+            }
+        }
+        return maxSequenceId;
+    }
+
+    private int getMaxColumnValueFromExistingTasks(long parentId, FacilioField field) throws Exception {
         int maxId = 0;
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getTasksModule().getTableName())
-                .select(Collections.singletonList(FieldFactory.getField("uniqueId", "MAX(UNIQUE_ID)", FieldType.NUMBER)))
+                .select(Collections.singletonList(field))
                 .andCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId", String.valueOf(parentId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = builder.get();
         if (props != null && !props.isEmpty()) {
-            maxId = (int) props.get(0).get("uniqueId");
+            maxId = (int) props.get(0).get(field.getName());
         }
         return maxId;
     }

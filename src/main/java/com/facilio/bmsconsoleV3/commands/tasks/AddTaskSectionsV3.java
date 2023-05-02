@@ -12,8 +12,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AddTaskSectionsV3 extends FacilioCommand {
     @Override
@@ -28,16 +30,20 @@ public class AddTaskSectionsV3 extends FacilioCommand {
                 context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP);
 
         if (workorder != null && taskMap != null && !taskMap.isEmpty()) {
+            List<String> sectionNameList = workorder.getSectionNameList();
+            if(CollectionUtils.isEmpty(sectionNameList)){
+                sectionNameList = new ArrayList<>(taskMap.keySet());
+            }
             GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getTaskSectionModule().getTableName())
                     .fields(FieldFactory.getTaskSectionFields());
             int sequence = 1;
             List<TaskSectionContext> sections = new ArrayList<>();
-            for (Map.Entry<String, List<V3TaskContext>> entry : taskMap.entrySet()) {
-                if (!entry.getKey().equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+            for (String sectionName : sectionNameList) {
+                if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
                     TaskSectionContext section = new TaskSectionContext();
                     section.setParentTicketId(workorder.getId());
-                    section.setName(entry.getKey());
+                    section.setName(sectionName);
                     section.setSequenceNumber(sequence++);
                     section.setPreRequest(Boolean.FALSE);
                     insertBuilder.addRecord(FieldUtil.getAsProperties(section));
