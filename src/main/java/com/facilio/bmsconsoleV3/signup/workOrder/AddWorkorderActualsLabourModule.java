@@ -97,7 +97,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         endTime.setRequired(true);
         fields.add(endTime);
 
-        NumberField duration = FieldFactory.getDefaultField("duration","duration","DURATION", FieldType.NUMBER,FacilioField.FieldDisplayType.DURATION);
+        NumberField duration = FieldFactory.getDefaultField("duration","Duration","DURATION", FieldType.NUMBER,FacilioField.FieldDisplayType.DURATION);
         duration.setRequired(true);
         fields.add(duration);
 
@@ -495,7 +495,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "resultList.add(result1);\n" +
                 "}\n" +
 
-               "return resultList;\n" +
+                "return resultList;\n" +
                 "\n" +
                 "\n" +
                 "\n" +
@@ -576,6 +576,14 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "labourList.add(labour);\n" +
                 "}\n" +
                 "}\n" +
+                "else if(labourCrafts == null ){\n" +
+                "labours = Module(\"labour\").fetch([id != null]);\n" +
+                "for each index,value in labours {\n"+
+                "labours= value;\n"+
+                "labour = labours.id+\"\";\n"+
+                "labourList.add(labour);\n" +
+                "}\n" +
+                "}\n" +
                 "conditionMap = {};\n" +
                 "conditionMap.operatorId = 36;\n"+
                 "conditionMap.fieldName = \"id\";\n" +
@@ -642,6 +650,14 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
                 "for each index,value in labourCrafts {\n"+
                 "labourCraft= value;\n"+
                 "labours = labourCraft.labour;\n" +
+                "labour = labours.id+\"\";\n"+
+                "labourList.add(labour);\n" +
+                "}\n" +
+                "}\n" +
+                "else if(labourCrafts == null ){\n" +
+                "labours = Module(\"labour\").fetch([id != null]);\n" +
+                "for each index,value in labours {\n"+
+                "labours= value;\n"+
                 "labour = labours.id+\"\";\n"+
                 "labourList.add(labour);\n" +
                 "}\n" +
@@ -877,3 +893,4 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
         return workorderActualLabourView;
     }
 }
+
