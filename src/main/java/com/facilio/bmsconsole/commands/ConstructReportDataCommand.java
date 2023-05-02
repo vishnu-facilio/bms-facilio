@@ -241,7 +241,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
         return xVal;
     }
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.####");
 
     private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap) throws Exception {
         FacilioField field = reportFieldContext.getField();
