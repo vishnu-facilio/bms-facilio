@@ -26,7 +26,7 @@ public class CloseWorkOrderFromFaultsCommand extends FacilioCommand {
         BaseAlarmContext baseAlarmContext = (BaseAlarmContext) context.get(FacilioConstants.ContextNames.BASE_ALARM);
         if (baseAlarmContext != null && workflowRuleContext != null) {
             Long ruleId = ((ReadingAlarm) baseAlarmContext).getRule().getId();
-            if (ruleId == workflowRuleContext.getRuleId()) {
+            if (ruleId.equals(workflowRuleContext.getRuleId())) {
                 JSONObject template = (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
                 workflowRuleContext.setCriteria(CriteriaAPI.getCriteria(workflowRuleContext.getWoCriteriaId()));
                 WorkOrderContext workOrderContext = WorkOrderAPI.getWorkOrderByCriteria(baseAlarmContext.getLastWoId(), workflowRuleContext.getCriteria());

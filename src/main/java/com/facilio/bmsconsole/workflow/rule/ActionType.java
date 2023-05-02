@@ -53,6 +53,7 @@ import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.qa.QAndAUtil;
+import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -699,7 +700,7 @@ public enum ActionType {
 					String moduleName=NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum());
 					LOGGER.info("Action Type CREATE_WO_FROM_ALARM"+"baseAlarm"+baseAlarm +"workflowRule"+currentRule + Thread.currentThread());
 					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) && baseAlarm.getIsNewReadingRule()){
-						faultWorkorderCreation(obj,currentRule,baseAlarm);
+						faultWorkorderCreation(obj,(ReadingRuleWorkOrderRelContext) currentRule,baseAlarm);
 					}
 					else {
 						if (lastOccurrence != null) {
@@ -2331,7 +2332,7 @@ public enum ActionType {
 			}
 		}
 	}
-    private static void faultWorkorderCreation(JSONObject template,WorkflowRuleContext wfRule,BaseAlarmContext baseAlarm) throws Exception{
+    private static void faultWorkorderCreation(JSONObject template, ReadingRuleWorkOrderRelContext wfRule, BaseAlarmContext baseAlarm) throws Exception{
         FacilioChain chain =TransactionChainFactory.addFaultToWorkOrder();
         FacilioContext context=chain.getContext();
         context.put(FacilioConstants.ContextNames.TEMPLATE_JSON,template);

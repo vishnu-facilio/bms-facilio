@@ -24,8 +24,8 @@ public class AddFaultToWorkOrderSupplementsCommand extends FacilioCommand {
 
         if (baseAlarmContext != null) {
             Long ruleId = ((ReadingAlarm) baseAlarmContext).getRule().getId();
-            LOGGER.info("workflowRuleContext "+workflowRuleContext.getRuleId()+"ruleId "+ruleId);
-            if (ruleId == workflowRuleContext.getRuleId()) {
+            LOGGER.info("workflowRuleContextRule "+workflowRuleContext.getRuleId()+" workflowRuleContext"+ workflowRuleContext.getClass()+"ruleId "+ruleId);
+            if (ruleId.equals(workflowRuleContext.getRuleId())) {
                 if (alarmOccurrence != null) {
                     Long woId = alarmOccurrence.getWoId();
                     createNewWo = (woId == -1);
