@@ -1957,14 +1957,6 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getLookupFieldList(){
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(getFilterableFields());
-		chain.addCommand(new LookupFieldListCommand());
-		chain.addCommand(new FieldListCommand());
-
-		return chain;
-	}
 	public static FacilioChain getAssetAlarmList() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAssetAlarmDetailsCommand());

@@ -240,7 +240,6 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
-		public static final String IS_ONE_LEVEL_FIELDS="isOneLevelFields";
 		public static final String CURRENCY = "currency";
 		public static final String OLD_CURRENCY = "oldCurrency";
 		public static final String CURRENCIES_LIST = "currencies";
