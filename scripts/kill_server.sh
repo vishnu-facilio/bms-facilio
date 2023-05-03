@@ -17,5 +17,4 @@ if [ -z "$pid" ]; then
     exit 0;
 fi
 kill -9 $pid
-sh stop_hydra.sh
 echo "server stopped..."

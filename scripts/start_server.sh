@@ -36,5 +36,4 @@ then
         rm -rf $APP_HOME/temp/*
         rm $FACILIO_HOME/build_update
 fi
-sh start_hydra.sh
 echo "server started..."
