@@ -715,11 +715,12 @@ public class AccountUtil {
 		Map<Integer, FeatureLicense> featureLicenses = FeatureLicense.getAllFeatureLicenseIdMap();
 		TreeMap<String,Boolean> features = new TreeMap<>();
 
+		Map<String,Long> licenseMap = getOrgFeatureLicense(orgId);
 		for(Integer featureId: featureLicenses.keySet()) {
 
 			FeatureLicense license = featureLicenses.get(featureId);
 			// boolean isEnabled = (FeatureLicense.TENANTS == license) || (FeatureLicense.VENDOR == license) || ((getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense());
-			boolean isEnabled = (getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense();
+			boolean isEnabled = (licenseMap.get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense();
 			features.put(license.toString(), isEnabled);
 		}
 		return features;
