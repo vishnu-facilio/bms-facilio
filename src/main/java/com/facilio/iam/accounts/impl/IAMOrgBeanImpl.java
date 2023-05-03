@@ -314,6 +314,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			if (StringUtils.isNotEmpty(defaultDbForNewOrg)) {
 				org.setDbName(defaultDbForNewOrg);
 			}
+			String defaultDataSourceForNewOrg = FacilioProperties.getDefaultDataSourceForNewOrg();
+			if(StringUtils.isNotEmpty(defaultDataSourceForNewOrg)) {
+				org.setDataSource(defaultDataSourceForNewOrg);
+			}
 		}
 		
 		return IAMUtil.getOrgBean().createOrgv2(org);

@@ -43,9 +43,13 @@ public class OrgSignupJob implements Runnable {
 			if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				// setting org db
 				String defaultDbForNewOrg = FacilioProperties.getDefaultAppDBForNewOrg();
+				String defaultDsForNewOrg = FacilioProperties.getDefaultDataSourceForNewOrg();
 				if (StringUtils.isNotEmpty(defaultDbForNewOrg)) {
 					Organization identityOrg = IdentityClient.getDefaultInstance().getOrgBean().getOrg(orgId);
 					identityOrg.setDbName(defaultDbForNewOrg);
+					if(StringUtils.isNotEmpty(defaultDsForNewOrg)) {
+						identityOrg.setDataSource(defaultDsForNewOrg);
+					}
 					IdentityClient.getDefaultInstance().getOrgBean().updateOrg(orgId, identityOrg);
 					account.getOrg().setDbName(defaultDbForNewOrg);
 				}

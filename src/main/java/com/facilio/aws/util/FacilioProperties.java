@@ -65,6 +65,7 @@ public class FacilioProperties {
     private static String defaultAppDB;
     private static String defaultAppDBForNewOrg;
     private static String defaultDataSource;
+    private static String defaultDataSourceForNewOrg;
     private static String queueSource;
     private static boolean isOnpremise = false;
     private static boolean sysLogEnabled;
@@ -300,6 +301,7 @@ public class FacilioProperties {
             iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
             messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL, "300000"));
             defaultDataSource = PROPERTIES.getProperty("db.default.ds");
+            defaultDataSourceForNewOrg = PROPERTIES.getProperty("db.default.ds.new.org");
             defaultDB = PROPERTIES.getProperty("db.default.db");
             defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
             defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
@@ -610,6 +612,10 @@ public class FacilioProperties {
 
     public static String getDefaultDataSource() {
         return defaultDataSource;
+    }
+
+    public static String getDefaultDataSourceForNewOrg() {
+        return defaultDataSourceForNewOrg;
     }
 
     public static String getDefaultDB() {
