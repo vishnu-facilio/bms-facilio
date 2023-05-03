@@ -6,13 +6,18 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +58,39 @@ public class SummaryCommand extends FacilioCommand {
 
         List<ModuleBaseWithCustomFields> list = selectRecordsBuilder.get();
 
+        setDisplayUnitIdForNumberFieldAndDecimalField(fields,list);
+
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
         recordMap.put(moduleName, list);
 
         context.put(Constants.RECORD_MAP, recordMap);
 
         return false;
+    }
+    private void setDisplayUnitIdForNumberFieldAndDecimalField(List<FacilioField> fields,List<ModuleBaseWithCustomFields> records){
+        if(CollectionUtils.isEmpty(records)){
+            return;
+        }
+        Map<FacilioField, Unit> fieldVsDisplayUnit = new HashMap<>();
+        for (FacilioField field:fields){
+            if(field.getDataTypeEnum()== FieldType.NUMBER || field.getDataTypeEnum()==FieldType.DECIMAL){
+                NumberField numberField = (NumberField) field;
+                if(numberField.getMetric()!=-1 && numberField.getUnitId()!=-1){
+                    int unitId = numberField.getUnitId(); //Display Unit id
+                    fieldVsDisplayUnit.put(numberField,Unit.valueOf(unitId));
+                }
+            }
+        }
+
+       for(ModuleBaseWithCustomFields record:records){
+          for(FacilioField field:fieldVsDisplayUnit.keySet()){
+              String fieldName = field.getName();
+              Unit unitId = fieldVsDisplayUnit.get(field);
+              if(record.getDatum(fieldName)!=null && unitId!=null){
+                  record.setDatum(fieldName+"Unit",unitId.getUnitId());
+              }
+          }
+       }
+
     }
 }

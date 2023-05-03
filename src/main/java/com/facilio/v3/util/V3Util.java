@@ -17,6 +17,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
@@ -287,11 +290,15 @@ public class V3Util {
             idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
         }
 
+        Map<String, FacilioField> numberAndDecimalFieldsWithMetrics = getNumberAndDecimalFieldsWithMetrics(module.getName());
         for (Map<String, Object> rec: rawRecords) {
             Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
             Set<String> keys = rec.keySet();
             for (String key : keys) {
                 jsonObject.put(key, rec.get(key));
+                if(numberAndDecimalFieldsWithMetrics.containsKey(key) && !keys.contains(key+"Unit")){
+                    jsonObject.remove(key+"Unit");
+                }
             }
         }
         List<Map<String, Object>> values = new ArrayList<>(idVsRecordMap.values());
@@ -315,12 +322,16 @@ public class V3Util {
         JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
 
         Map<String, FacilioField> fileFields = getFileFields(moduleName);
+        Map<String, FacilioField> numberAndDecimalFieldsWithMetrics = getNumberAndDecimalFieldsWithMetrics(moduleName);
 
         Set<String> keys = patchObj.keySet();
         for (String key: keys) {
             FacilioField fileField = fileFields.get(key);
             if (fileField != null && patchObj.get(key) == null) {
                 summaryRecord.put(fileField.getName(), patchObj.get(key));
+            }
+            if(numberAndDecimalFieldsWithMetrics.containsKey(key) && !keys.contains(key+"Unit")){
+                summaryRecord.remove(key+"Unit");
             }
             summaryRecord.put(key, patchObj.get(key));
         }
@@ -348,6 +359,18 @@ public class V3Util {
         for (FacilioField f : fields) {
             if (f instanceof FileField) {
                 fieldMap.put(f.getName()+"Id", f);
+            }
+        }
+        return fieldMap;
+    }
+    public static Map<String, FacilioField> getNumberAndDecimalFieldsWithMetrics(String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        Map<String, FacilioField> fieldMap = new HashMap<>();
+        for (FacilioField f : fields) {
+            if (f instanceof NumberField && ((NumberField)f).getMetric()!=-1 && ((NumberField)f).getUnitId()!=-1) {
+                fieldMap.put(f.getName(), f);
             }
         }
         return fieldMap;
@@ -459,7 +482,7 @@ public class V3Util {
 
     // Need to be changed
     public static FacilioContext createRecord(FacilioModule module,List<ModuleBaseWithCustomFields> records) throws Exception {
-    	
+
         if(CollectionUtils.isNotEmpty(records)) {
             Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
             recordMap.put(module.getName(), records);
