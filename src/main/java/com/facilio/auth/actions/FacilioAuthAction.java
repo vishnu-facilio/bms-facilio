@@ -32,6 +32,7 @@ import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.services.email.EmailClient;
+import com.facilio.services.filestore.FileStoreFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.common.base.Throwables;
@@ -2943,21 +2944,11 @@ public class FacilioAuthAction extends FacilioAction {
 	public String getLogo() throws Exception {
 		String domain = getDomain();
 		Organization org = IAMOrgUtil.getOrg(domain);
-		String logoURL = null;
+
 		if (org != null) {
-			logoURL = org.getLogoUrl();
-			if(logoURL != null && !logoURL.isEmpty()){
-				CloseableHttpClient c = HttpClients.createDefault();
-				try{
-					CloseableHttpResponse resp = c.execute(new HttpGet(logoURL));
-					HttpEntity entity = resp.getEntity();
-					setContentType("application/octet-image");
-					if(entity != null){
-						resultStream = entity.getContent();
-					}
-				} catch (Exception e){
-					throw e;
-				}
+			if (org.getLogoId() > 0) {
+				setContentType("application/octet-image");
+				resultStream = FileStoreFactory.getInstance().getFileStore().readFile(org.getLogoId());
 				return SUCCESS;
 			}
 		}
