@@ -713,6 +713,30 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 
+	public static FacilioModule getFlowModule(){
+		FacilioModule flowModule = new FacilioModule();
+		flowModule.setName("flow");
+		flowModule.setDisplayName("Flow");
+		flowModule.setTableName("Flows");
+		return flowModule;
+	}
+
+	public static FacilioModule getFlowTransitionModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("flowTransition");
+		flowTransitionModule.setDisplayName("Flow Transition");
+		flowTransitionModule.setTableName("FlowTransition");
+		return flowTransitionModule;
+	}
+
+	public static FacilioModule getFlowParameters(){
+		FacilioModule flowParameterModule = new FacilioModule();
+		flowParameterModule.setName("parameter");
+		flowParameterModule.setDisplayName("Parameter");
+		flowParameterModule.setTableName("Parameter");
+		return flowParameterModule;
+	}
+
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");

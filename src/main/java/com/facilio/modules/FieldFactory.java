@@ -3360,6 +3360,47 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getFlowFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFlowModule();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("name","NAME",module));
+        fields.add(getStringField("description","DESCRIPTION",module));
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+        fields.add(getNumberField("flowType","TYPE",module));
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getNumberField("createdBy", "SYS_CREATED_BY", module));
+        fields.add(getNumberField("modifiedBy", "SYS_MODIFIED_BY", module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getFlowTransitionFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFlowTransitionModule();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("blockType","BLOCK_TYPE",module));
+        fields.add(getNumberField("flowId","FLOW_ID",module));
+        fields.add(getBooleanField("isStartBlock","START_BLOCK",module));
+        fields.add(getNumberField("connectedFrom","CONNECTED_FROM",module));
+        fields.add(getNumberField("position","POSITION_NO",module));
+        fields.add(getStringField("configData","CONFIG_DATA",module));
+        return fields;
+    }
+
+    public static List<FacilioField> getFlowParameterFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFlowParameters();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("flowId","FLOW_ID",module));
+        fields.add(getStringField("parameters","PARAMETER",module));
+        return fields;
+    }
+
     public static List<FacilioField> getImportDataDetailsFields() {
         FacilioModule module = ModuleFactory.getImportDataDetailsModule();
 

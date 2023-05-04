@@ -1354,6 +1354,7 @@
                 method="getClassificationSupportedModules">
         </action>
     </package>
+
     <package name="applicationPermissions" namespace="/api/v3/applicationPermissions"
              extends="v3Api">
         <action name="addOrUpdate"

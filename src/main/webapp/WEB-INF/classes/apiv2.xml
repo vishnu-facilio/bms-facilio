@@ -267,6 +267,35 @@
 		</action>
 	</package>
 
+	<package name="flows" namespace="/api/v2/flows" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.flows.action.FlowAction" method="addOrUpdateFlow"/>
+		<action name="list" class="com.facilio.flows.action.FlowAction" method="getFlowList"/>
+		<action name="get" class="com.facilio.flows.action.FlowAction" method="viewFlow"/>
+		<action name="delete" class="com.facilio.flows.action.FlowAction" method="deleteFlow"/>
+	</package>
+
+	<package name="flowTransition" namespace="/api/v2/flowTransition" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.flows.action.FlowAction"
+				method="addOrUpdateFlowTransition"/>
+		<action name="list"
+				class="com.facilio.flows.action.FlowAction"
+				method="getFlowTransitionList"/>
+		<action name="view"
+				class="com.facilio.flows.action.FlowAction"
+				method="viewFlowTransition"/>
+		<action name="delete"
+				class="com.facilio.flows.action.FlowAction"
+				method="deleteFlowTransition"/>
+		<action name="deleteConnection"
+				class="com.facilio.flows.action.FlowAction"
+				method="deleteTransactionConnection"/>
+		<action name="availableBlocks"
+				class="com.facilio.flows.action.FlowAction"
+				method="availableBlocksList"/>
+	</package>
+
+
 	<package name="v2ApiNullIgnored" strict-method-invocation="false" extends="v2Api">
 		<global-results>
 			<result name="success" type="json">
