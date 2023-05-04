@@ -1029,6 +1029,21 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	public static DashboardContext getDashboard(String dashboardLinkName) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (props != null && !props.isEmpty()) {
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			return dashboard;
+		}
+		return null;
+	}
 
 	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName, String moduleName) throws Exception {
 		

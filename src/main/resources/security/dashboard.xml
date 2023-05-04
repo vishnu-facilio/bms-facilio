@@ -331,6 +331,11 @@
             <property name="dashboardTabId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/tab/list/:dashboardLink" method="GET">
+        <urlparams>
+            <property name="dashboardLink" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/dashboard/rule/:dashboard_rule_id" method="GET">
         <urlparams>
             <property name="dashboard_rule_id" type="number" mandatory="true"/>

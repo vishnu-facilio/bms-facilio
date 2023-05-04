@@ -20,9 +20,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Setter @Getter
 @Log4j
@@ -187,6 +185,30 @@ public class V3DashboardAction extends V3Action {
         }catch (Exception e)
         {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);
+        }
+        return SUCCESS;
+    }
+    public String getDashboardTabsList() throws Exception
+    {
+        if(linkName  == null || "".equals(linkName)){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Name can not be empty");
+        }
+        try {
+            DashboardContext dashboard = DashboardUtil.getDashboard(linkName);
+            List<Map<String,Object>> list = new ArrayList<>();
+            if(dashboard != null) {
+                if (dashboard.isTabEnabled()) {
+                    FacilioChain chain = TransactionChainFactoryV3.getDashboardTabListChain();
+                    FacilioContext context = chain.getContext();
+                    context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+                    chain.execute();
+                    list = (List<Map<String, Object>>) context.get("tabsList");
+                }
+            }
+           setData("DashboardTabs", list);
+        }catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tabs info"+e);
         }
         return SUCCESS;
     }

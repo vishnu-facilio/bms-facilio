@@ -2723,6 +2723,7 @@
 /api/v2/wosurvey
 /api/v3/dashboard/update
 /api/v3/dashboard/:linkName
+/api/v3/dashboard/tab/list/:dashboardLink
 /api/v3/dashboard/tab/update
 /api/v2/colorPalette/add
 /api/v2/colorPalette/list

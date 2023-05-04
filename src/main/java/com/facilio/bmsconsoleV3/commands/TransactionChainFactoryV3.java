@@ -2379,6 +2379,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new V3UpdateDashboardTabWidgetCommand());
         return c;
     }
+    public static FacilioChain getDashboardTabListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDashboardTabListCommand());
+        return c;
+    }
 
     public static FacilioChain getDeleteAssetTypeChain() {
         FacilioChain chain = getDefaultChain();

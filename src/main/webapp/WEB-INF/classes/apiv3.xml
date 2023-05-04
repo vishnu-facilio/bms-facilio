@@ -1170,6 +1170,11 @@
                 method="dashboardTabData">
             <param name="dashboardTabId">{1}</param>
         </action>
+        <action name="list/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="getDashboardTabsList">
+            <param name="linkName">{1}</param>
+        </action>
     </package>
 
     <package name="v3DashboardRule" namespace="/api/v3/dashboard/rule" extends="v3Api">
