@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.instant.jobs.OrgSignupJob;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.fs.FileInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
@@ -2946,11 +2947,14 @@ public class FacilioAuthAction extends FacilioAction {
 		Organization org = IAMOrgUtil.getOrg(domain);
 
 		if (org != null) {
-			if (org.getLogoId() > 0) {
-				setContentType("application/octet-image");
-				resultStream = FileStoreFactory.getInstance().getFileStore().readFile(org.getLogoId());
-				return SUCCESS;
-			}
+				if (org.getLogoId() > 0) {
+					FileInfo fileInfo = FileStoreFactory.getInstance().getFileStore().getFileInfo(org.getLogoId());
+					if(fileInfo != null){
+						setContentType(fileInfo.getContentType());
+						resultStream = FileStoreFactory.getInstance().getFileStore().readFile(org.getLogoId());
+						return SUCCESS;
+					}
+			    }
 		}
 		return ERROR;
 	}
