@@ -134,6 +134,7 @@ public class JobPlanAPI {
                     if (options != null) {
                         jobPlanTask.setOptions(options);
                     }
+                    jobPlanTask.setInputOptions(optionsMap) ;
                 }
             }
             return list;
