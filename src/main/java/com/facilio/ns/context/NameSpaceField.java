@@ -2,7 +2,6 @@ package com.facilio.ns.context;
 
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.relation.context.RelationMappingContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,13 +32,11 @@ public class NameSpaceField implements Cloneable, Serializable {
     @JsonIgnore
     FacilioModule module;
 
-    Long relMapId;
-
     Long parentResourceId; // used in storm, when related nsFields are created, their resIds are their relations, but the parentResourceId is the field's resource Id
 
     Long dataInterval;
 
-    RelationMappingContext relMapContext;
+    NamespaceFieldRelated relatedInfo;
 
     public Long getDataInterval() {
         return dataInterval != null ? dataInterval : -1L;
@@ -67,15 +64,24 @@ public class NameSpaceField implements Cloneable, Serializable {
         return (aggregationType != null) ? aggregationType : AggregationType.valueOf(aggregationTypeI);
     }
 
-    Integer relAggregationType; // related fields aggregation type
+    NsFieldType nsFieldType;
 
-    @JsonIgnore
-    public AggregationType getRelAggregationTypeEnum(){
-        if(relAggregationType != null) {
-            return AggregationType.valueOf(relAggregationType);
-        }
-        return null;
+    public void setNsFieldType(NsFieldType typ) {
+        this.nsFieldType = typ;
+        this.nsFieldTypeI = typ.getIndex();
     }
+
+    int nsFieldTypeI;
+
+    public void setNsFieldTypeI(int nsFieldTypeI) {
+        if (nsFieldType != null) {
+            this.nsFieldTypeI = nsFieldType.getIndex();
+        } else {
+            this.nsFieldTypeI = nsFieldTypeI;
+            this.nsFieldType = NsFieldType.valueOf(nsFieldTypeI);
+        }
+    }
+
 
     boolean isEnabledCompaction;
 
@@ -102,10 +108,9 @@ public class NameSpaceField implements Cloneable, Serializable {
                 ", varName='" + varName + '\'' +
                 ", resourceId=" + resourceId +
                 ", fieldId=" + fieldId +
-                ", relMapId=" + relMapId +
                 ", dataInterval=" + dataInterval +
                 ", aggregationType=" + aggregationType +
-                ", relAggregationType=" + relAggregationType +
+                ", relatedInfo=" + relatedInfo +
                 '}';
     }
 

@@ -16,9 +16,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.ns.context.NSType;
-import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.ns.context.NameSpaceField;
+import com.facilio.ns.context.*;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
@@ -82,9 +80,14 @@ public class NamespaceAPI {
             if (field.getPrimary() != null && field.getPrimary()) {
                 field.setResourceId(null);
             }
-            if (field.getRelMapId() != null) {
-                RelationMappingContext mapping = RelationUtil.getRelationMapping(field.getRelMapId());
-                field.setRelMapContext(mapping);
+            if (field.getNsFieldType() == NsFieldType.RELATED_READING) {
+                NamespaceFieldRelated relatedInfo = FieldUtil.getAsBeanFromMap(m, NamespaceFieldRelated.class);
+                RelationMappingContext mapping = RelationUtil.getRelationMapping(relatedInfo.getRelMapId());
+                relatedInfo.setRelMapContext(mapping);
+                if (relatedInfo.getCriteriaId() != null) {
+                    relatedInfo.setCriteria(CriteriaAPI.getCriteria(relatedInfo.getCriteriaId()));
+                }
+                field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
             field.setField(modBean.getField(field.getFieldId()));

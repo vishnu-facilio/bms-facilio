@@ -46,7 +46,12 @@ public class RelationUtil {
 
     public static JSONObject getRecordsWithRelationship(Long relationMappingId, Long parentId, int page, int perPage) throws Exception {
         RelationMappingContext mappingData = getRelationMapping(relationMappingId);
-        return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage);
+        return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage, null);
+    }
+
+    public static JSONObject getRecordsWithRelationship(Long relationMappingId, Long parentId, int page, int perPage, Criteria userCriteria) throws Exception {
+        RelationMappingContext mappingData = getRelationMapping(relationMappingId);
+        return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage, userCriteria);
     }
 
     public static JSONObject getRecordsWithReverseRelationship(Long relationMappingId, Long parentId, int page, int perPage) throws Exception {
@@ -56,22 +61,28 @@ public class RelationUtil {
             throw new IllegalArgumentException("Invalid Relation");
         }
         String relationMappingName = null;
-        for(RelationMappingContext mapping : relation.getMappings()) {
-            if(!mapping.getMappingLinkName().equals(mappingData.getMappingLinkName())) {
+        for (RelationMappingContext mapping : relation.getMappings()) {
+            if (!mapping.getMappingLinkName().equals(mappingData.getMappingLinkName())) {
                 relationMappingName = mapping.getMappingLinkName();
                 break;
             }
         }
 
-        return getRecordsWithRelationship(relationMappingName, mappingData.getToModule().getName(), parentId, page, perPage);
+        return getRecordsWithRelationship(relationMappingName, mappingData.getToModule().getName(), parentId, page, perPage, null);
     }
 
     public static JSONObject getRecordsWithRelationship(String relationLinkName, String moduleName, Long parentId, int page, int perPage) throws Exception {
+        return getRecordsWithRelationship(relationLinkName, moduleName, parentId, page, perPage, null);
+    }
+
+    public static JSONObject getRecordsWithRelationship(String relationLinkName, String moduleName, Long parentId, int page, int perPage, Criteria serverCriteria) throws Exception {
         JSONObject relatedData = new JSONObject();
         page = (page < 1) ? 1 : page;
         perPage = (perPage < 1) ? WorkflowV2Util.SELECT_DEFAULT_LIMIT : perPage;
 
-        Criteria serverCriteria = new Criteria();
+        if (serverCriteria == null) {
+            serverCriteria = new Criteria();
+        }
         serverCriteria.addAndCondition(CriteriaAPI.getCondition(relationLinkName, String.valueOf(parentId), RelationshipOperator.CONTAINS_RELATION));
 
         FacilioContext listContext = V3Util.fetchList(moduleName, true, null, null, false, null, null,
@@ -94,8 +105,7 @@ public class RelationUtil {
                 .select(FieldFactory.getRelationMappingFields())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(mappingId), NumberOperators.EQUALS));
 
-        RelationMappingContext mapping = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationMappingContext.class);
-        return mapping;
+        return FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationMappingContext.class);
     }
 
     public static RelationMappingContext getRelationMapping(String mappingLinkName) throws Exception {
@@ -120,7 +130,7 @@ public class RelationUtil {
 
         StringBuilder joinCondition = new StringBuilder();
         joinCondition = joinCondition.append(relationFields.get("id").getCompleteColumnName() + " = " + mappingFields.get("relationId").getCompleteColumnName());
-        if(isSetupPage) {
+        if (isSetupPage) {
             joinCondition.append(" AND ((")
                     .append(mappingFields.get("fromModuleId").getCompleteColumnName()).append(" = ").append(mappingFields.get("toModuleId").getCompleteColumnName()).append(" AND ")
                     .append(mappingFields.get("position").getCompleteColumnName()).append(" = ").append(RelationMappingContext.Position.LEFT.getIndex()).append(") OR (")
@@ -146,7 +156,7 @@ public class RelationUtil {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
 
-            int offset = ((page-1) * perPage);
+            int offset = ((page - 1) * perPage);
             if (offset < 0) {
                 offset = 0;
             }
@@ -183,7 +193,7 @@ public class RelationUtil {
     /**
      * Method will fetch all the relationships and filtered with parent id which is associated with any relationships.
      *
-     * @param module - source module
+     * @param module   - source module
      * @param parentId - resource id which is associated with relationships
      * @return Map of resource list
      * @throws Exception
@@ -272,17 +282,15 @@ public class RelationUtil {
                     } else { // this will fetch reverse mapping
                         fillReverseMappingDataInRequest(request, mapping);
                     }
-                }
-                else {
+                } else {
                     isSameModule = true;
-                    if(sameModuleRelationIds.contains(relation.getId())) {
+                    if (sameModuleRelationIds.contains(relation.getId())) {
                         if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
                             fillReverseMappingDataInRequest(request, mapping);
                         } else {
                             fillForwardMappingDatainRequest(request, mapping);
                         }
-                    }
-                    else {
+                    } else {
                         if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
                             fillForwardMappingDatainRequest(request, mapping);
                         } else {
@@ -291,7 +299,7 @@ public class RelationUtil {
                     }
                 }
             }
-            if(isSameModule) {
+            if (isSameModule) {
                 sameModuleRelationIds.add(relation.getId());
             }
             requests.add(request);
@@ -300,7 +308,7 @@ public class RelationUtil {
         return requests;
     }
 
-    private static void fillSameModuleRelationRequest(RelationRequestContext request, RelationContext relation, RelationMappingContext forwardMapping, RelationMappingContext reverseMapping) throws Exception{
+    private static void fillSameModuleRelationRequest(RelationRequestContext request, RelationContext relation, RelationMappingContext forwardMapping, RelationMappingContext reverseMapping) throws Exception {
         fillRelationMetaInfo(request, relation);
         fillForwardMappingDatainRequest(request, forwardMapping);
         fillReverseMappingDataInRequest(request, reverseMapping);

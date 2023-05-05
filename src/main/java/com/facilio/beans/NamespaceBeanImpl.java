@@ -1,32 +1,30 @@
 package com.facilio.beans;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
-import com.facilio.ns.context.NSType;
-import com.facilio.ns.context.NameSpaceCacheContext;
-import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.ns.context.NameSpaceField;
+import com.facilio.ns.context.*;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.db.criteria.CriteriaAPI.addCriteria;
 import static com.facilio.ns.NamespaceAPI.constructNamespaceAndFields;
+import static com.facilio.readingrule.util.NewReadingRuleAPI.setModuleNameForCriteria;
 
 @Log4j
 public class NamespaceBeanImpl implements NamespaceBean {
@@ -38,6 +36,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .leftJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldRelatedModule().getTableName()).on("Namespace_Fields.ID=Namespace_Field_Related.NAMESPACE_FIELD_ID")
                 .andCondition(CriteriaAPI.getIdCondition(nsId, NamespaceModuleAndFieldFactory.getNamespaceModule()));
 
         List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -105,38 +104,44 @@ public class NamespaceBeanImpl implements NamespaceBean {
 
     public void addNamespaceFields(Long nsId, List<NameSpaceField> fields) throws Exception {
         deleteFieldsIfAlreadyExists(nsId);
-        List<Map<String, Object>> assetList = new ArrayList<>();
 
         for (NameSpaceField fld : fields) {
-            Long resourceID = (fld.getResourceId() != null && fld.getResourceId() != -1) ? fld.getResourceId() : -1;
-            if (resourceID == -1) {
-                if (fld.getRelMapContext() != null && fld.getRelMapContext().getMappingLinkName() != null) {
-                    getRelationMappingFields(fld);
-                    prepareNSField(fld, nsId, resourceID, false);
-                    assetList.add(FieldUtil.getAsProperties(fld));
-                } else {
-                    prepareNSField(fld, nsId, resourceID, true);
-                    assetList.add(FieldUtil.getAsProperties(fld));
-                }
 
+            long resourceId = (fld.getResourceId() != null) ? fld.getResourceId() : -1;
+            if (resourceId == -1) {
+                if (fld.getNsFieldType() == NsFieldType.RELATED_READING) {
+                    prepareNSField(fld, nsId, resourceId, false);
+                    Long nsFieldId = addNsField(FieldUtil.getAsProperties(fld));
+                    fld.setId(nsFieldId);
+                    if (fld.getRelatedInfo() != null) {
+                        addNsFieldRelatedInfo(FieldUtil.getAsProperties(prepareNsRelatedField(fld)));
+                    }
+                } else {
+                    prepareNSField(fld, nsId, resourceId, true);
+                    addNsField(FieldUtil.getAsProperties(fld));
+                }
             } else {
-                prepareNSField(fld, nsId, resourceID, false);
-                assetList.add(FieldUtil.getAsProperties(fld));
+                prepareNSField(fld, nsId, resourceId, false);
+                addNsField(FieldUtil.getAsProperties(fld));
             }
         }
 
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                .fields(NamespaceModuleAndFieldFactory.getNamespaceFieldFields())
-                .addRecords(assetList);
-
-        insertBuilder.save();
     }
 
-    private void getRelationMappingFields(NameSpaceField nsField) throws Exception {
-        RelationMappingContext mapping = RelationUtil.getRelationMapping(nsField.getRelMapContext().getMappingLinkName());
-        nsField.setRelMapId(mapping.getId());
-        nsField.setRelMapContext(mapping);
+    private static Long addNsField(Map<String, Object>  nsField) throws Exception {
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFieldFields());
+
+        return insertBuilder.insert(nsField);
+    }
+
+    private void addNsFieldRelatedInfo(Map<String, Object> relatedInfo) throws Exception {
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldRelatedModule().getTableName())
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFieldRelatedFields());
+        insertBuilder.insert(relatedInfo);
+
     }
 
     private void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
@@ -159,6 +164,25 @@ public class NamespaceBeanImpl implements NamespaceBean {
         fld.setPrimary(isPrimary);
 
     }
+
+    private static NamespaceFieldRelated prepareNsRelatedField(NameSpaceField nsField) throws Exception {
+        NamespaceFieldRelated relatedInfo = nsField.getRelatedInfo();
+        getRelationMappingFields(relatedInfo);
+        relatedInfo.setNameSpaceFieldId(nsField.getId());
+        if (nsField.getRelatedInfo().getCriteria() != null) {
+            setModuleNameForCriteria(relatedInfo.getCriteria(), FacilioConstants.ContextNames.ASSET);
+            Long criteriaId = addCriteria(relatedInfo.getCriteria());
+            relatedInfo.setCriteriaId(criteriaId);
+        }
+        return relatedInfo;
+    }
+
+    private static void getRelationMappingFields(NamespaceFieldRelated relatedInfo) throws Exception {
+        RelationMappingContext mapping = RelationUtil.getRelationMapping(relatedInfo.getRelMapContext().getMappingLinkName());
+        relatedInfo.setRelMapId(mapping.getId());
+        relatedInfo.setRelMapContext(mapping);
+    }
+
 
     private void updateNamespaceInclusions(NameSpaceContext ns) throws Exception {
         List<Long> includedAssetIds = ns.getIncludedAssetIds();

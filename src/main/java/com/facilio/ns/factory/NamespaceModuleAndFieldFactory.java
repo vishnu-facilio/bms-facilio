@@ -35,6 +35,15 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         return module;
     }
 
+    public static FacilioModule getNamespaceFieldRelatedModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("namespaceFieldRelated");
+        module.setDisplayName("Namespace Field Related");
+        module.setTableName("Namespace_Field_Related");
+        module.setType(FacilioModule.ModuleType.CUSTOM);
+        return module;
+    }
+
     public static List<FacilioField> getNamespaceFieldFields() {
         FacilioModule module = getNamespaceFieldsModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -47,9 +56,8 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("fieldId", "FIELD_ID", module));
         fields.add(getNumberField("dataInterval", "DATA_INTERVAL", module));
         fields.add(getNumberField("aggregationTypeI", "AGGREGATION_TYPE", module));
-        fields.add(getNumberField("relAggregationType", "REL_AGGREGATION_TYPE", module));
         fields.add(getBooleanField("primary", "IS_PRIMARY", module));
-        fields.add(getNumberField("relMapId", "RELATION_MAPPING_ID", module));
+        fields.add(getNumberField("nsFieldTypeI", "NS_FIELD_TYPE", module));
         return fields;
     }
 
@@ -74,10 +82,23 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getNamespaceFieldRelatedFields() {
+        FacilioModule module = getNamespaceFieldRelatedModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("nameSpaceFieldId", "NAMESPACE_FIELD_ID", module));
+        fields.add(getNumberField("relMapId", "RELATION_MAPPING_ID", module));
+        fields.add(getNumberField("criteriaId", "CRITERIA_ID", module));
+        fields.add(getNumberField("relAggregationTypeInt", "REL_AGGREGATION_TYPE", module));
+        return fields;
+    }
+
     public static List<FacilioField> getNSAndFields() {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(getNamespaceFields());
         fields.addAll(getNamespaceFieldFields());
+        fields.addAll(getNamespaceFieldRelatedFields());
         return fields;
     }
+
 }
