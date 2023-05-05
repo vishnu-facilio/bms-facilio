@@ -612,7 +612,7 @@ public class WorkflowRuleAPI {
 
 		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
-
+	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		return getActiveWorkflowRulesFromActivityAndRuleType(module,activityTypes, criteria, true, true, ruleTypes);
 	}
@@ -626,8 +626,8 @@ public class WorkflowRuleAPI {
 				.table(ruleModule.getTableName())
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
-				.orderBy("EXECUTION_ORDER");
-
+				.orderBy("FIELD(MODULEID,"+StringUtils.join(module.getExtendedModuleIds(), ",")+"), EXECUTION_ORDER");
+		
 		if(module.hideFromParents()) {
 			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getModuleId()+"", NumberOperators.EQUALS));
 		}
@@ -1126,12 +1126,10 @@ public class WorkflowRuleAPI {
 	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
 		long startTime = System.currentTimeMillis();
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 		LOGGER.debug("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime)+" , PLACEHOLDERS  : " + rulePlaceHolders);
 
 		long criteriaCheckStartTime = System.currentTimeMillis();
-
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
 		if (siteId) {
 			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
