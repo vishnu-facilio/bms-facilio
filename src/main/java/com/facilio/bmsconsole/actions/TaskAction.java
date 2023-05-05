@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3WorkOderAPI;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
@@ -279,7 +283,8 @@ public class TaskAction extends FacilioAction {
 	
 	private String updateTask(FacilioContext context) throws Exception {
 		try {
-		if (task.getStatus() != null) {
+			checkForPreOpenWorkOrderAndThrowException(task.getParentTicketId());
+			if (task.getStatus() != null) {
 			FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), task.getStatus().getId());
 			if (status.getStatus().equals("Submitted")) {
 				task.setStatusNew(TaskStatus.OPEN);
@@ -421,7 +426,8 @@ public class TaskAction extends FacilioAction {
 	public String closeAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		try {
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+			checkForPreOpenWorkOrderAndThrowException(parentTicketId);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		if (CollectionUtils.isNotEmpty(taskIdList)) {
 			TaskContext defaultClosedTaskObj = new TaskContext();
 			defaultClosedTaskObj.setParentTicketId(parentTicketId);
@@ -550,6 +556,11 @@ public class TaskAction extends FacilioAction {
 		try {
 		for (TaskContext singleTask :taskContextList)
 		{
+			TaskContext taskContext = WorkOrderAPI.getTask(singleTask.getId());
+			if(taskContext == null){
+				throw  new RESTException(ErrorCode.VALIDATION_ERROR,true,"Task is Empty - #"+singleTask.getId(),null);
+			}
+			checkForPreOpenWorkOrderAndThrowException(taskContext.getParentTicketId());
 			context.clear();
 			context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -614,6 +625,15 @@ public class TaskAction extends FacilioAction {
 			throw e;
 		}
 		return SUCCESS;
+	}
+	public void checkForPreOpenWorkOrderAndThrowException(long ticketId) throws Exception{
+		List<V3WorkOrderContext> workOrders = V3WorkOderAPI.getWorkOrders(Collections.singletonList(ticketId),null,true,true);
+		if(CollectionUtils.isEmpty(workOrders)) {
+			throw new RESTException(ErrorCode.VALIDATION_ERROR, true, "No WorkOrder Found - #" +ticketId, null);
+		}
+		if(workOrders.get(0).getModuleState() == null){
+			throw new RESTException(ErrorCode.VALIDATION_ERROR,true,"Task(s) cannot be Updated for Pre-open WorkOrder #"+ticketId,null);
+		}
 	}
 	
 	public String deleteTask() throws Exception {

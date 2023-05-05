@@ -87,6 +87,10 @@ public class V3WorkOderAPI {
         }
         return null;
     }
+    public static List<V3WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList, boolean skipPermission) throws Exception{
+        List<V3WorkOrderContext> workorders = getWorkOrders(ticketIds,lookupFieldList,skipPermission,false);
+        return workorders;
+    }
 
     public static List<V3WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList) throws Exception {
 
@@ -112,7 +116,7 @@ public class V3WorkOderAPI {
         return workOrders;
     }
 
-    public static List<V3WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList, boolean skipPermission) throws Exception {
+    public static List<V3WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList, boolean skipPermission, boolean skipModuleCriteria) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
@@ -128,6 +132,10 @@ public class V3WorkOderAPI {
             builder.skipPermission();
             builder.skipScopeCriteria();
         }
+        if(skipModuleCriteria){
+            builder.skipModuleCriteria();
+        }
+
 
         if (CollectionUtils.isNotEmpty(lookupFieldList)) {
             List<LookupField> lookupFields = new ArrayList<>();
