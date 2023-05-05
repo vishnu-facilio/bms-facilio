@@ -8,7 +8,10 @@ import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.jobs.monitoring.utils.MonitoringFeature;
-import com.facilio.bmsconsoleV3.context.inspection.*;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -66,7 +69,7 @@ public class InspectionMonitoringToolJob extends FacilioJob {
             for(BaseScheduleContext baseSchedule : baseScheduleData){
                 Integer creationType = activeTemplateVSCreationType.get(baseSchedule.getRecordId());
                 Long startTime = DateTimeUtil.getCurrenTime();
-                Long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), InspectionUtil.INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));
+                Long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), InspectionScheduler.INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));
                 List<DateRange> times = baseSchedule.getScheduleInfo().getTimeIntervals(startTime, endDate);
                 int timesCount = times.size();
                 Integer generatedResponseCount = (Integer) templateVsResponseCount.get(baseSchedule.getRecordId());
@@ -77,8 +80,10 @@ public class InspectionMonitoringToolJob extends FacilioJob {
                         resBuilder.append("\n");
                     }
                 } else{
+                    List<ResourceContext> resources = new ArrayList<ResourceContext>();
                     InspectionTemplateContext inspectionTemplateRecord = templateIdvsTemplateContext.get(baseSchedule.getRecordId());
-                    List<ResourceContext> resources = InspectionUtil.getMultipleResource(inspectionTemplateRecord,baseSchedule);
+                    InspectionScheduler scheduler = new InspectionScheduler();
+                    resources = scheduler.getMultipleResource(inspectionTemplateRecord,baseSchedule);
                     int resourcesCount = resources.size();
                     int totalCount = timesCount * resourcesCount;
                     if(totalCount!=generatedResponseCount){

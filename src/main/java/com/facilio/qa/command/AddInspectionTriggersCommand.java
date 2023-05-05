@@ -5,14 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
-import com.facilio.bmsconsoleV3.context.inspection.InspectionGenerationHandler;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -133,15 +128,8 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 			if(!inclExclList.isEmpty()) {
 				V3RecordAPI.addRecord(false, inclExclList, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL));
 			}
-
-			List<BaseScheduleContext> baseSchedules = triggers.stream().map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
-			if(baseSchedules!=null && !baseSchedules.isEmpty()) {
-				JSONObject baseScheduleListObject = new JSONObject();
-				baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseSchedules);
-				SessionManager.getInstance().sendMessage(new Message()
-						.setTopic(InspectionGenerationHandler.TOPIC)
-						.setContent(baseScheduleListObject));
-			}
+			
+			InspectionAPI.scheduleResponseCreationJob(triggers);
 		}
 		return false;
 	}
