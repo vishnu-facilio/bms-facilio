@@ -42,6 +42,8 @@ import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.userScoping.*;
+import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
@@ -2053,6 +2055,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new LoadJobPlanServicesCommandV3());
         c.addCommand(new LoadJobPlanServicesExtraFieldsCommandV3());
         return c;
+    }
+    public static FacilioChain getBeforeFetchVendorsListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadVendorLookupCommandV3());
+        chain.addCommand(new LoadVendorsExtraFieldsCommandV3());
+        return chain;
     }
     public static FacilioChain getBeforeFetchToolTypesListChain() {
         FacilioChain chain = getDefaultChain();

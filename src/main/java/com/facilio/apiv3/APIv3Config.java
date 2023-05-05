@@ -1112,7 +1112,7 @@ public class APIv3Config {
                 .beforeSave(new AddOrUpdateLocationForVendorCommandV3())
                 .afterSave(TransactionChainFactoryV3.getVendorsAfterSaveChain())
                 .list()
-                .beforeFetch(new LoadVendorLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchVendorsListChain())
                 .afterFetch(new LookUpPrimaryFieldHandlingCommandV3())
                 .showStateFlowList()
                 .summary()

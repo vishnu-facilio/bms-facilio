@@ -84,13 +84,14 @@ public class VendorsModule extends BaseModuleConfig{
         vendorsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> vendorsFormFields = new ArrayList<>();
-        vendorsFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        vendorsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        vendorsFormFields.add(new FormField("website", FacilioField.FieldDisplayType.TEXTBOX, "Website", FormField.Required.OPTIONAL, 3, 1));
-        vendorsFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Name", FormField.Required.REQUIRED, 4, 1));
-        vendorsFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact E-mail", FormField.Required.OPTIONAL, 5, 1));
-        vendorsFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Phone", FormField.Required.REQUIRED, 6, 1));
-        vendorsFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 7, 1));
+        vendorsFormFields.add(new FormField("vendorLogo", FacilioField.FieldDisplayType.IMAGE, "Vendor Logo", FormField.Required.OPTIONAL, 1, 1));
+        vendorsFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        vendorsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        vendorsFormFields.add(new FormField("website", FacilioField.FieldDisplayType.TEXTBOX, "Website", FormField.Required.OPTIONAL, 4, 1));
+        vendorsFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Name", FormField.Required.REQUIRED, 5, 1));
+        vendorsFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact E-mail", FormField.Required.OPTIONAL, 6, 1));
+        vendorsFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Phone", FormField.Required.REQUIRED, 7, 1));
+        vendorsFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 8, 1));
 
         FormSection vendorsFormSection = new FormSection("Default", 1, vendorsFormFields, false);
         vendorsFormSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -107,13 +108,14 @@ public class VendorsModule extends BaseModuleConfig{
         portalVendorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 
         List<FormField> portalVendorFormFields = new ArrayList<>();
-        portalVendorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        portalVendorFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        portalVendorFormFields.add(new FormField("website", FacilioField.FieldDisplayType.TEXTBOX, "Website", FormField.Required.OPTIONAL, 3, 1));
-        portalVendorFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Contact Name", FormField.Required.REQUIRED, 4, 1));
-        portalVendorFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Contact E-mail", FormField.Required.REQUIRED, 5, 1));
-        portalVendorFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Contact Phone", FormField.Required.REQUIRED, 6, 1));
-        portalVendorFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 7, 1));
+        portalVendorFormFields.add(new FormField("vendorLogo", FacilioField.FieldDisplayType.IMAGE, "Vendor Logo", FormField.Required.OPTIONAL, 1, 1));
+        portalVendorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        portalVendorFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        portalVendorFormFields.add(new FormField("website", FacilioField.FieldDisplayType.TEXTBOX, "Website", FormField.Required.OPTIONAL, 4, 1));
+        portalVendorFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Contact Name", FormField.Required.REQUIRED, 5, 1));
+        portalVendorFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Contact E-mail", FormField.Required.REQUIRED, 6, 1));
+        portalVendorFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Contact Phone", FormField.Required.REQUIRED, 7, 1));
+        portalVendorFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 8, 1));
 
 
         FormSection portalVendorFormSection = new FormSection("Default", 1, portalVendorFormFields, false);

@@ -13,6 +13,7 @@ public class V3VendorContext extends V3Context {
     private static final long serialVersionUID = 1L;
     private String name, email, phone, website, description;
     private Long ttime, modifiedTime;
+    private Long vendorLogoId;
 
     public String getWebsite() {
         return website;
@@ -200,5 +201,13 @@ public class V3VendorContext extends V3Context {
 
     public void setInsurance(List<InsuranceContext> insurance) {
         this.insurance = insurance;
+    }
+
+    public Long getVendorLogoId() {
+        return vendorLogoId;
+    }
+
+    public void setVendorLogoId(Long vendorLogoId) {
+        this.vendorLogoId = vendorLogoId;
     }
 }
