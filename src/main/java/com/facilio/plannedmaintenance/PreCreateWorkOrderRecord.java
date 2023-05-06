@@ -11,11 +11,14 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PreCreateWorkOrderRecord extends FacilioCommand {
+    Logger LOGGER = LogManager.getLogger(PreCreateWorkOrderRecord.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -27,6 +30,7 @@ public class PreCreateWorkOrderRecord extends FacilioCommand {
         }
         Long plannerId = (Long) context.get("plannerId");
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrder.stream().map(i -> (ModuleBaseWithCustomFields) i).collect(Collectors.toList());
+        LOGGER.info("Size of WorkOrders scheduled = " + moduleBaseWithCustomFields.size());
 
         for (ModuleBaseWithCustomFields object : moduleBaseWithCustomFields) {
             Map<String, Object> objectMap = FieldUtil.getAsProperties(object);

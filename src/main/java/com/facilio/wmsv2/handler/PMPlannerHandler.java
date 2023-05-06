@@ -2,7 +2,9 @@ package com.facilio.wmsv2.handler;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.wmsv2.constants.Topics;
@@ -36,7 +38,8 @@ public class PMPlannerHandler extends BaseHandler {
             LOGGER.error("PM Planner handler entry");
             LOGGER.error(message.toString());
             long plannerId = getPlannerId(message);
-            ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());
+            ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",message.getOrgId());
+            //ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());
             PlannedMaintenanceAPI.ScheduleOperation operation = getOperation(message);
             switch (operation) {
                 case REINIT:

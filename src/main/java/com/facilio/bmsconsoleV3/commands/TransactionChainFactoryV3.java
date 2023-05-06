@@ -3169,7 +3169,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     public static FacilioChain preCreateWorkOrderAfterPPMPublish(){
-        FacilioChain c = getDefaultChain();
+        FacilioChain c = FacilioChain.getTransactionChain(1800000); // in ms
         c.addCommand(new FetchPlannerDetails());
         c.addCommand(new PreCreateWorkOrderRecord());
         return c;
