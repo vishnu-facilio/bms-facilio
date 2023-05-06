@@ -25,6 +25,7 @@ public class FeatureLockAction extends FacilioAction {
         
         FacilioChain updateChain = TransactionChainFactory.getUpdateFeatureLockChain();
         FacilioContext context = updateChain.getContext();
+        context.put(FacilioConstants.ContextNames.ORGID, orgId);
         context.put(FacilioConstants.FeatureAccessConstants.RECORD_IDS, ids);
         context.put(FacilioConstants.FeatureAccessConstants.FEATURE, feature);
         context.put(FacilioConstants.FeatureAccessConstants.ACCESS_PERMISSION, locked);

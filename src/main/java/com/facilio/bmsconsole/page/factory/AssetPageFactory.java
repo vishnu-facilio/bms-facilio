@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.controlaction.util.ControlActionUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -52,6 +54,8 @@ public class AssetPageFactory extends PageFactory {
 	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
 	public static Page getAssetPage(AssetContext asset) throws Exception {
+		Organization organization = AccountUtil.getCurrentOrg();
+		boolean isEmicoolOrg = organization.getOrgId() == 24l && StringUtils.isNotEmpty(organization.getDomain()) && organization.getDomain().equals("emicool");
 		Page page = new Page();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -107,8 +111,9 @@ public class AssetPageFactory extends PageFactory {
 		
 		
 		Tab tab2 = page.new Tab("maintenance");
-		page.addTab(tab2);
-		
+		if (!isEmicoolOrg) {
+			page.addTab(tab2);
+		}
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		
@@ -164,7 +169,9 @@ public class AssetPageFactory extends PageFactory {
 
 			// ----- Financial Tab Start --------
 			Tab tab7 = page.new Tab("financial");
-			page.addTab(tab7);
+			if(!isEmicoolOrg) {
+				page.addTab(tab7);
+			}
 			Section tab7Sec1 = page.new Section();
 			tab7.addSection(tab7Sec1);
 

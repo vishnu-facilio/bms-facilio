@@ -250,6 +250,18 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain validateAndGetCustomRelationDataChain() {
+        FacilioChain c = getRelationDataListChain();
+        c.addCommand(new GetRelatedModuleDataCommand());
+        return c;
+    }
+
+    public static FacilioChain getCustomRelationDataChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetRelatedModuleDataCommand());
+        return c;
+    }
+
     public static FacilioChain getRelatedDataChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateRelatedDataAndSetParamsCommand());

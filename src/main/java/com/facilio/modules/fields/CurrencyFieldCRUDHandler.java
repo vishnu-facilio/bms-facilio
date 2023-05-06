@@ -205,7 +205,7 @@ public class CurrencyFieldCRUDHandler extends BaseSingleRelRecordCRUDHandler<Map
 
         double currencyValue = Double.parseDouble(newProps.get("currencyValue") + "");
         double oldExchangeRate = (double) oldProps.get("exchangeRate");
-        double newBaseCurrencyVale = currencyValue * oldExchangeRate;
+        double newBaseCurrencyVale = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, oldExchangeRate);
 
         oldProps.put("currencyValue", roundOff(currencyValue, decimalPlaces));
         oldProps.put("baseCurrencyValue", roundOff(newBaseCurrencyVale, baseCurrencyDecimalPlaces));

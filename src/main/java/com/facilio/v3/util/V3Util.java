@@ -838,4 +838,35 @@ public class V3Util {
             }
         }
     }
+
+    public static void addJoinsToSelectBuilder(SelectRecordsBuilder selectRecordsBuilder, List<JoinContext> joins) throws Exception{
+        for(JoinContext join : joins) {
+            SelectRecordsBuilder.JoinRecordBuilder joinRecordBuilder;
+            switch (join.getJoinType()) {
+                case LEFT_JOIN:
+                    joinRecordBuilder = selectRecordsBuilder.leftJoin(join.getJoinModule().getTableName());
+                    break;
+                case RIGHT_JOIN:
+                    joinRecordBuilder = selectRecordsBuilder.rightJoin(join.getJoinModule().getTableName());
+                    break;
+                default:
+                    joinRecordBuilder = selectRecordsBuilder.innerJoin(join.getJoinModule().getTableName());
+                    break;
+            }
+
+            StringBuilder queryStatement = new StringBuilder();
+            // for ON statement
+            queryStatement.append(join.getJoinField().getCompleteColumnName());
+            queryStatement.append("=");
+            queryStatement.append(join.getParentTableField().getCompleteColumnName());
+
+            // Add Criteria for Join
+            if(join.getCriteria() != null) {
+                queryStatement.append(" AND ( ")
+                        .append(join.getCriteria().computeWhereClause())
+                        .append(" ) ");
+            }
+            joinRecordBuilder.on(queryStatement.toString());
+        }
+    }
 }

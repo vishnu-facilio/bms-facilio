@@ -3,6 +3,7 @@ package com.facilio.beans;
 import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -304,32 +305,17 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		int rows = super.updateField(field);
 		if (rows > 0) {
 			FacilioField newField = super.getField(field.getId());
-			dropFieldFromCache(newField);
-		
+			FieldUtil.dropFieldFromCache(getOrgId(), newField);
+
 		 // CacheUtil.remove(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), moduleName));
 		}
 		return rows;
 	}
-	
-	private void dropFieldFromCache(FacilioField newField )
-	{
-		FacilioCache cache = 	LRUCache.getModuleFieldsCache();
-		cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
-		
-		cache = LRUCache.getFieldsCache();
-		cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));
 
-		//Removing all field names with the same name because we might have multiple copies for the same field with different extended modules.
-		//Having multiple copies of the same field with different extended modules in cache is a conscious decision to avoid fetching of modules in getField
-		//The side effect of this is if another field has same name, even that will be removed from cache even if it doesn't extend the module of the field. We shall see how this goes!!
-		cache = LRUCache.getFieldNameCache();
-		String key = CacheUtil.FIELD_NAME_KEY_FOR_REMOVAL(getOrgId(), newField.getName());
-		cache.removeStartsWith(key);
-	}
 	@Override
 	public int deleteField(long fieldId) throws Exception {
 		FacilioField f = getField(fieldId);
-		dropFieldFromCache(f);
+		FieldUtil.dropFieldFromCache(getOrgId(), f);
 		return super.deleteField(fieldId);
 	}
 	
@@ -339,7 +325,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			fieldId = prop;
 		}
 		FacilioField f = getField(fieldId);
-		dropFieldFromCache(f);
+		FieldUtil.dropFieldFromCache(getOrgId(), f);
 		return super.deleteFields(fieldIds);
 	}
 

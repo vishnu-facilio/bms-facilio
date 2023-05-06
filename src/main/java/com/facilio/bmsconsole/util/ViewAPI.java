@@ -765,6 +765,21 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	
 	public static void customizeViewColumns(long viewId, List<ViewField> columns) throws Exception {
 		try {
+			List<ViewField> oldViewColumns = getViewColumns(viewId, false);
+			Map<Long, String> fieldIdVsCustomization = new HashMap<>();
+			Map<String, String> displayNameVsCustomization = new HashMap<>();
+			if (CollectionUtils.isNotEmpty(oldViewColumns)) {
+				for (ViewField viewField : oldViewColumns) {
+					if (StringUtils.isNotEmpty(viewField.getCustomization())) {
+						if (viewField.getFieldId() > 0) {
+							fieldIdVsCustomization.put(viewField.getFieldId(), viewField.getCustomization());
+						} else if (StringUtils.isNotEmpty(viewField.getColumnDisplayName())) {
+							displayNameVsCustomization.put(viewField.getColumnDisplayName(), viewField.getCustomization());
+						}
+					}
+				}
+			}
+
 			deleteViewColumns(viewId);
 			
 			List<Map<String, Object>> props = new ArrayList<>();
@@ -773,6 +788,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				FacilioField fieldDetails = field.getField();
 				if (field.getFieldId() == -1 && StringUtils.isEmpty(field.getFieldName()) && (fieldDetails.getFieldId() == -1 && StringUtils.isEmpty(fieldDetails.getName()))) {
 					throw new IllegalArgumentException("column field is required");
+				}
+				// add viewField customizations obtained from oldViewField
+				if (StringUtils.isEmpty(field.getCustomization())) {
+					if (field.getFieldId() > 0 && fieldIdVsCustomization.containsKey(field.getFieldId())) {
+						field.setCustomization(fieldIdVsCustomization.get(field.getFieldId()));
+					} else if (StringUtils.isNotEmpty(field.getColumnDisplayName()) && displayNameVsCustomization.containsKey(field.getColumnDisplayName())) {
+						field.setCustomization(displayNameVsCustomization.get(field.getColumnDisplayName()));
+					}
 				}
 				field.setViewId(viewId);
 				Map<String, Object> prop = FieldUtil.getAsProperties(field);
@@ -854,8 +877,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				.andCustomWhere("ORGID = ? AND VIEWID = ?", AccountUtil.getCurrentOrg().getId(), viewId);
 		return builder.delete();
 	}
-	
+
 	public static List<ViewField> getViewColumns(long viewId) throws Exception {
+		return getViewColumns(viewId, true);
+	}
+	
+	public static List<ViewField> getViewColumns(long viewId, boolean setFieldProps) throws Exception {
 		List<ViewField> columns = new ArrayList<>();
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -869,7 +896,10 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			for(Map<String, Object> prop : props) {
 				columns.add(FieldUtil.getAsBeanFromMap(prop, ViewField.class));
 			}
-			setViewFieldsProp(columns, null);
+
+			if (setFieldProps) {
+				setViewFieldsProp(columns, null);
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

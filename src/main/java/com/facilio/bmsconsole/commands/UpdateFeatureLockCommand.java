@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.featureAccess.FeatureLockEnum;
 import com.facilio.modules.fields.FacilioField;
@@ -12,6 +13,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import com.facilio.util.FacilioUtil;
+import com.facilio.fw.cache.FacilioCache;
+import com.facilio.fw.cache.LRUCache;
+import com.facilio.cache.CacheUtil;
+import com.facilio.v3.context.Constants;
+import com.facilio.beans.ModuleBean;
 
 import java.util.*;
 
@@ -23,6 +29,7 @@ public class UpdateFeatureLockCommand extends FacilioCommand {
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.FeatureAccessConstants.RECORD_IDS);
         Integer featureInt = (Integer) context.get(FacilioConstants.FeatureAccessConstants.FEATURE);
         FeatureLockEnum featureEnum = FeatureLockEnum.TYPE_MAP.get(featureInt);
+        long orgId = (long) context.get(FacilioConstants.ContextNames.ORGID);
 
         FacilioUtil.throwIllegalArgumentException(featureInt < 1, "Feature cannot be null");
 
@@ -37,6 +44,7 @@ public class UpdateFeatureLockCommand extends FacilioCommand {
                 case FIELDS:
                     module = ModuleFactory.getFieldsModule();
                     updateRecords(module, FieldFactory.getNumberField("fieldId", "FIELDID", module), recordIds, isLocked);
+                    dropFieldFromCache(orgId, recordIds);
                     break;
 
                 case WORKFLOW:
@@ -72,5 +80,13 @@ public class UpdateFeatureLockCommand extends FacilioCommand {
                 .fields(Collections.singletonList(isLockedField));
 
         updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);;
+    }
+
+    private void dropFieldFromCache(long orgId, List<Long> recordIds) throws Exception{
+        ModuleBean moduleBean = Constants.getModBean();
+        List<FacilioField> fieldsList = moduleBean.getFields(recordIds);
+        for (FacilioField newField : fieldsList) {
+            FieldUtil.dropFieldFromCache(orgId, newField);
+        }
     }
 }

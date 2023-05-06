@@ -1,5 +1,6 @@
 package com.facilio.relation.command;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +8,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -42,25 +44,36 @@ public class GetRelatedDataListCommand extends FacilioCommand {
 
         FacilioContext listContext;
         JSONObject recordJSON = new JSONObject();
+        Map<String, Object> paginationObject = new HashMap<>();
 
         if (fetchSummary) {
-            listContext = V3Util.fetchList(relationModuleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter);
+            FacilioChain relationDataChain = ReadOnlyChainFactoryV3.validateAndGetCustomRelationDataChain();
+
+            listContext = relationDataChain.getContext();
+            listContext.put(Constants.QUERY_PARAMS, queryParams);
+            listContext.put(FacilioConstants.ContextNames.MODULE_NAME, relationModuleName);
+
+            relationDataChain.execute();
 
             JSONObject customRelation = Constants.getJsonRecordMap(listContext);
             ArrayList<Map<String, Object>> resultData = (ArrayList<Map<String, Object>>) customRelation.get(relationModuleName);
 
             if (CollectionUtils.isNotEmpty(resultData)) {
-                JSONObject moduleDataObj = (JSONObject) resultData.get(0).get(relationPosition.getFieldName());
+                Map<String, Object> moduleDataObj = (Map<String, Object>) resultData.get(0).get(relationPosition.getFieldName());
                 FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, fetchOnlyViewColumnFields);
 
                 Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
                 List list = recordMap.get(moduleName);
 
                 recordJSON.put(moduleName, FieldUtil.getAsJSONArray(list, ModuleBaseWithCustomFields.class));
+                paginationObject.put("totalCount", list.size());
             } else {
                 recordJSON.put(moduleName, new ArrayList<>());
+                paginationObject.put("totalCount", 0l);
             }
+            JSONObject meta = new JSONObject();
+            meta.put("pagination", paginationObject);
+            context.put(FacilioConstants.ContextNames.META, meta);
         } else {
             listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
                     orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter);

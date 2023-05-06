@@ -1,6 +1,7 @@
 package com.facilio.db.criteria.operators;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -8,13 +9,19 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
 import lombok.SneakyThrows;
+import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public enum CurrencyOperator implements Operator<String> {
     EQUALS(116, "=") {
@@ -22,6 +29,19 @@ public enum CurrencyOperator implements Operator<String> {
         public String getWhereClause(String fieldName, String value) {
             if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
                 return getBaseCondition(fieldName, value, "=", true, false);
+            } else {
+                return null;
+            }
+        }
+
+        @SneakyThrows @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+                String[] module = fieldName.split("\\.");
+                if(module.length > 1) {
+                    fieldName = module[1];
+                }
+                return new FacilioModulePredicate(fieldName, computeEqualPredicate(value));
             } else {
                 return null;
             }
@@ -36,6 +56,19 @@ public enum CurrencyOperator implements Operator<String> {
                 return null;
             }
         }
+
+        @SneakyThrows @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+                String[] module = fieldName.split("\\.");
+                if(module.length > 1) {
+                    fieldName = module[1];
+                }
+                return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeEqualPredicate(value)));
+            } else {
+                return null;
+            }
+        }
     },
     LESS_THAN(118, "<") {
         @SneakyThrows @Override
@@ -45,6 +78,11 @@ public enum CurrencyOperator implements Operator<String> {
             } else {
                 return null;
             }
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicate(fieldName, value, "<");
         }
     },
     LESS_THAN_EQUALS(119, "<=") {
@@ -56,6 +94,11 @@ public enum CurrencyOperator implements Operator<String> {
                 return null;
             }
         }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicate(fieldName, value, "<=");
+        }
     },
     GREATER_THAN(120, ">") {
         @SneakyThrows @Override
@@ -66,6 +109,11 @@ public enum CurrencyOperator implements Operator<String> {
                 return null;
             }
         }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicate(fieldName, value, ">");
+        }
     },
     GREATER_THAN_EQUALS(121, ">=") {
         @SneakyThrows @Override
@@ -75,6 +123,11 @@ public enum CurrencyOperator implements Operator<String> {
             } else {
                 return null;
             }
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            return getPredicate(fieldName, value, ">=");
         }
     },
     BETWEEN(122, "between") {
@@ -88,6 +141,19 @@ public enum CurrencyOperator implements Operator<String> {
                 return null;
             }
         }
+
+        @SneakyThrows @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+                String[] module = fieldName.split("\\.");
+                if(module.length > 1) {
+                    fieldName = module[1];
+                }
+                return new FacilioModulePredicate(fieldName, getBetweenPredicate(value));
+            } else {
+                return null;
+            }
+        }
     },
     NOT_BETWEEN(123, "not between") {
         @SneakyThrows @Override
@@ -96,6 +162,19 @@ public enum CurrencyOperator implements Operator<String> {
                 String baseCondition = getBaseCondition(fieldName, null, null, false, true);
                 String betweenCondition = getBetweenCondition(value);
                 return baseCondition + betweenCondition;
+            } else {
+                return null;
+            }
+        }
+
+        @SneakyThrows @Override
+        public FacilioModulePredicate getPredicate(String fieldName, String value) {
+            if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+                String[] module = fieldName.split("\\.");
+                if(module.length > 1) {
+                    fieldName = module[1];
+                }
+                return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(getBetweenPredicate(value)));
             } else {
                 return null;
             }
@@ -129,9 +208,7 @@ public enum CurrencyOperator implements Operator<String> {
     }
 
     @Override
-    public FacilioModulePredicate getPredicate(String s, String s2) {
-        return null;
-    }
+    public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 
     @Override
     public boolean isDynamicOperator() {
@@ -208,4 +285,115 @@ public enum CurrencyOperator implements Operator<String> {
         builder.append(")");
         return builder.toString();
     }
+
+    private static Double getBaseCurrencyValue(Map<String, Object> currObj) {
+        Double baseCurrencyValue = null;
+        String currencyValueStr = String.valueOf(currObj.get("currencyValue"));
+        Double currencyValue = Double.parseDouble(currencyValueStr);
+        if (currObj.containsKey("currencyCode")) {
+            String currencyCode = String.valueOf(currObj.get("currencyCode"));
+            try {
+                CurrencyContext currency  = CurrencyUtil.getCurrencyFromCode(currencyCode);
+                if (currency != null) {
+                    double exchangeRate = currency.getExchangeRate();
+                    baseCurrencyValue = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, exchangeRate);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            baseCurrencyValue = currencyValue;
+        }
+        return baseCurrencyValue;
+    }
+
+    private static Predicate computeEqualPredicate(String value) {
+        if(value.contains(",")) {
+            List<Predicate> equalsPredicates = new ArrayList<>();
+            String[] values = value.trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
+            for(String val : values) {
+                equalsPredicates.add(getEqualPredicate(val));
+            }
+            return PredicateUtils.anyPredicate(equalsPredicates);
+        }
+        else {
+            return getEqualPredicate(value);
+        }
+    }
+
+    private static Predicate getEqualPredicate(final String value) {
+        return new Predicate() {
+            public boolean evaluate(Object object) {
+                if (object instanceof Map && MapUtils.isNotEmpty((Map<String, Object>) object)) {
+                    Double currentVal = getBaseCurrencyValue((Map<String, Object>) object);
+                    Double doubleVal = Double.valueOf(value);
+
+                    return compareDoubles(currentVal, doubleVal, "==");
+                } else {
+                    return false;
+                }
+            }
+        };
+    }
+
+    public static Predicate getBetweenPredicate(final String value) {
+        return new Predicate() {
+            public boolean evaluate(Object object) {
+                if (object instanceof Map && MapUtils.isNotEmpty((Map<String, Object>) object)) {
+                    String[] values = value.trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
+                    Double currentVal = getBaseCurrencyValue((Map<String, Object>) object);
+                    Double minVal = Double.valueOf(values[0]);
+                    Double maxVal = Double.valueOf(values[1]);
+
+                    return compareDoubles(currentVal, minVal, ">=") && compareDoubles(currentVal, maxVal, "<=");
+                } else {
+                    return false;
+                }
+            }
+        };
+    }
+
+    public static FacilioModulePredicate getPredicate(String fieldName, final String value, String operator) {
+        if (fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+            String[] module = fieldName.split("\\.");
+            if(module.length > 1) {
+                fieldName = module[1];
+            }
+            return new FacilioModulePredicate(fieldName, new Predicate() {
+                public boolean evaluate(Object object) {
+                    if (object instanceof Map && MapUtils.isNotEmpty((Map<String, Object>) object)) {
+                        Double currentVal = getBaseCurrencyValue((Map<String, Object>) object);
+                        Double doubleVal = Double.valueOf(value);
+
+                        return compareDoubles(currentVal, doubleVal, operator);
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        } else {
+            return null;
+        }
+    }
+
+    public static boolean compareDoubles(Double a, Double b, String operator) {
+        int result = a.compareTo(b);
+        switch (operator) {
+            case "<":
+                return result < 0;
+            case "<=":
+                return result <= 0;
+            case ">":
+                return result > 0;
+            case ">=":
+                return result >= 0;
+            case "==":
+                return result == 0;
+            case "!=":
+                return result != 0;
+            default:
+                throw new IllegalArgumentException("Invalid operator: " + operator);
+        }
+    }
+
 }

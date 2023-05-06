@@ -12,12 +12,15 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
+import com.facilio.cache.CacheUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.cache.FacilioCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
@@ -51,6 +54,20 @@ public class FieldUtil {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
 		return prop;
+	}
+
+	public static void dropFieldFromCache(long orgId, FacilioField newField) {
+		FacilioCache cache = LRUCache.getModuleFieldsCache();
+		cache.remove(CacheUtil.FIELDS_KEY(orgId, newField.getModule().getName()));
+
+		cache = LRUCache.getFieldsCache();
+		cache.remove(CacheUtil.FIELD_KEY(orgId, newField.getFieldId()));
+
+		//Removing all field names with the same name because we might have multiple copies for the same field with different extended modules.
+		//Having multiple copies of the same field with different extended modules in cache is a conscious decision to avoid fetching of modules in getField
+		//The side effect of this is if another field has same name, even that will be removed from cache even if it doesn't extend the module of the field. We shall see how this goes!!
+		cache = LRUCache.getFieldNameCache();
+		cache.removeStartsWith(CacheUtil.FIELD_NAME_KEY_FOR_REMOVAL(orgId, newField.getName()));
 	}
 	
 	public static void init() {

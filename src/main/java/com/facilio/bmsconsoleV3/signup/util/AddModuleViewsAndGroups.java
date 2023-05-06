@@ -277,6 +277,7 @@ public class AddModuleViewsAndGroups {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
             if (e.getMessage().contains("Duplicate entry")) {
+                LOGGER.info("ViewName already exists - ModuleName - " + view.getModuleName() + ", ViewName - " + view.getName());
                 throw new IllegalArgumentException("ViewName already taken");
             } else {
                 throw e;

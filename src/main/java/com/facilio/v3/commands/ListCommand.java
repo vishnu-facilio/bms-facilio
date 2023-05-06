@@ -11,6 +11,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -143,7 +144,7 @@ public class ListCommand extends FacilioCommand {
 
         List<JoinContext> joins = (List<JoinContext>) context.getOrDefault(Constants.JOINS, null);
         if(CollectionUtils.isNotEmpty(joins)) {
-            addJoinsToSelectBuilder(selectRecordsBuilder, joins);
+            V3Util.addJoinsToSelectBuilder(selectRecordsBuilder, joins);
         }
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         boolean excludeParentCriteria = (boolean) context.getOrDefault(Constants.EXCLUDE_PARENT_CRITERIA, false);
@@ -200,37 +201,6 @@ public class ListCommand extends FacilioCommand {
         selectRecordsBuilder.orderBy(orderBy);
 
         return selectRecordsBuilder;
-    }
-
-    private void addJoinsToSelectBuilder(SelectRecordsBuilder selectRecordsBuilder, List<JoinContext> joins) throws Exception{
-        for(JoinContext join : joins) {
-            SelectRecordsBuilder.JoinRecordBuilder joinRecordBuilder;
-            switch (join.getJoinType()) {
-                case LEFT_JOIN:
-                    joinRecordBuilder = selectRecordsBuilder.leftJoin(join.getJoinModule().getTableName());
-                    break;
-                case RIGHT_JOIN:
-                    joinRecordBuilder = selectRecordsBuilder.rightJoin(join.getJoinModule().getTableName());
-                    break;
-                default:
-                    joinRecordBuilder = selectRecordsBuilder.innerJoin(join.getJoinModule().getTableName());
-                    break;
-            }
-
-            StringBuilder queryStatement = new StringBuilder();
-            // for ON statement
-            queryStatement.append(join.getJoinField().getCompleteColumnName());
-            queryStatement.append("=");
-            queryStatement.append(join.getParentTableField().getCompleteColumnName());
-
-            // Add Criteria for Join
-            if(join.getCriteria() != null) {
-                queryStatement.append(" AND ( ")
-                        .append(join.getCriteria().computeWhereClause())
-                        .append(" ) ");
-            }
-            joinRecordBuilder.on(queryStatement.toString());
-        }
     }
 
 }

@@ -9,6 +9,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 
 public class GetRelatedListMetaFromPageCommand extends FacilioCommand {
@@ -27,7 +28,7 @@ public class GetRelatedListMetaFromPageCommand extends FacilioCommand {
             for (Page.Tab pageTab : page.getTabs()) {
                 if (pageTab.getName().equalsIgnoreCase("related") && CollectionUtils.isNotEmpty(pageTab.getSections())) {
                     for (Page.Section tabSection : pageTab.getSections()) {
-                        if (tabSection.getName().equalsIgnoreCase("related list") && CollectionUtils.isNotEmpty(tabSection.getWidgets())) {
+                        if (StringUtils.isNotEmpty(tabSection.getName()) && tabSection.getName().equalsIgnoreCase("related list") && CollectionUtils.isNotEmpty(tabSection.getWidgets())) {
                             for (PageWidget widget : tabSection.getWidgets()) {
                                 if (widget.getWidgetType() > 0 &&
                                     (widget.getWidgetType() == PageWidget.WidgetType.RELATED_LIST.getValue() || widget.getWidgetType() == PageWidget.WidgetType.NEW_RELATED_LIST.getValue())) {

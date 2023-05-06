@@ -3,6 +3,7 @@ package com.facilio.relation.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -10,10 +11,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.RelationshipOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
@@ -370,6 +368,37 @@ public class RelationUtil {
 
     public static RelationMappingContext.Position getReversePosition(RelationMappingContext.Position position) {
         return (position == RelationMappingContext.Position.LEFT) ? RelationMappingContext.Position.RIGHT : RelationMappingContext.Position.LEFT;
+    }
+
+    public static Map<String, Object> getSimpleModuleRecordSummary(FacilioModule module, Long recordId,
+                                                                         List<FacilioField> selectableFields) throws Exception {
+        Map<String, Object> resultProp = null;
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>();
+        selectRecordsBuilder
+                .module(module)
+                .fetchDeleted()
+                .select(selectableFields)
+                .andCondition(CriteriaAPI.getIdCondition(recordId, module));
+
+        List<Map<String, Object>> propsList = selectRecordsBuilder.getAsProps();
+        if (CollectionUtils.isNotEmpty(propsList)) {
+            resultProp = propsList.get(0);
+        }
+        return resultProp;
+    }
+
+    public static void deleteCustomRelation(FacilioModule relationModule, long id) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(relationModule.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(id, relationModule))
+                .andCondition(CriteriaAPI.getModuleIdIdCondition(relationModule.getModuleId(), relationModule));
+
+        builder.delete();
+    }
+
+    public static boolean isToOneRelationShipType(RelationMappingContext relationMapping) {
+        return (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
+                || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex());
     }
 
 }

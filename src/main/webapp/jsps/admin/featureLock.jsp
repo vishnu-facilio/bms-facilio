@@ -28,7 +28,7 @@
         <tr>
             <td class="table-head"><h4>IDs List</h4></td>
             <td>
-                <textarea id="recordIds" placeholder="{123,456,789}" rows="10" cols="30"></textarea>
+                <textarea id="recordIds" placeholder="123,456,789" rows="10" cols="30"></textarea>
             </td>
         </tr>
         <tr>
