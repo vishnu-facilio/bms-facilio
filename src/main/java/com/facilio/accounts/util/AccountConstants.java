@@ -1531,6 +1531,13 @@ public class AccountConstants {
 		isDefaultApp.setModule(module);
 		fields.add(isDefaultApp);
 
+		FacilioField isDefaultMobileApp = new FacilioField();
+		isDefaultMobileApp.setName("isDefaultMobileApp");
+		isDefaultMobileApp.setDataType(FieldType.BOOLEAN);
+		isDefaultMobileApp.setColumnName("IS_DEFAULT_MOBILE_APP");
+		isDefaultMobileApp.setModule(module);
+		fields.add(isDefaultMobileApp);
+
 		return fields;
 	}
 

@@ -25,6 +25,8 @@ public class SetDefaultAppForUserCommandV3 extends FacilioCommand {
 
         List<Long> ouIds = (List<Long>) context.get(FacilioConstants.ContextNames.ORG_USER_ID);
         Long appId = (Long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
+        boolean isMobile = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_MOBILE,false);
+        boolean isWeb = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_WEB,false);
 
         if(CollectionUtils.isEmpty(ouIds)){
             throw new IllegalArgumentException("User(s) cannot be empty");
@@ -37,12 +39,26 @@ public class SetDefaultAppForUserCommandV3 extends FacilioCommand {
 
             GenericUpdateRecordBuilder trueBuilder =  getUpdateBuilder(ouId,appId,NumberOperators.EQUALS);
             Map<String, Object> props = new HashMap<>();
-            props.put("isDefaultApp", true);
+            if(isMobile) {
+                props.put("isDefaultMobileApp", true);
+            } else if(isWeb){
+                props.put("isDefaultApp", true);
+            } else {
+                props.put("isDefaultMobileApp", true);
+                props.put("isDefaultApp", true);
+            }
             trueBuilder.update(props);
 
             GenericUpdateRecordBuilder falseBuilder =  getUpdateBuilder(ouId,appId,NumberOperators.NOT_EQUALS);
             props = new HashMap<>();
-            props.put("isDefaultApp", false);
+            if(isMobile) {
+                props.put("isDefaultMobileApp", false);
+            } else if(isWeb){
+                props.put("isDefaultApp", false);
+            } else {
+                props.put("isDefaultMobileApp", false);
+                props.put("isDefaultApp", false);
+            }
             falseBuilder.update(props);
         }
         return false;

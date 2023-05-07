@@ -351,7 +351,9 @@ public class FacilioConstants {
 		public static final String SIGNATURE = "signature";
 		public static final String SIGNATURE_DELETE = "signatureDelete";
 
+		public static final String IS_MOBILE = "isMobile";
 
+		public static final String IS_WEB = "isWeb";
 		public static final String MY_APPS = "myApps";
 		public static final String APPLICATION = "application";
 		public static final String PORTALS = "portals";

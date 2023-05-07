@@ -20,6 +20,7 @@ public class OrgUserApp implements Serializable {
 	private long scopingId;
 	private Boolean isDefaultApp;
 	private ApplicationContext application;
+	private Boolean isDefaultMobileApp;
 
 	private Role role;
 
@@ -80,5 +81,13 @@ public class OrgUserApp implements Serializable {
 
 	public void setIsDefaultApp(Boolean isDefaultApp) {
 		this.isDefaultApp = isDefaultApp;
+	}
+
+	public Boolean getIsDefaultMobileApp() {
+		return isDefaultMobileApp;
+	}
+
+	public void setIsDefaulMobiletApp(Boolean isDefaultMobileApp) {
+		this.isDefaultMobileApp = isDefaultMobileApp;
 	}
 }

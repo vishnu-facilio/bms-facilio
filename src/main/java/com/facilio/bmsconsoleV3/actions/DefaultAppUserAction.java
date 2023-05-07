@@ -29,6 +29,26 @@ public class DefaultAppUserAction extends V3Action {
         this.appId = appId;
     }
 
+    private boolean isMobile;
+
+    private boolean isWeb;
+
+    public boolean getIsMobile() {
+        return isMobile;
+    }
+
+    public void setIsMobile(boolean isMobile) {
+        this.isMobile = isMobile;
+    }
+
+    public boolean getIsWeb() {
+        return isWeb;
+    }
+
+    public void setIsWeb(boolean isWeb) {
+        this.isWeb = isWeb;
+    }
+
     public String setDefaultAppUser() throws Exception {
 
         FacilioChain chain = TransactionChainFactoryV3.setDefaultAppForUser();
@@ -37,6 +57,8 @@ public class DefaultAppUserAction extends V3Action {
 
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouIds);
         context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+        context.put(FacilioConstants.ContextNames.IS_MOBILE, isMobile);
+        context.put(FacilioConstants.ContextNames.IS_WEB, isWeb);
 
         chain.execute();
         setData("message","success");

@@ -2522,8 +2522,13 @@ public class ApplicationApi {
                     .select(AccountConstants.getOrgUserAppsFields())
                     .table(AccountConstants.getOrgUserAppsModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(appIds,","), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("IS_DEFAULT_APP", "isDefaultApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS))
                     .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+
+            if(isRequestFromMobile()) {
+                selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_MOBILE_APP", "isDefaultMobileApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS));
+            } else {
+                selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_APP", "isDefaultApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS));
+            }
 
             List<Map<String, Object>> props = selectBuilder.get();
             if(CollectionUtils.isNotEmpty(props)) {
