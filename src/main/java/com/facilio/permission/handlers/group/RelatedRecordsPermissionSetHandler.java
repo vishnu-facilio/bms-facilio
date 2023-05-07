@@ -12,6 +12,7 @@ import com.facilio.permission.context.module.RelatedListPermissionSet;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,7 +51,13 @@ public class RelatedRecordsPermissionSetHandler implements PermissionSetGroupHan
                     if (CollectionUtils.isNotEmpty(fields)) {
                         for (FacilioField field : fields) {
                             RelatedListPermissionSet item = new RelatedListPermissionSet();
-                            item.setDisplayName(subModule.getDisplayName());
+                            String relatedListDisplayName = ((LookupField) field).getRelatedListDisplayName();
+                            if(StringUtils.isNotEmpty(relatedListDisplayName)){
+                                item.setDisplayName(relatedListDisplayName);
+                            }
+                            else {
+                                item.setDisplayName(subModule.getDisplayName());
+                            }
                             item.setModuleId(module.getModuleId());
                             item.setRelatedModuleId(subModule.getModuleId());
                             item.setRelatedFieldId(field.getFieldId());

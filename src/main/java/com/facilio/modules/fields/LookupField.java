@@ -17,8 +17,8 @@ public class LookupField extends BaseLookupField implements SupplementRecord {
 	
 	public LookupField(FacilioModule module, String name, String displayName, FieldDisplayType displayType,
 			String columnName, FieldType dataType, Boolean required, Boolean disabled, Boolean isDefault,
-			Boolean isMainField, FacilioModule lookupModule) {
-		super(module, name, displayName, displayType, columnName, dataType, required, disabled, isDefault, isMainField, lookupModule);
+			Boolean isMainField, String relatedListDisplayName, FacilioModule lookupModule) {
+		super(module, name, displayName, displayType, columnName, dataType, required, disabled, isDefault, isMainField, relatedListDisplayName, lookupModule);
 	}
 
 	public LookupField(FacilioModule module, String name, String displayName, FieldDisplayType displayType,

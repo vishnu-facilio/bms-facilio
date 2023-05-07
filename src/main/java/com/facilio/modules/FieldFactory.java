@@ -1302,6 +1302,13 @@ public class FieldFactory extends BaseFieldFactory {
         lookupModuleId.setModule(module);
         fields.add(lookupModuleId);
 
+        FacilioField relatedListDisplayName = new FacilioField();
+        relatedListDisplayName.setName("relatedListDisplayName");
+        relatedListDisplayName.setDataType(FieldType.STRING);
+        relatedListDisplayName.setColumnName("RELATED_LIST_LABEL");
+        relatedListDisplayName.setModule(module);
+        fields.add(relatedListDisplayName);
+
         return fields;
     }
 

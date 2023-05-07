@@ -1621,6 +1621,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof LargeTextField){
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), field);
 			}
+			else if(field instanceof LookupField){
+				// will allow only changes to relatedListDisplayName field, extended prop of lookup
+				List<FacilioField> lookupFieldFields = FieldFactory.getLookupFieldFields();
+				Map<String, FacilioField> lookupFieldFieldsMap = FieldFactory.getAsMap(lookupFieldFields);
+				FacilioField relatedListDisplayName = lookupFieldFieldsMap.get("relatedListDisplayName");
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getLookupFieldsModule(), Collections.singletonList(relatedListDisplayName), field);
+			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
 //			}

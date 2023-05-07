@@ -22,12 +22,14 @@ public class BaseLookupField extends FacilioField {
         this.lookupModuleId = field.lookupModuleId;
         this.lookupModule = field.lookupModule;
         this.specialType = field.specialType;
+        this.relatedListDisplayName = field.relatedListDisplayName;
     }
 
     public BaseLookupField(FacilioModule module, String name, String displayName, FieldDisplayType displayType,
                        String columnName, FieldType dataType, Boolean required, Boolean disabled, Boolean isDefault,
-                       Boolean isMainField, FacilioModule lookupModule) {
+                       Boolean isMainField, String relatedListDisplayName, FacilioModule lookupModule) {
         super(module, name, displayName, displayType, columnName, dataType, required, disabled, isDefault, isMainField);
+        this.relatedListDisplayName = relatedListDisplayName;
         this.lookupModule = lookupModule;
     }
 
@@ -61,5 +63,15 @@ public class BaseLookupField extends FacilioField {
     }
     public void setSpecialType(String specialType) {
         this.specialType = specialType;
+    }
+
+    private String relatedListDisplayName;
+
+    public String getRelatedListDisplayName() {
+        return relatedListDisplayName;
+    }
+
+    public void setRelatedListDisplayName(String relatedListDisplayName) {
+        this.relatedListDisplayName = relatedListDisplayName;
     }
 }
