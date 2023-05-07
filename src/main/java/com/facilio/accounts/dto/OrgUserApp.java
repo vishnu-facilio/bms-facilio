@@ -87,7 +87,7 @@ public class OrgUserApp implements Serializable {
 		return isDefaultMobileApp;
 	}
 
-	public void setIsDefaulMobiletApp(Boolean isDefaultMobileApp) {
+	public void setIsDefaultMobileApp(Boolean isDefaultMobileApp) {
 		this.isDefaultMobileApp = isDefaultMobileApp;
 	}
 }
