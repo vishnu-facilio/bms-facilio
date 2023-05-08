@@ -2942,25 +2942,20 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@Getter
+	@Setter
+	private String orgLogoUrl;
 	public String getLogo() throws Exception {
 		String domain = getDomain();
 		Organization org = IAMOrgUtil.getOrg(domain);
-
 		if (org != null) {
-				if (org.getLogoId() > 0) {
-					FileInfo fileInfo = FileStoreFactory.getInstance().getFileStore().getFileInfo(org.getLogoId());
-					if(fileInfo != null){
-						setContentType(fileInfo.getContentType());
-						resultStream = FileStoreFactory.getInstance().getFileStore().readFile(org.getLogoId());
-						return SUCCESS;
-					}
-			    }
+				if (org.getLogoUrl() != null) {
+					orgLogoUrl = org.getLogoUrl();
+					return SUCCESS;
+				}
 		}
 		return ERROR;
 	}
-	@Getter
-	@Setter
-	private InputStream resultStream;
 
 	public String fetchPrivacyPolicy() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();

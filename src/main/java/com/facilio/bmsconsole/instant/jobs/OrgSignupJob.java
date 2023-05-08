@@ -39,21 +39,7 @@ public class OrgSignupJob implements Runnable {
 		try {
 			LOGGER.info("Org Signup Job called. orgId: "+ orgId+" iamUserId: "+iamUserId);
 			Account account = new Account(IAMOrgUtil.getOrg(orgId), new User(IAMUserUtil.getFacilioUser(orgId, iamUserId)));
-
-			if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
-				// setting org db
-				String defaultDbForNewOrg = FacilioProperties.getDefaultAppDBForNewOrg();
-				String defaultDsForNewOrg = FacilioProperties.getDefaultDataSourceForNewOrg();
-				if (StringUtils.isNotEmpty(defaultDbForNewOrg)) {
-					Organization identityOrg = IdentityClient.getDefaultInstance().getOrgBean().getOrg(orgId);
-					identityOrg.setDbName(defaultDbForNewOrg);
-					if(StringUtils.isNotEmpty(defaultDsForNewOrg)) {
-						identityOrg.setDataSource(defaultDsForNewOrg);
-					}
-					IdentityClient.getDefaultInstance().getOrgBean().updateOrg(orgId, identityOrg);
-					account.getOrg().setDbName(defaultDbForNewOrg);
-				}
-			}
+			
 			AccountUtil.setCurrentAccount(account);
 
 			String currentOrgInitStatus = CommonCommandUtil.getOrgInfo(FacilioConstants.ContextNames.ORG_INITIALIZATION_STATUS, "");

@@ -11,11 +11,13 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
+import com.facilio.cache.CacheUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
@@ -857,6 +859,7 @@ public class AccountUtil {
 			String orgInitStatus = CommonCommandUtil.getOrgInfo(FacilioConstants.ContextNames.ORG_INITIALIZATION_STATUS, "");
 			if (StringUtils.isEmpty(orgInitStatus)) {
 				try {
+					LRUCache.getFeatureLicenseCache().remove(CacheUtil.ORG_KEY(org.getId()));
 					AccountUtil.getFeatureLicense();
 				} catch (Exception exception) {
 					// check if the org has feature license entry. if it throws exception, the org signup chain not invoked yet
@@ -864,7 +867,7 @@ public class AccountUtil {
 					orgInitStatus = "scheduled";
 				}
 			}
-			if (!"completed".equalsIgnoreCase(orgInitStatus)) {
+			if (StringUtils.isNotEmpty(orgInitStatus) && !"completed".equalsIgnoreCase(orgInitStatus)) {
 				// org signup chain not yet completed
 				return "orgsetup";
 			}

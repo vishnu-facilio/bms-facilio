@@ -24,10 +24,12 @@ public class ExternalPDFService extends PDFService {
     }
 
     private String getAppBaseURL() {
-        HttpServletRequest req = ServletActionContext.getRequest();
-        if (req != null) {
-            return FacilioProperties.getAppProtocol() + "://" + req.getServerName();
-        }
+        try {
+            HttpServletRequest req = ServletActionContext.getRequest();
+            if (req != null) {
+                return FacilioProperties.getAppProtocol() + "://" + req.getServerName();
+            }
+        } catch (Exception e) {}
         return FacilioProperties.getAppProtocol() + "://" + FacilioProperties.getAppDomain();
     }
 
@@ -40,13 +42,15 @@ public class ExternalPDFService extends PDFService {
             headers.put("X-current-site", AccountUtil.getCurrentSiteId() + "");
         }
 
-        HttpServletRequest req = ServletActionContext.getRequest();
-        if (req != null) {
-            String value = FacilioCookie.getUserCookie(req, "fc.sandbox");
-            if (value != null && "true".equals(value)) {
-                headers.put("fc.sandbox", "true");
+        try {
+            HttpServletRequest req = ServletActionContext.getRequest();
+            if (req != null) {
+                String value = FacilioCookie.getUserCookie(req, "fc.sandbox");
+                if (value != null && "true".equals(value)) {
+                    headers.put("fc.sandbox", "true");
+                }
             }
-        }
+        } catch (Exception e) {}
         return headers;
     }
 
