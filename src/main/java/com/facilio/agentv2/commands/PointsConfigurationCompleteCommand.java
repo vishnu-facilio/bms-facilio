@@ -35,7 +35,8 @@ public class PointsConfigurationCompleteCommand extends AgentV2Command{
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext editChainContext = editChain.getContext();
-            Criteria criteria = PointsAPI.getNameCriteria(pointNames);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(PointsAPI.getNameCondition(pointNames));
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controller.getId()), NumberOperators.EQUALS));
             editChainContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
             editChainContext.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));

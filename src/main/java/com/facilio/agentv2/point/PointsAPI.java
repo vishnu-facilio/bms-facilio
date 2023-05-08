@@ -28,6 +28,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -46,6 +47,7 @@ import org.json.simple.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
@@ -344,7 +346,8 @@ public class PointsAPI {
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext context = editChain.getContext();
-            Criteria criteria = getNameCriteria(pointNames);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(getNameCondition(pointNames));
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
             context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
             context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
@@ -415,11 +418,18 @@ public class PointsAPI {
         criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
         return criteria;
     }
+
     public static Criteria getNameCriteria(List<String> pointNames) {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         Criteria criteria = new Criteria();
+        pointNames = pointNames.stream().map(p -> p.replace(",", StringOperators.DELIMITED_COMMA)).collect(Collectors.toList());
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule), StringUtils.join(pointNames, ","), StringOperators.IS));
         return criteria;
+    }
+
+    public static Condition getNameCondition(List<String> pointNames) {
+        pointNames = pointNames.stream().map(p -> p.replace(",", StringOperators.DELIMITED_COMMA)).collect(Collectors.toList());
+        return CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()), StringUtils.join(pointNames,","), StringOperators.IS);
     }
 
 
@@ -590,8 +600,7 @@ public class PointsAPI {
         } else {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
         }
-        criteria.addAndCondition(CriteriaAPI.getNameCondition(String.join(",", pointNames), ModuleFactory.getPointModule()));
-
+        criteria.addAndCondition(getNameCondition(pointNames));
         List<Map<String, Object>> pointsFromDb = getPointData(criteria);
         return pointsFromDb;
     }
@@ -602,7 +611,6 @@ public class PointsAPI {
                 .select(FieldFactory.getPointFields())
                 .andCriteria(criteriaList);
         List<Map<String, Object>> res = builder.get();
-        LOGGER.info(builder.toString());
         return res;
     }
 
