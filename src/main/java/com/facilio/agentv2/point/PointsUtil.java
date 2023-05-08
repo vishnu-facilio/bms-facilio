@@ -196,7 +196,7 @@ public class PointsUtil
         }
         if(point.getControllerType() == FacilioControllerType.MODBUS_IP){
             ModbusTcpPointContext modbusTcpPoint = (ModbusTcpPointContext) point;
-            if(ModbusUtils.RegisterType.valueOf(Math.toIntExact(modbusTcpPoint.getRegisterType()) - 1 ).isWritable()){
+            if(ModbusUtils.RegisterType.valueOf(Math.toIntExact(modbusTcpPoint.getRegisterType())).isWritable()){
                 point.setWritable(true);
                 point.setAgentWritable(true);
             }

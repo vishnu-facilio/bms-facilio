@@ -26,7 +26,7 @@ public class ModbusUtils {
 
         public static ModbusUtils.RegisterType valueOf (int value) {
             if (value >= 0 && value < values().length) {
-                return values() [value];
+                return values() [value - 1];
             }
             return null;
         }
