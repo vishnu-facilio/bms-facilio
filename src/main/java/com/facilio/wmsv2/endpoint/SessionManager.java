@@ -1,10 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
-import com.facilio.wmsv2.handler.BaseHandler;
-import com.facilio.wmsv2.handler.Processor;
-import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
 
 import java.util.*;
@@ -27,7 +23,7 @@ public class SessionManager {
 	}
 
 	private SessionManager() {  // Making it singleton
-		broadcaster = DefaultBroadcaster.getDefaultBroadcaster();
+		broadcaster = WmsBroadcaster.getDefaultBroadcaster();
 	}
 	
 	public void addLiveSession(LiveSession liveSession) {
@@ -118,20 +114,7 @@ public class SessionManager {
 	}
 	
 	public void sendMessage(Message message) {
-		try {
-			if (AccountUtil.getCurrentOrg() != null) {
-				message.setOrgId(AccountUtil.getCurrentOrg().getId());
-			}
-
-			BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-			Group group = Group.DEFAULT;
-			if (handler != null) {
-				group = handler.getGroup();
-			}
-			broadcaster.broadcast(message, group);
-		} catch (Exception ex) {
-			logger.log(Level.WARNING, "Send message failed: " + message.toString(), ex);
-		}
+		broadcaster.sendMessage(message);
 	}
 
 	public void setBroadcaster(DefaultBroadcaster broadcaster) {

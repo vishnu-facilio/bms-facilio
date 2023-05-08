@@ -7,10 +7,7 @@ import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -20,13 +17,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-@TopicHandler(
-        topic = Topics.System.auditLogs,
-        priority = -5,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        group = Group.DEFAULT_SINGLE_WORKER,
-        recordTimeout = 15
-)
 public class AuditLogHandler extends BaseHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(AuditLogHandler.class.getName());
@@ -37,7 +27,7 @@ public class AuditLogHandler extends BaseHandler {
     }
 
     @Override
-    public Message processOutgoingMessage(Message message) {
+    public void processOutgoingMessage(Message message) {
         AuditLogContext auditLog = new AuditLogContext();
         try {
             JSONObject content = message.getContent();
@@ -51,7 +41,6 @@ public class AuditLogHandler extends BaseHandler {
                         + "\nRecord Type: " + auditLog.getRecordTypeEnum() + "\nType: " + auditLog.getTypeName() + "\nLink config: " + auditLog.getLinkConfig());
             }
         }
-        return null;
     }
 
     public static class AuditLogContext extends V3Context {

@@ -4,9 +4,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.facilio.wmsv2.message.Message;
 
@@ -44,7 +47,7 @@ public class AuditLogUtil {
         }
         long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
         if (orgId > 0L) {
-            SessionManager.getInstance().sendMessage(new Message()
+            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                     .setTopic(Topics.System.auditLogs)
                     .setOrgId(orgId)
                     .setContent(auditLog

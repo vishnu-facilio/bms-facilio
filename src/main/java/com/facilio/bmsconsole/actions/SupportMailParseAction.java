@@ -1,31 +1,27 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser.Status;
 import com.facilio.bmsconsole.util.WorkOrderRequestAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.handler.EmailProcessHandler;
 import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import org.apache.struts2.ServletActionContext;
 
 @Getter
 @Setter
@@ -63,7 +59,7 @@ public class SupportMailParseAction extends ActionSupport {
 			EmailProcessHandler.updateEmailProp(FacilioUtil.parseLong(props.get(i).get("id")), dataBag);
 					
 			Map<String,Object> workOrderEmailProps=props.get(i);
-			SessionManager.getInstance().sendMessage(new Message()
+			WmsBroadcaster.getBroadcaster().sendMessage(new Message()
 			        .setTopic(EmailProcessHandler.TOPIC)
 			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
 		}

@@ -44,39 +44,25 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.*;
 import com.facilio.modules.BaseLineContext.AdjustType;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.context.WorkflowFunctionContext;
+import com.facilio.scriptengine.systemfunctions.*;
+import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
-import com.facilio.services.messageQueue.MessageQueue;
-import com.facilio.services.messageQueue.MessageQueueFactory;
-import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.handler.ScriptLogHander;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.workflowlog.context.WorkflowLogContext;
@@ -85,16 +71,34 @@ import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
-import com.facilio.workflows.context.ConditionContext;
-import com.facilio.workflows.context.ExpressionContext;
-import com.facilio.workflows.context.IteratorContext;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowExpression;
-import com.facilio.workflows.context.WorkflowFieldContext;
+import com.facilio.workflows.context.*;
+import com.facilio.workflows.functions.*;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.*;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 ;
 
@@ -2379,7 +2383,7 @@ public class WorkflowUtil {
         		
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
-        	 SessionManager.getInstance().sendMessage(new Message()
+        	 WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                      .setTopic(ScriptLogHander.TOPIC+"/"+orgId+"/"+workflowContext.getId())
                      .setOrgId(orgId)
                      .setContent(json)

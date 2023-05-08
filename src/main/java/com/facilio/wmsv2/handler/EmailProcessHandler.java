@@ -16,9 +16,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.mail.util.MimeMessageParser;
 
@@ -28,20 +26,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-@TopicHandler(
-        topic = EmailProcessHandler.TOPIC+"/#",
-        priority = -5,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        group = Group.RECIEVE_MAIL_WORKER,
-		recordTimeout = 300 //5 mins
-)
 @Log4j
 public class EmailProcessHandler extends BaseHandler{
 	public static final String TOPIC = "email-process";
 	public static final String S3_BUCKET_NAME = FacilioProperties.getIncomingEmailS3Bucket();
 
 	@Override
-	public Message processOutgoingMessage(Message message) {
+	public void processOutgoingMessage(Message message) {
         try {
 			LOGGER.info("KAFKA EMAIL PROCESS HANDLER STARTED");
     		Long workOrderRequestEmailId = 0L;
@@ -95,7 +86,6 @@ public class EmailProcessHandler extends BaseHandler{
       } catch (Exception e) {
         	LOGGER.error("ERROR IN ADDING SCRIPT LOGS : "+ e);
         }
-        return null;
     }
 	
 	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception {

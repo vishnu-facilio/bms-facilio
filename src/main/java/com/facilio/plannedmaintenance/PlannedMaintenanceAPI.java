@@ -2,33 +2,28 @@ package com.facilio.plannedmaintenance;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PMPlanner;
+import com.facilio.bmsconsole.context.PMResourcePlanner;
+import com.facilio.bmsconsole.context.PMTriggerV2;
+import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.qa.context.AnswerHandler;
-import com.facilio.qa.context.ClientAnswerContext;
-import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.RuleHandler;
-import com.facilio.qa.context.questions.NumberQuestionContext;
-import com.facilio.qa.rules.Constants;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.StringUtil;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,7 +59,7 @@ public class PlannedMaintenanceAPI {
         message.put("operation", EXTEND.getValue());
         message.put("duration", duration.toString());
 
-        SessionManager.getInstance().sendMessage(new Message()
+        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                 .setTopic("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)
@@ -78,7 +73,7 @@ public class PlannedMaintenanceAPI {
         message.put("plannerId", plannerId);
         message.put("operation", ScheduleOperation.NIGHTLY.getValue());
 
-        SessionManager.getInstance().sendMessage(new Message()
+        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                 .setTopic("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)
@@ -92,7 +87,7 @@ public class PlannedMaintenanceAPI {
         message.put("plannerId", plannerId);
         message.put("operation", REINIT.getValue());
 
-        SessionManager.getInstance().sendMessage(new Message()
+        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                 .setTopic("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)

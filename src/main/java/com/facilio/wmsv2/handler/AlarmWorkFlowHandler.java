@@ -1,10 +1,8 @@
 package com.facilio.wmsv2.handler;
 
-import com.facilio.wmsv2.message.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -15,20 +13,11 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-@TopicHandler(
-        topic = AlarmWorkFlowHandler.TOPIC+"/#",
-        priority = -10,
-        deliverTo = TopicHandler.DELIVER_TO.ALL,
-        group=Group.ALARM_WORKFLOW_WORKER
-)
 
 @Log4j
 public class AlarmWorkFlowHandler extends BaseHandler {
@@ -36,7 +25,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
     public static final String TOPIC = "alarm-workflow";
 
     @Override
-    public Message processOutgoingMessage(Message message) {
+    public void processOutgoingMessage(Message message) {
 
         try {
             LOGGER.info("Current Thread in AlarmWorkFlowHandler---->" + Thread.currentThread());
@@ -59,7 +48,6 @@ public class AlarmWorkFlowHandler extends BaseHandler {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return null;
     }
 
     private void constructChangeSet(Map<String, Object> messageMap, FacilioContext context) {

@@ -7,7 +7,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Data;
@@ -59,7 +59,7 @@ public class OutgoingMailResponseAction extends ActionSupport {
             V3Util.throwRestException(StringUtils.isEmpty(mapperId), ErrorCode.VALIDATION_ERROR, "mapperId can't be null");
 
             requestJson.put(MailConstants.Params.MAPPER_ID, mapperId);
-            SessionManager.getInstance().sendMessage(new Message()
+            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                             .setTopic(Topics.Mail.mailResponse+"/"+mapperId)
                             .setContent(requestJson));
             status = "Successfully pushed outgoing  MAIL-RESPONSE for MAPPER_ID :: "+mapperId

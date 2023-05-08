@@ -1,22 +1,19 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
+import com.facilio.wmsv2.handler.EmailProcessHandler;
+import com.facilio.wmsv2.message.Message;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.handler.EmailProcessHandler;
-import com.facilio.wmsv2.message.Message;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorkOrderRequestAPI {
 
@@ -39,7 +36,7 @@ public class WorkOrderRequestAPI {
                     .addRecord(workOrderEmailProps);
             insertBuilder.save();
             
-			SessionManager.getInstance().sendMessage(new Message()
+			WmsBroadcaster.getBroadcaster().sendMessage(new Message()
 			        .setTopic(EmailProcessHandler.TOPIC+"/"+recipient)
 			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
 

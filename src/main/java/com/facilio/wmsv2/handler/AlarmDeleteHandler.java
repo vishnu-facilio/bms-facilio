@@ -11,20 +11,15 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 
 import java.util.*;
-@TopicHandler(
-        topic = AlarmDeleteHandler.TOPIC,
-        priority = -10,
-        deliverTo = TopicHandler.DELIVER_TO.ALL
-)
+
 @Log4j
 public class AlarmDeleteHandler extends BaseHandler {
     public static final String TOPIC = "alarm-delete";
     @Override
-    public Message processOutgoingMessage(Message message) {
+    public void processOutgoingMessage(Message message) {
         try {
            Map<String,Object> messageContent = (Map<String, Object>) message.getContent();
            Long alarmId = Long.parseLong(messageContent.get("alarmId").toString());
@@ -41,8 +36,8 @@ public class AlarmDeleteHandler extends BaseHandler {
        catch (Exception e){
            LOGGER.error("Exception while deleting alarm",e);
        }
-       return null;
     }
+
     public Map<String, List<Long>> getEventAndOccurrenceIds(Long alarmId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<BaseEventContext> selectBuilder = new SelectRecordsBuilder<BaseEventContext>()

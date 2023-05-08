@@ -15,7 +15,7 @@ import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.MessageDecoder;
 import com.facilio.wmsv2.message.MessageEncoder;
-import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.wmsv2.message.SessionInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.websocket.*;
@@ -60,7 +60,7 @@ public class FacilioServerEndpoint
 	
 	private DefaultBroadcaster getBroadcaster() {
 		if (this.broadcaster == null) {
-			this.broadcaster = DefaultBroadcaster.getDefaultBroadcaster();
+			this.broadcaster = WmsBroadcaster.getDefaultBroadcaster();
 		}
 		return this.broadcaster;
 	}
@@ -185,7 +185,10 @@ public class FacilioServerEndpoint
 
 		LiveSession ls = SessionManager.getInstance().getLiveSession(session.getId());
 
-		message.setLiveSession(ls);
+		SessionInfo sessionInfo = new SessionInfo();
+		sessionInfo.setLiveSession(ls);
+		message.setSessionInfo(sessionInfo.toJson());
+
 		message = processor.filterIncomingMessage(message);
 		if (message != null) {
 			BaseHandler handler = processor.getHandler(message.getTopic());

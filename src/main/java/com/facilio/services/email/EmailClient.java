@@ -32,7 +32,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +99,7 @@ public abstract class EmailClient extends BaseEmailClient {
 
                 long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
                 String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
-                SessionManager.getInstance().sendMessage(new Message()
+                WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                         .setTopic(Topics.Mail.prepareOutgoingMail + "/" + topicIdentifier)
                         .setOrgId(orgId)
                         .setContent(mailJson));

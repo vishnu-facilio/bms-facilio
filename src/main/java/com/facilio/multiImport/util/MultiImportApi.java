@@ -15,7 +15,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
@@ -33,6 +32,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.message.SessionInfo;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1021,7 +1021,12 @@ public class MultiImportApi {
         message.setContent(json);
         message.setTo(ouid);
         message.setOrgId(user.getOrgId());
-        message.setSessionType(LiveSession.LiveSessionType.APP);
+        SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
+        if(sessionInfo == null) {
+            sessionInfo =  new SessionInfo();
+        }
+        sessionInfo.setSessionType(LiveSession.LiveSessionType.APP);
+        message.setSessionInfo(sessionInfo.toJson());
         SessionManager.getInstance().sendMessage(message);
     }
     public static float getImportCompletePercentage(ImportDataDetails importDataDetails){
@@ -1052,7 +1057,12 @@ public class MultiImportApi {
         message.setContent(json);
         message.setTo(ouid);
         message.setOrgId(user.getOrgId());
-        message.setSessionType(LiveSession.LiveSessionType.APP);
+        SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
+        if(sessionInfo == null) {
+            sessionInfo =  new SessionInfo();
+        }
+        sessionInfo.setSessionType(LiveSession.LiveSessionType.APP);
+        message.setSessionInfo(sessionInfo.toJson());
         SessionManager.getInstance().sendMessage(message);
     }
     public static List<MultiImportField> getMultiImportFieldsList(String moduleName) throws Exception {

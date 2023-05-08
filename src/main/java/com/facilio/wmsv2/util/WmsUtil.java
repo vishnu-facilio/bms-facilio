@@ -1,10 +1,11 @@
-package com.facilio.wmsv2.endpoint;
+package com.facilio.wmsv2.util;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.wmsv2.endpoint.LiveSession;
+import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
-import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.message.SessionInfo;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.websocket.EncodeException;
@@ -12,37 +13,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
-public class DefaultBroadcaster {
+public class WmsUtil {
 
-    private static final DefaultBroadcaster broadcaster = new DefaultBroadcaster();
+    public static void pushToLiveSession(Message message) {
 
-    static DefaultBroadcaster getDefaultBroadcaster() {
-        String wmsBroadcaster = FacilioProperties.getWmsBroadcaster();
-        switch (wmsBroadcaster) {
-            case "kafka":
-                return KafkaBroadcaster.getBroadcaster();
-            case "default":
-            default:
-                return DefaultBroadcaster.getBroadcaster();
-        }
-    }
-
-    static DefaultBroadcaster getBroadcaster() {
-        return broadcaster;
-    }
-
-    protected DefaultBroadcaster() { // Making it singleton
-
-    }
-
-    protected void pushToLiveSession(Message message) {
-        message = Processor.getInstance().filterOutgoingMessage(message);
+        SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
         BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-        message = handler.processOutgoingMessage(message);
-
-        if (message == null) {
-            return;
-        }
 
         switch (handler.getDeliverTo()) {
             case ALL: {
@@ -52,7 +28,7 @@ public class DefaultBroadcaster {
 
             case USER: {
                 Long to = message.getTo();
-                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getSessionTypeEnum(), to, message.getOrgId(), message.getAppId());
+                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(sessionInfo.getSessionTypeEnum(), to, message.getOrgId(), message.getAppId());
                 sendObject(liveSessions, message);
                 break;
             }
@@ -72,20 +48,20 @@ public class DefaultBroadcaster {
             }
 
             case SESSION: {
-                sendObject(message.getLiveSession(), message);
+                sendObject(sessionInfo.getLiveSession(), message);
                 break;
             }
         }
     }
 
-    private void sendObject(LiveSession session, Message message) {
+    private static void sendObject(LiveSession session, Message message) {
         if (session == null) {
             return;
         }
         sendObject(Collections.singletonList(session), message);
     }
 
-    private void sendObject(Collection<LiveSession> sessions, Message message) {
+    private static void sendObject(Collection<LiveSession> sessions, Message message) {
         if (CollectionUtils.isEmpty(sessions)) {
             return;
         }
@@ -99,10 +75,5 @@ public class DefaultBroadcaster {
         } catch (IOException | EncodeException ex) {
             ex.printStackTrace();
         }
-    }
-
-    public void broadcast(Message data, Group group) throws Exception {
-        // ignoring sendToAllWorkers in default
-        pushToLiveSession(data);
     }
 }

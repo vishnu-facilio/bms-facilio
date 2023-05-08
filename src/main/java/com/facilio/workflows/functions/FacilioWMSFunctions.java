@@ -19,7 +19,6 @@ public class FacilioWMSFunctions {
 		checkParam(objects);
 
 		Map<String,Object> msgMap = (Map<String,Object>) objects[0];
-
 		Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
 
 		msg.setTopic("__custom__/user/"+msg.getTopic());

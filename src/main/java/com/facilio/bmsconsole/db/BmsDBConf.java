@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.db;
 
 import com.facilio.accounts.dto.*;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.db.util.DBConf;
@@ -18,12 +15,14 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.server.ServerInfo;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.util.WmsUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -215,6 +214,31 @@ public class BmsDBConf extends DBConf {
     @Override
     public String getSecretManager() {
         return FacilioProperties.getSecretManager();
+    }
+
+    @Override
+    public String getWmsBroadcaster() {
+        return FacilioProperties.getWmsBroadcaster();
+    }
+
+    @Override
+    public void pushToLiveSession(Message message) {
+        WmsUtil.pushToLiveSession(message);
+    }
+
+    @Override
+    public boolean isWmsConsumerEnabled() {
+        return FacilioProperties.isWmsConsumerEnabled();
+    }
+
+    @Override
+    public List<String> getWmsTopics() {
+        return FacilioProperties.getWmsTopics();
+    }
+
+    @Override
+    public String getHostname() {
+        return ServerInfo.getHostname();
     }
 
     @Override
@@ -632,7 +656,7 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
-    public String getEnvironment() throws Exception {
+    public String getEnvironment() {
         return FacilioProperties.getEnvironment();
     }
 

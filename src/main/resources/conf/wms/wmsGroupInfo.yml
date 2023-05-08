@@ -1,0 +1,61 @@
+version: 1.0
+date: Apr 13, 2023
+
+groups:
+  - group: default
+    sendToAll: true
+    topics:
+      - { topic: __custom__/app/#, handler: com.facilio.wmsv2.handler.custom.AppLevelHandler, deliverTo: APP, isLiveMessage: true }
+      - { topic: __custom__/org/#, handler: com.facilio.wmsv2.handler.custom.OrgLevelHandler, deliverTo: ORG, isLiveMessage: true }
+      - { topic: __custom__/user/#, handler: com.facilio.wmsv2.handler.custom.UserLevelHandler, deliverTo: USER, isLiveMessage: true }
+      - { topic: __agentpoints__, handler: com.facilio.wmsv2.handler.AgentPointHandler, deliverTo: SESSION, isLiveMessage: true }
+      - { topic: __inApp__, handler: com.facilio.wmsv2.handler.InAppHandler, priority: -6, deliverTo: USER, isLiveMessage: true }
+      - { topic: __livereading__, handler: com.facilio.wmsv2.handler.LiveReadingHandler, deliverTo: ORG, isLiveMessage: true }
+      - { topic: __ping__, handler: com.facilio.wmsv2.handler.PingHandler, deliverTo: SESSION, isLiveMessage: true }
+      - { topic: __push__, handler: com.facilio.wmsv2.handler.PushHandler, isLiveMessage: true }
+      - { topic: [ __subscribe__, __unsubscribe__ ], handler: com.facilio.wmsv2.handler.SubscribeHandler, deliverTo: SESSION, isLiveMessage: true }
+      - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, recordTimeout: 60, isLiveMessage: true }
+      - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, recordTimeout: 60, isLiveMessage: true }
+
+  - group: default-single
+    sendToAll: false
+    topics:
+      - { topic: alarm-delete, handler: com.facilio.wmsv2.handler.AlarmDeleteHandler, isLiveMessage: false }
+      - { topic: __audit_logs__, handler: com.facilio.wmsv2.handler.AuditLogHandler, recordTimeout: 15, isLiveMessage: false }
+      - { topic: __pushnotification__, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
+      - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 30, isLiveMessage: false }
+
+  - group: receive-mail
+    sendToAll: false
+    topics:
+      - { topic: email-process/#, handler: com.facilio.wmsv2.handler.EmailProcessHandler, recordTimeout: 300, isLiveMessage: false }
+
+  - group: long-running-task
+    sendToAll: false
+    topics:
+      - { topic: __longrunning_tasks__, handler: com.facilio.wmsv2.handler.LongRunningTaskHandler, recordTimeout: 900, isLiveMessage: false }
+
+  - group: pre-send-mail
+    sendToAll: false
+    topics:
+      - { topic: __prepare_ogmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingPreprocessHandler, recordTimeout: 60, isLiveMessage: false }
+
+  - group: send-mail
+    sendToAll: false
+    topics:
+      - { topic: __sendmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingMailHandler, recordTimeout: 300, isLiveMessage: false }
+
+  - group: pm-planner
+    sendToAll: false
+    topics:
+      - { topic: pm_planner/+/execute, handler: com.facilio.wmsv2.handler.PMPlannerHandler, recordTimeout: 1800, isLiveMessage: false }
+
+  - group: scriptlog
+    sendToAll: false
+    topics:
+      - { topic: script-log/#/#, handler: com.facilio.wmsv2.handler.ScriptLogHander, recordTimeout: 120, isLiveMessage: false }
+
+  - group: alarm-wf
+    sendToAll: false
+    topics:
+      - { topic: alarm-workflow/#, handler: com.facilio.wmsv2.handler.AlarmWorkFlowHandler, isLiveMessage: false }

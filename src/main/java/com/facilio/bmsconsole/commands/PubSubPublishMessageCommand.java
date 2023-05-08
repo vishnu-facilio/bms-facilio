@@ -1,22 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.MessageFormat;
-import java.util.Iterator;
-import java.util.Map;
-
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
-
+import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+
+import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.Map;
 
 public class PubSubPublishMessageCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(PubSubPublishMessageCommand.class.getName());
@@ -45,7 +43,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 					msg.setOrgId(AccountUtil.getCurrentOrg().getId());
 					msg.setTopic("__livereading__/" + rdm.getResourceId() + "/" + rdm.getFieldId());
 					msg.setContent(content);
-					SessionManager.getInstance().sendMessage(msg);
+					WmsBroadcaster.getBroadcaster().sendMessage(msg);
 				} catch (Exception e) {
 					LOGGER.log(Level.WARN, "Exception while send wms message for live reading update. readingKey: "+readingKey, e);
 				} catch (Error err) {

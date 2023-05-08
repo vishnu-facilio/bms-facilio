@@ -1,16 +1,9 @@
 package com.facilio.wmsv2.handler;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.message.Group;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import java.util.*;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -20,23 +13,24 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@TopicHandler(
-        topic = Topics.PushNotification.pushNotification,
-        priority = -6,
-        deliverTo = TopicHandler.DELIVER_TO.USER,
-        recordTimeout =60,
-        group= Group.DEFAULT_SINGLE_WORKER
-)
 public  class PushNotificationHandler extends BaseHandler{
 
     private static final Logger LOGGER = LogManager.getLogger(PushNotificationHandler.class.getName());
 
     @Override
-    public Message processOutgoingMessage(Message message)  {
+    public void processOutgoingMessage(Message message)  {
         try {
             List<Long> recordIds = (List<Long>) message.getContent().get("recordIds");
             FacilioContext Context=  V3Util.getSummary(FacilioConstants.ContextNames.USER_NOTIFICATION, recordIds);
@@ -66,7 +60,6 @@ public  class PushNotificationHandler extends BaseHandler{
         } catch (Exception e) {
             LOGGER.error("Exception occurred while sending Push Notification : ", e);
         }
-        return null;
     }
     public void sendNotification(List<UserNotificationContext> userNotificationList,Map<Long,List<UserMobileSetting>> mobileInstanceSettings,String appLinkName,long appId) throws Exception {
             if (MapUtils.isNotEmpty(mobileInstanceSettings)) {

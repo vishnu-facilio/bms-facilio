@@ -10,7 +10,7 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -52,7 +52,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand implements Po
         }
         long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
         String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
-        SessionManager.getInstance().sendMessage(new Message()
+        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                 .setTopic(Topics.Mail.outgoingMail+"/"+topicIdentifier)
                 .setOrgId(orgId)
                 .setContent(mailJson));

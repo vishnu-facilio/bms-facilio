@@ -7,7 +7,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.weather.commands.WeatherReadOnlyChainFactory;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +98,7 @@ public class WeatherAction extends V3Action {
         content.put("emailAddress", emailAddress);
         content.put("methodName", "addBulkWeatherStationMigration");
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
-        SessionManager.getInstance().sendMessage(new Message()
+        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                 .setTopic(Topics.Tasks.longRunnningTasks+"/"+ DateTimeUtil.getCurrenTime())
                 .setOrgId(orgId)
                 .setContent(content));

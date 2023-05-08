@@ -3,13 +3,14 @@ package com.facilio.faults;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.handler.AlarmDeleteHandler;
 import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class AfterDeleteAlarmCommand extends FacilioCommand {
     @Override
@@ -20,7 +21,7 @@ public class AfterDeleteAlarmCommand extends FacilioCommand {
         baseAlarms.forEach(baseAlarm -> {
             JSONObject content = new JSONObject();
             content.put("alarmId",baseAlarm.getId());
-            SessionManager.getInstance().sendMessage(new Message()
+            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
                     .setTopic(AlarmDeleteHandler.TOPIC)
                     .setContent(content)
             );

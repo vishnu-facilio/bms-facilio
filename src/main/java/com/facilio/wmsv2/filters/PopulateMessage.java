@@ -2,6 +2,7 @@ package com.facilio.wmsv2.filters;
 
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.message.SessionInfo;
 
 @WMSFilter(priority = 0)
 public class PopulateMessage extends BaseFilter {
@@ -24,9 +25,16 @@ public class PopulateMessage extends BaseFilter {
     }
 
     private void fillBasicData(Message message) {
-        LiveSession session = message.getLiveSession();
-        message.setSessionType(session.getLiveSessionType());
-        message.setOrgId(session.getOrgId());
+        SessionInfo sessionInfo;
+        try {
+            sessionInfo = SessionInfo.getSessionInfo(message);
+            LiveSession session = sessionInfo.getLiveSession();
+            sessionInfo.setSessionType(session.getLiveSessionType());
+            message.setSessionInfo(sessionInfo.toJson());
+            message.setOrgId(session.getOrgId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

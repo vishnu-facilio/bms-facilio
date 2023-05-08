@@ -1,29 +1,14 @@
 package com.facilio.wmsv2.handler;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.message.Group;
 import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.time.Duration;
-
-@TopicHandler(
-        topic = Topics.System.pmPlanner,
-        priority = -5,
-        deliverTo = TopicHandler.DELIVER_TO.SESSION,
-        recordTimeout = 1800,
-        group = Group.PM_PLANNER_WORKER
-)
 
 @Log4j
 public class PMPlannerHandler extends BaseHandler {
@@ -33,7 +18,7 @@ public class PMPlannerHandler extends BaseHandler {
     }
 
     @Override
-    public Message processOutgoingMessage(Message message) {
+    public void processOutgoingMessage(Message message) {
         try {
             LOGGER.error("PM Planner handler entry");
             LOGGER.error(message.toString());
@@ -55,7 +40,6 @@ public class PMPlannerHandler extends BaseHandler {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return null;
     }
 
     private Duration getDuration(Message message) {
