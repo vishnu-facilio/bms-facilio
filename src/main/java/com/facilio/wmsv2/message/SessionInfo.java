@@ -75,7 +75,7 @@ public class SessionInfo
 	public static SessionInfo getSessionInfo(Message message) {
 		JSONObject object = message.getSessionInfo();
 		if(object == null || object.isEmpty()) {
-			return null;
+			return new SessionInfo();
 		}
 		try {
 			return FieldUtil.getAsBeanFromJson(object, SessionInfo.class);
