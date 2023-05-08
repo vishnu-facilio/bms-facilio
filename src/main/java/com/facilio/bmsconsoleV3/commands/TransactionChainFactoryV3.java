@@ -29,7 +29,7 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
-import com.facilio.bmsconsoleV3.commands.servicerequest.SetAppIdForServiceRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.*;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
@@ -176,9 +176,6 @@ import com.facilio.bmsconsoleV3.commands.receipts.PurchaseOrderQuantityRecievedR
 import com.facilio.bmsconsoleV3.commands.safetyplan.AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3;
 import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAssociatedHazardPrecautions;
 import com.facilio.bmsconsoleV3.commands.safetyplan.ExcludeAvailableWorkOrderHazardPrecautions;
-import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.shift.ListShiftPlannerCommand;
 import com.facilio.bmsconsoleV3.commands.shift.MarkAsNonDefaultShiftCommand;
 import com.facilio.bmsconsoleV3.commands.shift.UpdateShiftPlannerCommand;
@@ -836,6 +833,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddRequesterForServiceRequestCommandV3());
         c.addCommand(new SetIsNewForServiceRequestCommandV3());
         c.addCommand(new SetAppIdForServiceRequestCommandV3());
+        c.addCommand(new setSourceTypeCommandV3());
         return c;
     }
 
