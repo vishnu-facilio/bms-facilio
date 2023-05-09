@@ -39,25 +39,23 @@ public class FilterUtil {
         }
         return drillDownPattern;
     }
-    public static List getAsFilterList(JSONObject filters){
+    public static void getAsFilterList(JSONObject filters,List filterList){
         Iterator<String> filterIterator = filters.keySet().iterator();
-        List filterList=new ArrayList<>();
         while(filterIterator.hasNext()) {
             String fieldName=filterIterator.next();
             Object filterObj=  filters.get(fieldName);
-            if(filterObj!=null && filterObj instanceof JSONArray) {
+            if(filterObj!=null && filterObj instanceof JSONArray && ((JSONArray) filterObj).size()>0) {
                 JSONArray fieldJsonArr = (JSONArray) filterObj;
                 for(int i=0;i<fieldJsonArr.size();i++) {
                     JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
                     filterList.add(constructFilterObject(fieldName,fieldJsonObj));
                 }
             }
-            else if(filterObj!=null && filterObj instanceof JSONObject) {
+            else if(filterObj!=null && filterObj instanceof JSONObject && !((JSONObject) filterObj).isEmpty()) {
                 JSONObject fieldJsonObj = (JSONObject) filterObj;
                 filterList.add(constructFilterObject(fieldName,fieldJsonObj));
             }
         }
-        return filterList;
     }
     public static JSONObject constructFilterObject(String fieldName, JSONObject obj)
     {
@@ -80,7 +78,8 @@ public class FilterUtil {
             }
 
             String drillDownPattern=removeIfPivotDrillDownPatternExists(filters);
-            List filterList=getAsFilterList(filters);
+            List filterList=new ArrayList();
+            getAsFilterList(filters,filterList);
             if(StringUtils.isNotEmpty(drillDownPattern)) {
                 filterList=(List) filterList.stream().sorted(Comparator.comparingLong(i->(long)((JSONObject)i).get("id"))).collect(Collectors.toList());
             }
