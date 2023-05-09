@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.instant.jobs;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.AddOrUpdateSLABreachJobCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -14,11 +17,13 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.InstantJob;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 
+@Log4j
 public class AddSLAEscalationJob extends InstantJob {
 
     @Override
@@ -39,6 +44,13 @@ public class AddSLAEscalationJob extends InstantJob {
                                             ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
+            if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
+                try {
+                    LOGGER.info("SLA Escalation Job Entry - " + "\n SLA Entity - " + slaEntity.getName() + "\n Record Id - " + moduleRecord.getId() + "\n Module Name - " + module.getName());
+                }catch (Exception e){
+
+                }
+            }
             int count = 0;
             for (SLAWorkflowEscalationContext escalation : escalations) {
                 count++;
@@ -46,11 +58,25 @@ public class AddSLAEscalationJob extends InstantJob {
                 Long value = (Long) FieldUtil.getValue(moduleRecord, dueField);
                 if (value == null) {
                     // don't assign any escalations
+                    if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
+                        try {
+                            LOGGER.info("SLA Escalation Job Entry Field Value null - " + "\n SLA Entity - " + slaEntity.getName() + "\n Record Id - " + moduleRecord.getId() + "\n Module Name - " + module.getName());
+                        }catch (Exception e){
+
+                        }
+                    }
                     continue;
                 }
 
                 value = value + (escalation.getInterval() * 1000);
                 if (!FacilioUtil.isEmptyOrNull(value) && (value) < System.currentTimeMillis()) {
+                    if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
+                        try {
+                            LOGGER.info("SLA Escalation Job Entry Value < current time - " + "\n SLA Entity - " + slaEntity.getName() + "\n Record Id - " + moduleRecord.getId() + "\n Module Name - " + module.getName() + "\n Value - " + value);
+                        }catch (Exception e){
+
+                        }
+                    }
                     continue;
                 }
 

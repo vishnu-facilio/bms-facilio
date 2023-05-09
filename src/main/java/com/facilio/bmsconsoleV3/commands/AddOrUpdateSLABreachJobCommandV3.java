@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.amazonaws.regions.Regions;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -23,6 +26,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import io.opentelemetry.extension.annotations.WithSpan;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -33,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j
 public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
     private boolean addMode;
 
@@ -51,6 +56,13 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                 FacilioModule module = modBean.getModule(moduleName);
 
                 if (!addMode) {
+                    if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
+                        try {
+                            LOGGER.info("SLA Breach Job Entry -" + "\n Record Id - " + records + "\n Module Name - " + moduleName);
+                        } catch (Exception e) {
+
+                        }
+                    }
                     deleteAllExistingSLASingleRecordJob(records, "_Breach", StringOperators.ENDS_WITH, module);
                 }
 
@@ -71,6 +83,14 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                             if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value) && ((Long) value) > System.currentTimeMillis()) {
                                 addSLAEntityBreachJob(entity.getName() + "_" + record.getId() + "_Breach", module, record, entity.getCriteria(),
                                         field, entity);
+                            }else {
+                                if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
+                                    try {
+                                        LOGGER.info("SLA Breach Job Entry -" + "\n Entity Name - " + entity.getName() + "\n Record Id - " + record.getId() + "\n Module Name - " + moduleName + "\n Value - " + value);
+                                    }catch (Exception e){
+
+                                    }
+                                }
                             }
                         }
                     }
