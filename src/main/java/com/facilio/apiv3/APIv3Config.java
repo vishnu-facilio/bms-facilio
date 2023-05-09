@@ -62,10 +62,7 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanCraftsLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand;
@@ -1653,12 +1650,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlanItems() {
         return () -> new V3Config(JobPlanItemsContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new ValidateJobPlanItemsCommandV3())
                 .update()
+                .beforeSave(new ValidateJobPlanItemsCommandV3())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchJobPlanItemsListChain())
                 .summary()
                 .beforeFetch(new LoadJobPlanItemsLookupCommandV3())
                 .delete()
+                .beforeDelete(new ValidateJobPlanItemsBeforeDeleteCommandV3())
                 .build();
     }
 
@@ -1666,12 +1666,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlanTools() {
         return () -> new V3Config(JobPlanToolsContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new ValidateJobPlanToolsCommandV3())
                 .update()
+                .beforeSave(new ValidateJobPlanToolsCommandV3())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchJobPlanToolsListChain())
                 .summary()
                 .beforeFetch(new LoadJobPlanToolsLookupCommandV3())
                 .delete()
+                .beforeDelete(new ValidateJobPlanToolsBeforeDeleteCommandV3())
                 .build();
     }
 
@@ -1679,12 +1682,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlanServices() {
         return () -> new V3Config(JobPlanServicesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new ValidateJobPlanServicesCommandV3())
                 .update()
+                .beforeSave(new ValidateJobPlanServicesCommandV3())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchJobPlanServicesListChain())
                 .summary()
                 .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .delete()
+                .beforeDelete(new ValidateJobPlanServicesBeforeDeleteCommandV3())
                 .build();
     }
 

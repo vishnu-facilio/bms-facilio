@@ -40,7 +40,7 @@ public class SetWorkOrderPlannedServicesCommandV3 extends FacilioCommand {
                     if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.FIXED)){
                         workOrderPlannedService.setTotalCost(totalCost);
                     }else if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.DURATION_BASED) && workOrderPlannedService.getDuration()!=null){
-                        workOrderPlannedService.setTotalCost(totalCost * workOrderPlannedService.getDuration());
+                        workOrderPlannedService.setTotalCost(totalCost * (workOrderPlannedService.getDuration()/3600));
                     }
                 }
             }

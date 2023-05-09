@@ -31,6 +31,7 @@ public class LoadExtraFieldsCommandV3 extends FacilioCommand {
             extraSelectableFields.add(allFieldsAsMap.get("sysModifiedTime"));
             extraSelectableFields.add(allFieldsAsMap.get("sysCreatedBy"));
             extraSelectableFields.add(allFieldsAsMap.get("sysModifiedBy"));
+            extraSelectableFields.add(allFieldsAsMap.get("isReserved"));
             extraSelectableFields = extraSelectableFields.stream().filter(Objects::nonNull).collect(Collectors.toList());
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraSelectableFields);
 

@@ -32,10 +32,10 @@ public class VendorQuoteBeforeUpdateCommandV3  extends FacilioCommand {
                     Long rfqId = vendorQuote.getRequestForQuotation().getId();
                     V3RequestForQuotationContext requestForQuotation = V3RecordAPI.getRecord(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, rfqId, V3RequestForQuotationContext.class);
                     checkIsRfqDiscarded(requestForQuotation);
-                    if(!vendorQuote.getIsFinalized()) {
-                        checkIsRfqSubmissionClosed(requestForQuotation);
-                        checkIsRfqAwarded(requestForQuotation);
-                    }
+//                    if(!vendorQuote.getIsFinalized()) {
+//                        checkIsRfqSubmissionClosed(requestForQuotation);
+//                        checkIsRfqAwarded(requestForQuotation);
+//                    }
                     if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("negotiation") && (boolean) bodyParams.get("negotiation")){
                         checkIsRfqSubmissionClosed(requestForQuotation);
                         checkIsRfqAwarded(requestForQuotation);

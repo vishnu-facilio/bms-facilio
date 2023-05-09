@@ -1490,7 +1490,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getLineItemsBeforeFetchChain() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new LoadInventoryRequestLineItemsExtraFieldsCommandV3());
         chain.addCommand(new LoadExtraFieldsCommandV3());
         return chain;
     }

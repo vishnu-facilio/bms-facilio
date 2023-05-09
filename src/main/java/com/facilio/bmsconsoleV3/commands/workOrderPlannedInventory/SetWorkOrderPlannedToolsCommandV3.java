@@ -43,7 +43,7 @@ public class SetWorkOrderPlannedToolsCommandV3 extends FacilioCommand {
                 }
                 if(workOrderPlannedTool.getRate()!=null && workOrderPlannedTool.getQuantity()!=null && workOrderPlannedTool.getDuration()!=null){
                     //total cost computation
-                    Double totalCost = workOrderPlannedTool.getRate() * workOrderPlannedTool.getQuantity() * workOrderPlannedTool.getDuration();
+                    Double totalCost = workOrderPlannedTool.getRate() * workOrderPlannedTool.getQuantity() * (workOrderPlannedTool.getDuration() / 3600);
                     workOrderPlannedTool.setTotalCost(totalCost);
                 }
             }

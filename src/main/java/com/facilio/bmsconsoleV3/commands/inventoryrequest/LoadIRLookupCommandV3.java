@@ -29,7 +29,9 @@ public class LoadIRLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));
-
+        additionaLookups.add((LookupField) fieldsAsMap.get("requestedBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("requestedFor"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("workorder"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
         return false;
