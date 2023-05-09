@@ -35,6 +35,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<result name="identity-acs">/jsps/identity-acs.jsp</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
@@ -50,6 +51,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<result name="identity-acs">/jsps/identity-acs.jsp</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>

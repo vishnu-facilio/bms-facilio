@@ -247,12 +247,10 @@ public class FacilioSSOAction extends FacilioAction {
 		if (getSsoToken() != null && isValidSSOToken(getSsoToken())) {
 			if (isIdentityACS(request.getParameter("RelayState"))) {
 				// redirecting the SAML ACS to identity server if the saml login initiated from identity server
-				String samlResponse = request.getParameter("SAMLResponse");
-				URIBuilder builder = new URIBuilder(SSOUtil.getCurrentAppURL() + "/identity/sso/acs/" + getSsoToken());
-				builder.addParameter("SAMLResponse", samlResponse);
-				builder.addParameter("RelayState", request.getParameter("RelayState"));
-				response.sendRedirect(builder.build().toURL().toString());
-				return SUCCESS;
+				request.setAttribute("IdentityACSURL", SSOUtil.getCurrentAppURL() + "/identity/sso/acs/" + getSsoToken());
+				request.setAttribute("SAMLResponse", request.getParameter("SAMLResponse"));
+				request.setAttribute("RelayState", request.getParameter("RelayState"));
+				return "identity-acs";
 			}
 
 			FacilioAuthAction authAction = new FacilioAuthAction();
@@ -288,12 +286,10 @@ public class FacilioSSOAction extends FacilioAction {
 		if (getSsoToken() != null && isValidSSOToken(getSsoToken())) {
 			if (isIdentityACS(request.getParameter("RelayState"))) {
 				// redirecting the SAML ACS to identity server if the saml login initiated from identity server
-				String samlResponse = request.getParameter("SAMLResponse");
-				URIBuilder builder = new URIBuilder(SSOUtil.getCurrentAppURL() + "/identity/sso/acs/" + getSsoToken());
-				builder.addParameter("SAMLResponse", samlResponse);
-				builder.addParameter("RelayState", request.getParameter("RelayState"));
-				response.sendRedirect(builder.build().toURL().toString());
-				return SUCCESS;
+				request.setAttribute("IdentityACSURL", SSOUtil.getCurrentAppURL() + "/identity/sso/acs/" + getSsoToken());
+				request.setAttribute("SAMLResponse", request.getParameter("SAMLResponse"));
+				request.setAttribute("RelayState", request.getParameter("RelayState"));
+				return "identity-acs";
 			}
 
 			FacilioAuthAction authAction = new FacilioAuthAction();
