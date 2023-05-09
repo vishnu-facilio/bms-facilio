@@ -2603,7 +2603,7 @@ public class FacilioConstants {
 
 		public static final String READ_PERMISSION = "READ";
 
-		public static final String READ_PERMISSIONS = "READ,READ_TEAM,READ_OWN";
+		public static final String READ_PERMISSIONS = "READ,READ_TEAM,READ_OWN,VIEW";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
 		private static Map<String, Class> initClassMap() {
@@ -3948,7 +3948,7 @@ public class FacilioConstants {
 	}
 
 	public static class HTTPParameter {
-		public static final List<String> KEYS = Arrays.asList("permission","moduleName","setupTab","permissionModuleName",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME);
+		public static final List<String> KEYS = Arrays.asList("permission","moduleName","setupTab","permissionModuleName",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME,"isFileApi");
 	}
 
 	public static class CustomPage{

@@ -79,6 +79,7 @@
 			<interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
 			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
+			<interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
@@ -89,6 +90,7 @@
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="validationinterceptor" />
 				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
@@ -2118,12 +2120,39 @@
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+			<param name="deprecated">true</param>
+		</action>
+		<action name="*/*/add/*"
+				class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<param name="checkSubModulePermission">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.NoteAction" method="v2updateNote">
+			<param name="deprecated">true</param>
+		</action>
+		<action name="*/*/update/*"
+				class="com.facilio.bmsconsole.actions.NoteAction" method="v2updateNote">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<param name="checkSubModulePermission">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
+			<param name="deprecated">true</param>
+		</action>
+		<action name="*/*/delete/*"
+				class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<param name="checkSubModulePermission">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 		<action name="updateSharing"
 				class="com.facilio.bmsconsole.actions.NoteAction" method="v2SharingUpdate">
@@ -6083,6 +6112,9 @@
 	<package name="photosV2Api" namespace="/api/v2/photos" extends="v2Api">
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2uploadPhotos">
+			<param name="checkTabPermission">true</param>
+			<param name="isFileApi">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2deletePhotos">

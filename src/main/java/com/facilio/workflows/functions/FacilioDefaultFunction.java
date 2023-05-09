@@ -174,8 +174,14 @@ public class FacilioDefaultFunction  {
 			if(objects[0] != null) {
 				fileId = (long) Double.parseDouble(objects[0].toString());
 			}
+			String url = null;
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
 
-			return fs.getPrivateUrl(fileId);
+				url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD, fileId,false);
+			} else {
+				url = fs.getPrivateUrl(fileId);
+			}
+			return url;
 		}
 
 		public Object getFileName(Map<String, Object> globalParam, Object... objects) throws Exception {

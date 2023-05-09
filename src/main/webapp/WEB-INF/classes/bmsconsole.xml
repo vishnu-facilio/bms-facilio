@@ -2144,6 +2144,8 @@
 	<package name="attachmentApi" namespace="/api/attachment" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="addAttachment">
+			<param name="checkSubModulePermission">true</param>
+			<param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
@@ -3313,6 +3315,8 @@
 		
 		<action name="addPhoto" class="com.facilio.bmsconsole.actions.WidgetAction"
 			method="addPhoto">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:EDIT,CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^url.*,^photoId.*</param>
 			</result>

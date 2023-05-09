@@ -212,7 +212,7 @@ public class WebTabContext implements Serializable {
         ANALYTICS ("Analytics", true, TabType.NORMAL,null), // 5
         KPI ("Kpi", false,TabType.NORMAL,null), // 6
         DASHBOARD ("Dashboard", false,TabType.NORMAL,new DashboardHandler()), // 7
-        CUSTOM ("Custom",false, TabType.NORMAL,null), // 8
+        CUSTOM ("Custom",false, TabType.NORMAL,new CustomTypehandler()), // 8
         APPS ("Apps",false,TabType.NORMAL,null), // 9
         SETTINGS("Settings",true,TabType.NORMAL,null), // 10
         TIMELINE("Timeline", false, TabType.NORMAL,null), // 11

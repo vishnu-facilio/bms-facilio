@@ -202,4 +202,22 @@ public class V3PermissionUtil {
         }
         return false;
     }
+
+    public static boolean currentUserHasPermission(WebTabContext tab, String action, Role role) {
+
+        try {
+            long tabId = tab.getId();
+            if (V3PermissionUtil.isFeatureEnabled()) {
+                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
+                return PermissionUtil.hasPermission(permission, action, tabId);
+            } else {
+                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+                return PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

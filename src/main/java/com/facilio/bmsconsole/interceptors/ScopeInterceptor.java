@@ -394,24 +394,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             } else if(checkTabPermission != null && checkTabPermission) {
                                 isTabPermision = true;
                             }
-                            Parameter v3PermissionActions = action;
-                            action = null;
-                            String actions = v3PermissionActions.toString();
-                            List<String> actionList = Arrays.asList(actions.split(";"));
-                            for(String act : actionList){
-                                String[] actList = act.split(":");
-                                if(actList[0].equals(method)){
-                                    action = getActionParam(actList[1]);
-                                    break;
-                                }
-                            }
+                            action = WebTabUtil.getActions(action,method);
                         }
 
                         if(throwDeprecatedApiError(deprecated)) {
                             return logAndReturn("unauthorized", null, startTime, request);
                         }
 
-                        if (action != null && action.getValue() != null && (isTabPermision || (moduleName != null && moduleName.getValue() != null)) && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
+                        if (action != null && action.getValue() != null && (isTabPermision || (moduleName != null && moduleName.getValue() != null)) && !WebTabUtil.isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
                             if (isSetupPermission || isV3Permission || isTabPermision) {
                                 if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
                                     return logAndReturn("unauthorized", null, startTime, request);
@@ -537,92 +527,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-    private boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,boolean isTabPermision, String method) throws Exception {
-
-        if (action == null || "".equals(action.trim())) {
-            return true;
-        }
-
-        if (AccountUtil.getCurrentUser() == null) {
-            return false;
-        }
-
-        if(AccountUtil.getCurrentUser().getRoleId() <= 0 || AccountUtil.getCurrentUser().getRole() == null) {
-            return true;
-        }
-
-        Role role = AccountUtil.getCurrentUser().getRole();
-
-        //allowing all access to privileged roles of all apps
-        if(role.isPrevileged()){
-            return true;
-        }
-
-        try {
-            if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
-                return true;
-            }
-            HttpServletRequest request = ServletActionContext.getRequest();
-            if(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI())) {
-                return true;
-            }
-        } catch (Exception e) {
-            LOGGER.info("Error checking whitelisted API");
-        }
-        if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-            try {
-                HttpServletRequest request = ServletActionContext.getRequest();
-                String currentTab = request.getHeader("X-Tab-Id");
-                if (currentTab != null && !currentTab.isEmpty()) {
-                    long tabId = Long.parseLong(currentTab);
-                    boolean hasPerm = WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId);
-                    if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                        permissionLogsForTabs(tabId, moduleName, role.getName(), action);
-                    }
-
-//                  This is a temporary solution but logs will be added
-                    if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
-                        if(isTabPermision) {
-                            return hasPerm;
-                        }
-                        if (isV3Permission) {
-                            return WebTabUtil.checkModulePermissionForTab(action, moduleName);
-                        }
-                    }
-//                  For now not throwing this. Need to change this immediately
-//                  return checkAndReturnHasWebtabPermission(hasPerm);
-                } else {
-                    LOGGER.info("scope interceptor tab permission - Tab id is empty " + getReferrerUri());
-                }
-            } catch (Exception e) {
-                LOGGER.info("scope interceptor error occured tab");
-            }
-            return checkAndReturnHasWebtabPermission(false);
-        } else {
-            try{
-                boolean hasPerm = WebTabUtil.checkModulePermission(action,moduleName,isV3Permission);
-                if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                    permissionLogsForModule(moduleName,role.getName(),action);
-                }
-                if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403)) {
-                    if(method != null && method.equalsIgnoreCase("GET")) {
-                        return hasPerm;
-                    }
-                }
-                return true;
-            } catch (Exception e) {
-                LOGGER.info("scope interceptor error occured module");
-            }
-            return true;
-        }
-    }
 
     private Parameter getModuleNameParam(String moduleName) {
         return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-    }
-
-    private Parameter getActionParam(String action) {
-        return new Parameter.Request(FacilioConstants.ContextNames.ACTION,action);
     }
 
     private boolean isAuthRequired() {
@@ -633,68 +540,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return false;
     }
 
-
-    private void permissionLogsForTabs(Long tabId,String moduleName,String roleName,String action) throws Exception {
-        try {
-            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-            WebTabContext tab = tabBean.getWebTab(tabId);
-            if(tabId == -1) {
-                LOGGER.info("Tab id is -1");
-            }
-            else if (tab != null) {
-                ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
-                List<String> modulesList = ApplicationApi.getModulesForTab(tabId);
-                String commonString = " Role Name - " + roleName + " - Action " + action + " - referrer - " + getReferrerUri();
-                if (app == null) {
-                    LOGGER.info("scope interceptor tab permission Case 1 : Application is empty - tab name" + tab.getName() + commonString);
-                }
-                if (CollectionUtils.isEmpty(modulesList)) {
-                    LOGGER.info("scope interceptor tab permission Case 2 : Module for tab is empty - Tab name - " + tab.getName() + commonString);
-                }
-                if (modulesList.contains(moduleName)) {
-                    LOGGER.info("scope interceptor tab permission Case 3 : No permission - Tab config exists - Module exist - Application " + app.getLinkName() + "- Tab Name - " + tab.getName() + " - Module Name - " + moduleName + " - " + commonString);
-                } else {
-                    LOGGER.info("scope interceptor tab permission Case 4 : No permission - Tab config exists - Module not exist - Application " + app.getLinkName() + "- Tab Name - " + tab.getName() + " - Module Name - " + moduleName + " - " + commonString);
-                }
-            } else {
-                LOGGER.info("scope interceptor tab permission Case 5 : Tab not configured - no permission - Tab Id - " + tabId);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception in tab permission logs - " + e);
-        }
-    }
-
-    private void permissionLogsForModule(String moduleName,String roleName,String action) {
-        try {
-            //Handled in client - need to check after logs
-            LOGGER.info("scope interceptor module permission : Module Name - " + moduleName + " - Role Name - " + roleName + " - Action - " + action + " - referrer - " + getReferrerUri());
-        } catch (Exception e) {
-            LOGGER.info("Exception in module permission logs - " + e);
-        }
-    }
-
-    private String getReferrerUri() throws Exception {
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String referrer = request.getHeader(HttpHeaders.REFERER);
-        if (referrer != null && !"".equals(referrer.trim())) {
-            URL url = new URL(referrer);
-            if(url != null) {
-                return url.getPath();
-            }
-        }
-        return "";
-    }
-
-    private boolean checkAndReturnHasWebtabPermission(boolean hasPerm) {
-        try {
-            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
-                return hasPerm;
-            }
-        } catch(Exception e) {
-            LOGGER.info("Error occured in checkAndReturnHasWebtabPermission method");
-        }
-        return true;
-    }
 
     private static boolean throwDeprecatedApiError(Boolean deprecated) {
         try {

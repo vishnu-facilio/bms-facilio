@@ -27,6 +27,7 @@ import javax.imageio.ImageIO;
 
 import com.beust.ah.A;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -988,8 +989,13 @@ public abstract class FileStore {
 		return addFile(fileName, file, contentType);
 	}
 
-	public String getFileUrlForOrg(ApplicationContext app, long moduleId, long recordId, String namespace, long fileId, long expiryTime, boolean isDownload, boolean isModuleFile){
-		String token = getToken(moduleId,recordId,namespace,fileId,expiryTime,-1,isModuleFile);
+	public String getFileUrlForOrg(ApplicationContext app, long moduleId, long recordId, String namespace, long fileId, long expiryTime, boolean isDownload, boolean isModuleFile,String specialTabType){
+		String token = null;
+		if(StringUtils.isNotEmpty(specialTabType)) {
+			token = getToken(namespace,fileId,expiryTime,-1,specialTabType);
+		} else {
+			token = getToken(moduleId,recordId,namespace,fileId,expiryTime,-1,isModuleFile);
+		}
 		StringBuilder url = new StringBuilder();
 		if(!(AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile())) {
 			url.append("/");
@@ -1007,6 +1013,20 @@ public abstract class FileStore {
 		return url.toString();
 	}
 
+	private String getToken(String namespace, long fileId, long expiryTime,long publicFileId,String specialTabType){
+		Objects.requireNonNull(specialTabType, "Special Type cannot be null for url generation");
+		Objects.requireNonNull(namespace, "Namespace cannot be null for url generation");
+		Map<String, String> claims = new HashMap<>();
+		claims.put(FacilioConstants.ContextNames.WEB_TAB_TYPE, specialTabType);
+		claims.put("namespace", namespace);
+		claims.put("fileId", String.valueOf(fileId));
+		claims.put("expiresAt", String.valueOf(expiryTime));
+		claims.put("specialTabType",String.valueOf(true));
+		if(publicFileId>0){
+			claims.put("publicFileId",String.valueOf(publicFileId));
+		}
+		return FileJWTUtil.generateFileJWT(claims);
+	}
 
 	private String getToken(long moduleId, long recordId, String namespace, long fileId, long expiryTime,long publicFileId,boolean isModuleFile){
 		Objects.requireNonNull(moduleId, "Module Id cannot be null for url generation");
@@ -1041,6 +1061,18 @@ public abstract class FileStore {
 				url.append(FacilioProperties.getClientAppUrl());
 			}
 			url.append(PublicFileUtil.createFileUrlForOrg(moduleId, recordId, fileId, isDownload, isModuleFile));
+			return url.toString();
+		}
+		return null;
+	}
+
+	public String getUrl (String specialTabType, long fileId, boolean isDownload) throws Exception {
+		StringBuilder url = new StringBuilder();
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if(FacilioProperties.isDevelopment()) {
+				url.append(FacilioProperties.getClientAppUrl());
+			}
+			url.append(PublicFileUtil.createFileUrlForOrg(-1, -1, fileId, isDownload, false,specialTabType));
 			return url.toString();
 		}
 		return null;

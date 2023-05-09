@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.bmsconsole.util.FileJWTUtil;
@@ -39,11 +40,14 @@ public class V3FilePreviewCommad extends FacilioCommand {
 				long expiresAt = Long.valueOf(decodedjwtClaims.get("expiresAt"));
 				if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
 					Boolean isModuleFile = Boolean.valueOf(decodedjwtClaims.get("moduleFile"));
+					String specialTabType = String.valueOf(decodedjwtClaims.get(FacilioConstants.ContextNames.WEB_TAB_TYPE));
 					if(isModuleFile != null && isModuleFile) {
 						context.put("isModuleFile",true);
 						context.put(FacilioConstants.ContextNames.FILE_ID,Long.valueOf(decodedjwtClaims.get("fileId")));
 						context.put(FacilioConstants.ContextNames.MODULE_ID,Long.valueOf(decodedjwtClaims.get("moduleId")));
 						context.put(FacilioConstants.ContextNames.RECORD_ID,Long.valueOf(decodedjwtClaims.get("recordId")));
+					} else if(StringUtils.isNotEmpty(specialTabType)) {
+						context.put(FacilioConstants.ContextNames.WEB_TAB_TYPE,specialTabType);
 					}
 				}
 				if(expiresAt == -1 || expiresAt > System.currentTimeMillis()) {

@@ -89,6 +89,7 @@
             <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
             <interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor"/>
             <interceptor name="permissionSetInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
+            <interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
 
             <interceptor-stack name="defaultInterceptor">
                 <interceptor-ref name="defaultStack" />
@@ -100,6 +101,7 @@
                 <interceptor-ref name="malwareInterceptor" />
                 <interceptor-ref name="globalscopevariableinterceptor" />
                 <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="permissionInterceptor" />
                 <interceptor-ref name="validationinterceptor" />
                 <interceptor-ref name="permissionSetInterceptor" />
                 <interceptor-ref name="json">
@@ -168,6 +170,9 @@
         <action name="files"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="files">
+            <param name="checkTabPermission">true</param>
+            <param name="isFileApi">true</param>
+            <param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
         </action>
 
         <action name="count"

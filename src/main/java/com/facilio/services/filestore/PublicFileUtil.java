@@ -28,12 +28,12 @@ public class PublicFileUtil {
 	private static final long PUBLIC_FILE_EXPIRY_IN_MILLIS = 300000; //5 mins
 
 
-	private static long createFile(String content,String fileName,String fileType,String contentType) throws Exception {
-		if(!fileName.contains(".")) {
-			fileName = fileName + "."+ fileType;
+	private static long createFile(String content, String fileName, String fileType, String contentType) throws Exception {
+		if (!fileName.contains(".")) {
+			fileName = fileName + "." + fileType;
 		}
 
-		try(FileWriter writer = new FileWriter(fileName, false);) {
+		try (FileWriter writer = new FileWriter(fileName, false);) {
 			writer.append(content);
 			writer.flush();
 
@@ -46,16 +46,16 @@ public class PublicFileUtil {
 		}
 	}
 
-	public static String createPublicFile(String content,String fileName,String fileType,String contentType, long expiresOn) throws Exception {
+	public static String createPublicFile(String content, String fileName, String fileType, String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> insertPublicFile(orgId, content, fileName, fileType, contentType, expiresOn));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> insertPublicFile(orgId, content, fileName, fileType, contentType, expiresOn));
 	}
 
-	public static String createPublicFile(String content,String fileName,String fileType,String contentType) throws Exception {
+	public static String createPublicFile(String content, String fileName, String fileType, String contentType) throws Exception {
 		return createPublicFile(content, fileName, fileType, contentType, System.currentTimeMillis() + PUBLIC_FILE_EXPIRY_IN_MILLIS);
 	}
 
-	public static String createPublicFile(File file,String fileName, String fileType,String contentType) throws Exception {
+	public static String createPublicFile(File file, String fileName, String fileType, String contentType) throws Exception {
 		return createPublicFile(file, fileName, fileType, contentType, System.currentTimeMillis() + PUBLIC_FILE_EXPIRY_IN_MILLIS);
 	}
 
@@ -63,9 +63,9 @@ public class PublicFileUtil {
 		return insertPublicFile(file, fileName, fileType, contentType, expiresOn);
 	}
 
-	public static String createPublicFile(File file,String fileName, String fileType,String contentType, long expiresOn) throws Exception {
+	public static String createPublicFile(File file, String fileName, String fileType, String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> insertPublicFile(orgId, file, fileName, fileType, contentType, expiresOn));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> insertPublicFile(orgId, file, fileName, fileType, contentType, expiresOn));
 	}
 
 	public static String createPublicFileUrl(long fileId) throws Exception {
@@ -79,10 +79,13 @@ public class PublicFileUtil {
 	}
 
 	public static String createFileUrlForOrg(long moduleId, long recordId, long fileId, boolean isDownload, boolean isModuleFile) throws Exception {
+		return createFileUrlForOrg(moduleId,  recordId,  fileId, isDownload, isModuleFile, null);
+	}
+	public static String createFileUrlForOrg(long moduleId, long recordId, long fileId, boolean isDownload, boolean isModuleFile, String specialTabType) throws Exception {
 		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() > 0 ) {
 			ApplicationContext currentApp = AccountUtil.getCurrentApp();
 			if(currentApp != null) {
-				return FileStoreFactory.getInstance().getFileStore().getFileUrlForOrg(currentApp, moduleId, recordId, DEFAULT_NAMESPACE, fileId, -1, isDownload,isModuleFile);
+				return FileStoreFactory.getInstance().getFileStore().getFileUrlForOrg(currentApp, moduleId, recordId, DEFAULT_NAMESPACE, fileId, -1, isDownload,isModuleFile,specialTabType);
 			}
 		}
 		return null;

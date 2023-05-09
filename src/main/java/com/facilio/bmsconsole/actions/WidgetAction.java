@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.util.List;
 
+import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -98,9 +99,14 @@ public class WidgetAction extends ActionSupport {
 		
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
-		
+		String url = null;
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD,fileId,false);
+		} else {
+			url = fs.getPrivateUrl(fileId);
+		}
 		setPhotoId(fileId);
-		setUrl(fs.getPrivateUrl(fileId));
+		setUrl(url);
 		
 		return SUCCESS;
 	}

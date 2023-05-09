@@ -14,6 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class GetPhotosCommand extends FacilioCommand {
 
@@ -21,6 +22,7 @@ public class GetPhotosCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
 		if(moduleName != null && !moduleName.isEmpty()) {
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -39,7 +41,7 @@ public class GetPhotosCommand extends FacilioCommand {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.andCondition(idCondition);
-			
+
 			context.put(FacilioConstants.ContextNames.PHOTOS, selectBuilder.get());
 		}
 		return false;

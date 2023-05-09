@@ -1,7 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
 	/**
@@ -36,6 +43,18 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 //			url = fs.getPrivateUrl(this.parentId);
 //		}
 		if (this.photoId > 0) {
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+				if(getModuleId() > 0) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(getModuleId());
+					if(module != null && parentId > 0) {
+						FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+						if(parentModule != null) {
+							return FacilioFactory.getFileStore().getPrivateUrl(parentModule.getModuleId(), parentId, photoId, true);
+						}
+					}
+				}
+			}
 			return FacilioFactory.getFileStore().getPrivateUrl(photoId);
 		}
 		return null;

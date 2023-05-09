@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
@@ -43,6 +45,7 @@ public class PhotosAction extends FacilioAction {
 	public String addPhotos() throws Exception {
 		return addPhotos(module);
 	}
+
 	
 	private String addPhotos(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -81,7 +84,7 @@ public class PhotosAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
-		
+
 		FacilioChain getPhotosChain = FacilioChainFactory.getPhotosChain();
 		getPhotosChain.execute(context);
 		
