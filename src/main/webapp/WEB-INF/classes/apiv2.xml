@@ -3368,7 +3368,9 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
-	
+	<package name="lookupFields" namespace="/api/v2/lookupFields" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.LookupFieldAction" method="lookupFieldList"></action>
+	</package>
 	<package name="dashboardCardApiv2" namespace="/api/v2/dashboard/cards"
 		extends="v2Api">
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.CardAction" method="getCardData">

@@ -25,26 +25,10 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.codecs.MySQLCodec;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FilterUtil {
     private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
-
-    public static Queue<String> getFieldNamesFromFilter(JSONObject filter){
-        Queue<String> filedNamesQueue = new LinkedList<>();
-        for (long index = 1; index <= filter.size(); index++){
-            String fieldName = getFieldNameById(index, filter);
-            filedNamesQueue.add(fieldName);
-        }
-        return filedNamesQueue;
-    }
-    public static String getFieldNameById(long id, JSONObject filter){
-        for (Object fieldName: filter.keySet()) {
-            JSONObject jsonObject = (JSONObject) filter.get(fieldName);
-            long fieldId = (Long) jsonObject.get("id");
-            if(fieldId == id) return fieldName.toString();
-        }
-        return null;
-    }
 
     public static String removeIfPivotDrillDownPatternExists(JSONObject filters){
         String drillDownPattern=null;
@@ -55,6 +39,33 @@ public class FilterUtil {
         }
         return drillDownPattern;
     }
+    public static List getAsFilterList(JSONObject filters){
+        Iterator<String> filterIterator = filters.keySet().iterator();
+        List filterList=new ArrayList<>();
+        while(filterIterator.hasNext()) {
+            String fieldName=filterIterator.next();
+            Object filterObj=  filters.get(fieldName);
+            if(filterObj!=null && filterObj instanceof JSONArray) {
+                JSONArray fieldJsonArr = (JSONArray) filterObj;
+                for(int i=0;i<fieldJsonArr.size();i++) {
+                    JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
+                    filterList.add(constructFilterObject(fieldName,fieldJsonObj));
+                }
+            }
+            else if(filterObj!=null && filterObj instanceof JSONObject) {
+                JSONObject fieldJsonObj = (JSONObject) filterObj;
+                filterList.add(constructFilterObject(fieldName,fieldJsonObj));
+            }
+        }
+        return filterList;
+    }
+    public static JSONObject constructFilterObject(String fieldName, JSONObject obj)
+    {
+        JSONObject constructedObj= new JSONObject();
+        constructedObj.put("fieldName",fieldName);
+        constructedObj.putAll(obj);
+        return constructedObj;
+    }
     public static Criteria getCriteriaFromFilters(JSONObject filters,String moduleName) throws Exception {
         Operator op=Operator.getOperator(93);
         Criteria criteria=new Criteria();
@@ -63,26 +74,21 @@ public class FilterUtil {
             boolean isPm;
             List<String> templateFields=Collections.emptyList();
 
-            Iterator<String> filterIterator = filters.keySet().iterator();
-
-
             isPm = moduleName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
             if (isPm) {
                 templateFields = PreventiveMaintenanceAPI.getTemplateFields();
             }
 
             String drillDownPattern=removeIfPivotDrillDownPatternExists(filters);
-
-            if(StringUtils.isNotEmpty(drillDownPattern)){
-                Queue<String> fieldNamesFromFilter = getFieldNamesFromFilter(filters);
-                filterIterator = fieldNamesFromFilter.iterator();
+            List filterList=getAsFilterList(filters);
+            if(StringUtils.isNotEmpty(drillDownPattern)) {
+                filterList=(List) filterList.stream().sorted(Comparator.comparingLong(i->(long)((JSONObject)i).get("id"))).collect(Collectors.toList());
             }
 
-            while(filterIterator.hasNext())
+            for(Object conditionObj:filterList)
             {
-                String fieldName = filterIterator.next();
-                Object fieldJson = filters.get(fieldName);
-
+                Object fieldJson = conditionObj;
+                String fieldName= (String) ((JSONObject)fieldJson).get("fieldName");
                 if(isPm) {
                     moduleName = PreventiveMaintenanceAPI.getPmModule(templateFields, fieldName);
                 }
@@ -92,14 +98,7 @@ public class FilterUtil {
                 }
 
                 List<Condition> conditionList = new ArrayList<>();
-                if(fieldJson!=null && fieldJson instanceof JSONArray) {
-                    JSONArray fieldJsonArr = (JSONArray) fieldJson;
-                    for(int i=0;i<fieldJsonArr.size();i++) {
-                        JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
-                        FilterUtil.setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
-                    }
-                }
-                else if(fieldJson!=null && fieldJson instanceof JSONObject) {
+               if(fieldJson!=null) {
                     JSONObject fieldJsonObj = (JSONObject) fieldJson;
                     FilterUtil.setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
                 }
@@ -356,6 +355,7 @@ public class FilterUtil {
           criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
           condition.setCriteriaValue(criteriaVal);
       } else if (condition.getOperator() instanceof LookupOperator) {
+          LOGGER.info("Old Filter used for OnelevelLookup :  FieldJson - " + fieldJson + " ModuleName - " + moduleName + " FieldName - " + fieldName);
           Criteria criteriaVal = new Criteria();
           Operator lookupOperator = Operator.getOperator((int)(long) fieldJson.get("lookupOperatorId"));
           FacilioField lookupFilterField = modBean.getField((String)fieldJson.get("field"), ((LookupField)field).getLookupModule().getName());
