@@ -3,8 +3,10 @@ package com.facilio.qa.command;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -29,6 +31,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 
+@Log4j
 public class FetchRelatedItemsForInspectionTemplateCommand extends FacilioCommand {
 
 	@Override
@@ -36,12 +39,14 @@ public class FetchRelatedItemsForInspectionTemplateCommand extends FacilioComman
 		// TODO Auto-generated method stub
 		
 		List<InspectionTemplateContext> inspections = Constants.getRecordList((FacilioContext) context);
-
+		LOGGER.info("Reached Fetch Related Items for Inspection Template Command");
 		if (CollectionUtils.isNotEmpty(inspections)) {
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			List<Long> inspectionTemplateIds = inspections.stream().map(InspectionTemplateContext::getId).collect(Collectors.toList());
+
+			LOGGER.info("Inspection Template Ids : "+inspectionTemplateIds);
 
 			Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
 

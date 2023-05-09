@@ -115,40 +115,45 @@ public class ImageScaleUtil {
 	    // return the final image
 	    return outputImage;
 	}
-	
-	private static BufferedImage rescale(BufferedImage inputImage) throws IOException {
-        int originalWidth = inputImage.getWidth();
-        int originalHeight = inputImage.getHeight();
-        double imgRatio = originalWidth/ (double) originalHeight;
-        
-        if ((originalWidth > MAX_WIDTH || originalHeight > MAX_HEIGHT) && !(originalHeight == MAX_WIDTH && originalWidth == MAX_HEIGHT) ) {
-	        	if(imgRatio < MAX_RATIO){
-	                //adjust width according to maxHeight
-	                imgRatio = MAX_HEIGHT / (double) originalHeight;
-	                originalWidth = (int) (imgRatio * originalWidth);
-	                originalHeight = MAX_HEIGHT;
-            }
-            else if(imgRatio > MAX_RATIO){
-                //adjust height according to maxWidth
-                imgRatio = MAX_WIDTH / (double) originalWidth;
-                originalHeight = (int) (imgRatio * originalHeight);
-                originalWidth = MAX_WIDTH;
-            }else{
-            		originalHeight = MAX_HEIGHT;
-            		originalWidth = MAX_WIDTH;
-            }
-        }
-        else {
-        		return inputImage;
-        }
-        
-        BufferedImage resizedImage = Scalr.resize(inputImage, Scalr.Method.QUALITY, originalWidth, originalHeight);
-        return resizedImage;
-    }
-	
-	public static void compressImage(BufferedImage inputImage, OutputStream outputStream, String contentType) throws IOException {
 
-		inputImage = rescale(inputImage);
+	private static BufferedImage rescale(BufferedImage inputImage, Scalr.Rotation rotation) throws IOException {
+		int originalWidth = inputImage.getWidth();
+		int originalHeight = inputImage.getHeight();
+		double imgRatio = originalWidth/ (double) originalHeight;
+
+		if ((originalWidth > MAX_WIDTH || originalHeight > MAX_HEIGHT) && !(originalHeight == MAX_WIDTH && originalWidth == MAX_HEIGHT) ) {
+			if(imgRatio < MAX_RATIO){
+				//adjust width according to maxHeight
+				imgRatio = MAX_HEIGHT / (double) originalHeight;
+				originalWidth = (int) (imgRatio * originalWidth);
+				originalHeight = MAX_HEIGHT;
+			}
+			else if(imgRatio > MAX_RATIO){
+				//adjust height according to maxWidth
+				imgRatio = MAX_WIDTH / (double) originalWidth;
+				originalHeight = (int) (imgRatio * originalHeight);
+				originalWidth = MAX_WIDTH;
+			}else{
+				originalHeight = MAX_HEIGHT;
+				originalWidth = MAX_WIDTH;
+			}
+		}
+		else {
+			return inputImage;
+		}
+		BufferedImage resizedImage;
+		if(rotation!=null) {
+			BufferedImage rotated = Scalr.rotate(inputImage, rotation, Scalr.OP_ANTIALIAS);
+			resizedImage = Scalr.resize(rotated, Scalr.Method.QUALITY, originalWidth, originalHeight);
+		} else{
+			resizedImage = Scalr.resize(inputImage, Scalr.Method.QUALITY, originalWidth, originalHeight);
+		}
+		return resizedImage;
+	}
+
+	public static void compressImage(BufferedImage inputImage, OutputStream outputStream, String contentType, Scalr.Rotation rotation) throws IOException {
+
+		inputImage = rescale(inputImage,rotation);
 
 		Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName("jpeg");
 		ImageWriter imageWriter = (ImageWriter) imageWriters.next();

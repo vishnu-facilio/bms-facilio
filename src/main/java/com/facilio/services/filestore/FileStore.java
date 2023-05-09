@@ -15,20 +15,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
+import java.util.*;
+import javax.imageio.*;
+import javax.imageio.metadata.*;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 
-import com.beust.ah.A;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -58,6 +57,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.FacilioUtil;
+import org.imgscalr.Scalr;
 
 public abstract class FileStore {
 
@@ -951,10 +951,39 @@ public abstract class FileStore {
 		}
 	}
 
+	@SneakyThrows
+	private Scalr.Rotation getOrientation(InputStream inputStream){
+		Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+		if(metadata!=null) {
+			ExifIFD0Directory exifIFD0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+			if (exifIFD0 != null) {
+				int orientation = exifIFD0.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+
+				switch (orientation) {
+					case 1: // [Exif IFD0] Orientation - Top, left side (Horizontal / normal)
+						return null;
+					case 6: // [Exif IFD0] Orientation - Right side, top (Rotate 90 CW)
+						return Scalr.Rotation.CW_90;
+					case 3: // [Exif IFD0] Orientation - Bottom, right side (Rotate 180)
+						return Scalr.Rotation.CW_180;
+					case 8: // [Exif IFD0] Orientation - Left side, bottom (Rotate 270 CW)
+						return Scalr.Rotation.CW_270;
+				}
+			}
+		}
+		return null;
+	}
+
 	public byte[] writeCompressedFile(String namespace, long fileId, FileInfo fileInfo, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+		Scalr.Rotation orientation = null;
+		try (InputStream inputStream = this.readFile(namespace, fileId, true)){
+			orientation = getOrientation(inputStream);
+		}catch (Exception e) {
+			LOGGER.error("Error while getting the orientation", e);
+		}
 		try (InputStream inputStream = this.readFile(namespace, fileId, true)){
 			BufferedImage imBuff = ImageIO.read(inputStream);
-			ImageScaleUtil.compressImage(imBuff, baos, fileInfo.getContentType());
+			ImageScaleUtil.compressImage(imBuff, baos, fileInfo.getContentType(),orientation);
 
 			byte[] imageInByte = baos.toByteArray();
 			if (imageInByte.length >= fileInfo.getFileSize()) {	// Small files may be compressed to more size bcz of metadata

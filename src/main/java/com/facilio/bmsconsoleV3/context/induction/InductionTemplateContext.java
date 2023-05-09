@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
 import com.facilio.bmsconsoleV3.util.InductionAPI;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;

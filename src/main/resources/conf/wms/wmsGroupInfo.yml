@@ -24,6 +24,7 @@ groups:
       - { topic: __audit_logs__, handler: com.facilio.wmsv2.handler.AuditLogHandler, recordTimeout: 15, isLiveMessage: false }
       - { topic: __pushnotification__, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
       - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 30, isLiveMessage: false }
+      - { topic: inspection-generation-process, handler: com.facilio.wmsv2.handler.InspectionGenerationHandler , priority: -5,recordTimeout : 300, isLiveMessage: false}
 
   - group: receive-mail
     sendToAll: false

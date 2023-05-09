@@ -24,6 +24,7 @@ public class Constants {
         public static final String RULES_TO_BE_UPDATED = "qandaRulesToBeUpdated";
         public static final String CONDITIONS_TO_BE_DELETED = "qandaRuleConditionsToBeDeleted";
         public static final String ACTIONS_TO_BE_ADDED = "actionsToBeAdded";
+        public static final String BASESCHEDULES = "baseSchedules";
     }
 
     public static class ModuleFactory {
