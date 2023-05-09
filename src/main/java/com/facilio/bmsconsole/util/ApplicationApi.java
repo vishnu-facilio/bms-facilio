@@ -119,10 +119,7 @@ public class ApplicationApi {
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
         }
-        if(skipCheck) {
-            return null;
-        }
-        throw new IllegalArgumentException("Invalid link name");
+        return null;
     }
 
 

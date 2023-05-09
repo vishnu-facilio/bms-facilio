@@ -168,6 +168,12 @@ public class GetApplicationDetails extends FacilioCommand {
 						}
 					}
 					application.setWebTabGroups(webTabGroups);
+					if(Boolean.FALSE.equals(fetchAllLayouts) && application.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+						if(layout!=null){
+							layout.setWebTabGroupList(null);
+						}
+						application.setWebTabGroups(null);
+					}
 					application.setLayoutType(appLayouts.get(0).getAppLayoutType());
 
 					application.setLayouts(appLayouts);

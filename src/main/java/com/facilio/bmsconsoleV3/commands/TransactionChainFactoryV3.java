@@ -3263,6 +3263,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddWebLayoutTabsCommand());
         chain.addCommand(new AddSetupLayoutTabsCommand());
         chain.addCommand(new AddRelatedApplicationsForMigratingAppCommand());
+        chain.addCommand(new RelateMainAppWithMaintenanceCommand());
         return chain;
     }
 }

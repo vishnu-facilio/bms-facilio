@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -32,15 +33,20 @@ public class MigrationAction extends V3Action {
 
     public String oldAppMigration() {
         try {
-            ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, true);
-            if (mainApp != null) {
-                long mainAppId = mainApp.getId();
-                FacilioChain chain = TransactionChainFactoryV3.getOldAppMigrationChain();
-                FacilioContext context = chain.getContext();
-                context.put(FacilioConstants.ContextNames.APP_ID, mainAppId);
-                chain.execute();
+            User currentUser = AccountUtil.getCurrentUser();
+            if (currentUser != null && currentUser.getEmail().contains("system+")) {
+                ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, true);
+                if (mainApp != null) {
+                    long mainAppId = mainApp.getId();
+                    FacilioChain chain = TransactionChainFactoryV3.getOldAppMigrationChain();
+                    FacilioContext context = chain.getContext();
+                    context.put(FacilioConstants.ContextNames.APP_ID, mainAppId);
+                    chain.execute();
+                } else {
+                    LOGGER.error("App Id cannot be null");
+                }
             } else {
-                LOGGER.error("App Id cannot be null");
+                LOGGER.error("Current user don't have permission to access this api");
             }
         } catch (Exception e) {
             LOGGER.error(e);
@@ -67,9 +73,9 @@ public class MigrationAction extends V3Action {
                 }
             }
             setData("redirectUrl", redirectUrl);
-            LOGGER.info("Route from notification redirected to :- " + redirectUrl);
+            LOGGER.info("Route ("+ previousRoute + ") from notification redirected to :- " + redirectUrl);
         } catch (Exception e) {
-            LOGGER.error("Error Occurred in notification route redirection :- " + redirectUrl);
+            LOGGER.error("Error Occurred in notification route ("+ previousRoute +") redirection :- " + redirectUrl);
         }
         return SUCCESS;
     }
