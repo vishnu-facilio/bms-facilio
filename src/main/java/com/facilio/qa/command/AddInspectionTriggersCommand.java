@@ -129,15 +129,8 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 				V3RecordAPI.addRecord(false, inclExclList, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL));
 			}
 
-			List<BaseScheduleContext> baseSchedules = triggers.stream().map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
-			if(baseSchedules!=null && !baseSchedules.isEmpty()) {
-				LOGGER.info("Base Schedules Size : "+baseSchedules.size());
-				JSONObject baseScheduleListObject = new JSONObject();
-				baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseSchedules);
-				SessionManager.getInstance().sendMessage(new Message()
-						.setTopic(InspectionGenerationHandler.TOPIC)
-						.setContent(baseScheduleListObject));
-			}
+			context.put(FacilioConstants.Inspection.INSPECTION_TRIGGERS,triggers);
+
 		}
 		return false;
 	}

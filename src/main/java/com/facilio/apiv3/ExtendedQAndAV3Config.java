@@ -53,9 +53,11 @@ public class ExtendedQAndAV3Config {
                 .create()
                 .beforeSave(QAndATransactionChainFactory.inspectionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inspectionAfterSaveChain())
+				.afterTransaction(new PushInspectionGenerationToWMS())
                 .update()
                 .beforeSave(QAndATransactionChainFactory.inspectionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inspectionAfterUpdateChain())
+				.afterTransaction(new PushInspectionGenerationToWMS())
                 .list()
                 .beforeFetch( QAndATransactionChainFactory.inspectionTemplateBeforeFetchChain())
                 .delete().afterDelete(new DeleteInspectionTriggerCommand())
@@ -87,9 +89,11 @@ public class ExtendedQAndAV3Config {
     public static Supplier<V3Config> getInspectionTriggers() {
         return () -> new V3Config(InspectionTriggerContext.class, null)
         		.create()
-                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+				.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+				.afterTransaction(new PushInspectionGenerationToWMS())
                 .update()
-                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+				.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+				.afterTransaction(new PushInspectionGenerationToWMS())
                 .build();
     }
     

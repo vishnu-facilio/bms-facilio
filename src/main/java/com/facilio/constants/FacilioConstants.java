@@ -3064,6 +3064,7 @@ public class FacilioConstants {
 		public static final String INSPECTION_TEMPLATE = "inspectionTemplate";
 		public static final String INSPECTION_RESPONSE = "inspectionResponse";
 		public static final String INSPECTION_TRIGGER = "inspectionTrigger";
+		public static final String INSPECTION_TRIGGERS = "inspectionTriggers";
 
 		public static final String INSPECTION_RESPONSE_ACTIVITY = "inspectionResponseActivity";
 
