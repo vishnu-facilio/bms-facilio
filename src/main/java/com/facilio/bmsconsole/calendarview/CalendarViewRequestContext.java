@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.calendarview;
 
+import com.facilio.constants.FacilioConstants.ViewConstants;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.AggregateOperator;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class CalendarViewRequestContext {
     private Long startTime;
@@ -47,5 +45,23 @@ public class CalendarViewRequestContext {
     }
     public void setMaxResultPerCell(int maxResultPerCell) {
         this.maxResultPerCell = maxResultPerCell;
+    }
+
+    private ViewConstants.CalendarViewType calendarViewType;
+    public int getCalendarViewType() {
+        if(calendarViewType != null) {
+            return calendarViewType.getIntVal();
+        }
+        return ViewConstants.CalendarViewType.MONTH.getIntVal();
+    }
+
+    public ViewConstants.CalendarViewType getDefaultCalendarViewEnum() {
+        return calendarViewType;
+    }
+    public void setCalendarViewType(int calendarViewType) {
+        this.calendarViewType = ViewConstants.CalendarViewType.TYPE_MAP.get(calendarViewType);
+    }
+    public void setDefaultCalendarView(ViewConstants.CalendarViewType defaultCalendarView) {
+        this.calendarViewType = defaultCalendarView;
     }
 }

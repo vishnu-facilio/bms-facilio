@@ -51,7 +51,11 @@ public class CalendarViewContext implements Serializable {
         if(defaultCalendarView != null) {
             return defaultCalendarView.getIntVal();
         }
-        return ViewConstants.CalendarViewType.DAY.getIntVal();
+        return ViewConstants.CalendarViewType.MONTH.getIntVal();
+    }
+
+    public ViewConstants.CalendarViewType getDefaultCalendarViewEnum() {
+        return defaultCalendarView;
     }
     public void setDefaultCalendarView(int defaultCalendarView) {
         this.defaultCalendarView = ViewConstants.CalendarViewType.TYPE_MAP.get(defaultCalendarView);

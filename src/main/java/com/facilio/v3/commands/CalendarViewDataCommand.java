@@ -23,6 +23,8 @@ public class CalendarViewDataCommand extends FacilioCommand {
     private static Logger logger = LogManager.getLogger(CalendarViewDataCommand.class);
     private static final String GROUP_CONCAT_FIELD_NAME = "__groupConcat";
     private static final String DATE_FORMAT = "__date_format";
+    private static final String DIFFERENCE = "__difference";
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         CalendarViewRequestContext calendarViewRequest = (CalendarViewRequestContext) context.get(FacilioConstants.ViewConstants.CALENDAR_VIEW_REQUEST);
@@ -46,17 +48,26 @@ public class CalendarViewDataCommand extends FacilioCommand {
         selectiveFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
 
         // Construct Sub-Query for Group_Concat() (obtain all recordIds that match mainCriteria)
-        SelectRecordsBuilder subQueryBuilder = getGroupConcatQuery(module, mainCriteria, startTimeField, idFieldColumnName, calendarViewRequest.getDateAggregator());
+        SelectRecordsBuilder subQueryBuilder = getGroupConcatQuery(module, mainCriteria, startTimeField, endTimeField, idFieldColumnName, calendarViewRequest.getDateAggregator());
         String subQueryString = subQueryBuilder.constructQueryString();
 
         SelectRecordsBuilder<ModuleBaseWithCustomFields> recordsBuilder = CalendarViewUtil.getSelectRecordsBuilder(context, moduleBean, true);
         recordsBuilder
                 .select(selectiveFields)
+                .andCriteria(mainCriteria)
                 .innerJoinQuery(subQueryString, "groupMax")
                 .on(calendarViewRequest.getDateAggregator().getSelectField(startTimeField).getColumnName() + " = groupMax." + DATE_FORMAT);
 
         // Filter MAX Number of Records per cell
-        recordsBuilder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + calendarViewRequest.getMaxResultPerCell());
+        recordsBuilder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + (calendarViewRequest.getMaxResultPerCell() + 1));
+
+        if (endTimeField != null) {
+            FacilioField differenceField = new FacilioField();
+            differenceField.setName(DIFFERENCE);
+            differenceField.setColumnName("(" + endTimeField.getCompleteColumnName() + " - " + startTimeField.getCompleteColumnName() + ")");
+            recordsBuilder.orderBy("groupMax." + DATE_FORMAT + ", " + differenceField.getCompleteColumnName() + " " + "desc");
+            selectiveFields.add(differenceField);
+        }
 
         List<? extends ModuleBaseWithCustomFields> records = recordsBuilder.get();
 
@@ -67,7 +78,7 @@ public class CalendarViewDataCommand extends FacilioCommand {
         return false;
     }
 
-    private SelectRecordsBuilder getGroupConcatQuery(FacilioModule module, Criteria timeCriteria, FacilioField startTimeField, String idFieldColumnName,
+    private SelectRecordsBuilder getGroupConcatQuery(FacilioModule module, Criteria timeCriteria, FacilioField startTimeField, FacilioField endTimeField, String idFieldColumnName,
                                                      BmsAggregateOperators.DateAggregateOperator dateAggregator) throws Exception {
         SelectRecordsBuilder groupConcatQuery = new SelectRecordsBuilder()
                 .module(module)
@@ -82,7 +93,7 @@ public class CalendarViewDataCommand extends FacilioCommand {
         fields.add(startTimeAggrField);
         groupByJoiner.add(startTimeAggrField.getCompleteColumnName());
 
-        FacilioField groupConcatField = getGroupConcatField(idFieldColumnName, startTimeField.getCompleteColumnName());
+        FacilioField groupConcatField = getGroupConcatField(idFieldColumnName, startTimeField, endTimeField);
         fields.add(groupConcatField);
 
         groupConcatQuery.select(fields);
@@ -91,13 +102,30 @@ public class CalendarViewDataCommand extends FacilioCommand {
         return groupConcatQuery;
     }
 
-    private FacilioField getGroupConcatField(String idFieldColumnName, String startFieldColumnName) {
+    private FacilioField getGroupConcatField(String idFieldColumnName, FacilioField startTimeField, FacilioField endTimeField) {
         FacilioField field = new FacilioField();
         field.setName(GROUP_CONCAT_FIELD_NAME);
         field.setDisplayName(field.getDisplayName());
         field.setFieldId(field.getFieldId());
         field.setDataType(FieldType.STRING);
-        field.setColumnName("GROUP_CONCAT(" + idFieldColumnName + " order by " + startFieldColumnName + "," + idFieldColumnName + ")");
+
+        String startFieldColumnName = startTimeField.getCompleteColumnName();
+
+        StringBuilder groupConcatQuery = new StringBuilder();
+        groupConcatQuery.append("GROUP_CONCAT(" ).append(idFieldColumnName)
+                .append(" ORDER BY ");
+        if (endTimeField != null) {
+            String endFieldColumnName = endTimeField.getCompleteColumnName();
+            groupConcatQuery.append("CASE WHEN (").append(startFieldColumnName).append(" is not null AND ").append(endFieldColumnName).append(" is not null) ")
+                    .append("THEN (").append(endFieldColumnName).append(" - ").append(startFieldColumnName).append(") END DESC,");
+        }
+        groupConcatQuery.append(" CASE WHEN (").append(startFieldColumnName).append(" is not null").append(") ")
+                .append("THEN (").append(startFieldColumnName).append(") END ASC, ")
+                .append(idFieldColumnName)
+                .append(")");
+
+        field.setColumnName(groupConcatQuery.toString());
+
         return field;
     }
 }
