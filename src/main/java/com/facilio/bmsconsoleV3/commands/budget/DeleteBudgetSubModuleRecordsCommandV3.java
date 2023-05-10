@@ -13,6 +13,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,13 +48,14 @@ public class DeleteBudgetSubModuleRecordsCommandV3 extends FacilioCommand {
                 return;
             }
             Set<Long> budgetAmountIds = budgetAmountRecords.keySet();
-            deleteBudgetMonthlyAmountForBudgetAmount(modBean, budgetAmountIds);
+            deleteBudgetMonthlyAmountForBudgetAmount(budgetAmountIds);
             V3RecordAPI.deleteRecords(budgetAmountModuleName, criteria, true);
         }
     }
 
-    private static void deleteBudgetMonthlyAmountForBudgetAmount(ModuleBean modBean, Set<Long> budgetAmountIds) throws Exception {
+    static void deleteBudgetMonthlyAmountForBudgetAmount( Set<Long> budgetAmountIds) throws Exception {
         String budgetMontlyAmounts = FacilioConstants.ContextNames.BUDGET_MONTHLY_AMOUNT;
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(budgetMontlyAmounts);
         if(module.isTrashEnabled()) {
             FacilioField budgetAmtField = modBean.getField("budgetAmount", budgetMontlyAmounts);

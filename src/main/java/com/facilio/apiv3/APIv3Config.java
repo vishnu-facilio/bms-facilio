@@ -1487,7 +1487,7 @@ public class APIv3Config {
                 .create().beforeSave(TransactionChainFactoryV3.getCreateBudgetBeforeSaveChain())
                 .afterSave(new AddOrUpdateMonthlyBudgetAmountCommandV3())
                 .update()
-                .beforeSave(TransactionChainFactoryV3.getCreateBudgetBeforeSaveChain())
+                .beforeSave(TransactionChainFactoryV3.getCreateBudgetBeforeSaveChain(), new DeleteBudgetAmountCommand())
                 .afterSave(new AddOrUpdateMonthlyBudgetAmountCommandV3())
                 .list()
                 .beforeFetch(new LoadBudgetLookupCommandV3())
