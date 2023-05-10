@@ -12,8 +12,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.v3.util.V3Util;
+import org.json.simple.JSONObject;
 
 public class StateFlowScheduledRuleJob extends FacilioJob {
 
@@ -27,18 +30,13 @@ public class StateFlowScheduledRuleJob extends FacilioJob {
 		
 			StateflowTransitionContext stateTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(transitionId);
 			if (stateTransition != null && recordId > 0) {
-				FacilioContext context = new FacilioContext();
-				FacilioChain chain = TransactionChainFactory.getUpdateStateTransitionChain();
-				
-				long moduleId = stateTransition.getModuleId();
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(moduleId);
-				
-				context.put(FacilioConstants.ContextNames.ID, recordId);
-				context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransition.getId());
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-				
-				chain.execute(context);
+				Object recordObj = V3Util.getRecord(stateTransition.getModuleName(), recordId, null);
+				Map<String,Object> recordMap = FieldUtil.getAsProperties(recordObj);
+				JSONObject bodyParam = new JSONObject();
+				bodyParam.put(FacilioConstants.ContextNames.SKIP_APPROVAL,true);
+				V3Util.processAndUpdateSingleRecord(stateTransition.getModuleName(), recordId, recordMap , bodyParam, null ,stateTransition.getId(), null,
+						null,null, null,null);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -16,6 +16,7 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
+import java.util.Map;
 
 public class VerifyApprovalCommandV3 extends FacilioCommand {
     @Override
@@ -24,6 +25,14 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
+        Map<String,Object> bodyParam = Constants.getBodyParams(context);
+
+        boolean skipApproval = bodyParam != null ? (boolean) bodyParam.get(FacilioConstants.ContextNames.SKIP_APPROVAL) : false;
+
+        if (skipApproval){
+            return false;
+        }
+
         if (module == null) {
             throw new IllegalArgumentException("Invalid module, " + moduleName);
         }

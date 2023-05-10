@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -59,7 +60,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				return false;
 			}
 			for (ModuleBaseWithCustomFields record : records) {
-				if (record.getApprovalFlowId() > -1 && record.getApprovalFlowId() > 0) {
+				if (!(stateflowTransition.getTypeEnum() == AbstractStateTransitionRuleContext.TransitionType.SCHEDULED) && record.getApprovalFlowId() > -1 && record.getApprovalFlowId() > 0) {
 					throw new IllegalArgumentException("Cannot change state as it is in approval");
 				}
 
