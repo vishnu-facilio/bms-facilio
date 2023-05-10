@@ -521,8 +521,9 @@ public class GroupBeanImpl implements GroupBean {
 				.table(module.getTableName())
 				.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
 				.on("FacilioGroups.ID = FacilioGroupMembers.GROUPID")
-				.andCustomWhere("FacilioGroupMembers.ORG_USERID = ? and FacilioGroups.IS_ACTIVE = true", ouid);
-		
+				.andCustomWhere("FacilioGroupMembers.ORG_USERID = ? and FacilioGroups.IS_ACTIVE = true", ouid)
+				.andCustomWhere("FacilioGroupMembers.SYS_DELETED = 0 or FacilioGroupMembers.SYS_DELETED IS NULL");
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
