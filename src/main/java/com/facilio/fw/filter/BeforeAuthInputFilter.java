@@ -95,6 +95,7 @@ public class BeforeAuthInputFilter implements Filter {
                return;
             }
             if ( !isAllowed() || exclution.isMatch()) {
+                log(securityRequestWrapper,"Validation missing for : " + httpServletRequest.getRequestURI());
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
