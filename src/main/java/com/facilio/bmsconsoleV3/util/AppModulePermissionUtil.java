@@ -126,7 +126,9 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(4), "VIEW_BOOKING_OWN", "View Booking Own", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(5), "EDIT", "Edit", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION),
-            new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Update Task", PermissionMapping.GROUP2PERMISSION));
+            new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Update Task", PermissionMapping.GROUP2PERMISSION),
+            new Permission(getExponentValue(8), "CONTROL", "Control", PermissionMapping.GROUP2PERMISSION)
+        );
 
     private static long getExponentValue(int exponent) {
         return (long) Math.pow(2, (exponent - 1));
@@ -180,6 +182,10 @@ public class AppModulePermissionUtil {
         //Preventive Maintenance
         permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("EXPORT"));
         modulePermissionGroupMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, new ModuleAppPermission(permissionTypes));
+
+        //Asset
+        permissionTypes = Arrays.asList(permissionMap.get("CREATE"), permissionMap.get("READ"), permissionMap.get("UPDATE"), permissionMap.get("DELETE"), permissionMap.get("EXPORT"), permissionMap.get("CONTROL"));
+        modulePermissionGroupMap.put(FacilioConstants.ContextNames.ASSET, new ModuleAppPermission(permissionTypes));
 
         //Approval
         permissionTypes = Arrays.asList(permissionMap.get("CAN_APPROVE"));

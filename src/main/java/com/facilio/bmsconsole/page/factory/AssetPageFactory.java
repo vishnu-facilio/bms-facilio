@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.controlaction.util.ControlActionUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -415,6 +416,12 @@ public class AssetPageFactory extends PageFactory {
 		
 		List<ReadingDataMeta> writableReadings = null;
 		try {
+
+			boolean hasPermission = ControlActionUtil.hasControlPermission();
+			if (!hasPermission) {
+				return;
+			}
+
 			writableReadings = ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), null, true, ReadingType.WRITE);
 		
 			if (CollectionUtils.isNotEmpty(writableReadings)) {

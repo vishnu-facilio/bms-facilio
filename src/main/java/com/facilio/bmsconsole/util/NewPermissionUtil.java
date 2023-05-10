@@ -74,6 +74,7 @@ public class NewPermissionUtil {
         moduleTabType.put("DELETE_TEAM", 8192);
         moduleTabType.put("DELETE_OWN", 16384);
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
+        moduleTabType.put("CONTROL", 65536);
         return moduleTabType;
     }
 
@@ -333,6 +334,15 @@ public class NewPermissionUtil {
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissionMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("CONTROL", "Control", moduleTabType.get("CONTROL"), null));
+        permissionMap.put(FacilioConstants.ContextNames.ASSET, permissions);
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();

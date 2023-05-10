@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.util.WebTabUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -347,5 +351,21 @@ public class ControlActionUtil {
 				;
 		
 		updateBuilder.batchUpdateById(batchUpdateList);
+	}
+
+	public static boolean hasControlPermission() throws Exception {
+		boolean hasPermission;
+		if (AccountUtil.getCurrentUser().getRole().isPrevileged()) {
+			hasPermission  = true;
+		}
+		else if(AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			hasPermission = PermissionUtil.currentUserHasPermission(FacilioConstants.ContextNames.ASSET, "CONTROL", AccountUtil.getCurrentUser().getRole());
+		}
+		else {
+			WebTabContext tab = AccountUtil.getCurrentTab();
+			hasPermission = WebTabUtil.currentUserHasPermission(tab.getId(),"CONTROL",AccountUtil.getCurrentUser().getRole());
+		}
+
+		return hasPermission;
 	}
 }
