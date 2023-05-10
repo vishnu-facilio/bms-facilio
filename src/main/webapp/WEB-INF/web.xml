@@ -43,7 +43,7 @@
 		<init-param>
 			<param-name>cors.allowed.headers</param-name>
 			<param-value>
-				Content-Type,X-Is-Export,X-Requested-With,accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Referer,User-Agent,Authorization,X-Device-Type,X-App-Version,X-CSRF-Token,X-Remote-Screen,X-current-site,X-Permalink-Token,X-Current-Org,X-Tab-Id,X-Org-Id,X-Org-Group,X-Switch-Value,X-Proxy-Token
+				Content-Type,X-Is-Export,X-Requested-With,accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Referer,User-Agent,Authorization,X-Device-Type,X-App-Version,X-CSRF-Token,X-Remote-Screen,X-current-site,X-Permalink-Token,X-Current-Org,X-Tab-Id,X-Org-Id,X-Org-Group,X-Switch-Value,X-Proxy-Token,X-Current-Environment
 			</param-value>
 		</init-param>
 		<init-param>
