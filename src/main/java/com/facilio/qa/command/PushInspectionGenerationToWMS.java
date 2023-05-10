@@ -5,12 +5,14 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.handler.InspectionGenerationHandler;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,11 +25,13 @@ public class PushInspectionGenerationToWMS extends FacilioCommand {
         List<BaseScheduleContext> baseSchedules = triggers.stream().map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
         if(baseSchedules!=null && !baseSchedules.isEmpty()) {
             LOGGER.info("Base Schedules Size : "+baseSchedules.size());
-            JSONObject baseScheduleListObject = new JSONObject();
-            baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseSchedules);
-            SessionManager.getInstance().sendMessage(new Message()
-                    .setTopic(InspectionGenerationHandler.TOPIC)
-                    .setContent(baseScheduleListObject));
+            for(BaseScheduleContext baseSchedule:baseSchedules) {
+                JSONObject baseScheduleListObject = new JSONObject();
+                baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseSchedule);
+                WmsBroadcaster.getBroadcaster().sendMessage(new Message()
+                        .setTopic(InspectionGenerationHandler.TOPIC+"/"+baseSchedule.getId())
+                        .setContent(baseScheduleListObject));
+            }
             LOGGER.info("Successfully Pushed Inspection generation to kafka");
         }
         return false;

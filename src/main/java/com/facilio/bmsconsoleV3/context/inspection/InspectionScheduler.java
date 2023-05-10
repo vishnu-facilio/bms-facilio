@@ -23,7 +23,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 	public List<? extends ModuleBaseWithCustomFields> createRecords(BaseScheduleContext baseScheduleContext,boolean isUpdate, List<Map<String, Object>> parentRecordProps, boolean isManualOrScheduleTrigger) throws Exception {
 		LOGGER.info("Reached Inspection Scheduler");
 		JSONObject baseScheduleListObject = new JSONObject();
-		baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, Collections.singletonList(baseScheduleContext));
+		baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseScheduleContext);
 		SessionManager.getInstance().sendMessage(new Message()
 				.setTopic(InspectionGenerationHandler.TOPIC)
 				.setContent(baseScheduleListObject));

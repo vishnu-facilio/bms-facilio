@@ -25,17 +25,15 @@ public class InspectionGenerationHandler extends BaseHandler {
         try{
             if (message != null && message.getContent()!=null) {
                 Map<String, Object> messageMap = message.getContent();
-                List<Map<String,Object>> baseScheduleListMap = (List<Map<String,Object>>) messageMap.get(Constants.Command.BASESCHEDULES);
-                List<BaseScheduleContext> baseSchedules= FieldUtil.getAsBeanListFromMapList(baseScheduleListMap,BaseScheduleContext.class);
-                if(baseSchedules!=null && !baseSchedules.isEmpty()) {
-                    for (BaseScheduleContext baseScheduleContext : baseSchedules) {
-                        LOGGER.info("Baseschedule ID --"+baseScheduleContext.getId());
-                        List<Map<String, Object>> parentRecordProps = baseScheduleContext.fetchParent();
-                        List<? extends ModuleBaseWithCustomFields> childRecords = InspectionUtil.inspectionGeneration(baseScheduleContext, parentRecordProps);
-                        if (childRecords != null && !childRecords.isEmpty()) {
-                            LOGGER.info("Count of inspections to be generated -- " + childRecords.size());
-                            baseScheduleContext.saveAsV3PreCreate(childRecords);
-                        }
+                Map<String,Object> baseScheduleMap = (Map<String,Object>) messageMap.get(Constants.Command.BASESCHEDULES);
+                BaseScheduleContext baseSchedule= FieldUtil.getAsBeanFromMap(baseScheduleMap,BaseScheduleContext.class);
+                if(baseSchedule!=null) {
+                    LOGGER.info("Baseschedule ID --"+baseSchedule.getId());
+                    List<Map<String, Object>> parentRecordProps = baseSchedule.fetchParent();
+                    List<? extends ModuleBaseWithCustomFields> childRecords = InspectionUtil.inspectionGeneration(baseSchedule, parentRecordProps);
+                    if (childRecords != null && !childRecords.isEmpty()) {
+                        LOGGER.info("Count of inspections to be generated -- " + childRecords.size());
+                        baseSchedule.saveAsV3PreCreate(childRecords);
                     }
                 }
             }
