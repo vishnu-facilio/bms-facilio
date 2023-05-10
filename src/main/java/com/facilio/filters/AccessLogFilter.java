@@ -190,6 +190,7 @@ public class AccessLogFilter implements Filter {
                 contextMap.put("referer",event.getProperty(RequestUtil.REFERER));
                 contextMap.put("query",event.getProperty(RequestUtil.QUERY));
                 contextMap.put("userId",event.getProperty(RequestUtil.USERID_HEADER));
+                contextMap.put("uid",event.getProperty(RequestUtil.IAM_USERID_HEADER));
                 contextMap.put("responseCode",responseCode);
                 contextMap.put("timeTaken",String.valueOf(timeTaken));
                 contextMap.put("thread",thread.getName());
@@ -217,10 +218,12 @@ public class AccessLogFilter implements Filter {
             if(FacilioProperties.isAccessLogEnable()) {
                 long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
                 long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
+                long iamUserId = Long.parseLong(event.getProperty(RequestUtil.IAM_USERID_HEADER));
                 if((orgId > 0L) && (userId > 0)) {
                     Map<String, Object> props = new HashMap<>();
                     props.put("orgId",orgId);
                     props.put("userId",userId);
+                    props.put("uid",iamUserId);
                     props.put("app",event.getProperty("app"));
                     props.put("reqUri",event.getProperty(RequestUtil.REQUEST_URL));
                     props.put("sourceIp",ServerInfo.getHostname());

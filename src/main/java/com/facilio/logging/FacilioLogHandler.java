@@ -7,6 +7,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.util.RequestUtil;
@@ -70,6 +71,7 @@ public class FacilioLogHandler extends Handler {
     private static final long FREE_SPACE_THRESHOLD = 5_000_000_000L;
     private static long freeSpace = ROOT_FILE.getFreeSpace();
     private static final String DEFAULT_ORG_USER_ID = "-1";
+    private static final String DEFAULT_IAM_USER_ID="-1";
 
     
     static boolean isLoggable(LoggingEvent event) {
@@ -104,11 +106,13 @@ public class FacilioLogHandler extends Handler {
         User user = AccountUtil.getCurrentUser();
         if (user != null) {
             event.setProperty("userId", String.valueOf(user.getOuid()));
+            event.setProperty("uid",String.valueOf(user.getUid()));
             if (StringUtils.isNotEmpty(user.getProxy())) {
                 event.setProperty("proxy", user.getProxy());
             }
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
+            event.setProperty("uid",DEFAULT_IAM_USER_ID);
         }
 
         String reqUri = event.getProperty(RequestUtil.REQUEST_URL);
