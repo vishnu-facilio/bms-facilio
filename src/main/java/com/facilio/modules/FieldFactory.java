@@ -2652,6 +2652,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getViewGroupSharingFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("parentId","PARENT_ID",module,FieldType.LOOKUP));
+        fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+        fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+        fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getActionFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getActionModule();

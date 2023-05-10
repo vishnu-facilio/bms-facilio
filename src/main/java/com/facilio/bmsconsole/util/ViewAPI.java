@@ -525,6 +525,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 
 			addViewSharing(view);
+			addViewGroupSharing(view.getGroupId());
 			
 			return viewId;
 			
@@ -735,7 +736,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 
 			addViewSharing(view);
-			
+			addViewGroupSharing(view.getGroupId());
 			return count;
 			
 		} catch (Exception e) {
@@ -868,8 +869,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewsModule().getTableName())
 				.andCustomWhere("Views.ID = ?", viewDetail.getId());
-		return builder.delete();
-
+		int count = builder.delete();
+		addViewGroupSharing(viewDetail.getGroupId());
+		return count;
 	}
 	public static int deleteViewSortColumns(long viewId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -1058,9 +1060,173 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				viewSharing.add(newViewSharing);	
 			}
 			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
-		
 	}
-	
+
+	public static void addViewGroupSharing(long viewGroupId) throws Exception{
+		if(viewGroupId <= 0) {
+			return;
+		}
+		Criteria viewIdsFilterCriteria = new Criteria();
+		viewIdsFilterCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getViewsModule()), StringUtils.join(LoadViewCommand.HIDDEN_VIEW_NAMES, ','), StringOperators.ISN_T));
+		List<Long> viewIds = getViewIdsVsGroup(viewGroupId, viewIdsFilterCriteria);
+		SharingContext<SingleSharingContext> allViewSharing = new SharingContext<>();
+		Map<Long, SharingContext<SingleSharingContext>> sharing = null;
+		boolean deleteAll = viewIds.isEmpty();
+		if(!viewIds.isEmpty()){
+			sharing = SharingAPI.getSharing(viewIds, ModuleFactory.getViewSharingModule(), SingleSharingContext.class, FieldFactory.getSharingFields(ModuleFactory.getViewSharingModule()));
+			if(sharing.keySet().size() <= 0 || sharing.keySet().size() != viewIds.size()) {
+				deleteAll = true;
+			}
+		}
+		if(deleteAll) {
+			SharingAPI.deleteSharingForParent(Collections.singletonList(viewGroupId), ModuleFactory.getViewGroupSharingModule());
+			return;
+		}
+		for(SharingContext<SingleSharingContext> sharingContexts : sharing.values()) {
+			allViewSharing.addAll(sharingContexts);
+		}
+		SharingContext<SingleSharingContext> viewGroupSharing = SharingAPI.getSharing(viewGroupId, ModuleFactory.getViewGroupSharingModule(),
+				SingleSharingContext.class, FieldFactory.getViewGroupSharingFields(ModuleFactory.getViewGroupSharingModule()));
+		if(viewGroupSharing == null) {
+			viewGroupSharing = new SharingContext<>();
+		}
+		Map<String, Set<Long>> allViewSharingTypeMap = getSharingTypeMap(allViewSharing);
+		Map<String, Set<Long>> viewGroupSharingTypeMap = getSharingTypeMap(viewGroupSharing);
+		Map<String, Map<String, Set<Long>>> sharingDifferenceValues = getSharingDifferenceValues(allViewSharingTypeMap, viewGroupSharingTypeMap, "userIds", "roleIds", "groupIds");
+		Map<String, Set<Long>> addSharingValues = sharingDifferenceValues.get("addSharingValues");
+		Map<String, Set<Long>> deleteSharingValues = sharingDifferenceValues.get("deleteSharingValues");
+		SharingContext<SingleSharingContext> addViewGroupSharing = getSharingContextFromSharingValues(addSharingValues);
+		if(!addViewGroupSharing.isEmpty()) {
+			SharingAPI.addSharing(addViewGroupSharing, FieldFactory.getViewGroupSharingFields(ModuleFactory.getViewGroupSharingModule()), viewGroupId, ModuleFactory.getViewGroupSharingModule());
+		}
+		boolean hasValues = deleteSharingValues.values()
+				.stream()
+				.anyMatch(set -> !set.isEmpty());
+		if(hasValues) {
+			deleteGroupSharing(deleteSharingValues, viewGroupId);
+		}
+	}
+	private static Map<String, Map<String, Set<Long>>> getSharingDifferenceValues(Map<String, Set<Long>> allViewSharingTypeMap, Map<String, Set<Long>> viewGroupSharingTypeMap, String... keys) {
+		Map<String, Map<String, Set<Long>>> sharingValues = new HashMap<>();
+		Map<String, Set<Long>> addSharingValues = new HashMap<>();
+		Map<String, Set<Long>> deleteSharingValues = new HashMap<>();
+		for (String key : keys) {
+			Set<Long> leftSet = allViewSharingTypeMap.get(key);
+			Set<Long> rightSet = viewGroupSharingTypeMap.get(key);
+			Set<Long> difference = new HashSet<>(leftSet);
+			difference.removeAll(rightSet);
+			addSharingValues.put(key, difference);
+			difference = new HashSet<>(rightSet);
+			difference.removeAll(leftSet);
+			deleteSharingValues.put(key, difference);
+		}
+		sharingValues.put("addSharingValues", addSharingValues);
+		sharingValues.put("deleteSharingValues", deleteSharingValues);
+		return sharingValues;
+	}
+	private static void deleteGroupSharing(Map<String, Set<Long>> groupSharingValues, long viewGroupId) throws Exception{
+		Set<Long> userIds = groupSharingValues.get("userIds");
+		Set<Long> roleIds = groupSharingValues.get("roleIds");
+		Set<Long> groupIds = groupSharingValues.get("groupIds");
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", StringUtils.join(userIds, ','), NumberOperators.EQUALS));
+		criteria.addOrCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(roleIds, ','), NumberOperators.EQUALS));
+		criteria.addOrCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", StringUtils.join(groupIds, ','), NumberOperators.EQUALS));
+		if(!CollectionUtils.isEmpty(userIds) || !CollectionUtils.isEmpty(roleIds) || !CollectionUtils.isEmpty(groupIds)) {
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getViewGroupSharingModule().getTableName())
+					.andCriteria(criteria)
+					.andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId",String.valueOf(viewGroupId), NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+	private static SharingContext<SingleSharingContext> getSharingContextFromSharingValues(Map<String, Set<Long>> sharingValues) {
+		SharingContext<SingleSharingContext> sharingContext = new SharingContext<>();
+		Set<Long> userIds = sharingValues.get("userIds");
+		Set<Long> roleIds = sharingValues.get("roleIds");
+		Set<Long> groupIds = sharingValues.get("groupIds");
+		if (CollectionUtils.isNotEmpty(userIds)) {
+			sharingContext.addAll(generateSharingContextObjects(userIds, SharingType.USER));
+		}
+		if (CollectionUtils.isNotEmpty(roleIds)) {
+			sharingContext.addAll(generateSharingContextObjects(roleIds, SharingType.ROLE));
+		}
+		if (CollectionUtils.isNotEmpty(groupIds)) {
+			sharingContext.addAll(generateSharingContextObjects(groupIds, SharingType.GROUP));
+		}
+		return sharingContext;
+	}
+
+	public static List<Long> getViewIdsVsGroup(Long viewGroupId) throws Exception {
+		return getViewIdsVsGroup(viewGroupId, null);
+	}
+	public static List<Long> getViewIdsVsGroup(Long viewGroupId, Criteria andCriteria) throws Exception {
+		List<Long> viewIds;
+		GenericSelectRecordBuilder viewsVsGroupProps= new GenericSelectRecordBuilder()
+				.select(Collections.singleton(FieldFactory.getIdField()))
+				.table(ModuleFactory.getViewsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("GROUPID","groupId",String.valueOf(viewGroupId),NumberOperators.EQUALS));
+		if(andCriteria != null && !andCriteria.isEmpty()){
+			viewsVsGroupProps.andCriteria(andCriteria);
+		}
+		List<Map<String, Object>> props = viewsVsGroupProps.get();
+		viewIds = props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList());
+		return viewIds;
+	}
+	public static Map<String, Set<Long>> getSharingTypeMap(SharingContext<SingleSharingContext> sharingContexts) {
+		Set<Long> userIds = new HashSet<>();
+		Set<Long> roleIds = new HashSet<>();
+		Set<Long> groupIds = new HashSet<>();
+		for (SingleSharingContext sharingContext : sharingContexts) {
+			switch (sharingContext.getTypeEnum()) {
+				case USER:
+					if (sharingContext.getUserId() > 0) {
+						userIds.add(sharingContext.getUserId());
+					}
+					break;
+				case ROLE:
+					if (sharingContext.getRoleId() > 0) {
+						roleIds.add(sharingContext.getRoleId());
+					}
+					break;
+				case GROUP:
+					if (sharingContext.getGroupId() > 0) {
+						groupIds.add(sharingContext.getGroupId());
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		Map<String, Set<Long>> sharingTypeMap = new HashMap<>();
+		sharingTypeMap.put("userIds", userIds);
+		sharingTypeMap.put("roleIds", roleIds);
+		sharingTypeMap.put("groupIds", groupIds);
+		return sharingTypeMap;
+	}
+	public static SharingContext<SingleSharingContext> generateSharingContextObjects(Collection<Long> ids, SharingType sharingType) {
+		SharingContext<SingleSharingContext> sharingContexts = new SharingContext<>();
+		for (Long id : ids) {
+			SingleSharingContext sharingContext = new SingleSharingContext();
+			sharingContext.setType(sharingType);
+			switch (sharingType) {
+				case USER:
+					sharingContext.setUserId(id);
+					break;
+				case ROLE:
+					sharingContext.setRoleId(id);
+					break;
+				case GROUP:
+					sharingContext.setGroupId(id);
+					break;
+				default:
+					break;
+			}
+			sharingContexts.add(sharingContext);
+		}
+		return sharingContexts;
+	}
+
 	private static void setCriteriaValue(Criteria criteria) throws Exception {
 		Map<String, Condition> conditions = criteria.getConditions();
 		for(Map.Entry<String, Condition> entry : conditions.entrySet()) {

@@ -57,7 +57,6 @@ public class AddModuleViewsAndGroups {
         Map<Long, Map<String, ViewGroups>> allViewGroupsMap = new HashMap<>();
         allApplicationIds.forEach(appId -> allViewGroupsMap.put(appId, new HashMap<>()));
         List<FacilioField> allModuleFields = modBean.getAllFields(moduleName);
-
         // For "hidden-all" & "pendingapproval"
         FacilioView allView = new FacilioView();
         boolean containsAll = false;
@@ -148,6 +147,15 @@ public class AddModuleViewsAndGroups {
                 addHiddenViews(orgId, mainAppId, moduleName, module, modBean, allView, "pendingapproval", allModuleFields);
             }
         }
+        Set<Long> viewGroupIds = allViewGroupsMap.values().stream() // 3rd
+                .flatMap(viewGroupsMap -> viewGroupsMap.values().stream())
+                .map(ViewGroups::getId)
+                .collect(Collectors.toSet());
+
+        for(Long viewGroupId : viewGroupIds) {
+            ViewAPI.addViewGroupSharing(viewGroupId);
+        }
+
         LOGGER.info("Completed adding Views and Groups for module - " + moduleName);
     }
 
