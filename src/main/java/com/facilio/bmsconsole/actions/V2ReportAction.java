@@ -1100,26 +1100,31 @@ public class V2ReportAction extends FacilioAction {
     }
 
     public String executeReport() throws Exception {
-        FacilioChain chain = FacilioChain.getNonTransactionChain();
-        FacilioContext context = new FacilioContext();
 
-        if (getFilters() != null) {
-            chain.addCommand(new GenerateCriteriaFromFilterCommand());
-            JSONParser parser = new JSONParser();
-            JSONObject filter = (JSONObject) parser.parse(getFilters());
-            context.put(FacilioConstants.ContextNames.FILTERS, filter);
+        try {
+            FacilioChain chain = FacilioChain.getNonTransactionChain();
+            FacilioContext context = new FacilioContext();
+            if (getFilters() != null) {
+                chain.addCommand(new GenerateCriteriaFromFilterCommand());
+                JSONParser parser = new JSONParser();
+                JSONObject filter = (JSONObject) parser.parse(getFilters());
+                context.put(FacilioConstants.ContextNames.FILTERS, filter);
+            }
+            getReport(context);
+
+            chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
+            chain.addCommand(new GetModuleFromReportContextCommand());
+            if (needCriteriaData) {
+                chain.addCommand(new GetCriteriaDataCommand());
+            }
+            context.put(FacilioConstants.ContextNames.REPORT_DRILLDOWN_PARAMS, getDrilldownParams());
+            chain.execute(context);
+            return setReportResult(context);
         }
-        getReport(context);
-
-        chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
-        chain.addCommand(new GetModuleFromReportContextCommand());
-        if (needCriteriaData) {
-            chain.addCommand(new GetCriteriaDataCommand());
+        catch(Exception e){
+            LOGGER.info("Error occurred in executeReport",e);
+            throw new Exception("Error occurred in executeReport",e);
         }
-        context.put(FacilioConstants.ContextNames.REPORT_DRILLDOWN_PARAMS, getDrilldownParams());
-        chain.execute(context);
-
-        return setReportResult(context);
     }
 
     public String getReportFields() throws Exception {
@@ -2900,61 +2905,66 @@ public class V2ReportAction extends FacilioAction {
     }
 
     public String executePivotReport() throws Exception {
-        FacilioChain chain = ReadOnlyChainFactory.fetchPivotReportChain();
-        FacilioContext context = new FacilioContext();
+        try {
+            FacilioChain chain = ReadOnlyChainFactory.fetchPivotReportChain();
+            FacilioContext context = new FacilioContext();
 
-        ReportContext reportContext = ReportUtil.getReport(reportId);
-        if (reportContext == null) {
-            throw new Exception("Report not found");
+            ReportContext reportContext = ReportUtil.getReport(reportId);
+            if (reportContext == null) {
+                throw new Exception("Report not found");
+            }
+            context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
+            if (startTime != -1 && endTime != -1) {
+                reportContext.setDateRange(new DateRange(startTime, endTime));
+            }
+            JSONParser parser = new JSONParser();
+            ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+                    (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+
+            if (getFilters() != null) {
+                JSONObject filter = (JSONObject) parser.parse(getFilters());
+                context.put(FacilioConstants.ContextNames.FILTERS, filter);
+            }
+
+            context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+            context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+            context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
+            context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+            context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+            context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
+            context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+            context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+            context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+            context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+            context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, pivotparams.getDrillDown());
+            context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
+
+            if (sortBy != null) {
+                context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+            } else {
+                context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+            }
+            if (getStartTime() > 0 && getEndTime() > 0) {
+                context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
+                context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+                context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
+            } else {
+                context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
+                context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+                context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+            }
+
+            chain.execute(context);
+
+            setResult("report", reportContext);
+            setPivotResult(context);
         }
-        context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
-        if (startTime != -1 && endTime != -1) {
-            reportContext.setDateRange(new DateRange(startTime, endTime));
+        catch(Exception e){
+            LOGGER.info("Error Occurred in executePivotReport",e);
+            throw new Exception("Error occurred in executePivotReport",e);
         }
-        JSONParser parser = new JSONParser();
-        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
-                (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
-
-        if (getFilters() != null) {
-            JSONObject filter = (JSONObject) parser.parse(getFilters());
-            context.put(FacilioConstants.ContextNames.FILTERS, filter);
-        }
-
-        context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
-        context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
-        context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
-        context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
-        context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
-        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
-        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
-        context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
-        context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, pivotparams.getDrillDown());
-        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
-
-        if (sortBy != null) {
-            context.put(FacilioConstants.ContextNames.SORTING, sortBy);
-        } else {
-            context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
-        }
-        if (getStartTime() > 0 && getEndTime() > 0) {
-            context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
-            context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
-            context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
-        } else {
-            context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
-            context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
-            context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
-        }
-
-        chain.execute(context);
-
-        setResult("report", reportContext);
-        setPivotResult(context);
-
         return SUCCESS;
     }
 

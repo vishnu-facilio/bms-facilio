@@ -23,9 +23,17 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	private String dashboardName;
 
 	private boolean skipDefaultWidgetDeletion;
-	
+	private Boolean locked;
+
+	public Boolean getLocked() {
+		return locked;
+	}
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
+	}
+
 	private String clientMetaJsonString;
-	
 	public String getClientMetaJsonString() {
 		return clientMetaJsonString;
 	}

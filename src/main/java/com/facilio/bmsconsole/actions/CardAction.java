@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -9,7 +10,7 @@ import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
-
+@Log4j
 public class CardAction extends FacilioAction {
 	
 	/**
@@ -101,7 +102,7 @@ private String cardUserFilters;
 
 
 	public String getCardData() throws Exception {
-		
+		try{
 		FacilioChain chain = ReadOnlyChainFactory.getExecuteCardWorkflowChain();
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
@@ -119,6 +120,11 @@ private String cardUserFilters;
 		}
 		else {
 			setResult("state", ((WidgetCardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT)).getCardState());
+		}
+		}
+		catch(Exception e){
+			LOGGER.info("Error Occurred on getCardData",e);
+			throw new Exception("Error Occurred on getCardData",e);
 		}
 		return SUCCESS;
 	}

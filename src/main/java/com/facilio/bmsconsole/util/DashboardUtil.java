@@ -865,6 +865,9 @@ public class DashboardUtil {
 			dashboardJson.put("children", childrenArray);
 			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
 			dashboardJson.put("tabEnabled", dashboard.isTabEnabled());
+			dashboardJson.put("locked",dashboard.getLocked());
+			dashboardJson.put("createdByUserId",dashboard.getCreatedByUserId());
+			dashboardJson.put("createdBy",dashboard.getCreatedBy());
 			dashboardJson.put("dashboardTabPlacement", dashboard.getDashboardTabPlacement());
 			dashboardJson.put("clientMetaJsonString", dashboard.getClientMetaJsonString());
 			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());

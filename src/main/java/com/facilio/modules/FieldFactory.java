@@ -5398,7 +5398,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
-
+        fields.add(getField("locked","LOCKED",module,FieldType.BOOLEAN));
         return fields;
     }
 
