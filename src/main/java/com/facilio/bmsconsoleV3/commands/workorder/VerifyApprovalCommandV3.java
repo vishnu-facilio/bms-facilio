@@ -27,7 +27,7 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         Map<String,Object> bodyParam = Constants.getBodyParams(context);
 
-        boolean skipApproval = bodyParam != null ? (boolean) bodyParam.get(FacilioConstants.ContextNames.SKIP_APPROVAL) : false;
+        boolean skipApproval = bodyParam != null ? (boolean) bodyParam.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL,false) : false;
 
         if (skipApproval){
             return false;
