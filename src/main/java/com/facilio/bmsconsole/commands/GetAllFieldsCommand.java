@@ -198,7 +198,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			fields.removeAll(fieldsToRemove);
 		}
 		
-		if (Arrays.asList(ContextNames.WORK_ORDER, ContextNames.TENANT, ContextNames.ASSET, ContextNames.SERVICE_REQUEST,ContextNames.WorkPermit.WORKPERMIT).contains(mod.getName())) {
+		if (Arrays.asList(ContextNames.WORK_ORDER, ContextNames.TENANT, ContextNames.ASSET, ContextNames.SERVICE_REQUEST,ContextNames.WorkPermit.WORKPERMIT, ContextNames.NEW_READING_ALARM).contains(mod.getName())) {
 			fields.add(FieldFactory.getSiteIdField());
 		}
 		
