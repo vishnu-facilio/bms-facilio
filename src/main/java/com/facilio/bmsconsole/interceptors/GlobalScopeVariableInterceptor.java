@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ValueGenerator;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import io.opentelemetry.extension.annotations.WithSpan;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,8 +39,11 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
     @WithSpan
     public String intercept(ActionInvocation invocation) throws Exception {
         try {
-            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-                computeScopeVariable();
+            Parameter parameter = ActionContext.getContext().getParameters().get("globalScopeInterceptor");
+            if(parameter == null || parameter.getValue() == null || parameter.getValue().equals("true")) {
+                if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+                    computeScopeVariable();
+                }
             }
         } catch (Exception e) {
             LOGGER.error("Error at compute scope variable");

@@ -104,6 +104,9 @@
 
 		<action name="orgsetup" class="com.facilio.auth.actions.FacilioAuthAction" method="initOrgSetup">
 			<param name="authorise">false</param>
+			<param name="permissionInterceptor">false</param>
+			<param name="permissionSetInterceptor">false</param>
+			<param name="globalScopeInterceptor">false</param>
 		</action>
 		<action name="account"
 			class="com.facilio.bmsconsole.actions.LoginAction"

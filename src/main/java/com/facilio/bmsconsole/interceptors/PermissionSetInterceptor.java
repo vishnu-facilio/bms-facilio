@@ -27,24 +27,27 @@ public class PermissionSetInterceptor extends AbstractInterceptor {
     @WithSpan
     public String intercept(ActionInvocation invocation) throws Exception {
         try {
-            if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
-                if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getPeopleId() > -1) {
-                    setPermissionSetForAccount();
-                    Parameter permissionSet = ActionContext.getContext().getParameters().get("permissionSet");
-                    if(permissionSet != null) {
-                        String permissionSetType = permissionSet.getValue();
-                        if(permissionSetType != null) {
-                            PermissionSetType.Type typeEnum = PermissionSetType.Type.valueOf(permissionSetType);
-                            if (typeEnum != null) {
-                                Parameter permissionFieldParam = ActionContext.getContext().getParameters().get("permissionValue");
-                                if (permissionFieldParam != null) {
-                                    PermissionFieldEnum permissionField = PermissionFieldEnum.valueOf(permissionFieldParam.getValue());
-                                    Map<String, String> requiredParamsMap = getRequiredHTTPParamsMap(typeEnum);
-                                    PermissionSetGroupHandler handler = typeEnum.getHandler();
-                                    Map<String, Long> resolvedParamsValueMap = handler.paramsResolver(requiredParamsMap);
-                                    boolean hasPermission = PermissionSetUtil.hasPermission(typeEnum, resolvedParamsValueMap, permissionField);
-                                    if (!hasPermission) {
-                                        return ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+            Parameter parameter = ActionContext.getContext().getParameters().get("permissionSetInterceptor");
+            if(parameter == null || parameter.getValue() == null || parameter.getValue().equals("true")) {
+                if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                    if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getPeopleId() > -1) {
+                        setPermissionSetForAccount();
+                        Parameter permissionSet = ActionContext.getContext().getParameters().get("permissionSet");
+                        if (permissionSet != null) {
+                            String permissionSetType = permissionSet.getValue();
+                            if (permissionSetType != null) {
+                                PermissionSetType.Type typeEnum = PermissionSetType.Type.valueOf(permissionSetType);
+                                if (typeEnum != null) {
+                                    Parameter permissionFieldParam = ActionContext.getContext().getParameters().get("permissionValue");
+                                    if (permissionFieldParam != null) {
+                                        PermissionFieldEnum permissionField = PermissionFieldEnum.valueOf(permissionFieldParam.getValue());
+                                        Map<String, String> requiredParamsMap = getRequiredHTTPParamsMap(typeEnum);
+                                        PermissionSetGroupHandler handler = typeEnum.getHandler();
+                                        Map<String, Long> resolvedParamsValueMap = handler.paramsResolver(requiredParamsMap);
+                                        boolean hasPermission = PermissionSetUtil.hasPermission(typeEnum, resolvedParamsValueMap, permissionField);
+                                        if (!hasPermission) {
+                                            return ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+                                        }
                                     }
                                 }
                             }

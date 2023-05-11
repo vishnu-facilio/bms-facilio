@@ -11,6 +11,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
@@ -19,13 +20,21 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j
 public class PermissionInterceptor extends AbstractInterceptor {
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
-            if(!checkSubModulePermission()) {
-                ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+        try {
+            Parameter parameter = ActionContext.getContext().getParameters().get("permissionInterceptor");
+            if (parameter == null || parameter.getValue() == null || parameter.getValue().equals("true")) {
+                if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+                    if (!checkSubModulePermission()) {
+                        return ErrorUtil.sendError(ErrorUtil.Error.NO_PERMISSION);
+                    }
+                }
             }
+        } catch (Exception e) {
+            LOGGER.error("Error at PermissionInterceptor interceptor computation",e);
         }
         return invocation.invoke();
     }
