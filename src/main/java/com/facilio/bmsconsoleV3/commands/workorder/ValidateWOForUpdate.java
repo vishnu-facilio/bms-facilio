@@ -158,6 +158,11 @@ public class ValidateWOForUpdate extends FacilioCommand {
             return false;
         }
         BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId());
+
+        if (baseSpace == null || !(baseSpace.getId() > 0)) {
+            return false;
+        }
+        
         long resourceSiteID = baseSpace.getSpaceTypeEnum() == BaseSpaceContext.SpaceType.SITE ?
                 baseSpace.getId() : baseSpace.getSiteId();
 
