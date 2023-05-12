@@ -3216,14 +3216,27 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-	public static FacilioChain getOfflineStateTransitionChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new GetOfflineStateTransitionCommand());
-		return c;
-	}
+		public static FacilioChain getOfflineStateTransitionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetOfflineStateTransitionCommand());
+			return c;
+		}
+
 		public static FacilioChain getRegisterOrUnRegisterOfflineRecordChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetRegisterOrUnRegisterOfflineRecordCommand());
+			return c;
+		}
+
+		public static FacilioChain getCheckForRecordUpdatesChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new CheckForRecordUpdatesCommand());
+			return c;
+		}
+
+		public static FacilioChain getUpdateFCMTokenChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetUpdateFCMTokenCommand());
 			return c;
 		}
 

@@ -1,10 +1,12 @@
  package com.facilio.iam.accounts.bean;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.APIClient;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -83,6 +85,8 @@ public interface IAMUserBean {
 	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception;
+
+	public int updateUserMobileFcmToken(UserMobileSetting userMobileSetting, FacilioModule module,HashMap<String,Object> updateValue) throws Exception;
 
 	public boolean removeUserMobileSetting(String mobileInstanceId, String appLinkName) throws Exception;
 

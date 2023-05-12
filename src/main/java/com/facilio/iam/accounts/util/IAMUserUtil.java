@@ -2,6 +2,7 @@ package com.facilio.iam.accounts.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -14,6 +15,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.iam.accounts.context.SecurityPolicy;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import dev.samstevens.totp.code.CodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
@@ -271,6 +273,10 @@ public class IAMUserUtil {
 	
 	public static boolean addUserMobileSettings(UserMobileSetting userMobileSetting) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().addUserMobileSetting(userMobileSetting));
+	}
+
+	public static int updateUserMobileFcmToken(UserMobileSetting userMobileSetting, FacilioModule module,HashMap<String,Object> updateValue) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserMobileFcmToken(userMobileSetting,module,updateValue));
 	}
 	
 	public static boolean removeUserMobileSettings(String mobileInstanceId, boolean isFromPortal) throws Exception {

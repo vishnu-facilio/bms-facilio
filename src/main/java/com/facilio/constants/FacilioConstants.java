@@ -547,6 +547,8 @@ public class FacilioConstants {
 		public static final String USER_OPERATION = "userOperation";
 		public static final String USER_STATUS = "userStatus";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
+		public static final String OLD_FCM_TOKEN = "oldFcmToken";
+		public static final String NEW_FCM_TOKEN = "newFcmToken";
 		public static final String ACCESSIBLE_SPACE = "accessibleSpace";
 		public static final String USER_SHIFT_READING = "usershiftreading";
 		public static final String USER_WORK_HOURS_READINGS = "userworkhoursreading";
@@ -1279,6 +1281,7 @@ public class FacilioConstants {
 		public static final String RESULT = "result";
 		public static final String MESSAGE = "message";
 		public static final String REGISTERED_OFFLINE_RECORD = "registeredOfflineRecord";
+		public static final String CHECK_FOR_RECORD_UPDATES = "checkForRecordUpdates";
 
 		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
 

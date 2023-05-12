@@ -1629,6 +1629,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition(idField, String.valueOf(id), PickListOperators.IS));
 		return updateBuilder.update(FieldUtil.getAsProperties(userMobileSetting));
 	}
+
+	public int updateUserMobileFcmToken(UserMobileSetting userMobileSetting, FacilioModule module,
+										HashMap<String, Object> updateValue) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getUserMobileSettingFields());
+
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getUserMobileSettingModule().getTableName())
+				.fields(IAMAccountConstants.getUserMobileSettingFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userMobileSettingId"), String.valueOf(userMobileSetting.getUserMobileSettingId()), NumberOperators.EQUALS));
+		return builder.update(updateValue);
+	}
 	
 	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module,
 			List<FacilioField> fields,String appLinkName) throws Exception {

@@ -7688,4 +7688,17 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
+
+	<package name="checkForRecordUpdates" namespace="/api/v2/module" extends="v2Api">
+		<action name="*/checkForUpdates"
+				class="com.facilio.bmsconsole.actions.OfflineRecordAction" method="checkForRecordUpdates">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+
+	<package name="updateFcmToken" namespace="/api/v2/userMobileSetting" extends="v2Api">
+		<action name="updateFcmToken"
+				class="com.facilio.bmsconsole.actions.UpdateFcmTokenAction" method="updateFcmToken">
+		</action>
+	</package>
 </struts>

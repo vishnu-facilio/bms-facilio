@@ -5,6 +5,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class OfflineRecordAction extends FacilioAction{
     private String moduleName;
     public String getModuleName() {
@@ -28,6 +31,14 @@ public class OfflineRecordAction extends FacilioAction{
     }
     public void setRecordId(long recordId) {
         this.recordId = recordId;
+    }
+
+    private List<HashMap<String,Object>> checkForRecordUpdates;
+    public List<HashMap<String, Object>> getCheckForRecordUpdates() {
+        return checkForRecordUpdates;
+    }
+    public void setCheckForRecordUpdates(List<HashMap<String, Object>> checkForRecordUpdates) {
+        this.checkForRecordUpdates = checkForRecordUpdates;
     }
 
     private void updateOfflineRecordContext(FacilioContext context, boolean isRegister) {
@@ -58,6 +69,16 @@ public class OfflineRecordAction extends FacilioAction{
         chain.execute();
         setResult(FacilioConstants.ContextNames.COUNT,context.get(FacilioConstants.ContextNames.COUNT));
 
+        return SUCCESS;
+    }
+
+    public String checkForRecordUpdates() throws Exception{
+        FacilioChain chain = TransactionChainFactory.getCheckForRecordUpdatesChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.CHECK_FOR_RECORD_UPDATES,checkForRecordUpdates);
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.CHECK_FOR_RECORD_UPDATES,context.get(FacilioConstants.ContextNames.RESULT));
         return SUCCESS;
     }
 

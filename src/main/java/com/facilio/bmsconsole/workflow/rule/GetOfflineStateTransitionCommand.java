@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.cb.util.ChatBotWitAIUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class GetOfflineStateTransitionCommand extends FacilioCommand {
@@ -17,9 +21,19 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.ID);
 
-        FacilioModule module = ModuleFactory.getModule(moduleName);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+
+        if(module == null){
+            throw new IllegalArgumentException("Invalid moduleName");
+        }
 
         ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getRecord(module,recordId);
+
+        if(record == null){
+            return false;
+        }
+
         FacilioStatus moduleState = record.getModuleState();
         Long stateFlowId = record.getStateFlowId();
 

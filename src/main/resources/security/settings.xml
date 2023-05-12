@@ -2476,5 +2476,20 @@
         <urlparams>
             <property name="recordId" type="number" mandatory="true"/>
         </urlparams>
+    <request path="/api/v2/userMobileSetting/updateFcmToken" method="POST">
+        <requestbody type="object">
+            <property name="oldFcmToken" type="string" mandatory="true"/>
+            <property name="newFcmToken" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/module/:moduleName/checkForUpdates" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="checkForRecordUpdates" type="array" mandatory="true">
+                <items type="object"/>
+            </property>
+        </requestbody>
     </request>
 </config>
