@@ -28,6 +28,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.readingrule.faulttowo.RuleWoAPI;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
@@ -1177,6 +1178,7 @@ public class WorkflowRuleAPI {
 			FacilioField onSuccess = fields.get("onSuccess");
 
 			for(WorkflowRuleContext workflowRule : workflowRules) {
+				setLookupFieldsData(workflowRule,record);
 				long startTime = System.currentTimeMillis();
 				boolean stopFurtherExecution = workflowRule.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
 				LOGGER.debug(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
@@ -1186,7 +1188,30 @@ public class WorkflowRuleAPI {
 			}
 		}
 	}
-	
+	private static void setLookupFieldsData(WorkflowRuleContext workflowRule ,Object record) throws Exception
+	{
+		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<String> lookupFieldName = new ArrayList<>();
+		Criteria criteria=workflowRule.getCriteria();
+		if(criteria!=null && !criteria.isEmpty())
+		{
+			lookupFieldName.addAll(criteria.getConditions().values().stream().filter(i -> i.getOperator() instanceof LookupOperator).map(i -> i.getFieldName()).collect(Collectors.toSet()));
+		}
+		if(!lookupFieldName.isEmpty() && lookupFieldName.size()>=1)
+		{
+			for(String name:lookupFieldName)
+			{
+				String[] fieldName=name.split("\\.");
+				FacilioField lookupField=modBean.getField(fieldName[1],fieldName[0]);
+				Object propertyVal=FieldUtil.getValue((ModuleBaseWithCustomFields) record,lookupField);
+				if(propertyVal!=null) {
+					long recordId= (long) FieldUtil.getAsProperties(propertyVal).get("id");
+					Object lookupFieldData = FieldUtil.getLookupVal((LookupField) lookupField, recordId);
+                    FieldUtil.setValue((ModuleBaseWithCustomFields) record,lookupField,lookupFieldData);
+				}
+			}
+		}
+	}
 	public static LinkedHashMap<RuleType, List<WorkflowRuleContext>> groupWorkflowRulesByRuletype(List<WorkflowRuleContext> workflowRules, List<WorkflowRuleContext> postRules) throws Exception {
 
 		LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = new LinkedHashMap<RuleType, List<WorkflowRuleContext>>();

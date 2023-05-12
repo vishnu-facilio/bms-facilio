@@ -4,7 +4,11 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +19,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -86,7 +87,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 					if (condition.getModuleName() != null && !condition.getModuleName().isEmpty()) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						FacilioField field = modBean.getField(condition.getFieldName(), condition.getModuleName());
-						condition.setColumnName(field.getColumnName());
+						condition.setColumnName(field.getCompleteColumnName());
 					}
 					else {
 						throw new IllegalArgumentException("Both module name and fieldName cannot be null in Condition");
@@ -117,7 +118,12 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 				
 				if(condition.getCriteriaValue() != null) {
 					if (condition.getCriteriaValue().getCriteriaId() == -1) {
-						long criteriaValueId = addCriteria(condition.getCriteriaValue(), orgId);
+						Criteria criteriaValue=condition.getCriteriaValue();
+						if(condition.getOperator() instanceof LookupOperator)
+						{
+							criteriaValue.getConditions().get("1").setModuleName(((LookupField)condition.getField()).getLookupModule().getName());
+						}
+						long criteriaValueId = addCriteria(criteriaValue, orgId);
 						condition.setCriteriaValueId(criteriaValueId);
 					}
 					else {
