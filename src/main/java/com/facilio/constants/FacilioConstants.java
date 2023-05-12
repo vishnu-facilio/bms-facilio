@@ -3380,6 +3380,7 @@ public class FacilioConstants {
 
 	public static class WidgetNames {
 		public static final String MAIN_SUMMARY_WIDGET = "mainsummarywidget";
+		public static final String WIDGET_GROUP = "widgetGroup";
 	}
 
 	public static class Ticket {
@@ -3984,16 +3985,42 @@ public class FacilioConstants {
 		public static final List<String> KEYS = Arrays.asList("permission","moduleName","setupTab","permissionModuleName",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME,"isFileApi");
 	}
 
+	public static class SummaryWidget{
+		public static final String EXISTING_SUMMARY_WIDGET="existingSummaryWidget";
+		public static final String SUMMARY_WIDGET_NAME="summaryWidgetName";
+		public static final String SUMMARY_WIDGET="summaryWidget";
+		public static final String EXISTING_SUMMARY_WIDGET_GROUPS ="existingSummaryWidgetGroups";
+		public static final String SUMMARY_WIDGET_GROUPS ="summaryWidgetGroups";
+		public static final String SUMMARY_WIDGET_GROUP_FIELDS="summaryWidgetGroupFields";
+		public static final String UPDATABLE_SUMMARY_WIDGET_GROUP_FIELDS="updatableSummaryWidgetGroupFields";
+		public static final String EXISTING_SUMMARY_WIDGET_GROUP_FIELD_IDS ="existingSummaryWidgetGroupFieldIds";
+	}
+
+	public static class WidgetGroup {
+		public static final String WIDGETGROUP = "widgetGroup";
+		public static final String WIDGETGROUP_ID = "widgetGroupId";
+		public static final String WIDGETGROUP_SECTION = "widgetGroupSection";
+		public static final String WIDGETGROUP_SECTIONS = "widgetGroupSections";
+		public static final String WIDGETGROUP_SECTION_ID = "WGsectionId";
+		public static final String WIDGETGROUP_SECTION_IDS = "WGsectionIds";
+		public static final String WIDGETGROUP_WIDGET = "widgetGroupWidget";
+		public static final String WIDGETGROUP_WIDGETS = "widgetGroupWidgets";
+		public static final String WIDGETGROUP_WIDGET_ID = "widgetGroupWidgetId";
+	}
 	public static class CustomPage{
 		public static final String SEQUENCE_NUMBER = "sequenceNumber";
 		public static final String PREVIOUS_ID = "previousId";
 		public static final String NEXT_ID = "nextId";
 		public static final String IS_TEMPLATE = "isTemplate";
+		public static final String IS_FETCH_FOR_CLONE = "isFetchForClone";
 		public static final String IS_SYSTEM = "isSystem";
+		public static final String LAYOUT_TYPE = "layoutType";
 		public static final String IS_DEFAULT_PAGE = "isDefaultPage";
 		public static final String CUSTOM_PAGE = "customPage";
 		public static final String CUSTOM_PAGES = "customPages";
 		public static final String PAGE_ID = "pageId";
+		public static final String LAYOUT_ID = "layoutId";
+		public static final String LAYOUT_IDS = "layoutIds";
 		public static final String TAB = "tab";
 		public static final String PAGE_TABS = "tabs";
 		public static final String TAB_ID = "tabId";
@@ -4010,19 +4037,6 @@ public class FacilioConstants {
 		public static final String PAGE_SECTION_WIDGET_ID = "pageSectionWidgetId";
 		public static final String PAGE_SECTION_WIDGETS = "widgets";
 		public static final String PAGE_SECTION_WIDGETS_POSITIONS = "pageSectionWidgetsPosition";
-		public static final String WIDGETGROUP = "widgetGroup";
-		public static final String WIDGETGROUPS = "widgetGroups";
-		public static final String WIDGETGROUP_ID = "widgetGroupId";
-		public static final String WIDGETGROUP_IDS = "widgetGroupIds";
-		public static final String WIDGETGROUP_CONFIGS = "widgetGroupConfigs";
-		public static final String WIDGETGROUP_SECTION = "widgetGroupSection";
-		public static final String WIDGETGROUP_SECTIONS = "widgetGroupSections";
-		public static final String WIDGETGROUP_SECTION_ID = "WGsectionIds";
-		public static final String WIDGETGROUP_SECTION_IDS = "WGsectionIds";
-		public static final String WIDGETGROUP_WIDGET = "widgetGroupWidget";
-		public static final String WIDGETGROUP_WIDGETS = "widgetGroupWidgets";
-		public static final String WIDGETGROUP_WIDGET_ID = "widgetGroupWidgetId";
-		public static final String WIDGETGROUP_WIDGET_IDS = "widgetGroupWidgetIds";
 		public static final String MESSAGE = "message";
 		public static final String PAGE_SECTION_WIDGET_IDS = "widgetIds";
 		public static final String TAB_NAME = "tabName";
@@ -4041,4 +4055,12 @@ public class FacilioConstants {
 		public static final String WIDGET_DETAIL_TYPE = "widgetDetailType";
     }
 
+
+	public static class Widget{
+		public static final String MODULE_NAME = "moduleName";
+        public static final String WIDGETS = "widgets";
+		public static final String WIDGET_IDS = "widgetIds";
+		public static final String WIDGET_MODULE = "widgetToModule";
+		public static final String WIDGET_CONFIGS = "widgetConfigs";
+	}
 }

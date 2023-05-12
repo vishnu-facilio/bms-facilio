@@ -16,6 +16,7 @@ public class UpdatePageWidgetCommand extends FacilioCommand {
             context.put(FacilioConstants.CustomPage.WIDGET_DETAIL,
                     CustomPageAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
         }
+        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, widget.getId());
         return false;
     }
 }

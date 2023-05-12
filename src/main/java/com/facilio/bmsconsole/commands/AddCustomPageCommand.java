@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -17,7 +18,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Objects;
 public class AddCustomPageCommand extends FacilioCommand {
@@ -122,7 +123,14 @@ public class AddCustomPageCommand extends FacilioCommand {
         customPage.setSysCreatedTime(System.currentTimeMillis());
 
         CustomPageAPI.insertCustomPageToDB(customPage);
+        Map<String, Long> layoutMap = CustomPageAPI.createLayoutsForPage(customPage.getId());
+
+        if (isSystem == null || !isSystem) {
+            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.WEB);
+            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
+        }
         context.put(FacilioConstants.CustomPage.PAGE_ID,customPage.getId());
+        context.put(FacilioConstants.CustomPage.LAYOUT_IDS, layoutMap);
         LOGGER.info("Custom page named --"+customPage.getName()+" has been created");
 
 

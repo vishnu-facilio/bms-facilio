@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.page.RelatedListContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
@@ -31,6 +30,7 @@ import com.facilio.permission.util.PermissionSetUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -112,8 +112,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.constants.FacilioConstants.MultiResource;
-
-import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
 
 public class PageFactory {
 	public static Page getPage(FacilioModule module, Object record, boolean isApproval) throws Exception {
@@ -854,7 +852,7 @@ public class PageFactory {
 		else {
 			boolean isNewSummaryWidget = false;
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SUMMARY_WIDGET)) {
-				CustomPageWidget pageWidget = CustomPageAPI.getMainSummaryWidget(module.getModuleId());
+				SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidget(module.getModuleId());
 				if(pageWidget != null){
 					isNewSummaryWidget = true;
 					PageWidget newSummaryFieldsWidget = new PageWidget(WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);

@@ -37,10 +37,10 @@ public class ValidatePageTabsReorderCommand extends FacilioCommand {
                     break;
                 }
 
-                Long pageId = (Long) context.get(FacilioConstants.CustomPage.PAGE_ID);
-                if(pageId == null || pageId <= 0){
-                    pageId = tab.getPageId();
-                    context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
+                Long layoutId = (Long) context.get(FacilioConstants.CustomPage.LAYOUT_ID);
+                if(layoutId == null || layoutId <= 0){
+                    layoutId = tab.getLayoutId();
+                    context.put(FacilioConstants.CustomPage.LAYOUT_ID,layoutId);
                 }
             }
         }

@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PageSectionWidgetContext;
-import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
+import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.facilio.bmsconsole.context.PageSectionWidgetContext;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.Logger;
@@ -14,16 +17,18 @@ import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.Map;
 
-
 @Getter
 @Setter
 public class PageWidgetsAction extends FacilioAction{
 
     private static final Logger LOGGER = Logger.getLogger(PageWidgetsAction.class.getName());
+
+
     private String moduleName;
     private Long appId;
     private long id;
     private long sectionId;
+    private long widgetId;
     private PageSectionWidgetContext widget;
     private boolean onlyDetails;
     private PageWidget.WidgetType widgetType;
@@ -41,7 +46,7 @@ public class PageWidgetsAction extends FacilioAction{
         FacilioContext context = WidgetConfigUtil.updateWidget(widget, widgetPositions);
 
         widget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET);
-        setResult(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, widget);
+        setResult("result", SUCCESS);
 
         return SUCCESS;
     }
@@ -66,9 +71,10 @@ public class PageWidgetsAction extends FacilioAction{
         chain.execute();
         return SUCCESS;
     }
-    public String deleteWidget() throws Exception {
 
+    public String deleteWidget() throws Exception {
         WidgetConfigUtil.deleteWidget(id, widgetPositions);
         return SUCCESS;
     }
+
 }

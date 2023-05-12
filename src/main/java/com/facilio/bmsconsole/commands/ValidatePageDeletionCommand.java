@@ -11,7 +11,7 @@ public class ValidatePageDeletionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        Long id = (Long) context.get(FacilioConstants.CustomPage.PAGE_ID);
+        Long id = (Long) context.get(FacilioConstants.ContextNames.ID);
         PagesContext page = CustomPageAPI.getCustomPage(id);
 
         if (page == null) {

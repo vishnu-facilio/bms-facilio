@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.signup.workOrder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
@@ -12,8 +12,6 @@ import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -21,7 +19,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -128,7 +125,7 @@ public class AddWorkOrderLabourPlanModules extends BaseModuleConfig {
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
 
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
             SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
             SummaryWidgetGroupFields groupField1 = new SummaryWidgetGroupFields();

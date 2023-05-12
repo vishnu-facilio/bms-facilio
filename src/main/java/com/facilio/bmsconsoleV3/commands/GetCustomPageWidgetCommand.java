@@ -1,16 +1,14 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.fw.BeanFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-
-import static com.facilio.util.SummaryWidgetUtil.getAllPageWidgets;
+import static com.facilio.util.SummaryWidgetUtil.getSummaryWidget;
 
 public class GetCustomPageWidgetCommand extends FacilioCommand {
     @Override
@@ -26,7 +24,7 @@ public class GetCustomPageWidgetCommand extends FacilioCommand {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         long moduleId = moduleBean.getModule(moduleName).getModuleId();
 
-        CustomPageWidget pageWidgets = getAllPageWidgets(appId, -1, widgetName, moduleId);
+        SummaryWidget pageWidgets = getSummaryWidget(appId, -1, widgetName, moduleId);
 
         context.put(FacilioConstants.ContextNames.CUSTOM_PAGE_WIDGET, pageWidgets);
 

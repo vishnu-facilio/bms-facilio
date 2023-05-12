@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -49,14 +50,18 @@ public class AddPageSectionWidgetCommand extends FacilioCommand {
             }
 
             if (widget.getConfigType() == null) {
-                LOGGER.error("Widget ConfigType Should be Defined");
-                throw new IllegalArgumentException("Widget ConfigType Should be Defined");
+                LOGGER.error("Widget ConfigType should be defined");
+                throw new IllegalArgumentException("Widget ConfigType should be defined for widgets");
             }
 
             if (widget.getConfigType() == PageSectionWidgetContext.ConfigType.FIXED && !(widget.getWidth() + widget.getPositionX() <= getColumnWidth(sectionId))) {
                 LOGGER.error("Widget Width Exceeded the Column Limit");
                 throw new IllegalArgumentException("Widget width exceeded the column limit");
             }
+
+            Long widgetConfigId = WidgetAPI.getWidgetConfigId(widget.getWidgetType(), widget.getWidth(), widget.getHeight(), widget.getConfigType());
+            Objects.requireNonNull(widgetConfigId, "Widget Configuration does not exists");
+            widget.setWidgetConfigId(widgetConfigId);
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
             String name = widget.getDisplayName() != null ? widget.getDisplayName() : "widget";

@@ -101,6 +101,16 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
                     signUpData.addGlimpse();
                 }
             }
+            for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                if (signUpData instanceof BaseModuleConfig) {
+                     ((BaseModuleConfig) signUpData).addWidgets();
+                }
+            }
+            for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                if(signUpData instanceof BaseModuleConfig) {
+                    ((BaseModuleConfig) signUpData).addTemplateAndDefaultPage();
+                }
+            }
         }
         return false;
     }

@@ -34,12 +34,22 @@ public class OrderPageComponents extends FacilioCommand {
             tabs.stream().filter(f->CollectionUtils.isNotEmpty(columns.get(f.getId()))).forEach(f->f.setColumns(columns.get(f.getId())));
         }
 
-        PagesContext customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
-        if(customPage!=null){
-            if(CollectionUtils.isNotEmpty(tabs)){
-                customPage.setTabs(tabs);
+        PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.getOrDefault(FacilioConstants.CustomPage.LAYOUT_TYPE,
+                PagesContext.PageLayoutType.WEB);
+
+        if(layoutType != null) {
+            Map<String, List<PageTabContext>> layoutTabMap = new HashMap<String, List<PageTabContext>>() {{
+                put(layoutType.name(), tabs);
+            }};
+
+            PagesContext customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
+            if(customPage!=null){
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    customPage.setLayouts(layoutTabMap);
+                }
             }
         }
+
         return false;
     }
 }

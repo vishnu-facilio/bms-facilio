@@ -514,7 +514,9 @@ public class PageWidget {
 		IMPACT_REPORT("impactReport"),
 		IMPACT_INFO("impactInfo"),
 		ENERGY_IMPACT("energyImpact"),
-		COST_IMPACT("costImpact");
+		COST_IMPACT("costImpact"),
+		BULK_RELATED_LIST("bulkRelatedList"),
+		WIDGET_GROUP("widgetGroup");
 
 		private String name;
 

@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
@@ -117,7 +117,7 @@ public class MultiResourceModule extends BaseModuleConfig{
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.MultiResource.NAME);
 
 
-            CustomPageWidget widget = new CustomPageWidget();
+            SummaryWidget widget = new SummaryWidget();
 
             SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
             SummaryWidgetGroupFields groupField1 = new SummaryWidgetGroupFields();

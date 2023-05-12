@@ -7420,7 +7420,7 @@
 
 	<package name="customPageAPI" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="summaryFieldWidget"
-				class="com.facilio.bmsconsole.actions.CustomPageAction" method="getCustomPageWidget">
+				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getSummaryWidget">
 		</action>
 	</package>
 
@@ -7548,6 +7548,42 @@
 		</action>
 	</package>
 
+	<package name="ModuleWidgetsConfig" namespace="/api/v2/moduleWidgets" extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetsForModule">
+		</action>
+		<action name="configs"
+				class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetConfigs">
+		</action>
+	</package>
+
+	<package name="summaryWidget" namespace="/api/v2/summaryWidget" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.SummaryWidgetAction"
+				method="addOrUpdateSummaryWidget">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.SummaryWidgetAction"
+				method="fetchSummaryWidget">
+		</action>
+	</package>
+
+	<package name="RelatedListWidget" namespace="/api/v2/bulkRelatedList" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
+				method="addBulkRelatedList"/>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
+				method="updateBulkRelatedList"/>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
+				method="fetchBulkRelatedList"/>
+		<action name="relatedModules/list"
+				class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
+				method="getRelatedModules">
+		</action>
+
+	</package>
 	<package name="vendorkiosk" namespace="/api/v2/customkiosk/vendor" extends="v2Api">
 		<action name="checkout"
 				class="com.facilio.bmsconsole.actions.VendorCustomKioskAction"

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioStringEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ public class PagesContext implements Serializable {
     private String name;
     private String displayName;
     private String moduleName;
+    private long layoutId;
     private long moduleId = -1;
     private Criteria criteria;
     private long criteriaId = -1;
@@ -51,6 +53,7 @@ public class PagesContext implements Serializable {
     private String description;
     private Boolean isTemplate;
     private Boolean isDefaultPage;
+    private Boolean isSystemPage = false;
     private Boolean status;
     private Long sysCreatedBy;
     private Long sysCreatedTime;
@@ -58,5 +61,10 @@ public class PagesContext implements Serializable {
     private Long sysModifiedTime;
     private Long sysDeletedBy;
     private Long sysDeletedTime;
-    private List<PageTabContext> tabs ;
+    private Map<String,List<PageTabContext>> layouts ;
+
+    public enum PageLayoutType implements FacilioStringEnum {
+        WEB,
+        MOBILE;
+    }
 }

@@ -5600,6 +5600,9 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Pages");
 		return module;
 	}
+	public static FacilioModule getPageLayoutsModule() {
+		return constructModule("pageLayouts", "Page Layouts", "Page_Layouts");
+	}
 	public static FacilioModule getPageTabsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("pageTabs");
@@ -5630,7 +5633,53 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Page_Section_Widgets");
 		return module;
 	}
+	public static FacilioModule getWidgetListModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("widgetlist");
+		module.setDisplayName("Widget List");
+		module.setTableName("Widget_List");
+		return module;
+	}
+	public static FacilioModule getPageSummaryWidgetModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageSummaryWidget");
+		module.setDisplayName("Page Summary Widget");
+		module.setTableName("Page_Summary_Widget");
+		return module;
+	}
 
+	public static FacilioModule getPageRelatedListWidgetsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pageRelatedListWidgets");
+		module.setDisplayName("Page Related List Widgets");
+		module.setTableName("Page_Related_List_Widgets");
+		return module;
+	}
+
+	public static FacilioModule getWidgetModuleModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("WidgetModule");
+		module.setDisplayName("Widget Module");
+		module.setTableName("Widget_Modules");
+		return module;
+	}
+	public static FacilioModule getWidgetConfigsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("widgetConfigs");
+		module.setDisplayName("Widget Configs");
+		module.setTableName("Widget_Configs");
+		return module;
+	}
+	public static FacilioModule getWidgetGroupConfigModule() {
+		return constructModule("widgetGroupConfig","WidgetGroup Config","WidgetGroup_Config");
+	}
+	public static FacilioModule getWidgetGroupSectionsModule(){
+		return constructModule("widgetGroupSections","WidgetGroup Sections","WidgetGroup_Sections");
+	}
+
+	public static FacilioModule getWidgetGroupWidgetsModule(){
+		return constructModule("widgetGroupWidgets","WidgetGroup Widgets","WidgetGroup_Widgets");
+	}
 
 	public static FacilioModule getAttendanceSettingsPseudoModule() {
 		FacilioModule attendanceSettings = new FacilioModule();

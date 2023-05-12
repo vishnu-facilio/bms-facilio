@@ -102,6 +102,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEventModuleCommand());					//eventModule.sql
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
+//			c.addCommand(new AddCommonModuleWidgetsCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
@@ -1271,6 +1272,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddSubModulesSystemFieldsCommad());
 			c.addCommand(new CreateDefaultViewCommand());
 			c.addCommand(commonAddModuleChain());
+//			c.addCommand(new CreateDefaultAndTemplatePageCommand());
 //			c.addCommand(new CreateCustomModuleDefaultSubModuleCommand());
 			return c;
 		}
@@ -6892,13 +6894,71 @@ public class TransactionChainFactory {
 		chain.addCommand(new ChangeDefaultPageCommand());
 		return chain;
 	}
+	public static FacilioChain getAddWidgetConfigCommand(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddNewWidgetsCommand());
+		chain.addCommand(new AddWidgetToModuleCommand());
+		chain.addCommand(new AddWidgetConfigurationCommand());
+		return chain;
+	}
 
+	public static FacilioChain getCreateWidgetGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddWidgetGroupConfigCommand());
+		chain.addCommand(new AddWidgetGroupSectionsCommand());
+		chain.addCommand(new AddWidgetGroupWidgetsCommand());
+		return chain;
+	}
 	public static FacilioChain getRearrangeWidgetsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdatePageWidgetPositionsCommand());
 		return chain;
 	}
 
+
+	public static FacilioChain getAddSummaryWidgetChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSummaryWidgetCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupsCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupFieldsCommand());
+		return chain;
+	}
+	public static FacilioChain getUpdateSummaryWidgetChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSummaryWidgetCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupsCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupFieldsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddSummaryWidgetChainInPage(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSummaryWidgetCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupsCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupFieldsCommand());
+		chain.addCommand(new AddPageSummaryWidgetCommand());
+		return chain;
+	}
+
+	public static FacilioChain getUpdateSummaryWidgetChainInPage(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSummaryWidgetCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupsCommand());
+		chain.addCommand(new AddOrUpdateSummaryWidgetGroupFieldsCommand());
+		chain.addCommand(new AddPageSummaryWidgetCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddBulkRelatedListCommand() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddBulkRelatedListWidgetCommand());
+		return chain;
+	}
+	public static FacilioChain getUpdateBulkRelatedListCommand() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateBulkRelatedListWidgetCommand());
+		return chain;
+	}
 	public static FacilioChain getKioskVendorCheckoutChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new KioskVendorCheckOutCommand());

@@ -7,7 +7,7 @@ import java.util.List;
 public class PageTabContext {
     private long id = -1;
     private long orgId = -1;
-    private long pageId = -1;
+    private long layoutId = -1;
     private String name;
     private String displayName;
     private Double sequenceNumber = -1D;

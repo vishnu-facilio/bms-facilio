@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfig;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.activity.ActivityType;
@@ -172,7 +173,8 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
-//			WidgetConfigChain.initWidgetConfigHandler();
+			ModuleWidgetsUtil.initWidgetConfigHandler();
+			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();
 			IdentityClient.init(FacilioProperties.getIdentityServerURL(), FacilioProperties.getRegion());
 			BackgroundActivityUtil.init();

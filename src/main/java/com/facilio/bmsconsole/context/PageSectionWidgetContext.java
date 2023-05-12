@@ -2,23 +2,35 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Map;
+
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageSectionWidgetContext {
     private long id = -1;
     private long orgId = -1;
     private long sectionId = -1;
     private String name;
     private String displayName;
-    private long widgetConfigId;
+    private Long widgetConfigId;
+
+    public void setWidgetType(PageWidget.WidgetType widgetType) throws Exception {
+        this.widgetType = widgetType;
+        this.setWidgetTypeObj(FieldUtil.getAsProperties(widgetType));
+    }
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private PageWidget.WidgetType widgetType;
+    private Map<String, Object> widgetTypeObj;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ConfigType configType;
     private Double sequenceNumber = -1D;

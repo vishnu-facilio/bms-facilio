@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Logger;
 
@@ -17,9 +18,9 @@ public class FetchPageColumnsCommand extends FacilioCommand {
         boolean excludeColumns = (boolean) context.getOrDefault(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);
 
         if(!excludeColumns) {
-            Long tabId = (Long) context.get(FacilioConstants.CustomPage.TAB_ID);
+            List<Long> tabId = (List<Long>) context.get(FacilioConstants.CustomPage.TAB_ID);
 
-            if (tabId != null) {
+            if (CollectionUtils.isNotEmpty(tabId)) {
                 Map<Long, List<PageColumnContext>> columns = CustomPageAPI.fetchColumns(tabId);
 
                 if (MapUtils.isNotEmpty(columns)) {

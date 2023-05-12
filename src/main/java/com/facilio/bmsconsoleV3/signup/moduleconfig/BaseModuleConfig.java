@@ -6,14 +6,17 @@ import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
-import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
+import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ModuleSettingContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.WidgetContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -25,6 +28,7 @@ import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -82,13 +86,43 @@ public abstract class BaseModuleConfig extends SignUpData {
             AddModuleViewsAndGroups.addViews(getModuleName(), viewsAndGroups, allApplications);
         }
     };
+
+    public List<WidgetContext> getModuleWidgets() throws Exception{
+        List<WidgetContext> ModuleWidgets = ModuleWidgetsUtil.getWidgetsForModuleName(getModuleName());
+        if(CollectionUtils.isNotEmpty(ModuleWidgets)) {
+            return ModuleWidgets;
+        }
+        return new ArrayList<>();
+    }
+    public void addWidgets() throws Exception {
+        List<WidgetContext> widgetContexts = getModuleWidgets();
+        if (CollectionUtils.isNotEmpty(widgetContexts)) {
+            WidgetAPI.addWidgets(getModuleName(), widgetContexts);
+        }
+    }
     protected void addMisc() throws Exception {};
     protected void addTriggers() throws Exception {
         addTrigger("Create", EventType.CREATE);
         addTrigger("Update", EventType.EDIT);
         addTrigger("Delete", EventType.DELETE);
     }
+    public Map<String, List<PagesContext>> fetchTemplatePageConfigs() throws Exception {
+        return new HashMap<>();
+    }
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        return new HashMap<>();
+    }
+    public void addTemplateAndDefaultPage() throws Exception {
+        Map<String, List<PagesContext>> appNameVsTemplatePages = fetchTemplatePageConfigs();
+        if(MapUtils.isNotEmpty(appNameVsTemplatePages)) {
+            PagesUtil.addTemplatePage(getModuleName(), appNameVsTemplatePages);
+        }
 
+        Map<String, List<PagesContext>> appNameVsSystemPages = fetchSystemPageConfigs();
+        if(MapUtils.isNotEmpty(appNameVsSystemPages)) {
+            PagesUtil.addSystemPages(getModuleName(), appNameVsSystemPages);
+        }
+    }
     private BaseTriggerContext addTrigger(String name, EventType eventType) throws Exception {
         BaseTriggerContext trigger = new BaseTriggerContext();
         trigger.setName(name);

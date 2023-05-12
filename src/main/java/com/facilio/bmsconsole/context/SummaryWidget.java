@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CustomPageWidget {
+public class SummaryWidget extends PageSectionWidgetContext {
     private long id = -1;
     private long orgId;
     private String name;

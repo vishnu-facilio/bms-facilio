@@ -35,8 +35,8 @@ public class ReorderPageComponentsCommand extends FacilioCommand {
                 criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(type.getModule()), CommonOperators.IS_EMPTY));
                 break;
             case TAB:
-                Long pageId = (Long) context.get(FacilioConstants.CustomPage.PAGE_ID);
-                criteria.addAndCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("pageId"), String.valueOf(pageId)));
+                Long layoutId = (Long) context.get(FacilioConstants.CustomPage.LAYOUT_ID);
+                criteria.addAndCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("layoutId"), String.valueOf(layoutId)));
                 break;
             /*case COLUMN:
                 Long tabId = (Long) context.get(FacilioConstants.CustomPage.TAB_ID);

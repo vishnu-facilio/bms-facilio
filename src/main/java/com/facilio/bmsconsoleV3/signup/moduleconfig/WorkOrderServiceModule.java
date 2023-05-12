@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -102,7 +102,7 @@ public class WorkOrderServiceModule extends BaseModuleConfig {
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_SERVICE);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_SERVICE);
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();

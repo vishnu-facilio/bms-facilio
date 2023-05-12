@@ -14,7 +14,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
 public class AddPageSectionCommand extends FacilioCommand {
-    private static final org.apache.log4j.Logger LOGGER = Logger.getLogger(AddPageSectionCommand.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AddPageSectionCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long columnId = (long) context.get(FacilioConstants.CustomPage.COLUMN_ID);
@@ -36,7 +36,7 @@ public class AddPageSectionCommand extends FacilioCommand {
 
             if (section.getSequenceNumber() <= 0) {
                 double sequenceNumber = CustomPageAPI.getMaxSequenceNumber(sectionsModule, criteria);
-                section.setSequenceNumber(sequenceNumber+10);
+                section.setSequenceNumber(sequenceNumber + 10);
             }
 
 

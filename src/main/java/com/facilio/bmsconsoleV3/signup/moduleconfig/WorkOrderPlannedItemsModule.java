@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -65,7 +65,7 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
             FacilioField isReservedField = moduleBean.getField("isReserved", FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();

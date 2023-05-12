@@ -2,19 +2,24 @@ package com.facilio.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -28,19 +33,19 @@ import org.apache.log4j.Logger;
 
 public class SummaryWidgetUtil {
     public static Logger LOGGER = LogManager.getLogger(SummaryWidgetUtil.class.getName());
-    public static CustomPageWidget getWidgetById(long appId, long widgetId) throws Exception {
-        return getAllPageWidgets(appId, widgetId, null, -1);
+    public static SummaryWidget getSummaryWidgetById(long appId, long widgetId) throws Exception {
+        return getSummaryWidget(appId, widgetId, null, -1);
     }
 
-    public static CustomPageWidget getWidgetByName(long appId, String widgetName) throws Exception {
-        return getAllPageWidgets(appId, -1, widgetName, -1);
+    public static SummaryWidget getSummaryWidgetByName(long appId, String widgetName) throws Exception {
+        return getSummaryWidget(appId, -1, widgetName, -1);
     }
 
-    public static CustomPageWidget getAllWidgets(long appId, long moduleId) throws Exception {
-        return getAllPageWidgets(appId, -1, null, moduleId);
+    public static SummaryWidget getAllWidgets(long appId, long moduleId) throws Exception {
+        return getSummaryWidget(appId, -1, null, moduleId);
     }
 
-    public static CustomPageWidget getAllPageWidgets(long appId, long widgetId, String widgetName, long moduleId) throws Exception {
+    public static SummaryWidget getSummaryWidget(long appId, long widgetId, String widgetName, long moduleId) throws Exception {
         if (appId < 0){
             ApplicationContext application = AccountUtil.getCurrentApp();
             if (application == null) {
@@ -49,11 +54,11 @@ public class SummaryWidgetUtil {
             appId = application.getId();
         }
 
-        CustomPageWidget pageWidget = CustomPageAPI.getCustomPageWidget(appId, widgetId, widgetName, moduleId);
-        if (pageWidget != null) {
-            long currWidgetId = pageWidget.getId();
-            List<SummaryWidgetGroup> widgetGroups = CustomPageAPI.getCustomWidgetGroups(currWidgetId);
-            List<SummaryWidgetGroupFields> allWidgetGroupFields = CustomPageAPI.getCustomWidgetGroupFields(currWidgetId);
+        SummaryWidget summaryWidget = getCustomPageWidget(appId, widgetId, widgetName, moduleId);
+        if (summaryWidget != null) {
+            long currWidgetId = summaryWidget.getId();
+            List<SummaryWidgetGroup> widgetGroups = getSummaryWidgetGroups(currWidgetId);
+            List<SummaryWidgetGroupFields> allWidgetGroupFields = getSummaryWidgetGroupFields(currWidgetId);
 
             if (CollectionUtils.isNotEmpty(allWidgetGroupFields)) {
                 getAllFieldDetails(allWidgetGroupFields);
@@ -77,10 +82,10 @@ public class SummaryWidgetUtil {
                     widgetGroup.setFields(groupVsFieldsMap.get(groupId));
                 }
             }
-            pageWidget.setGroups(widgetGroups);
+            summaryWidget.setGroups(widgetGroups);
         }
 
-        return pageWidget;
+        return summaryWidget;
     }
 
     public static List<SummaryWidgetGroupFields> getAllFieldDetails(List<SummaryWidgetGroupFields> allGroupFields) throws Exception {
@@ -88,7 +93,7 @@ public class SummaryWidgetUtil {
         List<Long> allGroupFieldIds = allGroupFields.stream().map(SummaryWidgetGroupFields::getFieldId).collect(Collectors.toList());
 
         List<FacilioField> allModBeanFields = modBean.getFields(allGroupFieldIds);
-        Map<Long, FacilioField> allModBeanFieldsMap = allModBeanFields.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
+        Map<Long, FacilioField> allModBeanFieldsMap = allModBeanFields.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity(), (oldValue, newValue) -> newValue));
 
         for (SummaryWidgetGroupFields groupField : allGroupFields){
             long fieldId = groupField.getFieldId();
@@ -114,37 +119,130 @@ public class SummaryWidgetUtil {
         return field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP;
     }
 
-    public static void addPageWidget(CustomPageWidget customPageWidget) throws Exception {
-        customPageWidget.setId(-1);
-        customPageWidget.setOrgId(AccountUtil.getCurrentOrg().getId());
-        if (customPageWidget.getAppId() < 0){
-            ApplicationContext application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-            customPageWidget.setAppId(application.getId());
-        }
+    public static List<String> getExistingSummaryWidgetsNameOfModuleInApp(long appId, long moduleId) throws Exception{
+        if(moduleId > 0){
+            Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(FieldFactory.getCustomPageWidgetFields());
+            List<FacilioField> fields = Collections.singletonList(fieldMap.get("name"));
 
-        try {
-            Map<String, Object> widgetProps = FieldUtil.getAsProperties(customPageWidget);
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .select(fields)
+                    .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
+                    .andCondition(CriteriaAPI.getEqualsCondition(fieldMap.get("appId"), String.valueOf(appId)))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+
+            List<Map<String, Object>> props = selectBuilder.get();
+            if(CollectionUtils.isNotEmpty(props)){
+                return props.stream().map(f->(String)f.get("name")).collect(Collectors.toList());
+            }
+        }
+        return null;
+    }
+
+    public static void insertSummaryWidgetToDB(SummaryWidget summaryWidget) throws Exception {
+        if (summaryWidget != null) {
+            Map<String, Object> prop = FieldUtil.getAsProperties(summaryWidget);
+
             GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
                     .fields(FieldFactory.getCustomPageWidgetFields())
-                    .addRecord(widgetProps);
-
+                    .addRecord(prop);
             insertBuilder.save();
-            long widgetId = (long) widgetProps.get("id");
-            customPageWidget.setId(widgetId);
 
-            addWidgetGroup(customPageWidget);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
-            throw e;
+            summaryWidget.setId((long) prop.get("id"));
         }
     }
 
-    public static void addWidgetGroup(CustomPageWidget customPageWidget) throws Exception {
-        for (SummaryWidgetGroup widgetGroup : customPageWidget.getGroups()){
+    public static void updateSummaryWidget(SummaryWidget summaryWidget) throws Exception {
+        if (summaryWidget != null) {
+            FacilioModule module = ModuleFactory.getCustomPageWidgetModule();
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getCustomPageWidgetFields());
+            List<FacilioField> fields = new ArrayList<>(Arrays.asList(fieldsMap.get("displayName")));
+
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("displayName", summaryWidget.getDisplayName());
+
+            GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(fields)
+                    .andCondition(CriteriaAPI.getIdCondition(summaryWidget.getId(), module));
+            updateRecordBuilder.update(prop);
+        }
+    }
+
+    public static void addPageWidget(SummaryWidget summaryWidget) throws Exception {
+
+        FacilioChain chain = TransactionChainFactory.getAddSummaryWidgetChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.APP_ID, summaryWidget.getAppId());
+        context.put(FacilioConstants.CustomPage.IS_SYSTEM, true);
+        context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);
+        chain.execute();
+//        customPageWidget.setId(-1);
+//        customPageWidget.setOrgId(AccountUtil.getCurrentOrg().getId());
+//        if (customPageWidget.getAppId() < 0){
+//            ApplicationContext application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+//            customPageWidget.setAppId(application.getId());
+//        }
+//
+//        try {
+//            Map<String, Object> widgetProps = FieldUtil.getAsProperties(customPageWidget);
+//            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+//                    .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
+//                    .fields(FieldFactory.getCustomPageWidgetFields())
+//                    .addRecord(widgetProps);
+//
+//            insertBuilder.save();
+//            long widgetId = (long) widgetProps.get("id");
+//            customPageWidget.setId(widgetId);
+//
+//            addWidgetGroup(customPageWidget);
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred ", e);
+//            throw e;
+//        }
+    }
+
+    public static void insertSummaryWidgetGroupToDB(SummaryWidgetGroup summaryWidgetGroup) throws Exception {
+        if (summaryWidgetGroup != null) {
+            Map<String, Object> prop = FieldUtil.getAsProperties(summaryWidgetGroup);
+
+            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getSummaryWidgetGroupModule().getTableName())
+                    .fields(FieldFactory.getSummaryWidgetGroupFields())
+                    .addRecord(prop);
+            insertBuilder.save();
+
+            summaryWidgetGroup.setId((long) prop.get("id"));
+        }
+    }
+
+    public static void updateSummaryWidgetGroup(SummaryWidgetGroup summaryWidgetGroup) throws Exception {
+        if (summaryWidgetGroup != null) {
+            Map<String, Object> prop = FieldUtil.getAsProperties(summaryWidgetGroup);
+
+            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getSummaryWidgetGroupModule().getTableName())
+                    .fields(FieldFactory.getSummaryWidgetGroupFields())
+                    .andCondition(CriteriaAPI.getIdCondition(summaryWidgetGroup.getId(), ModuleFactory.getSummaryWidgetGroupModule()));
+            updateBuilder.update(prop);
+        }
+    }
+
+    public static void deleteSummaryWidgetGroup(List<Long> ids) throws Exception {
+        if (CollectionUtils.isNotEmpty(ids)) {
+            FacilioModule module = ModuleFactory.getSummaryWidgetGroupModule();
+
+            GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                    .table(module.getTableName())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, module));
+            deleteRecordBuilder.delete();
+        }
+    }
+    public static void addWidgetGroup(SummaryWidget summaryWidget) throws Exception {
+        for (SummaryWidgetGroup widgetGroup : summaryWidget.getGroups()){
             widgetGroup.setId(-1);
-            widgetGroup.setOrgId(customPageWidget.getOrgId());
-            widgetGroup.setWidgetId(customPageWidget.getId());
+            widgetGroup.setOrgId(summaryWidget.getOrgId());
+            widgetGroup.setWidgetId(summaryWidget.getId());
 
             try {
                 Map<String, Object> widgetGroupProps = FieldUtil.getAsProperties(widgetGroup);
@@ -165,6 +263,40 @@ public class SummaryWidgetUtil {
         }
     }
 
+    public static void insertSummaryWidgetGroupFieldsToDB(List<SummaryWidgetGroupFields> fields) throws Exception {
+        if (fields != null) {
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(fields, SummaryWidgetGroupFields.class);
+
+            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getSummaryWidgetGroupFieldsModule().getTableName())
+                    .fields(FieldFactory.getSummaryWidgetGroupFieldsFields())
+                    .addRecords(props);
+            insertBuilder.save();
+        }
+    }
+
+    public static void updateSummaryWidgetGroupFields(SummaryWidgetGroupFields field) throws Exception {
+        if (field != null) {
+            Map<String, Object> prop = FieldUtil.getAsProperties(field);
+
+            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getSummaryWidgetGroupFieldsModule().getTableName())
+                    .fields(FieldFactory.getSummaryWidgetGroupFieldsFields())
+                    .andCondition(CriteriaAPI.getIdCondition(field.getId(), ModuleFactory.getSummaryWidgetGroupFieldsModule()));
+            updateBuilder.update(prop);
+        }
+    }
+
+    public static void deleteSummaryWidgetGroupFiedls(List<Long> ids) throws Exception {
+        if (CollectionUtils.isNotEmpty(ids)) {
+            FacilioModule module = ModuleFactory.getSummaryWidgetGroupFieldsModule();
+
+            GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                    .table(module.getTableName())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, module));
+            deleteRecordBuilder.delete();
+        }
+    }
     public static void addWidgetGroupFields(SummaryWidgetGroup widgetGroup) throws Exception {
         widgetGroupRowSpanValidator(widgetGroup);
         List<Map<String, Object>> groupFieldsProps = new ArrayList<>();
@@ -234,9 +366,9 @@ public class SummaryWidgetUtil {
         }
     }
 
-    public static CustomPageWidget generateCustomWidget(List<FacilioField> fields) {
+    public static SummaryWidget generateCustomWidget(List<FacilioField> fields) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            CustomPageWidget pageWidget = new CustomPageWidget();
+            SummaryWidget pageWidget = new SummaryWidget();
             List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
             List<SummaryWidgetGroupFields> widgetGroupFields = new ArrayList<>();
 
@@ -263,5 +395,124 @@ public class SummaryWidgetUtil {
             return pageWidget;
         }
         return null;
+    }
+
+    public static long getSummaryWidgetIdForPageWidget(Long pageWidgetId) throws Exception {
+        List<FacilioField> fields = FieldFactory.getPageSummaryWidgetFields();
+        Map<String, FacilioField>  fieldMap = FieldFactory.getAsMap(fields);
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldMap.get("pageWidgetId"), String.valueOf(pageWidgetId)));
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            return (long) props.get(0).get("summaryWidgetId");
+        }
+        return -1L;
+    }
+
+    public static void addPageSummaryWidget(Long pageWidgetId, Long summaryWidgetId) throws Exception{
+        Map<String, Object> prop = new HashMap<>();
+        prop.put("pageWidgetId", pageWidgetId);
+        prop.put("summaryWidgetId", summaryWidgetId);
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
+                .fields(FieldFactory.getPageSummaryWidgetFields())
+                .addRecord(prop);
+        builder.save();
+    }
+
+    public static void updatePageSummaryWidget(long pageWidgetId, long summaryWidgetId) throws Exception{
+        Map<String, Object> prop = new HashMap<>();
+        prop.put("pageWidgetId", pageWidgetId);
+        prop.put("summaryWidgetId", summaryWidgetId);
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
+                .fields(FieldFactory.getPageSummaryWidgetFields())
+                .andCondition(CriteriaAPI.getCondition("PAGE_WIDGET_ID", "pageWIdgetId", String.valueOf(pageWidgetId), NumberOperators.EQUALS));
+        builder.update(prop);
+    }
+
+    public static SummaryWidget getMainSummaryWidget(long moduleId) throws Exception {
+        List<FacilioField> fields = FieldFactory.getCustomPageWidgetFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+
+        List<SummaryWidget> pageWidgets = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidget.class);
+        if (CollectionUtils.isNotEmpty(pageWidgets)){
+            return pageWidgets.get(0);
+        }
+        return null;
+    }
+
+    public static SummaryWidget getCustomPageWidget(long appId, long widgetId, String widgetName, long moduleId) throws Exception{
+        List<SummaryWidget> pageWidgets = null;
+        ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+        if (app == null) {
+            app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        }
+
+        List<FacilioField> fields = FieldFactory.getCustomPageWidgetFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+
+        if (moduleId > 0) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+        }
+
+        if (widgetId > 0) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"),String.valueOf(widgetId), NumberOperators.EQUALS));
+        } else if (org.apache.commons.lang.StringUtils.isNotEmpty(widgetName)) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), widgetName, StringOperators.IS));
+        }
+
+        pageWidgets = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidget.class);
+        if (CollectionUtils.isNotEmpty(pageWidgets)){
+            return pageWidgets.get(0);
+        }
+        return null;
+    }
+
+    public static List<SummaryWidgetGroup> getSummaryWidgetGroups(long widgetId) throws Exception{
+        List<SummaryWidgetGroup> widgetGroups = null;
+
+        List<FacilioField> fields = FieldFactory.getSummaryWidgetGroupFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getSummaryWidgetGroupModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("widgetId") ,String.valueOf(widgetId), NumberOperators.EQUALS))
+                .orderBy("SEQUENCE_NUMBER");
+
+        widgetGroups = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidgetGroup.class);
+        return widgetGroups;
+    }
+
+    public static List<SummaryWidgetGroupFields> getSummaryWidgetGroupFields(long widgetId) throws Exception{
+        List<SummaryWidgetGroupFields> widgetGroupFields = null;
+
+        List<FacilioField> fields = FieldFactory.getSummaryWidgetGroupFieldsFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getSummaryWidgetGroupFieldsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("widgetId"), String.valueOf(widgetId), NumberOperators.EQUALS))
+                .orderBy("ROW_INDEX, COL_INDEX");
+
+        widgetGroupFields = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidgetGroupFields.class);
+        return widgetGroupFields;
     }
 }

@@ -18,7 +18,7 @@ public class GetCustomPageCommand extends FacilioCommand {
         Long pageId = (Long) context.get(FacilioConstants.CustomPage.PAGE_ID);
         PagesContext customPage = CustomPageAPI.getCustomPage(pageId);
 
-        if(customPage == null){
+        if(customPage == null) {
             LOGGER.error("Page does not exists");
             throw new IllegalArgumentException("Page does not exists");
         }
@@ -32,6 +32,10 @@ public class GetCustomPageCommand extends FacilioCommand {
         if(customPage.getCriteriaId()!=-1 && customPage.getCriteria() == null) {
             Criteria criteria = CriteriaAPI.getCriteria(customPage.getCriteriaId());
             customPage.setCriteria(criteria);
+        }
+
+        if(!customPage.getName().contains("__c")) {
+            customPage.setIsSystemPage(true);
         }
 
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE,customPage);

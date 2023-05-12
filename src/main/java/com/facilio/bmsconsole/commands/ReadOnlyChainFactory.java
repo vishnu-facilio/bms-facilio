@@ -1366,6 +1366,18 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getUnusedRelatedModulesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedModulesForBuilder());
+		c.addCommand(new RemoveBuilderUsedRelatedModules());
+		return c;
+	}
+
+	public static FacilioChain getBulkRelatedListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetBulkRelatedListWidgetCommand());
+		return chain;
+	}
 	public static FacilioChain getRelatedModulesCountChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedModulesCountCommand());
@@ -3278,10 +3290,21 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllCustomPageCommand());
 		return chain;
 	}
+	public static FacilioChain getWidgetGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWidgetGroupConfigCommand());
+		chain.addCommand(new GetWidgetGroupSectionCommand());
+		chain.addCommand(new GetWidgetGroupWidgetsCommand());
+		return chain;
+	}
 	public static FacilioChain getPageForRecordChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPageForRecordCommand());
 		c.addCommand(new FetchPageTabsCommand());
+		c.addCommand(new FetchPageColumnsCommand());
+		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new FetchPageSectionWidgetsCommand());
+		c.addCommand(new OrderPageComponents());
 		return c;
 	}
 	public static FacilioChain getCustomPageChain(){
@@ -3304,6 +3327,15 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain fetchPageTabsForLayoutChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchPageTabsCommand());
+		c.addCommand(new FetchPageColumnsCommand());
+		c.addCommand(new FetchPageSectionsCommand());
+		c.addCommand(new FetchPageSectionWidgetsCommand());
+		c.addCommand(new OrderPageComponents());
+		return c;
+	}
 	public static FacilioChain getPageColumnChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPageColumnCommand());
@@ -3319,5 +3351,30 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchParentBackgroundActivitiesCommand());
 		return c;
+	}
+
+	public static FacilioChain getSummaryWidgetChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSummaryWidgetCommand());
+		return chain;
+	}
+
+	public static FacilioChain getSummaryWidgetForPageWidgetChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSummaryWidgetIdOfPageWidget());
+		chain.addCommand(new GetSummaryWidgetCommand());
+		return chain;
+	}
+
+	public static FacilioChain getWidgetsForModuleChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetWidgetsForModuleCommand());
+		return c;
+	}
+
+	public static FacilioChain getWidgetConfigChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWidgetConfigsChain());
+		return chain;
 	}
 }

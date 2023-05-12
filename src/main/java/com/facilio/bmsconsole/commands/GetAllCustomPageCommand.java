@@ -34,7 +34,9 @@ public class GetAllCustomPageCommand extends FacilioCommand {
         }
         appId = app.getId();
 
-        List<Map<String, Object>> customPages = CustomPageAPI.getAllCustomPageForBuilder(appId, moduleId);
+        PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.getOrDefault(FacilioConstants.CustomPage.LAYOUT_TYPE,
+                PagesContext.PageLayoutType.WEB);
+        List<Map<String, Object>> customPages = CustomPageAPI.getAllCustomPageForBuilder(appId, moduleId, layoutType);
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGES,customPages);
         return false;
     }

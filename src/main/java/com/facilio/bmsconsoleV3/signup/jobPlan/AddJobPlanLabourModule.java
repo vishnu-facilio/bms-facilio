@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.signup.jobPlan;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
@@ -111,7 +111,7 @@ public class AddJobPlanLabourModule extends BaseModuleConfig {
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
 
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
             SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
 

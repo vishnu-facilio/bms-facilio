@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
@@ -129,7 +129,7 @@ public class JobPlanToolsModule extends BaseModuleConfig {
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.JOB_PLAN_TOOLS);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.JOB_PLAN_TOOLS);
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();

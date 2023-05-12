@@ -28,60 +28,15 @@ public class CustomPageAction extends FacilioAction {
     private long previousId;
     private long recordId;
     private long nextId;
-    private long formId;
-    private long widgetId;
     private long appId = -1;
     private String moduleName;
-    private String widgetName;
-    private boolean fetchFormFields;
-    private boolean fetchMainFields;
-    private Map<String, Object> widgetParams;
     private long pageId;
     private PagesContext customPage;
     private String tabName;
     private Boolean status;
+    private PagesContext.PageLayoutType layoutType;
     private Boolean excludeTabs = false;
 
-    public String getCustomPageWidget() throws Exception {
-        FacilioChain getPageWidgetChain = TransactionChainFactory.getPageWidgetChain();
-
-        FacilioContext context = getPageWidgetChain.getContext();
-        context.put(FacilioConstants.ContextNames.WIDGET_NAME, widgetName);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.APP_ID, appId);
-        getPageWidgetChain.execute();
-
-        CustomPageWidget pageWidget = (CustomPageWidget) context.get(FacilioConstants.ContextNames.CUSTOM_PAGE_WIDGET);
-
-        if (fetchFormFields && pageWidget == null) {
-            FacilioChain summaryFieldsChain = ReadOnlyChainFactoryV3.getSummaryFieldsCommand();
-
-            FacilioContext summaryFieldsContext = summaryFieldsChain.getContext();
-            summaryFieldsContext.put(FacilioConstants.ContextNames.ID, id);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.FETCH_LOOKUPS, true);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, widgetParams);
-            summaryFieldsContext.put(FacilioConstants.ContextNames.FETCH_MAIN_FIELDS, fetchMainFields);
-            summaryFieldsChain.execute();
-
-            List<FormField> formFields = (List<FormField>) summaryFieldsContext.get("fields");
-
-            List<FacilioField> allFields = new ArrayList<>();
-            for (FormField formField : formFields) {
-                FacilioField field = formField.getField();
-                if (field != null) {
-                    allFields.add(field);
-                }
-            }
-            pageWidget = SummaryWidgetUtil.generateCustomWidget(allFields);
-        }
-
-        setResult("summaryFieldWidget", pageWidget);
-
-        return "success";
-    }
     public String createCustomPage() throws Exception{
         FacilioChain chain = TransactionChainFactory.getCreateCustomPageChain();
         FacilioContext context = chain.getContext();
@@ -92,12 +47,15 @@ public class CustomPageAction extends FacilioAction {
         chain.execute();
         pageId = (long) context.get(FacilioConstants.CustomPage.PAGE_ID);
         setResult(FacilioConstants.CustomPage.PAGE_ID,pageId);
+        Map<String, Long> layoutMap = (Map<String, Long>) context.get(FacilioConstants.CustomPage.LAYOUT_IDS);
+        setResult(FacilioConstants.CustomPage.LAYOUT_IDS, layoutMap);
         return SUCCESS;
     }
     public String getAllCustomPage() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getAllCustomPageChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.ContextNames.APP_ID,appId);
         chain.execute();
 
@@ -111,6 +69,7 @@ public class CustomPageAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.APP_ID,getAppId());
         context.put(FacilioConstants.ContextNames.RECORD_ID,getRecordId());
         context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST,false);
         context.put(FacilioConstants.CustomPage.TAB_NAME,getTabName());
         chain.execute();
@@ -122,6 +81,7 @@ public class CustomPageAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getCustomPageChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.PAGE_ID,id);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST,true);
         context.put(FacilioConstants.CustomPage.TAB_NAME,tabName);
         if(excludeTabs) {
@@ -142,6 +102,7 @@ public class CustomPageAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
     public String changePageStatus() throws Exception {
@@ -150,6 +111,7 @@ public class CustomPageAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.ID,id);
         context.put(FacilioConstants.ContextNames.STATUS,status);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
 
@@ -157,8 +119,9 @@ public class CustomPageAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getDeleteCustomPageChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getPagesModule());
-        context.put(FacilioConstants.CustomPage.PAGE_ID,id);
+        context.put(FacilioConstants.ContextNames.ID,id);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
     public String reorderPage() throws Exception{
@@ -181,6 +144,7 @@ public class CustomPageAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         context.put(FacilioConstants.ContextNames.ID,id);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
 }

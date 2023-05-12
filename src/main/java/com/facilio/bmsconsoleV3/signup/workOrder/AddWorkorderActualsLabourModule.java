@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.signup.workOrder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
@@ -32,8 +32,6 @@ import org.apache.commons.chain.Context;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.facilio.modules.fields.FacilioField.FieldDisplayType.SELECTBOX;
 
 public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
 
@@ -159,7 +157,7 @@ public class AddWorkorderActualsLabourModule extends BaseModuleConfig {
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_LABOUR);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_LABOUR);
 
-            CustomPageWidget widget = new CustomPageWidget();
+            SummaryWidget widget = new SummaryWidget();
 
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
             SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();

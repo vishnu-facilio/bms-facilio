@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -18,7 +18,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.SummaryWidgetUtil;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
 
@@ -44,7 +43,7 @@ public class WorkOrderPlannedServicesModule extends BaseModuleConfig {
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_PLANNED_SERVICES);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_PLANNED_SERVICES);
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();

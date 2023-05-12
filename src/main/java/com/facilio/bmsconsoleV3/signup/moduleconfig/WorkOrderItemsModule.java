@@ -2,13 +2,11 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.CustomPageWidget;
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -16,20 +14,15 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.SummaryWidgetUtil;
-import org.apache.commons.chain.Context;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WorkOrderItemsModule extends BaseModuleConfig{
     public WorkOrderItemsModule() throws Exception{
@@ -109,7 +102,7 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WORKORDER_ITEMS);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WORKORDER_ITEMS);
 
-            CustomPageWidget pageWidget1 = new CustomPageWidget();
+            SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();

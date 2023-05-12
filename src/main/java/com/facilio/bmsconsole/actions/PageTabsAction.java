@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.PageTabContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -22,13 +24,16 @@ public class PageTabsAction extends FacilioAction{
     private long tabId;
     private String tabName;
     private PageTabContext tab;
-    private Boolean excludeColumns;
+    private Long layoutId;
+    private PagesContext.PageLayoutType layoutType;
+    private Boolean excludeColumns = false;
     private Boolean status;
     public String addPageTabs() throws Exception{
         FacilioChain chain = TransactionChainFactory.getAddPageTabsChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.TAB, tab);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
+        context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         chain.execute();
         tabId = (long) context.get(FacilioConstants.CustomPage.TAB_ID);
         setResult(FacilioConstants.CustomPage.TAB_ID,tabId);
@@ -40,7 +45,8 @@ public class PageTabsAction extends FacilioAction{
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID,id);
         context.put(FacilioConstants.CustomPage.TAB_NAME,tabName);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
+        context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, excludeColumns);
         chain.execute();
         tab = (PageTabContext) context.get(FacilioConstants.CustomPage.TAB);
@@ -53,6 +59,7 @@ public class PageTabsAction extends FacilioAction{
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.TAB, tab);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
 
@@ -62,6 +69,7 @@ public class PageTabsAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.ID,id);
         context.put(FacilioConstants.ContextNames.STATUS,status);
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
     public String deletePageTabs() throws Exception{
@@ -70,6 +78,7 @@ public class PageTabsAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.ID, id);
         context.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getPageTabsModule());
         chain.execute();
+        setResult("result",SUCCESS);
         return SUCCESS;
     }
 
@@ -79,7 +88,7 @@ public class PageTabsAction extends FacilioAction{
         context.put(FacilioConstants.CustomPage.PREVIOUS_ID,previousId);
         context.put(FacilioConstants.ContextNames.ID,id);
         context.put(FacilioConstants.CustomPage.NEXT_ID,nextId);
-        context.put(FacilioConstants.CustomPage.PAGE_ID,pageId);
+        context.put(FacilioConstants.CustomPage.LAYOUT_ID, layoutId);
         context.put(FacilioConstants.CustomPage.TYPE, CustomPageAPI.PageComponent.TAB);
         chain.execute();
         double sequenceNumber = (double) context.get(FacilioConstants.CustomPage.SEQUENCE_NUMBER);

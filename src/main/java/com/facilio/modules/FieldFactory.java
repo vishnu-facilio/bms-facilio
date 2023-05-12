@@ -11478,11 +11478,19 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSysDeletedTimeField(module));
         return  fields;
     }
+    public static List<FacilioField> getPageLayoutsFields() {
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPageLayoutsModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("pageId", "PAGE_ID", module));
+        fields.add(getStringField("layoutType", "LAYOUT_TYPE", module));
+        return fields;
+    }
     public static List<FacilioField> getPageTabsFields(){
         List<FacilioField> fields=new ArrayList<>();
         FacilioModule module=ModuleFactory.getPageTabsModule();
         fields.add(getIdField(module));
-        fields.add(getNumberField("pageId", "PAGE_ID", module));
+        fields.add(getNumberField("layoutId", "LAYOUT_ID", module));
         fields.add(getStringField("name", "NAME", module));
         fields.add(getStringField("displayName","DISPLAY_NAME",module));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
@@ -11548,6 +11556,99 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getWidgetListFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getWidgetListModule();
+        fields.add(getIdField(module));
+        fields.add(getStringField("name","NAME",module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getStringField("widgetType","WIDGET_TYPE",module));
+        return fields;
+    }
+    public static List<FacilioField> getWidgetModuleFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getWidgetModuleModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("widgetId","WIDGETID",module));
+        fields.add(getNumberField("moduleId","MODULEID",module));
+        return fields;
+    }
+    public static List<FacilioField> getWidgetConfigFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getWidgetConfigsModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("widgetId","WIDGETID",module));
+        fields.add(getStringField("configType","CONFIG_TYPE",module));
+        fields.add(getNumberField("minHeight","MIN_HEIGHT",module));
+        fields.add(getNumberField("maxHeight","MAX_HEIGHT",module));
+        fields.add(getNumberField("minWidth","MIN_WIDTH",module));
+        fields.add(getNumberField("maxWidth","MAX_WIDTH",module));
+        return fields;
+    }
+    public static List<FacilioField> getPageSummaryWidgetFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPageSummaryWidgetModule();
+        fields.add(getNumberField("summaryWidgetId", "SUMMARY_WIDGET_ID", module));
+        fields.add(getNumberField("pageWidgetId", "PAGE_WIDGET_ID", module));
+        return fields;
+    }
+    public static List<FacilioField> getPageRelatedListWidgetsFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPageRelatedListWidgetsModule();
+        fields.add(getIdField(module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getNumberField("widgetId","WIDGETID",module));
+        fields.add(getNumberField("subModuleId","SUB_MODULE_ID",module));
+        fields.add(getStringField("subModuleName", "SUB_MODULE_NAME", module));
+        fields.add(getBooleanField("status","STATUS",module));
+        fields.add(getNumberField("fieldId","FIELDID",module));
+        return fields;
+    }
+
+    public static List<FacilioField> getWidgetGroupConfigFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module=ModuleFactory.getWidgetGroupConfigModule();
+        fields.add(getNumberField("widgetId", "WIDGET_ID", module));
+        fields.add(getStringField("configType","CONFIG_TYPE",module));
+        return fields;
+    }
+    public static List<FacilioField> getWidgetGroupSectionsFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getWidgetGroupSectionsModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("widgetId", "WIDGET_ID", module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+        fields.add(getSystemField("sysCreatedBy",module));
+        fields.add(getSystemField("sysCreatedTime",module));
+        fields.add(getSystemField("sysModifiedBy",module));
+        fields.add(getSystemField("sysModifiedTime",module));
+        return  fields;
+    }
+
+    public static List<FacilioField> getWidgetGroupWidgetsFields() {
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getWidgetGroupWidgetsModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("sectionId", "SECTION_ID", module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getNumberField("widgetConfigId", "WIDGET_CONFIG_ID", module));
+        fields.add(getStringField("widgetType", "WIDGET_TYPE", module));
+        fields.add(getStringField("configType", "CONFIG_TYPE", module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getNumberField("positionX","X_POSITION",module));
+        fields.add(getNumberField("positionY","Y_POSITION",module));
+        fields.add(getNumberField("width","WIDTH",module));
+        fields.add(getNumberField("height","HEIGHT",module));
+        fields.add(getSystemField("sysCreatedBy",module));
+        fields.add(getSystemField("sysCreatedTime",module));
+        fields.add(getSystemField("sysModifiedBy",module));
+        fields.add(getSystemField("sysModifiedTime",module));
+        return fields;
+    }
     public static List<FacilioField> getConnectedAppFilesFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getConnectedAppFilesModule();

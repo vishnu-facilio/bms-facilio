@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -52,7 +51,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
                 boolean skipCheck = appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
                 ApplicationContext app = ApplicationApi.getApplicationForLinkName(appLinkName, skipCheck);
                 if(app != null) {
-                    CustomPageWidget widget = SummaryWidgetUtil.getAllWidgets(app.getId(), vendorQuotesModule.getModuleId());
+                    SummaryWidget widget = SummaryWidgetUtil.getAllWidgets(app.getId(), vendorQuotesModule.getModuleId());
                     if(widget == null) {
                         FacilioField rfqField = moduleBean.getField("requestForQuotation", FacilioConstants.ContextNames.VENDOR_QUOTES);
                         FacilioField nameField = moduleBean.getField("name", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
@@ -62,7 +61,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
                         FacilioField requiredDateField = moduleBean.getField("requiredDate", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
                         FacilioField vendorField = moduleBean.getField("vendor", FacilioConstants.ContextNames.VENDOR_QUOTES);
 
-                        CustomPageWidget pageWidget = new CustomPageWidget();
+                        SummaryWidget pageWidget = new SummaryWidget();
                         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
                         SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
                         SummaryWidgetGroupFields groupField21 = new SummaryWidgetGroupFields();
