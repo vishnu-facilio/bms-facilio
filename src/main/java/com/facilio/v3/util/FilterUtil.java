@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ public class FilterUtil {
         constructedObj.putAll(obj);
         return constructedObj;
     }
-    public static Criteria getCriteriaFromFilters(JSONObject filters,String moduleName) throws Exception {
+    public static Criteria getCriteriaFromFilters(JSONObject filters,String moduleName, Context context) throws Exception {
         Operator op=Operator.getOperator(93);
         Criteria criteria=new Criteria();
 
@@ -99,7 +100,7 @@ public class FilterUtil {
                 List<Condition> conditionList = new ArrayList<>();
                if(fieldJson!=null) {
                     JSONObject fieldJsonObj = (JSONObject) fieldJson;
-                    FilterUtil.setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+                    FilterUtil.setConditions(moduleName, fieldName, fieldJsonObj, conditionList, context, isPm);
                 }
                 criteria.groupOrConditions(conditionList);
             }
@@ -181,6 +182,10 @@ public class FilterUtil {
         }
     }
     public static void setConditions(String moduleName, String fieldName, JSONObject fieldJson, List<Condition> conditionList) throws Exception {
+        setConditions(moduleName,fieldName,fieldJson,conditionList, null, false);
+    }
+
+    public static void setConditions(String moduleName, String fieldName, JSONObject fieldJson, List<Condition> conditionList, Context context, boolean isPm) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -299,12 +304,16 @@ public class FilterUtil {
                     if (!fieldJsonObj.containsKey("value")) {
                         fieldJsonObj.put("value", value);
                     }
-                    setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList);
+                    setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList, context, isPm);
                 }
             }
         }
         condition.validateValue();
-        conditionList.add(condition);
+        if(isPm && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE) && fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && context != null){
+            context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES, condition.getValue());
+        }else {
+            conditionList.add(condition);
+        }
     }
   private static void setValueForCondition(Condition condition,JSONArray value,String fieldName,FacilioField field,String moduleName,JSONObject fieldJson) throws Exception {
       ModuleBean modBean=Constants.getModBean();

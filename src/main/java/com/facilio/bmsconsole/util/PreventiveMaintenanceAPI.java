@@ -1475,9 +1475,13 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 
-
 	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean... fetchDependencies) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		return getPMs(ids, criteria, searchQuery, pagination, fields, null, fetchDependencies);
+	}
+
+	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, String siteFilterValues, Boolean... fetchDependencies) throws Exception {
+
+			FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();
 		} else {
@@ -1565,7 +1569,17 @@ public class PreventiveMaintenanceAPI {
 		long singleSiteSiteID = -1L;
 
 		if(CollectionUtils.isNotEmpty(globalSwitchSiteValues) && globalSwitchSiteValues.size() == 1){
-			singleSiteSiteID = globalSwitchSiteValues.get(0);
+			long globalSwitchSiteValue = globalSwitchSiteValues.get(0);
+			if(CollectionUtils.isNotEmpty(accessibleSpaceIds)){
+				for (Long id: accessibleSpaceIds){
+					if(globalSwitchSiteValue == id){
+						singleSiteSiteID = globalSwitchSiteValue;
+						break;
+					}
+				}
+			}else {
+				singleSiteSiteID = globalSwitchSiteValues.get(0);
+			}
 		}
 
 		if(singleSiteSiteID > 0){
@@ -1574,6 +1588,29 @@ public class PreventiveMaintenanceAPI {
 			builder1.append(" ( ").append(builder).append(" OR ").append("Preventive_Maintenance.SITE_ID = ").append(singleSiteSiteID).append(" ) ");
 			builder = builder1;
 			//selectBuilder.orCustomWhere("Preventive_Maintenance.SITE_ID = ?", Collections.singletonList(singleSiteSiteID));
+		}
+		/*
+			Handling for siteId filter.
+			This is just a workaround, as we can't remove the siteId condition from criteria,
+			since siteId condition takes in WorkOrderTemplate.SITE_ID.
+		 */
+		if (StringUtils.isNotEmpty(siteFilterValues)) {
+			StringBuilder builder1 = new StringBuilder();
+			List<Long> siteFilterValueIDs = new ArrayList<>();
+			List<String> siteFilterValueStringIDs = Arrays.stream(siteFilterValues.split(",")).collect(Collectors.toList());
+			for (String id: siteFilterValueStringIDs){
+				siteFilterValueIDs.add(Long.parseLong(id));
+			}
+
+			if(!builder.toString().isEmpty()) {
+				builder1.append(" ( ").append(builder).append(" AND ").append(getPMSiteIDQueryForGlobalSiteSwitch(siteFilterValueIDs)).append(" ) ");
+			}else{
+				builder1.append(" ( ").append(builder).append(getPMSiteIDQueryForGlobalSiteSwitch(siteFilterValueIDs)).append(" ) ");
+			}
+			builder = builder1;
+//			selectBuilder.andCustomWhere("( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
+//					+ siteFilterValues
+//					+ ") group by PM_ID having count(PM_ID) = (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))");
 		}
 
 		if(!builder.toString().isEmpty()) {

@@ -44,7 +44,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-		Criteria filterCriteria=FilterUtil.getCriteriaFromFilters(filters,moduleName);
+		Criteria filterCriteria=FilterUtil.getCriteriaFromFilters(filters,moduleName, context);
 		Criteria quickFilterCriteria=FilterUtil.getCriteriaFromQuickFilter(quickFilter,moduleName);
 
 		if(!filterCriteria.isEmpty()){
