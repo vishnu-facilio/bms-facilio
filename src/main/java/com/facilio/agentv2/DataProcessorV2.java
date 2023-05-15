@@ -127,7 +127,7 @@ public class DataProcessorV2 {
                     break;
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    Controller timeseriesController = AgentConstants.getControllerBean().getController(payload, agent.getId());
+                    Controller timeseriesController = getOrAddController(payload, agent);
                     int messagePartition = 0;
                     if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
                         messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
@@ -148,7 +148,7 @@ public class DataProcessorV2 {
                     }
                     break;
                 case COV:
-                    Controller controller = AgentConstants.getControllerBean().getController(payload,agent.getId());
+                    Controller controller = getOrAddController(payload, agent);
                     timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
@@ -191,6 +191,25 @@ public class DataProcessorV2 {
         }
         LOGGER.debug(" process status " + processStatus);
         return processStatus;
+    }
+
+    private static Controller getOrAddController(JSONObject payload, FacilioAgent agent) throws Exception {
+        Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
+        if(controller == null){
+            if (agent.getAgentTypeEnum().allowAutoAddition()) {
+                LOGGER.info("Adding Controller for agent "+ agent.getDisplayName() + " of agent type " + agent.getAgentTypeEnum().getLabel());
+                MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
+                JSONObject controllerObj = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+                miscControllerContext.setName(controllerObj.get(AgentConstants.NAME).toString());
+                miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);
+                long contorllerId = AgentConstants.getControllerBean().addController(miscControllerContext);
+                if(contorllerId!=-1){
+                    return miscControllerContext;
+                }
+            }
+        }
+
+        return controller;
     }
 
     private boolean processAlarmSourceEvents ( FacilioAgent agent,JSONObject payload ) {

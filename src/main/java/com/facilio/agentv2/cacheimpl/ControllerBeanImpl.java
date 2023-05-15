@@ -75,21 +75,8 @@ public class ControllerBeanImpl implements ControllerBean {
         } catch (Exception e){
             LOGGER.info("Exception while fetching controller ",e);
         }
-        if(controller != null){
-            return controller;
-        } else {
-            FacilioAgent agent = AgentConstants.getAgentBean().getAgent(agentId);
-            if (agent.getAgentTypeEnum().allowAutoAddition()) {
-                LOGGER.info("Adding Controller for agent "+ agent.getDisplayName());
-                MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
-                miscControllerContext.setName(controllerJson.get(AgentConstants.NAME).toString());
-                miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);
-                AgentConstants.getControllerBean().addController(miscControllerContext);
-                return miscControllerContext;
-            }
-        }
-        LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
-        return null;
+
+        return controller;
     }
 
 
@@ -151,11 +138,7 @@ public class ControllerBeanImpl implements ControllerBean {
                 controller.setId(-1);
                 controller.setActive(true);
                 controller.setLastModifiedTime(System.currentTimeMillis());
-                if ((agent.getSiteId() > 0)) {
-                    controller.setSiteId(agent.getSiteId());
-                } else {
-                    throw new Exception(" agent's siteId can't be less than 1");
-                }
+                controller.setSiteId(agent.getSiteId());
                 context.put(FacilioConstants.ContextNames.RECORD, controller);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, controller.getModuleName());
                 addControllerChain.execute();
@@ -251,8 +234,6 @@ public class ControllerBeanImpl implements ControllerBean {
             case SYSTEM:
                 controller = FieldUtil.getAsBeanFromMap(map, SystemControllerContext.class);
                 break;
-            case BACNET_MSTP:
-            case KNX:
             case RDM:
                 controller = FieldUtil.getAsBeanFromMap(map, RdmControllerContext.class);
                 break;
@@ -260,6 +241,9 @@ public class ControllerBeanImpl implements ControllerBean {
                 E2ControllerContext.validateControllerJSON(map);
                 controller = FieldUtil.getAsBeanFromMap(map,E2ControllerContext.class);
                 break;
+            case BACNET_MSTP:
+            case KNX:
+                throw new Exception("No implementation for " + controllerType.asString());
             default:
                 throw new IllegalStateException("Unexpected value: " + controllerType);
         }
