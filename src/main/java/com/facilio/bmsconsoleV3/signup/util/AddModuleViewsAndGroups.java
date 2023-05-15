@@ -95,7 +95,9 @@ public class AddModuleViewsAndGroups {
                     if(SignupUtil.maintenanceAppSignup()) {
                         viewAppLinkNames.remove(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
                     }
+                    FacilioView newViewObj = view;
                     for (String viewAppLinkName : viewAppLinkNames) {
+                        view = new FacilioView(newViewObj);
                         long groupId = -1;
                         String viewName = view.getName();
                         long appId = allApplicationMap.get(viewAppLinkName).getId();
