@@ -119,7 +119,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 				if(condition.getCriteriaValue() != null) {
 					if (condition.getCriteriaValue().getCriteriaId() == -1) {
 						Criteria criteriaValue=condition.getCriteriaValue();
-						if(condition.getOperator() instanceof LookupOperator)
+						if(condition.getOperator() instanceof LookupOperator && condition.getField()!=null && ((LookupField)condition.getField()).getLookupModule()!=null)
 						{
 							criteriaValue.getConditions().get("1").setModuleName(((LookupField)condition.getField()).getLookupModule().getName());
 						}
