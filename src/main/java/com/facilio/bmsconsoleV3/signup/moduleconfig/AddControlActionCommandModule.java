@@ -146,8 +146,8 @@ public class AddControlActionCommandModule extends BaseModuleConfig {
         fields.add(executedTime);
 
         SystemEnumField controlActionMode = FieldFactory.getDefaultField("controlActionMode","Control Action Mode","CONTROL_ACTION_MODE",FieldType.SYSTEM_ENUM);
-        executedMode.setEnumName("ControlActionMode");
-        executedMode.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
+        controlActionMode.setEnumName("ControlActionMode");
+        controlActionMode.setAccessType(calculateAccessType(FacilioField.AccessType.READ, FacilioField.AccessType.CRITERIA));
         fields.add(controlActionMode);
 
         StringField command = FieldFactory.getDefaultField("command","Command","COMMAND",FieldType.STRING);
