@@ -14,16 +14,16 @@ groups:
       - { topic: __ping__, handler: com.facilio.wmsv2.handler.PingHandler, deliverTo: SESSION, isLiveMessage: true }
       - { topic: __push__, handler: com.facilio.wmsv2.handler.PushHandler, isLiveMessage: true }
       - { topic: [ __subscribe__, __unsubscribe__ ], handler: com.facilio.wmsv2.handler.SubscribeHandler, deliverTo: SESSION, isLiveMessage: true }
-      - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, recordTimeout: 60, isLiveMessage: true }
-      - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, recordTimeout: 60, isLiveMessage: true }
+      - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, isLiveMessage: true }
+      - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, isLiveMessage: true }
 
   - group: default-single
     sendToAll: false
     topics:
       - { topic: alarm-delete, handler: com.facilio.wmsv2.handler.AlarmDeleteHandler, isLiveMessage: false }
-      - { topic: __audit_logs__, handler: com.facilio.wmsv2.handler.AuditLogHandler, recordTimeout: 15, isLiveMessage: false }
+      - { topic: __audit_logs__, handler: com.facilio.wmsv2.handler.AuditLogHandler, isLiveMessage: false }
       - { topic: __pushnotification__, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
-      - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 30, isLiveMessage: false }
+      - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 5, isLiveMessage: false }
 
   - group: receive-mail
     sendToAll: false
@@ -38,12 +38,12 @@ groups:
   - group: pre-send-mail
     sendToAll: false
     topics:
-      - { topic: __prepare_ogmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingPreprocessHandler, recordTimeout: 60, isLiveMessage: false }
+      - { topic: __prepare_ogmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingPreprocessHandler, recordTimeout: 5, isLiveMessage: false }
 
   - group: send-mail
     sendToAll: false
     topics:
-      - { topic: __sendmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingMailHandler, recordTimeout: 300, isLiveMessage: false }
+      - { topic: __sendmail__/org/#, handler: com.facilio.wmsv2.handler.OutgoingMailHandler, recordTimeout: 10, isLiveMessage: false }
 
   - group: pm-planner
     sendToAll: false
