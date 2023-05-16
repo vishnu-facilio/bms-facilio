@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
@@ -23,10 +24,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.text.DecimalFormat;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.time.format.DateTimeFormatter;
+
+
 public class RollUpTransactionAmountCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(RollUpTransactionAmountCommand.class.getName());
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -74,8 +84,12 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         builder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
         List<Map<String, Object>> mapList = builder.getAsProps();
 
+        LOGGER.info("RollUpTransactionAmountCommand selectBuilder -- "+builder);
+
         Set<Long> availableResourceIds = new HashSet<>();
         if(CollectionUtils.isNotEmpty(mapList)) {
+            LOGGER.info("Transaction maplist -- "+mapList);
+
             for(Map<String, Object> map : mapList){
                 Double creditAmount = (Double) map.get("creditAmount");
                 Double debitAmount = (Double) map.get("debitAmount");
@@ -101,7 +115,18 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
                 Double actualAmount = Double.valueOf(df.format(amount));
                 Long monthStartDate = DateTimeUtil.getMonthStartTimeOf(minMonthStartDate, false);
-                rollUpData(actualAmount, accountMap, resourceMap, rollUpModName, rollUpFieldName, monthStartDate);
+
+                Long convertedMillis = monthStartDate;
+
+                // this method used to convert onetime zone mills to another timeZone
+                String accountTimeZone = AccountUtil.getCurrentAccount().getTimeZone();
+                String orgTimeZone = AccountUtil.getCurrentOrg().getTimezone();
+
+                if(!accountTimeZone.isEmpty() && !orgTimeZone.isEmpty()) {
+                    convertedMillis = timeZoneConverter(monthStartDate,accountTimeZone, orgTimeZone);
+                }
+
+                rollUpData(actualAmount, accountMap, resourceMap, rollUpModName, rollUpFieldName, convertedMillis);
 
             }
 
@@ -132,6 +157,22 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         return false;
     }
 
+    private static Long timeZoneConverter(Long timestampInMillis, String sourceTimezone, String targetTimezone) {
+        LOGGER.info("timeZoneConverter -- "+ timestampInMillis + " sourceTimezone " + sourceTimezone + " targetTimezone " + targetTimezone);
+
+        Instant instant = Instant.ofEpochMilli(timestampInMillis);
+
+        ZoneId sourceZone = ZoneId.of(sourceTimezone);
+        ZoneId targetZone = ZoneId.of(targetTimezone);
+
+        ZonedDateTime sourceDateTime = ZonedDateTime.ofInstant(instant, sourceZone);
+
+        ZonedDateTime targetDateTime = sourceDateTime.withZoneSameLocal(targetZone);
+
+        long convertedTimestampInMillis = targetDateTime.toInstant().toEpochMilli();
+
+        return convertedTimestampInMillis;
+    }
     private void rollUpData(Double amount, Map<String, Object> accountMap, Map<String, Object> resourceMap, String rollUpModName, String rollUpFieldName, long startDate) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(rollUpModName);

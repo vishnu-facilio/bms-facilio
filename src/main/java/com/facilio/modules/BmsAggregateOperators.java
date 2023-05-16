@@ -378,6 +378,10 @@ public class BmsAggregateOperators {
         public FacilioField getSelectField(FacilioField field) throws Exception {
             String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
             String timeZone = getTimeZoneString();
+            // temp fix for aster account [There is an issue with the budget module transactions not rolling up correctly due to the site timezone being applied in the rollup to fix this manually overriding org timezone]
+            if(AccountUtil.getCurrentOrg().getOrgId() == 583 && field.getName().equals("transactionDate")) {
+                timeZone = AccountUtil.getCurrentOrg().getTimezone();
+            }
             selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 
             FacilioField selectField =  new FacilioField();
