@@ -45,6 +45,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.lang.reflect.Field;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -1591,6 +1592,21 @@ public class FetchReportDataCommand extends FacilioCommand {
                     if(!cm_pivot_joins.contains(tableName)) {
                         cm_pivot_joins.add(tableName);
                         selectBuilder.innerJoin(tableName).on(submoduleJoinOn);
+                    }else{
+                        Field field = selectBuilder.getClass().getDeclaredField("joinBuilder");
+                        if(field != null)
+                        {
+                            field.setAccessible(true);
+                            Object value = field.get(selectBuilder);
+                            if(value != null)
+                            {
+                                String join_builder = value.toString();
+                                if(!join_builder.contains(tableName))
+                                {
+                                    selectBuilder.innerJoin(tableName).on(submoduleJoinOn);
+                                }
+                            }
+                        }
                     }
                     break;
                 }

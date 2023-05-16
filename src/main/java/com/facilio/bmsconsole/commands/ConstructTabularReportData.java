@@ -306,7 +306,19 @@ public class ConstructTabularReportData extends FacilioCommand {
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
                 }  else if (dateFieldId > 0 && dateOperatorInt > 0 && showTimelineFilter && !data.isExcludeFromTimelineFilter() && data.getReadingField() == null) {
-                    FacilioField dateField = modBean.getField(dateFieldId, yAxisModule.getName()).clone();
+                    FacilioField dateField = null;
+                    try
+                    {
+                        dateField = modBean.getField(dateFieldId, yAxisModule.getName()).clone();
+                    }
+                    catch (Exception e)
+                    {
+                        if(module != null) {
+                            dateField = modBean.getField(dateFieldId, module.getName()).clone();
+                        }else{
+                            throw e;
+                        }
+                    }
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(dateOperatorInt);
                     Criteria otherCrit = new Criteria();
