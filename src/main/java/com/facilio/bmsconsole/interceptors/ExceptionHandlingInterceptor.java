@@ -9,6 +9,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONObject;
 
@@ -37,6 +38,7 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             if(ex instanceof RESTException){
                 errorType = true;
                 values = new ErrorResponseUtil((RESTException) ex);
+                ((RESTException) ex).setMessage(StringUtils.isEmpty(ex.getMessage()) ? values.getMessage() : ex.getMessage());
             } else {
                 errorType = false;
             }
@@ -54,7 +56,7 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             errorMap.put("isVisible",  errorType ? values.getIsVisible(): true);
             errorMap.put("correctiveAction", errorType ? values.getCorrectiveAction(): "");
             write(errorMap, errorType ? values.getErrorCode().getHttpStatus() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus() : ErrorCode.ERROR.getHttpStatus(), response);
-
+            LOGGER.log(Level.FATAL, "error thrown from action class", ex);
         }
         return result;
     }

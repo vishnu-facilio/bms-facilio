@@ -490,8 +490,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
             }
         } catch (Exception e) {
             System.out.println("exception code 154");
-
-            LOGGER.log(Level.FATAL, "error thrown from action class", e);
             throw e;
         }
     }
