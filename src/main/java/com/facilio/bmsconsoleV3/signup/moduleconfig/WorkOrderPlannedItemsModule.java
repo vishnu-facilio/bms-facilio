@@ -51,13 +51,12 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
     public void addData() throws Exception {
         super.addData();
 
-        ArrayList<String> apps = new ArrayList<>();
-        if(!SignupUtil.maintenanceAppSignup()) {
-            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        }
-        apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+//        ArrayList<String> apps = new ArrayList<>();
+//        if(!SignupUtil.maintenanceAppSignup()) {
+//            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+//        }
+//        apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
-        for(String app : apps){
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule workOrderPlannedItemModule = moduleBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
@@ -129,11 +128,10 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
             pageWidget1.setName("plansWidget");
             pageWidget1.setDisplayName("Plans Widget");
             pageWidget1.setModuleId(workOrderPlannedItemModule.getModuleId());
-            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(app));
+            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(SignupUtil.getSignupApplicationLinkName()));
             pageWidget1.setGroups(widgetGroupList);
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
-        }
 
     }
 
@@ -151,6 +149,12 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         allView.setName("all");
         allView.setDisplayName("All WorkOrder Planned Items");
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
 
         return allView;
     }
@@ -170,6 +174,12 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         allView.setName("details");
         allView.setDisplayName("WorkOrder Planned Item Details");
         allView.setSortFields(sortFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
 
         return allView;
 

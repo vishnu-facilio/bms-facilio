@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -79,17 +80,21 @@ public class WorkOrderServiceModule extends BaseModuleConfig {
         detailsView.setDisplayName("Work Order Service Details");
         detailsView.setModuleName(workOrderServiceModule.getName());
 
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        detailsView.setAppLinkNames(appLinkNames);
+
         return detailsView;
     }
 
     @Override
     public void addData() throws Exception {
         super.addData();
-        List<String> appLinkNamesForSummaryWidget = new ArrayList<>();
-        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+//        List<String> appLinkNamesForSummaryWidget = new ArrayList<>();
+//        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+//        appLinkNamesForSummaryWidget.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
-        for(String appLinkName: appLinkNamesForSummaryWidget) {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule workOrderServiceModule = moduleBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.WO_SERVICE);
@@ -151,12 +156,10 @@ public class WorkOrderServiceModule extends BaseModuleConfig {
             pageWidget1.setName("workorderServicesWidget");
             pageWidget1.setDisplayName("Work Order Services Widget");
             pageWidget1.setModuleId(workOrderServiceModule.getModuleId());
-            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(appLinkName));
+            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(SignupUtil.getSignupApplicationLinkName()));
             pageWidget1.setGroups(widgetGroupList);
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
-        }
-
     }
 
     @Override

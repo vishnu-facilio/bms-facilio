@@ -57,6 +57,9 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
                     if (woService.getVendor() != null) {
                         vendorId = woService.getVendor();
                     }
+                    if(woService.getStartTime()!=null && woService.getEndTime()!=null &&  woService.getStartTime() > woService.getEndTime()){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Start time cannot be greater than end time");
+                    }
                     if(woService.getQuantity() <= 0) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be null");
                     }

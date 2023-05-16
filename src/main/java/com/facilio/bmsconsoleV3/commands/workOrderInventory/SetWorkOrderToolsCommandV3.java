@@ -64,6 +64,9 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                 V3ToolContext tool = getStockedTools(workorderTool.getTool().getId());
                 toolTypesId = tool.getToolType().getId();
                 V3ToolTypesContext toolTypes = getToolType(toolTypesId);
+                if(workorderTool.getReturnTime()!=null && workorderTool.getIssueTime()!=null &&  workorderTool.getIssueTime() > workorderTool.getReturnTime()){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Return time cannot be greater than issued time");
+                }
                 if(workorderTool.getQuantity() <= 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
@@ -86,7 +89,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
 
                     if (woIt != null) {
                         V3WorkorderToolsContext wTool = woIt.get(0);
-                        if ((wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < workorderTool
+                        if (wTool.getTool().getCurrentQuantity() < workorderTool
                                 .getQuantity()) {
                             throw new IllegalArgumentException("Insufficient quantity in inventory!");
                         } else {
@@ -114,7 +117,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
 //                    if (!eventTypes.contains(EventType.CREATE)) {
 //                        eventTypes.add(EventType.CREATE);
 //                    }
-                    if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getQuantity() < workorderTool.getQuantity()) {
+                    if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getCurrentQuantity() < workorderTool.getQuantity()) {
                         throw new IllegalArgumentException("Insufficient quantity in inventory!");
                     } else {
                         ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;

@@ -31,13 +31,12 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
     @Override
     public void addData() throws Exception {
         super.addData();
-        ArrayList<String> apps = new ArrayList<>();
-        if (!SignupUtil.maintenanceAppSignup()) {
-            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        }
-        apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+//        ArrayList<String> apps = new ArrayList<>();
+//        if (!SignupUtil.maintenanceAppSignup()) {
+//            apps.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+//        }
+//        apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
-        for(String appLinkName: apps) {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule inventoryRequestLineItemModule = moduleBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
             FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
@@ -98,11 +97,10 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
             pageWidget1.setName("inventoryRequestLineItemsSummaryWidget");
             pageWidget1.setDisplayName("Inventory Request Line Items Summary");
             pageWidget1.setModuleId(inventoryRequestLineItemModule.getModuleId());
-            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(appLinkName));
+            pageWidget1.setAppId(ApplicationApi.getApplicationIdForLinkName(SignupUtil.getSignupApplicationLinkName()));
             pageWidget1.setGroups(widgetGroupList);
 
             SummaryWidgetUtil.addPageWidget(pageWidget1);
-        }
     }
 
     @Override
