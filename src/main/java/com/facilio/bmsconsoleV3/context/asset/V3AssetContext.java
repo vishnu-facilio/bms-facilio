@@ -3,11 +3,9 @@ package com.facilio.bmsconsoleV3.context.asset;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
-import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
-import com.facilio.bmsconsoleV3.context.V3ResourceContext;
-import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -61,6 +59,9 @@ public class V3AssetContext extends V3ResourceContext {
     private List<Long> hazardIds;
     private V3ToolContext rotatingTool;
     private V3ItemContext rotatingItem;
+    private V3ItemTypesContext rotatingItemType;
+    private V3StoreRoomContext storeRoom;
+    private Boolean canUpdateRotatingAsset;
 
     public Boolean getDowntimeStatus() {
         return downtimeStatus;
@@ -464,5 +465,32 @@ public class V3AssetContext extends V3ResourceContext {
 
     public void setCategoryModuleName(String categoryModuleName) {
         this.categoryModuleName = categoryModuleName;
+    }
+
+    public V3ItemTypesContext getRotatingItemType() {
+        return rotatingItemType;
+    }
+
+    public void setRotatingItemType(V3ItemTypesContext rotatingItemType) {
+        this.rotatingItemType = rotatingItemType;
+    }
+
+    public V3StoreRoomContext getStoreRoom() {
+        return storeRoom;
+    }
+
+    public void setStoreRoom(V3StoreRoomContext storeRoom) {
+        this.storeRoom = storeRoom;
+    }
+
+    public Boolean getCanUpdateRotatingAsset() {
+        if(canUpdateRotatingAsset != null) {
+            return canUpdateRotatingAsset.booleanValue();
+        }
+        return false;
+    }
+
+    public void setCanUpdateRotatingAsset(Boolean canUpdateRotatingAsset) {
+        this.canUpdateRotatingAsset = canUpdateRotatingAsset;
     }
 }

@@ -24,7 +24,7 @@ public class AddAssetRequiredFieldsCommand extends FacilioCommand {
 
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ContextNames.ASSET));
 
-            String[] extraFieldNames = new String[]{"photoId","qrVal"};
+            String[] extraFieldNames = new String[]{"photoId","qrVal","rotatingItemType"};
 
             for (String fieldName : extraFieldNames) {
                 if (allFieldsAsMap.containsKey(fieldName)) {

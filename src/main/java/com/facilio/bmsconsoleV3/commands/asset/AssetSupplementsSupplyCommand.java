@@ -44,6 +44,8 @@ public class AssetSupplementsSupplyCommand extends FacilioCommand {
         SupplementRecord typeField = (SupplementRecord) fieldsAsMap.get("type");
         SupplementRecord failureClassField = (SupplementRecord) fieldsAsMap.get("failureClass");
         SupplementRecord decommissionedByField = (SupplementRecord) fieldsAsMap.get("decommissionedBy");
+        SupplementRecord rotatingItemTypeField = (SupplementRecord) fieldsAsMap.get("rotatingItemType");
+        SupplementRecord storeRoomField = (SupplementRecord) fieldsAsMap.get("storeRoom");
 
         supplementFields.add(identifiedLocationField);
         supplementFields.add(spaceField);
@@ -54,6 +56,8 @@ public class AssetSupplementsSupplyCommand extends FacilioCommand {
         supplementFields.add(typeField);
         supplementFields.add(failureClassField);
         supplementFields.add(decommissionedByField);
+        supplementFields.add(rotatingItemTypeField);
+        supplementFields.add(storeRoomField);
 
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
         supplementFields.add(sysCreatedBy);

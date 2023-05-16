@@ -24,18 +24,26 @@ public class GetWorkOrderItemCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long itemId = (Long) context.get(FacilioConstants.ContextNames.ITEM);
         Long workOrderId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-        V3WorkorderItemContext workorderItem = new V3WorkorderItemContext();
-        if(itemId != null && workOrderId != null) {
-            V3WorkOrderContext workOrder = new V3WorkOrderContext();
-            workOrder.setId(workOrderId);
-            V3ItemContext item = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM, itemId, V3ItemContext.class);
-            if(item != null){
-                workorderItem.setItem(item);
-                workorderItem.setWorkorder(workOrder);
-                workorderItem.setStoreRoom(item.getStoreRoom());
+        V3WorkorderItemContext workOrderItem = new V3WorkorderItemContext();
+        if(itemId != null) {
+            V3ItemContext item = V3ItemsApi.getItems(itemId);
+            if(item!=null) {
+                V3ItemContext itemRec = new V3ItemContext();
+                itemRec.setId(itemId);
+                workOrderItem.setItem(itemRec);
+                workOrderItem.setStoreRoom(item.getStoreRoom());
+                if (item.getItemType() != null && item.getItemType().isRotating()) {
+                    workOrderItem.setQuantity(1);
+                    workOrderItem.setItemType(item.getItemType());
+                }
             }
         }
-        context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS,workorderItem);
+        if(workOrderId!=null){
+            V3WorkOrderContext workOrder = new V3WorkOrderContext();
+            workOrder.setId(workOrderId);
+            workOrderItem.setWorkorder(workOrder);
+        }
+        context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS,workOrderItem);
         return false;
     }
 }

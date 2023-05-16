@@ -445,7 +445,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "sysModifiedBy",
                 "moduleState",
                 "siteId",
-                "id"
+                "id",
+                "rotatingItemType",
+                "storeRoom"
         }));
 
         public static final List<String> QUOTE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{

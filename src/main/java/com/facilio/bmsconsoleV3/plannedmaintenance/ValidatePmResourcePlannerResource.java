@@ -28,18 +28,18 @@ public class ValidatePmResourcePlannerResource extends FacilioCommand {
             return false;
         }
         List<PMResourcePlanner> pmResourcePlannerList = (List<PMResourcePlanner>) recordMap.get(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
-         if(CollectionUtils.isEmpty(pmResourcePlannerList)){
-             return false;
-         }
-         for(PMResourcePlanner resourcePlanner : pmResourcePlannerList){
-             Long pmId = resourcePlanner.getPmId();
-             PlannedMaintenance plannedMaintenance = PlannedMaintenanceAPI.getPmV2fromId(pmId);
-             List<V3SiteContext> pmSiteList = plannedMaintenance.getSites();
-             boolean check = checkForSiteScope(plannedMaintenance,resourcePlanner,pmSiteList);
-             if(!check){
-                 throw new IllegalArgumentException(resourcePlanner.getResource().getName()+" is not inside the scope of site associated with ppm - # "+resourcePlanner.getPmId());
-             }
-         }
+        if(CollectionUtils.isEmpty(pmResourcePlannerList)){
+            return false;
+        }
+        for(PMResourcePlanner resourcePlanner : pmResourcePlannerList){
+            Long pmId = resourcePlanner.getPmId();
+            PlannedMaintenance plannedMaintenance = PlannedMaintenanceAPI.getPmV2fromId(pmId);
+            List<V3SiteContext> pmSiteList = plannedMaintenance.getSites();
+            boolean check = checkForSiteScope(plannedMaintenance,resourcePlanner,pmSiteList);
+            if(!check){
+                throw new IllegalArgumentException(resourcePlanner.getResource().getName()+" is not inside the scope of site associated with ppm - # "+resourcePlanner.getPmId());
+            }
+        }
         return false;
     }
     public boolean checkForSiteScope(PlannedMaintenance plannedMaintenance, PMResourcePlanner resourcePlanner, List<V3SiteContext> pmSiteList) throws Exception{

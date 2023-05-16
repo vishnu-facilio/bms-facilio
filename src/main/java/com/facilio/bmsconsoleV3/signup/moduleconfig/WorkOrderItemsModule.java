@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
@@ -10,7 +9,6 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -101,14 +99,17 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
             FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WORKORDER_ITEMS);
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WORKORDER_ITEMS);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WORKORDER_ITEMS);
+            FacilioField rotatingAsset = moduleBean.getField("asset", FacilioConstants.ContextNames.WORKORDER_ITEMS);
 
-            SummaryWidget pageWidget1 = new SummaryWidget();
+
+        SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField15 = new SummaryWidgetGroupFields();
 
             groupField11.setName(sysCreatedByField.getName());
             groupField11.setDisplayName(sysCreatedByField.getDisplayName());
@@ -138,11 +139,19 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
             groupField14.setColIndex(3);
             groupField14.setColSpan(2);
 
+            groupField15.setName(rotatingAsset.getName());
+            groupField15.setDisplayName("Rotating Asset");
+            groupField15.setFieldId(rotatingAsset.getId());
+            groupField15.setRowIndex(3);
+            groupField15.setColIndex(1);
+            groupField15.setColSpan(2);
+
             List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
             groupOneFields.add(groupField11);
             groupOneFields.add(groupField12);
             groupOneFields.add(groupField13);
             groupOneFields.add(groupField14);
+            groupOneFields.add(groupField15);
 
 
             widgetGroup1.setName("moreDetails");
@@ -180,6 +189,7 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         workOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum, 1));
         workOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1));
         workOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
+        workOrderItemFormFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Asset", FormField.Required.OPTIONAL, "asset", ++seqNum, 1));
         workOrderItemFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.OPTIONAL, "ticket", ++seqNum, 1));
 
         FormSection section = new FormSection("Default", 1, workOrderItemFormFields, false);
@@ -187,9 +197,13 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         workOrderItemForm.setSections(Collections.singletonList(section));
         workOrderItemForm.setIsSystemForm(true);
         workOrderItemForm.setType(FacilioForm.Type.FORM);
-
-        FormRuleContext singleRule = addItemFilterRule();
-        workOrderItemForm.setDefaultFormRules(Arrays.asList(singleRule));
+        //form rules
+        List<FormRuleContext> workOrderItemFormRules = new ArrayList<>();
+        FormRuleContext itemFilterRule = addItemFilterRule();
+        FormRuleContext assetFormRule = addRotatingAssetFilterRule();
+        workOrderItemFormRules.add(itemFilterRule);
+        workOrderItemFormRules.add(assetFormRule);
+        workOrderItemForm.setDefaultFormRules(workOrderItemFormRules);
 
         return Collections.singletonList(workOrderItemForm);
     }
@@ -219,6 +233,42 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         Criteria criteria = new Criteria();
 
         criteria.addAndCondition(CriteriaAPI.getCondition("Item.STORE_ROOM_ID","storeRoom", "${workorderItem.storeRoom.id}", StringOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
+    }
+    private FormRuleContext addRotatingAssetFilterRule() {
+        // TODO Auto-generated method stub
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Set Rotating Asset Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Item");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Rotating Asset");
+
+        Criteria criteria = new Criteria();
+
+        criteria.addAndCondition(CriteriaAPI.getCondition("Asset.ROTATING_ITEM","rotatingItem", "${workorderItem.item.id}", StringOperators.IS));
 
         actionField.setCriteria(criteria);
 

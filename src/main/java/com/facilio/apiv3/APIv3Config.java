@@ -69,6 +69,7 @@ import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.itemtypes.ValidateItemTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
@@ -890,6 +891,7 @@ public class APIv3Config {
         return () -> new V3Config(V3ItemTypesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
+                .beforeSave(new ValidateItemTypeCommandV3())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemTypesListChain())
                 .summary()
@@ -1801,6 +1803,7 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"inventoryReservation")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"asset")
                 .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
@@ -2244,12 +2247,12 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),
                         new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),
-                        new ValidateQrValueCommandV3())
+                        new ValidateQrValueCommandV3(), new ValidateRotatingItemBeforeCreateCommandV3())
                 .afterSave(new ConstructAddAssetActivityCommandV3(), new AddRotatingItemToolCommandV3(),
                         new AssetAfterSaveCommandV3(), FacilioChainFactory.getCategoryReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .update()
-                .beforeSave(new CheckPMForAssetsCommandV3(), new AssetCategoryAdditionInExtendModuleCommand(),
+                .beforeSave(new RotatingItemMovementToStoreCommandV3(), new ValidateRotatingItemBeforeUpdateCommandV3(),new CheckPMForAssetsCommandV3(), new AssetCategoryAdditionInExtendModuleCommand(),
                         new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),
                         new ValidateQrValueCommandV3())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(),new RemoveAssetExtendedModulesFromRecordMap())

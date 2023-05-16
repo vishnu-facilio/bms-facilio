@@ -23,6 +23,7 @@ public class V3ItemContext extends V3Context {
     private Double lastPurchasedPrice;
     private Double minimumQuantity;
     public Boolean isUnderstocked;
+    public Double issuanceCost;
 
     public V3ItemTypesContext getItemType() {
         return itemType;
@@ -173,4 +174,11 @@ public class V3ItemContext extends V3Context {
         }
     }
 
+    public Double getIssuanceCost() {
+        return issuanceCost;
+    }
+
+    public void setIssuanceCost(Double issuanceCost) {
+        this.issuanceCost = issuanceCost;
+    }
 }

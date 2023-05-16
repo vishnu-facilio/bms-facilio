@@ -108,16 +108,27 @@ public enum AssetActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " used the asset in WO #" + json.get("woId");
+			String history = "issued the asset to WO #" + json.get("woId") + ", moved to " + json.get("site");
+			if(json.get("space")!=null){
+				history += ", " + json.get("space");
+			}
+			return history;
 		}
 	},
 	ADDED_TO_INVENTORY(46) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " added as rotating asset to Inventory Store - " + json.get("addedTo");
+			return " added as rotating asset to the Storeroom - " + json.get("storeroom");
 		}
 	},
+	MOVE_TO_STOREROOM(121){
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "moved asset to the Storeroom - " + json.get("storeroom");
+		}
+	}
 	;
 
 	private AssetActivityType(int value) {

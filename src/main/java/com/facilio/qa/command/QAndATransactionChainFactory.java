@@ -19,6 +19,7 @@ public class QAndATransactionChainFactory {
     
     public static FacilioChain inspectionTemplateBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateInspectionTemplateCommand());
         c.addCommand(commonQAndABeforeSave());
         c.addCommand(new InspectionTemplateBeforeSaveCommand());
         return c;

@@ -2,9 +2,7 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
@@ -13,6 +11,8 @@ import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -263,12 +263,15 @@ public class AssetModule extends BaseModuleConfig{
         assetFormFields.add(new FormField("warrantyExpiryDate", FacilioField.FieldDisplayType.DATETIME, "Warranty Expiry Date", FormField.Required.OPTIONAL, 10, 3));
         assetFormFields.add(new FormField("qrVal", FacilioField.FieldDisplayType.TEXTBOX, "QR Value", FormField.Required.OPTIONAL, 11, 2));
         // new fields
-        assetFormFields.add(new FormField("rotatingItem", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Item", FormField.Required.OPTIONAL, "item", 12,2));
-        assetFormFields.add(new FormField("rotatingTool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Tool", FormField.Required.OPTIONAL, "tool", 12,3));
+       // assetFormFields.add(new FormField("rotatingItem", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Item", FormField.Required.OPTIONAL, "item", 12,2));
+       // assetFormFields.add(new FormField("rotatingTool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Tool", FormField.Required.OPTIONAL, "tool", 12,3));
         assetFormFields.add(new FormField("geoLocationEnabled", FacilioField.FieldDisplayType.DECISION_BOX, "Is Movable", FormField.Required.OPTIONAL, 13,2));
         assetFormFields.add(new FormField("moveApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Is Move Approval Needed", FormField.Required.OPTIONAL, 13,2));
         assetFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 2));
         assetFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+
+        assetFormFields.add(new FormField("rotatingItemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating - Item Type", FormField.Required.OPTIONAL, "itemTypes", 15,2));
+        assetFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 16,2));
 
         FormSection section = new FormSection("Default", 1, assetFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
@@ -276,6 +279,8 @@ public class AssetModule extends BaseModuleConfig{
         assetForm.setIsSystemForm(true);
         assetForm.setType(FacilioForm.Type.FORM);
 
+        FormRuleContext singleRule = addRotatingItemTypeFilterRule();
+        assetForm.setDefaultFormRules(Arrays.asList(singleRule));
 
         FacilioForm mobileAssetForm = new FacilioForm();
         mobileAssetForm.setDisplayName("Asset");
@@ -314,7 +319,40 @@ public class AssetModule extends BaseModuleConfig{
 
         return assetModuleForms;
     }
+    private FormRuleContext addRotatingItemTypeFilterRule() {
 
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Rotating Item Type Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Rotating - Item Type");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Rotating - Item Type");
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("Item_Types.INDIVIDUAL_TRACKING","isRotating", String.valueOf(true), BooleanOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
+    }
 
     @Override
     public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {

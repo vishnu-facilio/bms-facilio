@@ -219,7 +219,6 @@ public class V3ItemsApi {
     }
 
     public static V3ItemContext getItem(V3ItemTypesContext itemType, V3StoreRoomContext storeroom) throws Exception {
-        V3ItemContext itemc = null;
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
         List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
@@ -314,6 +313,30 @@ public class V3ItemsApi {
                     .select(fields)
                     .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+            item = selectRecordsBuilder.fetchFirst();
+        }
+        return item;
+    }
+    public static V3ItemContext getItemWithSupplements(Long itemTypeId,Long storeRoomId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String itemModuleName = FacilioConstants.ContextNames.ITEM;
+        FacilioModule module = modBean.getModule(itemModuleName);
+        List<FacilioField> fields = modBean.getAllFields(itemModuleName);
+
+        Collection<SupplementRecord> supplementFields = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        supplementFields.add((LookupField) fieldsMap.get("itemType"));
+        supplementFields.add((LookupField) fieldsMap.get("storeRoom"));
+
+        V3ItemContext item = new V3ItemContext();
+        if(itemTypeId != null && itemTypeId >=0 && storeRoomId != null && storeRoomId >=0) {
+            SelectRecordsBuilder<V3ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ItemContext>()
+                    .module(module)
+                    .beanClass(V3ItemContext.class)
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS))
+                    .fetchSupplements(supplementFields);
             item = selectRecordsBuilder.fetchFirst();
         }
         return item;

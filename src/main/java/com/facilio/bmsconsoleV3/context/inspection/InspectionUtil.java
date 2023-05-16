@@ -27,6 +27,8 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.facilio.bmsconsoleV3.util.V3AssetAPI.isAssetInStoreRoom;
+
 public class InspectionUtil {
 
     private static final Logger LOGGER = Logger.getLogger(InspectionUtil.class.getName());
@@ -69,7 +71,7 @@ public class InspectionUtil {
 
             V3VisitorManagementAPI.updateBaseScheduleContext(baseScheduleContext);
 
-            LOGGER.info(responses!=null ? "Count of Inspection Responses to be created : "+ responses.size() : "Responses is Empty.");
+            LOGGER.info(responses!=null && responses.size()>0 ? "Count of Inspection Responses to be created : "+ responses.size() : "Responses is Empty.");
 
             return responses;
         }
@@ -95,15 +97,17 @@ public class InspectionUtil {
             long createdtime = time.getEndTime()+1;
 
             for(ResourceContext resource : resources) {
-                InspectionResponseContext response = template.constructResponse();
+                if(!isAssetInStoreRoom(resource)) {
+                    InspectionResponseContext response = template.constructResponse();
 
-                response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
-                response.setCreatedTime(createdtime);
-                response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
-                response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
-                response.setResource(resource);
-                response.setSiteId(resource.getSiteId());
-                responses.add(response);
+                    response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
+                    response.setCreatedTime(createdtime);
+                    response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
+                    response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
+                    response.setResource(resource);
+                    response.setSiteId(resource.getSiteId());
+                    responses.add(response);
+                }
             }
         }
 

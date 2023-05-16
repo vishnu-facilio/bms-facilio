@@ -1570,6 +1570,13 @@
                 method="cost">
         </action>
     </package>
+    <package name="rotatingAsset" namespace="/api/v3/rotatingAsset"
+             extends="v3Api">
+        <action name="rotatingAssetUsages"
+                class="com.facilio.bmsconsoleV3.actions.RotatingAssetAction"
+                method="rotatingAssetUsages">
+        </action>
+    </package>
     <package name="peoplefilter" namespace="/api/v3/people/filters" extends="v3Api">
         <action name="filter" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchActivePeoples"/>
     </package>

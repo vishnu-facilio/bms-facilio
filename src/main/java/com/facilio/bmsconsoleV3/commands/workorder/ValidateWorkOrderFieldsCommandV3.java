@@ -1,6 +1,11 @@
 package com.facilio.bmsconsoleV3.commands.workorder;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.bmsconsoleV3.util.V3ResourceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.UpdateWorkOrderCommand;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -46,8 +51,6 @@ public class ValidateWorkOrderFieldsCommandV3 extends FacilioCommand {
             if(woContext.getDescription() != null && !woContext.getDescription().isEmpty()) {
                 woContext.setDescription(woContext.getDescription().trim());
             }
-
-
 
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && AccountUtil.getCurrentUser() != null) {
                 long currentUserId = AccountUtil.getCurrentUser().getOuid();

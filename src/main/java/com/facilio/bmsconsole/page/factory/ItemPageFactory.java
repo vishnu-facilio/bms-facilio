@@ -13,10 +13,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemPageFactory extends PageFactory{
     private static final Logger LOGGER = LogManager.getLogger(ItemPageFactory.class.getName());
@@ -48,7 +52,7 @@ public class ItemPageFactory extends PageFactory{
         tab1Sec1.addWidget(card3);
 
         if(isRotating(item)){
-            addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, module.getModuleId());
+            addAssetRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, module.getModuleId());
         }
         else{
             addPurchasedItemsWidget(tab1Sec1);
@@ -101,6 +105,27 @@ public class ItemPageFactory extends PageFactory{
         section.addWidget(transactionsWidget);
 
         return transactionsWidget;
+    }
+    static void addAssetRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (FacilioField field : fields) {
+                PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.NEW_RELATED_LIST);
+                JSONObject relatedList = new JSONObject();
+                relatedList.put("module", module);
+                relatedList.put("field", field);
+                relatedList.put("isEditable", false);
+                relatedList.put("isDeletable", false);
+                relatedListWidget.setRelatedList(relatedList);
+                relatedListWidget.addToLayoutParams(section, 24, 8);
+                section.addWidget(relatedListWidget);
+            }
+        }
     }
     private static PageWidget addNotesAttachmentsModule(Page.Section section) {
 

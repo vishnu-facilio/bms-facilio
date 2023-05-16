@@ -2452,6 +2452,11 @@
             <property name="plannedServiceId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v3/rotatingAsset/rotatingAssetUsages">
+        <requestbody type="object">
+            <property name="assetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/setup/portalUsersList" method="GET" />
 
     <request path="/api/v3/requestForQuotation/convertPrToRfq" method="GET">

@@ -167,10 +167,11 @@ public class ItemModule extends BaseModuleConfig{
 
         List<FormField> itemFormFields = new ArrayList<>();
         itemFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item Type", FormField.Required.REQUIRED, "itemTypes", 1, 2));
-        itemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 1, 3));
-        itemFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 2, 2));
-        itemFormFields.add(new FormField("costType", FacilioField.FieldDisplayType.SELECTBOX, "Cost Type", FormField.Required.OPTIONAL, 2, 3));
-//        itemForm.setFields(itemFormFields);
+        itemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 2, 3));
+        itemFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 3, 2));
+        itemFormFields.add(new FormField("costType", FacilioField.FieldDisplayType.SELECTBOX, "Cost Type", FormField.Required.OPTIONAL, 4, 3));
+        itemFormFields.add(new FormField("issuanceCost", FacilioField.FieldDisplayType.DECIMAL, "Issuance Cost", FormField.Required.OPTIONAL, 5, 2));
+        //        itemForm.setFields(itemFormFields);
 
         FormSection section = new FormSection("Default", 1, itemFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

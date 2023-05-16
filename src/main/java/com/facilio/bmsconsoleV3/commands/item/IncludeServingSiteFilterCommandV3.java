@@ -25,10 +25,8 @@ public class IncludeServingSiteFilterCommandV3 extends FacilioCommand {
             Long siteId = FacilioUtil.parseLong(Objects.requireNonNull(Constants.getQueryParam(context, "siteId")));
             if (Objects.nonNull(Constants.getQueryParam(context, "includeServingSite")) && includeServingSite && siteId != null) {
                 Set<Long> storeIds = V3StoreroomApi.getStoreRoomList(siteId, includeServingSite);
-                if (CollectionUtils.isNotEmpty(storeIds)) {
-                    Condition condition = CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS);
-                    context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, condition);
-                }
+                Condition condition = CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS);
+                context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, condition);
             }
         }
         return false;

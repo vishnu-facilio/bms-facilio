@@ -2451,6 +2451,9 @@ public class FacilioConstants {
 		public static final String PLANNEDMAINTENANCE_JOB_LIST = "plannedmaintenanceJobList";
 		public static final String PLANNEDMAINTENANCE_TRIGGER_LIST = "planedmaintenaceTriggerList";
 		public static final String PLANNEDMAINTENANCE_RESOURCE_LIST = "plannedmaintenanceResourceList";
+		public static final String PLANNED_MAINTENANCE_LIST = "plannedMaintenanceList";
+		public static final String INSPECTION_TEMPLATE_LIST = "inspectionTemplateList";
+
 
 		public static final String PMPLANNER = "pmPlanner";
 		public static final String PLANNER_ID = "plannerId";

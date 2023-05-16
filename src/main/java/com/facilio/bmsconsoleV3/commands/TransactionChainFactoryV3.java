@@ -11,7 +11,7 @@ import com.facilio.alarms.sensor.commands.AddSensorRuleTypeCommand;
 import com.facilio.alarms.sensor.commands.SensorRulePreCreationCommand;
 import com.facilio.alarms.sensor.commands.SetRecordModuleAndFieldIdCommand;
 import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
@@ -86,9 +86,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
-import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
-import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
-import com.facilio.bmsconsoleV3.commands.asset.SparePartsSelectionCommand;
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
@@ -2152,7 +2149,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getAddOrUpdateItemStockTransactionChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForItemTransactions());
         c.addCommand(new AddOrUpdateItemStockTransactionsCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
         return c;
@@ -2616,6 +2612,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCostChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlansCostCommandV3());
+        return c;
+    }
+    public static FacilioChain getRotatingAssetUsagesChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPmAndInspectionForRotatingAssetCommandV3());
         return c;
     }
     public static FacilioChain getWorkorderLabourPlanBeforeFetchChain(){
@@ -3375,6 +3376,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PMResourcePlannerBeforeSaveCommand());
         c.addCommand(new ValidatePmResourcePlannerResource());
         c.addCommand(new ValidateDuplicateResourcesInsidePlannerCommand());
+        c.addCommand(new ValidateRotatingAssetPMResource());
         return c;
     }
 

@@ -794,7 +794,7 @@ public class PageFactory {
 		List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(fields)) {
 			for (FacilioField field : fields) {
-				PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.RELATED_LIST);
+				PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
 				JSONObject relatedList = new JSONObject();
 				relatedList.put("module", module);
 				relatedList.put("field", field);
