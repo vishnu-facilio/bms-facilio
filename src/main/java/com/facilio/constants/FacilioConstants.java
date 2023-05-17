@@ -267,7 +267,13 @@ public class FacilioConstants {
 
 		public static final String CUSTOM_KIOSK_DATA= "customKiosk";
 		public static final String SUMMARY_CONTEXT= "summaryContext";
-
+		public static  final String DECOMMISSION = "decommission";
+        public static final String COMMISSION_TIME = "commissionedTime";
+		public static final String REMARKS = "remarks";
+		public static final String DECOMMISSION_LOG = "decommissionLog";
+		public static final String LOG_CONTEXT = "logContext";
+		public static final String RESOURCE_MODULENAME = "resourceModuleName";
+		//public static final String RESOURCE_ID = "resourceId";
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
@@ -1036,6 +1042,11 @@ public class FacilioConstants {
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
 		public static final String SPACE_ID = "spaceId";
+		public static final String SPACE_ID1 = "spaceId1";
+		public static final String SPACE_ID2 = "spaceId2";
+		public static final String SPACE_ID3 = "spaceId3";
+		public static final String SPACE_ID4 = "spaceId4";
+		public static final String SPACE_ID5 = "spaceId5";
 		public static final String SPACE_AMENITY = "spaceAmenity";
 		public static final String FETCH_DELETED_RECORDS = "FetchDeletedRecords";
 		public static final String SPACE_TYPE = "spaceType";
@@ -1111,6 +1122,8 @@ public class FacilioConstants {
 		public static final String CONTROLLER_MODULE_NAME = "controller";
 		public static final String AGENT_METRICS_MODULE = "agentMetrics";
 		public static final String CUSTOM_ACTIVITY = "customactivity";
+
+		public static final String COMMISSIONING_ACTIVITY = "commissionactivity";
 		public static final String SITE_ACTIVITY = "siteactivity";
 		public static final String BUILDING_ACTIVITY = "buildingactivity";
 		public static final String FLOOR_ACTIVITY = "flooractivity";
@@ -1684,6 +1697,7 @@ public class FacilioConstants {
 
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
+		public static final String DEPENDENT_RESOURCES_DATA = "dependentResourcesData";
 
 		public static final String PAGE = "page";
 		public static final String PER_PAGE = "perPage";

@@ -11,58 +11,21 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter@Getter
 public class V3ResourceContext extends V3Context {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	private String description;
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	private Long photoId;
-
-	public Long getPhotoId() {
-		return photoId;
-	}
-
-	public void setPhotoId(Long photoId) {
-		this.photoId = photoId;
-	}
-
 	private Long operatingHour;
-
-	public Long getOperatingHour() {
-		return operatingHour;
-	}
-
-	public void setOperatingHour(Long operatingHour) {
-		this.operatingHour = operatingHour;
-	}
 	BusinessHoursContext businessHour;
-	public BusinessHoursContext getBusinessHour() {
-		return businessHour;
-	}
-	public void setBusinessHour(BusinessHoursContext businessHour) {
-		this.businessHour = businessHour;
-	}
 
 	private long spaceId = -1;
 
@@ -139,26 +102,7 @@ public class V3ResourceContext extends V3Context {
 	}
 
 	private Long controllerId;
-
-	public Long getControllerId() {
-		return controllerId;
-	}
-
-	public void setControllerId(Long controllerId) {
-		this.controllerId = controllerId;
-	}
-
-
 	private String qrVal;
-
-	public String getQrVal() {
-		return qrVal;
-	}
-
-	public void setQrVal(String qrVal) {
-		this.qrVal = qrVal;
-	}
-	
 
 	public static enum ResourceType {
 		SPACE (FacilioConstants.ContextNames.BASE_SPACE),
@@ -209,14 +153,12 @@ public class V3ResourceContext extends V3Context {
 		this.sourceType = sourceType;
 	}
 
-	public Long getSourceId() {
-		return sourceId;
-	}
-
-	public void setSourceId(Long sourceId) {
-		this.sourceId = sourceId;
-	}
-
 	private Long sourceId;
+
+	public Boolean getDecommission() {
+		return decommission != null && decommission.booleanValue();
+	}
+	private Boolean decommission;
+	private  long decommissionedTime;
 
 }

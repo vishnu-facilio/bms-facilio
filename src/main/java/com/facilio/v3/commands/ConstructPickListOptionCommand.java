@@ -2,7 +2,6 @@ package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -11,6 +10,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -29,7 +29,8 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
         List<Map<String, Object>> records = new ArrayList<>();
 
         if(MapUtils.isNotEmpty(recordMap)){
-            records = FieldUtil.getAsMapList((List<ModuleBaseWithCustomFields>)recordMap.get(moduleName),ModuleBaseWithCustomFields.class);
+            Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
+            records = FieldUtil.getAsMapList((List<ModuleBaseWithCustomFields>)recordMap.get(moduleName), beanClass);
         }
         List<FieldOption<Long>> pickList = null;
         if(CollectionUtils.isNotEmpty(records)) {

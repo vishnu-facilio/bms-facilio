@@ -220,8 +220,10 @@ public class PageWidget {
 		ATTACHMENT("attachment"),
 		RELATED_LIST("relatedList"),
 		ACTIVITY("activity"),
+
 		GROUP("group"),
 		HISTORY("history"),
+		COMMISSIONING("commissioningLog"),
 		RULE_DETIALS_WIGET("ruleDetialsWidget"),
 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
 		RULE_RCA("ruleRCA"),

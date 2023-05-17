@@ -4,18 +4,24 @@ import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
@@ -148,5 +154,47 @@ public class AccessibleSpacesUtil {
             return baseSpace.getId();
         }
         return baseSpace.getSiteId();
+    }
+    
+    public static Map<String, Long> getAccessibleSpaceUserList(List<Long> spaceIds) throws Exception {
+
+        List<FacilioField> userFields = AccountConstants.getAppOrgUserFields();
+        userFields.addAll(AccountConstants.getOrgUserAppsFields());
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table("ORG_Users")
+                .select(userFields)
+                .innerJoin("Accessible_Space")
+                .on("ORG_Users.ORG_USERID = Accessible_Space.ORG_USER_ID")
+                .innerJoin("ORG_User_Apps")
+                .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+                .groupBy("ORG_Users.USERID")
+                .andCondition(CriteriaAPI.getCondition("Accessible_Space.BS_ID","bsid", org.apache.commons.lang3.StringUtils.join(spaceIds, ','),NumberOperators.EQUALS));
+
+        List<Map<String,Object>> props = builder.get();
+        if(props.size() > 0 ) {
+            IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getId(), false);
+            Map<Long, Long> userGroup = new HashMap<>();
+            for (Map<String, Object> prop : props) {
+                long appId = (long) prop.get(FacilioConstants.ContextNames.APPLICATION_ID);
+                userGroup.put(appId, userGroup.containsKey(appId) ? (userGroup.get(appId) + 1) : 1L );
+            }
+            Map<String, Long> userList = new HashMap<>();
+
+            userGroup.forEach((key, value) -> {
+                try {
+
+                    ApplicationContext appObject = ApplicationApi.getApplicationForId(key);
+                    if (appObject != null) {
+                        userList.put(appObject.getName(), value);
+                    }
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            });
+            return userList;
+        }
+        return null;
     }
 }

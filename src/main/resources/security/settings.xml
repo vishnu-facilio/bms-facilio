@@ -1925,6 +1925,25 @@
         <requestbody type="object"></requestbody>
     </request>
     <request path="/api/v2/module/:moduleName/:id/statetransition/getOfflineStateTransition" method="GET" />
+    <request path="/api/v1/setup/decommission/getChild">
+        <requestbody type="object">
+            <property name="decommission" type="object" mandatory="true">
+                <property name="resourceId" type="number" mandatory="true"/>
+                <property name="moduleName" type="string" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/decommission/update">
+        <requestbody type="object">
+            <property name="decommission" type="object" mandatory="true">
+                <property name="resourceId" type="number" mandatory="true"/>
+                <property name="moduleName" type="string" mandatory="true"/>
+                <property name="decommission" type="boolean" mandatory="true"/>
+                <property name="remarkValue" type="string" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/oldAppMigration/migrateTabs" method="GET">
         <requestbody type="object">
         </requestbody>

@@ -5,12 +5,14 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.addOrDelet
 import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCategoryReadingChain;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
+import com.facilio.bmsconsoleV3.commands.decommission.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.FilterItemTransactionsCommandV3;
@@ -56,6 +58,7 @@ import com.facilio.bmsconsoleV3.commands.workorder.multi_import.AddWorkOrderComm
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -3120,6 +3123,21 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new RemoveDuplicateSites());
         c.addCommand(new PMBeforeCreateCommand());
         c.addCommand(new AddPMDetailsBeforeCreateCommand());
+        return c;
+    }
+    public static FacilioChain updateResourceDecommissionChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new ValidateDecommisionCommand());
+        c.addCommand(new FetchDependentResourceDataCommand());
+        c.addCommand(new UpdateResourceDecommissionCommand());
+        c.addCommand(new DecommissionWmsCommand());
+        return c;
+    }
+
+    public static FacilioChain addDecommissionLog(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddDecommissionLogCommand());
         return c;
     }
 

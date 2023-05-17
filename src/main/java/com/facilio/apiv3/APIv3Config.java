@@ -48,6 +48,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.Neighbo
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.decommission.DecommissionPicklistCheckCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.failureclass.*;
@@ -187,6 +188,7 @@ import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.faults.UpdateOccurrenceCommand;
@@ -2043,6 +2045,9 @@ public class APIv3Config {
                 .beforeFetch(new SiteFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchSiteFilterChain())
+//                .pickList()
+//                .setSecondaryField(FacilioConstants.ContextNames.SITE, FacilioConstants.ContextNames.DECOMMISSION)
+//                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2063,6 +2068,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchBuildingFilterChain())
+//                .pickList()
+//                .setSecondaryField(FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.DECOMMISSION)
+//                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2083,6 +2091,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new FloorFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new FloorFillLookupFieldsCommand())
+//                .pickList()
+//                .setSecondaryField(FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.DECOMMISSION)
+//                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2104,6 +2115,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(TransactionChainFactoryV3.getSpaceBeforeFetchChain())
+//                .pickList()
+//                .setSecondaryField(FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.DECOMMISSION)
+//                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2173,6 +2187,9 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getAssetBeforeFetchChain())
                 .afterFetch(new AssetListFilterByReadingsCommand())
+//                .pickList()
+//                .setSecondaryField(FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.DECOMMISSION)
+//                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
     @Module("assetSpareParts")
@@ -2987,6 +3004,15 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.DECOMMISSION_LOG)
+    public static Supplier<V3Config> getDecommissionLog(){
+        return () -> new V3Config(DecommissionLogContext.class,null)
+                .create()
+                .list()
+                .summary()
+                .update()
                 .build();
     }
 }

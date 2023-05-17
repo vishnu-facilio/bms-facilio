@@ -8,9 +8,12 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
+@Getter@Setter
 public class ResourceContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
@@ -236,4 +239,12 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	}
 
 	private V3FailureClassContext failureClass;
+
+	public boolean isDecommission() {
+		return decommission != null && decommission.booleanValue();
+	}
+
+	private Boolean decommission;
+	private  long decommissionedTime;
+
 }

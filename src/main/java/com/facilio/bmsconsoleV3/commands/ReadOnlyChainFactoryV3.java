@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.decommission.FetchDependentResourceDataCommand;
+import com.facilio.bmsconsoleV3.commands.decommission.FetchResourceDependentModuleListCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
@@ -454,6 +456,13 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchJobPlanLookupCommand());
         c.addCommand(new FetchExtraFieldsForJobPlanCommand());
+        return c;
+    }
+    public static FacilioChain getDependentResources(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateDecommisionCommand());
+        c.addCommand(new FetchDependentResourceDataCommand());
+        c.addCommand(new FetchResourceDependentModuleListCommand());
         return c;
     }
 

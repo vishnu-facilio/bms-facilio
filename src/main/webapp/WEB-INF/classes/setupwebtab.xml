@@ -337,4 +337,8 @@
             <param name="permission">USER_MANAGEMENT,REQUESTERS</param>
         </action>
     </package>
+    <package name="decommission" namespace="/api/v1/setup/decommission" extends="v2Api">
+        <action name="getChild" class="com.facilio.bmsconsole.actions.DecommissionAction" method="getChildOfResource" />
+        <action name="update" class="com.facilio.bmsconsole.actions.DecommissionAction" method="updateDecommission" />
+    </package>
 </struts>
