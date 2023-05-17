@@ -2606,11 +2606,13 @@ public class FacilioAuthAction extends FacilioAction {
 				String username= getEmailaddress();
 				AppDomainType appDomainType = AppDomainType.valueOf(getDomainType());
 				String domainUrl = IAMAppUtil.getPortalDomainUrlForUser(username,appDomainType);
-				String url = getProtocol() + "://" +domainUrl;
-				if (!domainUrl.equals(request.getServerName())) {
-					invitation.put("domainUrl", url);
-					ActionContext.getContext().getValueStack().set("invitation", invitation);
-					return SUCCESS;
+				if(StringUtils.isNotEmpty(domainUrl)){
+					if (!domainUrl.equals(request.getServerName())) {
+						String url = getProtocol() + "://" +domainUrl;
+						invitation.put("domainUrl", url);
+						ActionContext.getContext().getValueStack().set("invitation", invitation);
+						return SUCCESS;
+					}
 				}
 			}
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
