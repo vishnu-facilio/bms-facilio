@@ -810,7 +810,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static StateflowTransitionContext resetStateTransitionBeforeAndDuringActions(StateflowTransitionContext stateTransition){
-		stateTransition.setQrLookupFieldId(null);
+		stateTransition.setQrLookupFieldId(-99L);
 		stateTransition.setQrFieldId(-99);
 		stateTransition.setLocationFieldId(-99);
 		stateTransition.setFormId(-99);
@@ -821,6 +821,14 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		stateTransition.setApprovers(new SharingContext());
 		stateTransition.setFormModuleName(null);
 		stateTransition.setForm(null);
+		stateTransition.setRadius(-99L);
+		stateTransition.setDateFieldId(-99L);
+		stateTransition.setDateField(null);
+		stateTransition.setScheduleTime(-99);
+		stateTransition.setInterval(-99);
+		stateTransition.setType(1);
+		stateTransition.setQrField(null);
+		stateTransition.setLocationLookupFieldId(-99);
 
 		return stateTransition;
 	}

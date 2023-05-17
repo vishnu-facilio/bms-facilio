@@ -31,4 +31,8 @@ public interface Topics {
         String multiImport = "__multi_import__";
         String multiImportErrorRecords = "__multi_import_error_records__";
     }
+
+    interface UpdateOnOfflineRecord{
+        String updateOnOfflineRecord = "__update_on_offline_record__";
+    }
 }

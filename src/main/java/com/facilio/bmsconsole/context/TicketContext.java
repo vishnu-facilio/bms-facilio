@@ -522,4 +522,18 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	@Getter
 	@Setter
 	private ClassificationContext classification;
+
+	private Boolean makeRecordOffline;
+	public Boolean getMakeRecordOffline() {
+		return makeRecordOffline;
+	}
+	public void setMakeRecordOffline(Boolean makeRecordOffline) {
+		this.makeRecordOffline = makeRecordOffline;
+	}
+	public Boolean makeRecordOffline() {
+		if (makeRecordOffline != null) {
+			return makeRecordOffline.booleanValue();
+		}
+		return false;
+	}
 }

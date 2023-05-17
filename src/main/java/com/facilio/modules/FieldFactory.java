@@ -3088,6 +3088,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         /*fields.add(getOrgIdField(module));*/
 
+        fields.add(getField("makeRecordOffline", "MAKE_RECORD_OFFLINE", module, FieldType.BOOLEAN));
+
         LookupField statusField = (LookupField) getField("status", "STATUS_ID", module, FieldType.LOOKUP);
         statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
         fields.add(statusField);
@@ -11570,6 +11572,18 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getIdField(module));
         fieldList.add(getNumberField("peopleId","PEOPLE_ID",module));
         fieldList.add(getNumberField("userScopingId","USER_SCOPING_ID",module));
+        return fieldList;
+    }
+
+    public static List<FacilioField> getOfflineRecordRegisterFields() {
+        FacilioModule module = ModuleFactory.getOfflineRecordRegisterModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("recordId","RECORD_ID",module));
+        fieldList.add(getStringField("moduleId","MODULE_ID",module));
+        fieldList.add(getDateField("registeredTime","REGISTERED_TIME",module));
+        fieldList.add(getDateField("userMobileSettingId","USER_MOBILE_SETTING_ID",module));
+
         return fieldList;
     }
 

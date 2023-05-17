@@ -75,7 +75,8 @@ public class StateFlowAction extends FacilioAction {
 	public void setStateTransition(StateflowTransitionContext stateTransition) {
 		this.stateTransition = stateTransition;
 	}
-	
+
+
 	public String addOrUpdateStateTransition() throws Exception {
 		FacilioContext context = new FacilioContext();
 
@@ -540,17 +541,17 @@ public class StateFlowAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String getOfflineStateTransition() throws Exception{
+	public String getOfflineStateTransition() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getOfflineStateTransitionChain();
 		FacilioContext context = chain.getContext();
 
-		context.put(FacilioConstants.ContextNames.ID,id);
+		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
 		chain.execute();
 
-		setResult(FacilioConstants.ContextNames.OFFLINE_STATE_TRANSITION,context.get("offlineStateTransition"));
-
+		setResult(FacilioConstants.ContextNames.OFFLINE_STATE_TRANSITION, context.get("offlineStateTransition"));
 		return SUCCESS;
 	}
+
 }

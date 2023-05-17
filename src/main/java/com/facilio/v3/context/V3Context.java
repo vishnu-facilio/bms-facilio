@@ -241,4 +241,8 @@ public class V3Context extends ModuleBaseWithCustomFields {
     @Setter
     @JsonProperty("classification")
     private ClassificationContext classification;
+
+    @Getter
+    @Setter
+    private Boolean makeRecordOffline;
 }

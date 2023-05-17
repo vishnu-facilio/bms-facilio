@@ -718,6 +718,17 @@
 		</action>
 	</package>
 
+	<package name="offlineRecord" extends="v2Api" namespace="/api/v2/module">
+		<action name="offline/register"
+				class="com.facilio.bmsconsole.actions.OfflineRecordAction" method="registerOfflineRecord"
+		>
+		</action>
+		<action name="offline/unRegister"
+				class="com.facilio.bmsconsole.actions.OfflineRecordAction" method="unRegisterOfflineRecord"
+		>
+		</action>
+	</package>
+
 	<package name="auditLogs" extends="v2Api" namespace="/api/v2/auditLogs">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.AuditLogAction" method="getAuditLogs">

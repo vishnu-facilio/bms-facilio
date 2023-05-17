@@ -8,10 +8,7 @@ import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GetOfflineStateTransitionCommand extends FacilioCommand {
@@ -92,13 +89,21 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
         FacilioStatus fromState = TicketAPI.getStatus(record.getFromStateId());
         FacilioStatus toState = TicketAPI.getStatus(record.getToStateId());
 
-        result.put("fromStateName",fromState.getDisplayName());
-        result.put("toStateName",toState.getDisplayName());
+        HashMap<String,Object> fromStateMap = new HashMap<>();
+        fromStateMap.put("id",fromState.getId());
+        fromStateMap.put("primaryValue",fromState.getPrimaryValue());
+        fromStateMap.put("displayName",fromState.getDisplayName());
+
+        HashMap<String,Object> toStateMap = new HashMap<>();
+        toStateMap.put("id",toState.getId());
+        toStateMap.put("primaryValue",toState.getPrimaryValue());
+        toStateMap.put("displayName",toState.getDisplayName());
+
+        result.put("fromState",fromStateMap);
+        result.put("toState",toStateMap);
         result.put("isOffline",record.getIsOffline());
         result.put("id",record.getId());
-        result.put("fromStateId",record.getFromStateId());
         result.put("name",record.getName());
-        result.put("toStateId",record.getToStateId());
 
         return result;
     }

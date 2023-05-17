@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
 import com.facilio.bmsconsole.workflow.rule.GetOfflineStateTransitionCommand;
+import com.facilio.bmsconsole.workflow.rule.GetRegisterOrUnRegisterOfflineRecordCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
@@ -3204,6 +3205,11 @@ public class TransactionChainFactory {
 		c.addCommand(new GetOfflineStateTransitionCommand());
 		return c;
 	}
+		public static FacilioChain getRegisterOrUnRegisterOfflineRecordChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetRegisterOrUnRegisterOfflineRecordCommand());
+			return c;
+		}
 
 		public static FacilioChain getAddOrUpdateStateFlowTransition() {
 			FacilioChain c = getDefaultChain();

@@ -5631,4 +5631,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		attendanceSettings.setTableName("Attendance_Settings");
 		return attendanceSettings;
 	}
+
+	public static FacilioModule getOfflineRecordRegisterModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("offlineRecordRegister");
+		module.setTableName("Offline_Record_Register");
+		module.setDisplayName("Offline Record Register");
+		return module;
+	}
 }

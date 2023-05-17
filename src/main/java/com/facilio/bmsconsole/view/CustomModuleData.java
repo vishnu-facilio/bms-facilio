@@ -75,4 +75,9 @@ public class CustomModuleData extends ModuleBaseWithCustomFields {
 	@Setter
 	@JsonProperty("classification")
 	private ClassificationContext classification;
+
+	@Getter
+	@Setter
+	@JsonProperty("makeRecordOffline")
+	private Boolean makeRecordOffline;
 }

@@ -95,6 +95,14 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 			fields.add(approvalFlowIdField);
 
+			FacilioField makeRecordOffline = FieldFactory.getField("makeRecordOffline", "Make Record Offline", "MAKE_RECORD_OFFLINE", module, FieldType.BOOLEAN);
+			makeRecordOffline.setDisplayType(FieldDisplayType.DECISION_BOX);
+			makeRecordOffline.setMainField(false);
+			makeRecordOffline.setRequired(false);
+			makeRecordOffline.setDefault(true);
+			makeRecordOffline.setAccessType(61);
+			fields.add(makeRecordOffline);
+
 			fields.add(FieldFactory.getSystemField("sysCreatedTime",module));
 			fields.add(FieldFactory.getSystemField("sysCreatedBy",module));
 			fields.add(FieldFactory.getSystemField("sysModifiedTime",module));
@@ -144,5 +152,4 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			}
 		}
 	}
-
 }

@@ -509,4 +509,6 @@ public class V3TicketContext extends V3Context {
     public void setServiceRequest(V3ServiceRequestContext serviceRequest) {
         this.serviceRequest = serviceRequest;
     }
+
+    private Boolean makeRecordOffline;
 }

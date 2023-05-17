@@ -4,6 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.SendNotificationForOfflineRecordUpdate;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
@@ -533,6 +534,7 @@ public class ChainUtil {
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate());
         updateWorkflowChain(transactionChain);
         // execute custom button action if the custom button id is sent
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
