@@ -290,6 +290,7 @@ public class RoleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
         context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
         context.put(FacilioConstants.ContextNames.WEB_TABS, getWebTabs());
+        context.put(FacilioConstants.ContextNames.IS_WEBTAB_PERMISSION,true);
 
 		Command updateRole = FacilioChainFactory.getUpdateWebTabRoleCommand();
 		updateRole.execute(context);

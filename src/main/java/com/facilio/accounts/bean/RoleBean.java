@@ -13,7 +13,7 @@ public interface RoleBean {
 	
 	public long createRole(long orgId, Role role) throws Exception;
 
-	public boolean updateRole(long roleId, Role role) throws Exception;
+	public boolean updateRole(long roleId, Role role,  Boolean isWebTabPermission) throws Exception;
 
 	public boolean deleteRole(long roleId) throws Exception;
 	

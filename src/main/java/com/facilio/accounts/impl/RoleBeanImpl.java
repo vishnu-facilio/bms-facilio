@@ -98,14 +98,15 @@ public class RoleBeanImpl implements RoleBean {
 	
 
 	@Override
-	public boolean updateRole(long roleId, Role role) throws Exception {
+	public boolean updateRole(long roleId, Role role, Boolean isWebTabPermission) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getRoleModule().getTableName())
 				.fields(AccountConstants.getRoleFields())
 				.andCustomWhere("ROLE_ID = ?", roleId);
-		
-		deletePermission(roleId);
+		if(isWebTabPermission == null || Boolean.FALSE.equals(isWebTabPermission)){
+			deletePermission(roleId);
+		}
 		deleteNewPermsisions(roleId);
 		Map<String, Object> props = FieldUtil.getAsProperties(role);
 		int updatedRows = updateBuilder.update(props);

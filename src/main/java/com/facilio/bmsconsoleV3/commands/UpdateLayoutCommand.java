@@ -30,8 +30,8 @@ public class UpdateLayoutCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(mainAppId), NumberOperators.EQUALS));
         updateLayoutBuilder.update(props);
 
-        ApplicationLayoutContext mobileLayout = new ApplicationLayoutContext(mainAppId, ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, "oldMaintenance");
-        ApplicationLayoutContext setupLayout = new ApplicationLayoutContext(mainAppId, ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, "oldMaintenance");
+        ApplicationLayoutContext mobileLayout = new ApplicationLayoutContext(mainAppId, ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, "newapp");
+        ApplicationLayoutContext setupLayout = new ApplicationLayoutContext(mainAppId, ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, "newapp");
         List<Map<String, Object>> layoutList = new ArrayList<>();
         layoutList.add(FieldUtil.getAsProperties(mobileLayout));
         layoutList.add(FieldUtil.getAsProperties(setupLayout));

@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
@@ -51,6 +53,7 @@ public class GetApplicationDetails extends FacilioCommand {
 		}
 		application = ApplicationApi.getApplicationForId(appId);
 		if (application != null) {
+			application = ApplicationApi.getApplicationForLinkName(application.getLinkName());
 			List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(application.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
 			if(CollectionUtils.isNotEmpty(appDomainList)) {
 				application.setAppDomain(appDomainList.get(0));
@@ -168,7 +171,7 @@ public class GetApplicationDetails extends FacilioCommand {
 						}
 					}
 					application.setWebTabGroups(webTabGroups);
-					if(Boolean.FALSE.equals(fetchAllLayouts) && application.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+					if(Boolean.FALSE.equals(fetchAllLayouts) && application.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !SignupUtil.maintenanceAppSignup()){
 						if(layout!=null){
 							layout.setWebTabGroupList(null);
 						}

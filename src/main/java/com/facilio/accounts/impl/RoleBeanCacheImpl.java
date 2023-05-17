@@ -50,10 +50,10 @@ public class RoleBeanCacheImpl extends RoleBeanImpl implements RoleBean {
     }
 
     @Override
-    public boolean updateRole ( long roleId,Role role ) throws Exception {
+    public boolean updateRole ( long roleId,Role role, Boolean isWebTabPermission ) throws Exception {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while updating User Role");
         removeCache(roleId);
-        return super.updateRole(roleId,role);
+        return super.updateRole(roleId, role, isWebTabPermission);
     }
 
     @Override

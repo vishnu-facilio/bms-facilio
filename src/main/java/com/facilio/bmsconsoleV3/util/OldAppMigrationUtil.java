@@ -3,26 +3,25 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ApplicationLayoutContext;
-import com.facilio.bmsconsole.context.IconType;
-import com.facilio.bmsconsole.context.WebTabContext;
-import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.PortalUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.kafka.common.protocol.types.Field;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OldAppMigrationUtil {
     public static void addTabsForCustomModule(ApplicationLayoutContext layout) {
@@ -90,7 +89,56 @@ public class OldAppMigrationUtil {
                         String.valueOf(webTabId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("Application_Layout.DEVICE_TYPE", "layoutDeviceType",
                         String.valueOf(deviceType), NumberOperators.EQUALS));
-        WebTabGroupContext webTabGroup = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), WebTabGroupContext.class);
-        return webTabGroup;
+        Map<String, Object> webTabGroup = builder.fetchFirst();
+        if(MapUtils.isNotEmpty(webTabGroup)){
+            return FieldUtil.getAsBeanFromMap(webTabGroup, WebTabGroupContext.class);
+        }
+        return new WebTabGroupContext();
+    }
+
+    public static WebTabContext findRouteForTabType(long appId, int tabType) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(tabType),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TYPE","type",String.valueOf(tabType),NumberOperators.EQUALS));
+        Map<String, Object> webTab = builder.fetchFirst();
+        if(MapUtils.isNotEmpty(webTab)){
+            return FieldUtil.getAsBeanFromMap(webTab, WebTabContext.class);
+        }
+        return new WebTabContext();
+    }
+    public static WebTabContext getModuleTab(Long appId, int deviceType, int tabType, String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        boolean isSpecialType = LookupSpecialTypeUtil.isSpecialType(moduleName);
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+                .select(FieldFactory.getTabIdAppIdMappingFields())
+                .innerJoin(ModuleFactory.getWebTabModule().getTableName())
+                .on("TABID_MODULEID_APPID_MAPPING.TAB_ID = WebTab.ID")
+                .innerJoin(ModuleFactory.getWebTabWebGroupModule().getTableName())
+                .on("TABID_MODULEID_APPID_MAPPING.TAB_ID = WebTab_WebGroup.WEBTAB_ID")
+                .innerJoin(ModuleFactory.getWebTabGroupModule().getTableName())
+                .on("WebTab_WebGroup.WEBTAB_GROUP_ID = WebTab_Group.ID")
+                .innerJoin(ModuleFactory.getApplicationLayoutModule().getTableName())
+                .on("WebTab_Group.LAYOUT_ID =  Application_Layout.ID")
+                .andCondition(CriteriaAPI.getCondition("WebTab.APPLICATION_ID", "applicationId",String.valueOf(appId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("WebTab.TYPE","type", String.valueOf(tabType),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Application_Layout.DEVICE_TYPE","layoutDeviceType", String.valueOf(deviceType),NumberOperators.EQUALS));
+
+        if (!isSpecialType) {
+            builder.andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.MODULE_ID", "moduleId",String.valueOf(modBean.getModule(moduleName).getModuleId()), NumberOperators.EQUALS));
+        } else {
+            builder.andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.SPECIAL_TYPE", "specialType",moduleName, StringOperators.IS));
+        }
+
+        List<TabIdAppIdMappingContext> webTabGroups = FieldUtil.getAsBeanListFromMapList(builder.get(),TabIdAppIdMappingContext.class);
+
+        if(webTabGroups != null && !webTabGroups.isEmpty()) {
+            long tabId =  webTabGroups.get(0).getTabId();
+            return ApplicationApi.getWebTab(tabId);
+        }
+
+        return null;
     }
 }

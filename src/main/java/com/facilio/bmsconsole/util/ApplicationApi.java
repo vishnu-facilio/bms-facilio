@@ -110,6 +110,26 @@ public class ApplicationApi {
             appLinkName = SignupUtil.getSignupApplicationLinkName();
         }
 
+        //development check need to be changed to preproduction and removed after testing
+        boolean isPreProdSetup = false;
+        if(SignupUtil.maintenanceAppSignup()) {
+            if (FacilioProperties.isPreProd()) {
+                isPreProdSetup = true;
+                if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)) {
+                    if (checkApplicationExisitsInDB(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) > 0) {
+                        appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+                    }
+                }
+            }
+            else {
+                if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+                    if (checkApplicationExisitsInDB(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) > 0) {
+                        appLinkName = FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
+                    }
+                }
+            }
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
@@ -117,13 +137,43 @@ public class ApplicationApi {
                 ApplicationContext.class);
 
         if (applications != null && !applications.isEmpty()) {
-            return applications.get(0);
+            ApplicationContext app = applications.get(0);
+            if(isPreProdSetup && app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !skipCheck) {
+                app.setName("Web Maintenance");
+                app.setLinkName("maintenance");
+                return app;
+            }
+            return app;
         }
         return null;
     }
 
+    public static long checkApplicationExisitsInDB(String appLinkName) throws Exception {
+        if (StringUtils.isNotEmpty(appLinkName)) {
+            // temp handling for newapp and newtenant linkname
+            if (appLinkName.equals("app")) {
+                appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+            } else if (appLinkName.equals("newtenants")) {
+                appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
+            }
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getApplicationModule().getTableName())
+                    .select(FieldFactory.getApplicationFields())
+                    .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
+            List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                    ApplicationContext.class);
+            if (applications != null && !applications.isEmpty()) {
+                return applications.get(0).getId();
+            }
+        }
+        return -1;
+    }
 
     public static long getApplicationIdForLinkName(String appLinkName) throws Exception {
+        ApplicationContext application = getApplicationForLinkName(appLinkName, true);
+        if(application != null && application.getLinkName() != null){
+           appLinkName = application.getLinkName();
+        }
         if (StringUtils.isNotEmpty(appLinkName)) {
             // temp handling for newapp and newtenant linkname
             if (appLinkName.equals("app")) {
@@ -3137,7 +3187,7 @@ public class ApplicationApi {
                 }
             }
             if (paramsMap.containsKey("serverCriteria")) {
-            	serverCriteria = (Criteria) paramsMap.get("serverCriteria");
+                serverCriteria = (Criteria) paramsMap.get("serverCriteria");
             }
             if (paramsMap.containsKey("orderBy")) {
                 FacilioField nameField = Constants.getModBean().getField("name", FacilioConstants.ContextNames.PEOPLE);

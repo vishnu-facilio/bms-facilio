@@ -21,11 +21,12 @@ public class UpdateRoleCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		Role role = (Role) context.get(FacilioConstants.ContextNames.ROLE);
 		List<RoleApp> rolesApps = (List<RoleApp>) context.get(FacilioConstants.ContextNames.ROLES_APPS);
+		Boolean isWebTabPermission = (Boolean) context.get(FacilioConstants.ContextNames.IS_WEBTAB_PERMISSION);
 
 
 		if (role != null) {
 			
-			AccountUtil.getRoleBean().updateRole(role.getRoleId(), role);
+			AccountUtil.getRoleBean().updateRole(role.getRoleId(), role, isWebTabPermission);
 			if(CollectionUtils.isNotEmpty(rolesApps)) {
 				for(RoleApp roleApp : rolesApps) {
 					roleApp.setRoleId(role.getRoleId());
