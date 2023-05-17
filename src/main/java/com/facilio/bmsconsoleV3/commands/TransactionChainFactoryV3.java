@@ -155,7 +155,6 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand
 import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.people.PeopleValidationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
@@ -856,7 +855,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateCommentPreferencesChain());
         return c;
     }
-    public static FacilioChain getClearCommentSharingPreferencesUpdateChain() {
+    public static FacilioChain getClearCommentSharingPreferencesChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new deleteCommentPreferencesChain());
         return c;

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
@@ -141,10 +142,9 @@ public class GetApplicationDetails extends FacilioCommand {
 										webtab.setModules(modules);
 									}
 								}
-								if (webTabGroup.getRoute().equals("general")) {
-									webTabs.removeIf(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)
-											? (webTabContext -> webTabContext.getType() == Type.COMPANY_PROFILE.getIndex() || (webTabContext.getType() == Type.TAX.getIndex()))
-											: (webTabContext -> webTabContext.getType() == Type.ORGANIZATION_SETTINGS.getIndex()));
+								WebTabContext organizationTab = webTabs.stream().filter(tab -> tab.getType() == Type.ORGANIZATION_SETTINGS.getIndex()).findFirst().orElse(null);
+								if (webTabGroup.getRoute().equals("general") && organizationTab != null && organizationTab.getFeatureLicense() <= 0) {
+									webTabs.removeIf(webTabContext -> webTabContext.getType() == Type.COMPANY_PROFILE.getIndex() || (webTabContext.getType() == Type.TAX.getIndex()));
 								}
 							}
 							if(layout != null && layout.getLayoutDeviceTypeEnum() != null && layout.getLayoutDeviceTypeEnum() == ApplicationLayoutContext.LayoutDeviceType.SETUP) {

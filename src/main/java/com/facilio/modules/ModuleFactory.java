@@ -5449,6 +5449,15 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return commentMentions;
 	}
 
+
+	public static FacilioModule getPeopleNotificationSettingsModule() {
+		FacilioModule peopleNotificationSettings = new FacilioModule();
+		peopleNotificationSettings.setName("peopleNotificationSettings");
+		peopleNotificationSettings.setDisplayName("People Notification Settings");
+		peopleNotificationSettings.setTableName("People_Notification_Settings");
+		return peopleNotificationSettings;
+	}
+
 	public static FacilioModule getValueGeneratorModule(){
 		FacilioModule valueGenModule = new FacilioModule();
 		valueGenModule.setName("valueGenerator");

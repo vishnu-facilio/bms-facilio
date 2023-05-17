@@ -284,7 +284,7 @@ public class WebTabContext implements Serializable {
         BOOKING_POLICY("Booking Policy",false,TabType.SETUP,new SetupTypeHandler()), // 77
         PIVOT("Pivot",false,TabType.NORMAL), // 78
         SCOPING("Scoping",false,TabType.SETUP,new SetupTypeHandler()), // 79
-        ORGANIZATION_SETTINGS("Organization Settings", false, TabType.SETUP,new SetupTypeHandler()), // 80
+        ORGANIZATION_SETTINGS("Organization", false, TabType.SETUP,new SetupTypeHandler()), // 80
         CLASSIFICATIONS("Classifications",false,TabType.SETUP), // 81
         SCRIPT_LOGS("Script Logs",false,TabType.SETUP), // 82
         SHIFT_PLANNER("Shift Planner", false, TabType.NORMAL, new ShiftPlannerHandler()), // 83

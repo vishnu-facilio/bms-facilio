@@ -237,6 +237,17 @@
             <param name="setupTab">DATA_SHARING</param>
         </action>
     </package>
+    <package name="commentPreferencesSetup" namespace="/api/v1/setup/commentPreferences" extends="v3Api">
+        <action name="sharingOptions" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="getSharingOptions">
+        </action>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="updateSharingPreferences">
+        </action>
+        <action name="clear" class="com.facilio.bmsconsoleV3.actions.Comments"
+                method="clearSharingPreferences">
+        </action>
+    </package>
 
     <package name="readingkpi" namespace="/api/v1/setup" extends="v3Api">
         <action name="readingkpi" class="com.facilio.v3.action.RestAPIHandlerV3">

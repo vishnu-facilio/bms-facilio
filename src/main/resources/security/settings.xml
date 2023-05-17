@@ -1863,6 +1863,18 @@
     <request path="/api/v1/setup/faultImpact">
         <requestbody type="object"/>
     </request>
+    <request path="/api/v1/setup/commentPreferences/update" method="POST">
+        <requestbody type="object">
+            <property name="commentSharingPreferences" type="array">
+                <items type="object">
+                    <property name="appId" type="number"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/commentPreferences/sharingOptions" method="GET"/>
+    <request path="/api/v1/setup/commentPreferences/clear" method="GET"/>
+
     <request path="/api/v3/modules/bulkCreate/:moduleName">
         <requestbody type="object">
         </requestbody>
@@ -1885,17 +1897,7 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v3/commentPreferences/update" method="POST">
-        <requestbody type="object">
-            <property name="commentSharingPreferences" type="array">
-                <items type="object">
-                    <property name="appId" type="number"/>
-                </items>
-            </property>
-        </requestbody>
-    </request>
     <request path="/api/v3/commentPreferences/sharingOptions" method="GET"/>
-    <request path="/api/v3/commentPreferences/clear" method="GET"/>
     <request path="/api/v3/workOrderLabour/actuals">
         <requestbody type="object">
         </requestbody>

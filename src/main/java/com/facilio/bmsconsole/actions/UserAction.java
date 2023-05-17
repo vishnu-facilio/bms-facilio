@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,25 +8,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsoleV3.context.PeopleNotificationSettings;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.iam.accounts.util.IAMUserException;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,31 +33,24 @@ import com.chargebee.models.Customer;
 import com.chargebee.models.Subscription;
 import com.chargebee.models.enums.Gateway;
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.impl.UserBeanImpl;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 
 public class UserAction extends FacilioAction {
 
@@ -529,7 +511,17 @@ public class UserAction extends FacilioAction {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	
+
+	private List<PeopleNotificationSettings> peopleNotificationSettingsList;
+
+	public List<PeopleNotificationSettings> getPeopleNotificationSettingsList() {
+		return peopleNotificationSettingsList;
+	}
+
+	public void setPeopleNotificationSettingsList(List<PeopleNotificationSettings> peopleNotificationSettingsList) {
+		this.peopleNotificationSettingsList = peopleNotificationSettingsList;
+	}
+
 	public String editUser() throws Exception {
 				
 		setSetup(SetupLayout.getEditUserLayout());
@@ -633,7 +625,14 @@ public class UserAction extends FacilioAction {
 		subscriptionInfo();
 		user.setUid(AccountUtil.getCurrentAccount().getUser().getUid());
 		AccountUtil.getUserBean().updateUser(user);
-		
+		PeopleAPI.updatePeopleNotificationSettings(peopleNotificationSettingsList);
+		return SUCCESS;
+	}
+
+	public String getNotificationPreferences() throws Exception {
+		long pplId= AccountUtil.getCurrentAccount().getUser().getPeopleId();
+		List<PeopleNotificationSettings> allNotificationPreferences = PeopleAPI.getAllNotificationSettingsForPeople(pplId);
+		setPeopleNotificationSettingsList(allNotificationPreferences);
 		return SUCCESS;
 	}
 	

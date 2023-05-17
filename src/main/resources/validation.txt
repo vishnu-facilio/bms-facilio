@@ -1102,6 +1102,7 @@
 /api/settings/users/avatar/upload
 /api/settings/users/avatar/delete
 /api/account/update
+/api/account/getNotificationPreferences
 /api/notification/read
 /api/notification/readall
 /api/notification/seenall
@@ -1947,6 +1948,7 @@
 /api/v3/files/preview/app
 /api/v3/files/download/app
 /api/v2/files/add
+/api/v2/files/:parentModule/addCommentAttachments/:recordId
 /api/v2/files/download/:previewFile
 /api/v2/workflow/xml
 /api/v2/workflow/execute

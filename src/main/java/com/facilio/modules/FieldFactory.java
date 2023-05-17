@@ -11259,6 +11259,19 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("mentionType","MENTION_TYPE",module,FieldType.SYSTEM_ENUM));
         return fields;
     }
+
+    public static List<FacilioField> getPeopleNotificationSettings() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getPeopleNotificationSettingsModule();
+        fields.add(getIdField("id", "ID", module));
+        fields.add(getField("peopleId", "PEOPLE_ID", module, FieldType.LOOKUP));
+        StringSystemEnumField notificationType = FieldFactory.getDefaultField("notificationType", "Notification Type", "NOTIFICATION_TYPE", FieldType.STRING_SYSTEM_ENUM);
+        notificationType.setEnumName("Notification_Type");
+        fields.add(notificationType);
+        fields.add(getField("disabled", "DISABLED", module, FieldType.BOOLEAN));
+        return fields;
+    }
+
     public static List<FacilioField> getCustomPageWidgetFields() {
         FacilioModule module = ModuleFactory.getCustomPageWidgetModule();
         List<FacilioField> fields = new ArrayList<>();

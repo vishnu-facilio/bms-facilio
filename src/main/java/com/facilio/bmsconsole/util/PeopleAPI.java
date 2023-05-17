@@ -17,12 +17,15 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
+import com.facilio.bmsconsoleV3.context.PeopleNotificationSettings;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -1255,6 +1258,7 @@ public class PeopleAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		ArrayList<FacilioField> selectFields = new ArrayList<>(Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.OUID),fieldMap.get(FacilioConstants.ContextNames.APPLICATION_ID)));
 		selectFields.add(FieldFactory.getField(FacilioConstants.ContextNames.USER,"ORG_Users.ORG_USERID",FieldType.NUMBER));
+		selectFields.add(FieldFactory.getField(FacilioConstants.ContextNames.PEOPLE,"ORG_Users.PEOPLE_ID",FieldType.NUMBER));
 		return getOrgUserAppsForPeople(peopleId,selectFields);
 	}
 
@@ -1437,4 +1441,99 @@ public class PeopleAPI {
 		return groups;
 	}
 
+
+    public static List<PeopleNotificationSettings> getAllNotificationSettingsForPeople(long pplId) throws Exception {
+		Map<String, PeopleNotificationSettings> allNotificationSettingsMap = getPeopleNotificationSettingsMap(pplId);
+		List<PeopleNotificationSettings> allNotificationSettings = allNotificationSettingsMap.values().stream().collect(Collectors.toList());
+        return allNotificationSettings;
+    }
+
+	public static Map<String, PeopleNotificationSettings> getPeopleNotificationSettingsMap(long pplId) throws Exception {
+		Map<String,PeopleNotificationSettings> allNotificationSettingsMap = new HashMap<>();
+		List<PeopleNotificationSettings> availableSettings = getDisabledNotificationSettingsForPeople(Collections.singletonList(pplId));
+		if(availableSettings != null && !availableSettings.isEmpty()){
+			for (PeopleNotificationSettings setting :availableSettings){
+				allNotificationSettingsMap.put(setting.getNotificationType().toString(),setting);
+			}
+		}
+		PeopleNotificationSettings.Notification_Types[] allEnums = PeopleNotificationSettings.Notification_Types.values();
+		for ( PeopleNotificationSettings.Notification_Types notificationType: allEnums) {
+			if(allNotificationSettingsMap.containsKey(notificationType.toString())){
+				continue;
+			}
+			PeopleNotificationSettings peopleNotificationSetting = new PeopleNotificationSettings();
+			peopleNotificationSetting.setPeopleId(pplId);
+			peopleNotificationSetting.setNotificationType(notificationType);
+			peopleNotificationSetting.setDisabled(false);
+			allNotificationSettingsMap.put(notificationType.toString(),peopleNotificationSetting);
+		}
+		return allNotificationSettingsMap;
+	}
+
+	public static List<PeopleNotificationSettings> getDisabledNotificationSettingsForPeople(Collection<Long> pplIds) throws Exception {
+		if(pplIds == null || pplIds.isEmpty()){
+			return null;
+		}
+		FacilioModule module = ModuleFactory.getPeopleNotificationSettingsModule();
+		List<FacilioField> fields = FieldFactory.getPeopleNotificationSettings();
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getConditionFromList("PEOPLE_ID", "people", pplIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		List<PeopleNotificationSettings> availableSettings = FieldUtil.getAsBeanListFromMapList(props,PeopleNotificationSettings.class);
+		return availableSettings;
+	}
+
+
+	public static void updatePeopleNotificationSettings(List<PeopleNotificationSettings> peopleNotificationSettingsList) throws Exception {
+		if(peopleNotificationSettingsList == null || peopleNotificationSettingsList.isEmpty()){
+			return;
+		}
+		List<PeopleNotificationSettings> settingsToAdd = new ArrayList<>();
+		List<PeopleNotificationSettings> settingsToDelete = new ArrayList<>();
+
+		for (PeopleNotificationSettings peopleNotificationSettings: peopleNotificationSettingsList) {
+			if(peopleNotificationSettings.getId() > 0 && !peopleNotificationSettings.getDisabled()){
+				settingsToDelete.add(peopleNotificationSettings);
+			} else if(peopleNotificationSettings.getId() < 0 && peopleNotificationSettings.getDisabled()){
+				settingsToAdd.add(peopleNotificationSettings);
+			}
+		}
+		if(settingsToDelete != null && !settingsToDelete.isEmpty()){
+			deletePeopleNotificationSettings(settingsToDelete);
+		}
+		if(settingsToAdd != null && !settingsToAdd.isEmpty()){
+			addPeopleNotificationSettings(settingsToAdd);
+		}
+	}
+
+	public static void addPeopleNotificationSettings(List<PeopleNotificationSettings> peopleNotificationSettingsList) throws  Exception {
+		FacilioModule module = ModuleFactory.getPeopleNotificationSettingsModule();
+		List<FacilioField> fields = FieldFactory.getPeopleNotificationSettings();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields);
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(peopleNotificationSettingsList, PeopleNotificationSettings.class);
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+	}
+
+	public static void deletePeopleNotificationSettings(List<PeopleNotificationSettings> peopleNotificationSettingsList) throws Exception {
+		FacilioModule module = ModuleFactory.getPeopleNotificationSettingsModule();
+		List<Long> idsToDelete = peopleNotificationSettingsList.stream().map(a -> a.getId()).collect(Collectors.toList());
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(idsToDelete,","),StringOperators.IS));
+		builder.delete();
+	}
+
+	public static List<User> getUsersForPeopleIds(Set<Long> peopleIds) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+		List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
+		return users;
+	}
 }

@@ -11,7 +11,9 @@ public enum MailSourceType implements FacilioStringEnum {
     INVITE_MAIL ("Invitation Mail"),
     SERVICE_REQUEST("Service Request"),
     REPORT("Report"),
-    SCHEDULED_VIEW("Scheduled View")
+    SCHEDULED_VIEW("Scheduled View"),
+    COMMENTS("Notes")
+
     ;
 
     private final String moduleName;

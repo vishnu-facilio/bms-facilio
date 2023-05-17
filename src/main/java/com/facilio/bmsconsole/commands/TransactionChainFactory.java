@@ -18,7 +18,6 @@ import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigurationCommand;
-import com.facilio.bmsconsole.NotifyCommentMentions;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;

@@ -38,6 +38,7 @@ public class LoadPeopleAnnouncementLookupCommand extends FacilioCommand {
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
         additionaLookups.add(sysModifiedBy);
         additionaLookups.add((LookupField)fieldsAsMap.get("people"));
+        additionaLookups.add((LookupField)fieldsAsMap.get("createdBy"));
         MultiLookupMeta audienceField = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("audience"));
 
         FacilioField nameField = FieldFactory.getField("name", "NAME", modBean.getModule(FacilioConstants.ContextNames.AUDIENCE), FieldType.STRING);

@@ -3444,13 +3444,19 @@
 			<param name="isDownload">true</param>
 		</action>
 	</package>
-	
 	<package name="addfile" namespace="/api/v2/files"
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FileAction" method="addFile">
 			<param name="permission">ALL</param>
             <param name="setupTab">EMAIL_TEMPLATES</param>
+		</action>
+		<action name="*/addCommentAttachments/*"
+				class="com.facilio.bmsconsole.actions.FileAction" method="addFile">
+			<param name="parentModuleName">{1}</param>
+			<param name="checkSubModulePermission">true</param>
+			<param name="recordId">{2}</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 	</package>
 	<package name="deletefile" namespace="/api/v2/files"

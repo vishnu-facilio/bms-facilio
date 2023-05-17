@@ -37,7 +37,7 @@ public class Comments extends V3Action {
 
 
     public String clearSharingPreferences() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getClearCommentSharingPreferencesUpdateChain();
+        FacilioChain chain = TransactionChainFactoryV3.getClearCommentSharingPreferencesChain();
         chain.execute();
         return V3Action.SUCCESS;
     }

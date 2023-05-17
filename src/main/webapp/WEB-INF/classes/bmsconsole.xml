@@ -2821,6 +2821,10 @@
 			<result name="success" type="json">
 			</result>
 		</action>
+		<action name="getNotificationPreferences" class="com.facilio.bmsconsole.actions.UserAction" method="getNotificationPreferences">
+			<result name="success" type="json">
+			</result>
+		</action>
 	</package>
 	
 	<package name="notificationApi" namespace="/api/notification" extends="homeApi">
