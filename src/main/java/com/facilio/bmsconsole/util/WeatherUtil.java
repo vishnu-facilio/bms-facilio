@@ -24,6 +24,7 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.weather.context.WeatherStationContext;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
@@ -485,13 +486,13 @@ public class WeatherUtil {
 																 Map<String, Object> weatherData, boolean forecast) throws Exception {
 		List<ReadingContext> hourlyForecastReadings = new ArrayList<ReadingContext>();
 
-		Map<String, Object> hourlyWeather = (JSONObject) weatherData.get("hourly");
+		Map<String, Object> hourlyWeather = (Map<String, Object>) weatherData.get("hourly");
 
 		if (hourlyWeather == null) {
 			return hourlyForecastReadings;
 		}
 
-		JSONArray hourlyData = (JSONArray) hourlyWeather.get("data");
+		List hourlyData = (List) hourlyWeather.get("data");
 		if (hourlyData == null || hourlyData.isEmpty()) {
 			return hourlyForecastReadings;
 		}
@@ -499,10 +500,10 @@ public class WeatherUtil {
 			hourlyData.remove(0);
 		}
 
-		ListIterator<JSONObject> dataIterator = hourlyData.listIterator();
+		ListIterator<Map<String, Object>> dataIterator = hourlyData.listIterator();
 		while (dataIterator.hasNext()) {
 
-			JSONObject hourlyWeatherReading = dataIterator.next();
+			Map<String, Object> hourlyWeatherReading = dataIterator.next();
 			ReadingContext reading = WeatherUtil.getHourlyReadingOld(siteId, moduleName, hourlyWeatherReading);
 			if (reading != null) {
 				hourlyForecastReadings.add(reading);
@@ -560,7 +561,7 @@ public class WeatherUtil {
 		reading.addReading("nearestStormDistance", hourlyWeather.get("nearestStormDistance"));
 		reading.addReading("nearestStormBearing", hourlyWeather.get("nearestStormBearing"));
 		// will be used for forecast alone..
-		Long ttime = getAdjustedTtime(moduleName, (Long) hourlyWeather.get("time"));
+		Long ttime = getAdjustedTtime(moduleName, FacilioUtil.parseLong(hourlyWeather.get("time")));
 		reading.addReading("forecastTime", ttime);
 		return reading;
 	}

@@ -10,6 +10,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -22,6 +23,7 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.ServiceHttpUtils;
 import com.facilio.v3.context.Constants;
+import com.facilio.weather.bean.WeatherBean;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
 import lombok.extern.log4j.Log4j;
@@ -40,6 +42,10 @@ import java.util.stream.Collectors;
 @Log4j
 public class WeatherAPI {
 	private static String jobName = "FacilioWeatherJob";
+
+	public static WeatherBean getWeatherBean(long orgId) throws IllegalAccessException, InstantiationException {
+		return (WeatherBean) BeanFactory.lookup("WeatherBean", orgId);
+	}
 
 	public static void deleteWeatherServiceJob(V3WeatherServiceContext weatherServiceContext) throws Exception {
 		long jobId = weatherServiceContext.getId();

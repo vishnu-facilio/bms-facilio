@@ -30,6 +30,8 @@
 
 	<bean name="MailBean" class="com.facilio.mailtracking.bean.MailTrackBeanImpl" />
 
+	<bean name="WeatherBean" class="com.facilio.weather.bean.WeatherBeanImpl" />
+
 	<bean name="LongTasksBean" class="com.facilio.wmsv2.bean.LongTasksBeanImpl" />
 
 	<bean name="ScopeBean" class="com.facilio.beans.GlobalScopeBeanCacheImpl"></bean>

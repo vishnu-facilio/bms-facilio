@@ -20,6 +20,11 @@ public interface Topics {
         String prepareOutgoingMail = "__prepare_ogmail__/org";
         String mailResponse = "__mailresponse__";
     }
+
+    interface Weather {
+        String newWeatherJob = "__newweather__";
+    }
+    
     interface PushNotification {
         String pushNotification = "__pushnotification__";
     }
