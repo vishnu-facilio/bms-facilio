@@ -35,10 +35,10 @@ public enum FormActionType {
 		public void performAction(FacilioContext facilioContext) throws Exception {
 
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-			
+
 			if(!CollectionUtils.isEmpty(formRuleActionContext.getFormRuleActionFieldsContext())) {
 				for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
-					
+
 					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SHOW_FIELD, null, null);
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 				}
@@ -48,14 +48,14 @@ public enum FormActionType {
 	HIDE_FIELD(2,"hide") {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			
+
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-			
+
 			if(!CollectionUtils.isEmpty(formRuleActionContext.getFormRuleActionFieldsContext())) {
 				for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
-					
+
 					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.HIDE_FIELD, null, null);
-					
+
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 				}
 			}
@@ -64,14 +64,14 @@ public enum FormActionType {
 	ENABLE_FIELD(3,"enable") {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			
+
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-			
+
 			if(!CollectionUtils.isEmpty(formRuleActionContext.getFormRuleActionFieldsContext())) {
 				for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
-					
+
 					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.ENABLE_FIELD, null, null);
-					
+
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 				}
 			}
@@ -80,15 +80,15 @@ public enum FormActionType {
 	DISABLE_FIELD(4,"disable") {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			
+
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-			
+
 			if(!CollectionUtils.isEmpty(formRuleActionContext.getFormRuleActionFieldsContext())) {
-				
+
 				for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
-					
+
 					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.DISABLE_FIELD, null, null);
-					
+
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 				}
 			}
@@ -98,37 +98,37 @@ public enum FormActionType {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-			
+
 			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
-			
+
 			Map<String,Object> placeHolders = new HashMap<>();
 			if (MapUtils.isNotEmpty(formData)) {
 				FacilioForm formDetails = formRuleActionContext.getRuleContext().getFormContext();
 				if (formDetails != null) {
-					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), formData, placeHolders);	
+					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), formData, placeHolders);
 				}
-				
+
 				if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
 					Map<String, Object> subFormData = (Map<String, Object>) facilioContext.get(FormRuleAPI.SUB_FORM_DATA);
 					if(MapUtils.isNotEmpty(subFormData)) {
 						FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
 						if (formDetails != null) {
-							CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName()+"."+subForm.getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);	
+							CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName()+"."+subForm.getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);
 						}
 					}
 				}
 			}
-			
-			
+
+
 			FacilioForm form = (FacilioForm) facilioContext.get(ContextNames.FORM);
-			
+
 			if(!CollectionUtils.isEmpty(formRuleActionContext.getFormRuleActionFieldsContext())) {
-				
+
 				for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
-					
+
 					String meta = actionField.getActionMeta();
 					JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
-					
+
 					Object value = metaJson.get("setValue");
 					if(value != null && value instanceof String) {
 						String val = (String)value;
@@ -139,9 +139,9 @@ public enum FormActionType {
 							}
 						}
 					}
-					
+
 					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value, null);
-					
+
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 					
 				}

@@ -1,8 +1,5 @@
 package com.facilio.v3.util;
 
-import com.amazonaws.regions.Regions;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.SendNotificationForOfflineRecordUpdate;
 import com.facilio.bmsconsole.activity.CommonActivityType;
@@ -13,7 +10,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddOrUpdateSLABreachJobCommandV3;
-import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.bmsconsoleV3.context.CustomModuleDataFailureClassRelationship;
 import com.facilio.chain.FacilioChain;
@@ -22,7 +18,6 @@ import com.facilio.classification.command.AddClassificationDataCommand;
 import com.facilio.classification.command.SummaryClassificationDataCommand;
 import com.facilio.classification.command.UpdateClassificationDataCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -281,6 +276,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "initCommand", moduleName));
         addIfNotNull(transactionChain, beforeSaveCommand);
+        transactionChain.addCommand(new LocationFieldCRUDHandlerCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
@@ -413,6 +409,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "initCommand", moduleName));
         addIfNotNull(transactionChain, beforeSaveCommand);
+        transactionChain.addCommand(new LocationFieldCRUDHandlerCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
@@ -522,6 +519,7 @@ public class ChainUtil {
         transactionChain.addCommand(new CustomButtonValidationCommand());
         transactionChain.addCommand(new VerifyApprovalCommandV3());
 
+        transactionChain.addCommand(new LocationFieldCRUDHandlerCommand());
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new UpdateCommand(module));

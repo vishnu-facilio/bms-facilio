@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -91,7 +88,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 			if (excludeField(field)) {
 				continue;
 			}
-			if (field instanceof LookupField) {
+			if (field instanceof LookupField && !FieldUtil.isGeoLocationField(field)) {
 				FacilioModule lookupModule = ((LookupField)field).getLookupModule();
 				String lookupModuleName = lookupModule.getName();
 				
@@ -129,7 +126,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 			}
 		}
 	}
-	
+
 	private void createLookupPlaceholder(String lookupModuleName, FacilioField field, List<Map<String, Object>> placeHolderFields) throws Exception {
 		if(LookupSpecialTypeUtil.isSpecialType(lookupModuleName)) {
 			String primaryFieldName = LookupSpecialTypeUtil.getPrimaryFieldName(lookupModuleName);
@@ -157,7 +154,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		}
 		placeHolder.put("displayType", displayType != null ? displayType.name() : null);
 		if(primaryField != null) {
-			if (isIdPrimaryField) {
+			if (isIdPrimaryField && !FieldUtil.isGeoLocationField(field)) {
 				primaryField =  "id";
 			}
 			placeHolder.put("primaryField", primaryField);

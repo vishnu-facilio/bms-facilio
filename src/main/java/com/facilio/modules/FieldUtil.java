@@ -989,4 +989,8 @@ public class FieldUtil {
 	public static final boolean isSupplementRecord (FacilioField field) { // By default will exclude system rel record
 		return field instanceof SupplementRecord && !field.getDataTypeEnum().isSystemRelRecord();
 	}
+
+	public  static boolean isGeoLocationField(FacilioField field){
+		return field.getDisplayType()== FacilioField.FieldDisplayType.GEO_LOCATION && Objects.equals(((LookupField) field).getLookupModule().getName(), ContextNames.LOCATION);
+	}
 }

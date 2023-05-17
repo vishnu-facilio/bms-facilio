@@ -109,7 +109,7 @@ public class LocationActions extends FacilioAction {
 			
 //		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 //		long locationId = LocationAPI.addLocation(location);	
-//		setLocationId(locationId);
+		setLocationId((Long) context.get(FacilioConstants.ContextNames.RECORD_ID));
 		
 		return SUCCESS;
 	}

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -18,6 +19,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PlaceHoldersUtil {
     private static class PlaceHoldersBeanPair {
@@ -60,7 +62,7 @@ public class PlaceHoldersUtil {
         if(fields != null && !fields.isEmpty()) {
             placeHolders = new HashMap<>();
             for(FacilioField field : fields) {
-                if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+                if(field.getDataTypeEnum() == FieldType.LOOKUP && !FieldUtil.isGeoLocationField(field)) {
                     Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
                     if(MapUtils.isNotEmpty(props)) {
                         Long lookupId = (Long) props.get("id");
@@ -126,6 +128,7 @@ public class PlaceHoldersUtil {
         prefixKey.append(key);
         return prefixKey.toString();
     }
+
 
     private static final int MAX_LEVEL_FOR_PLACEHOLDERS = 2;
     public static Map<String, Object> constructPlaceholders(String moduleName, String prefix, Map<String, Object> beanMap, int level) throws Exception {
