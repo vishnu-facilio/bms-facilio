@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-public class  ViewFactory {
+public class ViewFactory {
 	   private static final Logger LOGGER = Logger.getLogger(ViewFactory.class.getName());
 
 	private static Map<String, Map<String, FacilioView>> views = Collections.unmodifiableMap(initializeViews());

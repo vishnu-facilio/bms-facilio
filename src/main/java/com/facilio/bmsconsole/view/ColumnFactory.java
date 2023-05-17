@@ -159,6 +159,7 @@ public class ColumnFactory {
 		columnMap.put("invitevisitor-default", getDefaultVisitorInvitesColumns());
 		columnMap.put("invitevisitor-invite_myInvites", getTenantPortalVisitorInvitesColumns());
 		columnMap.put("invitevisitor-invite_myExpired", getTenantPortalVisitorInvitesColumns());
+		columnMap.put("groupinvite-default",getGroupInvitesColumns());
 
 		columnMap.put("inventoryrequestlineitems-default", getDefaultInventoryRequestLineItemsColumns());
 
@@ -1522,6 +1523,13 @@ public class ColumnFactory {
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
 
+		return columns;
+	}
+
+	private static List<ViewField> getGroupInvitesColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
 		return columns;
 	}
 	

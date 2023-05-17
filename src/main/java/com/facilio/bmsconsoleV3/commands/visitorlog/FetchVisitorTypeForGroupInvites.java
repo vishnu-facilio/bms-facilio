@@ -34,8 +34,9 @@ public class FetchVisitorTypeForGroupInvites extends FacilioCommand {
                     .beanClass(InviteVisitorContextV3.class)
                     .module(module)
                     .select(modBean.getAllFields(module.getName()))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("groupId"), "" + groupInvite.getId(), NumberOperators.EQUALS));
-            InviteVisitorContextV3 childInvite = builder.get().get(0);
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("groupId"), "" + groupInvite.getId(), NumberOperators.EQUALS))
+                    .limit(1);
+            InviteVisitorContextV3 childInvite = builder.fetchFirst();
             if (childInvite != null) {
                 groupInvite.setVisitorTypeId(childInvite.getVisitorType().getId());
             }

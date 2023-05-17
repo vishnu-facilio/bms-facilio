@@ -4046,15 +4046,6 @@ public class ModuleFactory {
 		module.setTableName("InviteVisitor");
 		return module;
 	}
-
-	public static FacilioModule getGroupInviteModule()
-	{
-		FacilioModule module=new FacilioModule();
-		module.setName(ContextNames.GROUP_VISITOR_INVITE);
-		module.setDisplayName("Group Invites");
-		module.setTableName("GroupInvite");
-		return module;
-	}
 	
 	public static FacilioModule getVisitorInviteModule()
 	{
