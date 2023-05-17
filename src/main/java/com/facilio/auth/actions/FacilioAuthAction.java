@@ -28,7 +28,6 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.instant.jobs.OrgSignupJob;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.fs.FileInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
@@ -535,7 +534,6 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-
 	@Getter
 	@Setter
 	private String proxiedUserName;
@@ -2582,6 +2580,10 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@Getter
+	@Setter
+	private String domainType;
+
 	public String resetPassword() throws Exception {
 		JSONObject invitation = new JSONObject();
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -2600,13 +2602,24 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else {
 			User user = null;
+			if (getDomainType() != null) {
+				String username= getEmailaddress();
+				AppDomainType appDomainType = AppDomainType.valueOf(getDomainType());
+				String domainUrl = IAMAppUtil.getPortalDomainUrlForUser(username,appDomainType);
+				String url = getProtocol() + "://" +domainUrl;
+				if (!domainUrl.equals(request.getServerName())) {
+					invitation.put("domainUrl", url);
+					ActionContext.getContext().getValueStack().set("invitation", invitation);
+					return SUCCESS;
+				}
+			}
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
-			if(appDomain == null) {
+			if (appDomain == null) {
 				invitation.put("status", "failed");
 				invitation.put("message", "Invalid app domain");
 			}
 			Map<String, Object> userMap = IAMUserUtil.getUserForUsername(getEmailaddress(), -1, appDomain.getIdentifier());
-			if(MapUtils.isNotEmpty(userMap)) {
+			if (MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			}
 

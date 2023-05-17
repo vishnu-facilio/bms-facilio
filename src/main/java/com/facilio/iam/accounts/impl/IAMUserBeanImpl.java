@@ -2847,6 +2847,53 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	}
 
+	public String getPortalDomainUrlForUser(String username ,AppDomainType appDomainType) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountsUserFields())
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName());
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("USERNAME","username",username, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IDENTIFIER","identifier",String.valueOf(1),StringOperators.ISN_T));
+
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(props!=null && !props.isEmpty()){
+			for(Map<String,Object> prop : props){
+				String identifier = (String) prop.get("identifier");
+				List<AppDomain> appDomainList = getAppDomainForIdentifier(identifier);
+				if (appDomainList != null) {
+					for (AppDomain appDomain : appDomainList) {
+						if (appDomain.getAppDomainTypeEnum() == appDomainType) {
+							return appDomain.getDomain();
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	public List<AppDomain> getAppDomainForIdentifier(String identifier)throws Exception{
+
+		int groupType = Integer.parseInt(identifier.split("_")[0]);
+		long orgId = Long.parseLong(identifier.split("_")[1]);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table(IAMAccountConstants.getAppDomainModule().getTableName());
+
+		selectRecordBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID","orgId",orgId +"", NumberOperators.EQUALS));
+		selectRecordBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "groupType", groupType +"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> result = selectRecordBuilder.get();
+		if(result != null && !result.isEmpty()){
+			List<AppDomain> appDomains = new ArrayList<>();
+			for (Map<String, Object> res : result) {
+				appDomains.add(FieldUtil.getAsBeanFromMap(res, AppDomain.class));
+			}
+			return appDomains;
+		}
+		return null;
+	}
+
 
 	@Override
 	public List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception {

@@ -90,6 +90,10 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomainForType(domainType, orgId));
 	}
 
+	public static String getPortalDomainUrlForUser(String username, AppDomainType appDomainType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getPortalDomainUrlForUser(username,appDomainType));
+	}
+
 	public static List<AppDomain> getPortalAppDomains() throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getPortalAppDomains());
 	}
