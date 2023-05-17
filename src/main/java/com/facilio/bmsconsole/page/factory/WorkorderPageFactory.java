@@ -58,7 +58,7 @@ public class WorkorderPageFactory extends PageFactory {
             yOffset += widgetHeight;
 
            // Maintenance and Quote Widget
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 6;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             totalCost.addToWidgetParams("hideBg", true);

@@ -629,6 +629,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
         c.addCommand(new AddTaskOptions());
+        c.addCommand(getPlannedInventoryChainV3());
         return c;
     }
 
@@ -641,7 +642,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddPrerequisiteApproversCommandV3());
         c.addCommand(new UpdateJobStatusForWorkOrderCommand());
         c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());
-        c.addCommand(getPlannedInventoryChainV3());
         c.addCommand(new AddActivityForWoPostCreateCommand());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
         return c;
