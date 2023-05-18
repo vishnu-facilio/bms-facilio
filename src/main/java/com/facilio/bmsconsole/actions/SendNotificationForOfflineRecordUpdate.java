@@ -26,7 +26,7 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         FacilioModule module = modBean.getModule(moduleName);
 
-        if(module == null) {
+        if(module == null || CollectionUtils.isEmpty(recordIds)) {
             return false;
         }
 
