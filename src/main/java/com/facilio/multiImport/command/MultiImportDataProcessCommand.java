@@ -2,6 +2,9 @@ package com.facilio.multiImport.command;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
+import com.facilio.backgroundactivity.util.BackgroundActivityService;
+import com.facilio.backgroundactivity.util.ChildActivityService;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -35,10 +38,14 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
     Long importId = null;
     String errorMessage = null;
 
+    BackgroundActivityService backgroundActivityService = null;
     @Override
     public boolean executeCommand(Context context) throws Exception {
         importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
         importDataDetails = (ImportDataDetails) context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
+
+        //background activity service
+        backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(importId, "import"));
 
         List<ImportFileContext> importFiles = importDataDetails.getImportFiles();
         List<ImportFileSheetsContext> importSheets = MultiImportApi.getSortedImportSheetsFromAllFiles(importFiles);
@@ -48,11 +55,18 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         importData(importSheets);
 
         checkImportProcessdRecordsCountAndUpdateTheImportStatus();
+        if(backgroundActivityService != null) {
+            backgroundActivityService.updateMessage("Import completed successfully");
+        }
         return false;
     }
 
     private void importData(List<ImportFileSheetsContext> importSheets) throws Exception {
         for (ImportFileSheetsContext importSheet : importSheets) {
+            ChildActivityService childService = null;
+            if(backgroundActivityService != null) {
+                childService = new ChildActivityService(BackgroundActivityAPI.getChildActivity(backgroundActivityService.getActivityId(), importSheet.getId(), "import"));
+            }
             try {
                 ImportDataStatus sheetsStatus = importSheet.getStatusEnum();
 
@@ -63,10 +77,13 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
                 if (ImportDataStatus.IMPORT_STARTED != sheetsStatus) {    //update import started status for the current sheet if first thread enters
                     importSheet.setStatus(ImportDataStatus.IMPORT_STARTED);
                     MultiImportApi.updateImportSheetStaus(importSheet);
+                    if(childService != null) {
+                        childService.updateActivity(1, "Started Importing Sheet " + importSheet.getName() + " Module Name " + importSheet.getModuleName());
+                    }
                     LOGGER.info("Import started for sheetId ---:" + importSheet.getId());
                 }
 
-                batchImportDataFromSheet(importSheet);
+                batchImportDataFromSheet(importSheet,childService);
 
                 if (recordsProcessedCount >= MAXIMUM_RECORDS_PER_THREAD) {
                     LOGGER.info("Maximum records per thread reached");
@@ -75,12 +92,15 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             } catch (Exception e) {
                 errorMessage = "Import failed for sheetId - " + importSheet.getId() + " :" + e;
                 LOGGER.severe(errorMessage);
+                if(backgroundActivityService != null && importSheet != null) {
+                    backgroundActivityService.failActivity("Import failed for sheet name " + importSheet.getName() + " Module Name " + importSheet.getModuleName());
+                }
                 throw e;
             }
         }
     }
 
-    private void batchImportDataFromSheet(ImportFileSheetsContext importSheet) throws Exception {
+    private void batchImportDataFromSheet(ImportFileSheetsContext importSheet,ChildActivityService childService) throws Exception {
         LOGGER.info("Batch import started for sheetId ---:" + importSheet.getId());
         FacilioModule module = importSheet.getModule();
         String moduleName = importSheet.getModuleName();
@@ -136,11 +156,15 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             LOGGER.info("recordsProcessedCount out of 25000:" + recordsProcessedCount);
             LOGGER.info(i + "/" + splitSize + " batch completed------completed time:"+System.currentTimeMillis());
             updateSheetDetails(importSheet, context);
-
+            if(childService != null) {
+                childService.updateActivity((int) (((float) i / (float) splitSize) * 100), "Import in progress");
+            }
         }
         LOGGER.info("currently processed records count :" + remainingRecordsToImport);
         LOGGER.info("Batch import completed for sheetId ---:" + importSheet.getId());
-
+        if(childService != null) {
+            childService.completeActivity("Import Completed");
+        }
     }
 
     private void checkImportProcessdRecordsCountAndUpdateTheImportStatus() throws Exception {
@@ -158,11 +182,17 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setStatus(ImportDataStatus.IMPORT_STARTED);
             importDataDetails.setImportStartTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
+            if(backgroundActivityService != null) {
+                backgroundActivityService.updateActivity(1,"Import Started");
+            }
             LOGGER.info("MultiImport Started for multiImportId--- :" + importDataDetails.getId());
         } else if (totalImportRecordsCount == processedRecordsCount || processedRecordsCount==MAXIMUM_RECORDS_PER_THREAD) {
             importDataDetails.setStatus(ImportDataStatus.IMPORT_COMPLETED);
             importDataDetails.setImportEndTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
+            if(backgroundActivityService != null) {
+                backgroundActivityService.completeActivity("Import Completed");
+            }
             LOGGER.info("MultiImport Completed  for multiImportId--- :" + importDataDetails.getId());
         }
     }

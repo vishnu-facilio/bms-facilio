@@ -6,6 +6,8 @@ import com.facilio.attribute.chain.ClassificationAttributeChain;
 import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
 import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
 import com.facilio.attribute.context.ClassificationAttributeContext;
+import com.facilio.backgroundactivity.commands.FetchBackgroundActivitySupplementsCommand;
+import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
@@ -3013,6 +3015,18 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .update()
+                .build();
+    }
+    
+    @Module(com.facilio.backgroundactivity.factory.Constants.BACKGROUND_ACTIVITY_MODULE)
+    public static Supplier<V3Config> getBackgroundActivityTransaction() {
+        return () -> new V3Config(BackgroundActivity.class, null)
+                .list()
+                .beforeFetch(new FetchBackgroundActivitySupplementsCommand())
+                .afterFetch(ReadOnlyChainFactoryV3.backgroundActivityFetchChain())
+                .summary()
+                .beforeFetch(new FetchBackgroundActivitySupplementsCommand())
+                .afterFetch(ReadOnlyChainFactoryV3.backgroundActivityFetchChain())
                 .build();
     }
 }

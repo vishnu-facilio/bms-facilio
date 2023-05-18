@@ -63,3 +63,9 @@ groups:
     sendToAll: false
     topics:
       - { topic: alarm-workflow/#, handler: com.facilio.wmsv2.handler.AlarmWorkFlowHandler, isLiveMessage: false }
+
+  - group: backgroundactivity
+    sendToAll: false
+    topics:
+      - { topic: __background_activity__/+/process, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityTopicHandler, recordTimeout: 120, isLiveMessage: false }
+      - { topic: __background_activity_rollup__/+/rollup, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityRollupTopicHandler, recordTimeout: 120, isLiveMessage: false }

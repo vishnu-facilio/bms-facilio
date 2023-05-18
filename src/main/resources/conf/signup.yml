@@ -391,3 +391,5 @@ classes:
 
     #Adding Inventory Request Stateflow
   - com.facilio.bmsconsoleV3.signup.inventory.InventoryRequestDefaultStateFlow
+
+  - com.facilio.backgroundactivity.util.AddBackgroundActivityModule

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.commands.MLGetTaggedPointsCommand;
+import com.facilio.backgroundactivity.commands.FetchParentBackgroundActivitiesCommand;
 import com.facilio.banner.commands.GetBannersCommand;
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
@@ -3311,6 +3312,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPageSectionChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPageSectionCommand());
+		return c;
+	}
+
+	public static FacilioChain getParentActivitiesChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchParentBackgroundActivitiesCommand());
 		return c;
 	}
 }

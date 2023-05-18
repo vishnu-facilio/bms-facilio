@@ -2775,6 +2775,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null,AccountUtil.FeatureLicense.EMAIL_TRACKING.getFeatureId()));
             webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
             webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
+            webTabs.add(new WebTabContext("Background Activity","backgroundactivity", WebTabContext.Type.BACKGROUND_ACTIVITY,null,appId,null,AccountUtil.FeatureLicense.BACKGROUND_ACTIVITY.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 

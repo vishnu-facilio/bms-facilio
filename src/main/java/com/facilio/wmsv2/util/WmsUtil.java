@@ -2,6 +2,8 @@ package com.facilio.wmsv2.util;
 
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
@@ -19,7 +21,6 @@ public class WmsUtil {
 
         SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
         BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-
         switch (handler.getDeliverTo()) {
             case ALL: {
                 sendObject(SessionManager.getInstance().getLiveSessions(), message);

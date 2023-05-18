@@ -296,7 +296,9 @@ public class WebTabContext implements Serializable {
         NEW_KPI_TEMPLATES ("KPI Templates", false,TabType.SETUP,new SetupTypeHandler()), // 89
         DATA_SHARING("Data Sharing", false, TabType.SETUP,new SetupTypeHandler()),
         IMPORT_DATA("Import Data",false,TabType.SETUP,new SetupTypeHandler()), //91
-        DECOMMISSION("Decommission",false,TabType.SETUP,new SetupTypeHandler()); // 92
+
+        DECOMMISSION("Decommission",false,TabType.SETUP,new SetupTypeHandler()), // 92
+        BACKGROUND_ACTIVITY("Background Activity",false,TabType.SETUP,new SetupTypeHandler()); //93
 
         public void setName(String name) {
             this.name = name;

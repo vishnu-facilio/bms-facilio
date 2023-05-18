@@ -1,0 +1,51 @@
+activity:
+  #interval starts with 0 and end with 100 - the specified values includes the interval
+  #0, 100, 1, -1(failed) is required and other values are optional
+  jobplan:
+    status:
+      0:
+        name: "Started"
+        color: "#4974a5"
+      1:
+        name: "In Progress"
+        color: "#99854d"
+      100:
+        name: "Completed"
+        color: "#1d7130"
+      -2:
+        name: "Failed"
+        color: "#FF0000"
+  import:
+    status:
+      0:
+        name: "Started"
+        color: "#4974a5"
+      1:
+        name: "Initiated"
+        color: "#99854d"
+      100:
+        name: "Done"
+        color: "#1d7130"
+      5:
+        name: "Work In Progress"
+        color: "#e83a8a"
+      -2:
+        name: "Stopped"
+        color: "#FF0000"
+  import_sheet:
+    status:
+      0:
+        name: "Started"
+        color: "#4974a5"
+      1:
+        name: "Initiated"
+        color: "#99854d"
+      100:
+        name: "Done"
+        color: "#1d7130"
+      5:
+        name: "Work In Progress"
+        color: "#e83a8a"
+      -2:
+        name: "Stopped"
+        color: "#FF0000"

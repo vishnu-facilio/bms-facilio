@@ -2637,6 +2637,7 @@ public class FacilioConstants {
 		public static final String READ_PERMISSIONS = "READ,READ_TEAM,READ_OWN,VIEW";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
+
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
 			classMap.put(TICKET_STATUS, FacilioStatus.class);

@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.agentv2.commands.FetchAgentDetailsCommand;
 import com.facilio.agentv2.commands.FetchMessageSourcesCommand;
+import com.facilio.backgroundactivity.commands.FillColourCodeForBackgroundActivityCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
@@ -517,6 +518,12 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain fetchPermissionSetListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPermissionSetsListCommand());
+        return c;
+    }
+
+    public static FacilioChain backgroundActivityFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillColourCodeForBackgroundActivityCommand());
         return c;
     }
 }

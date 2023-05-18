@@ -586,7 +586,9 @@ public class AccountUtil {
 		FORM_DSM(133,getExponentValue(6),LicenseMapping.GROUP3LICENSE),//2^6
 		GROUP_INVITES(134,getExponentValue(7),new String[]{ContextNames.GROUP_VISITOR_INVITE},LicenseMapping.GROUP3LICENSE),//2^7
 		NEW_GROUP_INVITES(135,getExponentValue(8),LicenseMapping.GROUP3LICENSE),//2^8
-		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE);//2^9
+
+		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE),//2^9
+		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE);//2^10
 
 		public int featureId;
 		private long license;

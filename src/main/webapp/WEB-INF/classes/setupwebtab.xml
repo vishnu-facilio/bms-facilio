@@ -249,6 +249,30 @@
         </action>
     </package>
 
+    <package name="backgroundactivity" namespace="/api/v1/setup" extends="v3Api">
+        <action name="backgroundactivity/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">backgroundActivity</param>
+            <param name="viewName">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="*/backgroundactivity" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="id">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="moduleName">backgroundActivity</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+        </action>
+    </package>
+
+    <package name="backgroundactivitymeta" namespace="/api/v1/setup" extends="v2Api">
+        <action name="*/parentbackgroundactivity" class="com.facilio.backgroundactivity.action.BackgroundActivityAction" method="fetchParentActivities">
+            <param name="activityId">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+        </action>
+    </package>
+
     <package name="readingkpi" namespace="/api/v1/setup" extends="v3Api">
         <action name="readingkpi" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">readingkpi</param>

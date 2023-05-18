@@ -694,6 +694,16 @@
         </urlparams>
         <requestbody type="v3fields"/>
     </request>
+    <request path="/api/v1/setup/backgroundactivity/view/:viewName" method="GET">
+        <urlparams>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/modules/:moduleName/view/:viewName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

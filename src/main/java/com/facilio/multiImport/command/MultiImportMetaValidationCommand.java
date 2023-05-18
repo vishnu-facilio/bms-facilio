@@ -1,5 +1,6 @@
 package com.facilio.multiImport.command;
 
+import com.facilio.backgroundactivity.util.BackgroundActivityService;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.multiImport.context.ImportDataDetails;
@@ -11,6 +12,7 @@ public class MultiImportMetaValidationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
+        new BackgroundActivityService(importId,"import","Import Id: #"+importId,"Scheduled Import Id: #"+importId+".");
 
         FacilioUtil.throwIllegalArgumentException(importId == -1L, "Import Id is Empty");
         ImportDataDetails importDataDetails = MultiImportApi.getImportData(importId);
