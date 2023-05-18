@@ -1,2 +1,1 @@
-/api/integ/lookup
-/api/integ/loginWithPasswordAndDigest
+/api/v2/fetchAccount

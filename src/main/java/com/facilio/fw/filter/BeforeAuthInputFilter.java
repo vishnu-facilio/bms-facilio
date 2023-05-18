@@ -14,6 +14,7 @@ import com.facilio.security.requestvalidator.retree.Matcher;
 import com.facilio.security.requestvalidator.retree.URLReTree;
 import com.facilio.util.RequestUtil;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.json.JSONObject;
@@ -22,6 +23,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.*;
 
 
@@ -69,23 +72,32 @@ public class BeforeAuthInputFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
 
-        if(FacilioProperties.isApiRateLimiterEnabled()){
-            if(rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
-                try {
+        if(FacilioProperties.isApiRateLimiterEnabled() && rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
+            try {
+                if (StringUtils.isNotEmpty(httpServletRequest.getRequestURI()) && StringUtils.isNotEmpty(httpServletRequest.getRemoteHost()) && httpServletRequest.getRemotePort() != -1) {
                     APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();
-                    if(!(ratelimit.allow(httpServletRequest.getRequestURI(),httpServletRequest.getRemoteHost()))){
+                    if (!(ratelimit.allow(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort())))) {
                         log(securityRequestWrapper, "Rate Limiter Strike: API strike limit was reached");
+                        Map<String, String> errorMap = new HashMap<>();
+                        errorMap.put("errorMessage", "Too Many Request your limit is crossed, Try again after a minute");
+                        write(errorMap, 429, servletResponse);
+                        return;
                     }
-                } catch (Exception e) {
+                    long expiryTime = ratelimit.getKeyExpiryTime(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort()));
+                    httpServletResponse.setHeader("X-Rate-Limit-Limit", String.valueOf(FacilioProperties.getRateLimiterAllowedRequest()));
+                    httpServletResponse.setHeader("X-Rate-Limit-Remaining", String.valueOf(ratelimit.getAvailableRequests(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort()))));
+                    httpServletResponse.setHeader("X-Rate-Limit-Reset", String.valueOf(Instant.ofEpochMilli(expiryTime).atZone(ZoneId.systemDefault()).toLocalDateTime()));
+                }
+            } catch (Exception e) {
                     log(securityRequestWrapper, "APILimiter exception thrown: "+e);
-                    if(!FacilioProperties.isProduction()) {
+                    if (!FacilioProperties.isProduction()) {
                         throw new RuntimeException(e);
                     }
                 }
             }
-        }
 
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
@@ -95,6 +107,9 @@ public class BeforeAuthInputFilter implements Filter {
                return;
             }
             if ( !isAllowed() || exclution.isMatch()) {
+                if(!exclution.isMatch()){
+                    log(securityRequestWrapper,FacilioProperties.getEnvironment()+" Validation missing for : " + httpServletRequest.getRequestURI());
+                }
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
                 log(securityRequestWrapper,"Validation missing for : " + httpServletRequest.getRequestURI());
