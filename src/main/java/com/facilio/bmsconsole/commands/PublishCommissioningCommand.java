@@ -326,20 +326,22 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		}
 
 		List<Long> inputRdmIds = new ArrayList<>();
+		Set<Long> pointIds = new HashSet<>();
 		for(Entry<String, List<Map<String, Object>>> entry: values.entrySet()) {
 			String rdmKey = entry.getKey();
 			long rdmId = rdmMap.get(rdmKey).getId();
 			inputRdmIds.add(rdmId);
 			entry.getValue().forEach(value -> {
 				value.put("rdmId", rdmId);
+				pointIds.add((Long) value.get(AgentConstants.POINT_ID));
 			});
 		}
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), inputRdmIds, NumberOperators.EQUALS));
-		
-		deleteBuilder.batchDelete(Collections.singletonList(fieldMap.get("rdmId")), inputRdmIds.stream().map(id -> Collections.singletonMap("rdmId", (Object) id)).collect(Collectors.toList()));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_ID), pointIds, NumberOperators.EQUALS));
+
+		deleteBuilder.batchDelete(Collections.singletonList(fieldMap.get(AgentConstants.POINT_ID)), pointIds.stream().map(id -> Collections.singletonMap(AgentConstants.POINT_ID, (Object) id)).collect(Collectors.toList()));
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(fields)

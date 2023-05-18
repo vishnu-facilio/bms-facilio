@@ -209,7 +209,15 @@ public class CommissionAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
-	
+
+	private long pointId = -1;
+	public long getPointId() {
+		return pointId;
+	}
+	public void setPointId(long pointId) {
+		this.pointId = pointId;
+	}
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;
@@ -227,8 +235,13 @@ public class CommissionAction extends FacilioAction{
 	}
 
 	public String fetchInputValues() throws Exception {
-		
-		List<Map<String, Object>> readingInputValues = ReadingsAPI.getReadingInputValues(resourceId, fieldId);
+
+		List<Map<String, Object>> readingInputValues;
+		if(pointId != -1){
+			readingInputValues = ReadingsAPI.getReadingInputValues(pointId);
+		} else {
+			readingInputValues = ReadingsAPI.getReadingInputValues(resourceId, fieldId);
+		}
 		setResult("inputValues", readingInputValues);
 		
 		return SUCCESS;

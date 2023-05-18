@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.bacnet.BACNetUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -199,7 +201,9 @@ public class GetPointRequest {
         		
         		FacilioControllerType pointControllerType = FacilioControllerType.valueOf(FacilioUtil.parseInt(prop.get(AgentConstants.POINT_TYPE)));
         		handlePointToggleFlag(prop, pointControllerType);
-        		
+        		/* if(pointControllerType == FacilioControllerType.BACNET_IP){
+                    addBACnetProperties(prop);
+                } */
         		// Fetching extended data if controllerType unknown during fetch
             	if (this.controllerType == null) {
             		
@@ -311,6 +315,24 @@ public class GetPointRequest {
         }
         return false;
     }
-    
+
+    private void addBACnetProperties(Map<String, Object> prop) throws Exception {
+        if(prop.containsKey(AgentConstants.INSTANCE_TYPE) && prop.get(AgentConstants.INSTANCE_TYPE) != null){
+            int pointInstanceType = (int) prop.get(AgentConstants.INSTANCE_TYPE);
+            BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf(pointInstanceType);
+            if(instanceType.isMultiState()){
+                List<Map<String, Object>> readingInputValueAndLabelProps = ReadingsAPI.getReadingInputValues((Long) prop.get(AgentConstants.ID));
+                JSONObject inputValueVsLabel = new JSONObject();
+                for (Map<String, Object> readingInputValueAndLabelProp : readingInputValueAndLabelProps) {
+                    if(readingInputValueAndLabelProp.containsKey("inputLabel") && readingInputValueAndLabelProp.get("inputLabel") != null && readingInputValueAndLabelProp.containsKey("inputValue") && readingInputValueAndLabelProp.get("inputValue") != null){
+                        inputValueVsLabel.put(readingInputValueAndLabelProp.get("inputValue").toString(), readingInputValueAndLabelProp.get("inputLabel").toString());
+                    }
+                }
+                if(!inputValueVsLabel.isEmpty()){
+                    prop.put(AgentConstants.STATES, inputValueVsLabel);
+                }
+            }
+        }
+    }
      
 }

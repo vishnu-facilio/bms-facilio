@@ -40,4 +40,9 @@ public interface Topics {
     interface UpdateOnOfflineRecord{
         String updateOnOfflineRecord = "__update_on_offline_record__";
     }
+
+    interface Agent {
+        String agentPointAlarm = "__agent__/point/alarm";
+    }
+
 }

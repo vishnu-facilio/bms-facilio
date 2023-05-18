@@ -4,6 +4,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.command.FacilioCommand;
@@ -120,6 +121,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 			for(String header: headers) {
 				if (point.containsKey(header)) {
 					filteredPoint.put(header, point.get(header));
+				}
+			}
+			if(point.containsKey(AgentConstants.INSTANCE_TYPE) && point.get(AgentConstants.INSTANCE_TYPE) != null){
+				BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf((int) point.get(AgentConstants.INSTANCE_TYPE));
+				if(instanceType.isMultiState() && point.containsKey(AgentConstants.STATES)){
+					filteredPoint.put(AgentConstants.STATES, point.get(AgentConstants.STATES));
 				}
 			}
 			if(point.get("controllerId") != null){

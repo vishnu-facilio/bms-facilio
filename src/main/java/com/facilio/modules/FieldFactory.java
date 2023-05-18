@@ -7060,6 +7060,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("idx", "IDX", module, FieldType.NUMBER));
         fields.add(getField("pointId", "POINT_ID", module, FieldType.NUMBER));
         fields.add(getField("inputValue", "INPUT_VALUE", module, FieldType.STRING));
+        fields.add(getField("inputLabel", "INPUT_LABEL", module, FieldType.STRING));
 
         return fields;
     }

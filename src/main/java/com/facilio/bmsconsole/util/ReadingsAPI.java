@@ -1373,7 +1373,11 @@ public class ReadingsAPI {
 		ReadingDataMeta rdm = getReadingDataMeta(resourceId, modBean.getField(fieldId));
 		return getReadingInputValueProps(Collections.singletonList(rdm.getId()), "rdmId");
 	}
-	
+
+	public static List<Map<String, Object>> getReadingInputValues(long pointId) throws Exception {
+		return getReadingInputValueProps(Collections.singletonList(pointId), "pointId");
+	}
+
 	public static Map<Long,Map<Integer, String>> getReadingIdxVsValuesMap(List<Long> rdmIds) throws Exception {
 		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds, "rdmId");
 		Map<Long, Map<Integer, String>> rdmValuesMap = null;
@@ -1400,6 +1404,9 @@ public class ReadingsAPI {
 		if(props!=null && !props.isEmpty()) {
 			parentValuesMap = new HashMap<>();
 			for(Map<String, Object> prop: props) {
+				if(!prop.containsKey("rdmId")){
+					continue;
+				}
 				long parentId = (long) prop.get("pointId");
 				Map<String, Integer> valueMap = parentValuesMap.get(parentId);
 				if (valueMap == null) {

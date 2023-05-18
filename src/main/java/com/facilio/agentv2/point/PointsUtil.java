@@ -80,14 +80,13 @@ public class PointsUtil
     }*/
 
     public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
-        LOGGER.info(" processing point " + controller.toJSON());
-
+        LOGGER.info("Processing points for controller " + controller.getName());
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
             long incomingCount = pointsJSON.size();
             if (incomingCount == 0) {
-                throw new Exception(" pointJSON cant be empty");
+                throw new Exception("PointJSON can't be empty");
             }
 
 
@@ -132,6 +131,10 @@ public class PointsUtil
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }
                             }
+                            if(pointJSON.containsKey(AgentConstants.STATE_TEXT_ENUMS)){
+                                JSONObject stateTextEnums = (JSONObject) pointJSON.get(AgentConstants.STATE_TEXT_ENUMS);
+                                point.setStates(stateTextEnums);
+                            }
                             Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
 
                             points.add(pointMap);
@@ -146,7 +149,7 @@ public class PointsUtil
             }
 
             if (points.size() == 0) {
-                throw new Exception(" points to add can't be empty");
+                throw new Exception("Points to add can't be empty");
             }
             FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
             FacilioContext context = new FacilioContext();

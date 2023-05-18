@@ -68,6 +68,8 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private Long controlActionId;
     @Getter @Setter
     private Integer commandRetryCount;
+    @JsonInclude @Setter @Getter
+    private JSONObject states;
 
     private boolean dataMissing;
     //TODO remove actionName and overrideMillis (redundant in ControlActionCommandContext.java)
@@ -121,6 +123,7 @@ public abstract class Point extends FacilioPoint implements Serializable {
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
+        pointJSON.put(AgentConstants.STATES, getStates());
         if(getConfigureStatusEnum() != null ){
             pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus());
         }else {

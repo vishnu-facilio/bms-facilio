@@ -262,7 +262,7 @@ public class DataProcessorV2 {
                     return true;
                 }
                 if (eventType == AgentEvent.TIMESERIES_DATA_COLLECTION_END) {
-                    return executeTriggers(agent);
+                    return executeTriggers(agent) && AgentUtilV2.sendClearPointAlarm(agent);
                 }
                 if (eventType == AgentEvent.COMMAND_DELAY) {
                     return processCommandDelayAlarm(payload, agent);

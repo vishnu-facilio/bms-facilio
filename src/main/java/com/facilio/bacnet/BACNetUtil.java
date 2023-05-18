@@ -16,13 +16,13 @@ public class BACNetUtil {
 	    	FILE,
 	    	GROUP,
 	    	LOOP,
-	    	MULTI_STATE_INPUT,	// 13
-	    	MULTI_STATE_OUTPUT(true),
+	    	MULTI_STATE_INPUT(false, true),	// 13
+	    	MULTI_STATE_OUTPUT(true, true),
 	    	NOTIFICATION_CLASS,
 	    	PROGRAM,
 	    	SCHEDULE,
 	    	AVERAGING,
-	    	MULTI_STATE_VALUE(true),	// 19
+	    	MULTI_STATE_VALUE(true, true),	// 19
 	    	TREND_LOG,
 	    	LIFE_SAFETY_POINT,
 	    	LIFE_SAFETY_ZONE,
@@ -66,21 +66,31 @@ public class BACNetUtil {
 		;
     	
     		private boolean writable;
+			private boolean multiState;
     		
     		InstanceType() {};
     		
     		InstanceType(boolean isWritable) {
     			this.writable = isWritable;
     		}
-		
-		public int getValue() {
-			return ordinal();
-		}
-		
-		public boolean isWritable() {
-			return writable;
-		}
-		
+
+			InstanceType(boolean isWritable, boolean isMultiState) {
+				this.writable = isWritable;
+				this.multiState = isMultiState;
+			}
+
+			public int getValue() {
+				return ordinal();
+			}
+
+			public boolean isWritable() {
+				return writable;
+			}
+
+			public boolean isMultiState() {
+				return multiState;
+			}
+
 		public static InstanceType valueOf (int value) {
 			if (value >= 0 && value < values().length) {
 				return values() [value];

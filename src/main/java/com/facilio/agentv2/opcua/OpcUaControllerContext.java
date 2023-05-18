@@ -123,7 +123,7 @@ public class OpcUaControllerContext extends Controller {
 
     @Override
     public String getIdentifier() {
-        return url+IDENTIFIER_SEPERATER+certPath+IDENTIFIER_SEPERATER+securityMode+IDENTIFIER_SEPERATER+securityPolicy;
+        return getUrl();
     }
 
     @Override

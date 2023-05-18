@@ -39,6 +39,9 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.constants.Topics;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -410,7 +413,7 @@ public class AgentUtilV2
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
             StringBuilder descBuilder = new StringBuilder();
             descBuilder.append("Count : " + controllers.size());
-            descBuilder.append(", Controller Names: ");
+            descBuilder.append(", Controllers Name: ");
             for (Controller c : controllers) {
                 descBuilder.append(c.getName()).append(", ");
             }
@@ -619,6 +622,15 @@ public class AgentUtilV2
             scheduleInfo.addTime(time);
         }
         FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
+    }
+
+    public static boolean sendClearPointAlarm(FacilioAgent agent) {
+        JSONObject content = new JSONObject();
+        content.put(AgentConstants.AGENT, agent.getName());
+        SessionManager.getInstance().sendMessage(new Message()
+                .setTopic(Topics.Agent.agentPointAlarm)
+                .setContent(content));
+        return true;
     }
 
 }

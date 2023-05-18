@@ -179,7 +179,11 @@ public class AgentConstants
     public static final String EMERGENCY_OVERRIDE = "emergencyOverride";
     public static final String OVERRIDE_MILLIS = "overrideMillis";
     public static final String OVERRIDE_SECONDS = "overrideSeconds";
-
+    public static final String STATES = "states";
+    public static final String POINT_ID = "pointId";
+    public static final String INPUT_VALUE = "inputValue";
+    public static final String INPUT_LABEL = "inputLabel";
+    public static final String STATE_TEXT_ENUMS = "stateTextEnums";
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";
     public static final String CHILDJSON = "childJson";

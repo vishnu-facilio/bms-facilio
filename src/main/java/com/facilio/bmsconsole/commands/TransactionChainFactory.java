@@ -4538,6 +4538,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddPointsChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddPointsCommand());
+		chain.addCommand(new SetReadingInputValuesAndLabelsCommand());
 		chain.addCommand(new MLTagPointListCommand());
 		return chain;
 	}
