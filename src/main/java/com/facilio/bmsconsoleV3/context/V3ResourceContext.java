@@ -159,6 +159,6 @@ public class V3ResourceContext extends V3Context {
 		return decommission != null && decommission.booleanValue();
 	}
 	private Boolean decommission;
-	private  long decommissionedTime;
+	private  long commissionedTime;
 
 }

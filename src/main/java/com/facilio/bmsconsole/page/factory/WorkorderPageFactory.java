@@ -103,16 +103,6 @@ public class WorkorderPageFactory extends PageFactory {
         section.addWidget(slaRemainingDuration);
         yOffset += widgetHeight;
 
-        // total cost widget
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) &&
-                !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = 3;
-            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
-            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-            section.addWidget(totalCost);
-            yOffset += widgetHeight;
-        }
-
         // resource widget
         widgetHeight = 3;
         PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
@@ -120,14 +110,14 @@ public class WorkorderPageFactory extends PageFactory {
         section.addWidget(resource);
         yOffset += widgetHeight;
 
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
-            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
-            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-            totalCost.addToWidgetParams("hideBg", true);
-            section.addWidget(totalCost);
-            yOffset += widgetHeight;
-        }
+        // Maintenance and Cost Widget
+        widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 6;
+        PageWidget totalMaintenanceCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+        totalMaintenanceCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        totalMaintenanceCost.addToWidgetParams("hideBg", true);
+        section.addWidget(totalMaintenanceCost);
+        yOffset += widgetHeight;
+
 
         // tenant widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
