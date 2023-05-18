@@ -38,11 +38,11 @@ public class ScheduleExecutor extends ExecutorBase {
     protected List<Long> getNextExecutionTimes(Context context) throws Exception {// return list of milliseconds.
         PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
         long currentTime = System.currentTimeMillis();
-
-        long endTime = calculateEndTime(trigger, System.currentTimeMillis());
+        long startTime = trigger.getStartTime() > 0 ? trigger.getStartTime() > currentTime ? trigger.getStartTime() - 300 : currentTime : currentTime;
+        long endTime = calculateEndTime(trigger, startTime);
         List<Long> nextExecutionTimes = new ArrayList<>();
 
-        List<DateRange> nextExecutionTimesRange = trigger.getScheduleInfo().getTimeIntervals(currentTime,endTime);
+        List<DateRange> nextExecutionTimesRange = trigger.getScheduleInfo().getTimeIntervals(startTime,endTime);
 
         long maxNextExecutionCount = 1000;
 
