@@ -3,11 +3,9 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -46,6 +44,10 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 
         List<WorkOrderContext> workOrders = bulkWorkOrderContext.getWorkOrderContexts();
+        List<Map<String, List<TaskContext>>> taskMaps = bulkWorkOrderContext.getTaskMaps();
+        List<Map<String, List<TaskContext>>> preRequestMaps = bulkWorkOrderContext.getPreRequestMaps();
+        List<List<AttachmentContext>> attachments = bulkWorkOrderContext.getAttachments();
+
         if (workOrders == null || workOrders.isEmpty()) {
             LOGGER.log(Level.SEVERE, "WorkOrder list Object cannot be null");
             return false;
@@ -62,7 +64,10 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
                 .withLocalId();
 
         List<WorkOrderContext> woToBeRemoved = new ArrayList<>();
-        
+        List<Map<String, List<TaskContext>>> taskMapsToBeDeleted = new ArrayList<>();
+        List<Map<String, List<TaskContext>>> preRequestMapsToBeDeleted = new ArrayList<>();
+        List<List<AttachmentContext>> attachmentsToBeDeleted = new ArrayList<>();
+
         for (int i = 0; i < workOrders.size(); i++) {
             WorkOrderContext workOrder = workOrders.get(i);
             try {
@@ -90,6 +95,16 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
                     	}
                     	else {
                     		woToBeRemoved.add(workOrder);
+                            // removing the corresponding objects of workorder, so that NPE doesn't occur while adding tasks.
+                            if(taskMaps.get(i) != null){
+                                taskMapsToBeDeleted.add(taskMaps.get(i));
+                            }
+                            if(preRequestMaps.get(i) != null) {
+                                preRequestMaps.remove(i);
+                            }
+                            if(attachments.get(i) != null) {
+                                attachments.remove(i);
+                            }
                     		LOGGER.log(Level.SEVERE, "Skipping current workorder since its createdtime is less than current time : "+updatedCreatedTime);
                     	}
                     	
@@ -117,7 +132,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
         }
         
         workOrders.removeAll(woToBeRemoved);
-        
+        taskMaps.removeAll(taskMapsToBeDeleted);
+
         builder.addRecords(workOrders);
 
         //long beforeSaveTime = System.currentTimeMillis();
