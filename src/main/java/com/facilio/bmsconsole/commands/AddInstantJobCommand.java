@@ -31,10 +31,10 @@ public class AddInstantJobCommand extends FacilioCommand implements PostTransact
     @Override
     public boolean postExecute() throws Exception {
         if (context != null) {
-            if (DBConf.getInstance().getCurrentOrgId() == 592) {
+            if (DBConf.getInstance().getCurrentOrgId() == 592 || DBConf.getInstance().getCurrentOrgId() == 583) {
                 try {
                     LOGGER.info("Current transaction while adding post transaction instant => " + FacilioTransactionManager.INSTANCE.getTransactionManager().getTransaction());
-                    LOGGER.info("Adding post transaction instant jobs for TL " + jobName);
+                    LOGGER.info("Adding post transaction instant jobs for TL/Aster " + jobName);
                 }
                 catch (Exception e) {
 
