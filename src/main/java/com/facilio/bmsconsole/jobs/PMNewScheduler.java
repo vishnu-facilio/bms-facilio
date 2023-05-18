@@ -291,7 +291,7 @@ public class PMNewScheduler extends FacilioJob {
 		for (PMTriggerContext trigger: triggers) {
 			if (trigger.getSchedule() != null) {
 				long startTimeInSecond = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-				LOGGER.debug("createBulkWoContextsFromPM() - 4");
+				LOGGER.info("createBulkWoContextsFromPM() - 4");
 				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTimeInSecond, endTime, minTime, workorderTemplate);
 				bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 			}

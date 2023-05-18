@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
@@ -40,7 +41,7 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        PreventiveMaintenanceAPI.logIf(92L,"Entering BulkAddTasksCommand");
+        LOGGER.error("Entering BulkAddTasksCommand");
         BulkWorkOrderContext bulkWorkOrderContext = (BulkWorkOrderContext) context.get(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT);
 
         if (bulkWorkOrderContext.getTaskMaps() == null || bulkWorkOrderContext.getTaskMaps().isEmpty()) {
@@ -71,20 +72,26 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
                sum += tasks.size();
            }
 
-           PreventiveMaintenanceAPI.logIf(92L,"woid " + wo.getId() + " task Map size " + sum);
+           PreventiveMaintenanceAPI.logIf(779L,"woid " + wo.getId() + " task Map size " + sum);
 
            Map<String, TaskSectionContext> sections = bulkWorkOrderContext.getSectionMap().get(wo.getId());
+           if(sections == null) {
+               LOGGER.error("sections is null for WO ID = " + wo.getId());
+           }else {
+               PreventiveMaintenanceAPI.logIf(779L, "sections list: " + sections);
+           }
 
            if (workOrderTaskMap.get(wo.getId()) == null) {
                workOrderTaskMap.put(wo.getId(), 0);
            } else {
-               PreventiveMaintenanceAPI.logIf(92L,"Duplicate entry for " + wo.getId());
+               PreventiveMaintenanceAPI.logIf(779L,"Duplicate entry for " + wo.getId());
            }
 
            for (Map.Entry<String, List<TaskContext>> entry:  taskMap.entrySet()) {
                String sectionName = entry.getKey();
                List<TaskContext> tasks = entry.getValue();
                long sectionId = -1;
+               PreventiveMaintenanceAPI.logIf(779L, "taskMap section name: " + sectionName);
                if(!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
                    sectionId = sections.get(sectionName).getId();
                }
@@ -131,14 +138,14 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 			for (List<TaskContext> tasks : listOfPrerequisites) {
 				sum += tasks.size();
 			}
-			PreventiveMaintenanceAPI.logIf(92L, "woid " + wo.getId() + " Prerequisite Map size " + sum);
+			PreventiveMaintenanceAPI.logIf(779L, "woid " + wo.getId() + " Prerequisite Map size " + sum);
 
 			sections = bulkWorkOrderContext.getPrerequisiteSectionMap().get(wo.getId());
 
 			if (workOrderPrerequisiteMap.get(wo.getId()) == null) {
 				workOrderPrerequisiteMap.put(wo.getId(), 0);
 			} else {
-				PreventiveMaintenanceAPI.logIf(92L, "Duplicate entry for " + wo.getId());
+				PreventiveMaintenanceAPI.logIf(779L, "Duplicate entry for " + wo.getId());
 			}
 
 			for (Map.Entry<String, List<TaskContext>> entry : prerequisiteMap.entrySet()) {

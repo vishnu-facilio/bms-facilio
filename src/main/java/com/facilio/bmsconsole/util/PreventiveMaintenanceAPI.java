@@ -360,6 +360,7 @@ public class PreventiveMaintenanceAPI {
 			}
 
 			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
+			LOGGER.log(Level.ERROR,"getTaskMapForNewPMExecution(): Length of resourceIds: " + resourceIds.size()); // can be changed to info level
 			 for(Long resourceId :resourceIds) {
 				 if(resourceId == null || resourceId < 0) {
 					 continue;
@@ -415,6 +416,9 @@ public class PreventiveMaintenanceAPI {
 		}
 		if(workorderTemplate != null) {
 			workorderTemplate.setSectionNameList(sectionNameList);
+		}
+		if(sectionNameList != null){
+			LOGGER.log(Level.ERROR,"getTaskMapForNewPMExecution(): Length of sectionNameList: " + sectionNameList.size()); // can be changed to info level
 		}
 		return taskMap;
 	}
@@ -620,7 +624,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, long minTime, WorkorderTemplate woTemplate) throws Exception {
-		LOGGER.debug("createBulkWoContextsFromPM()");
+		LOGGER.info("createBulkWoContextsFromPM()");
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis();
@@ -651,7 +655,7 @@ public class PreventiveMaintenanceAPI {
 			isScheduled = true;
 		}
 
-		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec times " + Arrays.toString(nextExecutionTimes.toArray()));
+		LOGGER.info("PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec times " + Arrays.toString(nextExecutionTimes.toArray()));
 
 		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
 			LOGGER.log(Level.WARN, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
@@ -667,7 +671,7 @@ public class PreventiveMaintenanceAPI {
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
-		LOGGER.log(Level.ERROR, "PM " + pm.getId() + " PM Trigger ID: " + pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
+		LOGGER.info("PM " + pm.getId() + " PM Trigger ID: " + pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime &&
 				lessThenEndDate(nextExecutionTime, pmTrigger) &&
 				(pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) &&
@@ -692,7 +696,7 @@ public class PreventiveMaintenanceAPI {
 			isScheduled = true;
 		}
 
-		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec times " + Arrays.toString(nextExecutionTimes.toArray()));
+		LOGGER.info("PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec times " + Arrays.toString(nextExecutionTimes.toArray()));
 
 		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
 			LOGGER.log(Level.WARN, "No nextExecutionTimes for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
@@ -859,6 +863,7 @@ public class PreventiveMaintenanceAPI {
 
 			if(taskMapForNewPmExecution != null) {
 				taskMap = taskMapForNewPmExecution;
+				logIf(779L, "taskMap: " + taskMap);
 			}
 
 			if (taskMap != null && CollectionUtils.isNotEmpty(clonedWoTemplate.getSectionNameList())) {

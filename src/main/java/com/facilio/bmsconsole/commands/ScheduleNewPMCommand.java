@@ -135,8 +135,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             minTime = pm.getWoGeneratedUpto();
         }
 
-        LOGGER.log(Level.ERROR, "PM CREATION TYPE: " + pm.getPmCreationTypeEnum());
-        LOGGER.log(Level.ERROR, "PM TriggerTypeEnum: " + pm.getTriggerTypeEnum());
+        LOGGER.info("PM CREATION TYPE: " + pm.getPmCreationTypeEnum());
+        LOGGER.info("PM TriggerTypeEnum: " + pm.getTriggerTypeEnum());
 
         if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
             switch (pm.getTriggerTypeEnum()) {
@@ -223,7 +223,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                     long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
                                     switch (pm.getTriggerTypeEnum()) {
                                         case ONLY_SCHEDULE_TRIGGER:
-                                            LOGGER.debug("createBulkWoContextsFromPM() - 1");
+                                            LOGGER.info("createBulkWoContextsFromPM() - 1");
                                             BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, endTime, minTime, workorderTemplate);
                                             bulkWorkOrderContexts.add(bulkWoContextsFromPM);
                                             nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
@@ -385,9 +385,13 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 LOGGER.log(Level.ERROR,"Work orders are empty before sending it to chain");
             }
 
+            long beforeAddWOChainTime = System.currentTimeMillis();
+            LOGGER.log(Level.ERROR, "beforeAddWOChainTime = " + beforeAddWOChainTime);
             FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
             addWOChain.addCommand(new PMEditBlockRemovalCommand(pm.getId()));
             addWOChain.execute(context);
+            long afterAddWOChainTime = System.currentTimeMillis();
+            LOGGER.log(Level.ERROR,"Time taken for addWOChain = " + (afterAddWOChainTime - beforeAddWOChainTime));
             if (bulkWorkOrderContext.getWorkOrderContexts() != null && !bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {
                 wos.addAll(bulkWorkOrderContext.getWorkOrderContexts());
             }

@@ -38,6 +38,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
 
     public boolean executeCommand(Context context) throws Exception {
 
+        long startTime = System.currentTimeMillis();
+        LOGGER.log(Level.SEVERE, "BulkAddWorkOrderCommand: Start time = " + startTime);
     	BulkWorkOrderContext bulkWorkOrderContext = (BulkWorkOrderContext) context.get(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT);
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -118,9 +120,15 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
         
         builder.addRecords(workOrders);
 
+        //long beforeSaveTime = System.currentTimeMillis();
+        //LOGGER.log(Level.SEVERE, "Time taken till before save" + (beforeSaveTime - startTime));
+
         builder.save();
 
-        PreventiveMaintenanceAPI.logIf(92L, "Done BulkAddWorkOrderCommand");
+        //long afterSaveTime = System.currentTimeMillis();
+        //LOGGER.log(Level.SEVERE, "Time taken till after save" + (afterSaveTime - startTime));
+
+        PreventiveMaintenanceAPI.logIf(779L, "Done BulkAddWorkOrderCommand");
 
         Map<Long, List<UpdateChangeSet>> changes = builder.getChangeSet();
 
@@ -139,6 +147,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
 
 
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workOrders.stream().map(i -> i.getId()).collect(Collectors.toList()));
+        long endTime = System.currentTimeMillis();
+        LOGGER.log(Level.SEVERE, "Total time in BulkAddWorkOrderCommand" + (endTime - startTime));
 //        context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
         return false;
     }
