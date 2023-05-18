@@ -273,6 +273,22 @@ public class ViewAction extends FacilioAction {
 	public void setFromBuilder(boolean fromBuilder) {
 		this.fromBuilder = fromBuilder;
 	}
+	public long viewGroupId;
+
+	public long getViewGroupId() {
+		return viewGroupId;
+	}
+
+	public void setViewGroupId(long viewGroupId) {
+		this.viewGroupId = viewGroupId;
+	}
+	private boolean status;
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+	public boolean getStatus() {
+		return status;
+	}
 
 	private Boolean restrictPermissions;
 	public Boolean getRestrictPermissions() {
@@ -313,6 +329,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
+		context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
 		
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
@@ -320,6 +337,53 @@ public class ViewAction extends FacilioAction {
 		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
 		setResult("groupViews", context.get(FacilioConstants.ContextNames.GROUP_VIEWS));	// TODO remove
 
+		return SUCCESS;
+	}
+
+	public String getViewGroupList() throws Exception{
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
+			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		}
+
+		FacilioContext context = new FacilioContext();
+		FacilioChain getViewGroupsListChain = FacilioChainFactory.getViewGroupsListChain();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
+		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
+		context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
+		context.put(FacilioConstants.ContextNames.VIEW_NAME, viewName);
+
+		getViewGroupsListChain.setContext(context);
+		getViewGroupsListChain.execute();
+
+		setResult("groupViews", context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
+		return SUCCESS;
+	}
+
+	public String getViewsForGroup() throws Exception{
+
+		FacilioContext context = new FacilioContext();
+		FacilioChain viewVsGroupChain = FacilioChainFactory.getViewsForGroupChain();
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_ID, viewGroupId);
+		context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
+
+		viewVsGroupChain.setContext(context);
+		viewVsGroupChain.execute();
+
+		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
+		return SUCCESS;
+	}
+
+	public String editViewStatus() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, id);
+		context.put(FacilioConstants.ContextNames.VIEW_STATUS, getStatus());
+		FacilioChain editViewStatusChain = TransactionChainFactory.editViewStatusChain();
+		editViewStatusChain.setContext(context);
+		editViewStatusChain.execute();
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
+		addViewAuditLog(view, "updated");
 		return SUCCESS;
 	}
 	
@@ -471,6 +535,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
+		context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
 
 		FacilioChain addView = FacilioChainFactory.getViewsListCustomizeChain();
 		addView.execute(context);
@@ -583,7 +648,8 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields);
 		FacilioChain customizeColumnChain = FacilioChainFactory.getViewCustomizeColumnChain();
 		customizeColumnChain.execute(context);
-
+		FacilioView viewObj = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
+		addViewAuditLog(viewObj, "updated");
 		setFields((List<ViewField>) context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields));
 		
 		return SUCCESS;

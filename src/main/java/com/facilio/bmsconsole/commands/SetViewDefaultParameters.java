@@ -23,7 +23,7 @@ public class SetViewDefaultParameters extends FacilioCommand {
         if (view.getIsLocked() == null) {
             view.setLocked(false);
         }
-
+        view.setStatus(true);
         if (view.getIncludeParentCriteria()) {
             String parentViewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
             if (StringUtils.isNotEmpty(parentViewName)) {

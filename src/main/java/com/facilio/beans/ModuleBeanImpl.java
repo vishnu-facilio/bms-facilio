@@ -1387,6 +1387,13 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private void validateLookupField (BaseLookupField lookupField, Map<String, Object> fieldProps, boolean addSubModule) throws Exception {
+		if(StringUtils.isEmpty(lookupField.getRelatedListDisplayName())){
+			if(lookupField.getModule() == null){
+				lookupField.setModule(getMod(lookupField.getModuleId()));
+			}
+			String relatedListDisplayName = lookupField.getModule().getDisplayName() != null ? lookupField.getModule().getDisplayName() : lookupField.getModule().getName();
+			fieldProps.put("relatedListDisplayName", relatedListDisplayName);
+		}
 		if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
 			FacilioModule module = getMod(lookupField.getSpecialType());
 			if (module == null) {

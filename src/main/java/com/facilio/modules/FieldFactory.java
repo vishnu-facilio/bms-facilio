@@ -2647,10 +2647,10 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("companyId", "COMPANY_ID", module, FieldType.NUMBER));
         if (module.getName().equals("viewSharing")) {
             fields.add(getField("appType", "APP_TYPE", module, FieldType.NUMBER));
+            fields.add(getField("sharedBy","SHARED_BY", module, FieldType.NUMBER));
         }
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
-
         return fields;
     }
 
@@ -4318,6 +4318,11 @@ public class FieldFactory extends BaseFieldFactory {
         groupType.setModule(module);
         fields.add(groupType);
 
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedBy", module));
+
         return fields;
 
     }
@@ -4442,6 +4447,13 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getBooleanField("isListView", "IS_LIST_VIEW", module));
         fields.add(getBooleanField("isCalendarView", "IS_CALENDAR_VIEW", module));
+
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedBy", module));
+        fields.add(getBooleanField("status", "STATUS", module));
+
         return fields;
 
     }

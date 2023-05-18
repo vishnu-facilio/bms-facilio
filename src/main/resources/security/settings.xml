@@ -2426,4 +2426,25 @@
     <request path="/api/v3/requestForQuotation/convertPrToRfq" method="GET">
         <requestbody type="object"/>
     </request>
+    <request path="/api/v2/viewGroup/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="false"/>
+            <property name="fromBuilder" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/viewGroup/getViews" method="GET">
+        <urlparams>
+            <property name="viewGroupId" type="number" mandatory="true"/>
+            <property name="fromBuilder" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/views/editStatus" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
 </config>

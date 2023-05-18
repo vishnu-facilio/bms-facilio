@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,11 @@ public class FacilioView {
 		this.calendarViewContext = view.calendarViewContext;
 		this.excludeModuleCriteria=view.excludeModuleCriteria;
 		this.appLinkNames = view.appLinkNames;
+		this.sysCreatedBy = view.sysCreatedBy;
+		this.sysModifiedBy = view.sysModifiedBy;
+		this.sysCreatedTime = view.sysCreatedTime;
+		this.sysModifiedTime = view.sysModifiedTime;
+		this.status = view.getStatus();
 	}
 
 	private Boolean isListView;
@@ -454,5 +460,58 @@ public class FacilioView {
 			return excludeModuleCriteria;
 		}
 		return false;
+	}
+	private Long sysCreatedBy;
+	private Long sysModifiedBy;
+	private Long sysCreatedTime;
+	private Long sysModifiedTime;
+
+	public Long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+
+	public void setSysCreatedBy(Long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	public Long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+
+	public void setSysModifiedBy(Long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+
+	public Long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+
+	public void setSysCreatedTime(Long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	public Long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+
+	public void setSysModifiedTime(Long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	private Boolean status;
+	public Boolean getStatus(){
+		if (status == null){
+			return true;
+		}
+		return status;
+	}
+	public boolean isStatus() {
+		if (status == null){
+			return true;
+		}
+		return status;
+	}
+	public void setStatus(Boolean status){
+		this.status = status;
 	}
 }

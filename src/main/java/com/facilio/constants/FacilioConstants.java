@@ -1478,6 +1478,8 @@ public class FacilioConstants {
 
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
+
+		public static final String VIEW_STATUS = "viewStatus";
 		public static final String VIEW_GROUP = "viewGroup";
 
 		public static final String VIEW_GROUP_ID = "viewGroupId";

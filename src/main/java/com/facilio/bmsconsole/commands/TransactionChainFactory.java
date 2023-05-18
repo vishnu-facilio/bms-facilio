@@ -96,6 +96,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddDefaultLicenseCommand());
 			c.addCommand(new AddDefaultModulesCommand());
+			c.addCommand(new AddRelatedListTitleCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
@@ -4708,6 +4709,14 @@ public class TransactionChainFactory {
 	    	c.addCommand(new DeleteViewGroupCommand());
 	    	return c;
 	    }
+
+	public static FacilioChain editViewStatusChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetDBViewCommand());
+		c.addCommand(new CheckEditAccessCommand());
+		c.addCommand(new ChangeViewStatusCommand());
+		return c;
+	}
 
 		public static FacilioChain addVisitorChain() {
 			FacilioChain c = getDefaultChain();

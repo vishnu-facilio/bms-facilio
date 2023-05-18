@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -54,7 +53,8 @@ public class GetViewListCommand extends FacilioCommand {
 			viewTypeVal = (int) context.get(ContextNames.VIEW_TYPE);
 		}
 		boolean getOnlyBasicViewDetails = (context.containsKey(ContextNames.GET_ONLY_BASIC_VIEW_DETAILS)) ? (boolean)context.get(ContextNames.GET_ONLY_BASIC_VIEW_DETAILS) : false;
-		
+		boolean fromBuilder = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_FROM_BUILDER, false);
+
 		FacilioView.ViewType viewType= FacilioView.ViewType.getViewType(viewTypeVal);
 		ViewGroups.ViewGroupType groupType = ViewGroups.ViewGroupType.getGroupType(groupTypeVal);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -114,7 +114,7 @@ public class GetViewListCommand extends FacilioCommand {
 			});
 
 		if (CollectionUtils.isNotEmpty(dbViews)) {
-			dbViews = filterAccessibleViews(appId, dbViews);
+			dbViews = filterAccessibleViews(appId, dbViews, fromBuilder);
 		}
 
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
@@ -413,7 +413,7 @@ public class GetViewListCommand extends FacilioCommand {
 		}
 	}
 
-	public List<FacilioView> filterAccessibleViews(long currAppId, List<FacilioView> dbViews) throws Exception {
+	public List<FacilioView> filterAccessibleViews(long currAppId, List<FacilioView> dbViews, boolean fromBuilder) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		List<FacilioView> resultViews = new ArrayList<>();
 
@@ -460,6 +460,9 @@ public class GetViewListCommand extends FacilioCommand {
 			}
 		} else {
 			resultViews = dbViews.stream().filter(facilioView -> !facilioView.isHidden()).collect(Collectors.toList());
+		}
+		if(!fromBuilder){
+			resultViews = resultViews.stream().filter(view -> view.getStatus()).collect(Collectors.toList());
 		}
 
 		addEditableAccess(dbViews, isPrivilegedAccess, currentUserId, superAdminUserId);

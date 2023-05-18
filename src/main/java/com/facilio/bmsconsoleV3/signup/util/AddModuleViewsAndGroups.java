@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.util;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -120,6 +121,7 @@ public class AddModuleViewsAndGroups {
                         view.setModuleName(moduleName);
                         view.setModuleId(module.getModuleId());
                         view.setType(FacilioView.ViewType.TABLE_LIST);
+                        view.setStatus(true);
 
                         long viewId = addView(view, orgId);
                         view.setId(viewId);
@@ -148,7 +150,7 @@ public class AddModuleViewsAndGroups {
                 addHiddenViews(orgId, mainAppId, moduleName, module, modBean, allView, "pendingapproval", allModuleFields);
             }
         }
-        Set<Long> viewGroupIds = allViewGroupsMap.values().stream() // 3rd
+        Set<Long> viewGroupIds = allViewGroupsMap.values().stream()
                 .flatMap(viewGroupsMap -> viewGroupsMap.values().stream())
                 .map(ViewGroups::getId)
                 .collect(Collectors.toSet());
@@ -267,7 +269,12 @@ public class AddModuleViewsAndGroups {
                 long criteriaId = CriteriaAPI.addCriteria(criteria, orgId);
                 view.setCriteriaId(criteriaId);
             }
-
+            User currentUser = AccountUtil.getCurrentUser();
+            view.setSysCreatedTime(System.currentTimeMillis());
+            view.setSysModifiedTime(view.getSysCreatedTime());
+            view.setSysCreatedBy(currentUser.getId());
+            view.setSysModifiedBy(currentUser.getId());
+            view.setStatus(true);
             Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
             GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                     .table("Views")

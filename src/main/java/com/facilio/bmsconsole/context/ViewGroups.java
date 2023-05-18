@@ -20,6 +20,52 @@ public class ViewGroups {
 	private String moduleName = "";
 	
 	private int sequenceNumber = -1;
+	private Long sysCreatedBy;
+	private Long sysModifiedBy;
+	private Long sysCreatedTime;
+	private Long viewCount;
+
+	public void setViewCount(Long viewCount) {
+		this.viewCount = viewCount;
+	}
+
+	public Long getViewCount() {
+		return viewCount;
+	}
+
+	public Long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+
+	public void setSysCreatedBy(Long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	public Long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+
+	public void setSysModifiedBy(Long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+
+	public Long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+
+	public void setSysCreatedTime(Long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	public Long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+
+	public void setSysModifiedTime(Long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	private Long sysModifiedTime;
 
 	@Setter @Getter
 	private String translatedDisplayName;

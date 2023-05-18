@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;

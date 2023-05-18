@@ -1451,6 +1451,17 @@ public class FacilioChainFactory {
 		c.addCommand(new GetViewListCommand());
 		return c;
 	}
+
+	public static FacilioChain getViewGroupsListChain() {
+		FacilioChain chain = FacilioChain.getNonTransactionChain();
+		chain.addCommand(new GetViewGroupListCommand());
+		return chain;
+	}
+	public static FacilioChain getViewsForGroupChain() {
+		FacilioChain chain = FacilioChain.getNonTransactionChain();
+		chain.addCommand(new GetViewsForGroupIdCommand());
+		return chain;
+	}
 	
 	public static FacilioChain getAddViewChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

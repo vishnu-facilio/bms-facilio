@@ -36,6 +36,7 @@ public class CreateDefaultViewCommand extends FacilioCommand {
 		defaultView.setGroupId(groupId);
 		defaultView.setModuleId(module.getModuleId());
 		defaultView.setType(1);
+		defaultView.setStatus(true);
 		defaultView.setModuleName(module.getName());
 		defaultView.setFields(getDefaultViewFields(module));
 		long viewId = ViewAPI.addView(defaultView, AccountUtil.getCurrentOrg().getOrgId());

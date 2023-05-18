@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -31,6 +32,8 @@ public class CustomizeViewColumnCommand extends FacilioCommand {
 			}
 			
 			List<ViewField> savedColumns = ViewAPI.getViewColumns(viewId);
+			FacilioView dbView = ViewAPI.getView(viewId);
+			context.put(FacilioConstants.ContextNames.EXISTING_CV, dbView);
 			context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, savedColumns);
 		}
 		

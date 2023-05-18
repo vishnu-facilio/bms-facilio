@@ -1282,6 +1282,18 @@
 		</action>
 	</package>
 
+	<package name="viewGroupApiV2" namespace="/api/v2/viewGroup"
+			 extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ViewAction"
+				method="getViewGroupList">
+		</action>
+		<action name="getViews"
+				class="com.facilio.bmsconsole.actions.ViewAction"
+				method="getViewsForGroup">
+		</action>
+	</package>
+
 	<package name="viewApiV2" namespace="/api/v2/views"
 		extends="v2Api">
 		<action name="viewList"
@@ -1295,6 +1307,9 @@
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+		</action>
+		<action name="editStatus"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="editViewStatus">
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteView">

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
@@ -24,6 +26,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -63,6 +66,13 @@ public class ViewAPI {
 			viewGroup.setModuleName(moduleName);
 		}
 		viewGroup.setOrgId(orgId);
+
+		User currentUser = AccountUtil.getCurrentUser();
+		viewGroup.setSysCreatedTime(System.currentTimeMillis());
+		viewGroup.setSysModifiedTime(viewGroup.getSysCreatedTime());
+		viewGroup.setSysCreatedBy(currentUser.getId());
+		viewGroup.setSysModifiedBy(currentUser.getId());
+
 		viewGroup.setId(-1);
 		if(viewGroup.getGroupType() == null)
 		{
@@ -108,52 +118,72 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	public static List<ViewGroups> getAllGroups(long moduleId,long appId, String moduleName) throws Exception {
 		return getAllGroups(moduleId, appId, moduleName, ViewGroups.ViewGroupType.TABLE_GROUP);
 	}
-
 	public static List<ViewGroups> getAllGroups(long moduleId, long appId, String moduleName, ViewGroups.ViewGroupType groupType) throws Exception {
-	
+		List<FacilioField> fields = FieldFactory.getViewGroupFields();
+		return getAllGroups(moduleId, appId, moduleName, groupType, fields, false, false);
+	}
+	public static List<ViewGroups> getAllGroups(long moduleId, long appId, String moduleName, ViewGroups.ViewGroupType groupType, boolean getViewsCount, boolean fromBuilder) throws Exception{
+		List<FacilioField> fields = FieldFactory.getViewGroupFields();
+		return getAllGroups(moduleId, appId, moduleName, groupType, fields, getViewsCount, fromBuilder);
+	}
+	public static List<ViewGroups> getAllGroups(long moduleId, long appId, String moduleName, ViewGroups.ViewGroupType groupType, List<FacilioField> fields, boolean getViewsCount, boolean fromBuilder) throws Exception {
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleId > -1 || moduleName != null) {
-			List<FacilioField> fields = FieldFactory.getViewGroupFields();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-	
+
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table(ModuleFactory.getViewGroupsModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(groupType.getIntVal()),NumberOperators.EQUALS));
-			
+
 			if (moduleId > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
 			}
-			
+
 			else if (moduleName != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleName"), moduleName, StringOperators.IS));
 			}
-	
+
 			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
 			if (app == null) {
 				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
-	
+
 			Criteria appCriteria = new Criteria();
 			appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
 			if(app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
 				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
 			}
+			if(getViewsCount){
+				List<FacilioField> viewFields = FieldFactory.getViewFields();
+				Map<String, FacilioField> viewFieldsAsMap = FieldFactory.getAsMap(viewFields);
+				FacilioField viewIdField = viewFieldsAsMap.get("id");
+				viewIdField.setName("viewCount");
+				selectBuilder.leftJoin(ModuleFactory.getViewsModule().getTableName())
+						.on("View_Groups.ID = Views.GROUPID")
+						.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, viewFieldsAsMap.get("id"))
+						.groupBy("View_Groups.ID");
+				if (!fromBuilder) {
+					Criteria statusFilterCriteria = new Criteria();
+					statusFilterCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
+					statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", CommonOperators.IS_EMPTY));
+					selectBuilder.andCriteria(statusFilterCriteria);
+				}
+			}
 			selectBuilder.andCriteria(appCriteria);
+			selectBuilder.orderBy("View_Groups.SEQUENCE_NUMBER");
 			List<Map<String, Object>> props = selectBuilder.get();
-	
+
 			if (props != null && !props.isEmpty()) {
-	
+
 				for(Map<String, Object> prop : props) {
 					ViewGroups viewGroup = FieldUtil.getAsBeanFromMap(prop, ViewGroups.class);
 					viewGroups.add(viewGroup);
 				}
 			}
 		}
-	
+
 		return viewGroups;
-	
-	
 	}
 
 		public static List<FacilioView> getAllViews(Long appId, long moduleId, ViewType type, boolean getOnlyBasicValues, String... moduleName) throws Exception {
@@ -467,6 +497,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
 		view.setId(-1);
+		if(view.getStatus() == null){
+			view.setStatus(true);
+		}
 		if (view.getAppId() < 0) {
 			ApplicationContext app = view.getAppId() <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(view.getAppId());
 			if (app == null) {
@@ -487,6 +520,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				long criteriaId = CriteriaAPI.addCriteria(criteria, orgId);
 				view.setCriteriaId(criteriaId);
 			}
+			User currentUser = AccountUtil.getCurrentUser();
+			view.setSysCreatedTime(System.currentTimeMillis());
+			view.setSysCreatedBy(currentUser.getId());
+			view.setSysModifiedTime(System.currentTimeMillis());
+			view.setSysModifiedBy(currentUser.getId());
 			
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -694,6 +732,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			// update criteria only for customViews and timeline views
 			if(!oldView.isDefault() || (view.getTypeEnum() != null && view.getTypeEnum().equals(ViewType.TIMELINE))) {
 				view.setCriteriaId(criteriaId);
+			}
+			User currentUser = AccountUtil.getCurrentUser();
+			view.setSysModifiedTime(System.currentTimeMillis());
+			view.setSysModifiedBy(currentUser.getId());
+
+			if(view.getStatus() == null){
+				view.setStatus(true);
 			}
 
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
@@ -1024,12 +1069,29 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	
 	public static void addViewSharing(FacilioView view) throws Exception {
 		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
+		if(!FacilioUtil.isEmptyOrNull(viewSharing)) {
+			List<FacilioField> viewSharingFields = FieldFactory.getSharingFields(ModuleFactory.getViewSharingModule());
+			SharingContext<SingleSharingContext> existingSharing = SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class, viewSharingFields);
+
+			viewSharing.forEach((sharingContext) -> {
+				if (sharingContext.getId() <= 0) {
+					sharingContext.setSharedBy(AccountUtil.getCurrentUser().getOuid());
+				} else {
+					existingSharing.stream().filter(share -> share.getId() == sharingContext.getId()).findFirst()
+							.ifPresent(existingShare -> {
+								long sharedBy = existingShare.getSharedBy() > 0 ? existingShare.getSharedBy() : AccountUtil.getCurrentUser().getOuid();
+								sharingContext.setSharedBy(sharedBy);
+							});
+				}
+			});
+		}
+
 		SharingAPI.deleteSharingForParent(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
-		
+
 		if(viewSharing == null) {
 			viewSharing = new SharingContext<>();
 		}
-		
+
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());
 			
@@ -1042,12 +1104,52 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
 	}
 
+
+	public static List<FacilioView> getViewsForGroupId(long viewGroupId, boolean fromBuilder) throws Exception {
+		Criteria criteria = new Criteria();
+		List<FacilioField> viewFields = FieldFactory.getViewFields();
+		Map<String, FacilioField> viewFieldsAsMap = FieldFactory.getAsMap(viewFields);
+		FacilioField statusField = viewFieldsAsMap.get("status");
+		if(!fromBuilder){
+			Criteria statusFilterCriteria = new Criteria();
+			statusFilterCriteria.addAndCondition(CriteriaAPI.getCondition(statusField, String.valueOf(true), BooleanOperators.IS));
+			statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", CommonOperators.IS_EMPTY));
+			criteria.andCriteria(statusFilterCriteria);
+		}
+		criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getViewsModule()), StringUtils.join(LoadViewCommand.HIDDEN_VIEW_NAMES, ','), StringOperators.ISN_T));
+		List<FacilioField> fields = FieldFactory.getViewFields();
+		return getViewsForGroupIds(Collections.singletonList(viewGroupId), fields, criteria);
+	}
+	public static List<FacilioView> getViewsForGroupIds(List<Long> viewGroupIds, List<FacilioField> viewFields, Criteria criteria) throws Exception{
+		FacilioModule module = ModuleFactory.getViewsModule();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(viewFields);
+		FacilioField viewGroupIdField = fieldsMap.get("groupId");
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(viewFields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(viewGroupIdField, StringUtils.join(viewGroupIds, ','), NumberOperators.EQUALS))
+				.orderBy("SEQUENCE_NUMBER");
+		if(criteria != null && !criteria.isEmpty()){
+			builder.andCriteria(criteria);
+		}
+		List<Map<String, Object>> viewProps = builder.get();
+		return getAllViewDetails(viewProps, module.getOrgId(), true);
+	}
+
 	public static void addViewGroupSharing(long viewGroupId) throws Exception{
 		if(viewGroupId <= 0) {
 			return;
 		}
+
 		Criteria viewIdsFilterCriteria = new Criteria();
 		viewIdsFilterCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getViewsModule()), StringUtils.join(LoadViewCommand.HIDDEN_VIEW_NAMES, ','), StringOperators.ISN_T));
+
+		Criteria statusFilterCriteria = new Criteria();
+		statusFilterCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
+		statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", CommonOperators.IS_EMPTY));
+
+		viewIdsFilterCriteria.andCriteria(statusFilterCriteria);
+
 		List<Long> viewIds = getViewIdsVsGroup(viewGroupId, viewIdsFilterCriteria);
 		SharingContext<SingleSharingContext> allViewSharing = new SharingContext<>();
 		Map<Long, SharingContext<SingleSharingContext>> sharing = null;
@@ -1411,5 +1513,90 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 		}
 		view.setName(viewLinkName);
+	}
+	public static List<ViewGroups> filterAccessibleViewGroups(List<ViewGroups> viewGroups, boolean fromBuilder, Boolean isPrivilegedAccess) throws Exception {
+		if(fromBuilder || isPrivilegedAccess){
+			return viewGroups;
+		}
+		List<Long> viewGroupIds = viewGroups.stream().map(ViewGroups::getId).collect(Collectors.toList());
+		List<Long> accessibleIds = getSharedViewsOrViewGroupIds(viewGroupIds, ModuleFactory.getViewGroupSharingModule(), FieldFactory.getViewGroupSharingFields(ModuleFactory.getViewGroupSharingModule()));
+		viewGroups = viewGroups.stream().filter(viewGroup -> accessibleIds.contains(viewGroup.getId())).collect(Collectors.toList());
+
+		return viewGroups;
+	}
+
+	public static List<FacilioView> filterAccessibleViews(List<FacilioView> views, User currentUser, Boolean isPrivilegedAccess) throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		Long currentUserId = currentUser.getId();
+		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(orgId).getOuid();
+
+		views = views.stream().filter(facilioView -> !facilioView.isHidden()).collect(Collectors.toList());
+		if(!isPrivilegedAccess) {
+			List<Long> viewIds = views.stream().map(FacilioView::getId).collect(Collectors.toList());
+			List<Long> accessibleIds = getSharedViewsOrViewGroupIds(viewIds, ModuleFactory.getViewSharingModule(), FieldFactory.getSharingFields(ModuleFactory.getViewSharingModule()));
+			checkViewOwnerAccess(accessibleIds, views, superAdminUserId, currentUserId);
+			views = views.stream().filter(view -> accessibleIds.contains(view.getId())).collect(Collectors.toList());
+		}
+		addEditableAccessToViews(views, isPrivilegedAccess, currentUserId, superAdminUserId);
+		return views;
+	}
+
+	private static void checkViewOwnerAccess(List<Long> accessibleIds, List<FacilioView> views, Long superAdminUserId, Long currentUserId) {
+		for(FacilioView view: views){
+			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+			if(ownerId.equals(currentUserId)){
+				accessibleIds.add(view.getId());
+			}
+		}
+	}
+
+	public static List<Long> getSharedViewsOrViewGroupIds(List<Long> viewsOrViewGroupsIds, FacilioModule module, List<FacilioField> viewsOrViewGroupFields) throws Exception {
+		List<Long> resultIds = new ArrayList<>();
+		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharing(viewsOrViewGroupsIds, module, SingleSharingContext.class, viewsOrViewGroupFields);
+		List<Long> viewGroupIdsWithPermission = SharingAPI.getAllowedParentIds(sharingMap, DelegationType.LIST_VIEWS);
+		for(Long id: viewsOrViewGroupsIds) {
+			if(!sharingMap.containsKey(id) || viewGroupIdsWithPermission.contains(id)){
+				resultIds.add(id);
+			}
+		}
+		return resultIds;
+	}
+	public static boolean isPrivilegedAccess(long currAppId, User currentUser, long currUserAppId) throws Exception {
+		Long currentUserRoleId = currentUser.getRoleId();
+		Boolean isSuperAdmin = currentUser.isSuperAdmin();
+		// Admin/CAFMAdmin Role has equal privileges as SuperAdmin Role
+		Criteria roleNameCriteria = new Criteria();
+		String[] roleNames = { FacilioConstants.DefaultRoleNames.ADMIN, FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN, FacilioConstants.DefaultRoleNames.CAFM_ADMIN };
+		roleNameCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", org.apache.commons.lang.StringUtils.join(roleNames, ","), StringOperators.IS));
+
+		List<Role> adminRoles = AccountUtil.getRoleBean().getRoles(roleNameCriteria);
+
+		List<Long> adminRoleIds = CollectionUtils.isNotEmpty(adminRoles) ? adminRoles.stream().map(Role::getId).collect(Collectors.toList()) : new ArrayList<>();
+
+		boolean isPrivilegedRole = currentUser.getRole().isPrevileged() && (currAppId == currUserAppId);
+		boolean isAdmin = adminRoleIds.contains(currentUserRoleId);
+		return isSuperAdmin || isAdmin || isPrivilegedRole;
+	}
+
+	public static void addEditableAccessToViews(List<FacilioView> views, Boolean isPrivilegedAccess, Long currentUserId, Long superAdminUserId) {
+		for (FacilioView view : views) {
+			boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
+			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+			view.setEditable(isPrivilegedAccess || !isLocked || ownerId.equals(currentUserId));
+		}
+	}
+	public static void setViewsForViewGroup(List<FacilioView> views, List<ViewGroups> viewGroups, long groupId) {
+		ViewGroups matchingViewGroup = viewGroups.stream()
+				.filter(viewGroup -> viewGroup.getId() == groupId)
+				.findFirst()
+				.orElse(null);
+		if (matchingViewGroup != null) {
+			long matchingViewGroupId = matchingViewGroup.getId();
+			List<FacilioView> groupBasedViews = views.stream()
+					.filter(view -> matchingViewGroupId > 0 && view.getGroupId() == matchingViewGroupId)
+					.sorted(Comparator.comparing(FacilioView::getSequenceNumber))
+					.collect(Collectors.toList());
+			matchingViewGroup.setViews(groupBasedViews);
+		}
 	}
 }

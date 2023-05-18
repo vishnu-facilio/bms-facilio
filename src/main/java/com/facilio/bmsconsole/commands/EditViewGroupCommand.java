@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -20,7 +22,9 @@ public class EditViewGroupCommand extends FacilioCommand {
 		
 		ViewGroups viewGroup = (ViewGroups) context.get(FacilioConstants.ContextNames.VIEW_GROUP);
 		if (viewGroup != null) {
-			
+			User currentUser = AccountUtil.getCurrentUser();
+			viewGroup.setSysModifiedTime(System.currentTimeMillis());
+			viewGroup.setSysModifiedBy(currentUser.getId());
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(ModuleFactory.getViewGroupsModule().getTableName())
 					.fields(FieldFactory.getViewGroupFields())
