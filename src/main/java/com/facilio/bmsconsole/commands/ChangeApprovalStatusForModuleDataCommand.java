@@ -29,23 +29,10 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid approval transition");
             }
             // skip approval check for update, if approvalTransition is valid
-            context.put(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, true);
 
             for (ModuleBaseWithCustomFields record : moduleRecord) {
                 Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
-                boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(approvalTransition,
-                        moduleName, record, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()),
-                        recordPlaceHolders, (FacilioContext) context, false);
-                if (shouldChangeState) {
-                    FacilioStatus newState = StateFlowRulesAPI.getStateContext(approvalTransition.getToStateId());
-                    if (newState == null) {
-                        throw new Exception("Invalid state");
-                    }
-                    approvalTransition.executeTrueActions(record, context, recordPlaceHolders);
-                }
-                else {
-                    throw new IllegalArgumentException("Invalid permission to approve");
-                }
+                approvalTransition.executeTrueActions(record, context, recordPlaceHolders);
             }
         }
         return false;

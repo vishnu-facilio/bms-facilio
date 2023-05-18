@@ -254,6 +254,8 @@ public class FacilioConstants {
 		public static final String CURRENCIES_LIST = "currencies";
 		public static final String SUPPLEMENTS = "supplements";
 		public static final String RELATED_LIST = "relatedList";
+
+		public static final String CUSTOM_BUTTON_ID = "customButtonId";
 		public static final String RELATED_MODULE_NAME = "relatedModuleName";
 		public static final String RELATED_FIELD_NAME = "relatedFieldName";
 		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
@@ -1901,6 +1903,8 @@ public class FacilioConstants {
 		public static final String SANDBOX_MODE = "sandboxMode";
 
 		public static final String STATE_FLOW = "stateFlow";
+
+		public static final String STATE_FLOW_TRANSITION = "stateFlowTransition";
 		public static final String SETTING_STATE_FLOW = "stateflow";
 		public static final String STATE_FLOW_LIST = "stateFlows";
 		public static final String STATE_FLOW_ID = "stateFlowId";

@@ -37,7 +37,7 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
             throw new IllegalArgumentException("Invalid module, " + moduleName);
         }
         Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
-        boolean skipChecking = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
+        boolean skipChecking =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
 
         if (recordList != null && !recordList.isEmpty()) {
             for (ModuleBaseWithCustomFields record : recordList) {

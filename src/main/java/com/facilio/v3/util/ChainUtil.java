@@ -517,6 +517,11 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
 
+        transactionChain.addCommand(new ApprovalButtonValidationCommand());
+        transactionChain.addCommand(new StateTransitionValidationCommand());
+        transactionChain.addCommand(new CustomButtonValidationCommand());
+        transactionChain.addCommand(new VerifyApprovalCommandV3());
+
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new UpdateCommand(module));
@@ -530,7 +535,6 @@ public class ChainUtil {
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-        transactionChain.addCommand(new VerifyApprovalCommandV3());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);

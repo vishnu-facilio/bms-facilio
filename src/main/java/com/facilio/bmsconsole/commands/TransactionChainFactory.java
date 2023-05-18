@@ -6943,6 +6943,7 @@ public class TransactionChainFactory {
 		c.addCommand(new FaultToWorkorderStatusChangeCommand());
 		return c;
 	}
+
 }
 
 
