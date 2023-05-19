@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -20,6 +21,11 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
+            return false;
+        }
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
@@ -34,17 +40,19 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(partitionedRecordIds)) {
             for (List<Long> recordIdList : partitionedRecordIds) {
+                Long recordId = recordIdList.get(0);
                 JSONObject content = new JSONObject();
                 content.put("recordIds", recordIdList);
                 content.put("moduleName", moduleName);
                 content.put("moduleId", module.getModuleId());
 
                 Message message = new Message();
-                message.setTopic(updateOnOfflineRecord);
+                message.setTopic(updateOnOfflineRecord+"/"+recordId);
                 message.setContent(content);
                 WmsBroadcaster.getBroadcaster().sendMessage(message);
             }
         }
+
         return false;
     }
 }
