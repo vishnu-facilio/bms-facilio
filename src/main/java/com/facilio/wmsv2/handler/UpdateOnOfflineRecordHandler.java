@@ -30,7 +30,7 @@ public class UpdateOnOfflineRecordHandler extends BaseHandler{
 
     @Override
     public void processOutgoingMessage(Message message)  {
-        Long moduleId = (Long) message.getContent().get("moduleId");
+        Long moduleId = ((Number) message.getContent().get("moduleId")).longValue();
         String moduleName = (String) message.getContent().get("moduleName");
         List<Map<String, Object>> recordIds = (List<Map<String, Object>>) message.getContent().get("recordIds");
         String registerTableName = ModuleFactory.getOfflineRecordRegisterModule().getTableName();
