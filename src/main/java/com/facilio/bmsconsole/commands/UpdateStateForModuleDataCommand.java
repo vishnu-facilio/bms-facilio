@@ -50,7 +50,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		}
 
 		if (CollectionUtils.isNotEmpty(records)) {
-			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.STATE_FLOW_TRANSITION);
+			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
 
 			if (stateflowTransition == null) {
 				return false;

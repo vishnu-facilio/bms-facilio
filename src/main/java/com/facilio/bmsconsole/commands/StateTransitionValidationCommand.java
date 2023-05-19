@@ -84,8 +84,6 @@ public class StateTransitionValidationCommand extends FacilioCommand {
             }
         }
 
-        context.put(FacilioConstants.ContextNames.STATE_FLOW_TRANSITION,stateTransition);
-
         return false;
     }
 
