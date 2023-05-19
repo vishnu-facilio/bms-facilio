@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.decommission;
 
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.DecommissionContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
@@ -11,16 +11,13 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UpdateResourceDecommissionCommand extends FacilioCommand {
@@ -39,7 +36,8 @@ public class UpdateResourceDecommissionCommand extends FacilioCommand {
         //ERROR MODULES CHECK FOR SCRIPT LEVEL DECOMMISSIONING
 
         if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)){
-            Long emailCount = DecommissionUtil.getDependentResourceEmailCount(Collections.singletonList(decommissionContext.getResourceId()));
+            long orgId = AccountUtil.getCurrentOrg().getId();
+            Long emailCount = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> DecommissionUtil.getDependentResourceEmailCount(Collections.singletonList(decommissionContext.getResourceId()),orgId));
             FacilioUtil.throwIllegalArgumentException(emailCount > 0,"Email is associated with the resource");
         }
 

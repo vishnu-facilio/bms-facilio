@@ -323,13 +323,14 @@ public class DecommissionUtil {
         List<Map<String,Object>> props = builder.getAsProps();
         return CollectionUtils.isNotEmpty(props) ? (Long) props.get(0).get(AgentConstants.ID) : 0;
     }
-    public static Long getDependentResourceEmailCount( List<Long> dependentResourceIds ) throws Exception{
+    public static Long getDependentResourceEmailCount( List<Long> dependentResourceIds, long orgId) throws Exception{
         FacilioModule supportEmailsModule = ModuleFactory.getSupportEmailsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(supportEmailsModule.getTableName())
                 .select(new HashSet<>())
                 .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,FieldFactory.getIdField(supportEmailsModule))
-                .andCondition(CriteriaAPI.getCondition("SITE_ID", FacilioConstants.ContextNames.SITE, StringUtils.join(dependentResourceIds, ','), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("SITE_ID", FacilioConstants.ContextNames.SITE, StringUtils.join(dependentResourceIds, ','), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ORGID",FacilioConstants.ContextNames.ORGID, String.valueOf(orgId),NumberOperators.EQUALS));
         List<Map<String, Object>> props = builder.get();
         return CollectionUtils.isNotEmpty(props) ? (Long) props.get(0).get(AgentConstants.ID) : 0;
     }

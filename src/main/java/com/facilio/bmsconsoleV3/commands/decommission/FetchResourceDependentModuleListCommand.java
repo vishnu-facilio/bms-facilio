@@ -1,13 +1,15 @@
 package com.facilio.bmsconsoleV3.commands.decommission;
 
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.DecommissionContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 import com.facilio.bmsconsoleV3.util.DecommissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -17,8 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
 
 @Log4j
 public class FetchResourceDependentModuleListCommand extends FacilioCommand {
@@ -41,7 +41,8 @@ public class FetchResourceDependentModuleListCommand extends FacilioCommand {
         if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)) {
 
             FacilioModule supportEmailModule = ModuleFactory.getSupportEmailsModule();
-            Long emailCount = DecommissionUtil.getDependentResourceEmailCount(Collections.singletonList(currentResourceId));
+            long orgId = AccountUtil.getCurrentOrg().getId();
+            Long emailCount = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> DecommissionUtil.getDependentResourceEmailCount(Collections.singletonList(currentResourceId),orgId));
             if( emailCount > 0){
                     resourceDependentModuleList.put(FacilioConstants.ContextNames.EMAIL_SETTING,DecommissionUtil.constructResultJSON(supportEmailModule,emailCount,true));
             }
