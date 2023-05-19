@@ -25,7 +25,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		JSONObject baseScheduleListObject = new JSONObject();
 		baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseScheduleContext);
 		SessionManager.getInstance().sendMessage(new Message()
-				.setTopic(InspectionGenerationHandler.TOPIC)
+				.setTopic(InspectionGenerationHandler.TOPIC+"/"+baseScheduleContext.getId())
 				.setContent(baseScheduleListObject));
 		LOGGER.info("Pushed BaseSchedules to Session");
 		return null;
