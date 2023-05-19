@@ -10,7 +10,6 @@
  import org.apache.commons.chain.Context;
  import org.apache.commons.collections4.CollectionUtils;
  import org.apache.commons.lang3.StringUtils;
- import org.json.simple.JSONObject;
 
  import java.text.MessageFormat;
  import java.util.ArrayList;
@@ -45,15 +44,6 @@
 		FacilioField subModuleField = (FacilioField) context.get(FacilioConstants.PickList.SUBMODULE_FIELD);
 		if(subModuleField != null){
 			selectFields.add(subModuleField);
-		}
-
-		JSONObject sorting = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
-		if (sorting != null && !sorting.isEmpty()) {
-			String sortByFieldName = (String) sorting.get("orderBy");
-			FacilioField sortByField = modBean.getField(sortByFieldName, moduleName);
-			FacilioUtil.throwIllegalArgumentException(sortByField == null, MessageFormat.format("Invalid sort field for module {0}", moduleName));
-
-			selectFields.add(sortByField);
 		}
 
 		if (CollectionUtils.isNotEmpty(supplements)) {
