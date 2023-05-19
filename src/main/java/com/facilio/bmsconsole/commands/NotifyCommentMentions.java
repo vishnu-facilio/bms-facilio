@@ -216,21 +216,18 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
                 "      >\n" +
                 "        <span\n" +
                 "          style=\"\n" +
-                "    /* font-weight: bold; */\n" +
+                "          font-weight: bold; \n" +
                 "  \"\n" +
                 "          >"+sender+" </span\n" +
                 "        >mentioned you in the\n" +
                 "        <span\n" +
                 "          style=\"\n" +
-                "    /* font-weight: bold; */\n" +
+                "          font-weight: bold;   \n" +
                 "  \"\n" +
                 "          >"+moduleName+"</span\n" +
                 "        >\n" +
                 "        Module note for record ID\n" +
-                "        <span\n" +
-                "          >#"+ recordId+"\n" +
-                "         </span\n" +
-                "        >\n" +
+                "        <span style=\"font-style:italic;\">#"+ recordId+"</span>\n"+
                 "      </div>\n" +
                 "      <div\n" +
                 "        class=\"notes\"\n" +
