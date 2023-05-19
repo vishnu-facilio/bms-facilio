@@ -247,6 +247,9 @@ enums:
   - name: AggregationType
     enumClassName: com.facilio.ns.context.AggregationType
 
+  - name: NsFieldType
+    enumClassName: com.facilio.ns.context.NsFieldType
+
   - name: PMTriggerType
     enumClassName: com.facilio.bmsconsole.context.PMTriggerV2$PMTriggerType
 
@@ -320,5 +323,6 @@ enums:
 
   - name: ControlActionMode
     enumClassName: com.facilio.bmsconsole.context.ReadingDataMeta$ControlActionMode
+
   - name: Notification_Type_Enum
     enumClassName: com.facilio.bmsconsoleV3.context.PeopleNotificationSettings$Notification_Types

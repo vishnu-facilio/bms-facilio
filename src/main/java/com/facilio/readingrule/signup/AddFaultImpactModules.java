@@ -47,16 +47,16 @@ public class AddFaultImpactModules extends SignUpData {
 
 		List<FacilioField> fields = new ArrayList<>();
 		
-		LookupField ressource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
-		ressource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-        fields.add(ressource);
+		LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
+		resource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
+        fields.add(resource);
         
         NumberField impact = (NumberField) FieldFactory.getDefaultField("impact", "Impact", "IMPACT_ID", FieldType.NUMBER);
         fields.add(impact);
         
         NumberField fieldId = (NumberField) FieldFactory.getDefaultField("fieldId", "Field Id", "FIELD_ID", FieldType.NUMBER);
 		fields.add(fieldId);
-		
+
 		NumberField dataInterval = (NumberField) FieldFactory.getDefaultField("dataInterval", "Data Interval", "DATA_INTERVAL", FieldType.NUMBER);
 		fields.add(dataInterval);
 		
@@ -68,10 +68,12 @@ public class AddFaultImpactModules extends SignUpData {
 		
 		SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("aggregationTypeEnum", "Aggregation Type", "AGGREGATION_TYPE", FieldType.SYSTEM_ENUM);
         creationType.setEnumName("AggregationType");
-        
-        fields.add(creationType);
-        
-        
+		fields.add(creationType);
+
+		SystemEnumField nsFieldType = (SystemEnumField) FieldFactory.getDefaultField("nsFieldType", "NS Field Type", "NS_FIELD_TYPE", FieldType.SYSTEM_ENUM);
+        nsFieldType.setEnumName("NsFieldType");
+		fields.add(nsFieldType);
+		
 		module.setFields(fields);
 		return module;
 	}

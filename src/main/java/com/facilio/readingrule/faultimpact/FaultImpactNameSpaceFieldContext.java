@@ -3,6 +3,7 @@ package com.facilio.readingrule.faultimpact;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.ns.context.AggregationType;
 import com.facilio.ns.context.NameSpaceField;
+import com.facilio.ns.context.NsFieldType;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
@@ -46,8 +47,31 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
         }
         return -1;
     }
-    
-    public NameSpaceField getNameSpaceField() {
+
+	NsFieldType nsFieldTypeEnum;
+
+	public void setNsFieldType(String nsFieldType) {
+		this.nsFieldTypeEnum = NsFieldType.valueOf(nsFieldType);
+	}
+	public String getNsFieldType() {
+		if(nsFieldTypeEnum != null) {
+			return nsFieldTypeEnum.getValue();
+		}
+		return null;
+	}
+
+	public void setNsFieldTypeEnum(int nsFieldType) {
+		this.nsFieldTypeEnum = NsFieldType.valueOf(nsFieldType);
+	}
+
+	public int getNsFieldTypeEnum() {
+		if(nsFieldTypeEnum != null) {
+			return nsFieldTypeEnum.getIndex();
+		}
+		return -1;
+	}
+
+	public NameSpaceField getNameSpaceField() {
     	NameSpaceField field = new NameSpaceField();
     	field.setFieldId(getFieldId());
     	field.setDataInterval(getDataInterval());
