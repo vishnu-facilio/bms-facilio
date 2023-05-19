@@ -191,21 +191,24 @@ public class PMNewScheduler extends FacilioJob {
 				}
 
 				for(Long resourceId :resourceIds) {
-					List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, workorderTemplate, pmResourcePlanner, resourceId);
-					if(triggers == null) {
-						triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
-					}
+					if(!resourceMap.isEmpty() && resourceMap.get(resourceId) != null && !resourceMap.get(resourceId).isDecommission()){
+						List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, workorderTemplate, pmResourcePlanner, resourceId);
+						if(triggers == null) {
+							triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());}
 
-					if (resourceMap.get(resourceId) != null) {
-						workorderTemplate.setResourceId(resourceId);
-						workorderTemplate.setResource(resourceMap.get(resourceId));
-					} else {
-						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
-						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
-					}
-					List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, triggers);
-					if (!bulkWorkOrderContextList.isEmpty()) {
-						bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);
+						if (resourceMap.get(resourceId) != null) {
+							workorderTemplate.setResourceId(resourceId);
+							workorderTemplate.setResource(resourceMap.get(resourceId));
+						} else {
+							LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
+							CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
+						}
+						List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, triggers);
+						if (!bulkWorkOrderContextList.isEmpty()) {
+							bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);
+						}
+					}else{
+						LOGGER.log(Level.ERROR, "PMV1 Nightly Scheduler for PMID("+ pm.getId() +") has skipped Workorder generation against the resource(" +resourceId+") as it is decommissioned");
 					}
 				}
 			}

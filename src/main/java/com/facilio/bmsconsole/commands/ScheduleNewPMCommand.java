@@ -89,13 +89,19 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         if (ws != null && !ws.isEmpty()) {
             LOGGER.log(Level.ERROR, "Generated WorkOrder Size = " + ws.size());
             for (WorkOrderContext w: ws) {
-                if (w.getResource() != null && w.getResource().getId() > 0) {
-                    List<WorkOrderContext> woList = resourceTriggerWoMap.get(""+w.getResource().getId()+w.getTrigger().getId());
-                    if (woList == null) {
-                        woList = new ArrayList<>();
+                if (w.getResource() != null && w.getResource().getId() > 0 ) {
+                    ResourceContext resource = ResourceAPI.getResource(w.getResource().getId());
+                    if(resource != null && !resource.isDecommission())
+                    {
+                        List<WorkOrderContext> woList = resourceTriggerWoMap.get(""+w.getResource().getId()+w.getTrigger().getId());
+                        if (woList == null) {
+                            woList = new ArrayList<>();
+                        }
+                        woList.add(w);
+                        resourceTriggerWoMap.put("" + w.getResource().getId() + w.getTrigger().getId(), woList);
+                    } else {
+                        LOGGER.log(Level.ERROR, "Trigger - "+ w.getTrigger().getId() +" has been skipped as the corresponding Resource ("+ w.getResource().getId() +") is decommissioned");
                     }
-                    woList.add(w);
-                    resourceTriggerWoMap.put("" + w.getResource().getId() + w.getTrigger().getId(), woList);
                 }
             }
         }else {

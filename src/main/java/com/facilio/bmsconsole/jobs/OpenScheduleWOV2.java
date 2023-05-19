@@ -1,27 +1,25 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.PMPlanner;
-import com.facilio.bmsconsole.context.PMTriggerV2;
-import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.util.V3WorkOderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 
 import lombok.extern.log4j.Log4j;
+import org.apache.log4j.Level;
 
 /*
     TODO(4): Test
@@ -64,6 +62,28 @@ public class OpenScheduleWOV2 extends FacilioJob {
         if(workOrderContext == null ){
             return false;
         }
+
+        if(!FacilioUtil.isEmptyOrNull(workOrderContext.getResource())){
+            ResourceContext resource = ResourceAPI.getResource(workOrderContext.getResource().getId());
+            if(resource != null && resource.isDecommission()){
+//                FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+
+                DeleteRecordBuilder<WorkOrderContext> delete = new DeleteRecordBuilder<WorkOrderContext>()
+                        .module(workOrderModule)
+                        .skipModuleCriteria()
+                        .andCondition(CriteriaAPI.getIdCondition(workOrderContext.getId(), workOrderModule));
+                delete.markAsDelete();
+
+//                DeleteRecordBuilder<TicketContext> delete = new DeleteRecordBuilder<TicketContext>()
+//                        .module(ticketModule)
+//                        .andCondition(CriteriaAPI.getIdCondition(workOrderContext.getId(), ticketModule));
+//                delete.markAsDelete();
+
+                LOGGER.log(Level.ERROR, "PMV2 WorkOrder has been deleted as the corresponding resource is decommissioned: WO_ID = " + workOrderContext.getId());
+                return false;
+            }
+        }
+
         if(workOrderContext.getPmV2() != null && workOrderContext.getPmPlanner() != null && workOrderContext.getPmTriggerV2() != null){
             Long pmV2Id = workOrderContext.getPmV2();
             Long plannedId = workOrderContext.getPmPlanner();

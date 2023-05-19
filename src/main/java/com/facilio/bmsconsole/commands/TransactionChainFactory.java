@@ -7017,6 +7017,18 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain updateDecommissionedResources() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DecommissionWorkOrder());
+//		chain.addCommand(new DecommissionInspection());
+		return chain;
+	}
+
+	public static FacilioChain updateRecommissioningResources() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new RecommissionWorkOrder());
+		return chain;
+	}
 }
 
 
