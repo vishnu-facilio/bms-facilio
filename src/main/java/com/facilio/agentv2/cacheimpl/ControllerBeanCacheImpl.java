@@ -35,7 +35,7 @@ public class ControllerBeanCacheImpl extends ControllerBeanImpl implements Contr
                     return controller;
                 }
                 // Cache Hit
-                LOGGER.info("Cache-Hit: Get Controller from cache for Controller: "+ key);
+                LOGGER.debug("Cache-Hit: Get Controller from cache for Controller: "+ key);
                 return controller;
             } else {
                 throw new Exception("Controller type is missing in payload -> "+ payload);
