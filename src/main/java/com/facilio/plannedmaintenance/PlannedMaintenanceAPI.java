@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMResourcePlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
@@ -18,11 +19,13 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.time.Duration;
 import java.util.*;
@@ -166,8 +169,10 @@ public class PlannedMaintenanceAPI {
             }
             for(PMTriggerV2 pmTriggerV2 : pmTriggerV2List){
                 if(pmTriggerV2.getFrequencyEnum() != null){
-                    String scheduleMsg = StringUtils.capitalize(pmTriggerV2.getFrequencyEnum().getName());
-                    pmTriggerV2.setScheduleMsg(scheduleMsg);
+                    JSONParser parser = new JSONParser();
+                    ScheduleInfo scheduleInfo = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(pmTriggerV2.getSchedule()), ScheduleInfo.class);
+                    pmTriggerV2.setScheduleMsg(scheduleInfo.getFrequencyTypeEnum().getDescription());
+                    pmTriggerV2.setFrequency(computeFrequencyForCalendar(scheduleInfo.getFrequencyTypeEnum()));
                 }
             }
             pmTriggerMap.put(pmId,pmTriggerV2List);
@@ -399,5 +404,33 @@ public class PlannedMaintenanceAPI {
                 .on(pmResourcePlannerModule.getTableName()+".PM_ID = "+plannedMaintenacenanceModule.getTableName()+".ID")
                 .andCondition(CriteriaAPI.getCondition(jobPlan,String.valueOf(jobPlanId),NumberOperators.EQUALS));
         return builder.get();
+    }
+    public static int computeFrequencyForCalendar(ScheduleInfo.FrequencyType frequencyType){
+        int frequency = 0;
+        switch (frequencyType){
+            case DAILY:
+                frequency = FacilioFrequency.DAILY.getValue();
+                break;
+            case WEEKLY:
+                frequency = FacilioFrequency.WEEKLY.getValue();
+                break;
+            case MONTHLY_DAY:
+            case MONTHLY_WEEK:
+                frequency =  FacilioFrequency.MONTHLY.getValue();
+                break;
+            case QUARTERLY_DAY:
+            case QUARTERLY_WEEK:
+                frequency = FacilioFrequency.QUARTERTLY.getValue();
+                break;
+            case HALF_YEARLY_DAY:
+            case HALF_YEARLY_WEEK:
+                frequency =  FacilioFrequency.HALF_YEARLY.getValue();
+                break;
+            case YEARLY:
+            case YEARLY_WEEK:
+                frequency = FacilioFrequency.ANNUALLY.getValue();
+                break;
+        }
+        return frequency;
     }
 }
