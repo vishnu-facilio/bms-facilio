@@ -5,10 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ParametersContext{
+public class ParameterContext{
 
     private long id = -1;
     private long flowId = -1;
-    private String parameters;
+    private String parameter;
 
 }

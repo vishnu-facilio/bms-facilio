@@ -3406,7 +3406,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("flowId","FLOW_ID",module));
         fields.add(getBooleanField("isStartBlock","START_BLOCK",module));
         fields.add(getNumberField("connectedFrom","CONNECTED_FROM",module));
-        fields.add(getNumberField("position","POSITION_NO",module));
+        fields.add(getStringField("position","POSITION",module));
         fields.add(getStringField("configData","CONFIG_DATA",module));
         return fields;
     }

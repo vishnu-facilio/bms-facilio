@@ -64,4 +64,9 @@ public class FlowChain {
         chain.addCommand(new GetAvailableBlocksListCommand());
         return chain;
     }
+    public static FacilioChain getExecuteFlowChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new ExecuteFlowCommand());
+        return chain;
+    }
 }

@@ -1,16 +1,19 @@
 package com.facilio.flows.command;
 
+import com.facilio.blockfactory.BlockFactory;
+import com.facilio.blockfactory.blocks.BaseBlock;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.flowengine.context.Constants;
 import com.facilio.flows.context.FlowTransitionContext;
-import com.facilio.flows.context.ParametersContext;
 import com.facilio.flows.util.FlowUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import java.util.Map;
@@ -31,6 +34,15 @@ public class AddOrUpdateFlowTransitionCommand extends FacilioCommand {
           if (flowTransition.getIsStartBlock() && FlowUtil.validateStartBlock(flowId)){
               throw new IllegalArgumentException("Start block is already declared");
           }
+          FacilioUtil.throwIllegalArgumentException(flowTransition.getBlockType() == null,"blockType can't be empty");
+
+          Map<String, Object> blockConfig = BlockFactory.getAsMapFromJsonString(flowTransition.getConfigData());
+
+          blockConfig.put(Constants.BLOCK_ID,flowTransition.getId());
+
+          BaseBlock baseBlock =BlockFactory.createBlock(blockConfig,flowTransition.getBlockType());
+
+          baseBlock.validateBlockConfiguration();
 
           Map<String, Object> props = FieldUtil.getAsProperties(flowTransition);
 

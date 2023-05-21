@@ -10,7 +10,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.flows.context.FlowTransitionContext;
-import com.facilio.flows.context.ParametersContext;
+import com.facilio.flows.context.ParameterContext;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -60,8 +60,18 @@ public class FlowUtil {
                 .andCondition(CriteriaAPI.getIdCondition(id,ModuleFactory.getFlowModule()));
 
         FlowContext flow = FieldUtil.getAsBeanFromMap(builder.fetchFirst(),FlowContext.class);
-
+        List<ParameterContext> parameters = getParameters(id);
+        flow.setParameters(parameters);
         return flow;
+    }
+    public static List<ParameterContext> getParameters(Long flowId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getFlowParameterFields())
+                .table(ModuleFactory.getFlowParameters().getTableName())
+                .andCondition(CriteriaAPI.getCondition("FLOW_ID","flowId",flowId.toString(),NumberOperators.EQUALS));
+
+        List<ParameterContext> parameters = FieldUtil.getAsBeanListFromMapList(builder.get(), ParameterContext.class);
+        return parameters;
     }
 
     public static Boolean checkUniqueName(String uniqueName) throws Exception{
@@ -137,7 +147,7 @@ public class FlowUtil {
         return flowTransition;
     }
 
-    public static void addOrUpdateParameter(ParametersContext parameters) throws Exception{
+    public static void addOrUpdateParameter(ParameterContext parameters) throws Exception{
 
         if (parameters.getId() > 0){
 

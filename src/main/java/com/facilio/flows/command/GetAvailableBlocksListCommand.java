@@ -1,8 +1,8 @@
 package com.facilio.flows.command;
 
+import com.facilio.blockfactory.enums.BlockType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.flows.context.FlowTransitionContext;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -17,15 +17,13 @@ public class GetAvailableBlocksListCommand extends FacilioCommand {
         int type = (int) context.get(FacilioConstants.ContextNames.TYPE);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-            List<Map<String, Object>> availableBlocks = new ArrayList<>();
+        List<Map<String, Object>> availableBlocks = new ArrayList<>();
 
+        if (type == 2) {
+            availableBlocks = BlockType.getGroupBlockList();
+        }
 
-            if (type == 2) {
-                Map<String, Object> groupsVsBlockMap = FlowTransitionContext.Blocks.getGroupBlockMap();
-                availableBlocks.add(groupsVsBlockMap);
-            }
-
-            context.put(FacilioConstants.ContextNames.AVAILABLE_BLOCKS,availableBlocks);
+        context.put(FacilioConstants.ContextNames.AVAILABLE_BLOCKS,availableBlocks);
 
 
         return false;

@@ -1,11 +1,11 @@
 package com.facilio.flows.context;
 
 import com.facilio.modules.FacilioIntEnum;
-import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class FlowContext implements Serializable {
     private long sysCreatedTime = -1;
     private long sysModifiedTime = -1;
 
-    private ParametersContext parameter;
+    private List<ParameterContext> parameters;
 
     private FlowType flowType;
     public int getFlowType() {

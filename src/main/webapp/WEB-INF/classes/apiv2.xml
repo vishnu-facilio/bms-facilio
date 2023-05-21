@@ -277,6 +277,7 @@
 		<action name="list" class="com.facilio.flows.action.FlowAction" method="getFlowList"/>
 		<action name="get" class="com.facilio.flows.action.FlowAction" method="viewFlow"/>
 		<action name="delete" class="com.facilio.flows.action.FlowAction" method="deleteFlow"/>
+		<action name="executeFlow" class="com.facilio.flows.action.FlowAction" method="executeFlow"/>
 	</package>
 
 	<package name="flowTransition" namespace="/api/v2/flowTransition" extends="v2Api">

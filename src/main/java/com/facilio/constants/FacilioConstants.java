@@ -1939,6 +1939,7 @@ public class FacilioConstants {
 		public static final String FLOW_ID = "flowId";
 
 		public static final String AVAILABLE_BLOCKS = "availableBlocks";
+		public static final String MEMORY = "memory";
 		public static final String APPROVAL_TRANSITION_ID = "approvalTransitionId";
 		public static final String SKIP_APPROVAL_CHECK = "approvalMandatorySuccess";
 

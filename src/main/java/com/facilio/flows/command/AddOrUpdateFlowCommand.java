@@ -8,7 +8,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.flows.context.FlowContext;
-import com.facilio.flows.context.ParametersContext;
+import com.facilio.flows.context.ParameterContext;
 import com.facilio.flows.util.FlowUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -16,7 +16,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AddOrUpdateFlowCommand extends FacilioCommand {
@@ -63,14 +66,23 @@ public class AddOrUpdateFlowCommand extends FacilioCommand {
             }
 
             flowContext.setId((long) props.get("id"));
-            ParametersContext parameters = flowContext.getParameter();
-            parameters.setFlowId(flowContext.getId());
-            FlowUtil.addOrUpdateParameter(flowContext.getParameter());
+            List<ParameterContext> parameters = flowContext.getParameters();
+
+            addOrUpdateParameters(parameters, flowContext.getId());
 
         }
 
         context.put(FacilioConstants.ContextNames.FLOW,flowContext);
 
         return false;
+    }
+    private void addOrUpdateParameters(List<ParameterContext> parameters,long flowId) throws Exception {
+        if(CollectionUtils.isEmpty(parameters)){
+            return;
+        }
+       for (ParameterContext parameter : parameters){
+           parameter.setFlowId(flowId);
+           FlowUtil.addOrUpdateParameter(parameter);
+       }
     }
 }
