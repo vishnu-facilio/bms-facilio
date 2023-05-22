@@ -1845,10 +1845,13 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkOrderCost() {
         return () -> new V3Config(V3WorkorderCostContext.class, null)
                 .create()
+                .afterSave(TransactionChainFactoryV3.getAfterCreateWorkOrderCostChainV3())
                 .update()
+                .afterSave(TransactionChainFactoryV3.getAfterUpdateWorkOrderCostChainV3())
                 .list()
                 .summary()
                 .delete()
+                .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkOrderCostChainV3())
                 .build();
     }
 

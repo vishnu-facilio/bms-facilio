@@ -2815,6 +2815,30 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getAfterCreateWorkOrderCostChainV3(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(getFillParentIdAndUpdateWorkOrderCostChainV3());
+        return chain;
+    }
+
+    public static FacilioChain getAfterUpdateWorkOrderCostChainV3(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(getFillParentIdAndUpdateWorkOrderCostChainV3());
+        return chain;
+    }
+
+    public static FacilioChain getAfterDeleteWorkOrderCostChainV3(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(getFillParentIdAndUpdateWorkOrderCostChainV3());
+        return chain;
+    }
+
+    public static FacilioChain getFillParentIdAndUpdateWorkOrderCostChainV3(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FillParentIdForCalculationOfWorkOrderCostV3());
+        chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
+        return chain;
+    }
     public static FacilioChain getReserveValidationChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReservationValidationCommandV3());
