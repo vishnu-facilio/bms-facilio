@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.*;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -20,7 +22,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -102,7 +104,27 @@ public class GetFormListCommand extends FacilioCommand {
 
 		if(!skipTemplatePermission){
 			forms = new LinkedHashMap<>(FormFactory.getForms(moduleName, appLinkNames));
+
+			boolean isMigratedApp = false;
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			Map<String,Object> migratedAppStatus = CommonCommandUtil.getOrgInfo(orgId,"isMigratedApp");
+			if(MapUtils.isNotEmpty(migratedAppStatus)){
+				Object value = migratedAppStatus.getOrDefault("value",false);
+				isMigratedApp =  FacilioUtil.parseBoolean(value);
+			}
+
+			if(isMigratedApp){
+				ApplicationContext applicationContext = ApplicationApi.getApplicationForId(appId);
+				if(applicationContext!=null && Objects.equals(applicationContext.getLinkName(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)){
+					List<String> newAppLinkName = new ArrayList<>();
+					newAppLinkName.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+					forms = new LinkedHashMap<>(FormFactory.getForms(moduleName, newAppLinkName));
+				}
+			}
+
 		}
+
+
 		if (!forms.isEmpty()) {
 			for(Map.Entry<String, FacilioForm> entry :forms.entrySet()) {
 				entry.getValue().setModule(module);
@@ -153,7 +175,7 @@ public class GetFormListCommand extends FacilioCommand {
 			}
 		}
 
-		if (dbForms != null) {
+		if (MapUtils.isNotEmpty(dbForms)) {
 
 			Map<Long,FacilioModule> moduleIdVsModuleMap = new HashMap<>();
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
