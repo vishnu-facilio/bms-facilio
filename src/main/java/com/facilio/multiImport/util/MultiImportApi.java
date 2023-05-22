@@ -1092,7 +1092,7 @@ public class MultiImportApi {
 
         List<MultiImportField> multiImportFields = new ArrayList<>();
 
-        List<String> mandatoryFieldsNames = getMandatoryFieldNames(moduleName);
+        List<String> mandatoryFieldsNames = getMandatoryFieldNames(module);
         for(FacilioField facilioField : facilioFields){
             String fieldName = facilioField.getName();
             MultiImportField importField =  new MultiImportField();
@@ -1124,7 +1124,11 @@ public class MultiImportApi {
         return facilioFields;
 
     }
-    public static List<String> getMandatoryFieldNames(String moduleName){
+    public static List<String> getMandatoryFieldNames(FacilioModule module){
+        if(module.isCustom()){
+            return Arrays.asList("name");
+        }
+        String moduleName = module.getName();
         switch (moduleName){
             case FacilioConstants.ContextNames.WORK_ORDER:
                 return Arrays.asList("subject","siteId","moduleState");

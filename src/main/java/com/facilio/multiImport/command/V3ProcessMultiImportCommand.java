@@ -184,8 +184,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         Map<String, Object> rowVal = rowContext.getRawRecordMap(); // un processed prop
         long rowNo = rowContext.getRowNumber();
 
-        LOGGER.info("row -- " + rowNo + " rowVal --- " + rowVal);
-
         // adding source_type and source_id in the props
         props.put(FacilioConstants.ContextNames.SOURCE_TYPE, SourceType.IMPORT.getIndex());
         props.put(FacilioConstants.ContextNames.SOURCE_ID, importId);
@@ -375,7 +373,18 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 props.put(field.getName(), value);
                 break;
             }
-            case NUMBER:
+            case NUMBER:{
+                String cellValueString = cellValue.toString();
+                if (cellValueString.contains(",")) {
+                    cellValueString = cellValueString.replaceAll(",", "");
+                }
+
+                long cellLongValue =(long)Double.parseDouble(cellValueString);
+                if (!props.containsKey(field.getName())) {
+                    props.put(field.getName(), cellLongValue);
+                }
+                break;
+            }
             case DECIMAL: {
                 String cellValueString = cellValue.toString();
                 if (cellValueString.contains(",")) {
@@ -561,9 +570,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }catch (Exception ignored){
                     value=null;
                 }
-            }
-            else if (FacilioUtil.isNumeric(value.toString())) {
-                value = ((Double) FacilioUtil.parseDouble(value)).toString();
             }
             uniqueKey.append(value);
             if (i == uniqueFields.size() - 1) {

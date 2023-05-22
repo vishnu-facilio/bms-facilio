@@ -10,14 +10,23 @@ import org.apache.commons.chain.Context;
 
 import java.util.*;
 
-public class GetMultiImportModulesCommand extends FacilioCommand {
+public class
+GetMultiImportModulesCommand extends FacilioCommand {
 
     public static final List<String> MODULES = Arrays.asList(
             FacilioConstants.ContextNames.WORK_ORDER,
             FacilioConstants.ContextNames.ASSET,
             FacilioConstants.ContextNames.VENDORS,
             FacilioConstants.ContextNames.VENDOR_CONTACT,
-            FacilioConstants.ContextNames.INSURANCE,
+            FacilioConstants.ContextNames.SITE,
+            FacilioConstants.ContextNames.BUILDING,
+            FacilioConstants.ContextNames.FLOOR,
+            FacilioConstants.ContextNames.SPACE,
+            FacilioConstants.ContextNames.LOCATION,
+            FacilioConstants.ContextNames.TENANT,
+            FacilioConstants.ContextNames.TENANT_CONTACT,
+            FacilioConstants.ContextNames.TENANT_UNIT_SPACE
+            /*FacilioConstants.ContextNames.INSURANCE,
             FacilioConstants.ContextNames.BASE_VISIT,
             FacilioConstants.ContextNames.VISITOR_LOG,
             FacilioConstants.ContextNames.INVITE_VISITOR,
@@ -26,9 +35,7 @@ public class GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS,
             FacilioConstants.ContextNames.WARRANTY_CONTRACTS,
             FacilioConstants.ContextNames.SERVICE,
-            FacilioConstants.ContextNames.TENANT,
-            FacilioConstants.ContextNames.TENANT_CONTACT,
-            FacilioConstants.ContextNames.TENANT_UNIT_SPACE,
+
             FacilioConstants.ContextNames.PURCHASE_REQUEST,
             FacilioConstants.ContextNames.PURCHASE_ORDER,
             FacilioConstants.ContextNames.SERVICE_REQUEST,
@@ -36,10 +43,6 @@ public class GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
             FacilioConstants.ContextNames.FacilityBooking.FACILITY,
             FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
-            FacilioConstants.ContextNames.SITE,
-            FacilioConstants.ContextNames.BUILDING,
-            FacilioConstants.ContextNames.FLOOR,
-            FacilioConstants.ContextNames.SPACE,
             FacilioConstants.Inspection.INSPECTION_TEMPLATE,
             FacilioConstants.Inspection.INSPECTION_RESPONSE,
             FacilioConstants.Induction.INDUCTION_TEMPLATE,
@@ -47,12 +50,10 @@ public class GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.TRANSFER_REQUEST,
             FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT,
             FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,
-            FacilioConstants.ContextNames.PLANNEDMAINTENANCE,
             FacilioConstants.ContextNames.ANNOUNCEMENT,
-            FacilioConstants.ContextNames.JOB_PLAN,
             FacilioConstants.ContextNames.ATTENDANCE,
-            FacilioConstants.PeopleGroup.PEOPLE_GROUP,
-            FacilioConstants.ContextNames.LOCATION);
+            FacilioConstants.PeopleGroup.PEOPLE_GROUP*/
+           );
 
 
     @Override
