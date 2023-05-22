@@ -33,6 +33,9 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
         }
 
         String moduleName = Constants.getModuleName(context);
+
+        LOGGER.info("CustomButtonForDataListCommand called for moduleName:"+moduleName);
+
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<? extends ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
         List<Integer> positionTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.POSITION_TYPE);
