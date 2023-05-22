@@ -33,7 +33,7 @@ public class SummaryWidgetAction extends FacilioAction{
     private boolean fetchMainFields;
     private Map<String, Object> widgetParams;
 
-    public String getSummaryWidget() throws Exception {
+    public String getMainSummaryWidget() throws Exception {
         FacilioChain getPageWidgetChain = TransactionChainFactory.getPageWidgetChain();
 
         FacilioContext context = getPageWidgetChain.getContext();

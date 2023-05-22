@@ -7420,7 +7420,7 @@
 
 	<package name="customPageAPI" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="summaryFieldWidget"
-				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getSummaryWidget">
+				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getMainSummaryWidget">
 		</action>
 	</package>
 

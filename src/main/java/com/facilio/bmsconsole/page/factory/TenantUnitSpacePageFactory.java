@@ -3,7 +3,12 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -75,7 +80,21 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-        addSecondaryDetailsWidget(tab2Sec1);
+
+        boolean isNewSummaryWidgetAdded = false;
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SUMMARY_WIDGET)) {
+            SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidget(module.getModuleId());
+            if(pageWidget != null){
+                isNewSummaryWidgetAdded = true;
+                PageWidget newSummaryFieldsWidget = new PageWidget(PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);
+                newSummaryFieldsWidget.addToLayoutParams(tab2Sec1, 24, 7);
+                tab2Sec1.addWidget(newSummaryFieldsWidget);
+            }
+        }
+        if(!isNewSummaryWidgetAdded) {
+            addSecondaryDetailsWidget(tab2Sec1);
+        }
+
         if(!(AccountUtil.getCurrentOrg().getId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))) {
             addNotesAttachmentsModule(tab2Sec1);
         }
