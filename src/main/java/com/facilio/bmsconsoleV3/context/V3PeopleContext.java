@@ -228,4 +228,8 @@ public class V3PeopleContext extends V3Context {
     private List<Long> groups;
     @Getter@Setter
     private Long shiftId;
+    @Getter@Setter
+    boolean isSuperAdmin = false; // for client purpose only
+    @Getter@Setter
+    boolean isCurrentUser = false; // for client purpose only
 }

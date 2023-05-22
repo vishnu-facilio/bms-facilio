@@ -2,26 +2,36 @@ package com.facilio.bmsconsole.commands.IAMUserManagement;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.ApplicationUserUtil;
+import com.facilio.beans.PermissionSetBean;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class AddPeopleCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
+        UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+        PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
 
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
         PeopleContext existingPeople = ApplicationUserUtil.checkIfExistsinPeople(user.getUser().getEmail());
@@ -62,6 +72,18 @@ public class AddPeopleCommand extends FacilioCommand {
             user.getUser().setInvitedBy(AccountUtil.getCurrentUser().getUid());
         }
         else{
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+                List<PermissionSetContext> permissionSetList = permissionSetBean.getUserPermissionSetMapping(existingPeople.getId(), false);
+                if (CollectionUtils.isNotEmpty(permissionSetList)) {
+                    List<Long> permissionSetIds = permissionSetList.stream().map(PermissionSetContext::getId).collect(Collectors.toList());
+                    existingPeople.setPermissionSets(permissionSetIds);
+                }
+            }
+
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING)) {
+                Long scopingId = userScopeBean.getPeopleScoping(existingPeople.getId());
+                existingPeople.setScopingId(scopingId);
+            }
             existingPeople.setUser(true);
             RecordAPI.updateRecord(FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(existingPeople), PeopleContext.class), Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE), Constants.getModBean().getAllFields(FacilioConstants.ContextNames.PEOPLE));
             user.setPeopleId(existingPeople.getId());

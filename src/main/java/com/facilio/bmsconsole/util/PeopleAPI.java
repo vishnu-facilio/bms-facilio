@@ -6,6 +6,7 @@ import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.ApplicationUserUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.PermissionSetBean;
 import com.facilio.beans.UserScopeBean;
@@ -50,7 +51,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.logging.log4j.util.Strings;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -726,16 +726,19 @@ public class PeopleAPI {
 	}
 
 	public static void deletePeopleUsers(List<Long> peopleIds) throws Exception {
-		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+		Organization org = AccountUtil.getCurrentOrg();
+		FacilioField uid = FieldFactory.getNumberField("uid","USERID",AccountConstants.getAppOrgUserModule());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("ORG_Users");
-		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+				.select(Collections.singletonList(uid))
+				.table("ORG_Users")
+				.groupBy(uid.getCompleteColumnName())
+				.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> list = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(list)) {
+		if (CollectionUtils.isNotEmpty(list) && org != null) {
 			for (Map<String, Object> map : list) {
-				AccountUtil.getUserBean().deleteUser((long) map.get("ouid"), false);
+				Long userId = (long) map.get("uid");
+				ApplicationUserUtil.deleteUser(org.getOrgId(),userId);
 			}
 		}
 	}
@@ -1574,9 +1577,9 @@ public class PeopleAPI {
 		builder.delete();
 	}
 
-	public static List<User> getUsersForPeopleIds(Set<Long> peopleIds) throws Exception {
+	public static List<User> getUsersForPeopleId(Long peopleId) throws Exception {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
 		List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
 		return users;
 	}

@@ -69,7 +69,7 @@ public class EmployeeModule extends BaseModuleConfig{
         allView.setDisplayName("All Employees");
         allView.setModuleName(employeeModule.getName());
         allView.setSortFields(sortFields);
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
         return allView;
     }
 
@@ -83,7 +83,7 @@ public class EmployeeModule extends BaseModuleConfig{
         employeeContactForm.setName("default_employee_web");
         employeeContactForm.setModule(employeeModule);
         employeeContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        employeeContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        employeeContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> employeeContactFormFields = new ArrayList<>();
         employeeContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

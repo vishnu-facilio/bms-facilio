@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.people;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -30,7 +31,8 @@ public class convertPeopleTypeCommand extends FacilioCommand {
 
         ModuleBean modBean = Constants.getModBean();
         FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        FacilioField peopleTypeField = modBean.getField(FacilioConstants.ContextNames.PEOPLE_TYPE, FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> pplFields = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(pplFields);
         V3PeopleContext.PeopleType newPeopleType = V3PeopleContext.PeopleType.valueOf(peopleTypeInt);
 
         if(CollectionUtils.isNotEmpty(peopleIds)){
@@ -84,8 +86,17 @@ public class convertPeopleTypeCommand extends FacilioCommand {
                     updateModuleLocalId(newModule.getName(),localId);
                 }
                 people.setPeopleType(newPeopleType.getIndex());
-                V3RecordAPI.updateRecord(people,peopleModule,Collections.singletonList(peopleTypeField));
+                people.setIsOccupantPortalAccess(false);
+                people.setIsEmployeePortalAccess(false);
+                people.setUser(false);
+                List<FacilioField> updateFields = new ArrayList<>();
+                updateFields.add(fieldMap.get(FacilioConstants.ContextNames.PEOPLE_TYPE));
+                updateFields.add(fieldMap.get("isOccupantPortalAccess"));
+                updateFields.add(fieldMap.get("employeePortalAccess"));
+                updateFields.add(fieldMap.get("user"));
+                V3RecordAPI.updateRecord(people,peopleModule,updateFields);
             }
+            PeopleGroupUtils.markAsDeletePeopleGroupMember(peopleIds);
         }
 
         return false;

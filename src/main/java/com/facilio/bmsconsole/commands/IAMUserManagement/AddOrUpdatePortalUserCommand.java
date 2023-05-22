@@ -22,6 +22,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
         boolean sendInvitation = (boolean) context.get(FacilioConstants.ContextNames.SEND_INVITE);
         String appLinkName = (String) context.get(FacilioConstants.ContextNames.APP_LINKNAME);
+        String password=(String) context.getOrDefault(FacilioConstants.ContextNames.PASSWORD,null);
 
         AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(user.getApplicationId());
         if(appDomainObj == null) {
@@ -53,7 +54,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
                 newUser.setMobile(existingPeople.getMobile());
                 newUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(newUser);
-                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(), user.getApplicationId(),true, user, sendInvitation, null);
+                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(), user.getApplicationId(),true, user, sendInvitation, password);
             } else {
                 existingUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(existingUser);

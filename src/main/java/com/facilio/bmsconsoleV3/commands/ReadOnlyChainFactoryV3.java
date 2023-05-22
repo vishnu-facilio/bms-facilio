@@ -36,6 +36,8 @@ import com.facilio.bmsconsoleV3.commands.jobplanSection.AddSupplementForJobPlanS
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddSupplementForJobPlanTaskCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.FillReadingObjForJobPlanTaskCommand;
+import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
+import com.facilio.bmsconsoleV3.commands.people.FetchPeopleMeta;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.V3FetchPeopleGroupCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.FetchExtraFieldsForPPMCommand;
@@ -388,6 +390,21 @@ public class ReadOnlyChainFactoryV3 {
         chain.addCommand(new JoinAndFetchAnnouncementPeopleCommandV3());
         chain.addCommand(new LoadEmployeeLookupCommandV3());
         return chain;
+    }
+
+    public static FacilioChain getPeopleAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchLabourAndUserContextForPeople());
+        c.addCommand(new FetchScopingForPeopleCommandV3());
+        c.addCommand(new FetchPeopleMeta());
+        return c;
+    }
+
+    public static FacilioChain getPeopleAfterListChain(){
+        FacilioChain c =getDefaultChain();
+        c.addCommand(new FetchScopingForPeopleCommandV3());
+        c.addCommand(new FetchPeopleMeta());
+        return c;
     }
 
     public static FacilioChain getPeopleGroupChain() {

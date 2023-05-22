@@ -1089,7 +1089,7 @@ public class V3PeopleAPI {
             criteria.addAndCondition(CriteriaAPI.getCondition("INVITATION_ACCEPT_STATUS", "inviteAcceptStatus", true+"", BooleanOperators.IS));
         }
 
-        GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
+        GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(-1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
         List<Map<String,Object>> props = builder.get();
 
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)){

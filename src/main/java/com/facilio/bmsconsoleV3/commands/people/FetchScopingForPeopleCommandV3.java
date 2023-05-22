@@ -62,7 +62,9 @@ public class FetchScopingForPeopleCommandV3 extends FacilioCommand {
                             List<OrgUserApp> scopingsForUsers = ApplicationApi.getScopingsForUser(ouId, null);
                             if (CollectionUtils.isNotEmpty(scopingsForUsers)) {
                                 for (OrgUserApp userScopingApp : scopingsForUsers) {
-                                    scopingAppForPeople.put(appLinkNames.get(userScopingApp.getApplicationId()), userScopingApp.getScopingId());
+                                    if(userScopingApp.getApplicationId() > 0 && appLinkNames.get(userScopingApp.getApplicationId()) != null){
+                                        scopingAppForPeople.put(appLinkNames.get(userScopingApp.getApplicationId()), userScopingApp.getScopingId());
+                                    }
                                 }
                             }
                         }

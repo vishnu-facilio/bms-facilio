@@ -22,8 +22,10 @@ public class V3PeopleAction extends V3Action {
     Long lookupId;
     Integer peopleType;
     List<Long> peopleIds;
-
     String email;
+    Long userId;
+    String password;
+    boolean sendInvitation;
 
     public String fetchActivePeoples() throws Exception {
 
@@ -53,6 +55,8 @@ public class V3PeopleAction extends V3Action {
         context.put(FacilioConstants.ContextNames.APP_LINKNAME,getAppLinkName());
         context.put(FacilioConstants.ContextNames.SECURITY_POLICY_ID,getSecurityPolicyId());
         context.put(FacilioConstants.ContextNames.EMAIL,getEmail());
+        context.put(FacilioConstants.ContextNames.PASSWORD,getPassword());
+        context.put(FacilioConstants.ContextNames.SEND_INVITE,isSendInvitation());
         chain.execute();
         return SUCCESS;
     }
@@ -63,6 +67,17 @@ public class V3PeopleAction extends V3Action {
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,getPeopleIds());
         context.put(FacilioConstants.ContextNames.PEOPLE_TYPE,getPeopleType());
         context.put("lookupId",getLookupId());
+        chain.execute();
+        return SUCCESS;
+    }
+    public String updateAppAccess() throws Exception{
+        FacilioChain chain=TransactionChainFactoryV3.updateAppAccessChain();
+        FacilioContext context=chain.getContext();
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID,getId());
+        context.put(FacilioConstants.ContextNames.ROLE_ID,getRoleId());
+        context.put(FacilioConstants.ContextNames.APP_LINKNAME,getAppLinkName());
+        context.put(FacilioConstants.ContextNames.SECURITY_POLICY_ID,getSecurityPolicyId());
+        context.put(FacilioConstants.ContextNames.USER_ID,getUserId());
         chain.execute();
         return SUCCESS;
     }

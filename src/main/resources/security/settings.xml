@@ -2189,6 +2189,17 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/people/util/updateAppAccess">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="roleId" type="number" mandatory="true"/>
+            <property name="securityPolicyId" type="number" mandatory="true"/>
+            <property name="appLinkName" type="string" mandatory="true"/>
+            <property name="email" type="string" mandatory="true"/>
+            <property name="userId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/people/util/convert">
         <requestbody type="object">
             <property name="peopleIds" type="array">
@@ -2319,6 +2330,12 @@
         </urlparams>
     </request>
     <request path="/api/v1/setup/iamuser/getuser" method="GET">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="appId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/iamuser/getIamUser" method="GET">
         <urlparams>
             <property name="email" type="string"/>
             <property name="appId" type="number"/>

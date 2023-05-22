@@ -1585,6 +1585,7 @@
         <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople"/>
         <action name="addAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="addAppAccess"/>
         <action name="convert" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="convertPeopleType"/>
+        <action name="updateAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="updateAppAccess"/>
     </package>
 
     <package name="group" namespace="/api/v3/group" extends="v3Api">

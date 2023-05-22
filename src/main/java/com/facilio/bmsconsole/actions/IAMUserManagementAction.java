@@ -376,6 +376,18 @@ public class IAMUserManagementAction extends FacilioAction{
         return SUCCESS;
     }
 
+    public String getExistingIamUser() throws Exception{
+        Organization org = AccountUtil.getCurrentOrg();
+        long orgId = org.getOrgId();
+        AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+        if(appDomainObj == null) {
+            throw new IllegalArgumentException("Invalid App Domain");
+        }
+        User user = IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, email, appDomainObj.getIdentifier());
+        setResult(FacilioConstants.ContextNames.USER, user);
+        return SUCCESS;
+    }
+
     public String activateOrDeactivateUsers() throws Exception{
         Organization org = AccountUtil.getCurrentOrg();
         long orgId = org.getOrgId();

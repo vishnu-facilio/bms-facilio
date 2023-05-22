@@ -154,8 +154,6 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
-import com.facilio.bmsconsoleV3.commands.people.PeopleValidationCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
@@ -801,6 +799,13 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetPeopleTypeCommand());
         c.addCommand(new PeopleValidationCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getPeopleAfterSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PeopleAfterSaveCommand());
+        c.addCommand(new UserUpdateCommand());
         return c;
     }
 
@@ -2897,6 +2902,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain convertPeopleTypeChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new convertPeopleTypeCommand());
+        return c;
+    }
+    public static FacilioChain updateAppAccessChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateAppAccessCommand());
         return c;
     }
 

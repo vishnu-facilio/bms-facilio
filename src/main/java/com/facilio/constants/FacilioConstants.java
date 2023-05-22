@@ -298,7 +298,7 @@ public class FacilioConstants {
 		public static final String LOG_CONTEXT = "logContext";
 		public static final String RESOURCE_MODULENAME = "resourceModuleName";
 		//public static final String RESOURCE_ID = "resourceId";
-		public static final String EMAIL="email";
+		public static final String EMAIL = "email";
 		public static final String IS_WEBTAB_PERMISSION = "isWebTabPermission";
         public static final String WORK_ORDER_FEATURE_SETTINGS_LIST = "workOrderFeatureSettingsList";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_LIST_MAP = "workOrderFeatureSettingsListMap";
@@ -311,6 +311,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_FEATURE_SETTINGS_HAS_MANAGE_TASK_PERMISSION = "workOrderFeatureSettingHasManageTaskPermission";
 		public static final String IS_LOCKED_STATE = "isLockedState";
 		public static final String CURRENT_MODULE_STATE = "currentModuleState";
+		public static final String NAME = "name";
 
         public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
