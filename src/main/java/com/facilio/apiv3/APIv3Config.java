@@ -1377,7 +1377,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                .beforeFetch(new LoadPeopleAnnouncementLookupCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getAnnouncementsBeforeFetchChain())
                 .summary()
                 .beforeFetch(new LoadPeopleAnnouncementLookupCommand())
                 .build();

@@ -8,6 +8,8 @@ import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.UserScopingForAnnouncements;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchDependentResourceDataCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchResourceDependentModuleListCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -524,6 +526,13 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain backgroundActivityFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FillColourCodeForBackgroundActivityCommand());
+        return c;
+    }
+
+    public static FacilioChain getAnnouncementsBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadPeopleAnnouncementLookupCommand());
+        c.addCommand(new UserScopingForAnnouncements());
         return c;
     }
 }

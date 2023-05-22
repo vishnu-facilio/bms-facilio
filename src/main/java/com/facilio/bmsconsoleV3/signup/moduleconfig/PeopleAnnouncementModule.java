@@ -1,15 +1,12 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -24,7 +21,7 @@ public class PeopleAnnouncementModule extends BaseModuleConfig{
 
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
@@ -42,7 +39,7 @@ public class PeopleAnnouncementModule extends BaseModuleConfig{
         return groupVsViews;
     }
 
-    private static FacilioView getAllPeopleAnnouncementView() {
+    private static FacilioView getAllPeopleAnnouncementView() throws Exception {
 
         FacilioModule module = ModuleFactory.getPeopleAnnouncementModule();
         FacilioModule announcementModule = ModuleFactory.getAnnouncementModule();
@@ -60,6 +57,7 @@ public class PeopleAnnouncementModule extends BaseModuleConfig{
         allView.setDisplayName("All Announcements");
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
+        allView.setFields(getDefaultPeopleAnnouncementViews());
 
         FacilioField isCancelledField = new FacilioField();
         isCancelledField.setName("isCancelled");
@@ -81,4 +79,14 @@ public class PeopleAnnouncementModule extends BaseModuleConfig{
 
         return allView;
     }
+    public static List<ViewField> getDefaultPeopleAnnouncementViews() throws Exception{
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("title", "Title"));
+        columns.add(new ViewField("longDescription", "Description"));
+        columns.add(new ViewField("category", "Category"));
+        columns.add(new ViewField("expiryDate", "Expiry Date"));
+        columns.add(new ViewField("createdBy", "Created BY"));
+        return columns;
+    }
+
 }
