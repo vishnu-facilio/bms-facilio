@@ -34,6 +34,13 @@ public class WorkorderPageFactory extends PageFactory {
         return AccountUtil.getCurrentOrg().getOrgId() == ordId;
     }
 
+    private static int getMaintenanceCostWidgetHeight(WorkOrderContext workorder) throws Exception{
+        int widgetHeight = 4;
+        int widgetHeightWithQuote =  QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 6;
+        widgetHeight = !(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) && !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION) ? widgetHeight : widgetHeightWithQuote;
+        return widgetHeight;
+    }
+
     private static void composeRightPanel(Page.Section section, WorkOrderContext workorder) throws Exception {
 
         if (isTutenLabs()) {
@@ -58,7 +65,7 @@ public class WorkorderPageFactory extends PageFactory {
             yOffset += widgetHeight;
 
            // Maintenance and Quote Widget
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 6;
+            widgetHeight = getMaintenanceCostWidgetHeight(workorder);
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             totalCost.addToWidgetParams("hideBg", true);
@@ -111,7 +118,7 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += widgetHeight;
 
         // Maintenance and Cost Widget
-        widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 6;
+        widgetHeight = getMaintenanceCostWidgetHeight(workorder);
         PageWidget totalMaintenanceCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
         totalMaintenanceCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
         totalMaintenanceCost.addToWidgetParams("hideBg", true);
