@@ -7,6 +7,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.metamigration.util.MetaMigrationConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -24,6 +25,7 @@ public class CreateWebTabWebGroupCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long groupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
         List<WebTabContext> webTabs = (List<WebTabContext>) context.get(FacilioConstants.ContextNames.WEB_TABS);
+        boolean useOrderFromContext = (boolean) context.getOrDefault(MetaMigrationConstants.USE_ORDER_FROM_CONTEXT, false);
         if(CollectionUtils.isNotEmpty(webTabs) && groupId != null && groupId > 0){
 
             List<WebtabWebgroupContext> tabGroups = new ArrayList<>();
@@ -31,7 +33,11 @@ public class CreateWebTabWebGroupCommand extends FacilioCommand {
 
             for (WebTabContext webTabContext : webTabs) {
                 WebtabWebgroupContext tabGroup = new WebtabWebgroupContext();
-                tabGroup.setOrder(lastOrderNumber++);
+                if (useOrderFromContext) {
+                    tabGroup.setOrder(webTabContext.getOrder());
+                } else {
+                    tabGroup.setOrder(lastOrderNumber++);
+                }
                 tabGroup.setWebTabGroupId(groupId);
                 tabGroup.setWebTabId(webTabContext.getId());
                 tabGroups.add(tabGroup);

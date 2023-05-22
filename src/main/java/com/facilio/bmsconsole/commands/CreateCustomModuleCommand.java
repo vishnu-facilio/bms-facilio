@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.metamigration.util.MetaMigrationConstants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
@@ -16,10 +17,16 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 		Integer moduleType = (Integer) context.get(FacilioConstants.ContextNames.MODULE_TYPE);
 		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 		Boolean stateFlowEnabled = (Boolean) context.get(FacilioConstants.ContextNames.STATE_FLOW_ENABLED);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		boolean useLinkNameFromContext = (boolean) context.getOrDefault(MetaMigrationConstants.USE_LINKNAME_FROM_CONTEXT, false);
 
 		if(displayName != null && !displayName.isEmpty()) {
 			FacilioModule module = new FacilioModule();
-			module.setName("custom_" + displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			if (useLinkNameFromContext) {
+				module.setName(moduleName);
+			} else {
+				module.setName("custom_" + displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
+			}
 			module.setDisplayName(displayName);
 			module.setTableName("CustomModuleData");
 			module.setStateFlowEnabled(stateFlowEnabled);

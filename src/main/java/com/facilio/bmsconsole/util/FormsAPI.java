@@ -458,7 +458,7 @@ public class FormsAPI {
 		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
 	
-	private static int deleteFormFields(List<Long> fieldIds) throws Exception {
+	public static int deleteFormFields(List<Long> fieldIds) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -468,7 +468,7 @@ public class FormsAPI {
 		return deleteBuilder.delete();
 	}
 	
-	private static int deleteFormSections(List<Long> sectionIds) throws Exception {
+	public static int deleteFormSections(List<Long> sectionIds) throws Exception {
 		deleteSubforms(sectionIds);
 		FacilioModule module = ModuleFactory.getFormSectionModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

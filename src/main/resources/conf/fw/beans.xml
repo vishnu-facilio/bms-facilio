@@ -50,6 +50,8 @@
 
 	<bean name="PermissionSetBean" class="com.facilio.beans.PermissionSetBeanCacheImpl"></bean>
 
+	<bean name="MetaMigrationBean" class="com.facilio.metamigration.beans.MetaMigrationBeanImpl" />
+
 	<!-- Agent and Controller -->
 	<bean name="AgentBean" class="com.facilio.agentv2.cacheimpl.AgentBeanCacheImpl"/>
 	<bean name="ControllerBean" class="com.facilio.agentv2.cacheimpl.ControllerBeanCacheImpl"/>

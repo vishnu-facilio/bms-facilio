@@ -5,21 +5,17 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.metamigration.util.MetaMigrationConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,10 +26,13 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         WebTabGroupContext tabGroup = (WebTabGroupContext) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP);
+        boolean useOrderFromContext = (boolean) context.getOrDefault(MetaMigrationConstants.USE_ORDER_FROM_CONTEXT, false);
         if (tabGroup != null) {
             if (tabGroup.getId() <= 0) {
-                int lastOrderNumber = getLastOrderNumber(tabGroup.getLayoutId());
-                tabGroup.setOrder(lastOrderNumber + 1);
+                if (!useOrderFromContext) {
+                    int lastOrderNumber = getLastOrderNumber(tabGroup.getLayoutId());
+                    tabGroup.setOrder(lastOrderNumber + 1);
+                }
             }
             else {
                 tabGroup.setOrder(-1);
