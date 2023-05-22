@@ -2,6 +2,7 @@ package com.facilio.readingrule.rca.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAGroupContext;
 import com.facilio.readingrule.rca.context.RCAConditionScoreContext;
@@ -28,6 +29,7 @@ public class UpdateRCAScoreConditionCommand extends FacilioCommand {
 
                 List<Long> oldScoreConditionIds = new ArrayList<>(oldGroup.getConditions()).stream().map(x -> x.getId()).collect(Collectors.toList());
                 List<Long> newScoreConditionIds = new ArrayList<>(group.getConditions()).stream().map(x -> x.getId()).collect(Collectors.toList());
+                List<Long> oldConditionCriteriaIds = new ArrayList<>(oldGroup.getConditions()).stream().map(x -> x.getCriteriaId()).collect(Collectors.toList());
 
                 List<Long> intersection = ReadingRuleRcaAPI.removeIntersection(newScoreConditionIds, oldScoreConditionIds);
                 group.getConditions().forEach(x -> {
@@ -42,7 +44,9 @@ public class UpdateRCAScoreConditionCommand extends FacilioCommand {
 
                 List<RCAConditionScoreContext> newRcaScoreConditions = new ArrayList<>(group.getConditions()).stream().filter(x -> newScoreConditionIds.contains(x.getId())).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(newRcaScoreConditions)) {
+                    CriteriaAPI.batchDeleteCriteria(oldConditionCriteriaIds);
                     for (RCAConditionScoreContext rcaCond : newRcaScoreConditions) {
+                        ReadingRuleRcaAPI.setModuleNameForCriteria(rcaCond.getCriteria());
                         Long criteriaId = ReadingRuleRcaAPI.createCriteria(rcaCond.getCriteria());
                         rcaCond.setCriteriaId(criteriaId);
                         rcaCond.setGroupId(group.getId());

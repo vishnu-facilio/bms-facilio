@@ -1,5 +1,6 @@
 package com.facilio.readingrule.signup;
 
+import com.amazonaws.services.dynamodbv2.xspec.N;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -149,16 +150,13 @@ public class AddRCAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField parentIdField = FieldFactory.getDefaultField("parentId", "Fault Id", "PARENT_ID", FieldType.LOOKUP, true);
-        parentIdField.setLookupModule(bean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
+        NumberField parentIdField = FieldFactory.getDefaultField("parentId", "Fault Id", "PARENT_ID", FieldType.NUMBER, true);
         fields.add(parentIdField);
 
-        LookupField rcaRuleIdField = FieldFactory.getDefaultField("rcaRule", "RCA Rule", "RCA_RULE_ID", FieldType.LOOKUP);
-        rcaRuleIdField.setLookupModule(bean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE));
+        NumberField rcaRuleIdField = FieldFactory.getDefaultField("rcaRuleId", "RCA Rule", "RCA_RULE_ID", FieldType.NUMBER);
         fields.add(rcaRuleIdField);
 
-        LookupField rcaFaultIdField = FieldFactory.getDefaultField("rcaFault", "RCA Fault", "RCA_FAULT_ID", FieldType.LOOKUP);
-        rcaFaultIdField.setLookupModule(bean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
+        NumberField rcaFaultIdField = FieldFactory.getDefaultField("rcaFaultId", "RCA Fault", "RCA_FAULT_ID", FieldType.NUMBER);
         fields.add(rcaFaultIdField);
 
         NumberField rcaGroupIdField = FieldFactory.getDefaultField("rcaGroupId", "RCA Group Id", "RCA_GROUP_ID", FieldType.NUMBER);

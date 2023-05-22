@@ -1353,4 +1353,23 @@ public class NewAlarmAPI {
 		}
 		return -1l;
 	}
+
+	public static ReadingAlarm getReadingAlarm(Long resourceId, Long ruleId) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		return getReadingAlarm(fields, resourceId, ruleId);
+	}
+
+	public static ReadingAlarm getReadingAlarm(List<FacilioField> fields, Long resourceId, Long ruleId) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+		SelectRecordsBuilder<ReadingAlarm> builder = new SelectRecordsBuilder<ReadingAlarm>()
+				.select(fields)
+				.beanClass(ReadingAlarm.class)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS));
+		return builder.fetchFirst();
+	}
 }

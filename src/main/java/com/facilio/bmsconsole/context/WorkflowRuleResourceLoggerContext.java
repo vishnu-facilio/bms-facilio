@@ -86,7 +86,9 @@ public class WorkflowRuleResourceLoggerContext implements Serializable {
         PARTIALLY_PROCESSED_STATE,
         PARTIALLY_COMPLETED_STATE,
         RESCHEDULED,
-        ;
+        ALARM_OCCURRENCES_DELETION_STATE,
+        FAULT_IMPACT_CALCULATION_STATE,
+        RCA_CALCULATION_STATE;
 
         public static Status valueOf(int type) {
             if (type > 0 && type <= values().length) {

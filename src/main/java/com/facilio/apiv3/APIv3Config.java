@@ -2399,6 +2399,8 @@ public class APIv3Config {
     @Module(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE)
     public static Supplier<V3Config> getReadingAlarmOccurrence() {
         return () -> new V3Config(ReadingAlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .build();
     }
 

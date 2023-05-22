@@ -1986,4 +1986,34 @@
             <property name="lookupId" type="number"/>
         </requestbody>
     </request>
+    <request path="/api/v3/readingrule/fetchRules">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingrule/fetchRcaReadings">
+        <requestbody type="object">
+            <property name="page" type="number" mandatory="false" />
+            <property name="perPage" type="number" mandatory="false" />
+            <property name="alarmId" type="number" mandatory="true" />
+            <property name="filters" type="object" mandatory="false" />
+            <property name="dateOperator" type="number" mandatory="false" />
+            <property name="dateOperatorValue" type="array" mandatory="false" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingrule/fetchImpact">
+        <requestbody type="object">
+            <property name="ruleId" type="number" mandatory="true" />
+            <property name="parentId" type="number" mandatory="true" />
+            <property name="isCostImpact" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingrule/fetchRootCause">
+        <requestbody type="object">
+            <property name="ruleId" type="number" mandatory="true" />
+            <property name="page" type="number" mandatory="false" />
+            <property name="perPage" type="number" mandatory="false" />
+        </requestbody>
+    </request>
+
 </config>

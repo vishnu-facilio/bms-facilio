@@ -71,12 +71,12 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
     }
 
     private void setParentFault(RCAScoreReadingContext reading) throws Exception {
-        ReadingAlarm parentAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getParentId().getId());
-        reading.setParentId(parentAlarm);
+        ReadingAlarm parentAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getParentId());
+        reading.setParentAlarm(parentAlarm);
     }
 
     private void setRcaFault(RCAScoreReadingContext reading) throws Exception {
-        ReadingAlarm rcaFault = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getRcaFault().getId());
+        ReadingAlarm rcaFault = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getRcaFaultId());
         setAssetCategory(rcaFault);
         reading.setRcaFault(rcaFault);
     }
@@ -88,7 +88,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
     }
 
     private void setRcaRule(RCAScoreReadingContext reading) throws Exception {
-        Long ruleId = reading.getRcaRule().getId();
+        Long ruleId = reading.getRcaRuleId();
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
@@ -121,7 +121,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
                         NewReadingRuleContext rule = new NewReadingRuleContext();
                         rule.setId(rcaRuleId);
                         readingContext.setRcaRule(rule);
-                        readingContext.setParentId(parentAlarm);
+                        readingContext.setParentAlarm(parentAlarm);
                         setAssetCategory(rcaFault);
                         readingContext.setRcaFault(rcaFault);
                         rcaScoreReadingContexts.add(readingContext);

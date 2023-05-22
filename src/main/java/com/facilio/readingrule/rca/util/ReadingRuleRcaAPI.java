@@ -2,8 +2,7 @@ package com.facilio.readingrule.rca.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.chain.FacilioContext;
@@ -14,17 +13,13 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
-import com.facilio.readingrule.rca.context.RCAConditionScoreContext;
-import com.facilio.readingrule.rca.context.RCAGroupContext;
-import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
-import com.facilio.readingrule.rca.context.ReadingRuleRCAContext;
+import com.facilio.readingrule.faultimpact.FaultImpactAPI;
+import com.facilio.readingrule.rca.context.*;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
@@ -39,6 +34,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -259,6 +255,7 @@ public class ReadingRuleRcaAPI {
         if (CollectionUtils.isNotEmpty(conditions)) {
             for (RCAConditionScoreContext rcaCond : conditions) {
                 V3Util.throwRestException(rcaCond.getScore() == null, ErrorCode.RESOURCE_NOT_FOUND, group.getName() + "'s Score cannot be null");
+                setModuleNameForCriteria(rcaCond.getCriteria());
                 Long criteriaId = createCriteria(rcaCond.getCriteria());
                 rcaCond.setCriteriaId(criteriaId);
                 rcaCond.setGroupId(group.getId());
@@ -318,7 +315,7 @@ public class ReadingRuleRcaAPI {
 
 
     public static void prepareGroupForInsert(RCAGroupContext group, Long rcaId) throws Exception {
-        NewReadingRuleAPI.setModuleNameForCriteria(group.getCriteria(),FacilioConstants.ContextNames.NEW_READING_ALARM);
+        setModuleNameForCriteria(group.getCriteria());
         Long criteriaId = ReadingRuleRcaAPI.createCriteria(group.getCriteria());
         group.setCriteriaId(criteriaId);
         group.setRcaId(rcaId);
@@ -328,7 +325,7 @@ public class ReadingRuleRcaAPI {
 
     public static void updateCriteriaOfGroup(RCAGroupContext group) throws Exception {
         CriteriaAPI.deleteCriteria(group.getCriteriaId());
-        NewReadingRuleAPI.setModuleNameForCriteria(group.getCriteria(),FacilioConstants.ContextNames.NEW_READING_ALARM);
+        setModuleNameForCriteria(group.getCriteria());
         Long criteriaId = createCriteria(group.getCriteria());
         group.setCriteriaId(criteriaId);
     }
@@ -352,7 +349,7 @@ public class ReadingRuleRcaAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(alarmId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
                 .aggregate(BmsAggregateOperators.NumberAggregateOperator.AVERAGE, score)
-                .groupBy(fieldsMap.get("rcaFault").getCompleteColumnName())
+                .groupBy(fieldsMap.get("rcaFaultId").getCompleteColumnName())
                 .orderBy("score desc")
                 .offset(offset)
                 .limit(perPage);
@@ -387,7 +384,7 @@ public class ReadingRuleRcaAPI {
             builder.andCriteria(filterCriteria);
 
         Map<String, Object> props = builder.fetchFirst();
-        return (Long) props.get("rcaFault");
+        return (Long) props.get("rcaFaultId");
     }
 
     public static DateRange getDateRange(Context context) {
@@ -496,6 +493,166 @@ public class ReadingRuleRcaAPI {
                 .andCondition(CriteriaAPI.getIdCondition(alarmId, readingAlarmModule));
         List<ReadingAlarm> readingAlarms = builder.get();
         return org.apache.commons.collections.CollectionUtils.isNotEmpty(readingAlarms);
+    }
+
+    public static boolean evaluateCriteria(Criteria criteria, Long alarmId, Long ruleId, Long resourceId, Long startTime, Long endTime) throws Exception {
+        Map<String, Object> props = new HashMap<>();
+        for (Condition condition : criteria.getConditions().values()) {
+            RCAFieldType fieldType = RCAFieldType.fromString(condition.getFieldName());
+            // to handle a case when criteria contains multiple conditions with the same field name
+            condition.setFieldName(condition.getFieldName() + "_" + condition.getSequence());
+            switch (fieldType) {
+                case FAULT_TYPE:
+                    props.put(condition.getFieldName(), getFaultType(resourceId, ruleId));
+                    break;
+                case READING_ALARM_ASSET_CATEGORY:
+                    props.put(condition.getFieldName(), getAssetCategory(resourceId, ruleId));
+                    break;
+                case SEVERITY:
+                    props.put(condition.getFieldName(), getSeverity(resourceId, ruleId));
+                    break;
+                case ENERGY_IMPACT:
+                    props.put(condition.getFieldName(), FaultImpactAPI.getEnergyImpact(resourceId, ruleId, startTime, endTime));
+                    break;
+                case COST_IMPACT:
+                    props.put(condition.getFieldName(), FaultImpactAPI.getCostImpact(resourceId, ruleId, startTime, endTime));
+                    break;
+                case NO_OF_OCCURRENCES:
+                    props.put(condition.getFieldName(), getCountOrDurationValue(alarmId, startTime, endTime, false));
+                    break;
+                case NO_OF_EVENTS:
+                    props.put(condition.getFieldName(), getEventCount(resourceId, ruleId, startTime, endTime));
+                    break;
+                case DURATION:
+                    props.put(condition.getFieldName(), getCountOrDurationValue(alarmId, startTime, endTime, true));
+                    break;
+            }
+        }
+        return criteria.computePredicate(null).evaluate(props);
+    }
+
+    private static Long getCountOrDurationValue(Long alarmId, Long startTime, Long endTime, boolean fetchDuration) throws Exception {
+        List<Map<String, Object>> list = getAlarmDurationAndCount(Collections.singletonList(alarmId), startTime, endTime);
+        Long value = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+            Optional<Long> optDuration = list.stream().map(prop -> fetchDuration ? ((BigDecimal) prop.get("duration")).longValue() : (Long) prop.get("count")).findFirst();
+            value = optDuration.orElse(null);
+        }
+        return value;
+    }
+
+    /**
+     * @param alarmIds
+     * @param startTime
+     * @param endTime
+     * @return list that contains the number of alarms, alarmIds of the alarms and duration of alarms
+     * <p> - occurring inside the interval between startTime and endTime </p>
+     * <p> - starts occurrence outside the interval but gets cleared inside the interval </p>
+     * <p> - starts occurrence outside the interval and occurs throughout the interval or gets cleared outside the interval </p>
+     * @throws Exception
+     * @Query: SUM(LEAST(COALESCE(CLEARED_TIME,LEAST(CLEARED_TIME,endTime)),endTime)-GREATEST(CREATED_TIME,startTime)) AS `duration`,
+     * COUNT(AlarmOccurrence.ID) AS `count`,
+     * ALARM_ID AS `alarm`
+     * FROM AlarmOccurrence WHERE ALARM_ID IN (alarmIds) AND
+     * ((CREATED_TIME BETWEEN startTime AND endTime) OR CLEARED_TIME BETWEEN startTime AND endTime)
+     * OR CREATED_TIME<=startTime AND ((CLEARED_TIME IS NULL) OR CLEARED_TIME>=endTime) GROUP BY ALARM_ID
+     */
+    public static List<Map<String, Object>> getAlarmDurationAndCount(List<Long> alarmIds, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
+        String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
+
+        StringBuilder durationAggrColumn = new StringBuilder("SUM(LEAST(COALESCE(")
+                .append(clearedTimeFieldColumn).append(",")
+                .append(endTime).append("),")
+                .append(endTime)
+                .append(") - ")
+                .append("GREATEST(")
+                .append(createdTimeFieldColumn).append(",")
+                .append(startTime).append(")")
+                .append(")");
+
+        List<FacilioField> selectFields = new ArrayList<>();
+        FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
+        selectFields.add(durationField);
+        selectFields.addAll(FieldFactory.getCountField(module));
+        selectFields.add(fieldMap.get("alarm"));
+
+        Criteria clearTimeCriteria = new Criteria();
+        clearTimeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), "" , CommonOperators.IS_EMPTY));
+        clearTimeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+
+        SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+                .select(selectFields)
+                .beanClass(AlarmOccurrenceContext.class)
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), alarmIds, NumberOperators.EQUALS))
+                .andCriteria(timeCriteria)
+                .orCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(startTime), NumberOperators.LESS_THAN_EQUAL))
+                .andCriteria(clearTimeCriteria)
+                .groupBy(fieldMap.get("alarm").getCompleteColumnName());
+
+        return builder.getAsProps();
+    }
+
+    public static Long getEventCount(Long resourceId, Long ruleId, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_EVENT);
+        FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+        FacilioField timeField = FieldFactory.getField("createdTime", "Created Time", "CREATED_TIME", eventModule, FieldType.NUMBER);
+        SelectRecordsBuilder<ReadingEventContext> builder = new SelectRecordsBuilder<ReadingEventContext>()
+                .select(FieldFactory.getCountField())
+                .beanClass(ReadingEventContext.class)
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition(eventModule.getTableName()+".RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(timeField, startTime+ "," + endTime, DateOperators.BETWEEN));
+        ReadingEventContext props = builder.fetchFirst();
+        return (props == null) ? null : (Long) props.getData().get("count");
+    }
+    public static int getFaultType(Long resourceId, Long ruleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+        FacilioField field = FieldFactory.getField("faultType",  "Fault Type", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM);
+        ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
+        return (props == null) ? -1 : props.getFaultType();
+    }
+    public static Long getAssetCategory(Long resourceId, Long ruleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+        FacilioField field = FieldFactory.getField("readingAlarmAssetCategory",  "AssetCategory", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
+        return (props == null) ? null : props.getReadingAlarmAssetCategory().getId();
+    }
+    public static Long getSeverity(Long resourceId, Long ruleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+        FacilioField field = FieldFactory.getField("severity",  "Severity", "SEVERITY_ID", module, FieldType.LOOKUP);
+        ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
+        return (props == null) ? null : props.getSeverity().getId();
+    }
+
+    public static void setModuleNameForCriteria(Criteria criteria) {
+        Map<String, Condition> conditions = criteria.getConditions();
+        for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
+            RCAFieldType fieldType = RCAFieldType.fromString(entry.getValue().getFieldName());
+            switch (fieldType) {
+                case DURATION:
+                case NO_OF_EVENTS:
+                    entry.getValue().setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+                    break;
+                default:
+                    entry.getValue().setModuleName(FacilioConstants.ContextNames.NEW_READING_ALARM);
+                    break;
+            }
+        }
     }
 }
 
