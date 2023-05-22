@@ -7239,7 +7239,9 @@
 		</action>
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
-				method="addOrUpdateDashboardFilters">			
+				method="addOrUpdateDashboardFilters">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:EDIT</param>
 		</action>
 		<action name="updateWidgetSettings"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"

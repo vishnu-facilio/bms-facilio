@@ -1148,7 +1148,10 @@
                 method="list"/>
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
-                method="clone_dashboard"/>
+                method="clone_dashboard">
+            <param name="checkTabPermission">true</param>
+            <param name="permission">POST:EDIT</param>
+        </action>
         <action name="moveto"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="move_dashboard"/>
