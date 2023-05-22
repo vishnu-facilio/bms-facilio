@@ -11,6 +11,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -28,18 +29,10 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportPivotFieldContext;
-import com.facilio.report.context.PivotRowColumnContext;
-import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
-import com.facilio.report.context.PivotDataColumnContext;
 import org.json.simple.parser.JSONParser;
 
 ;
@@ -48,6 +41,7 @@ public class ConstructTabularReportData extends FacilioCommand {
     private FacilioModule module;
     private LinkedHashMap<String, String> tableAlias = new LinkedHashMap<String, String>();
     private Context globalContext;
+    private Boolean isDataColumnSort=false;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -249,7 +243,8 @@ public class ConstructTabularReportData extends FacilioCommand {
             yField.setTableAlias(getAndSetTableAlias(yField.getModule().getName()));
             if (data.getAlias() != null) {
                 yAxis.setAlias(data.getAlias());
-                if (data.getAlias().equals(sortBy.get("alias"))) {
+                if (data.getAlias().equals(sortBy.get("alias")) || isDataColumnSort) {
+                    isDataColumnSort = true;
                     dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number) sortBy.get("order")).intValue()));
                     List<String> orderBy = new ArrayList<>();
                     orderBy.add(getAggrCompleteColumnName(yField.getCompleteColumnName(), yAggr));

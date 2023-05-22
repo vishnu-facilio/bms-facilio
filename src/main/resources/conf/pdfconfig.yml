@@ -2,6 +2,10 @@ pdf_pages:
   dashboard:
     url: "/pdf/dashboard/${linkname}"
   modulereport:
-    url: "/pdf/modulereport/${reportId}"
+    url: "/pdf/report/${reportId}?daterange=${dateRange:-null}&filters=${filters:-null}&excludeParams=${excludeParams:-null}&showOnlyImage=${showOnlyImage:-false}"
   recordsummary:
     url: "/pdf/record/${module}/${id}"
+  readingReport:
+    url: "/pdf/readingReport/${reportId}?daterange=${dateRange:-null}&filters=${filters:-null}&excludeParams=${excludeParams:-null}&showOnlyImage=${showOnlyImage:-false}"
+  alarmReport:
+    url: "/pdf/alarmReport?alarmId=${alarmId}&daterange=${dateRange:-null}&excludeParams=${excludeParams:-null}&isWithPrerequsite=${isWithPrerequsite:-true}&showOnlyImage=${showOnlyImage:-false}"

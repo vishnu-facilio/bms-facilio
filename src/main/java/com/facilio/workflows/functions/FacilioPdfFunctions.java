@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
@@ -17,17 +18,23 @@ import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.PDF)
 public class FacilioPdfFunctions {
 
+    public static final List<String> reportsName = Arrays.asList("readingReport","modulereport","alarmReport");
     public Object pageToPDF(Map<String, Object> globalParam, Object... objects) throws Exception {
 
         checkParam(objects);
 
         String pageName = (String) objects[0];
 
-        Map<String,Object> pageParams = (Map<String, Object>) objects[1];
+        Map<String, Object> pageParams = (Map<String, Object>) objects[1];
+        if (reportsName.contains(pageName)) {
+            pageParamCheck(pageParams);
+        }
 
         JSONObject obj = new JSONObject();
         obj.putAll(pageParams);
@@ -69,6 +76,9 @@ public class FacilioPdfFunctions {
         String pageName = (String) objects[0];
 
         Map<String,Object> pageParams = (Map<String, Object>) objects[1];
+        if(reportsName.contains(pageName)){
+            pageParamCheck(pageParams);
+        }
 
         JSONObject obj = new JSONObject();
         obj.putAll(pageParams);
@@ -114,7 +124,14 @@ public class FacilioPdfFunctions {
             throw new RuntimeException("Page params missing");
         }
     }
-
-
+    private void pageParamCheck(Map<String,Object> pageParams){
+        for(String param : pageParams.keySet()){
+            if(pageParams.get(param) instanceof Map){
+                JSONObject Object = new JSONObject();
+                Object.putAll((Map) pageParams.get(param));
+                pageParams.put(param, ReportsUtil.encodeURIComponent(Object.toJSONString()));
+            }
+        }
+    }
 
 }

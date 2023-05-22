@@ -188,7 +188,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && handleUserScope(dataPointList.get(0))) {
                     dataPoints.remove(dataPointList.get(0));
                     report.setHasEdit(false);
-                } else if (isSortPointIncluded(dataPointList.get(0), report.getTypeEnum())) {
+                } else if (isSortPointIncluded(dataPointList.get(0), report.getTypeEnum(), sortPoint)) {
                     ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked, getModuleFromDp);
                     reportData.add(data);
                 }
@@ -692,7 +692,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 }
                 newSelectBuilder.fetchSupplements(customLookupFields);
-//                newSelectBuilder.fetchSupplements(lookupFieldList);
+                if(dp.getxAxis().getField() != null && dp.getxAxis().getField().getCompleteColumnName() != null) {
+                    newSelectBuilder.having(dp.getxAxis().getField().getCompleteColumnName() + " IS NOT NULL");
+                }
             }
 //            String query = newSelectBuilder.constructQueryString();
             if (reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
@@ -936,7 +938,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                         if (handleBooleanField) {
                             handleBooleanField(dataPoint);
                         }
-                        addToMatchedList(dataPoint, groupedList);
+                        addToMatchedList(dataPoint, groupedList, reportType);
                         break;
                     case DERIVATION:
                         break;
@@ -954,7 +956,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
     }
 
-    private void addToMatchedList(ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList) throws Exception {
+    private void addToMatchedList(ReportDataPointContext dataPoint, List<List<ReportDataPointContext>> groupedList, ReportType reportType) throws Exception {
         for (List<ReportDataPointContext> dataPointList : groupedList) {
             ReportDataPointContext rdp = dataPointList.get(0);
             if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&                                    // xaxis should be same
@@ -975,6 +977,10 @@ public class FetchReportDataCommand extends FacilioCommand {
 //						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&		// x aggregation should be same;
                         Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields()) &&
                         rdp.getOtherCriteria() == null && dataPoint.getOtherCriteria() == null) {                            // group by field should be same;
+
+                    if(reportType == ReportType.PIVOT_REPORT && rdp.getyAxis().getField() != null && dataPoint.getyAxis().getField() != null && rdp.getyAxis().getField().equals(dataPoint.getyAxis().getField())){
+                        break;
+                    }
                     dataPointList.add(dataPoint);
                     return;
                 }
@@ -1472,10 +1478,15 @@ public class FetchReportDataCommand extends FacilioCommand {
     	return false;
     }
 
-    private boolean isSortPointIncluded(ReportDataPointContext dataPoint, ReportType type) {
+    private boolean isSortPointIncluded(ReportDataPointContext dataPoint, ReportType type, ReportDataPointContext sortedDP) {
         if (type == ReportType.PIVOT_REPORT) {
             if (dataPoint.isDefaultSortPoint()) {
-                return false;
+                if(dataPoint.getyAxis() != null && dataPoint.getyAxis().getAlias() != null && sortedDP != null &&
+                        sortedDP.getyAxis() != null && sortedDP.getyAxis().getAlias() != null &&
+                        dataPoint.getyAxis().getAlias().equals(sortedDP.getyAxis().getAlias()))
+                {
+                    return false;
+                }
             }
         }
         return true;

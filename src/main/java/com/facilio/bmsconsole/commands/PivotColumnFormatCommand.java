@@ -10,10 +10,8 @@ import com.facilio.modules.fields.*;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
 import com.facilio.report.context.PivotRowColumnContext;
-import com.facilio.report.formatter.DecimalFormatter;
+import com.facilio.report.formatter.*;
 import com.facilio.report.formatter.Formatter;
-import com.facilio.report.formatter.LookupFormatter;
-import com.facilio.report.formatter.NumberFormatter;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -317,7 +315,14 @@ public class PivotColumnFormatCommand extends FacilioCommand {
 
                 tempMap.put("value", data.get(actualKey));
                 Formatter formatter = formatterMap.get(actualKey);
-                if (formatter != null && data.get(actualKey) != null && !data.get(actualKey).equals("")) {
+                if(formatter instanceof BooleanFormatter)
+                {
+                    if(data.get(actualKey) instanceof Integer){
+                        Integer value = (Integer) data.get(actualKey);
+                        tempMap.put("formattedValue", formatter.format(value == 0 ? Boolean.FALSE : Boolean.TRUE));
+                    }
+                }
+                else if (formatter != null && data.get(actualKey) != null && !data.get(actualKey).equals("")) {
                     tempMap.put("formattedValue", formatter.format(data.get(actualKey)));
                 } else if(columnFormatMap != null &&
                         columnFormatMap.containsKey("customNullValue") &&
