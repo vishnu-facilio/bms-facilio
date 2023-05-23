@@ -31,13 +31,14 @@ public class ScheduledKpiHistoricalCalculationJob extends FacilioJob {
             FacilioChain execKpiChain = TransactionChainFactory.fetchIntervalsAndCalculateKpiChain();
             FacilioContext context = execKpiChain.getContext();
             ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi((Long) props.get(FacilioConstants.ReadingKpi.READING_KPI));
+            ReadingKpiAPI.setNamespaceAndMatchedResources(Collections.singletonList(kpi));
             context.put(FacilioConstants.ReadingKpi.READING_KPI, kpi);
             context.put(FacilioConstants.ContextNames.START_TIME, props.get(FacilioConstants.ContextNames.START_TIME));
             context.put(FacilioConstants.ContextNames.END_TIME, props.get(FacilioConstants.ContextNames.END_TIME));
             context.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, props.get(FacilioConstants.ReadingKpi.IS_HISTORICAL));
-
-            ReadingKpiAPI.setNamespaceAndMatchedResources(Collections.singletonList(kpi));
             context.put(FacilioConstants.ContextNames.RESOURCE_LIST, CollectionUtils.isEmpty(historicalLoggerAssetIds) ? kpi.getMatchedResourcesIds() : historicalLoggerAssetIds);
+            context.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, props.get(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID));
+
             execKpiChain.execute();
 
             LOGGER.info("Time taken for ScheduledKpiHistoricalCalculation job : " + (System.currentTimeMillis() - jobStartTime));
@@ -45,6 +46,8 @@ public class ScheduledKpiHistoricalCalculationJob extends FacilioJob {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
             throw e;
+        } finally {
+            BmsJobUtil.deleteJobWithProps(jc.getJobId(), jc.getJobName());
         }
     }
 }

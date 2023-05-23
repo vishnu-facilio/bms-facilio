@@ -3947,6 +3947,7 @@ public class FacilioConstants {
 		public static final String KPI_LOGGER_MODULE = "kpiLogger";
 		public static final String KPI_RESOURCE_LOGGER_MODULE = "kpiResourceLogger";
 		public static final String KPI_TYPE = "kpiType";
+		public static final String PARENT_LOGGER_ID = "parentLoggerId";
 	}
 
 

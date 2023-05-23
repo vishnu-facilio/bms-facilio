@@ -54,7 +54,7 @@ public class FetchIntervalsAndCalculateKpiCommand extends FacilioCommand {
         long parentLoggerId;
         if (isHistorical) {
             startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
-            parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, resourceList.size());
+            parentLoggerId = (long) context.get(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID);;
         } else {
             parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), true, resourceList.size());
         }
