@@ -45,7 +45,10 @@ public class FilterUtil {
         while(filterIterator.hasNext()) {
             String fieldName=filterIterator.next();
             Object filterObj=  filters.get(fieldName);
-            if(filterObj!=null && filterObj instanceof JSONArray && ((JSONArray) filterObj).size()>0) {
+            if (fieldName.equals(FacilioConstants.ContextNames.ONE_LEVEL_LOOKUP) && !((JSONObject)filterObj).isEmpty()) {
+                getAsFilterList((JSONObject) filterObj,filterList);
+            }
+            else if(filterObj!=null && filterObj instanceof JSONArray && ((JSONArray) filterObj).size()>0) {
                 JSONArray fieldJsonArr = (JSONArray) filterObj;
                 for(int i=0;i<fieldJsonArr.size();i++) {
                     JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
@@ -283,36 +286,50 @@ public class FilterUtil {
             operator = field.getDataTypeEnum().getOperator(operatorName);
             operatorId = operator.getOperatorId();
         }
-        JSONArray value = (JSONArray) fieldJson.get("value");
-
         Condition condition = new Condition();
         condition.setField(field);
         condition.setOperatorId(operatorId);
         condition.setOperator(operator);
+        if (fieldJson.containsKey("criteriaValue") && operator != null && (operator instanceof LookupOperator)) {
+            if (field != null) {
+                Criteria criteria = new Criteria();
+                List<Condition> lookupConditionList = new ArrayList<>();
+                condition.setModuleName(moduleName);
+                condition.setFieldName(fieldName);
+                JSONObject lookup = getParamsForOneLevelLookup((JSONObject) fieldJson.get("criteriaValue"));
+                setConditions(((LookupField) field).getLookupModule().getName(), (String) lookup.get("lookupFieldname"), (JSONObject) lookup.get("value"), lookupConditionList);
+                criteria.addAndCondition(lookupConditionList.get(0));
+                condition.setCriteriaValue(criteria);
+                condition.validateValue();
+                conditionList.add(condition);
+            }
+            return;
+        } else {
+            JSONArray value = (JSONArray) fieldJson.get("value");
+            if (operator.isValueNeeded() && (value != null && value.size() > 0)) {
 
-        if(operator.isValueNeeded() && (value!=null && value.size()>0)) {
+                setValueForCondition(condition, value, fieldName, field, moduleName, fieldJson);
 
-            setValueForCondition(condition,value,fieldName,field,moduleName,fieldJson);
-
-            if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
-                JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
-                for(int i=0;i<orFilters.size();i++) {
-                    JSONObject fieldJsonObj = (JSONObject) orFilters.get(i);
-                    if (!fieldJsonObj.containsKey("operator")) {
-                        fieldJsonObj.put("operator", operatorName);
+                if (fieldJson.containsKey("orFilters")) {    // To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
+                    JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
+                    for (int i = 0; i < orFilters.size(); i++) {
+                        JSONObject fieldJsonObj = (JSONObject) orFilters.get(i);
+                        if (!fieldJsonObj.containsKey("operator")) {
+                            fieldJsonObj.put("operator", operatorName);
+                        }
+                        if (!fieldJsonObj.containsKey("value")) {
+                            fieldJsonObj.put("value", value);
+                        }
+                        setConditions(moduleName, (String) fieldJsonObj.get("field"), fieldJsonObj, conditionList, context, isPm);
                     }
-                    if (!fieldJsonObj.containsKey("value")) {
-                        fieldJsonObj.put("value", value);
-                    }
-                    setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList, context, isPm);
                 }
             }
-        }
-        condition.validateValue();
-        if(isPm && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE) && fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && context != null){
-            context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES, condition.getValue());
-        }else {
-            conditionList.add(condition);
+            condition.validateValue();
+            if (isPm && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE) && fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && context != null) {
+                context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES, condition.getValue());
+            } else {
+                conditionList.add(condition);
+            }
         }
     }
   private static void setValueForCondition(Condition condition,JSONArray value,String fieldName,FacilioField field,String moduleName,JSONObject fieldJson) throws Exception {
@@ -397,6 +414,13 @@ public class FilterUtil {
     private static final Map<FieldType,Operator> FIELD_TYPE_VS_DEFAULT_OPERATOR_MAP=Collections.unmodifiableMap(initDefaultOperatorsMap());
     private static final List<String> OLD_FIELDS = Arrays.asList("siteId", "spaceId", "buildingId", "floorId", "spaceId1", "spaceId2", "spaceId3", "spaceId4");
     private static final List<String> OLD_FIELDS_MODULE = Arrays.asList(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.FLOOR);
-
+    public static JSONObject getParamsForOneLevelLookup(JSONObject fieldMap)
+    {
+        JSONObject lookup=new JSONObject();
+        String fieldName= (String) fieldMap.keySet().toArray()[0];
+        lookup.put("lookupFieldname",fieldName);
+        lookup.put("value",fieldMap.get(fieldName));
+        return lookup;
+    }
 
 }

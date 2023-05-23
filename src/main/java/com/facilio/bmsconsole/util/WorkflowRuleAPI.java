@@ -1126,6 +1126,7 @@ public class WorkflowRuleAPI {
 
 	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
 		long startTime = System.currentTimeMillis();
+		record=CriteriaAPI.setLookupFieldsData(workflowRule.getCriteria(),record);
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 		LOGGER.debug("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime)+" , PLACEHOLDERS  : " + rulePlaceHolders);
@@ -1178,36 +1179,11 @@ public class WorkflowRuleAPI {
 			FacilioField onSuccess = fields.get("onSuccess");
 
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				setLookupFieldsData(workflowRule,record);
 				long startTime = System.currentTimeMillis();
 				boolean stopFurtherExecution = workflowRule.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
 				LOGGER.debug(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
 				if(stopFurtherExecution) {
 					break;
-				}
-			}
-		}
-	}
-	private static void setLookupFieldsData(WorkflowRuleContext workflowRule ,Object record) throws Exception
-	{
-		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<String> lookupFieldName = new ArrayList<>();
-		Criteria criteria=workflowRule.getCriteria();
-		if(criteria!=null && !criteria.isEmpty())
-		{
-			lookupFieldName.addAll(criteria.getConditions().values().stream().filter(i -> i.getOperator() instanceof LookupOperator).map(i -> i.getFieldName()).collect(Collectors.toSet()));
-		}
-		if(!lookupFieldName.isEmpty() && lookupFieldName.size()>=1)
-		{
-			for(String name:lookupFieldName)
-			{
-				String[] fieldName=name.split("\\.");
-				FacilioField lookupField=modBean.getField(fieldName[1],fieldName[0]);
-				Object propertyVal=FieldUtil.getValue((ModuleBaseWithCustomFields) record,lookupField);
-				if(propertyVal!=null) {
-					long recordId= (long) FieldUtil.getAsProperties(propertyVal).get("id");
-					Object lookupFieldData = FieldUtil.getLookupVal((LookupField) lookupField, recordId);
-                    FieldUtil.setValue((ModuleBaseWithCustomFields) record,lookupField,lookupFieldData);
 				}
 			}
 		}

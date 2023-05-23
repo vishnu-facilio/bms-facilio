@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,10 +21,6 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class CriteriaAPI extends BaseCriteriaAPI {
@@ -312,5 +309,33 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField(module[1], module[0]);
 		return field;
+	}
+	public static Object setLookupFieldsData(Criteria criteria, Object record) throws Exception
+	{
+		if(record instanceof Map)
+		{
+			record=FieldUtil.getAsBeanFromMap((Map<String, Object>) record,ModuleBaseWithCustomFields.class);
+		}
+		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<String> lookupFieldName = new ArrayList<>();
+		if(criteria!=null && !criteria.isEmpty())
+		{
+			lookupFieldName.addAll(criteria.getConditions().values().stream().filter(i -> i.getOperator() instanceof LookupOperator).map(i -> i.getFieldName()).collect(Collectors.toSet()));
+		}
+		if(!lookupFieldName.isEmpty() && lookupFieldName.size()>=1)
+		{
+			for(String name:lookupFieldName)
+			{
+				String[] fieldName=name.split("\\.");
+				FacilioField lookupField=modBean.getField(fieldName[1],fieldName[0]);
+				Object propertyVal=FieldUtil.getValue((ModuleBaseWithCustomFields) record,lookupField);
+				if(propertyVal!=null) {
+					long recordId= (long) FieldUtil.getAsProperties(propertyVal).get("id");
+					Object lookupFieldData = FieldUtil.getLookupVal((LookupField) lookupField, recordId);
+					FieldUtil.setValue((ModuleBaseWithCustomFields) record,lookupField,lookupFieldData);
+				}
+			}
+		}
+		return record;
 	}
 }
