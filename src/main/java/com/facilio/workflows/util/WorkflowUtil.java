@@ -314,6 +314,14 @@ public class WorkflowUtil {
 		}
 	}
 	
+	public static Object evaluateExpressionV2(String expression, Map<String,Object> params) throws Exception {
+		
+		String scriptString = ScriptUtil.constructScriptStringForExpression(expression, params);
+		
+		return getWorkflowExpressionResult(scriptString, params, Boolean.TRUE);
+	}
+	
+	
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
 		return getResult(workflowId, paramMap, false);
 	}
