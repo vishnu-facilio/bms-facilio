@@ -45,7 +45,6 @@ public class BackgroundActivityTopicHandler extends BaseHandler {
             }
             if(isChildActivityExists(backgroundActivity.getId())) {
                 LOGGER.info("Cannot update parent activity if child activity exists for id: " + backgroundActivity.getId());
-                return;
             }
             backgroundActivity.setSystemStatus(BackgroundActivityAPI.getStatusForPercentage(existingBackgroundActivity.getRecordType(),backgroundActivity.getPercentage()));
             if(backgroundActivity.getPercentage() == null || backgroundActivity.getPercentage() == 0) {

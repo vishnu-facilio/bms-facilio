@@ -1,5 +1,7 @@
 package com.facilio.multiImport.job;
 
+import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
+import com.facilio.backgroundactivity.util.BackgroundActivityService;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -20,12 +22,18 @@ public class MultiImportDataJob extends FacilioJob {
     ImportDataDetails importDataDetails = null;
     Long importId = null;
 
+    BackgroundActivityService backgroundActivityService = null;
+
     @Override
     public void execute(JobContext jobContext) throws Exception {
 
         try {
             importId = jobContext.getJobId();
             LOGGER.info("MultiImportDataJob called for importId---------- " + importId);
+
+            //background activity service
+            backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(importId, "import"));
+
             importDataDetails = MultiImportApi.getImportData(importId);
 
             if(importDataDetails.getStatusEnum() == ImportDataStatus.IMPORT_FAILED){
@@ -49,6 +57,9 @@ public class MultiImportDataJob extends FacilioJob {
 
         } catch (Exception ex) {
             LOGGER.severe("Error Occured in MultiImportDataJob  -- importId: " + importId + "  Exception:" + ex);
+            if(backgroundActivityService != null) {
+                backgroundActivityService.failActivity("Import failed for sheet name");
+            }
             throw ex;
         }
 

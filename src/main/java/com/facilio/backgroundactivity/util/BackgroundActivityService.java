@@ -56,11 +56,15 @@ public class BackgroundActivityService implements BackgroundActivityInterface {
 
     @Override
     public void updateMessage(String activityMessage) {
-        ignoreException(() -> BackgroundActivityAPI.updateBackgroundActivityMessage(activityId,activityMessage));
+        ignoreException(() -> NewTransactionService.newTransaction(() -> BackgroundActivityAPI.updateBackgroundActivityMessage(activityId,activityMessage)));
     }
 
     public ChildActivityService addChildActivity(Long recordId,String recordType,String name,String message) {
         return ignoreExceptionWithReturn(() -> new ChildActivityService(activityId,recordId,recordType,name,message));
+    }
+
+    public void deleteAllChildActivities() {
+        ignoreException(() -> NewTransactionService.newTransaction(() -> BackgroundActivityAPI.deleteChildActivity(activityId)));
     }
 
     public static <T> T ignoreExceptionWithReturn(Callable<T> callable) {

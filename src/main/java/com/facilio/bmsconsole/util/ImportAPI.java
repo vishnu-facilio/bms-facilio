@@ -653,6 +653,7 @@ public class ImportAPI {
 					fields.add("Yearly Day of the Week Value");
 					fields.add("End Date");
 					fields.add("Start Date");
+					fields.add("Season");
 				}
 		}
 			if (!fields.contains("site") && !facilioModule.instanceOf(FacilioConstants.ContextNames.SITE) && FieldUtil.isSiteIdFieldPresent(facilioModule)

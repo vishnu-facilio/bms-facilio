@@ -55,9 +55,11 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         importData(importSheets);
 
         checkImportProcessdRecordsCountAndUpdateTheImportStatus();
+
         if(backgroundActivityService != null) {
-            backgroundActivityService.updateMessage("Import completed successfully");
+            backgroundActivityService.completeActivity("Import Completed");
         }
+        
         return false;
     }
 
@@ -65,7 +67,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         for (ImportFileSheetsContext importSheet : importSheets) {
             ChildActivityService childService = null;
             if(backgroundActivityService != null) {
-                childService = new ChildActivityService(BackgroundActivityAPI.getChildActivity(backgroundActivityService.getActivityId(), importSheet.getId(), "import"));
+                childService = new ChildActivityService(BackgroundActivityAPI.getChildActivity(backgroundActivityService.getActivityId(), importSheet.getId(), "import_sheet"));
             }
             try {
                 ImportDataStatus sheetsStatus = importSheet.getStatusEnum();
@@ -190,9 +192,6 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setStatus(ImportDataStatus.IMPORT_COMPLETED);
             importDataDetails.setImportEndTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
-            if(backgroundActivityService != null) {
-                backgroundActivityService.completeActivity("Import Completed");
-            }
             LOGGER.info("MultiImport Completed  for multiImportId--- :" + importDataDetails.getId());
         }
     }

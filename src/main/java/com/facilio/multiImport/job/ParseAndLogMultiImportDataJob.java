@@ -1,5 +1,6 @@
 package com.facilio.multiImport.job;
 
+import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityService;
 import com.facilio.backgroundactivity.util.ChildActivityService;
@@ -38,6 +39,9 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
     private static final List<FacilioField> IMPORT_SHEET_UPDATE_FIELDS = Collections.unmodifiableList(getSheetUpdateFields());
 
     BackgroundActivityService backgroundActivityService = null;
+
+    ChildActivityService parsingActivityService = null;
+
     @Override
     public void execute(JobContext jobContext) throws Exception {
 
@@ -46,8 +50,10 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
             backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(importId,"import"));
             ChildActivityService childActivityService = null;
             if(backgroundActivityService != null) {
-                backgroundActivityService.updateMessage("Parsing started for importId:" + importId);
+                backgroundActivityService.deleteAllChildActivities();
+                backgroundActivityService.updateActivity(1,"Parsing started for importId:" + importId);
                 childActivityService = backgroundActivityService.addChildActivity(importId,"import","Parsing Service for import",null);
+                parsingActivityService = childActivityService;
             }
             LOGGER.info("ParseAndLogMultiImportDataJob called for importId---------- " + importId);
             importDataDetails = MultiImportApi.getImportData(importId);
@@ -58,7 +64,7 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
             List<ImportFileSheetsContext> importSheets = MultiImportApi.getSortedImportSheetsFromAllFiles(importFiles);
             if(backgroundActivityService != null) {
                 for (ImportFileSheetsContext importSheet : importSheets) {
-                    new ChildActivityService(backgroundActivityService.getActivityId(), importSheet.getId(), "import", "Import For Sheet -> " + importSheet.getName(), null);
+                    new ChildActivityService(backgroundActivityService.getActivityId(), importSheet.getId(), "import_sheet", "Import For Sheet -> " + importSheet.getName(), null);
                 }
             }
             if(childActivityService != null) {
@@ -89,6 +95,9 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
             LOGGER.severe("MultiImport Parsing failed for importId:" + importId);
             LOGGER.severe("Exception:" + e);
             importDataDetails.setStatus(ImportDataStatus.PARSING_FAILED);
+            if(parsingActivityService != null) {
+                parsingActivityService.failActivity("Parsing failed due to exception");
+            }
             MultiImportApi.updateImportStatus(importDataDetails);
             e.printStackTrace();
         }

@@ -114,35 +114,35 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 
 		validateUsername(user, fields);
-		
+
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
 
 		if (fieldMap.containsKey("securityPolicyId")) {
 			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getUid()));
 		}
-		
+
 		return (updatedRows > 0);
 	}
-	
+
 
 	@Override
 	public long signUpSuperAdminUserv3(long orgId, IAMUser user, String identifier) throws Exception {
 		AppDomain appDomain = getAppDomain(AccountUtil.getDefaultAppDomain());
-		return  addUserv3(orgId, user, appDomain.getIdentifier());
+		return addUserv3(orgId, user, appDomain.getIdentifier());
 	}
 
 	@Override
 	public long addUserv3(long orgId, IAMUser user, String identifier) throws Exception {
-		return  addUserV3(orgId, user, false, identifier);
+		return addUserV3(orgId, user, false, identifier);
 	}
 
-	public IAMUser getUserFromToken(String userToken) throws Exception{
+	public IAMUser getUserFromToken(String userToken) throws Exception {
 		String[] tokenPortal = userToken.split("&");
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		IAMUser user = null;
-		if(userObj.length == 4) {
+		if (userObj.length == 4) {
 			String creationTimeStr = userObj[3];
 			long creationTime = Long.parseLong(creationTimeStr);
 			Instant creationInstant = Instant.ofEpochMilli(creationTime);
@@ -150,8 +150,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
 			if (((long) Long.parseLong(userObj[0])) == 17) {
 				expiryDay = creationInstant.plus(45, ChronoUnit.DAYS); // temp code for investa
-			}
-			else if (((long) Long.parseLong(userObj[0])) == 418) {
+			} else if (((long) Long.parseLong(userObj[0])) == 418) {
 				expiryDay = creationInstant.plus(45, ChronoUnit.DAYS); // temp code for altayer
 			}
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
@@ -163,12 +162,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return user;
 	}
 
-	public static void main(String []args)
-	{
+	public static void main(String[] args) {
 		IAMUserBeanImpl us = new IAMUserBeanImpl();
 		IAMUser s;
 		try {
-			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");System.out.println(s.getEmail());
+			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
+			System.out.println(s.getEmail());
 			System.out.println(s.getUid());
 //			System.out.println(s.getOuid());
 //			System.out.println(s.getPortalId());
@@ -177,29 +176,28 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-		
+
 	}
-	
-	
+
+
 	@Override
-	public IAMUser verifyEmailv2(String token) throws Exception{
+	public IAMUser verifyEmailv2(String token) throws Exception {
 		IAMUser user = getUserFromToken(token);
 
-		if(user != null) {
+		if (user != null) {
 //			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
-				try {
-					user.setUserVerified(true);
-					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
-					List<FacilioField> fields = new ArrayList<FacilioField>();
-					fields.add(fieldMap.get("userVerified"));
-					
-					updateUserv2(user, fields);
-				} catch (Exception e) {
-					LOGGER.info("Exception occurred ", e);
-				}
-				return user;
+			try {
+				user.setUserVerified(true);
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+				List<FacilioField> fields = new ArrayList<FacilioField>();
+				fields.add(fieldMap.get("userVerified"));
+
+				updateUserv2(user, fields);
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred ", e);
+			}
+			return user;
 //			}
 		}
 		return null;
@@ -226,7 +224,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		String hashedPassord = PasswordHashUtil.cryptWithMD5(password);
 
-		for (String pass: userPrevPassword) {
+		for (String pass : userPrevPassword) {
 			if (hashedPassord.equals(pass)) {
 				return true;
 			}
@@ -254,7 +252,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		int numChars = 0;
 		int splChars = 0;
 		int upperCase = 0;
-		int lowerCase =0;
+		int lowerCase = 0;
 		for (int i = 0; i < password.length(); i++) {
 			if (StringUtils.isNumeric(password.charAt(i) + "")) {
 				numChars++;
@@ -267,7 +265,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (StringUtils.isAllUpperCase(password.charAt(i) + "")) {
 				upperCase++;
 			}
-			if (StringUtils.isAllLowerCase(password.charAt(i) + "")){
+			if (StringUtils.isAllLowerCase(password.charAt(i) + "")) {
 				lowerCase++;
 			}
 		}
@@ -306,24 +304,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser resetExpiredPassword(String digest, String password , String confirmPassword) throws Exception {
+	public IAMUser resetExpiredPassword(String digest, String password, String confirmPassword) throws Exception {
 		long uid = getUIDFromPWDResetToken(digest);
 		IAMUser user = getFacilioUser(-1, uid, true);
 
-		return resetUserPassword(password, user,confirmPassword);
+		return resetUserPassword(password, user, confirmPassword);
 	}
 
 	@Override
-	public IAMUser resetPasswordv2(String token, String password , String confirmPassword) throws Exception{
+	public IAMUser resetPasswordv2(String token, String password, String confirmPassword) throws Exception {
 		IAMUser user = getUserFromToken(token);
 
-		return resetUserPassword(password, user,confirmPassword);
+		return resetUserPassword(password, user, confirmPassword);
 	}
 
-	private IAMUser resetUserPassword(String password, IAMUser user,String confirmPassword) throws Exception {
-		if(user != null) {
-			if(confirmPassword != null){
-				if(!password.equals(confirmPassword)){
+	private IAMUser resetUserPassword(String password, IAMUser user, String confirmPassword) throws Exception {
+		if (user != null) {
+			if (confirmPassword != null) {
+				if (!password.equals(confirmPassword)) {
 					throw new IllegalArgumentException("Passwords doest not match");
 				}
 			}
@@ -331,29 +329,29 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			password = PasswordHashUtil.cryptWithMD5(password);
 			savePreviousPassword(user.getUid(), password);
 //			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
-				try {
-					user.setPassword(password);
-					user.setUserVerified(true);
-					user.setPwdLastUpdatedTime(System.currentTimeMillis());
-					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
-					List<FacilioField> fields = new ArrayList<FacilioField>();
-					fields.add(fieldMap.get("userVerified"));
-					fields.add(IAMAccountConstants.getUserPasswordField());
-					fields.add(fieldMap.get("pwdLastUpdatedTime"));
+			try {
+				user.setPassword(password);
+				user.setUserVerified(true);
+				user.setPwdLastUpdatedTime(System.currentTimeMillis());
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+				List<FacilioField> fields = new ArrayList<FacilioField>();
+				fields.add(fieldMap.get("userVerified"));
+				fields.add(IAMAccountConstants.getUserPasswordField());
+				fields.add(fieldMap.get("pwdLastUpdatedTime"));
 
-					IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
-					IAMUtil.getTransactionalUserBean().endUserSessionv2(user.getUid());
-				} catch (Exception e) {
-					LOGGER.info("Exception occurred ", e);
-				}
-				return user;
+				IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
+				IAMUtil.getTransactionalUserBean().endUserSessionv2(user.getUid());
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred ", e);
+			}
+			return user;
 //			}
 		}
 		return null;
 	}
 
 	@Override
-	public IAMUser validateUserInvitev2(String token) throws  Exception{
+	public IAMUser validateUserInvitev2(String token) throws Exception {
 		IAMUser user = getUserFromToken(token);
 		return user;
 	}
@@ -361,23 +359,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public IAMUser acceptInvitev2(String token, String password) throws Exception {
 		IAMUser user = getUserFromToken(token);
-		if(user != null) {
-			 if(!user.isUserVerified()) {
-				 String hashedPassword = PasswordHashUtil.cryptWithMD5(password);
-				 user.setPassword(hashedPassword);
-				 IAMUserUtil.validatePasswordWithSecurityPolicy(user.getUid(), password);
-				 if(IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
+		if (user != null) {
+			if (!user.isUserVerified()) {
+				String hashedPassword = PasswordHashUtil.cryptWithMD5(password);
+				user.setPassword(hashedPassword);
+				IAMUserUtil.validatePasswordWithSecurityPolicy(user.getUid(), password);
+				if (IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
 					return user;
-				 }
+				}
 				return null;
-			 }
-			 return user;
+			}
+			return user;
 		}
 		return null;
 	}
 
 	public boolean acceptUserv2(IAMUser user) throws Exception {
-		if(user != null && user.isActive()) {
+		if (user != null && user.isActive()) {
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);
@@ -394,19 +392,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			fields.add(userStatus);
 
 			GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
-			
+
 			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
-				
+
 			Map<String, Object> props = new HashMap<>();
 			//props.put("isDefaultOrg", true);
 			props.put("userStatus", true);
-			
+
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
 				String password = user.getPassword();
-				if(user != null) {
+				if (user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
 					user.setPwdLastUpdatedTime(System.currentTimeMillis());
@@ -416,7 +414,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
 					fieldsToBeUpdated.add(fieldMap.get("pwdLastUpdatedTime"));
 					updateUserv2(user, fieldsToBeUpdated);
-					IAMUtil.getUserBean().savePreviousPassword(user.getUid(),user.getPassword());
+					IAMUtil.getUserBean().savePreviousPassword(user.getUid(), user.getPassword());
 					return true;
 				}
 			}
@@ -426,169 +424,168 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public boolean enableUser(long orgId, long userId) throws Exception {
-		
+
 		FacilioField userStatus = new FacilioField();
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
 		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
-		
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
-		
-	   GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
-				.fields(fields);
-		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("userStatus", true);
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean disableUser(long orgId, long uId) throws Exception {
-		
-		FacilioField userStatus = new FacilioField();
-		userStatus.setName("userStatus");
-		userStatus.setDataType(FieldType.BOOLEAN);
-		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
-		
-		IAMUser user = getFacilioUser(orgId, uId, true);
-		if(user.isDefaultOrg()) {
-			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
-		}
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(userStatus);
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
 				.fields(fields);
-			
+
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
-			
-		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+
 		Map<String, Object> props = new HashMap<>();
-		props.put("userStatus", false);
-		
+		props.put("userStatus", true);
+
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return true;
 		}
 		return false;
 	}
-	
-	
+
+	@Override
+	public boolean disableUser(long orgId, long uId) throws Exception {
+
+		FacilioField userStatus = new FacilioField();
+		userStatus.setName("userStatus");
+		userStatus.setDataType(FieldType.BOOLEAN);
+		userStatus.setColumnName("USER_STATUS");
+		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
+
+		IAMUser user = getFacilioUser(orgId, uId, true);
+		if (user.isDefaultOrg()) {
+			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+		}
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(userStatus);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
+				.fields(fields);
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("userStatus", false);
+
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
 	@Override
 	public boolean deleteUserv2(long userId, long orgId) throws Exception {
 		IAMUser user = getFacilioUser(orgId, userId, false);
-		if(user != null) {
+		if (user != null) {
 			FacilioField deletedTime = new FacilioField();
 			deletedTime.setName("deletedTime");
 			deletedTime.setDataType(FieldType.NUMBER);
 			deletedTime.setColumnName("DELETED_TIME");
 			deletedTime.setModule(IAMAccountConstants.getAccountOrgUserModule());
-			
-			if(user.isDefaultOrg()) {
+
+			if (user.isDefaultOrg()) {
 				updateDefaultOrgForUser(user.getUid(), user.getOrgId());
 			}
-			
+
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(deletedTime);
-			
+
 			GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
-			
+
 			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			
+
 			Map<String, Object> props = new HashMap<>();
 			props.put("deletedTime", System.currentTimeMillis());
-			
+
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
 				return true;
 			}
 			return false;
-		}
-		else {
+		} else {
 			throw new AccountException(ErrorCode.USER_ALREADY_DELETED, "IAMUser is already deleted");
 		}
 	}
 
 	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {
 		List<Organization> orgs = getOrgsv2(uId);
-		if(CollectionUtils.isNotEmpty(orgs)) {
-			for(Organization org: orgs) {
-				if(org.getOrgId() != currentOrg) {
+		if (CollectionUtils.isNotEmpty(orgs)) {
+			for (Organization org : orgs) {
+				if (org.getOrgId() != currentOrg) {
 					setDefaultOrgv2(uId, org.getOrgId());
 					break;
 				}
 			}
 		}
 	}
-	
+
 
 	private GenericUpdateRecordBuilder getUpdateBuilder(List<FacilioField> fields) {
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
 				.innerJoin("Account_Users")
 				.on("Account_Users.USERID = Account_ORG_Users.USERID")
 				.fields(fields);
-		
+
 		return updateBuilder;
 	}
 
 
 	@Override
 	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception {
-		
+
 		FacilioField isDefaultOrg = new FacilioField();
 		isDefaultOrg.setName("isDefaultOrg");
 		isDefaultOrg.setDataType(FieldType.BOOLEAN);
 		isDefaultOrg.setColumnName("ISDEFAULT");
 		isDefaultOrg.setModule(IAMAccountConstants.getAccountOrgUserModule());
-		
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(isDefaultOrg);
-		
+
 		GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
-		
+
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-		
-		
+
+
 		Map<String, Object> props = new HashMap<>();
 		props.put("isDefaultOrg", false);
-		
+
 		updateBuilder.update(props);
-		
+
 		GenericUpdateRecordBuilder updateBuilder1 = getUpdateBuilder(fields);
 		updateBuilder1.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder1.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		updateBuilder1.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-		
+
 		Map<String, Object> props1 = new HashMap<>();
 		props1.put("isDefaultOrg", true);
-		
+
 		updateBuilder1.update(props1);
 		return true;
 	}
 
-	private boolean hasGoogleLogin(long uid) throws Exception  {
+	private boolean hasGoogleLogin(long uid) throws Exception {
 		List<Map<String, Object>> props = getUserSocialLogins(uid);
 		if (CollectionUtils.isEmpty(props)) {
 			return false;
@@ -654,22 +651,22 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public List<Organization> getOrgsv2(long uid) throws Exception {
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-   				.select(IAMAccountConstants.getOrgFields())
-   				.table("Organizations")
-   				.innerJoin("Account_ORG_Users")
-   				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
-   			
+				.select(IAMAccountConstants.getOrgFields())
+				.table("Organizations")
+				.innerJoin("Account_ORG_Users")
+				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<Organization> orgs = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
+			for (Map<String, Object> prop : props) {
 				orgs.add(IAMOrgUtil.createOrgFromProps(prop));
 			}
 			return orgs;
@@ -679,7 +676,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String updateUserPhoto(long uid, User user) throws Exception {
-		
+
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(user.getAvatarFileName(), user.getAvatar(), user.getAvatarContentType());
 		String url = fs.newPreviewFileUrl("user", fileId);
@@ -688,20 +685,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		photoId.setDataType(FieldType.NUMBER);
 		photoId.setColumnName("PHOTO_ID");
 		photoId.setModule(IAMAccountConstants.getAccountsUserModule());
-		
+
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.add(photoId);
-		
-		
+
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
-		
+
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-	
+
 		Map<String, Object> props = new HashMap<>();
 		props.put("photoId", fileId);
-		
+
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return url;
@@ -715,7 +712,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (photoId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
 			boolean isDeleted = fs.deleteFile(photoId);
-			if(isDeleted) {
+			if (isDeleted) {
 				FacilioField photoField = new FacilioField();
 				photoField.setName("photoId");
 				photoField.setDataType(FieldType.NUMBER);
@@ -735,7 +732,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				props.put("photoId", -99);
 
 				int updatedRows = updateBuilder.update(props);
-				if(updatedRows > 0) {
+				if (updatedRows > 0) {
 					return true;
 				}
 			}
@@ -804,7 +801,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<String> domains = new ArrayList<>();
-		for (Long orgId: orgIds) {
+		for (Long orgId : orgIds) {
 			Organization org = IAMOrgUtil.getOrg(orgId);
 			domains.add(org.getDomain());
 		}
@@ -835,7 +832,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String generateProxyUserSessionToken(String proxyUser) throws Exception {
-		String jwt = createJWT("id", "auth0", proxyUser, System.currentTimeMillis());
+		String jwt = createJWT("id", "auth0", proxyUser, System.currentTimeMillis(),true);
 		return jwt;
 	}
 
@@ -860,17 +857,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public String generatePWDPolicyPWDResetToken(String userName, AppDomain.GroupType groupType) throws Exception {
 		final List<Map<String, Object>> userForUserName = getUserData(userName, groupType);
 		var uid = (long) userForUserName.get(0).get("uid");
-		String jwt = createJWT("id", "auth0", uid+"", System.currentTimeMillis());
+		String jwt = createJWT("id", "auth0", uid + "", System.currentTimeMillis());
 		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.PWD_POLICY_PWD_RESET);
 		return jwt;
 	}
-	
+
 	private boolean isUserPresentInCurrentDC(String username, GroupType groupType) throws Exception {
 		final List<Map<String, Object>> userInfo;
 		if (groupType == null || groupType == GroupType.FACILIO) {
 			userInfo = getUserData(username, -1, null);
-		}
-		else {
+		} else {
 			userInfo = getUserData(username, groupType);
 		}
 		return CollectionUtils.isNotEmpty(userInfo);
@@ -885,8 +881,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.select(fields)
 				.table(IAMAccountConstants.getDCLookupModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(groupType.getIndex()) , StringOperators.IS))
-				;
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(groupType.getIndex()), StringOperators.IS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -903,10 +898,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(IAMAccountConstants.getDCLookupModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), groupType.getIndex()+"", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), groupType.getIndex() + "", NumberOperators.EQUALS));
 		deleteRecordBuilder.delete();
 	}
-	
+
 	@Override
 	public long addDCLookup(Map<String, Object> props) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getDCFields();
@@ -944,7 +939,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (isUserPresentInCurrentDC(username, groupType)) {
 			return null;
 		}
-		
+
 		Integer dc = IamClient.lookupUserDC(username, groupType);
 		if (dc == null || dc <= 0) {
 			throw new IllegalArgumentException("user name is missing");
@@ -1005,7 +1000,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		boolean samlEnabled = false;
 		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
-			for (AccountSSO ss: accountSSODetails) {
+			for (AccountSSO ss : accountSSODetails) {
 				if (ss.getIsActive() != null && ss.getIsActive()) {
 					samlEnabled = true;
 					break;
@@ -1065,7 +1060,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			props.put("userAgent", userAgent);
 			props.put("userType", userType);
 			props.put("isProxySession", isProxySession);
-			props.put("lastActivityTime",System.currentTimeMillis());
+			props.put("lastActivityTime", System.currentTimeMillis());
 
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
@@ -1140,7 +1135,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@SneakyThrows
 	private List<Map<String, Object>> getUserWebSessions(long uid) {
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid + "");
 		if (sessions != null) {
 			return sessions;
 		}
@@ -1151,13 +1146,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.innerJoin("UserSessions")
 				.on("Account_Users.USERID = UserSessions.USERID");
 
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uid+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uid + "", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			sessions = props;
-			LRUCache.getUserSessionCache().put(uid+"", sessions);
+			LRUCache.getUserSessionCache().put(uid + "", sessions);
 		}
 		return sessions;
 	}
@@ -1166,9 +1161,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public long getSessionExpiry(long uid, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
-		for (Map<String, Object> session: sessions) {
+		for (Map<String, Object> session : sessions) {
 			long s = (long) session.get("id");
-			if (s == sessionId && ("web".equalsIgnoreCase((String) session.get("userType"))|| "mobile".equalsIgnoreCase((String) session.get("userType")))) {
+			if (s == sessionId && ("web".equalsIgnoreCase((String) session.get("userType")) || "mobile".equalsIgnoreCase((String) session.get("userType")))) {
 				prop = session;
 				break;
 			}
@@ -1179,7 +1174,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
-		if (userSecurityPolicy == null){
+		if (userSecurityPolicy == null) {
 			return -1L;
 		}
 
@@ -1189,11 +1184,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Integer webSessLifeTime;
 			Long startTime = (Long) prop.get("startTime");
 			Instant startInstant = Instant.ofEpochMilli(startTime);
-			if(userSecurityPolicy.getWebSessLifeTime() != null ){
+			if (userSecurityPolicy.getWebSessLifeTime() != null) {
 				webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
-				return startInstant.plus(webSessLifeTime,ChronoUnit.DAYS).toEpochMilli();
-				}
-			else if(userSecurityPolicy.getWebSessLifeTimesec() != null) {
+				return startInstant.plus(webSessLifeTime, ChronoUnit.DAYS).toEpochMilli();
+			} else if (userSecurityPolicy.getWebSessLifeTimesec() != null) {
 				webSessLifeTime = userSecurityPolicy.getWebSessLifeTimesec();
 				return startInstant.plus(webSessLifeTime, ChronoUnit.SECONDS).toEpochMilli();
 			}
@@ -1201,15 +1195,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		return -1L;
 	}
+
 	@Override
 	public String isSessionExpired(long uid, long sessionId) throws Exception {
-		return isSessionExpired( uid, sessionId,null);
+		return isSessionExpired(uid, sessionId, null);
 	}
+
 	@Override
 	public String isSessionExpired(long uid, long sessionId, AppDomain appdomainObj) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
-		for (Map<String, Object> session: sessions) {
+		for (Map<String, Object> session : sessions) {
 			long s = (long) session.get("id");
 			if (s == sessionId && ("web".equalsIgnoreCase((String) session.get("userType")) || "mobile".equalsIgnoreCase((String) session.get("userType")))) {
 				prop = session;
@@ -1221,10 +1217,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return "false";
 		}
 
-		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid,appdomainObj);
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, appdomainObj);
 
-		if (userSecurityPolicy == null){
-				return "false";
+		if (userSecurityPolicy == null) {
+			return "false";
 		}
 
 		Long currentTime = System.currentTimeMillis();
@@ -1239,26 +1235,25 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				Duration durationBetween = Duration.between(activityInstant, currentInstant);
 				if (durationBetween.compareTo(duration) >= 0) {
 					return "sessiontimeout";
-				}else{
+				} else {
 					Duration oneMinute = Duration.ofSeconds(MINUTE_IN_SECONDS);
-					if(durationBetween.compareTo(oneMinute) >= 0) {
-						updateUserSessionsLastActivityTime(sessionId,uid,currentTime);
+					if (durationBetween.compareTo(oneMinute) >= 0) {
+						updateUserSessionsLastActivityTime(sessionId, uid, currentTime);
 					}
 				}
 			}
 		}
 
-		boolean isWebSessManagementEnabled =  isWebSessManagementEnabled(userSecurityPolicy);
+		boolean isWebSessManagementEnabled = isWebSessManagementEnabled(userSecurityPolicy);
 
 		if (userSecurityPolicy != null && isWebSessManagementEnabled) {
 			Duration duration = null;
-			if(userSecurityPolicy.getWebSessLifeTime() != null ){
+			if (userSecurityPolicy.getWebSessLifeTime() != null) {
 				duration = Duration.ofDays(userSecurityPolicy.getWebSessLifeTime());
-				LOGGER.info("Session Expired " + userSecurityPolicy.getWebSessLifeTime()+" days");
-			}
-			else if (userSecurityPolicy.getWebSessLifeTimesec() != null) {
+				LOGGER.info("Session Expired " + userSecurityPolicy.getWebSessLifeTime() + " days");
+			} else if (userSecurityPolicy.getWebSessLifeTimesec() != null) {
 				duration = Duration.ofSeconds(userSecurityPolicy.getWebSessLifeTimesec());
-				LOGGER.info("Session Expired  " + userSecurityPolicy.getWebSessLifeTimesec() +" seconds" );
+				LOGGER.info("Session Expired  " + userSecurityPolicy.getWebSessLifeTimesec() + " seconds");
 			}
 			Long startTime = (Long) prop.get("startTime");
 			if (startTime != null) {
@@ -1273,17 +1268,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return "false";
 	}
 
-    public boolean isWebSessManagementEnabled(SecurityPolicy userSecurityPolicy){
-		if(userSecurityPolicy.getWebSessLifeTime() != null && userSecurityPolicy.getWebSessLifeTime() > 0){
+	public boolean isWebSessManagementEnabled(SecurityPolicy userSecurityPolicy) {
+		if (userSecurityPolicy.getWebSessLifeTime() != null && userSecurityPolicy.getWebSessLifeTime() > 0) {
 			return true;
 		}
-		if(userSecurityPolicy.getWebSessLifeTimesec() !=null && userSecurityPolicy.getWebSessLifeTimesec() > 0){
+		if (userSecurityPolicy.getWebSessLifeTimesec() != null && userSecurityPolicy.getWebSessLifeTimesec() > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	public void updateUserSessionsLastActivityTime(long sessionId , long uid ,Long currentTime) throws Exception {
+	public void updateUserSessionsLastActivityTime(long sessionId, long uid, Long currentTime) throws Exception {
 		FacilioField lastActivityTime = new FacilioField();
 		lastActivityTime.setName("lastActivityTime");
 		lastActivityTime.setDataType(FieldType.NUMBER);
@@ -1297,52 +1292,52 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.table(IAMAccountConstants.getUserSessionModule().getTableName())
 				.fields(fields);
 
-		updateBuilder.andCondition(CriteriaAPI.getCondition("SESSIONID", "sessionId",String.valueOf(sessionId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("SESSIONID", "sessionId", String.valueOf(sessionId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE","isActive","1",NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 		Map<String, Object> props = new HashMap<>();
 		props.put("lastActivityTime", currentTime);
 
 		updateBuilder.update(props);
 
-		LOGGER.info("Last Activity Time updated for sessionId: "+sessionId);
+		LOGGER.info("Last Activity Time updated for sessionId: " + sessionId);
 
-		LRUCache.getUserSessionCache().removeStartsWith(uid+"");
+		LRUCache.getUserSessionCache().removeStartsWith(uid + "");
 	}
+
 	@Override
-	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception
-	{
+	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
 				.on("Account_Users.USERID =UserSessions.USERID");
-		
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-		
+
 		if (isActive != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", isActive ? "1" : "0", NumberOperators.EQUALS));
 		}
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return props;
 		}
 		return null;
-	
+
 	}
-	
+
 	@Override
 	public void clearUserSessionv2(long uid, String token) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getUserSessionModule().getTableName());
-		
+
 		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		builder.andCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
-		
+
 		builder.delete();
-		
+
 		LRUCache.getUserSessionCache().remove(String.valueOf(uid));
 	}
 
@@ -1353,12 +1348,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.table(IAMAccountConstants.getUserSessionModule().getTableName());
 		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		builder.delete();
-		
+
 		//LRUCache.getUserSessionCache().remove(email);
 		LRUCache.getUserSessionCache().remove(String.valueOf(uid));
-		
+
 	}
-	
+
 	@Override
 	public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception {
 		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
@@ -1366,14 +1361,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
 			user.setAvatarUrl(fs.newPreviewFileUrl("user", user.getPhotoId()));
 		}
-	
+
 		return user;
 	}
 
 	@Override
 	public String generatePermalinkForURL(long uid, long orgId, JSONObject sessionInfo) throws Exception {
 		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
-		String tokenKey = orgId + "-" + uid ;
+		String tokenKey = orgId + "-" + uid;
 		String jwt = createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
 
 		insertTokenIntoSession(uid, sessionInfo, jwt, IAMAccountConstants.SessionType.PERMALINK_SESSION);
@@ -1382,7 +1377,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	public String addProxySession(String proxyUsername, String proxiedUserName, long proxiedSessionId) throws Exception {
-		String jwt = createJWT("id", "auth0", proxyUsername+"_"+proxiedUserName, System.currentTimeMillis());
+		String jwt = createJWT("id", "auth0", proxyUsername + "_" + proxiedUserName, System.currentTimeMillis());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getProxySessionsModule().getTableName())
 				.fields(IAMAccountConstants.getProxySessionsFields());
@@ -1432,35 +1427,35 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		return generatePermalinkForURL(uid, orgId, sessionInfo);
 	}
-    
+
 	@Override
-    public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
-    	
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+	public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("UserSessions");
-    	
-    	selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			Map<String, Object> session = props.get(0);
 			Long startTime = (Long) session.get("startTime");
 			String sessionInfo = (String) session.get("sessionInfo");
-			
+
 			if ((startTime + 2678400000l) < System.currentTimeMillis()) { // one month
 				// expired
 				return false;
 			}
-			
+
 			if (urls != null) {
 				JSONParser parser = new JSONParser();
 				try {
 					JSONObject sessionInfoObj = (JSONObject) parser.parse(sessionInfo);
 					String allowUrls = (String) sessionInfoObj.get("allowUrls");
 					List<String> allowedUrlList = Arrays.asList(allowUrls.split(","));
-					
+
 					for (String url : urls) {
 						if (allowedUrlList.contains(url)) {
 							// url valid
@@ -1470,69 +1465,80 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				} catch (ParseException e) {
 					LOGGER.info("Exception occurred ", e);
 				}
-			}
-			else {
+			} else {
 				// token valid
 				return true;
 			}
 		}
 		return false;
-    }
+	}
 
-	
+
 	@Override
 	public String getEncodedTokenv2(IAMUser user) throws Exception {
 		IAMUser iamUser = getFacilioUser(user.getOrgId(), user.getUid(), true);
-		if(iamUser != null) {
-			return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+		if (iamUser != null) {
+			return EncryptionUtil.encode(iamUser.getOrgId() + USER_TOKEN_REGEX + iamUser.getUid() + USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 		}
 		throw new IllegalArgumentException("Cannot generate token for invalid user");
 	}
 
-	
+
 	@Override
 	public IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
-		if(verifyPermalinkForURL(token, urls)) {
+		if (verifyPermalinkForURL(token, urls)) {
 			DecodedJWT decodedjwt = validateJWT(token, "auth0");
-	
+
 			String[] tokens = null;
 			if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
 				tokens = decodedjwt.getSubject().split(JWT_DELIMITER)[0].split("-");
-			}
-			else {
+			} else {
 				tokens = decodedjwt.getSubject().split("_")[0].split("-");
 			}
 			long orgId = Long.parseLong(tokens[0]);
 			long uid = Long.parseLong(tokens[1]);
-			
+
 			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(orgId, uid, true));
 			return currentAccount;
 		}
 		return null;
 	}
 
-
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
-		 
+		return createJWT(id, issuer, subject, ttlMillis, false);
+	}
+
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis, boolean secretFromAWS) {
+
 		try {
-		    Algorithm algorithm = Algorithm.HMAC256("secret");
-		    
-		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
-		    JWTCreator.Builder builder = JWT.create().withSubject(key)
-	        .withIssuer(issuer);
-		    
-		    return builder.sign(algorithm);
-		} catch (UnsupportedEncodingException | JWTCreationException exception){
-			LOGGER.info("exception occurred while creating JWT "+ exception.toString());
-		    //UTF-8 encoding not supported
+			String secret = "secret";
+			if (secretFromAWS && FacilioProperties.getProxyJwtTokenSecret() != null) {
+				secret = FacilioProperties.getProxyJwtTokenSecret();
+			}
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+
+			String key = subject + JWT_DELIMITER + System.currentTimeMillis();
+			JWTCreator.Builder builder = JWT.create().withSubject(key)
+					.withIssuer(issuer);
+
+			return builder.sign(algorithm);
+		} catch (UnsupportedEncodingException | JWTCreationException exception) {
+			LOGGER.info("exception occurred while creating JWT " + exception.toString());
+			//UTF-8 encoding not supported
 		}
 		return null;
 	}
-
 	public static DecodedJWT validateJWT(String token, String issuer) {
+		return validateJWT(token, issuer, false);
+	}
+	public static DecodedJWT validateJWT(String token, String issuer, boolean secretFromAWS) {
 		try {
-			Algorithm algorithm = Algorithm.HMAC256("secret");
+			String secret = "secret";
+			if (secretFromAWS && FacilioProperties.getProxyJwtTokenSecret() != null) {
+				secret = FacilioProperties.getProxyJwtTokenSecret();
+			}
+			Algorithm algorithm = Algorithm.HMAC256(secret);
 			JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build(); // Reusable verifier instance
 
 			DecodedJWT jwt = verifier.verify(token);
@@ -1971,7 +1977,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String decodeProxyUserToken(String token) throws Exception {
-		DecodedJWT decodedJWT = validateJWT(token, "auth0");
+		DecodedJWT decodedJWT = validateJWT(token, "auth0",true);
 		String[] split = decodedJWT.getSubject().split(JWT_DELIMITER);
 		long createdTime = Long.parseLong(split[1]);
 

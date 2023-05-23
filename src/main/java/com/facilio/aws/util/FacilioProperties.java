@@ -218,6 +218,9 @@ public class FacilioProperties {
     @Getter
     private static long defaultTransactionTimeout = -1;
 
+    @Getter
+    private static String proxyJwtTokenSecret;
+
     static {
         loadProperties();
     }
@@ -299,6 +302,7 @@ public class FacilioProperties {
             iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
             messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL, "300000"));
             defaultDataSource = PROPERTIES.getProperty("db.default.ds");
+            proxyJwtTokenSecret = PROPERTIES.getProperty("proxy.jwt.secret");
             defaultDataSourceForNewOrg = PROPERTIES.getProperty("db.default.ds.new.org");
             defaultDB = PROPERTIES.getProperty("db.default.db");
             defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
@@ -614,6 +618,10 @@ public class FacilioProperties {
 
     public static String getDefaultDataSourceForNewOrg() {
         return defaultDataSourceForNewOrg;
+    }
+
+    public static String getProxyJwtTokenSecret() {
+        return proxyJwtTokenSecret;
     }
 
     public static String getDefaultDB() {

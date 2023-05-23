@@ -160,6 +160,7 @@ public class MultiImportDataAction extends V3Action {
 
     public String parseAndImportData() throws Exception {
 
+        new BackgroundActivityService(importId,"import","Import Id: #"+importId,"Scheduled Import Id: #"+importId+".");
         FacilioChain chain = MultiImportChain.scheduleParseAndImportDataJob();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.IMPORT_ID, importId);

@@ -1,5 +1,6 @@
 package com.facilio.backgroundactivity.util;
 
+import com.azure.core.annotation.Delete;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.backgroundactivity.factory.BackgroundActivityChainFactory;
@@ -23,14 +24,12 @@ import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class BackgroundActivityAPI {
@@ -184,10 +183,10 @@ public class BackgroundActivityAPI {
             LOGGER.error("Parent Activity Id is null");
             return false;
         }
-        if(anyNeighbourStarted(parentActivityId)) {
-            LOGGER.error("Some neighbour activity is already started");
-            return false;
-        }
+//        if(anyNeighbourStarted(parentActivityId)) {
+//            LOGGER.error("Some neighbour activity is already started");
+//            return false;
+//        }
         return true;
     }
 
@@ -274,11 +273,32 @@ public class BackgroundActivityAPI {
     }
 
     public static boolean isActivityLicenseEnabled() {
-        try {
-            return AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.BACKGROUND_ACTIVITY);
-        } catch (Exception e) {
-            LOGGER.error("Error while checking background activity license",e);
+        return true;
+    }
+
+    public static void deleteChildActivity(Long parentId) throws Exception {
+        if (parentId == null) {
+            LOGGER.error("Background Activity id is null");
+            return;
         }
-        return false;
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder<>();
+        selectRecordsBuilder.moduleName(Constants.BACKGROUND_ACTIVITY_MODULE);
+        selectRecordsBuilder.beanClass(BackgroundActivity.class);
+        selectRecordsBuilder.select(modBean.getAllFields(Constants.BACKGROUND_ACTIVITY_MODULE));
+        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("PARENT_ACTIVITY","parentActivity", String.valueOf(parentId), NumberOperators.EQUALS));
+        List<BackgroundActivity> backgroundActivities = selectRecordsBuilder.get();
+        List<Long> ids = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(backgroundActivities)) {
+            for(BackgroundActivity backgroundActivity : backgroundActivities) {
+                ids.add(backgroundActivity.getId());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(ids)) {
+            DeleteRecordBuilder deleteRecordBuilder = new DeleteRecordBuilder();
+            deleteRecordBuilder.moduleName(Constants.BACKGROUND_ACTIVITY_MODULE);
+            deleteRecordBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids,","), NumberOperators.EQUALS));
+            deleteRecordBuilder.delete();
+        }
     }
 }

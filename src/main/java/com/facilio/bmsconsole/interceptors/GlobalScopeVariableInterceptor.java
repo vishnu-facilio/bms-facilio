@@ -94,7 +94,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                 }
             } else {
                 if (switchMap != null) {
-                    LOGGER.error("When no scope variable is active and value from switch throw 400");
+//                    LOGGER.error("When no scope variable is active and value from switch throw 400");
 //                    return "invalid";
                 }
             }

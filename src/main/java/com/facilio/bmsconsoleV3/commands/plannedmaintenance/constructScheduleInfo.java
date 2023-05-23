@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.plannedmaintenance;
 
+import bsh.StringUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ContractsContext;
@@ -15,9 +16,11 @@ import com.facilio.date.calenderandclock.WeekDayEnum;
 import com.facilio.date.calenderandclock.WeekEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.taskengine.Season;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.common.protocol.types.Field;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +59,8 @@ public class constructScheduleInfo extends FacilioCommand {
                     long endDate = 0;
                     long startDate = System.currentTimeMillis();
                     List<Integer> yearlyDayOfWeekValue = new ArrayList<>();
+                    List<Season> seasons = new ArrayList<>();
+
                     colval = jsonObject.getJSONObject("colVal");
                     if(colval.isNull("Trigger") || !fieldMapping.containsValue("Trigger")){
                         return true;
@@ -100,6 +105,30 @@ public class constructScheduleInfo extends FacilioCommand {
                     if(!colval.isNull("Start Date") && fieldMapping.containsValue("Start Date")){
                         startDate = convertDateStringToMilliSeconds(colval.getString("Start Date"));
                     }
+                    if(!colval.isNull("Season") && fieldMapping.containsValue("Season")){
+                        String[] seasonsArray = StringUtil.split(colval.getString("Season"),";");
+                        if(seasonsArray.length > 5) {
+                            return true;
+                        }
+                        if(seasonsArray.length > 0) {
+                            for(String singleSeason : seasonsArray) {
+                                String[] singleSeasonProp = StringUtil.split(singleSeason,":");
+                                if (singleSeasonProp.length == 3) {
+                                    String seasonName = singleSeasonProp[0];
+                                    Integer seasonStartMonth = getMonthValue(singleSeasonProp[1].split("/")[1]);
+                                    Integer seasonStartDay = Integer.parseInt(singleSeasonProp[1].split("/")[0]);
+                                    Integer seasonEndMonth = getMonthValue(singleSeasonProp[2].split("/")[1]);
+                                    Integer seasonEndDay = Integer.parseInt(singleSeasonProp[2].split("/")[0]);
+                                    Season season = new Season();
+                                    season.setName(seasonName);
+                                    season.setStartMonth(seasonStartMonth)                    ;
+                                    season.setStartDate(seasonStartDay);
+                                    season.setEndMonth(seasonEndMonth);
+                                    season.setEndDate(seasonEndDay);
+                                    seasons.add(season);
+                                }
+                            }
+                        }                    }
                     Map<String,Object> scheduleInfo = new HashMap<>();
                     scheduleInfo.put("times",times);
                     scheduleInfo.put("frequency",runsEvery);
@@ -111,6 +140,9 @@ public class constructScheduleInfo extends FacilioCommand {
                     scheduleInfo.put("monthValue",monthValue);
                     scheduleInfo.put("yearlyDayOfWeekValues",yearlyDayOfWeekValue);
                     scheduleInfo.put("endDate",endDate);
+                    if(CollectionUtils.isNotEmpty(seasons)) {
+                        scheduleInfo.put("seasons",seasons);
+                    }
                     colval.put("scheduleInfo",scheduleInfo);
                     PMTriggerV2 triggerV2 = new PMTriggerV2();
                     triggerV2.setSchedule(String.valueOf(colval.getJSONObject("scheduleInfo")));
@@ -134,6 +166,13 @@ public class constructScheduleInfo extends FacilioCommand {
         }
         context.put("trigger", pmTriggerV2List);
         return false;
+    }
+
+    private static int getMonthValue(String month) {
+        if(FacilioConstants.ContextNames.MONTH_LIST.contains(month)) {
+            return (FacilioConstants.ContextNames.MONTH_LIST.indexOf(month) + 1);
+        }
+        return 1;
     }
     private static int setFrequencyType(PMTriggerV2.PMTriggerFrequency frequency, int weekFrequency){
         switch (frequency){
