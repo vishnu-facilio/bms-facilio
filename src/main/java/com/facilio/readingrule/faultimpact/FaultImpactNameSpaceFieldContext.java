@@ -50,6 +50,17 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
 
 	NsFieldType nsFieldTypeEnum;
 
+
+	public int getNsFieldTypeEnum() {
+		if(nsFieldTypeEnum != null) {
+			return nsFieldTypeEnum.getIndex();
+		}
+		return -1;
+	}
+	public void setNsFieldTypeEnum(int nsFieldType) {
+		this.nsFieldTypeEnum = NsFieldType.valueOf(nsFieldType);
+	}
+
 	public void setNsFieldType(String nsFieldType) {
 		this.nsFieldTypeEnum = NsFieldType.valueOf(nsFieldType);
 	}
@@ -60,16 +71,6 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
 		return null;
 	}
 
-	public void setNsFieldTypeEnum(int nsFieldType) {
-		this.nsFieldTypeEnum = NsFieldType.valueOf(nsFieldType);
-	}
-
-	public int getNsFieldTypeEnum() {
-		if(nsFieldTypeEnum != null) {
-			return nsFieldTypeEnum.getIndex();
-		}
-		return -1;
-	}
 
 	public NameSpaceField getNameSpaceField() {
     	NameSpaceField field = new NameSpaceField();
@@ -83,7 +84,7 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
     	}
     	field.setVarName(getVarName());
     	field.setAggregationTypeI(getAggregationTypeEnum());
-    	
+    	field.setNsFieldTypeI(getNsFieldTypeEnum());
     	return field;
     }
 }

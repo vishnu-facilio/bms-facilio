@@ -27,6 +27,7 @@ public class LoadSupplementsForFaultsCommand extends FacilioCommand {
         );
         fetchAdditionalFields(context);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
+
         return false;
     }
 
