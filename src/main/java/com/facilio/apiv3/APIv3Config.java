@@ -2050,9 +2050,9 @@ public class APIv3Config {
                 .beforeFetch(new SiteFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchSiteFilterChain())
-//                .pickList()
-//                .setSecondaryField(FacilioConstants.ContextNames.SITE, FacilioConstants.ContextNames.DECOMMISSION)
-//                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .pickList()
+                .setSecondaryField(FacilioConstants.ContextNames.SITE, FacilioConstants.ContextNames.DECOMMISSION)
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2073,9 +2073,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchBuildingFilterChain())
-//                .pickList()
-//                .setSecondaryField(FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.DECOMMISSION)
-//                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .pickList()
+                .setSecondaryField(FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.DECOMMISSION)
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2096,9 +2096,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new FloorFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new FloorFillLookupFieldsCommand())
-//                .pickList()
-//                .setSecondaryField(FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.DECOMMISSION)
-//                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .pickList()
+                .setSecondaryField(FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.DECOMMISSION)
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2120,9 +2120,9 @@ public class APIv3Config {
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(TransactionChainFactoryV3.getSpaceBeforeFetchChain())
-//                .pickList()
-//                .setSecondaryField(FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.DECOMMISSION)
-//                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .pickList()
+                .setSecondaryField(FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.DECOMMISSION)
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 
@@ -2192,9 +2192,9 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getAssetBeforeFetchChain())
                 .afterFetch(new AssetListFilterByReadingsCommand())
-//                .pickList()
-//                .setSecondaryField(FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.DECOMMISSION)
-//                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .pickList()
+                .setSecondaryField(FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.DECOMMISSION)
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
     @Module("assetSpareParts")
@@ -3032,6 +3032,22 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new FetchBackgroundActivitySupplementsCommand())
                 .afterFetch(ReadOnlyChainFactoryV3.backgroundActivityFetchChain())
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.BASE_SPACE)
+    public static Supplier<V3Config> getBaseSpace(){
+        return () -> new V3Config(V3BaseSpaceContext.class,null)
+                .list()
+                .pickList()
+                .beforeFetch(new DecommissionPicklistCheckCommand())
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.RESOURCE)
+    public static Supplier<V3Config> getResource(){
+        return () -> new V3Config(V3ResourceContext.class,null)
+                .list()
+                .pickList()
+                .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
 }
