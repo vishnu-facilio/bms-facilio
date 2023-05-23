@@ -437,12 +437,13 @@ public class ReadingKpiAPI {
     private static Double fetchReadingsAndEvaluateKpi(Long resourceId, DateRange interval, List<NameSpaceField> nsFields, String script) throws Exception {
         List<Object> scriptParams = new ArrayList<>();
         for (NameSpaceField field : nsFields) {
-            Double reading = fetchAggregatedReading(field.getFieldId(), resourceId, interval.getStartTime(), interval.getEndTime(), field.getAggregation());
+            Long resId = field.getResourceId() != null ? field.getResourceId() : resourceId;
+            Double reading = fetchAggregatedReading(field.getFieldId(), resId, interval.getStartTime(), interval.getEndTime(), field.getAggregation());
             if (reading != null) {
                 scriptParams.add(reading);
                 LOGGER.info("nsId: " + field.getNsId() + " resourceId: " + resourceId + " variable: " + field.getVarName() + " value: " + reading);
             } else {
-                LOGGER.info("Variable " + field.getVarName() + " with fieldID " + field.getField() + " field does not have data, for resource" + resourceId);
+                LOGGER.info("Variable " + field.getVarName() + " with fieldID " + field.getField().getId() + " field does not have data, for resource" + resId);
                 return null;
             }
         }
@@ -450,7 +451,7 @@ public class ReadingKpiAPI {
         sysPropMap.put("resourceId", resourceId);
         sysPropMap.put("ttime", interval.getStartTime());
         scriptParams.add(sysPropMap);
-
+        LOGGER.info("Script Params : " + scriptParams + " for resource "+  resourceId );
         ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
         return Double.parseDouble(result.getReturnValue().toString());
     }
