@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -83,7 +81,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
 
         boolean isNewSummaryWidgetAdded = false;
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SUMMARY_WIDGET)) {
-            SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidget(module.getModuleId());
+            SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidgetForApp(module.getModuleId());
             if(pageWidget != null){
                 isNewSummaryWidgetAdded = true;
                 PageWidget newSummaryFieldsWidget = new PageWidget(PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);

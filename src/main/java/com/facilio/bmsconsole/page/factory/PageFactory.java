@@ -852,7 +852,7 @@ public class PageFactory {
 		else {
 			boolean isNewSummaryWidget = false;
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SUMMARY_WIDGET)) {
-				SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidget(module.getModuleId());
+				SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidgetForApp(module.getModuleId());
 				if(pageWidget != null){
 					isNewSummaryWidget = true;
 					PageWidget newSummaryFieldsWidget = new PageWidget(WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);

@@ -435,7 +435,12 @@ public class SummaryWidgetUtil {
         builder.update(prop);
     }
 
-    public static SummaryWidget getMainSummaryWidget(long moduleId) throws Exception {
+    public static SummaryWidget getMainSummaryWidgetForApp(long moduleId) throws Exception {
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        if(app == null) {
+            app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        }
+        long appId = app.getId();
         List<FacilioField> fields = FieldFactory.getCustomPageWidgetFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
@@ -443,7 +448,8 @@ public class SummaryWidgetUtil {
                 .select(fields)
                 .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET, StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldMap.get("appId"), String.valueOf(appId)));
 
         List<SummaryWidget> pageWidgets = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidget.class);
         if (CollectionUtils.isNotEmpty(pageWidgets)){
