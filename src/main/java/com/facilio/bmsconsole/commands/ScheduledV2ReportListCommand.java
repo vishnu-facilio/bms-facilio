@@ -41,20 +41,22 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
 		List<Long> moduleIds = new ArrayList<>();
-		String name = AccountUtil.getCurrentApp().getLinkName();
-		if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-			if(moduleName != null && moduleName.equals("custom")){
-				List<FacilioModule> moduleList = modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY,true);
-				for (FacilioModule prop : moduleList) {
-					moduleIds.add(prop.getModuleId());
+		if(!moduleName.equals("pivot")){
+			String name = AccountUtil.getCurrentApp().getLinkName();
+			if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+				if(moduleName != null && moduleName.equals("custom")){
+					List<FacilioModule> moduleList = modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY,true);
+					for (FacilioModule prop : moduleList) {
+						moduleIds.add(prop.getModuleId());
+					}
+				}
+				else{
+					moduleIds.add(moduleToFetch.getModuleId());
 				}
 			}
 			else{
 				moduleIds.add(moduleToFetch.getModuleId());
 			}
-		}
-		else{
-			moduleIds.add(moduleToFetch.getModuleId());
 		}
 
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
@@ -84,10 +86,15 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = new ArrayList<>();
 		List<Map<String, Object>> lists = selectBuilder.get();
-		for(Map<String, Object> list : lists){
-			if(list.get("moduleId") != null && moduleIds.contains(list.get("moduleId"))) {
-				props.add(list);
+		if(!moduleName.equals("pivot")){
+			for(Map<String, Object> list : lists){
+				if(list.get("moduleId") != null && moduleIds.contains(list.get("moduleId"))) {
+					props.add(list);
+				}
 			}
+		}
+		else{
+			props.addAll(lists);
 		}
 		Map<Long, ReportInfo> reportsMap = new HashMap<>();
 
