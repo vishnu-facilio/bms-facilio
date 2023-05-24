@@ -1650,8 +1650,6 @@
     <package name="pickList" namespace="/api/v3/pickList/modules" extends="v3Api">
         <action name="*" class="com.facilio.v3.action.PickListActionV3">
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="checkPermission">true</param>
         </action>
     </package>
 
