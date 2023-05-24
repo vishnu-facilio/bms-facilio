@@ -1722,6 +1722,7 @@ public class FacilioConstants {
 
 		public static final String WORKORDER_COST = "workorderCost";
 		public static final String WORKORDER_COST_TYPE = "workorderCostType";
+		public static final String IS_WORKORDER_COST_CHAIN = "isWorkOrderCostChain";
 
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";

@@ -29,9 +29,10 @@ public class UpdateWorkorderTotalCostCommandV3 extends FacilioCommand {
         // TODO Auto-generated method stub
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+        Boolean isWorkOrderCostChain = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_WORKORDER_COST_CHAIN, false);
 
         if (parentIds != null && !parentIds.isEmpty()) {
-            if(parentIds.size()==1){
+            if(getConditionForCostUpdate(parentIds, isWorkOrderCostChain)){
                 Long parentId = parentIds.get(0);
                 FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
                 List<FacilioField> workorderCostsFields = modBean
@@ -70,4 +71,11 @@ public class UpdateWorkorderTotalCostCommandV3 extends FacilioCommand {
         return false;
     }
 
+    private boolean getConditionForCostUpdate(List<Long> parentIds, Boolean isWorkOrderCostChain){
+        if(isWorkOrderCostChain){
+            return parentIds.size() > 0;
+        }else{
+            return parentIds.size()==1;
+        }
+    }
 }

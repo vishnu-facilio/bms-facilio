@@ -2835,6 +2835,14 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getFillParentIdAndUpdateWorkOrderCostChainV3(){
         FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FacilioCommand() {
+            @Override
+            public boolean executeCommand(Context context) throws Exception {
+                // adding boolean flag to add multiple costs in UpdateWorkorderTotalCostCommandV3()
+                context.put(FacilioConstants.ContextNames.IS_WORKORDER_COST_CHAIN, true);
+                return false;
+            }
+        });
         chain.addCommand(new FillParentIdForCalculationOfWorkOrderCostV3());
         chain.addCommand(new UpdateWorkorderTotalCostCommandV3());
         return chain;
