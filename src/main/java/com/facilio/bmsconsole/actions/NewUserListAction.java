@@ -41,7 +41,7 @@ public class NewUserListAction extends FacilioAction{
         pagination.put("perPage", perPage);
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(FacilioConstants.ContextNames.DEFAULT_IDS,defaultIds);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,"people");
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,"users");
         if(getSearch() != null)
         {
             context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
