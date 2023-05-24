@@ -1024,6 +1024,7 @@ public class FacilioConstants {
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
 		public static final String SITE_ID = "siteId";
+		public static final String SITE_IDS = "siteIds";
 		public static final String REPORT_CARDS = "reportCards";
 		public static final String REPORT_CARDS_META = "reportCardsMeta";
 		public static final String REPORTS = "reports";

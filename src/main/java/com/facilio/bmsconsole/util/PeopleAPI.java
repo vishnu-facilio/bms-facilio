@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
@@ -47,6 +48,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -1324,8 +1326,12 @@ public class PeopleAPI {
 		}
 	}
 
-	public static List<User> getScopedUsers(List<Long> appIds, long siteId) throws Exception {
+	public static List<User> getScopedUsers(List<Long> appIds, long siteId) throws Exception{
+		return getScopedUsers(appIds, Collections.singletonList(siteId),false);
+	}
+	public static List<User> getScopedUsers(List<Long> appIds, List<Long> siteIds,boolean fetchAccessibleSpaces) throws Exception {
 		List<User> users = new ArrayList<>();
+		Map<Long, List<Long>> accessibleSpaceListMap = new HashMap<>();
 
 		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
 
@@ -1343,8 +1349,12 @@ public class PeopleAPI {
 					.groupBy("ORG_Users.ORG_USERID");
 		}
 
-		if (siteId > 0) {
-			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(siteId) + ")))");
+		if (CollectionUtils.isNotEmpty(siteIds)) {
+			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID IN (" + StringUtils.join(siteIds,",") + "))))");
+		}
+
+		if(fetchAccessibleSpaces){
+			accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1354,6 +1364,9 @@ public class PeopleAPI {
 				for (Map<String, Object> prop : props) {
 					User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 					user.setId((long)prop.get("ouid"));
+					if(fetchAccessibleSpaces){
+						user.setAccessibleSpace(accessibleSpaceListMap.get(user.getOuid()));
+					}
 					if( user.isActive() ) {
 						users.add(user);
 					}
@@ -1364,15 +1377,21 @@ public class PeopleAPI {
 	}
 
 	public static List<Group> getScopedTeams(List<Long> appIds, long siteId) throws Exception {
+		return getScopedTeams(appIds, Collections.singletonList(siteId),false);
+	}
+	public static List<Group> getScopedTeams(List<Long> appIds, List<Long> siteIdsList, boolean fetchAccessibleSpaces) throws Exception {
 		JSONObject resultObject = new JSONObject();
 		List<Group> groups = new ArrayList<>();
+		Map<Long, List<Long>> accessibleSpaceListMap = new HashMap<>();
 
 		FacilioModule groupModule = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);;
 		FacilioField groupSiteIdField = FieldFactory.getSiteIdField(groupModule);
 
 		Criteria siteCriteria = new Criteria();
 		siteCriteria.addAndCondition(CriteriaAPI.getCondition(groupSiteIdField, CommonOperators.IS_EMPTY));
-		siteCriteria.addOrCondition(CriteriaAPI.getCondition(groupSiteIdField,String.valueOf(siteId),NumberOperators.EQUALS));
+		if(CollectionUtils.isNotEmpty(siteIdsList)) {
+			siteCriteria.addOrCondition(CriteriaAPI.getCondition(groupSiteIdField, siteIdsList, NumberOperators.EQUALS));
+		}
 
 		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
@@ -1394,14 +1413,17 @@ public class PeopleAPI {
 					.groupBy("ORG_Users.ORG_USERID, FacilioGroupMembers.ID");
 		}
 
-		if (siteId > 0) {
-			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(siteId) + ")))")
+		if (CollectionUtils.isNotEmpty(siteIdsList)) {
+			selectBuilder.andCustomWhere("((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID IN (" + StringUtils.join(siteIdsList,",") + "))))")
 					.innerJoin(groupModule.getTableName())
 					.on("FacilioGroupMembers.GROUPID = FacilioGroups.ID")
 					.andCriteria(siteCriteria);
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
+		if(fetchAccessibleSpaces){
+			accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
+		}
 		if (props != null && !props.isEmpty()) {
 
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getId(), false);
@@ -1413,6 +1435,9 @@ public class PeopleAPI {
 					}
 					prop.put("id", prop.get("ouid"));
 					GroupMember member = FieldUtil.getAsBeanFromMap(prop, GroupMember.class);
+					if(fetchAccessibleSpaces){
+						member.setAccessibleSpace(accessibleSpaceListMap.get(member.getOuid()));
+					}
 					if(member.isActive()) {
 						members.add(member);
 					}
@@ -1426,7 +1451,7 @@ public class PeopleAPI {
 							.beanClass(Group.class)
 							.andCondition(CriteriaAPI.getIdCondition(StringUtils.join(groupMemberMap.keySet(), ","), groupModule));
 
-					if (siteId > 0) {
+					if (CollectionUtils.isNotEmpty(siteIdsList)) {
 						groupBuilder.andCriteria(siteCriteria);
 					}
 

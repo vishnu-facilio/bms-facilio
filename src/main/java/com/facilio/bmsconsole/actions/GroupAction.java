@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.facilio.chain.FacilioChain;
 import com.facilio.v3.V3Action;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.Group;
@@ -15,6 +17,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 public class GroupAction extends V3Action {
@@ -161,7 +164,15 @@ public class GroupAction extends V3Action {
 		return SUCCESS;
 	}
 
-	private long siteId;
+	private long siteId = -1L;
+
+	@Getter
+	@Setter
+	private List<Long> siteIds;
+
+	@Getter
+	@Setter
+	private Boolean addAccessibleSpaces = false;
 
 	public long getSiteId() { return this.siteId; }
 
@@ -170,6 +181,10 @@ public class GroupAction extends V3Action {
 	public String ScopeTeamUser() throws Exception {
 		FacilioContext context =  new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SITE_ID,siteId);
+		if(CollectionUtils.isNotEmpty(siteIds)){
+			context.put(FacilioConstants.ContextNames.SITE_IDS, siteIds);
+		}
+		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE,addAccessibleSpaces);
 		FacilioChain chain = FacilioChainFactory.getScopedTeamAndUsersChain();
 		chain.execute(context);
 		setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
