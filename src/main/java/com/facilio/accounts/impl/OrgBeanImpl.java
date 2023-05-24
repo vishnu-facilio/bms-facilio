@@ -4,11 +4,8 @@ import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -17,6 +14,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -82,6 +80,36 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public List<Organization> getOrgs() throws Exception {
 		return IAMOrgUtil.getOrgs();
+	}
+
+	@Override
+	public List<Organization> getOrgsForMigration() throws Exception {
+		List<Organization> orgs = IAMOrgUtil.getOrgs();
+		List<Organization> finalOrgs = new ArrayList<>();
+		Account existingAccount = AccountUtil.getCurrentAccount();
+		if (CollectionUtils.isNotEmpty(orgs)) {
+			for (Organization org : orgs) {
+				AccountUtil.setCurrentAccount(org.getOrgId());
+				try {
+					String orgInitStatus = CommonCommandUtil.getOrgInfo(FacilioConstants.ContextNames.ORG_INITIALIZATION_STATUS, "");
+					if ("completed".equalsIgnoreCase(orgInitStatus)) {
+						finalOrgs.add(org);
+					}
+					else {
+						Map<String,Long> featureLicense = getFeatureLicense();
+						finalOrgs.add(org);
+					}
+				} catch (Exception e) {
+					// error will throw from getFeatureLicense if the org setup is not completed
+					LOGGER.warn("Migration will be skipped as the organization setup is not yet completed. orgId: "+org.getOrgId()+" message: "+e.getMessage());
+				}
+				AccountUtil.cleanCurrentAccount();
+			}
+		}
+		if (existingAccount != null) {
+			AccountUtil.setCurrentAccount(existingAccount);
+		}
+		return finalOrgs;
 	}
 
 	@Override
