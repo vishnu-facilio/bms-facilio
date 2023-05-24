@@ -5,9 +5,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class DeletePMPlannerPreOpenWorkOrders extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -16,6 +16,7 @@ public class DeletePMPlannerPreOpenWorkOrders extends FacilioCommand {
             return false;
         }
         List<Long> pmPlannerIdList = new ArrayList<>();
+        Set<Long> pmIdSet = new HashSet<>();
         if(recordMap.containsKey(FacilioConstants.PM_V2.PM_V2_PLANNER)){
             List<PMPlanner> pmPlannerList = (List<PMPlanner>) recordMap.get(FacilioConstants.PM_V2.PM_V2_PLANNER);
             if(pmPlannerList == null){
@@ -23,11 +24,13 @@ public class DeletePMPlannerPreOpenWorkOrders extends FacilioCommand {
             }
             for(PMPlanner planner : pmPlannerList){
                 pmPlannerIdList.add((Long)planner.getId());
+                pmIdSet.add(planner.getPmId());
             }
             if(pmPlannerIdList == null || pmPlannerIdList.isEmpty()){
                 return false;
             }
             PlannedMaintenanceAPI.deleteWorkOrdersFromPlannerId(pmPlannerIdList);
+            context.put("pmIds",pmIdSet.stream().collect(Collectors.toList()));
         }
         return false;
     }

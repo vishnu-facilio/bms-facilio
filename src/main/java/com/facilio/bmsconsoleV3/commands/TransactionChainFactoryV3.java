@@ -3140,6 +3140,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTimelineViewCalenderTypeCommand());
         c.addCommand(new DeletePMPlannerPreOpenWorkOrders());
+        c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }
     public static FacilioChain PPMAfterPatchChain(){
