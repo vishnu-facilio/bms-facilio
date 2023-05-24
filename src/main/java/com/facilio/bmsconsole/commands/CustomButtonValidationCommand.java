@@ -37,9 +37,11 @@ public class CustomButtonValidationCommand extends FacilioCommand {
 
                 if (record != null) {
 
-                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeholders);
+                    ModuleBaseWithCustomFields oldRecord = Constants.getOldRecord(context, moduleName, record.getId());
 
-                    boolean evaluateCustomButton = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(customButton, moduleName, record, null, recordPlaceHolders, (FacilioContext) context, false);
+                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, oldRecord, placeholders);
+
+                    boolean evaluateCustomButton = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(customButton, moduleName, oldRecord, null, recordPlaceHolders, (FacilioContext) context, false);
                     if (!evaluateCustomButton) {
                         throw new IllegalArgumentException("Custom button is not valid for current Record");
                     }

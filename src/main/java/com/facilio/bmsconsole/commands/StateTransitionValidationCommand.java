@@ -59,12 +59,12 @@ public class StateTransitionValidationCommand extends FacilioCommand {
 
             for (ModuleBaseWithCustomFields record : records) {
 
-                ModuleBaseWithCustomFields oldRecord = Constants.getOldRecord(context, moduleName, record.getId());
-
                 if (record != null) {
 
-                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
-                    boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, record, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()), recordPlaceHolders, (FacilioContext) context, false);
+                    ModuleBaseWithCustomFields oldRecord = Constants.getOldRecord(context, moduleName, record.getId());
+
+                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, oldRecord, WorkflowRuleAPI.getOrgPlaceHolders());
+                    boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, oldRecord, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()), recordPlaceHolders, (FacilioContext) context, false);
                     if (shouldChangeState) {
                         FacilioStatus newState = StateFlowRulesAPI.getStateContext(((StateflowTransitionContext) stateTransition).getToStateId());
                         if (newState == null) {
@@ -77,7 +77,7 @@ public class StateTransitionValidationCommand extends FacilioCommand {
                             validateQrValue(moduleBean, (StateflowTransitionContext) stateTransition, oldRecord, isfromV2, qrCode);
                         }
                     } else {
-                        throw new IllegalArgumentException("Stateflow is not valid for current record");
+                        throw new IllegalArgumentException("State transition button is not valid for current record");
                     }
                 }
 
