@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import java.util.HashMap;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,8 +20,15 @@ public class ServiceRequestPageFactory extends PageFactory {
             Page.Tab tab1 = page.new Tab("summary", "serviceRequestDetails");
             page.addTab(tab1);
 
+            boolean hideCommentsAndInformationSectionInSR = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HIDE_COMMENTS_AND_INFORMATION_SECTION_IN_SR, Boolean.FALSE));
+
             //hide comments section for portal users except for atre org
             boolean hideComments = AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() != 418l;
+
+            if(hideCommentsAndInformationSectionInSR){
+                hideComments=true;
+            }
+
 
             String tab2Title = hideComments ? "More Information" : "Comments & Information";
             Page.Tab tab2 = page.new Tab(tab2Title);
