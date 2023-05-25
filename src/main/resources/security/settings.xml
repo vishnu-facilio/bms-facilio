@@ -932,11 +932,31 @@
             </property>
         </requestbody>
     </request>
-
     <request path="/api/v3/weather/stationcode">
         <requestbody type="object">
             <property name="lat" type="number"/>
             <property name="lng" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/weather/currentdata">
+        <requestbody type="object">
+            <property name="stationId" type="number"/>
+            <property name="siteId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/weather/sitestationid">
+        <requestbody type="object">
+            <property name="siteId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/weather/buildingSpecificWeatherFields">
+        <requestbody type="object">
+            <property name="buildingId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/weather/migrateWeatherStation">
+        <requestbody type="object">
+            <property name="emailAddress" type="string"/>
         </requestbody>
     </request>
     <request path="/api/v3/homepage/widgetData">
