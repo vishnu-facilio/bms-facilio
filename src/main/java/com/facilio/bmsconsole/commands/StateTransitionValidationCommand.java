@@ -63,18 +63,21 @@ public class StateTransitionValidationCommand extends FacilioCommand {
 
                     ModuleBaseWithCustomFields oldRecord = Constants.getOldRecord(context, moduleName, record.getId());
 
-                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, oldRecord, WorkflowRuleAPI.getOrgPlaceHolders());
-                    boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, oldRecord, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()), recordPlaceHolders, (FacilioContext) context, false);
+                    //temp fix
+                    ModuleBaseWithCustomFields currentRecord = oldRecord != null ? oldRecord : record;
+
+                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, currentRecord, WorkflowRuleAPI.getOrgPlaceHolders());
+                    boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, currentRecord, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()), recordPlaceHolders, (FacilioContext) context, false);
                     if (shouldChangeState) {
                         FacilioStatus newState = StateFlowRulesAPI.getStateContext(((StateflowTransitionContext) stateTransition).getToStateId());
                         if (newState == null) {
                             throw new Exception("Invalid state");
                         }
                         if (((StateflowTransitionContext) stateTransition).getLocationFieldId() > 0) {
-                            validateGeoLocation((StateflowTransitionContext) stateTransition, oldRecord, moduleBean, locationValue, currentLocation);
+                            validateGeoLocation((StateflowTransitionContext) stateTransition, currentRecord, moduleBean, locationValue, currentLocation);
                         }
                         if (((StateflowTransitionContext) stateTransition).getQrFieldId() > 0) {
-                            validateQrValue(moduleBean, (StateflowTransitionContext) stateTransition, oldRecord, isfromV2, qrCode);
+                            validateQrValue(moduleBean, (StateflowTransitionContext) stateTransition, currentRecord, isfromV2, qrCode);
                         }
                     } else {
                         throw new IllegalArgumentException("State transition button is not valid for current record");
