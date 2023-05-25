@@ -4019,6 +4019,8 @@ public class FacilioConstants {
 		public static final String KPI_RESOURCE_LOGGER_MODULE = "kpiResourceLogger";
 		public static final String KPI_TYPE = "kpiType";
 		public static final String PARENT_LOGGER_ID = "parentLoggerId";
+		public static final String READING_KPI_LOGS_MODULE = "readingkpilogs";
+		public static final String KPI_SCRIPT_LOGS_MODULE = "kpiscriptlogs";
 	}
 
 
@@ -4028,6 +4030,12 @@ public class FacilioConstants {
 		public static final String NEW_READING_RULE_LIST = "newreadingrulelist";
 
 		public static final String FAULT_TO_WORKORDER="faultToWorkorder";
+
+		public static final String READING_RULE_LOGS_MODULE = "readingrulelogs";
+
+		public static final String RULE_SCRIPT_LOGS_MODULE = "rulescriptlogs";
+
+		public static final String SCRIPT_LOGS = "scriptLogs";
 
 		public static class RCA {
 			public static final String RCA_MODULE = "readingrulerca";

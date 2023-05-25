@@ -219,7 +219,10 @@ import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
 import com.facilio.readingkpi.context.KpiLoggerContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.readingkpi.context.ReadingKpiLogsContext;
+import com.facilio.readingrule.command.LoadSupplementsForConnectedRuleLogs;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.context.ReadingRuleLogsContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
@@ -2713,6 +2716,22 @@ public class APIv3Config {
         return () -> new V3Config(KpiLoggerContext.class, null)
                 .list()
                 .beforeFetch(new LoadSupplementsForKpiLogger())
+                .build();
+    }
+
+    @Module(FacilioConstants.ReadingKpi.READING_KPI_LOGS_MODULE)
+    public static Supplier<V3Config> getKpiLogs() {
+        return () -> new V3Config(ReadingKpiLogsContext.class, null)
+                .list()
+                .beforeFetch(new LoadSupplementsForConnectedRuleLogs())
+                .build();
+    }
+
+    @Module(FacilioConstants.ReadingRules.READING_RULE_LOGS_MODULE)
+    public static Supplier<V3Config> getRuleLogs() {
+        return () -> new V3Config(ReadingRuleLogsContext.class, null)
+                .list()
+                .beforeFetch(new LoadSupplementsForConnectedRuleLogs())
                 .build();
     }
 

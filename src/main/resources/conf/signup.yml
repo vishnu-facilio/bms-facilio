@@ -142,6 +142,7 @@ classes:
   # ReadingKpi Modules
   - com.facilio.bmsconsoleV3.signup.readingkpi.AddKPIModules
   - com.facilio.bmsconsoleV3.signup.readingkpi.AddKpiLoggerModules
+  - com.facilio.bmsconsoleV3.signup.readingkpi.AddReadingKpiLogsModules
 
   #Adding Send Mail modules
   - com.facilio.mailtracking.signup.AddOutgoingMailLoggerModules
@@ -378,6 +379,7 @@ classes:
   - com.facilio.readingrule.signup.AddFaultImpactModules #Fault Impact
   - com.facilio.readingrule.signup.AddReadingRuleModules
   - com.facilio.readingrule.signup.AddRCAModules #RCA
+  - com.facilio.readingrule.signup.AddReadingRuleLogsModules
 
   - com.facilio.bmsconsoleV3.signup.asset.AddAssetDepreciationRelModule
 

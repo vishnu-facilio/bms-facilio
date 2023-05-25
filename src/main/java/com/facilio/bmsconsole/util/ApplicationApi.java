@@ -2934,6 +2934,8 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
             webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
             webTabs.add(new WebTabContext("Background Activity","backgroundactivity", WebTabContext.Type.BACKGROUND_ACTIVITY,null,appId,null,AccountUtil.FeatureLicense.BACKGROUND_ACTIVITY.getFeatureId()));
+            webTabs.add(new WebTabContext("KPI Execution Logs", "readingkpilogs", WebTabContext.Type.KPI_EXEC_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
+            webTabs.add(new WebTabContext("Rule Logs", "readingrulelogs", WebTabContext.Type.RULE_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_READING_RULE.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 

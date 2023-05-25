@@ -329,3 +329,6 @@ enums:
 
   - name: RfqTypes
     enumClassName: com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext$RfqTypes
+
+  - name: ExecutionStatus
+    enumClassName: com.facilio.readingrule.context.ExecutionStatus
