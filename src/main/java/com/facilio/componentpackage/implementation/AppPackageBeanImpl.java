@@ -1,49 +1,45 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.xml.builder.XMLBuilder;
 
 import java.util.List;
+import java.util.Map;
 
-public class AppPackageBeanImpl<ApplicationContext> extends PackageBeanImpl implements PackageBean {
-
+public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     @Override
-    public List fetchAllComponentsToPackage() throws Exception {
+    public List<Long> fetchAllComponentIdsToPackage() throws Exception {
         return null;
     }
 
     @Override
-    public List fetchComponents(List ids) throws Exception {
+    public Map<Long, ApplicationContext> fetchComponents(List<Long> ids) throws Exception {
         return null;
     }
 
     @Override
-    public void convertToXMLComponent(List components) throws Exception {
-
+    public XMLBuilder convertToXMLComponent(ApplicationContext component) throws Exception {
+        return null;
     }
 
     @Override
-    public void validateComponentToCreate(List components) throws Exception {
-
+    public Map<String, String> validateComponentToCreate(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void createComponentFromXML(List components) throws Exception {
-
+    public Map<String, Long> createComponentFromXML(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void checkComponentAvailability(List ids) throws Exception {
-
+    public Map<String, Long> updateComponentFromXML(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void updateComponentFromXML(List components) throws Exception {
+    public void deleteComponentFromXML(List<Long> ids) throws Exception {
 
     }
-
-    @Override
-    public void deleteComponentFromXML(List components) throws Exception {
-
-    }
-
 }

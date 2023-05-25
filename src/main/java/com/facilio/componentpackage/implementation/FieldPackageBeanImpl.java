@@ -1,49 +1,59 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.componentpackage.constants.PackageConstants.FieldConstants;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.xml.builder.XMLBuilder;
 
 import java.util.List;
+import java.util.Map;
 
-public class FieldPackageBeanImpl<FacilioField> extends PackageBeanImpl implements PackageBean {
+public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
     @Override
-    public List fetchAllComponentsToPackage() throws Exception {
+    public List<Long> fetchAllComponentIdsToPackage() throws Exception {
         return null;
     }
 
     @Override
-    public List fetchComponents(List ids) throws Exception {
+    public Map<Long, FacilioField> fetchComponents(List<Long> ids) throws Exception {
         return null;
     }
 
     @Override
-    public void convertToXMLComponent(List components) throws Exception {
+    public XMLBuilder convertToXMLComponent(FacilioField facilioField) throws Exception {
+            XMLBuilder fieldElement = XMLBuilder.create(ComponentType.FIELD.getValue());
+            fieldElement.element(PackageConstants.NAME).text(facilioField.getName());
+            fieldElement.element(PackageConstants.DISPLAY_NAME).text(facilioField.getDisplayName());
+            fieldElement.element(PackageConstants.MODULENAME).text(facilioField.getModule().getName());
+            fieldElement.element(FieldConstants.REQUIRED).text(String.valueOf(facilioField.isRequired()));
+            fieldElement.element(FieldConstants.IS_DEFAULT).text(String.valueOf(facilioField.isDefault()));
+            fieldElement.element(FieldConstants.DATA_TYPE).text(String.valueOf(facilioField.getDataType()));
+            fieldElement.element(FieldConstants.MAIN_FIELD).text(String.valueOf(facilioField.isMainField()));
+            fieldElement.element(FieldConstants.DISPLAY_TYPE).text(String.valueOf(facilioField.getDisplayTypeInt()));
 
+        return fieldElement;
     }
 
     @Override
-    public void validateComponentToCreate(List components) throws Exception {
-
+    public Map<String, String> validateComponentToCreate(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void createComponentFromXML(List components) throws Exception {
-
+    public Map<String, Long> createComponentFromXML(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void checkComponentAvailability(List ids) throws Exception {
-
+    public Map<String, Long> updateComponentFromXML(List<XMLBuilder> components) throws Exception {
+        return null;
     }
 
     @Override
-    public void updateComponentFromXML(List components) throws Exception {
+    public void deleteComponentFromXML(List<Long> ids) throws Exception {
 
     }
-
-    @Override
-    public void deleteComponentFromXML(List components) throws Exception {
-
-    }
-
 }

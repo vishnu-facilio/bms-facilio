@@ -18,6 +18,8 @@ public class PackageChangeSetMappingContext {
     private Double modifiedVersion;
     private ComponentStatus status;
     private String uniqueIdentifier;
+    private String componentDisplayName;
+    private long componentLastEditedTime;
 
     @AllArgsConstructor
     public enum ComponentStatus implements FacilioIntEnum {
