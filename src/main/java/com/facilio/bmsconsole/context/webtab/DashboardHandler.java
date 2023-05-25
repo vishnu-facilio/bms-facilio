@@ -15,7 +15,7 @@ public class DashboardHandler implements WebTabHandler{
     public boolean hasPermission(WebTabContext webtab, Map<String, String> parameters, String action) {
         try {
             long tabId = webtab.getId();
-            if(!(webtab.getTypeEnum() == WebTabContext.Type.DASHBOARD))
+            if(!(webtab.getTypeEnum() == WebTabContext.Type.DASHBOARD || webtab.getTypeEnum() == WebTabContext.Type.REPORT || webtab.getTypeEnum() == WebTabContext.Type.PIVOT))
                 return false;
             Role role = AccountUtil.getCurrentUser().getRole();
             if(V3PermissionUtil.isFeatureEnabled()){

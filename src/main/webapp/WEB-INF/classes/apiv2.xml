@@ -2874,6 +2874,8 @@
 		<action name="savePivotReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="savePivotReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE_EDIT</param>
 		</action>
 		<action name="executePivotReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
@@ -2882,6 +2884,8 @@
 		<action name="exportPivotReport"
 				class="com.facilio.bmsconsole.actions.V2ReportAction"
 				method="exportPivotReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:EXPORT</param>
 		</action>
 		<action name="readingReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
@@ -2927,6 +2931,8 @@
 		<action name="exportModuleReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="exportModuleReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:EXPORT</param>
 		</action>
 
 		<action name="sendMail"
@@ -2941,6 +2947,8 @@
 		<action name="schedule"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="scheduleReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:SCHEDULE</param>
 		</action>
 		<action name="fetchReportFolders"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
@@ -2967,6 +2975,8 @@
 		<action name="deleteReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="deleteReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:DELETE</param>
 		</action>
 		<action name="updateReportFolder"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
@@ -3012,10 +3022,14 @@
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="editScheduledReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:SCHEDULE</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="deleteScheduledReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:SCHEDULE</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"

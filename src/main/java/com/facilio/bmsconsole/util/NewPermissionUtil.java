@@ -35,6 +35,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> calendarTabType = Collections.unmodifiableMap(initCalendarMap());
     private static Map<String, Integer> reportTabType = Collections.unmodifiableMap(initReportMap());
     private static Map<String, Integer> analyticsTabType = Collections.unmodifiableMap(initAnalyticsMap());
+    private static Map<String, Integer> pivotTabType = Collections.unmodifiableMap(initPivotReportMap());
     private static Map<String, Integer> kpiTabType = Collections.unmodifiableMap(initKpiMap());
     private static Map<String, Integer> newKpiTabType = Collections.unmodifiableMap(initNewKpiMap());
 
@@ -96,7 +97,20 @@ public class NewPermissionUtil {
         reportTabType.put("VIEW", 1);
         reportTabType.put("CREATE_EDIT", 2);
         reportTabType.put("EXPORT", 4);
+        reportTabType.put("DELETE", 8);
+        reportTabType.put("SHARE", 16);
+        reportTabType.put("SCHEDULE", 32);
         return reportTabType;
+    }
+    private static Map<String, Integer> initPivotReportMap() {
+        pivotTabType = new HashMap<>();
+        pivotTabType.put("VIEW", 1);
+        pivotTabType.put("CREATE_EDIT", 2);
+        pivotTabType.put("EXPORT", 4);
+        pivotTabType.put("DELETE", 8);
+        pivotTabType.put("SHARE", 16);
+        pivotTabType.put("SCHEDULE", 32);
+        return pivotTabType;
     }
 
     private static Map<String, Integer> initAnalyticsMap() {
@@ -361,13 +375,27 @@ public class NewPermissionUtil {
         permissions.add(new Permission("VIEW", "View", reportTabType.get("VIEW"), null));
         permissions.add(new Permission("CREATE_EDIT", "Create/Edit", reportTabType.get("CREATE_EDIT"), null));
         permissions.add(new Permission("EXPORT", "Export", reportTabType.get("EXPORT"), null));
+        permissions.add(new Permission("DELETE", "Delete", reportTabType.get("DELETE"), null));
+        permissions.add(new Permission("SHARE", "Share", reportTabType.get("SHARE"), null));
+        permissions.add(new Permission("SCHEDULE", "Schedule", reportTabType.get("SCHEDULE"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.REPORT.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
+        permissions.add(new Permission("VIEW", "View", pivotTabType.get("VIEW"), null));
+        permissions.add(new Permission("CREATE_EDIT", "Create/Edit", pivotTabType.get("CREATE_EDIT"), null));
+        permissions.add(new Permission("EXPORT", "Export", pivotTabType.get("EXPORT"), null));
+        permissions.add(new Permission("DELETE", "Delete", pivotTabType.get("DELETE"), null));
+        permissions.add(new Permission("SHARE", "Share", pivotTabType.get("SHARE"), null));
+        permissions.add(new Permission("SCHEDULE", "Schedule", pivotTabType.get("SCHEDULE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.PIVOT.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
         permissions.add(new Permission("SAVE_AS_REPORT", "Save As Report", analyticsTabType.get("SAVE_AS_REPORT"), null));
-        permissions.add(new Permission("VIEW", "view", analyticsTabType.get("VIEW"), null));
+        permissions.add(new Permission("VIEW", "View", analyticsTabType.get("VIEW"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.ANALYTICS.getIndex(), permissionMap);
 
@@ -666,6 +694,8 @@ public class NewPermissionUtil {
                 return homepageTabType.getOrDefault(action, -1);
             case 16:
                 return serviceCatalogTabType.getOrDefault(action, -1);
+            case 78:
+                return pivotTabType.getOrDefault(action, -1);
             case 83:
                 return shiftPlannerTabType.getOrDefault(action, -1);
             case 84:

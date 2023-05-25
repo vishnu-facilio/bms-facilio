@@ -195,18 +195,11 @@ public class ScreenUtil {
 			
 			ScreenDashboardRelContext screenDashboardContext = FieldUtil.getAsBeanFromMap(prop, ScreenDashboardRelContext.class);
 			
-			DashboardContext db = DashboardUtil.getDashboardWithWidgets(screenDashboardContext.getDashboardId());
+			DashboardContext db = DashboardUtil.getDashboard(screenDashboardContext.getDashboardId());
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", db.getOrgId());
 			db.setModuleName(modBean.getModule(db.getModuleId()).getName());
-			
-			if (db.getLinkName().indexOf("buildingdashboard") != -1 && screenDashboardContext.getSpaceId() != null && screenDashboardContext.getSpaceId() > 0) {
-				db.setDashboardName(SpaceAPI.getBaseSpace(screenDashboardContext.getSpaceId()).getName());
-			}
-			else if (db.getLinkName().indexOf("sitedashboard") != -1 && screenDashboardContext.getSpaceId() != null && screenDashboardContext.getSpaceId() > 0) {
-				db.setDashboardName(SpaceAPI.getBaseSpace(screenDashboardContext.getSpaceId()).getName());
-			}
-			
+
 			screenDashboardContext.setDashboard(db);
 			screenContext.addScreenDashboard(screenDashboardContext);
 			screenDashboardRels.add(screenDashboardContext);
