@@ -277,6 +277,7 @@ public class FacilioConstants {
 		public static final String RESOURCE_MODULENAME = "resourceModuleName";
 		//public static final String RESOURCE_ID = "resourceId";
 		public static final String EMAIL="email";
+		public static final String IS_WEBTAB_PERMISSION = "isWebTabPermission";
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
