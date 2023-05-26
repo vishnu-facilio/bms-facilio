@@ -65,9 +65,18 @@ public abstract class PDFService {
         if (pageParams == null) {
             pageParams = new JSONObject();
         }
-        String templatePageURL = "/" + appLinkName + pdfPages.get(pageName).get("url");
+        String templatePageURL = getAppBaseURL() + "/" + appLinkName + pdfPages.get(pageName).get("url");
         String pageURL = StringSubstitutor.replace(templatePageURL, pageParams);
         return pageURL;
+    }
+    protected String getAppBaseURL() {
+        try {
+            HttpServletRequest req = ServletActionContext.getRequest();
+            if (req != null) {
+                return FacilioProperties.getAppProtocol() + "://" + req.getServerName();
+            }
+        } catch (Exception e) {}
+        return FacilioProperties.getAppProtocol() + "://" + FacilioProperties.getAppDomain();
     }
 
     protected String getUserToken() {

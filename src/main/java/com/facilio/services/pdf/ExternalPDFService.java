@@ -23,15 +23,6 @@ public class ExternalPDFService extends PDFService {
         return serviceURL + "/generate/" + exportType.name().toLowerCase() + "/" + exportFor;
     }
 
-    private String getAppBaseURL() {
-        try {
-            HttpServletRequest req = ServletActionContext.getRequest();
-            if (req != null) {
-                return FacilioProperties.getAppProtocol() + "://" + req.getServerName();
-            }
-        } catch (Exception e) {}
-        return FacilioProperties.getAppProtocol() + "://" + FacilioProperties.getAppDomain();
-    }
 
     private Map<String, String> getAuthHeaders() {
         Map<String, String> headers = new HashMap<String, String>();
