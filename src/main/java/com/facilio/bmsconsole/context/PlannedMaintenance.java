@@ -110,7 +110,8 @@ public class PlannedMaintenance extends V3WorkOrderContext {
         ASSETCATEGORY("Asset Category"),
         SPACECATEGORY("Space Category"),
         BUILDINGS("Buildings"),
-        SITES("Sites");
+        SITES("Sites"),
+        FLOORS("Floors");
 
         @Override
         public String getValue() {

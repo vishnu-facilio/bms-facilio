@@ -2104,7 +2104,7 @@ public class APIv3Config {
                 .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new FloorFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new FloorFillLookupFieldsCommand())
+                .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchFloorFilterChain())
                 .pickList()
                 .setSecondaryField(FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.DECOMMISSION)
                 .beforeFetch(new DecommissionPicklistCheckCommand())

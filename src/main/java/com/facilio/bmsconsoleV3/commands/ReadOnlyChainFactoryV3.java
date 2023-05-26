@@ -15,6 +15,7 @@ import com.facilio.bmsconsoleV3.commands.decommission.FetchDependentResourceData
 import com.facilio.bmsconsoleV3.commands.decommission.FetchResourceDependentModuleListCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand;
@@ -311,6 +312,16 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new AddPlannerIdFilterCriteriaCommand());
         return c;
     }
+
+    public static FacilioChain getFetchFloorFilterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FloorFillLookupFieldsCommand());
+        c.addCommand(new FetchSpaceExcludingAccessibleSpacesCommandV3());
+        c.addCommand(new AddPlannerIdFilterCriteriaCommand());
+        return c;
+    }
+
+
     public static FacilioChain getMessageSourcesCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchMessageSourcesCommand());
