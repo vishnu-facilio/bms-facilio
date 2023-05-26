@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -155,7 +156,7 @@ public class AccessibleSpacesUtil {
         }
         return baseSpace.getSiteId();
     }
-    
+
     public static Map<String, Long> getAccessibleSpaceUserList(List<Long> spaceIds) throws Exception {
 
         List<FacilioField> userFields = AccountConstants.getAppOrgUserFields();
@@ -196,5 +197,21 @@ public class AccessibleSpacesUtil {
             return userList;
         }
         return null;
+    }
+
+    public static void updateAccessibleSpaceForPeople(Long ouid, Long peopleId, List<Long> accessibleSpaceIds) throws Exception {
+        if (peopleId != null && peopleId > 0){
+            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+            if(ouid != null && ouid > 0){
+                builder.andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+            }
+            builder.delete();
+
+            addAccessibleSpace(ouid,peopleId,accessibleSpaceIds);
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"peopleId is mandatory to delete accessible space");
+        }
     }
 }

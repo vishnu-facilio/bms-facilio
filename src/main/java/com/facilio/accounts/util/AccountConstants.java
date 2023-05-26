@@ -1538,6 +1538,20 @@ public class AccountConstants {
 		isDefaultMobileApp.setModule(module);
 		fields.add(isDefaultMobileApp);
 
+//		FacilioField uid = new FacilioField();
+//		uid.setName("uid");
+//		uid.setDataType(FieldType.NUMBER);
+//		uid.setColumnName("IAM_USERID");
+//		uid.setModule(module);
+//		fields.add(uid);
+//
+//		FacilioField peopleId = new FacilioField();
+//		peopleId.setName("peopleId");
+//		peopleId.setDataType(FieldType.NUMBER);
+//		peopleId.setColumnName("PEOPLE_ID");
+//		peopleId.setModule(module);
+//		fields.add(peopleId);
+
 		return fields;
 	}
 

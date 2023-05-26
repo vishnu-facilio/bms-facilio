@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.commands.IAMUserManagement.*;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.GetScheduledWoCommandV3;
@@ -1149,7 +1150,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GetAttachmentsCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getDeleteAttachmentChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteAttachmentCommand());
@@ -2547,6 +2548,37 @@ public class FacilioChainFactory {
 	public static FacilioChain getScopedTeamAndUsersChain(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetScopedTeamAndUsersCommand());
+		return c;
+	}
+	public static FacilioChain addUserChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddPeopleCommand());
+		c.addCommand(new AddIAMUserCommand());
+		c.addCommand(new AddPeopleRelatedDataCommand());
+		return c;
+	}
+	public static FacilioChain updateUserChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdatePeopleCommand());
+		c.addCommand(new UpdateIAMUserCommand());
+		c.addCommand(new UpdatePeopleRelatedDataCommand());
+		return c;
+	}
+	public static FacilioChain deleteUserChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteIAMUserCommand());
+		c.addCommand(new UpdatePortalAccessCommand());
+		return c;
+	}
+	public static FacilioChain addOrUpdatePortalUserChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddOrUpdatePortalUserCommand());
+		return c;
+	}
+	public static FacilioChain revokeAppAccessChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new RevokeAppAccessCommand());
+		c.addCommand(new UpdatePortalAccessCommand());
 		return c;
 	}
 }

@@ -4,6 +4,7 @@ import com.facilio.agentv2.commands.MLGetTaggedPointsCommand;
 import com.facilio.backgroundactivity.commands.FetchParentBackgroundActivitiesCommand;
 import com.facilio.banner.commands.GetBannersCommand;
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
+import com.facilio.bmsconsole.commands.IAMUserManagement.GetApplicationUserCommand;
 import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
@@ -3377,4 +3378,9 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetWidgetConfigsChain());
 		return chain;
 	}
+	public static FacilioChain getUserListChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetApplicationUserCommand());
+		return c;
+		}
 }

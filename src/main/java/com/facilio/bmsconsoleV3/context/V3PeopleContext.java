@@ -222,4 +222,10 @@ public class V3PeopleContext extends V3Context {
     private Long scopingId;
     @Getter @Setter
     private List<Long> permissionSets;
+    @Getter@Setter
+    private List<Long> accessibleSpace;
+    @Getter@Setter
+    private List<Long> groups;
+    @Getter@Setter
+    private Long shiftId;
 }

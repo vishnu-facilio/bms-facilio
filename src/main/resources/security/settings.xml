@@ -2071,4 +2071,170 @@
         </requestbody>
     </request>
 
+
+    <request path="/api/v1/setup/iamuser/:addorupdateuser" method="POST">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="sendInvitation" type="boolean"/>
+            <property name="user" type="object">
+                <property name="people" type="object">
+                    <property name="id" type="number"/>
+                    <property name="accessibleSpace" type="array"/>
+                    <property name="groups" type="array"/>
+                    <property name="permissionSets" type="array"/>
+                    <property name="scopingId" type="number"/>
+                </property>
+                <property name="roleId" type="number" mandatory="true"/>
+                <property name="user" type="object">
+                    <property name="email" type="string" mandatory="true"/>
+                    <property name="name" type="string"/>
+                    <property name="language" type="string"/>
+                    <property name="timezone" type="string"/>
+                    <property name="mobile" type="string"/>
+                    <property name="phone" type="string"/>
+                    <property name="securityPolicyId" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/userlist" method="GET">
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withMFA" type="boolean"/>
+            <property name="appId" type="number" mandatory="true"/>
+            <property name="inviteStatusValue" type="number"/>
+            <property name="userStatus" type="boolean"/>
+            <property name="fetchCount" type="boolean"/>
+
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/iamuser/deleteuser" method="POST">
+        <requestbody type="object">
+            <property name="isPortal" type="boolean"/>
+            <property name="appLinkName" type="string"/>
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+                <property name="peopleId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/invite" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="applicationId" type="number"/>
+                <property name="uid" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/updatestatus" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+            <property name="userStatus" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/resetpassword" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/getpeople" method="GET">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="user" type="object">
+                <property name="orgUserId" type="number"/>
+            </property>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/iamuser/getuser" method="GET">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="appId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/iamuser/addorupdateportaluser" method="POST">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="appLinkName" type="string"/>
+            <property name="sendInvitation" type="boolean"/>
+            <property name="peopleIds" type="array"/>
+            <property name="user" type="object">
+                <property name="roleId" type="number" mandatory="true"/>
+                <property name="user" type="object">
+                    <property name="securityPolicyId" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/activateordeactivateusers" method="POST">
+        <requestbody type="object">
+            <property name="userIds" type="array"/>
+            <property name="userStatus" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/deleteusers" method="POST">
+        <requestbody type="object">
+            <property name="isPortal" type="boolean"/>
+            <property name="appLinkName" type="string"/>
+            <property name="peopleIds" type="array"/>
+            <property name="userIds" type="array"/>
+
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/updatesecuritypolicy" method="POST">
+        <requestbody type="object">
+            <property name="securityPolicyId" type="number"/>
+            <property name="userIds" type="array"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/iamuser/resetMFA" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/bulkResetMFA" method="POST">
+        <requestbody type="object">
+            <property name="userIds" type="array"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/bulkinvite" method="POST">
+        <requestbody type="object">
+            <property name="userIds" type="array"/>
+            <property name="user" type="object">
+                <property name="applicationId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/revokeappaccess" method="POST">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="isPortal" type="boolean"/>
+            <property name="appLinkName" type="string"/>
+            <property name="user" type="object">
+                <property name="peopleId" type="number"/>
+                <property name="uid" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/bulkrevoke" method="POST">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="isPortal" type="boolean"/>
+            <property name="appLinkName" type="string"/>
+            <property name="peopleIds" type="array"/>
+            <property name="userIds" type="array"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/bulkresetpassword" method="POST">
+        <requestbody type="object">
+            <property name="userIds" type="array"/>
+        </requestbody>
+    </request>
 </config>

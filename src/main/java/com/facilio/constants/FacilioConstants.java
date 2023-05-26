@@ -532,6 +532,10 @@ public class FacilioConstants {
 		public static final String ACCESSIBLE_SPACE = "accessibleSpace";
 		public static final String USER_SHIFT_READING = "usershiftreading";
 		public static final String USER_WORK_HOURS_READINGS = "userworkhoursreading";
+		public static final String PASSWORD = "password";
+		public static final String USER_IDS ="userIds";
+		public static final String PEOPLE_IDS ="peopleIds";
+
 
 		public static final String GROUP_ID = "groupId";
 		public static final String GROUP = "group";
@@ -1224,6 +1228,7 @@ public class FacilioConstants {
 		public static final String ORGUSERS = "orgusers";
 		public static final String ORG_USER_ID = "orgUserId";
 		public static final String OUID = "ouid";
+		public static final String IAM_USERS="iam_users";
 
 		public static final String GROUPS = "groups";
 
@@ -2114,6 +2119,8 @@ public class FacilioConstants {
 		public static final int ASSET_BOUNDARY_RADIUS = 10; // meter
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
+		public static final String IS_PORTAL = "isPortal";
+		public static final String IS_PORTAL_ACCESS = "isPortalAccess";
 
 		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
 
@@ -2245,6 +2252,7 @@ public class FacilioConstants {
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
 
 		public static final String PEOPLE = "people";
+		public static final String PEOPLE_TYPE_LIST = "peopleTypeList";
 		public static final String PEOPLE_ID = "peopleId";
 
 		public static final String PEOPLE_TYPE = "peopleType";

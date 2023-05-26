@@ -365,4 +365,98 @@
         <action name="getChild" class="com.facilio.bmsconsole.actions.DecommissionAction" method="getChildOfResource" />
         <action name="update" class="com.facilio.bmsconsole.actions.DecommissionAction" method="updateDecommission" />
     </package>
+
+    <package name="iamuser" namespace="/api/v1/setup/iamuser" extends="v2Api">
+        <action name="adduser"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="addUser">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="updateuser"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="updateUser">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="userlist"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getUserList">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="deleteuser"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="deleteUser">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="invite"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="resendInvite">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="updatestatus"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="updateUserStatus">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="resetpassword"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="sendResetPasswordLink">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="getpeople"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getPeople">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+
+        </action>
+        <action name="getuser"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getExistingUser">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+
+        <action name="addorupdateportaluser"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="addOrUpdatePortalUser">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="activateordeactivateusers"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="activateOrDeactivateUsers">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="deleteusers"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="bulkDeleteUsers">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="updatesecuritypolicy" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="updateSecurityPolicy">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="resetMFA" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="resetMFA">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="bulkResetMFA" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="bulkResetMFA">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="bulkinvite" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="bulkInvite">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="revokeappaccess" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="revokeAppAccess">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="bulkrevoke" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="bulkRevokeAppAccess">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+        <action name="bulkresetpassword" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="bulkResetPassword">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
+
+    </package>
 </struts>

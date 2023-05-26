@@ -35,6 +35,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
@@ -1035,6 +1036,42 @@ public class V3PeopleAPI {
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
             permissionSetBean.updateUserPermissionSets(peopleId,permissionSets);
+        }
+    }
+    public static void updatePortalAccess(V3PeopleContext people,String appLinkName,boolean portalAccess) throws Exception{
+        updatePeople(people,appLinkName,portalAccess);
+    }
+    private static void updatePeople(V3PeopleContext people,String appLinkName,boolean portalAccess) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        switch (appLinkName){
+            case FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP:
+                FacilioField isOccupantPortalAccess = Constants.getModBean().getField("isOccupantPortalAccess",FacilioConstants.ContextNames.PEOPLE);
+                people.setIsOccupantPortalAccess(portalAccess);
+                V3RecordAPI.updateRecord(people, modBean.getModule(FacilioConstants.ContextNames.PEOPLE), Collections.singletonList(isOccupantPortalAccess));
+                break;
+            case FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP:
+                FacilioField employeePortalAccess = Constants.getModBean().getField("employeePortalAccess",FacilioConstants.ContextNames.PEOPLE);
+                people.setIsEmployeePortalAccess(portalAccess);
+                V3RecordAPI.updateRecord(people, modBean.getModule(FacilioConstants.ContextNames.PEOPLE), Collections.singletonList(employeePortalAccess));
+                break;
+            case FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP:
+                FacilioField isTenantPortalAccess = Constants.getModBean().getField("isTenantPortalAccess",FacilioConstants.ContextNames.TENANT_CONTACT);
+                V3TenantContactContext tc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3TenantContactContext.class);
+                tc.setIsTenantPortalAccess(portalAccess);
+                V3RecordAPI.updateRecord(tc, modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT), Collections.singletonList(isTenantPortalAccess));
+                break;
+            case FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP:
+                FacilioField isVendorPortalAccess = Constants.getModBean().getField("isVendorPortalAccess",FacilioConstants.ContextNames.VENDOR_CONTACT);
+                V3VendorContactContext vc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3VendorContactContext.class);
+                vc.setIsVendorPortalAccess(portalAccess);
+                V3RecordAPI.updateRecord(vc, modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT), Collections.singletonList(isVendorPortalAccess));
+                break;
+            case FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP:
+                FacilioField isClientPortalAccess = Constants.getModBean().getField("isClientPortalAccess",FacilioConstants.ContextNames.CLIENT_CONTACT);
+                V3ClientContactContext cc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3ClientContactContext.class);
+                cc.setIsClientPortalAccess(portalAccess);
+                V3RecordAPI.updateRecord(cc, modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT), Collections.singletonList(isClientPortalAccess));
+                break;
         }
     }
 }

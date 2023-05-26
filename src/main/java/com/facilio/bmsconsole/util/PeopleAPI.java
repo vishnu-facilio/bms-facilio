@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.PermissionSetBean;
+import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
@@ -40,6 +41,7 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -1561,4 +1563,34 @@ public class PeopleAPI {
 		List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
 		return users;
 	}
+	public static void setPeopleRelatedData(PeopleContext people,Long ouid) throws Exception {
+
+		UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
+		PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
+
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+			List<PermissionSetContext> permissionSetList = permissionSetBean.getUserPermissionSetMapping(people.getId(), false);
+			if (CollectionUtils.isNotEmpty(permissionSetList)) {
+				List<Long> permissionSetIds = permissionSetList.stream().map(PermissionSetContext::getId).collect(Collectors.toList());
+				people.setPermissionSets(permissionSetIds);
+			}
+		}
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING)) {
+				Long scopingId = userScopeBean.getPeopleScoping(people.getId());
+				people.setScopingId(scopingId);
+		}
+
+		List<Long> groupIds = PeopleGroupUtils.fetchPeopleGroupIds(people.getId());
+		people.setGroups(groupIds);
+
+		List<Long> spaceIds = new ArrayList<>();
+		List<BaseSpaceContext> existingAccSpaces = AccessibleSpacesUtil.getAccessibleSpaceList(ouid,people.getId(),-1,-1,null);
+		if (CollectionUtils.isNotEmpty(existingAccSpaces)) {
+			spaceIds =  existingAccSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList());
+		}
+		people.setAccessibleSpace(spaceIds);
+
+	}
+
 }

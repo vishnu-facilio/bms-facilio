@@ -203,4 +203,10 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private Long scopingId;
 	@Getter @Setter
 	private List<Long> permissionSets;
+	@Getter@Setter
+	private List<Long> accessibleSpace;
+	@Getter@Setter
+	private List<Long> groups;
+	@Getter@Setter
+	private Long shiftId;
 }
