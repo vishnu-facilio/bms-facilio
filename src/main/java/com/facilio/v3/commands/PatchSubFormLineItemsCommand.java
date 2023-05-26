@@ -137,7 +137,7 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
 
                 V3Config v3Config = ChainUtil.getV3Config(module);
                 V3Util.updateBulkRecords(module, v3Config, oldRecordList, new ArrayList<>(values), ids,
-                        null, null, null, null, null,null, null, null,false);
+                        null, null, null, null, null,null, null, null,false,false);
             }
         }
     }

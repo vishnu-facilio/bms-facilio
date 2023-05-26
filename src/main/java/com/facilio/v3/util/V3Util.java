@@ -183,12 +183,19 @@ public class V3Util {
         }
         return createRecord(module, recordList, true, bodyParams, queryParams,false);
     }
-
     public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,boolean restrictredAction) throws Exception {
 
-        return updateBulkRecords(moduleName,rawRecord,ids,null,null,restrictredAction);
+        return updateBulkRecords(moduleName,rawRecord,ids,null,null,restrictredAction,false);
+    }
+
+    public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,boolean restrictredAction,boolean skipApproval) throws Exception {
+
+        return updateBulkRecords(moduleName,rawRecord,ids,null,null,restrictredAction,skipApproval);
     }
     public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,Map<String, Object>bodyParams,Map<String, List<Object>> queryParams,boolean restrictredAction) throws Exception {
+        return updateBulkRecords(moduleName,rawRecord,ids,bodyParams,queryParams,restrictredAction,false);
+    }
+        public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,Map<String, Object>bodyParams,Map<String, List<Object>> queryParams,boolean restrictredAction,boolean skipApproval) throws Exception {
 
         FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
@@ -211,7 +218,7 @@ public class V3Util {
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
                 ids, bodyParams, queryParams, null,
-                null, null,null,null,null,restrictredAction);
+                null, null,null,null,null,restrictredAction,skipApproval);
 
         return context;
     }
@@ -221,10 +228,10 @@ public class V3Util {
                                                    List<Map<String, Object>> recordList, List<Long> ids,
                                                    Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                    Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
-                                                   String qrValue,String locationValue,Map<String,Double>currentLocation,boolean onlyPermittedActions
+                                                   String qrValue,String locationValue,Map<String,Double>currentLocation,boolean onlyPermittedActions,boolean skipApproval
     ) throws Exception {
         return updateRecords(module, v3Config, true, oldRecords, recordList, ids,
-                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue,locationValue,currentLocation,onlyPermittedActions);
+                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue,locationValue,currentLocation,onlyPermittedActions,skipApproval);
     }
 
     private static FacilioContext updateRecords(FacilioModule module, V3Config v3Config, boolean bulkOp,
@@ -232,7 +239,7 @@ public class V3Util {
                                                 List<Map<String, Object>> recordList, List<Long> ids,
                                                 Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                 Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
-                                                String qrValue, String locationValue,Map<String, Double>currentLocation,boolean onlyPermittedActions
+                                                String qrValue, String locationValue,Map<String, Double>currentLocation,boolean onlyPermittedActions,boolean skipApproval
     ) throws Exception {
         FacilioChain patchChain = bulkOp ? ChainUtil.getBulkPatchChain(module.getName()) : ChainUtil.getPatchChain(module.getName());
 
@@ -269,6 +276,7 @@ public class V3Util {
         context.put(FacilioConstants.ContextNames.LOCATION_VALUE,locationValue);
         context.put(FacilioConstants.ContextNames.CURRENT_LOCATION,currentLocation);
         context.put(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS, onlyPermittedActions);
+        context.put(FacilioConstants.ContextNames.SKIP_APPROVAL, skipApproval);
 
         if (customButtonId != null && customButtonId > 0) {
             context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(customButtonId));
@@ -284,7 +292,7 @@ public class V3Util {
     public static FacilioContext processAndUpdateBulkRecords(FacilioModule module, List<ModuleBaseWithCustomFields> oldRecords, List<Map<String, Object>> rawRecords,
                                                              Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                              Long stateTransitionId, Long customButtonId, Long approvalTransitionId, String qrValue, String locationValue,Map<String, Double>currentLocation,
-                                                             boolean restrictedActions) throws Exception {
+                                                             boolean restrictedActions,boolean skipApproval) throws Exception {
         Map<Long, Map<String, Object>> idVsRecordMap = new HashMap<>();
         for (ModuleBaseWithCustomFields record: oldRecords) {
             idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
@@ -306,7 +314,7 @@ public class V3Util {
         List<Long> ids = oldRecords.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
 
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, values, ids, bodyParams,
-                queryParams, stateTransitionId, customButtonId, approvalTransitionId, qrValue, locationValue, currentLocation, restrictedActions);
+                queryParams, stateTransitionId, customButtonId, approvalTransitionId, qrValue, locationValue, currentLocation, restrictedActions,skipApproval);
         return context;
     }
 
@@ -423,7 +431,7 @@ public class V3Util {
     ) throws Exception {
         return updateRecords(module, v3Config, false, Collections.singletonList(oldRecord),
                 Collections.singletonList(record), Collections.singletonList(id),
-                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue,locationValue,currentLocation,false);
+                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue,locationValue,currentLocation,false,false);
     }
 
     public static FacilioContext getSummary(String moduleName, List<Long> ids) throws Exception {

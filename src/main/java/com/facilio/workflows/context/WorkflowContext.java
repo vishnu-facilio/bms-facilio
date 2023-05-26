@@ -467,7 +467,7 @@ public class WorkflowContext extends ScriptContext{
 		
 		globalParameters.put("currentOrg", FieldUtil.getAsJSON(AccountUtil.getCurrentOrg()));
 		globalParameters.put("currentUser", FieldUtil.getAsJSON(AccountUtil.getCurrentUser()));
-		
+
 		Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
 		if (MapUtils.isNotEmpty(liveVariables)) {
 			globalParameters.put("cv", liveVariables);		

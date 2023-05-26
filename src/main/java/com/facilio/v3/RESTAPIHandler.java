@@ -183,7 +183,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioModule module = ChainUtil.getModule(moduleName);
         FacilioContext context = V3Util.processAndUpdateBulkRecords(module, moduleBaseWithCustomFields, rawRecords, bodyParams, getQueryParameters(), getStateTransitionId(),
-                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), getLocationValue(),getCurrentLocation(), false);
+                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), getLocationValue(),getCurrentLocation(), false,false);
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 

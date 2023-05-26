@@ -21,13 +21,17 @@ import java.util.Map;
 public class VerifyApprovalCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean skipApproval = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL,false);
+        if(skipApproval){
+            return false;
+        }
         List<ModuleBaseWithCustomFields> recordList = Constants.getRecordList((FacilioContext) context);
         String moduleName = Constants.getModuleName(context);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         Map<String,Object> bodyParam = Constants.getBodyParams(context);
 
-        boolean skipApproval = bodyParam != null ? (boolean) bodyParam.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL,false) : false;
+        skipApproval = bodyParam != null ? (boolean) bodyParam.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL,false) : false;
 
         if (skipApproval){
             return false;

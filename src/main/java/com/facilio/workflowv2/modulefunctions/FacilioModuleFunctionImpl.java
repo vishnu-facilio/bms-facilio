@@ -324,8 +324,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			}
 			
 			CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
-			
-			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true);
+
+			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true,true);
 		}
 		else {
 			if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {

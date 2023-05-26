@@ -53,7 +53,7 @@ public class UpdateAwardedStatusCommandV3  extends FacilioCommand {
                     updatedVendorQuotesList.add(vendorQuote);
                 }
                 FacilioModule vendorQuoteModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
-                V3Util.processAndUpdateBulkRecords(vendorQuoteModule, vendorQuotesMap.get(FacilioConstants.ContextNames.VENDOR_QUOTES),  FieldUtil.getAsMapList(updatedVendorQuotesList,V3VendorQuotesContext.class)  ,null,null,null,null,null,null,null,null,false);
+                V3Util.processAndUpdateBulkRecords(vendorQuoteModule, vendorQuotesMap.get(FacilioConstants.ContextNames.VENDOR_QUOTES),  FieldUtil.getAsMapList(updatedVendorQuotesList,V3VendorQuotesContext.class)  ,null,null,null,null,null,null,null,null,false,false);
             }
         }
         return false;
