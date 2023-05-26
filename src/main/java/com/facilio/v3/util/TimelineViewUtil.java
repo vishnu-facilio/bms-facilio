@@ -25,10 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TimelineViewUtil {
 
@@ -117,12 +114,13 @@ public class TimelineViewUtil {
     }
 
     public static String getTimelineSupportedFieldValue(Object o, FacilioField field) {
+        List<FieldType> supportedFieldTypes = Arrays.asList(FieldType.ENUM, FieldType.SYSTEM_ENUM, FieldType.BOOLEAN, FieldType.STRING_SYSTEM_ENUM);
         String value = null;
         if (o == null) {
             return "-1";
         }
 
-        if (field.getDataTypeEnum() == FieldType.ENUM || field.getDataTypeEnum() == FieldType.BOOLEAN) {
+        if (supportedFieldTypes.contains(field.getDataTypeEnum())) {
             value = String.valueOf(o);
         } else if (field.getDataTypeEnum() == FieldType.LOOKUP) {
             value = String.valueOf(((Map<String, Object>) o).get("id"));
