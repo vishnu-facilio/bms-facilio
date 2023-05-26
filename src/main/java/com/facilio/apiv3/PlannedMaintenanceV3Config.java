@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.FetchPMDetailsFromPmResourcePlanner;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
@@ -67,7 +68,7 @@ public class PlannedMaintenanceV3Config {
                     .beforeSave(TransactionChainFactoryV3.getPMPlannerBeforeUpdateCommand())
                     .afterSave(TransactionChainFactoryV3.PMPlannerAfterUpdateChain())
                 .create()
-                .afterSave(new AddTimelineViewForPMPlannerCommand())
+                .afterSave(TransactionChainFactoryV3.getPmV2PlannerAfterCreateChain())
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.PMPlannerAfterDeleteChain())
                 .list()
@@ -82,9 +83,10 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPmResourcePlanner() {
         return () -> new V3Config(PMResourcePlanner.class, null)
                 .update()
-                    .beforeSave(new PMResourcePlannerBeforeSaveCommand())
+                .beforeSave(new PMResourcePlannerBeforeSaveCommand())
                 .create()
-                    .beforeSave(new PMResourcePlannerBeforeSaveCommand())
+                .beforeSave(new PMResourcePlannerBeforeSaveCommand())
+                .afterSave(TransactionChainFactoryV3.getPmV2ResourcePlannerAfterCreateChain())
                 .delete()
                 .list()
                 .beforeFetch(new PMResourcePlannerSupplementsCommand())

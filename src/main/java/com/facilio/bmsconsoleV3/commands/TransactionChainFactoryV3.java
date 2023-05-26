@@ -23,10 +23,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.people.*;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePMPlannerPreOpenWorkOrders;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePPMPreOpenWorkorders;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.DeletePlannerTriggerCommand;
-import com.facilio.bmsconsoleV3.commands.plannedmaintenance.RemoveDuplicateSites;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
@@ -66,6 +63,7 @@ import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 import com.facilio.readingrule.faulttowo.command.FaultToWorkorderStatusChangeCommand;
+import nl.basjes.shaded.org.yaml.snakeyaml.error.Mark;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -3341,5 +3339,18 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddRelatedApplicationsForMigratingAppCommand());
         chain.addCommand(new RelateMainAppWithMaintenanceCommand());
         return chain;
+    }
+    public static FacilioChain getPmV2ResourcePlannerAfterCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPMDetailsFromPmResourcePlanner());
+        c.addCommand(new MarkPMAsDeactivatedCommand());
+        return c;
+    }
+    public static FacilioChain getPmV2PlannerAfterCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddTimelineViewForPMPlannerCommand());
+        c.addCommand(new FetchPPMDetailsFromPlannerCommand());
+        c.addCommand(new MarkPMAsDeactivatedCommand());
+        return c;
     }
 }
