@@ -1,14 +1,13 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -19,6 +18,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,10 @@ public class SummaryCommand extends FacilioCommand {
         if (skipModuleCriteria) {
             selectRecordsBuilder.skipModuleCriteria();
         }
-
+        if(module.getName().equals("peopleannouncement")){
+            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()),StringOperators.IS));
+        }
         List<ModuleBaseWithCustomFields> list = selectRecordsBuilder.get();
 
         setDisplayUnitIdForNumberFieldAndDecimalField(fields,list);

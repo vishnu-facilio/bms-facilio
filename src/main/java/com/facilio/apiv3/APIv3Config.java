@@ -1379,7 +1379,7 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getAnnouncementsBeforeFetchChain())
                 .summary()
-                .beforeFetch(new LoadPeopleAnnouncementLookupCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getAnnouncementsBeforeFetchChain())
                 .build();
     }
 

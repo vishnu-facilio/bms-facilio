@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -69,7 +74,10 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			if(fetchDeleted) {
 				builder.fetchDeleted();
 			}
-
+			if(module.getName().equals("peopleannouncement")){
+				Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()), StringOperators.IS));
+			}
 			// TODO remove this and use FETCH_SUPPLEMENTS
 			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {

@@ -328,7 +328,9 @@ public class V3Util {
         List<Map<String, Object>> converted = FieldUtil.getAsMapList(Collections.singletonList(record), beanClass);
 
         JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
-
+        if(moduleName.equals("peopleannouncement")){
+            bodyParams = patchObj;
+        }
         Map<String, FacilioField> fileFields = getFileFields(moduleName);
         Map<String, FacilioField> numberAndDecimalFieldsWithMetrics = getNumberAndDecimalFieldsWithMetrics(moduleName);
 

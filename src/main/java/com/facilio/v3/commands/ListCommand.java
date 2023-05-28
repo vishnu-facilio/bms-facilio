@@ -1,11 +1,14 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -189,7 +192,11 @@ public class ListCommand extends FacilioCommand {
                 selectRecordsBuilder.andCondition((Condition) serverCriteria);
             }
         }
-
+        if((AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) && //for peopleannouncement views,only the current user's record
+                Constants.getOnlyCount(context) && module.getName().equals("peopleannouncement")){                        // have to be fetched in tenant portal
+            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
+            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()), StringOperators.IS));
+        }
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
         String orderType= context.containsKey(FacilioConstants.ContextNames.ORDER_TYPE) ? (String)context.get(FacilioConstants.ContextNames.ORDER_TYPE) : "desc";
         if (orderBy != null && !orderBy.isEmpty()) {
