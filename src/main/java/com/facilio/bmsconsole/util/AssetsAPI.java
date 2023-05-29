@@ -206,7 +206,7 @@ public class AssetsAPI {
 		return null;
 	}
 
-	public static AssetContext getAssetInfoForAccessibleSite(long assetId) throws Exception
+	public static V3AssetContext getAssetInfoForAccessibleSite(long assetId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -214,9 +214,9 @@ public class AssetsAPI {
 
 		List<Long> ids = AccountUtil.getUserBean().getAccessibleSpaceList(AccountUtil.getCurrentUser().getOuid());
 
-		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+		SelectRecordsBuilder<V3AssetContext> selectBuilder = new SelectRecordsBuilder<V3AssetContext>()
 				.moduleName(module.getName())
-				.beanClass(AssetContext.class)
+				.beanClass(V3AssetContext.class)
 				.select(modBean.getAllFields(module.getName()))
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(assetId, module));
@@ -226,7 +226,7 @@ public class AssetsAPI {
 		}
 
 
-		List<AssetContext> assets = selectBuilder.get();
+		List<V3AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
 			return assets.get(0);
 		}

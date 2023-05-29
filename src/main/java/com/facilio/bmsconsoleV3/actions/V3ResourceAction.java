@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.actions;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -24,7 +25,7 @@ public class V3ResourceAction extends V3Action {
 
     public String getResourceFromQR () throws Exception {
 
-        ResourceContext resource = ResourceAPI.getResource(qrValue,getFilters());
+        V3ResourceContext resource = ResourceAPI.getResource(qrValue,getFilters());
         setData(FacilioConstants.ContextNames.RESOURCE, resource);
         if(resource != null) {
             List<FacilioField> fields = ResourceAPI.getQRSearchFields(resource, moduleName);

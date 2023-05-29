@@ -501,7 +501,7 @@ public class SpaceAPI {
 		return null;
 	}
 
-	public static BaseSpaceContext getBaseSpaceWithAccessibleSpace(long id) throws Exception {
+	public static V3BaseSpaceContext getBaseSpaceWithAccessibleSpace(long id) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -510,11 +510,11 @@ public class SpaceAPI {
 
 		List<Long> ids = AccountUtil.getUserBean().getAccessibleSpaceList(AccountUtil.getCurrentUser().getOuid());
 
-		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+		SelectRecordsBuilder<V3BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<V3BaseSpaceContext>()
 				.select(fields)
 				.table(module.getTableName())
 				.moduleName(module.getName())
-				.beanClass(BaseSpaceContext.class)
+				.beanClass(V3BaseSpaceContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id,module));
 
 			if(CollectionUtils.isNotEmpty(ids))	{
@@ -530,7 +530,7 @@ public class SpaceAPI {
 
 
 
-		List<BaseSpaceContext> spaces = selectBuilder.get();
+		List<V3BaseSpaceContext> spaces = selectBuilder.get();
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
 		}

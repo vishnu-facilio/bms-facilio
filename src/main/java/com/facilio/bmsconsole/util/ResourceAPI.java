@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.util;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -81,7 +84,7 @@ public class ResourceAPI {
 		return selectBuilder.get();
 	}
 
-	public static ResourceContext getResource(String qrValue , String filters) throws Exception {
+	public static V3ResourceContext getResource(String qrValue , String filters) throws Exception {
 
 		if (qrValue == null || qrValue.isEmpty()) {
 			return null;
@@ -103,13 +106,13 @@ public class ResourceAPI {
 			 return null;
 		}
 
-		ResourceContext resource = (ResourceContext) props.get(0);
+		V3ResourceContext resource = (V3ResourceContext) props.get(0);
 
 		if(resource != null) {
-			if(resource.getResourceTypeEnum() == ResourceContext.ResourceType.ASSET) {
+			if(resource.getResourceTypeEnum() == V3ResourceContext.ResourceType.ASSET) {
 				resource = AssetsAPI.getAssetInfoForAccessibleSite(resource.getId());
 			}
-			else if(resource.getResourceTypeEnum() == ResourceType.SPACE) {
+			else if(resource.getResourceTypeEnum() == V3ResourceContext.ResourceType.SPACE) {
 				resource = SpaceAPI.getBaseSpaceWithAccessibleSpace(resource.getId());
 			}
 		}
@@ -117,7 +120,7 @@ public class ResourceAPI {
 		return resource;
 	}
 
-	public static List<FacilioField> getQRSearchFields(ResourceContext resource,String moduleName) throws Exception {
+	public static List<FacilioField> getQRSearchFields(V3ResourceContext resource,String moduleName) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -125,11 +128,11 @@ public class ResourceAPI {
 		List<String> lookupModuleList = new ArrayList<>();
 		lookupModuleList.add(FacilioConstants.ContextNames.RESOURCE);
 
-		if(resource instanceof AssetContext) {
+		if(resource instanceof V3AssetContext) {
 			lookupModuleList.add(FacilioConstants.ContextNames.ASSET);
 		}
-		else if (resource instanceof BaseSpaceContext) {
-			lookupModuleList.add(((BaseSpaceContext)resource).getSpaceTypeEnum().getModuleName());
+		else if (resource instanceof V3BaseSpaceContext) {
+			lookupModuleList.add(((V3BaseSpaceContext)resource).getSpaceTypeEnum().getModuleName());
 		}
 		List<FacilioField> returnFields = new ArrayList<>();
 		for(FacilioField field : fields) {
