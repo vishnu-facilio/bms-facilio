@@ -55,11 +55,6 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
                         }
                     }
 
-                    if( moduleName.equals("peopleannouncement")){
-                        if((boolean)(((Map<String,Object>)context.get("bodyParams")).get("isRead"))){
-                            cannotEdit = false;
-                        }
-                    }
                     // -99 will be set when he approved the module record, so should go to the if-block
                     if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
                         if (!skipChecking) {

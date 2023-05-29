@@ -192,11 +192,6 @@ public class ListCommand extends FacilioCommand {
                 selectRecordsBuilder.andCondition((Condition) serverCriteria);
             }
         }
-        if((AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) && //for peopleannouncement views,only the current user's record
-                Constants.getOnlyCount(context) && module.getName().equals("peopleannouncement")){                        // have to be fetched in tenant portal
-            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
-            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()), StringOperators.IS));
-        }
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
         String orderType= context.containsKey(FacilioConstants.ContextNames.ORDER_TYPE) ? (String)context.get(FacilioConstants.ContextNames.ORDER_TYPE) : "desc";
         if (orderBy != null && !orderBy.isEmpty()) {

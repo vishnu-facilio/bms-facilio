@@ -55,10 +55,6 @@ public class SummaryCommand extends FacilioCommand {
         if (skipModuleCriteria) {
             selectRecordsBuilder.skipModuleCriteria();
         }
-        if(module.getName().equals("peopleannouncement")){
-            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()),StringOperators.IS));
-        }
         List<ModuleBaseWithCustomFields> list = selectRecordsBuilder.get();
 
         setDisplayUnitIdForNumberFieldAndDecimalField(fields,list);

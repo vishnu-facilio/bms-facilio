@@ -510,9 +510,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             if (CollectionUtils.isNotEmpty(restrictedFields)) {
                 for (FacilioField field : restrictedFields) {
                     if(field != null) {
-                        if(!moduleName.equals("peopleannouncement") && !field.getName().equals("isRead")) {
                             dataMap.remove(field.getName());
-                        }
                     }
                 }
             }

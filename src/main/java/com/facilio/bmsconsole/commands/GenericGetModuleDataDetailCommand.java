@@ -74,10 +74,6 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			if(fetchDeleted) {
 				builder.fetchDeleted();
 			}
-			if(module.getName().equals("peopleannouncement")){
-				Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), Collections.singleton(AccountUtil.getCurrentUser().getPeopleId()), StringOperators.IS));
-			}
 			// TODO remove this and use FETCH_SUPPLEMENTS
 			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {
