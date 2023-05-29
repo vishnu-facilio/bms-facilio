@@ -129,12 +129,19 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
-		addWeatherWidget(tab1Sec1);
-		int energyCardHeight = 4;
-		addEnergyWidget(tab1Sec1, energyCardHeight);
-		int yPos = tab1Sec1.getLatestY() + energyCardHeight;
-		addOperatingHoursWidget(tab1Sec1);
-		addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SITE_SUMMARY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION)) {
+			addNewRelatedCountWidget(tab1Sec1, Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.NEW_READING_ALARM, FacilioConstants.ContextNames.ASSET));
+			addNewOperatingHoursWidget(tab1Sec1);
+		}
+		else {
+			addWeatherWidget(tab1Sec1);
+			int energyCardHeight = 4;
+			addEnergyWidget(tab1Sec1, energyCardHeight);
+			int yPos = tab1Sec1.getLatestY() + energyCardHeight;
+			addOperatingHoursWidget(tab1Sec1);
+			addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+		}
 
 		Section tab1Sec2 = page.new Section("buildingRelatedList");
 		tab1.addSection(tab1Sec2);
@@ -438,5 +445,12 @@ public class SpaceManagementPageFactory extends PageFactory {
 		classificationWidget.addToLayoutParams(tab1Sec1, 24, 8);
 		classificationWidget.addToWidgetParams("activityModuleName", activityModuleName);
 		tab1Sec1.addWidget(classificationWidget);
+	}
+
+	private static void addNewOperatingHoursWidget(Page.Section section) {
+		PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 10, 5);
+		cardWidget.addCardType(PageWidget.CardType.NEW_OPERATING_HOURS);
+		section.addWidget(cardWidget);
 	}
  }
