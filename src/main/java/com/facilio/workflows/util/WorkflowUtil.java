@@ -2392,7 +2392,7 @@ public class WorkflowUtil {
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
         	 WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                     .setTopic(ScriptLogHander.TOPIC+"/"+orgId+"/"+workflowContext.getId())
+                     .setTopic(ScriptLogHander.TOPIC+"/"+orgId+"/"+workflowContext.getParentId()+"/"+workflowContext.getId())
                      .setOrgId(orgId)
                      .setContent(json)
              );
