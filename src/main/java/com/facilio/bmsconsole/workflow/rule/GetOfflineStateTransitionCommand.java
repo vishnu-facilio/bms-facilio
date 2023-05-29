@@ -89,15 +89,8 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
         FacilioStatus fromState = TicketAPI.getStatus(record.getFromStateId());
         FacilioStatus toState = TicketAPI.getStatus(record.getToStateId());
 
-        HashMap<String,Object> fromStateMap = new HashMap<>();
-        fromStateMap.put("id",fromState.getId());
-        fromStateMap.put("primaryValue",fromState.getPrimaryValue());
-        fromStateMap.put("displayName",fromState.getDisplayName());
-
-        HashMap<String,Object> toStateMap = new HashMap<>();
-        toStateMap.put("id",toState.getId());
-        toStateMap.put("primaryValue",toState.getPrimaryValue());
-        toStateMap.put("displayName",toState.getDisplayName());
+        HashMap<String,Object> fromStateMap = getOfflineStateTransitionMap(fromState);
+        HashMap<String,Object> toStateMap = getOfflineStateTransitionMap(toState);
 
         result.put("fromState",fromStateMap);
         result.put("toState",toStateMap);
@@ -122,5 +115,18 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
                 Collectors.groupingBy(StateflowTransitionContext::getFromStateId,HashMap::new,Collectors.toList()));
 
         return stateTransitionMap;
+    }
+
+    public static HashMap<String,Object> getOfflineStateTransitionMap(FacilioStatus state){
+        HashMap<String,Object> stateMap = new HashMap<>();
+        stateMap.put("id",state.getId());
+        stateMap.put("primaryValue",state.getPrimaryValue());
+        stateMap.put("displayName",state.getDisplayName());
+        stateMap.put("recordLocked",state.isRecordLocked());
+        stateMap.put("timerEnabled",state.isTimerEnabled());
+        stateMap.put("type",state.getType().getStringVal());
+        stateMap.put("typeCode",state.getType().getIntVal());
+
+        return stateMap;
     }
 }
