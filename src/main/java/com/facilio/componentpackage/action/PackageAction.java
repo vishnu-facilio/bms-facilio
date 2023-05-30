@@ -9,7 +9,7 @@ import com.facilio.componentpackage.command.PackageChainFactory;
 public class PackageAction extends FacilioAction {
 
     public String createPackageFromOrg() throws Exception{
-        FacilioChain createPackageChain = PackageChainFactory.getOrgPackageChain();
+        FacilioChain createPackageChain = PackageChainFactory.getCreatePackageChain();
         FacilioContext context = createPackageChain.getContext();
         createPackageChain.execute();
         setResult(BundleConstants.DOWNLOAD_URL, context.get(BundleConstants.DOWNLOAD_URL));

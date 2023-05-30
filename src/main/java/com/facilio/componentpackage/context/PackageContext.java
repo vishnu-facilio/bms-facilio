@@ -16,8 +16,8 @@ public class PackageContext {
     private double version;
     private PackageType type;
     private long fileId;
-    private long createdTime;
-    private long modifiedTime;
+    private long sysCreatedTime;
+    private long sysModifiedTime;
     private long sysCreatedBy;
     private long sysModifiedBy;
 

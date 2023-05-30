@@ -8,8 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
+
     @Override
-    public List<Long> fetchAllComponentIdsToPackage() throws Exception {
+    public List<Long> fetchSystemComponentIdsToPackage() throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<Long> fetchCustomComponentIdsToPackage() throws Exception {
         return null;
     }
 
@@ -19,8 +25,8 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     @Override
-    public XMLBuilder convertToXMLComponent(ApplicationContext component) throws Exception {
-        return null;
+    public void convertToXMLComponent(ApplicationContext component, XMLBuilder element) throws Exception {
+
     }
 
     @Override
@@ -34,7 +40,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     @Override
-    public Map<String, Long> updateComponentFromXML(List<XMLBuilder> components) throws Exception {
+    public Map<String, Long> updateComponentFromXML(Map<Long, XMLBuilder> idVscomponents) throws Exception {
         return null;
     }
 

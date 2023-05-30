@@ -11148,8 +11148,10 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
-        fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysModifiedBy", module));
         return fields;
     }
     

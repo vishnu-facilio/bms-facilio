@@ -4,16 +4,29 @@ import com.facilio.chain.FacilioChain;
 
 public class PackageChainFactory {
 
-	
 	private static FacilioChain getDefaultChain() {
         return FacilioChain.getTransactionChain();
     }
 
-    public static FacilioChain getOrgPackageChain() {
+    public static FacilioChain getCreatePackageChain() {
         FacilioChain c = getDefaultChain();
+
+        c.addCommand(new ValidateAndCreatePackageCommand());
+        c.addCommand(new PopulateExistingChangesetMappingCommand());
+        c.addCommand(new CreateXMLPackageCommand());
+
+        return c;
+    }
+
+    public static FacilioChain getCreatePackageForSandboxChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new GetSandboxPackageUniqueNameCommand());
+        c.addCommand(new ValidateAndCreatePackageCommand());
+        c.addCommand(new PopulateExistingChangesetMappingCommand());
+        c.addCommand(new CreateXMLPackageCommand());
 
         return c;
     }
     
-
 }
