@@ -24,7 +24,7 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
 
             List<Map<String, Object>> list = ReadingRuleRcaAPI.getAlarmDurationAndCount(rcaAlarmIds, dateRange.getStartTime(), dateRange.getEndTime());
             List<Long> alarmsWithOccurrence = list.stream().map(RcaReadingFaultCountAndDurationCommand::getAlarmId).collect(Collectors.toList());
-            readingContexts.forEach(reading -> nullDurationAndCount(reading, alarmsWithOccurrence));
+            readingContexts.removeIf(reading -> !alarmsWithOccurrence.contains(reading.getRcaFaultId()));
             if (CollectionUtils.isNotEmpty(list)) {
                 for (Map<String, Object> prop : list) {
                     Long alarmId = getAlarmId(prop);
@@ -45,13 +45,5 @@ public class RcaReadingFaultCountAndDurationCommand extends FacilioCommand {
     private static Long getAlarmId(Map<String, Object> map) {
         Map<String, Object> alarm = (Map<String, Object>) map.get("alarm");
         return (Long) alarm.get("id");
-    }
-
-    private static void nullDurationAndCount(RCAScoreReadingContext reading, List<Long> alarmsWithOccurrence){
-        if(!alarmsWithOccurrence.contains(reading.getRcaFaultId())) {
-            reading.setDuration(0L);
-            reading.setCount(0L);
-            reading.setScore(0L);
-        }
     }
 }

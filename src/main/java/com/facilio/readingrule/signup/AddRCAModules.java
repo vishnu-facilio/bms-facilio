@@ -1,6 +1,5 @@
 package com.facilio.readingrule.signup;
 
-import com.amazonaws.services.dynamodbv2.xspec.N;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -168,7 +167,9 @@ public class AddRCAModules extends SignUpData {
         NumberField score = FieldFactory.getDefaultField("score", "RCA Score", "SCORE", FieldType.NUMBER);
         fields.add(score);
 
-        fields.addAll(FieldFactory.getDefaultReadingFields(module));
+        List<FacilioField> defaultReadingFields = FieldFactory.getDefaultReadingFields(module);
+        defaultReadingFields.removeIf(field -> field.getName().equals("parentId"));
+        fields.addAll(defaultReadingFields);
 
         module.setFields(fields);
 

@@ -277,7 +277,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "readingAlarmCategory",
                 "faultType",
                 "id",
-                "localId"
+                "localId",
+                "costImpact",
+                "energyImpact"
         }));
 
         public static final List<String> NEW_OP_ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{

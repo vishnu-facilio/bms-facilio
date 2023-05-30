@@ -23,22 +23,16 @@ public class RCAScoreReadingContext extends V3Context {
 
     private Long count;
     private Long duration;
-    public void setParentId(Long parentId){
-        this.parentId = parentId;
-        ReadingAlarm alarm = new ReadingAlarm();
-        alarm.setId(parentId);
-        this.setParentAlarm(alarm);
+    public void setParentAlarm(ReadingAlarm parentAlarm){
+        this.parentId = parentAlarm.getId();
+        this.parentAlarm = parentAlarm;
     }
-    public void setRcaRuleId(Long rcaRuleId){
-        this.rcaRuleId = rcaRuleId;
-        NewReadingRuleContext rule = new NewReadingRuleContext();
-        rule.setId(rcaRuleId);
-        this.setRcaRule(rule);
+    public void setRcaRule(NewReadingRuleContext rcaRule){
+        this.rcaRuleId = rcaRule.getId();
+        this.rcaRule = rcaRule;
     }
-    public void setRcaFaultId(Long rcaFaultId){
-        this.rcaFaultId = rcaFaultId;
-        ReadingAlarm alarm = new ReadingAlarm();
-        alarm.setId(rcaFaultId);
-        this.setRcaFault(alarm);
+    public void setRcaFault(ReadingAlarm rcaFault){
+        this.rcaFaultId = rcaFault.getId();
+        this.rcaFault = rcaFault;
     }
 }
