@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.command.FacilioCommand;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMReminder;
@@ -13,11 +14,11 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.logging.log4j.util.Strings;
 
-
+@Log4j
 public class DeletePMAndDependenciesCommand extends FacilioCommand {
-	private static final Logger LOGGER = Logger.getLogger(DeletePMAndDependenciesCommand.class.getName());
 	private boolean isPMDelete;
 	private boolean isStatusUpdate = false;
 	public DeletePMAndDependenciesCommand(boolean isDelete, boolean... isStatusUpdate) {
@@ -29,7 +30,7 @@ public class DeletePMAndDependenciesCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+		LOGGER.log(Level.WARN, "DeletePMAndDependenciesCommand");
 		List<Long> ruleIds = new ArrayList<>();
 		List<Long> pmIds = new ArrayList<>();
 		List<Long> triggerPMIds = new ArrayList<>();
@@ -70,9 +71,11 @@ public class DeletePMAndDependenciesCommand extends FacilioCommand {
 		}
 
 		if (!ruleIds.isEmpty()) {
+			LOGGER.log(Level.WARN, "Rule IDs isn't empty: " + Strings.join(ruleIds, ','));
 			WorkflowRuleAPI.deleteWorkFlowRules(ruleIds);
 		}
 
+		// Deleting trigger happens there
 		PreventiveMaintenanceAPI.deletePmResourcePlanner(pmIds);
 		PreventiveMaintenanceAPI.deletePmIncludeExclude(pmIds);
 		PreventiveMaintenanceAPI.deleteTriggers(triggerPMIds);

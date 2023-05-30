@@ -3306,6 +3306,7 @@ public class PreventiveMaintenanceAPI {
 		if (pmIds.isEmpty()) {
 			return;
 		}
+		LOGGER.log(Level.ERROR, "deleteMultiWoPMReminders: " + pmIds);
 
 		FacilioModule module = ModuleFactory.getPMResourceScheduleRuleRelModule();
 		Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(FieldFactory.getPMResourceScheduleRuleRelFields());
@@ -3339,6 +3340,7 @@ public class PreventiveMaintenanceAPI {
 
 	public static void deleteTriggers(List<Long> triggerPMIds) throws Exception {
 		if (!triggerPMIds.isEmpty()) {
+			LOGGER.log(Level.ERROR, "deleteTriggers: " + triggerPMIds);
 			FacilioModule triggerModule = ModuleFactory.getPMTriggersModule();
 			List<FacilioField> triggerFields = FieldFactory.getPMTriggerFields();
 			FacilioField pmIdField = FieldFactory.getAsMap(triggerFields).get("pmId");
@@ -3351,6 +3353,7 @@ public class PreventiveMaintenanceAPI {
 
 	public static void deletePmResourcePlanner(List<Long> pmids) throws Exception {
 		if (pmids !=  null && !pmids.isEmpty()) {
+			LOGGER.log(Level.ERROR, "deletePmResourcePlanner: " + pmids);
 			FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
 			List<FacilioField> fields = FieldFactory.getPMResourcePlannerFields();
 			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
@@ -3363,6 +3366,7 @@ public class PreventiveMaintenanceAPI {
 
 	public static void deletePmIncludeExclude(List<Long> pmids) throws Exception {
 		if (pmids !=  null && !pmids.isEmpty()) {
+			LOGGER.log(Level.ERROR, "deletePmIncludeExclude: " + pmids);
 			FacilioModule module = ModuleFactory.getPMIncludeExcludeResourceModule();
 			List<FacilioField> fields = FieldFactory.getPMIncludeExcludeResourceFields();
 			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
@@ -3381,6 +3385,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	private static void deleteNewPMReminders(List<Long> pmIds) throws Exception {
+		LOGGER.log(Level.ERROR, "deleteNewPMReminders: " + pmIds);
 		FacilioModule reminderModule = ModuleFactory.getPMReminderModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPMReminderFields());
 

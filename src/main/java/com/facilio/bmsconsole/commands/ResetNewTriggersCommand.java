@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -37,9 +38,11 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
+import org.apache.log4j.Level;
 
 ;
 
+@Log4j
 public class ResetNewTriggersCommand extends FacilioCommand implements Serializable {
 
 	/**
@@ -49,6 +52,7 @@ public class ResetNewTriggersCommand extends FacilioCommand implements Serializa
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		LOGGER.log(Level.WARN, "ResetNewTriggersCommand");
 		// TODO Auto-generated method stub
 		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		if(pms != null && !pms.isEmpty()) {
