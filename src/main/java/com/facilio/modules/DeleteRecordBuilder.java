@@ -10,17 +10,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.facilio.db.builder.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.db.builder.DeleteBuilderIfc;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericDeleteRecordBuilder.GenericJoinBuilder;
-import com.facilio.db.builder.JoinBuilderIfc;
-import com.facilio.db.builder.WhereBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -38,6 +35,8 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private UpdateRecordBuilder<E> updateBuilder = new UpdateRecordBuilder<E>();
+	private GenericUpdateRecordBuilder genericUpdateBuilder = new GenericUpdateRecordBuilder();
+
 	private String moduleName;
 	private FacilioModule module;
 	private WhereBuilder where = new WhereBuilder();
@@ -81,27 +80,28 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		deleteBuilder.useExternalConnection(conn);
 		selectBuilder.useExternalConnection(conn);
 		updateBuilder.useExternalConnection(conn);
+		genericUpdateBuilder.useExternalConnection(conn);
 		return this;
 	}
-	
+
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName, boolean delete) {
-		return new JoinRecordBuilder<E>(this, deleteBuilder.innerJoin(tableName, delete), selectBuilder.innerJoin(tableName), updateBuilder.innerJoin(tableName));
+		return new JoinRecordBuilder<E>(this, deleteBuilder.innerJoin(tableName, delete), selectBuilder.innerJoin(tableName), updateBuilder.innerJoin(tableName), genericUpdateBuilder.innerJoin(tableName));
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> leftJoin(String tableName, boolean delete) {
-		return new JoinRecordBuilder<E>(this, deleteBuilder.leftJoin(tableName, delete), selectBuilder.leftJoin(tableName), updateBuilder.leftJoin(tableName));
+		return new JoinRecordBuilder<E>(this, deleteBuilder.leftJoin(tableName, delete), selectBuilder.leftJoin(tableName), updateBuilder.leftJoin(tableName), genericUpdateBuilder.leftJoin(tableName));
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> rightJoin(String tableName, boolean delete) {
-		return new JoinRecordBuilder<E>(this, deleteBuilder.rightJoin(tableName, delete), selectBuilder.rightJoin(tableName), updateBuilder.rightJoin(tableName));
+		return new JoinRecordBuilder<E>(this, deleteBuilder.rightJoin(tableName, delete), selectBuilder.rightJoin(tableName), updateBuilder.rightJoin(tableName), genericUpdateBuilder.rightJoin(tableName));
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> fullJoin(String tableName, boolean delete) {
-		return new JoinRecordBuilder<E>(this, deleteBuilder.fullJoin(tableName, delete), selectBuilder.fullJoin(tableName), updateBuilder.fullJoin(tableName));
+		return new JoinRecordBuilder<E>(this, deleteBuilder.fullJoin(tableName, delete), selectBuilder.fullJoin(tableName), updateBuilder.fullJoin(tableName), genericUpdateBuilder.fullJoin(tableName));
 	}
 	
 	@Override
@@ -151,6 +151,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public DeleteRecordBuilder<E> recordsPerBatch (int recordsPerBatch) {
 		this.deleteBuilder.recordsPerBatch(recordsPerBatch);
+		this.genericUpdateBuilder.recordsPerBatch(recordsPerBatch);
 		return this;
 	}
 
@@ -230,7 +231,52 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 	}
-	
+
+	public int batchMarkAsDeleteById(Collection<Long> ids) throws Exception {
+		if (CollectionUtils.isNotEmpty(ids)) {
+			FacilioModule currentModule = module.getParentModule();
+			List<FacilioField> fields = new ArrayList<>();
+			FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
+			FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(module.getParentModule());
+			FacilioField deletedByField = FieldFactory.getSysDeletedByField(module.getParentModule());
+			fields.add(isDeletedField);
+			fields.add(deletedTimeField);
+			fields.add(deletedByField);
+			genericUpdateBuilder.table(currentModule.getTableName());
+			genericUpdateBuilder.fields(fields);
+			long currentTimeInMillis = System.currentTimeMillis();
+			List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateContexts = new ArrayList<>();
+			for(Long id : ids) {
+				batchUpdateContexts.add(constructMarkAsDeleteBatchUpdate(id, currentModule, currentTimeInMillis, isDeletedField, deletedTimeField, deletedByField));
+			}
+			List<FacilioField> whereFields = new ArrayList<>();
+			whereFields.add(FieldFactory.getIdField(currentModule));
+			whereFields.add(FieldFactory.getModuleIdField(currentModule));
+			return genericUpdateBuilder.batchUpdate(whereFields,batchUpdateContexts);
+		}
+		return 0;
+	}
+
+	private GenericUpdateRecordBuilder.BatchUpdateContext constructMarkAsDeleteBatchUpdate(Long id, FacilioModule currentModule, long currentTimeInMillis, FacilioField isDeletedField, FacilioField deletedTimeField, FacilioField deletedByField) {
+		GenericUpdateRecordBuilder.BatchUpdateContext batchUpdateContext = new GenericUpdateRecordBuilder.BatchUpdateContext();
+
+		//Batch Update Record Value
+		Map<String, Object> updateValue = new HashMap<>();
+		updateValue.put(isDeletedField.getName(), true);
+		updateValue.put(deletedTimeField.getName(), currentTimeInMillis);
+		if (AccountUtil.getCurrentUser() != null) {
+			updateValue.put(deletedByField.getName(), AccountUtil.getCurrentUser().getId());
+		}
+		batchUpdateContext.setUpdateValue(updateValue);
+
+		//Batch Update Where Value
+		Map<String,Object> whereValue = new HashMap<>();
+		whereValue.put(FieldFactory.getIdField(currentModule).getName(),id);
+		whereValue.put(FieldFactory.getModuleIdField(currentModule).getName(),currentModule.getModuleId());
+		batchUpdateContext.setWhereValue(whereValue);
+		return batchUpdateContext;
+	}
+
 	public int markAsDelete() throws Exception {
 		checkForNullAndSanitize();
 		if (!module.isTrashEnabled()) {
@@ -318,12 +364,14 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		private GenericJoinBuilder deleteJoinBuilder;
 		private SelectRecordsBuilder.JoinRecordBuilder<E> selectJoinBuilder;
 		private UpdateRecordBuilder.JoinRecordBuilder<E> updateJoinBuilder;
-		
-		private JoinRecordBuilder(DeleteRecordBuilder<E> parentBuilder, GenericJoinBuilder deleteJoinBuilder, SelectRecordsBuilder.JoinRecordBuilder<E> selectJoinBuilder, UpdateRecordBuilder.JoinRecordBuilder<E> updateJoinBuilder) {
+		private GenericUpdateRecordBuilder.GenericJoinBuilder genericUpdateJoinBuilder;
+
+		private JoinRecordBuilder(DeleteRecordBuilder<E> parentBuilder, GenericJoinBuilder deleteJoinBuilder, SelectRecordsBuilder.JoinRecordBuilder<E> selectJoinBuilder, UpdateRecordBuilder.JoinRecordBuilder<E> updateJoinBuilder, GenericUpdateRecordBuilder.GenericJoinBuilder genericUpdateJoinBuilder) {
 			this.parentBuilder = parentBuilder;
 			this.deleteJoinBuilder = deleteJoinBuilder;
 			this.selectJoinBuilder = selectJoinBuilder;
 			this.updateJoinBuilder = updateJoinBuilder;
+			this.genericUpdateJoinBuilder = genericUpdateJoinBuilder;
 			// TODO Auto-generated constructor stub
 		}
 		
@@ -333,6 +381,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			deleteJoinBuilder.on(condition);
 			selectJoinBuilder.on(condition);
 			updateJoinBuilder.on(condition);
+			genericUpdateJoinBuilder.on(condition);
 			return parentBuilder;
 		}
 		

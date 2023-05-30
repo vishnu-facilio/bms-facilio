@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WebTabUtil;
+import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
@@ -396,6 +397,23 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             }
                             action = WebTabUtil.getActions(action,method);
                         }
+
+                        try {
+                            if (APIPermissionUtil.shouldCheckPermission(request.getRequestURI())) {
+                                if (!(isV3Permission || isTabPermision || isSetupPermission)) {
+                                    String authorisationReq = ActionContext.getContext().getParameters().get("authorise").getValue();
+                                    if (StringUtils.isEmpty(authorisationReq) || authorisationReq.equals("true")) {
+                                        LOGGER.info("API Permission missing for " + request.getRequestURI());
+                                        if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                                            return logAndReturn("unauthorized", null, startTime, request);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("Error while checking API permission");
+                        }
+
 
                         if(throwDeprecatedApiError(deprecated)) {
                             return logAndReturn("unauthorized", null, startTime, request);

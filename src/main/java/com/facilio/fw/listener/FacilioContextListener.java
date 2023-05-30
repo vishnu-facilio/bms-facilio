@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
 import com.facilio.client.app.pojo.ClientAppConfig;
 import com.facilio.client.app.util.ClientAppUtil;
@@ -156,6 +157,7 @@ public class FacilioContextListener implements ServletContextListener {
 			FieldUtil.init();
 			FacilioEnum.getEnumValues("CostType");
 			DCUtil.init();
+			APIPermissionUtil.init();
 			TranslationConf.getTranslationImpl("test");
 			AddSignupDataCommandV3.initSignUpDataClasses();
 
