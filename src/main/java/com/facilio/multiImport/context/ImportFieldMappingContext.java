@@ -14,7 +14,7 @@ public class ImportFieldMappingContext implements Serializable {
     private long fieldId = -1L;
     private String fieldName;
     private String sheetColumnName;
-    private int unitId;
+    private int unitId=-1;
     private boolean isMandatory;
     private String dateFormat;
 }

@@ -959,7 +959,7 @@ public class MultiImportApi {
         }
 
         if (CollectionUtils.isNotEmpty(valueMissingColumns)) {
-            ImportMandatoryFieldsException exception = new ImportMandatoryFieldsException((int)rowContext.getRowNumber(), valueMissingColumns, new Exception());
+            ImportMandatoryFieldsException exception = new ImportMandatoryFieldsException(valueMissingColumns, new Exception());
             String errorMessage = exception.getClientMessage();
             rowContext.setErrorOccurredRow(true);
             rowContext.setErrorMessage(errorMessage);
@@ -979,7 +979,7 @@ public class MultiImportApi {
         if (CollectionUtils.isNotEmpty(sheetColumnNames)) {
             for (String columnName : sheetColumnNames) {
                 if (Objects.isNull(rowVal.get(columnName))) {  //if object is null means,mark isErrorOccurredRow as a true and save error message in ImportRow context
-                    ImportFieldValueMissingException exception = new ImportFieldValueMissingException((int) rowContext.getRowNumber(), columnName, new Exception());
+                    ImportFieldValueMissingException exception = new ImportFieldValueMissingException(columnName, new Exception());
                     String errorMessage = exception.getClientMessage();
                     rowContext.setErrorOccurredRow(true);
                     rowContext.setErrorMessage(errorMessage);

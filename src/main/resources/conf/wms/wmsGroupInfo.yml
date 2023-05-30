@@ -14,8 +14,6 @@ groups:
       - { topic: __ping__, handler: com.facilio.wmsv2.handler.PingHandler, deliverTo: SESSION, isLiveMessage: true }
       - { topic: __push__, handler: com.facilio.wmsv2.handler.PushHandler, isLiveMessage: true }
       - { topic: [ __subscribe__, __unsubscribe__ ], handler: com.facilio.wmsv2.handler.SubscribeHandler, deliverTo: SESSION, isLiveMessage: true }
-      - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, isLiveMessage: true }
-      - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, isLiveMessage: true }
 
   - group: default-single
     sendToAll: false
@@ -70,3 +68,9 @@ groups:
     topics:
       - { topic: __background_activity__/+/process, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityTopicHandler, recordTimeout: 120, isLiveMessage: false }
       - { topic: __background_activity_rollup__/+/rollup, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityRollupTopicHandler, recordTimeout: 120, isLiveMessage: false }
+
+  - group: instant-broadcast
+    sendToAll: true
+    topics:
+      - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, isLiveMessage: true }
+      - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, isLiveMessage: true }

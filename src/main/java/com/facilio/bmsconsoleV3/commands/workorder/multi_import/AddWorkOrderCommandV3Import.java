@@ -61,6 +61,8 @@ public class AddWorkOrderCommandV3Import extends FacilioCommand {
                     }
                 }
 
+                workOrder.setStatus(workOrder.getModuleState());
+
                 if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && AccountUtil.getCurrentUser() != null) {
                     long currentUserId = AccountUtil.getCurrentUser().getOuid();
                     try {

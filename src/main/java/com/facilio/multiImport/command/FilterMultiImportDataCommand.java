@@ -222,7 +222,8 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
         SelectRecordsBuilder<V3Context> builder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .select(allFields)
-                .beanClass(beanClass);
+                .beanClass(beanClass)
+                .limit(1);
         List<SupplementRecord> supplements = new ArrayList<>();
         for (FacilioField field : allFields) {
             if (field.getDataTypeEnum().isRelRecordField()) {

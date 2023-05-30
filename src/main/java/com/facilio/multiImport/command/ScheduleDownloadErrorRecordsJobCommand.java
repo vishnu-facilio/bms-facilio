@@ -3,6 +3,7 @@ package com.facilio.multiImport.command;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.multiImport.context.ImportDataDetails;
+import com.facilio.multiImport.enums.ImportDataStatus;
 import com.facilio.multiImport.job.DownloadMultiImportErrorRecordsJob;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -23,7 +24,7 @@ public class ScheduleDownloadErrorRecordsJobCommand extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.FILE_URL,fileUrl);
         }else{
             JobContext jobContext = FacilioTimer.getJob(importId,DownloadMultiImportErrorRecordsJob.JOB_NAME);
-            if(jobContext == null){
+            if(jobContext == null && importDataDetails.getStatusEnum() == ImportDataStatus.IMPORT_COMPLETED){
                 FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importId, DownloadMultiImportErrorRecordsJob.JOB_NAME, 10, "priority");
             }
             else if(!jobContext.isActive()){

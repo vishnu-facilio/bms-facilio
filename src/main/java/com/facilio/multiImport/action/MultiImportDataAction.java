@@ -231,6 +231,7 @@ public class MultiImportDataAction extends V3Action {
 
         chain.execute();
         setData(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS, context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS));
+        setData(FacilioConstants.ContextNames.SUPPLEMENTS, context.get(FacilioConstants.ContextNames.SUPPLEMENTS));
         return SUCCESS;
     }
     public String getMultiImportModules() throws Exception{

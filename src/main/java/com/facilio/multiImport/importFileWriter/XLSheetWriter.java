@@ -33,7 +33,7 @@ public class XLSheetWriter implements AbstractSheetWriter{
     }
 
     @Override
-    public AbstractSheetWriter setHeaderColurs(Map<Integer, Short> columnIndexVsColour) throws Exception {
+    public AbstractSheetWriter setHeaderColors(Map<Integer, Short> columnIndexVsColour) throws Exception {
         this.columnIndexVsColour=columnIndexVsColour;
         return this;
     }
@@ -50,13 +50,15 @@ public class XLSheetWriter implements AbstractSheetWriter{
              headerCell.setCellValue(columnName);
 
              if(MapUtils.isNotEmpty(columnIndexVsColour)){
-                 short indexColour = columnIndexVsColour.get(i);
-                 CellStyle headerCellStyle = parent.workbook.createCellStyle();
-                 headerCellStyle.setFillForegroundColor(indexColour);
-                 headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                 headerCellStyle.setFont(headerFont);
+                 if(columnIndexVsColour.get(i)!=null){
+                     short indexColour = columnIndexVsColour.get(i);
+                     CellStyle headerCellStyle = parent.workbook.createCellStyle();
+                     headerCellStyle.setFillForegroundColor(indexColour);
+                     headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                     headerCellStyle.setFont(headerFont);
 
-                 headerCell.setCellStyle(headerCellStyle);
+                     headerCell.setCellStyle(headerCellStyle);
+                 }
              }
              autoSizeColumn(headerCell);
          }

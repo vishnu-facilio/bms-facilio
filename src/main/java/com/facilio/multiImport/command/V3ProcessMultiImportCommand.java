@@ -244,7 +244,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 LOGGER.severe("Process Import Exception -- Row No --" + rowNo + " Fields Mapping --" + sheetColumnName);
                 String errorMessage =null;
 
-                ImportParseException parseException = new ImportParseException((int) rowNo, sheetColumnName, ex);
+                ImportParseException parseException = new ImportParseException(sheetColumnName, ex);
                 errorMessage = parseException.getClientMessage();
 
                 rowContext.setErrorOccurredRow(true);
@@ -333,6 +333,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String[] split = multiLookupValue.split(",");
                 List<Object> values = new ArrayList<>();
                 String lookUpModuleName = ((BaseLookupField) field).getLookupModule().getName();
+                String lookUpModuleDisplayName = ((BaseLookupField) field).getLookupModule().getDisplayName();
                 List<FacilioField> uniqueFields = getImportLookupUniqueFields(Constants.getModBean(), context, lookUpModuleName);
                 Map<String, Object> nameVsIds = lookupMap.get(field);
                 for (String s : split) {
@@ -345,7 +346,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                     Object value = nameVsIds.get(name);
 
                     if(value == null){
-                        throw new ImportLookupModuleValueNotFoundException(lookUpModuleName,(int)rowNo,sheetColumnName,null);
+                        throw new ImportLookupModuleValueNotFoundException(lookUpModuleDisplayName,sheetColumnName,null);
                     }
 
                     if (nameVsIds.containsKey(name) && nameVsIds.get(name) != null) {
@@ -367,7 +368,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 Object value = nameVsIds.get(name);
 
                 if(value == null){
-                    throw new ImportLookupModuleValueNotFoundException(lookUpModuleName,(int)rowNo,sheetColumnName,null);
+                    throw new ImportLookupModuleValueNotFoundException(lookUpModuleName,sheetColumnName,null);
                 }
 
                 props.put(field.getName(), value);
@@ -383,6 +384,11 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 if (!props.containsKey(field.getName())) {
                     props.put(field.getName(), cellLongValue);
                 }
+                NumberField numberField = (NumberField) field;
+                ImportFieldMappingContext importFieldMapping = sheetColumnNameVsFieldMapping.get(sheetColumnName);
+                if(numberField.getMetric()!=-1 && numberField.getUnitId()!=-1 && importFieldMapping.getUnitId()!=-1){
+                    props.put(field.getName()+"Unit",importFieldMapping.getUnitId());
+                }
                 break;
             }
             case DECIMAL: {
@@ -394,6 +400,11 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 Double cellDoubleValue = Double.parseDouble(cellValueString);
                 if (!props.containsKey(field.getName())) {
                     props.put(field.getName(), cellDoubleValue);
+                }
+                NumberField decimalField = (NumberField) field;
+                ImportFieldMappingContext importFieldMapping = sheetColumnNameVsFieldMapping.get(sheetColumnName);
+                if(decimalField.getMetric()!=-1 && decimalField.getUnitId()!=-1 && importFieldMapping.getUnitId()!=-1){
+                    props.put(field.getName()+"Unit",importFieldMapping.getUnitId());
                 }
                 break;
             }
@@ -439,7 +450,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             if (isEmpty(uniqueCellValue)) {
                 uniqueCellValue = "null";
                 if (validate && !canBeEmptyFieldNames.contains(uniqueFieldName)) {
-                    throw new ImportFieldValueMissingException((int) rowContext.getRowNumber(), uniqueFieldSheetColumnName, new Exception());
+                    throw new ImportFieldValueMissingException(uniqueFieldSheetColumnName, new Exception());
                 }
             }
             String uniqueCellStringValue = uniqueCellValue.toString();
@@ -890,9 +901,13 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         }
         float currentPercentage = Math.round(MultiImportApi.getImportCompletePercentage(importDataDetails));
         float percentage_var = Math.round(currentPercentage) / (ratio)+30;
-        if(++pointer % one_percentage_records ==0 && percentage_var<=99 || pointer== batchRows.size()){
-            HashMap<String,Object> clientJson =  new HashMap<>();
 
+        if(percentage_var>99){
+            percentage_var = 99;
+        }
+
+        if(++pointer % one_percentage_records ==0  || pointer== batchRows.size()){
+            HashMap<String,Object> clientJson =  new HashMap<>();
             clientJson.put("percentage",percentage_var);
             MultiImportApi.sendMultiImportProgressToClient(importDataDetails,clientJson);
         }

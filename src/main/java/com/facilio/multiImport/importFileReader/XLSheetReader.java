@@ -108,7 +108,7 @@ public class XLSheetReader implements AbstractImportSheetReader {
                 CellValue cellValue = parent.evaluator.evaluate(cell);
                 val = MultiImportApi.getValueFromCell(cell, cellValue);
             } catch (Exception e) {
-                ImportParseException parseException = new ImportParseException(rowNumber + 1, cellName, e);
+                ImportParseException parseException = new ImportParseException(cellName, e);
                 throw parseException;
             }
             rowVal.put(cellName, val);

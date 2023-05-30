@@ -39,16 +39,18 @@ public class ImportUpdateCommand extends FacilioCommand {
         this.context = context;
         Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> updateRecordMap = ImportConstants.getUpdateRecordMap(context);
         Map<Long, ImportRowContext> logIdVsRowContext = ImportConstants.getLogIdVsRowContextMap(context);
-        removeErrorRecordsFromRecordMap(updateRecordMap,logIdVsRowContext);
+
 
         SaveOptions defaultOptions = SaveOptions.of((FacilioContext) context);
         Set<String> extendedModules = Constants.getExtendedModules(context); //For adding extended module which has module entry only for base module. Like Assets
         if (CollectionUtils.isEmpty(extendedModules)) {
+            removeErrorRecordsFromUpdateRecordMap(updateRecordMap,logIdVsRowContext, module.getName());
             Map<Long, List<UpdateChangeSet>> changeSet = updateData(module.getName(), defaultOptions, null, updateRecordMap.get(module.getName()),logIdVsRowContext);
             CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
         }
         else {
             for (String extendedModule : extendedModules) {
+                removeErrorRecordsFromUpdateRecordMap(updateRecordMap,logIdVsRowContext,extendedModule);
                 SaveOptions saveOptions = Constants.getExtendedSaveOption(context, extendedModule);
                 Map<Long, List<UpdateChangeSet>> changeSet = updateData(extendedModule, defaultOptions, saveOptions, updateRecordMap.get(extendedModule),logIdVsRowContext);
                 CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, extendedModule); // For automation of this module
@@ -105,7 +107,7 @@ public class ImportUpdateCommand extends FacilioCommand {
             }catch (Exception e){
                 LOGGER.severe("Import update failed for logId:"+logId+"  Exception:"+e);
                 rowContext.setErrorOccurredRow(true);
-                ImportUpdateException exception = new ImportUpdateException((int)rowNumber,e);
+                ImportUpdateException exception = new ImportUpdateException(e);
                 rowContext.setErrorMessage(exception.getClientMessage());
             }
 
@@ -143,9 +145,17 @@ public class ImportUpdateCommand extends FacilioCommand {
             updateRecordBuilder.updateSupplements(supplementFields);
         }
     }
-    private void removeErrorRecordsFromRecordMap(Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> updateRecordMap, Map<Long, ImportRowContext> logIdVsRowContext){
-        List<Pair<Long,ModuleBaseWithCustomFields>> records = updateRecordMap.get(module.getName());
+    private void removeErrorRecordsFromUpdateRecordMap(Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> updateRecordMap, Map<Long, ImportRowContext> logIdVsRowContext,String moduleName){
+        List<Pair<Long,ModuleBaseWithCustomFields>> records = updateRecordMap.get(moduleName);
         List<ModuleBaseWithCustomFields> importUpdateRecords = new LinkedList<>();
+
+        Map<String,List<ModuleBaseWithCustomFields>> recordMap = (Map<String,List<ModuleBaseWithCustomFields>>)context.getOrDefault(Constants.RECORD_MAP,new HashMap<String,List<ModuleBaseWithCustomFields>>());
+
+        if (CollectionUtils.isEmpty(records)){
+            recordMap.put(moduleName,importUpdateRecords);
+            return;
+        }
+
         records.removeIf(pair -> {
             long logId = pair.getKey();
             if (logIdVsRowContext.get(logId).isErrorOccurredRow()){
@@ -154,8 +164,7 @@ public class ImportUpdateCommand extends FacilioCommand {
             importUpdateRecords.add(pair.getValue());
             return false;
         });
-        Map<String,List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-        recordMap.put(module.getName(), importUpdateRecords);
+        recordMap.put(moduleName, importUpdateRecords);
         Constants.setRecordMap(context,recordMap);
     }
 }

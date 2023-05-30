@@ -254,7 +254,6 @@ public class MultiImportChainUtil {
                     beanClass = CustomModuleDataV3.class;
                 }
             } else {
-                beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
                 if (beanClass == null) {
                     if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
                         beanClass = AttachmentV3Context.class;

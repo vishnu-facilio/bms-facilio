@@ -17,8 +17,10 @@ import com.facilio.multiImport.config.ImportConfig;
 import com.facilio.multiImport.constants.ImportConstants;
 import com.facilio.multiImport.context.*;
 import com.facilio.multiImport.enums.ImportDataStatus;
+import com.facilio.multiImport.job.DownloadMultiImportErrorRecordsJob;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.multiImport.util.MultiImportChainUtil;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -193,6 +195,9 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setImportEndTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
             LOGGER.info("MultiImport Completed  for multiImportId--- :" + importDataDetails.getId());
+            if(importDataDetails.isHasErrorRecords()){
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importId, DownloadMultiImportErrorRecordsJob.JOB_NAME, 10, "priority");
+            }
         }
     }
 

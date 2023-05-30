@@ -49,13 +49,15 @@ public class ImportRowContext implements Serializable {
     @JsonIgnore
     public Map<String, Object> getRawRecordMap() {
         if(MapUtils.isEmpty(rawRecordMap) && StringUtils.isNotEmpty(rowContent)){
-            rawRecordMap=new HashMap<>();
             JSONParser parser = new JSONParser();
             try{
                 rawRecordMap = (JSONObject) parser.parse(rowContent);
             }catch (Exception ex){
 
             }
+        }
+        if(rawRecordMap == null){
+            rawRecordMap = new HashMap<>();
         }
         return rawRecordMap;
     }

@@ -119,10 +119,14 @@ public class ImportSaveCommand extends FacilioCommand {
     }
     private Map<String,List<ModuleBaseWithCustomFields>> removeErrorRecordsFromInsertRecordMap(Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> insertRecordMap, Map<Long, ImportRowContext> logIdVsRowContext,String moduleName){
         List<Pair<Long,ModuleBaseWithCustomFields>> records = insertRecordMap.get(moduleName);
-        if (CollectionUtils.isEmpty(records)){
-            return Collections.EMPTY_MAP;
-        }
+        Map<String,List<ModuleBaseWithCustomFields>> recordMap = (Map<String,List<ModuleBaseWithCustomFields>>)context.getOrDefault(Constants.RECORD_MAP,new HashMap<String,List<ModuleBaseWithCustomFields>>());
         List<ModuleBaseWithCustomFields> importRecords = new LinkedList<>();
+
+        if (CollectionUtils.isEmpty(records)){
+            recordMap.put(moduleName,importRecords);
+            return recordMap;
+        }
+
         records.removeIf(pair -> {
             long logId = pair.getKey();
             ImportRowContext importRowContext = logIdVsRowContext.get(logId);
@@ -134,7 +138,6 @@ public class ImportSaveCommand extends FacilioCommand {
             return false;
         });
 
-        Map<String,List<ModuleBaseWithCustomFields>> recordMap = (Map<String,List<ModuleBaseWithCustomFields>>)context.getOrDefault(Constants.RECORD_MAP,new HashMap<String,List<ModuleBaseWithCustomFields>>());
         recordMap.put(moduleName, importRecords);
         Constants.setRecordMap(context,recordMap);
 

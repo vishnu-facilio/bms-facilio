@@ -145,13 +145,13 @@ public class ImportFileUploadCommand extends FacilioCommand {
         importFileSheetsContext.setColumnHeadingString(columnHeadingString);
 
         if (CollectionUtils.isNotEmpty(firstRowAndSecondString)) {
-            if (firstRowAndSecondString.size() >= 1) {
+            if (firstRowAndSecondString.size() >= 1 && firstRowAndSecondString.get(0)!=null) {
                 HashMap<String, Object> firstRow = firstRowAndSecondString.get(0);
                 JSONObject jsonObject = FieldUtil.getAsJSON(firstRow, false);
                 String firstRowString = jsonObject.toJSONString();
                 importFileSheetsContext.setFirstRowString(firstRowString);
             }
-            if (firstRowAndSecondString.size() == 2) {
+            if (firstRowAndSecondString.size() == 2 && firstRowAndSecondString.get(1)!=null) {
                 HashMap<String, Object> secondRow = firstRowAndSecondString.get(1);
                 JSONObject jsonObject = FieldUtil.getAsJSON(secondRow, false);
                 String secondRowString = jsonObject.toJSONString();

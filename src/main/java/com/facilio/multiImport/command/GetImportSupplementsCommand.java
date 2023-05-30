@@ -11,7 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
-public class GetImportListSupplementsCommand extends FacilioCommand {
+public class GetImportSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<ImportDataDetails> importList = (List<ImportDataDetails>) context.get(FacilioConstants.ContextNames.IMPORT_LIST);

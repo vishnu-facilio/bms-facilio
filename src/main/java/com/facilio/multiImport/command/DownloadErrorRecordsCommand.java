@@ -7,11 +7,9 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
 import com.facilio.multiImport.importFileWriter.AbstractFileWriter;
 import com.facilio.multiImport.importFileWriter.AbstractSheetWriter;
@@ -20,7 +18,6 @@ import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.json.simple.JSONObject;
@@ -56,7 +53,7 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
             Map<Integer, String> columnIndexVsDateFormat = getColumnIndexVsDateFormat(sheetContext);
             Map<Integer,Short> columnIndexVsColour = getColumnIndexVsColour(headerMap);
             AbstractSheetWriter sheetWriter = fileWriter.createSheet(sheetName)
-                    .setHeaderColurs(columnIndexVsColour)
+                    .setHeaderColors(columnIndexVsColour)
                     .createHeader(headerMap)
                     .setDateFormatColumnIndex(columnIndexVsDateFormat);
 
@@ -105,8 +102,6 @@ public class DownloadErrorRecordsCommand extends FacilioCommand {
             String columnName = headerMap.get(i);
             if(columnName.equals("ROW NUMBER") || columnName.equals("ERROR MESSAGE")){
                 columnIndexVsColour.put(i, IndexedColors.RED.getIndex());
-            }else{
-                columnIndexVsColour.put(i,IndexedColors.BLACK.getIndex());
             }
         }
         return columnIndexVsColour;

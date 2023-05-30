@@ -66,7 +66,7 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
             }
         }
         if (missingColumns.size() > 0) {
-           throw  new ImportMandatoryFieldsException(null, missingColumns, new Exception());
+           throw  new ImportMandatoryFieldsException(missingColumns, new Exception());
         }
 
     }

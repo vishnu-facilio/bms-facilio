@@ -81,7 +81,11 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
 
             importDataDetails.setStatus(ImportDataStatus.PARSING_COMPLETED);
 
-            MultiImportApi.updateImportStatus(importDataDetails);
+            if(processedRowCount!=0){
+                importDataDetails.setHasErrorRecords(true);
+            }
+
+            MultiImportApi.updateImportDataDetails(importDataDetails);
             LOGGER.info("Parsing completed for ImportId:" + importId);
 
             closeAllReadersStreams(importFileIdVsImportReaderMap);

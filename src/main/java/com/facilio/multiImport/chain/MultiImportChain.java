@@ -89,7 +89,7 @@ public class MultiImportChain {
         chain.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
         chain.addCommand(new MultiImportListFilterCommand());
         chain.addCommand(new ListMultiImportDataDetailsCommand());
-        chain.addCommand(new GetImportListSupplementsCommand());
+        chain.addCommand(new GetImportSupplementsCommand());
         return chain;
     }
 
@@ -132,6 +132,7 @@ public class MultiImportChain {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new MultiImportMetaValidationCommand());
         chain.addCommand(new MultiImportSummaryCommand());
+        chain.addCommand(new GetImportSupplementsCommand());
         return chain;
     }
 }

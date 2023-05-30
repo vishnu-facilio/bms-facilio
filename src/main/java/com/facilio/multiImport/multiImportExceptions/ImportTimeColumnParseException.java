@@ -5,18 +5,16 @@ import com.facilio.fw.FacilioException;
 public class ImportTimeColumnParseException extends FacilioException {
 	
 	private static final long serialVersionUID = 1L;
-	private int row_no;
 	private String columnName;
 	private Exception e;
-	public ImportTimeColumnParseException(int row_number, String columnName,Exception e){
+	public ImportTimeColumnParseException(String columnName,Exception e){
 		super(e);
 		this.e = e;
-		this.row_no = row_number;
 		this.columnName = columnName;
 	}
 	
 	public String getClientMessage() {
-		String exceptionMessage="Time column " + "(" + columnName + ")" + " date format mismatch at row: " + row_no;
+		String exceptionMessage="Date format mismatch under column "+columnName+". Please ensure the date value is in the correct format";
 		return exceptionMessage;
 	}
 }

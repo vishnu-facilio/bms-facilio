@@ -42,6 +42,7 @@ public class DefaultBulkInit extends FacilioCommand {
         if(CollectionUtils.isEmpty(insertRecords)){
             insertRecordMap.put(moduleName,insertRecordsPair);
             ImportConstants.setInsertRecordMap(context, insertRecordMap);
+            recordMap.put(moduleName,records);
             Constants.setRecordMap(context, recordMap);
             return false;
         }
