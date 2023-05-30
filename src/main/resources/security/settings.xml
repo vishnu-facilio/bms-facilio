@@ -2292,4 +2292,33 @@
             <property name="userIds" type="array"/>
         </requestbody>
     </request>
+    <request path="/api/v3/workOrderItem/getWorkorderItem">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="itemId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderItem/getWorkorderItemFromReservation">
+        <requestbody type="object">
+            <property name="reservationId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderItem/getWorkOrderItemFromIssuedItem">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="itemTransactionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderService/getWorkorderService">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="serviceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkorderTool">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="toolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
 </config>
