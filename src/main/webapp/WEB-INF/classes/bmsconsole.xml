@@ -3394,6 +3394,8 @@
 			</result>
 		</action>
 		<action name="addScreen" class="com.facilio.screen.action.ScreenAction" method="addScreen">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^screenContext.*</param>
@@ -3404,6 +3406,8 @@
 		</action>
 		
 		<action name="updateScreen" class="com.facilio.screen.action.ScreenAction" method="updateScreen">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^screenContext.*</param>
@@ -3414,6 +3418,8 @@
 		</action>
 		
 		<action name="deleteScreen" class="com.facilio.screen.action.ScreenAction" method="deleteScreen">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^screenContext.*</param>
