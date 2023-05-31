@@ -43,18 +43,22 @@ public  class PushNotificationHandler extends BaseHandler{
             {
                 for(long appId: userNotificationContextMap.keySet()) {
                     ApplicationContext applicationContext = ApplicationApi.getApplicationForId(appId);
-                    String appLinkName = applicationContext.getLinkName();
-                    List<Long> userIdList = new ArrayList<>();
-                    for (UserNotificationContext userNotificationContext : userNotificationContextMap.get(appId)) {
-                        long userId = userNotificationContext.getUser().getId();
-                        userIdList.add(userId);
+                    if(applicationContext!=null) {
+                        String appLinkName = applicationContext.getLinkName();
+                        List<Long> userIdList = new ArrayList<>();
+                        for (UserNotificationContext userNotificationContext : userNotificationContextMap.get(appId)) {
+                            long userId = userNotificationContext.getUser().getId();
+                            userIdList.add(userId);
+                        }
+                        List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(userIdList, appLinkName);
+                        if (mobileInstanceSettings != null) {
+                            Map<Long, List<UserMobileSetting>> userMobileSettingMap = new HashMap<>();
+                            userMobileSettingMap = mobileInstanceSettings.stream().collect(
+                                    Collectors.groupingBy(UserMobileSetting::getUserId, HashMap::new, Collectors.toCollection(
+                                            ArrayList::new)));
+                            sendNotification(userNotificationContextMap.get(appId), userMobileSettingMap, appLinkName, appId);
+                        }
                     }
-                    List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(userIdList, appLinkName);
-                    Map<Long,List<UserMobileSetting>> userMobileSettingMap = new HashMap<>();
-                    userMobileSettingMap = mobileInstanceSettings.stream().collect(
-                            Collectors.groupingBy(UserMobileSetting::getUserId,HashMap::new, Collectors.toCollection(
-                                    ArrayList::new)));
-                    sendNotification(userNotificationContextMap.get(appId),userMobileSettingMap,appLinkName,appId);
                 }
             }
         } catch (Exception e) {
@@ -72,7 +76,7 @@ public  class PushNotificationHandler extends BaseHandler{
                     }
                     long uid = userNotification.getUser().getId();
                     User user = AccountUtil.getUserBean().getUser(appId, uid);
-                    if (mobileInstanceSettings.containsKey(user.getUid())) {
+                    if (user !=null && mobileInstanceSettings.containsKey(user.getUid())) {
                         List<UserMobileSetting> mobileSettings = mobileInstanceSettings.get(user.getUid());
                         for (UserMobileSetting mobileSetting : mobileSettings) {
                             obj.put("to", mobileSetting.getMobileInstanceId());
