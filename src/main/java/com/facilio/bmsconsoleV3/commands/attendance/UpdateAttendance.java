@@ -38,11 +38,22 @@ public class UpdateAttendance extends FacilioCommand {
         Long date = AttendanceAPI.stripTime(transaction.getTransactionTime());
         Shift shift = ShiftAPI.getPeopleShiftForDay(peopleID, date);
 
+        AttendanceSettings settings = AttendanceAPI.getAttendanceSettings();
         Attendance existingAttendance = AttendanceAPI.getAttendanceForGivenDay(date, peopleID);
 
-        AttendanceSettings settings = AttendanceAPI.getAttendanceSettings();
-
         List<AttendanceTransaction> transactions = AttendanceAPI.getAttendanceTxnsForGivenDay(date, peopleID);
+        long previousDay = date - ShiftAPI.DAY_IN_MILLIS;
+        List<AttendanceTransaction> previousDayTransactions = AttendanceAPI.getAttendanceTxnsForGivenDay(previousDay, peopleID);
+
+        if (existingAttendance == null && isPersonSignedInSincePreviousDay(previousDayTransactions)){
+            List<AttendanceTransaction> cumulativeTransactions = new ArrayList<>();
+            cumulativeTransactions.addAll(previousDayTransactions);
+            cumulativeTransactions.addAll(transactions);
+            transactions = cumulativeTransactions;
+
+            existingAttendance = AttendanceAPI.getAttendanceForGivenDay(previousDay, peopleID);
+        }
+
         if (transactions.size() < 2){
             return false;
         }
@@ -58,6 +69,15 @@ public class UpdateAttendance extends FacilioCommand {
         updateAttendance(attendanceMod, existingAttendance, reducedAttendance);
         return false;
     }
+
+    private boolean isPersonSignedInSincePreviousDay(List<AttendanceTransaction> previousDayTransactions) {
+        AttendanceTransaction lastTransaction = previousDayTransactions.get(previousDayTransactions.size() - 1);
+        if (lastTransaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN)){
+            return true;
+        }
+        return false;
+    }
+
 
     private boolean isCreateTransaction(Context context) {
         return context.get("eventType").equals(EventType.CREATE);

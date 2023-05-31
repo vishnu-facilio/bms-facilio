@@ -31,9 +31,9 @@ public class AddPlaceholderAttendanceCommand extends FacilioCommand {
             return false;
         }
 
-        if (notFirstTransactionOfTheDay(tx)){
-            return false;
-        }
+//        if (notFirstTransactionOfTheDay(tx)){
+//            return false;
+//        }
 
         addPlaceholderAttendance(tx);
         return false;

@@ -138,8 +138,8 @@ public class AttendanceAPI {
             throw new Exception("insufficient attendance transactions to reduce");
         }
         Attendance attendance = new Attendance();
-        Pair<Long, Long> surplus = computeBreaksConsumed(attendance, txns);
-        computeWorkingHoursAndDay(attendance, txns, surplus);
+        computeBreaksConsumed(attendance, txns);
+        computeWorkingHoursAndDay(attendance, txns);
         computeAttendanceStatus(settings, attendance);
         return attendance;
     }
@@ -184,12 +184,9 @@ public class AttendanceAPI {
         return cal.getTimeInMillis();
     }
 
-    private static void computeWorkingHoursAndDay(Attendance attendance, List<AttendanceTransaction> txns, Pair<Long, Long> surplus) {
+    private static void computeWorkingHoursAndDay(Attendance attendance, List<AttendanceTransaction> txns) {
 
-        long paidSurplus = surplus.getLeft();
-        long unpaidSurplus = surplus.getRight();
-
-        AttendanceTransaction firstCheckInTransaction = txns.get(0);
+        AttendanceTransaction firstCheckInTransaction = getFirstCheckInTxn(txns);
         attendance.setDay(stripTime(firstCheckInTransaction.getTransactionTime()));
         attendance.setCheckInTime(firstCheckInTransaction.getTransactionTime());
 
@@ -198,9 +195,15 @@ public class AttendanceAPI {
 
         long clockedHours = 0L;
         long startTime = 0;
+        boolean checkedInForTheDay = false;
         for (AttendanceTransaction tx: txns) {
             if (checkInOrBreakTransaction(tx)){
                 startTime = tx.getTransactionTime();
+                checkedInForTheDay = true;
+                continue;
+            }
+
+            if (!checkedInForTheDay) {
                 continue;
             }
 
@@ -213,6 +216,16 @@ public class AttendanceAPI {
         attendance.setWorkingHours(clockedHours);
     }
 
+    private static AttendanceTransaction getFirstCheckInTxn(List<AttendanceTransaction> txns) {
+        for (int ix = 0; ix < txns.size(); ix++) {
+            AttendanceTransaction tx = txns.get(ix);
+            if (tx.getTransactionType() == AttendanceTransaction.Type.CHECK_IN) {
+                return tx;
+            }
+        }
+        return txns.get(0);
+    }
+
     private static boolean checkOutOrBreakTransaction(AttendanceTransaction tx) {
         return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT) ||
                 tx.getTransactionType().equals(AttendanceTransaction.Type.BREAK);
@@ -223,11 +236,9 @@ public class AttendanceAPI {
                 tx.getTransactionType().equals(AttendanceTransaction.Type.RESUME_WORK);
     }
 
-    private static Pair<Long, Long> computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
+    private static void computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
 
         Map<Long, Long> breakTimeCounter = new HashMap<>();
-        Long paidBreakSurplus = 0L;
-        Long unpaidBreakSurplus = 0L;
 
         for (int ix = 0; ix < txns.size(); ix++) {
             AttendanceTransaction txn = txns.get(ix);
@@ -250,9 +261,6 @@ public class AttendanceAPI {
 
                 if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
 
-                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
-                    paidBreakSurplus += extraBreakTimeConsumedInMillis;
-
                     breakTimeCounter.put(associatedBreak.getId(), 0L);
 
                     long allowedTime = associatedBreak.getBreakTime();
@@ -265,8 +273,6 @@ public class AttendanceAPI {
 
             } else {
                 if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
-                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
-                    unpaidBreakSurplus += extraBreakTimeConsumedInMillis;
 
                     breakTimeCounter.put(associatedBreak.getId(), 0L);
 
@@ -280,8 +286,6 @@ public class AttendanceAPI {
                 }
             }
         }
-
-        return Pair.of(paidBreakSurplus, unpaidBreakSurplus);
     }
 
 
