@@ -280,6 +280,22 @@
                 method="calendarList"/>
     </package>
 
+    <package name="calendarV3ApiV2" namespace="/api/v3/modules/calendarData" extends="v3Api">
+        <action name="*/view/*/get"
+                class="com.facilio.bmsconsoleV3.actions.CalendarViewActionV2"
+                method="calendarData">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+        </action>
+
+        <action name="*/view/*/list"
+                class="com.facilio.bmsconsoleV3.actions.CalendarViewActionV2"
+                method="calendarList">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+        </action>
+    </package>
+
     <package name="workorderV3Api" namespace="/api/v3/workorders" extends="v3Api">
         <action name="close"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
