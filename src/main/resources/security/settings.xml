@@ -2321,4 +2321,5 @@
             <property name="toolId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/setup/portalUsersList" method="GET" />
 </config>
