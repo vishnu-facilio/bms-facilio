@@ -1,5 +1,6 @@
 package com.facilio.mailtracking.commands;
 
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.bean.MailBean;
@@ -16,11 +17,20 @@ import java.util.Map;
 public class ParseMailResponseCommand {
 
     public static void executeCommand(AwsMailResponseContext awsMailResponse) throws Exception {
+        String mapperId = String.valueOf(awsMailResponse.getMapperId());
+        Map<String, Object> mapperRecord = OutgoingMailAPI.getMapperRecord(mapperId);
+        V3Util.throwRestException(mapperRecord.isEmpty(), ErrorCode.VALIDATION_ERROR,
+                "OG_MAIL_ERROR :: Given MAPPER_ID not found :: "+mapperId);
+        long orgId = FacilioUtil.parseLong(mapperRecord.get("orgId"));
+
+        NewTransactionService.newTransaction(() -> updateMailResponseStatus(orgId, awsMailResponse));
+    }
+
+    private static void updateMailResponseStatus(long orgId,AwsMailResponseContext awsMailResponse) throws Exception {
         JSONObject response = awsMailResponse.getResponse();
         String eventType = awsMailResponse.getEventType();
         String mapperId = String.valueOf(awsMailResponse.getMapperId());
-        MailBean mailBean = getMailBeanWithCurrentOrg(mapperId);
-
+        MailBean mailBean = MailConstants.getMailBean(orgId);
         switch(eventType) { // handled event types
             case "Delivery" :
                 mailBean.updateDeliveryStatus(mapperId, (Map<String, Object>) response.get("delivery"));
@@ -31,13 +41,6 @@ public class ParseMailResponseCommand {
             default:
                 LOGGER.info("OG_MAIL_NOTIFY :: Unhandled eventType detected :: "+eventType);
         }
-    }
-
-    private static MailBean getMailBeanWithCurrentOrg(String mapperId) throws Exception {
-        Map<String, Object> mapperRecord = OutgoingMailAPI.getMapperRecord(mapperId);
-        V3Util.throwRestException(mapperRecord.isEmpty(), ErrorCode.VALIDATION_ERROR, "Given MAPPER_ID not found :: "+mapperId);
-        long orgId = FacilioUtil.parseLong(mapperRecord.get("orgId"));
-        return MailConstants.getMailBean(orgId);
     }
 
 }
