@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -24,6 +26,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 
+@Log4j
 public class BulkResourceAllocationUtil {
 
 	
@@ -122,79 +125,80 @@ public class BulkResourceAllocationUtil {
 		return commonresourceIds;
  	}
 	
-	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID){
+	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID) throws Exception{
 		
 		return getMultipleResourceCriteriaFromConfig(pmAssignmentType, Collections.singletonList(siteId), Collections.singletonList(baseSpaceId), spaceCategoryID, assetCategoryID);
 	}
 	
-	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,List<Long> siteIds,List<Long> baseSpaceIds,Long spaceCategoryID,Long assetCategoryID){
-		
+	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,List<Long> siteIds,List<Long> baseSpaceIds,Long spaceCategoryID,Long assetCategoryID) throws Exception{
 		JSONObject returnObject = new JSONObject();
 		Criteria criteria = new Criteria();
-		switch(pmAssignmentType) {
+		switch (pmAssignmentType) {
 			case ALL_SITES:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SITE);
+				if (!CollectionUtils.isEmpty(siteIds)) {
+					criteria.addAndCondition(CriteriaAPI.getIdCondition(siteIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.SITE)));
+				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case ALL_BUILDINGS:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.BUILDING);
-				if(!CollectionUtils.isEmpty(siteIds)) {
+				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case ALL_FLOORS:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.FLOOR);
-				if(!CollectionUtils.isEmpty(siteIds)) {
+				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
-				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+				if (!CollectionUtils.isEmpty(baseSpaceIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", StringUtils.join(baseSpaceIds, ","), PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case ALL_SPACES:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SPACE);
-				if(!CollectionUtils.isEmpty(siteIds)) {
+				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
-				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+				if (!CollectionUtils.isEmpty(baseSpaceIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", StringUtils.join(baseSpaceIds, ","), PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case SPACE_CATEGORY:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SPACE);
-				if(!CollectionUtils.isEmpty(siteIds)) {
+				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
-				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+				if (!CollectionUtils.isEmpty(baseSpaceIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", StringUtils.join(baseSpaceIds, ","), PickListOperators.IS));
 				}
-				if(spaceCategoryID != null && spaceCategoryID > 0) {
-					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_CATEGORY_ID", "spaceCategory", spaceCategoryID+"", PickListOperators.IS));
+				if (spaceCategoryID != null && spaceCategoryID > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_CATEGORY_ID", "spaceCategory", spaceCategoryID + "", PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case ASSET_CATEGORY:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
-				if(!CollectionUtils.isEmpty(siteIds)) {
+				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
-				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+				if (!CollectionUtils.isEmpty(baseSpaceIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(baseSpaceIds, ","), BuildingOperator.BUILDING_IS));
 				}
-				if(assetCategoryID != null && assetCategoryID > 0) {
-					criteria.addAndCondition(CriteriaAPI.getCondition("CATEGORY", "category", assetCategoryID+"", PickListOperators.IS));
+				if (assetCategoryID != null && assetCategoryID > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("CATEGORY", "category", assetCategoryID + "", PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
 			case CURRENT_ASSET:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.BASE_SPACE);
-				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+				if (!CollectionUtils.isEmpty(baseSpaceIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(baseSpaceIds, ","), PickListOperators.IS));
-				}
-				else if(!CollectionUtils.isEmpty(siteIds)) {
+				} else if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
@@ -202,7 +206,6 @@ public class BulkResourceAllocationUtil {
 			default:
 				break;
 		}
-		
 		return returnObject;
 	}
 }

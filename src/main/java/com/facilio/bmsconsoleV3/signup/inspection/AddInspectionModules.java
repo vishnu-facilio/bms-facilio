@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -448,9 +449,12 @@ public class AddInspectionModules extends BaseModuleConfig {
 	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
 	      
 	      JSONObject json = new JSONObject();
+		  JSONArray values = new JSONArray();
+		  values.add(5);
+		  values.add(6);
 	      
 	      json.put("show", Boolean.FALSE);
-	      json.put("values", "[5,6,8]");
+	      json.put("values",values);
 	      
 	      actionField.setActionMeta(json.toJSONString());
 	      
