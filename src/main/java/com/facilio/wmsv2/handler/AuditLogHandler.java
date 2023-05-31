@@ -212,7 +212,7 @@ public class AuditLogHandler extends BaseHandler {
                 if (time == null) {
                     time = System.currentTimeMillis();
                 }
-                if (appId < 0 && AccountUtil.getCurrentAccount() != null) {
+                if (appId < 0 && AccountUtil.getCurrentApp() != null) {
                     appId = AccountUtil.getCurrentApp().getId();
                 }
                 try {
