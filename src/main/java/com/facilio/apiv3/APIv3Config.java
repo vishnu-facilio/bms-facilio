@@ -25,6 +25,7 @@ import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.ValidateAssetDepre
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
+import com.facilio.bmsconsoleV3.commands.ValidateDeleteChartOfAccountCommand;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
@@ -1484,6 +1485,8 @@ public class APIv3Config {
                 .beforeFetch(new LoadChartOfAccountLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadChartOfAccountLookupCommandV3())
+                .delete()
+                .beforeDelete(new ValidateDeleteChartOfAccountCommand())
                 .build();
     }
 
@@ -1510,6 +1513,7 @@ public class APIv3Config {
         return () -> new V3Config(V3TransactionContext.class, null)
                 .create().afterSave(new RollUpTransactionAmountCommand())
                 .update()
+                .beforeSave(new RemoveAmountFromPreviousMonthCommand())
                 .afterSave(new RollUpTransactionAmountCommand())
                 .list()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
@@ -1517,6 +1521,7 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
                 .delete()
+                .beforeDelete(new GetTransactionBeforeDeleteCommand())
                 .afterDelete(new RollUpTransactionAmountCommand())
                 .build();
     }
