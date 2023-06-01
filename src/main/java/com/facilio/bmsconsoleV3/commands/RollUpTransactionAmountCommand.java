@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.chain.FacilioContext;
@@ -60,7 +59,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         selectFields.add(FieldFactory.getField("debitAmount", "sum(case WHEN TRANSACTION_TYPE = 2 THEN TRANSACTION_AMOUNT END )",
                 FieldType.DECIMAL));
 
-        SelectRecordsBuilder<V3TransactionContext> selectbuilder = new SelectRecordsBuilder<V3TransactionContext>()
+        SelectRecordsBuilder<V3TransactionContext> builder = new SelectRecordsBuilder<V3TransactionContext>()
                 .module(module)
                 .beanClass(V3TransactionContext.class)
                 .select(selectFields)
@@ -79,36 +78,13 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
             criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), filteredResource_id, PickListOperators.IS));
         }
         if (!criteria.isEmpty()) {
-            selectbuilder.andCriteria(criteria);
+            builder.andCriteria(criteria);
         }
 
-        selectbuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
-        List<Map<String, Object>> mapList = selectbuilder.getAsProps();
+        builder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
+        List<Map<String, Object>> mapList = builder.getAsProps();
 
-        LOGGER.info("RollUpTransactionAmountCommand selectBuilder -- "+selectbuilder);
-
-        EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-        if( activityType != EventType.CREATE) {
-
-            Long desiredTransactionDate = (Long) context.get("previoustransaction");
-            boolean transactionDateExists = false;
-            Long desiredmonthStartDate = DateTimeUtil.getMonthStartTimeOf(desiredTransactionDate, false);
-
-
-            for (Map<String, Object> map : mapList) {
-                Long transactionDate = (Long) map.get("transactionDate");
-                Long transactionMonthStartDate = DateTimeUtil.getMonthStartTimeOf(transactionDate, false);
-
-                if (desiredmonthStartDate.equals(transactionMonthStartDate)) {
-                    transactionDateExists = true;
-                    break;
-                }
-            }
-            if (!transactionDateExists) {
-                mapList.add((Map<String, Object>) context.get("transaction"));
-            }
-        }
-
+        LOGGER.info("RollUpTransactionAmountCommand selectBuilder -- "+builder);
 
         Set<Long> availableResourceIds = new HashSet<>();
         if(CollectionUtils.isNotEmpty(mapList)) {
@@ -203,7 +179,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
 
-        SelectRecordsBuilder<V3Context> selectRecordbuilder = new SelectRecordsBuilder<V3Context>()
+        SelectRecordsBuilder<V3Context> builder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .beanClass(V3Context.class)
                 .select(modBean.getAllFields(module.getName()))
@@ -211,12 +187,12 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("startDate"), String.valueOf(startDate), DateOperators.IS));
 
         if (MapUtils.isNotEmpty(resourceMap) && resourceMap.containsKey("id")) {
-            selectRecordbuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS));
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS));
         } else {
-            selectRecordbuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), "1", CommonOperators.IS_EMPTY));
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), "1", CommonOperators.IS_EMPTY));
         }
 
-        List<Map<String, Object>> mapList = selectRecordbuilder.getAsProps();
+        List<Map<String, Object>> mapList = builder.getAsProps();
 
         List<Long> ids = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(mapList)) {

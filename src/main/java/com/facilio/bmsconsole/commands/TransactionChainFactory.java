@@ -793,12 +793,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static FacilioChain ValidateAndaddWorkflowRuleChain(){
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ValidateTransactionRuleCommand());
-			c.addCommand(addWorkflowRuleChain());
-			return c;
-		}
 	public static FacilioChain getDelWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetWorkflowRuleCommand());
@@ -856,13 +850,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
-
-	public static FacilioChain ValidateAndupdateWorkflowRuleChain(){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ValidateTransactionRuleCommand());
-		c.addCommand(updateWorkflowRuleChain());
-		return c;
-	}
 
 		public static FacilioChain addAlarmRuleChain() {
 			FacilioChain c = getDefaultChain();

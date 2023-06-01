@@ -241,7 +241,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		 transactionRule.configToProp();
 		if(transactionRule.isValidated()) {
 			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
-			FacilioChain addRule = TransactionChainFactory.ValidateAndaddWorkflowRuleChain();
+			FacilioChain addRule = TransactionChainFactory.addWorkflowRuleChain();
 			addRule.execute(facilioContext);
 			setResult("rule", transactionRule);
 			return SUCCESS;
@@ -255,7 +255,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		transactionRule.configToProp();
 		if(transactionRule.isValidated()) {
 			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
-			FacilioChain addRule = TransactionChainFactory.ValidateAndupdateWorkflowRuleChain();
+			FacilioChain addRule = TransactionChainFactory.updateWorkflowRuleChain();
 			addRule.execute(facilioContext);
 			setResult("rule", transactionRule);
 			return SUCCESS;
