@@ -108,7 +108,11 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
                     .replace("${variable}", aliases.get(alias));
             scriptString.add(expressionString);
         }
-        scriptString.add(varExpressionTemplate.replace("${expression}", expression));
+        if(expression.contains("result")){
+            scriptString.add(expression);
+        }else {
+            scriptString.add(varExpressionTemplate.replace("${expression}", expression));
+        }
         scriptString.add("put = new NameSpace(\"map\").put(value, key, result);");
         scriptString.add("}");
         scriptString.add("}");
