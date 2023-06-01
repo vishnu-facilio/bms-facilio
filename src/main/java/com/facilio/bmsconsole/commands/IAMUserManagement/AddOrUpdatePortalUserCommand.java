@@ -30,7 +30,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
         if(user!=null) {
             PeopleContext existingPeople = PeopleAPI.getPeopleForId(user.getPeopleId());
             //check if null condition needed
-            if(StringUtils.isNotEmpty(existingPeople.getEmail())){
+            if(StringUtils.isEmpty(existingPeople.getEmail())){
                 throw new IllegalArgumentException("EmailId cannot be null");
             }
 
@@ -53,7 +53,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
                 newUser.setMobile(existingPeople.getMobile());
                 newUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(newUser);
-                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(), user.getApplicationId(), user, sendInvitation, null);
+                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(), user.getApplicationId(),true, user, sendInvitation, null);
             } else {
                 existingUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(existingUser);

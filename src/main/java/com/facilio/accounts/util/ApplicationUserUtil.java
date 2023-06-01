@@ -23,7 +23,7 @@ import java.util.*;
 
 public class ApplicationUserUtil {
 
-    public static void  addAppUser(long orgId, long appId, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
+    public static void  addAppUser(long orgId, long appId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
        User iamUser;
 
         if(sendInvitation)
@@ -36,7 +36,7 @@ public class ApplicationUserUtil {
         peopleUser.setIamOrgUserId(iamUser.getOuid());
         peopleUser.setUid(iamUser.getUid());
         //will remove this once ORG_User deprecated
-        addOrgUser(peopleUser);
+        addOrgUser(peopleUser,isPortal);
         addOrgUserApps(peopleUser);
     }
 
@@ -60,9 +60,13 @@ public class ApplicationUserUtil {
     }
 
     @Deprecated
-    private static void addOrgUser(PeopleUserContext user) throws Exception {
+    private static void addOrgUser(PeopleUserContext user,boolean isPortal) throws Exception {
         long orgUserId = checkIfExistsInOrgUsers(user.getUid(), user.getUser().getOrgId());
         if (orgUserId <0) {
+            int userType=1;
+            if(isPortal){
+                userType = 2;
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
@@ -83,6 +87,8 @@ public class ApplicationUserUtil {
             Map<String, Object> props = FieldUtil.getAsProperties(user);
             props.put("orgId", user.getUser().getOrgId());
             props.put("ouid", id);
+            props.put("inviteAcceptStatus",true);
+            props.put("userType",userType);
             insertBuilder.addRecord(props);
             insertBuilder.save();
             user.setOrgUserId(id);
