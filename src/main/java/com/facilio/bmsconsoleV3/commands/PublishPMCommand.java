@@ -33,6 +33,7 @@ public class PublishPMCommand extends FacilioCommand {
 
         for (Long plannerId : plannerIds) {
             PlannedMaintenanceAPI.schedulePlanner(plannerId);
+            LOGGER.info("Wo got created from Planner "+plannerId);
         }
 
         return false;

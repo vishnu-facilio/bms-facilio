@@ -333,6 +333,9 @@ public class ImportProcessContext implements Serializable,Cloneable
 				if (moduleName != FacilioConstants.ContextNames.TENANT_UNIT_SPACE) {
 					fieldsList.addAll(FieldFactory.getImportFieldMappingDisplayFields(getModule()));
 				}
+				if(moduleName.equals(FacilioConstants.PM_V2.PM_V2_PLANNER)){
+					fieldsList.addAll(ImportFieldFactory.getPmPlannerImportField());
+				}
 				for(FacilioField field : fieldsList)
 				{
 					if(!removeFields.contains(field.getName()))

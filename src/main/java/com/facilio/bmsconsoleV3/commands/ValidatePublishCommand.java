@@ -65,11 +65,11 @@ public class ValidatePublishCommand extends FacilioCommand {
 
         for (PMPlanner pmPlanner: pmPlanners) {
             if (pmPlanner.getTrigger() == null || pmPlanner.getTrigger().getId() <= 0) {
-                throw new IllegalArgumentException("Trigger is missing for " + pmPlanner.getName());
+                throw new IllegalArgumentException("Trigger is missing for " + pmPlanner.getName()+" pm - #"+pmPlanner.getPmId());
             }
 
             if (pmPlanner.getResourceCount() == null || pmPlanner.getResourceCount() <= 0) {
-                throw new IllegalArgumentException("Asset/Space is missing in the planner " + pmPlanner.getName());
+                throw new IllegalArgumentException("Asset/Space is missing in the planner " + pmPlanner.getName()+" pm - #"+pmPlanner.getPmId());
             }
         }
     }

@@ -3115,7 +3115,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain PMPlannerAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTimelineViewCalenderTypeCommand());
-        c.addCommand(new DeletePMPlannerPreOpenWorkOrders());
+        c.addCommand(new FetchPPMDetailsFromPlannerCommand());
+        c.addCommand(new DeletePPMPreOpenWorkorders());
         c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }
@@ -3321,6 +3322,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getPmV2ResourcePlannerAfterCreateChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPMDetailsFromPmResourcePlanner());
+        c.addCommand(new DeletePPMPreOpenWorkorders());
         c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }
@@ -3328,6 +3330,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTimelineViewForPMPlannerCommand());
         c.addCommand(new FetchPPMDetailsFromPlannerCommand());
+        c.addCommand(new DeletePPMPreOpenWorkorders());
         c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }

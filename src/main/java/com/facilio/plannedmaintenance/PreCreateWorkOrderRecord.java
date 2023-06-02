@@ -36,7 +36,7 @@ public class PreCreateWorkOrderRecord extends FacilioCommand {
             Map<String, Object> objectMap = FieldUtil.getAsProperties(object);
             V3Util.preCreateRecord(workOrderModule.getName(), Collections.singletonList(objectMap), null, null);
         }
-        updateLastGeneratedTimeInPlanner(plannerId, (long) context.getOrDefault(FacilioConstants.ContextNames.LAST_EXECUTION_TIME, -1));
+        updateLastGeneratedTimeInPlanner(plannerId, (Long) context.getOrDefault(FacilioConstants.ContextNames.LAST_EXECUTION_TIME, -1));
         return false;
     }
 

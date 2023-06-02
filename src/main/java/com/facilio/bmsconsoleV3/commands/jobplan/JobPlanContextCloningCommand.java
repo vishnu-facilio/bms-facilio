@@ -43,12 +43,12 @@ public class JobPlanContextCloningCommand extends FacilioCommand {
                 Long groupId = jobPlanContext.getGroup().getId();
                 List<JobPlanContext> jobPlanList = JobPlanAPI.getJobPlanFromGroupId(groupId);
                 if(jobPlanList == null || jobPlanList.isEmpty()){
-                    throw new IllegalArgumentException("This Group has No Job Plans");
+                    throw new IllegalArgumentException("This Group has No Job Plans (Group Id - #"+groupId);
                 }
                 Double version = getJobPlanVersionNumber(jobPlanList);
                 jobPlanContext.setJobPlanVersion(version);
                 if(jobPlanContext.getJobplansection() == null || jobPlanContext.getJobplansection().isEmpty()){
-                    throw new IllegalArgumentException("No Job plan Task Section Available");
+                    throw new IllegalArgumentException("No Job plan Task Section Available (JobPlan Id - #"+jobPlanContext.getId());
                 }
                 List<Map<String,Object>> jobPlanSectionContextMapList = new ArrayList<>();
                 List<JobPlanTaskSectionContext> jobPlanTaskSectionContextList = jobPlanContext.getJobplansection();

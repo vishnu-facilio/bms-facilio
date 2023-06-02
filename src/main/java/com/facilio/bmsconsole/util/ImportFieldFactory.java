@@ -236,7 +236,23 @@ public class ImportFieldFactory {
 		fields.add(FieldFactory.getField("falseVal","False Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		return fields;
 	}
-	
+
+	public static List<FacilioField> getPmPlannerImportField() throws Exception{
+		List<FacilioField> fields = new ArrayList<>();
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pmPlannerModule = bean.getModule(FacilioConstants.PM_V2.PM_V2_PLANNER);
+		fields.add(FieldFactory.getField("Times","Times",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Runs Every","Runs Every",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Skip Every","Skip Every",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Execution days/dates/months","Execution days/dates/months",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Week Frequency","Week Frequency",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Yearly Day Value","Yearly Day Value",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Month Value","Month Value",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Yearly Day of the Week Value","Yearly Day of the Week Value",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("End Date","End Date",null,pmPlannerModule,FieldType.STRING));
+		fields.add(FieldFactory.getField("Start Date","Start Date",null,pmPlannerModule,FieldType.STRING));
+		return fields;
+	}
 	private static List<FacilioField> getPMTriggerExtraFields() {
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
