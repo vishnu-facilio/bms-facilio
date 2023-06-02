@@ -25,6 +25,7 @@ import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.ValidateAssetDepre
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
+import com.facilio.bmsconsoleV3.commands.ValidateDeleteChartOfAccountCommand;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
@@ -1484,6 +1485,8 @@ public class APIv3Config {
                 .beforeFetch(new LoadChartOfAccountLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadChartOfAccountLookupCommandV3())
+                .delete()
+                .beforeDelete(new ValidateDeleteChartOfAccountCommand())
                 .build();
     }
 
@@ -1508,16 +1511,19 @@ public class APIv3Config {
     @Module("transaction")
     public static Supplier<V3Config> getTransaction() {
         return () -> new V3Config(V3TransactionContext.class, null)
-                .create().afterSave(new RollUpTransactionAmountCommand())
+                // new GetLogsForTransactionCommandV3() will be removed once all transactions are works fine
+                .create().afterSave(new GetLogsForTransactionCommandV3(),new RollUpTransactionAmountCommand())
                 .update()
-                .afterSave(new RollUpTransactionAmountCommand())
+                .beforeSave(new RemoveAmountFromPreviousMonthCommand())
+                .afterSave(new GetLogsForTransactionCommandV3(),new RollUpTransactionAmountCommand())
                 .list()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
                 .afterFetch(new SetDislayNameForTransactionSourceModuleName())
                 .summary()
                 .beforeFetch(new LoadTransactionsLookupCommandV3())
                 .delete()
-                .afterDelete(new RollUpTransactionAmountCommand())
+                .beforeDelete(new GetTransactionBeforeDeleteCommand())
+                .afterDelete(new GetLogsForTransactionCommandV3(),new RollUpTransactionAmountCommand())
                 .build();
     }
 
