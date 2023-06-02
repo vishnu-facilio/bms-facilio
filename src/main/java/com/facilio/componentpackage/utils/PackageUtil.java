@@ -64,7 +64,7 @@ public class PackageUtil {
         packageContext.setSysModifiedTime(packageContext.getSysCreatedTime());
         packageContext.setSysCreatedBy(createdUserId);
 
-        return null;
+        return packageContext;
     }
     public static PackageContext createPackage(String packageName, String packageDisplayName, PackageContext.PackageType packageType, double version, long createdUser) throws Exception{
         PackageContext packageContext = constructPackageContext(packageName, packageDisplayName, packageType, version, createdUser);

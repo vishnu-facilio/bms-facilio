@@ -11146,7 +11146,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("uniqueName", "UNIQUE_NAME", module, FieldType.STRING));
         fields.add(getField("version", "VERSION", module, FieldType.DECIMAL));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
-        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
@@ -11165,7 +11164,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
         fields.add(getField("createdVersion", "CREATED_VERSION", module, FieldType.DECIMAL));
         fields.add(getField("modifiedVersion", "MODIFIED_VERSION", module, FieldType.DECIMAL));
-        fields.add(getField("componentStatus", "COMPONENT_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("status", "COMPONENT_STATUS", module, FieldType.NUMBER));
         fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
         fields.add(getField("uniqueIdentifier", "UNIQUE_IDENTIFIER", module, FieldType.STRING));

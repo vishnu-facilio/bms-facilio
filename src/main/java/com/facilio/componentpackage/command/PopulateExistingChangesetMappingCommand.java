@@ -21,6 +21,9 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 
 		PackageContext packageContext = (PackageContext) context.get(PackageConstants.PACKAGE_CONTEXT);
 		for(ComponentType componentType : ComponentType.ORDERED_COMPONENT_TYPE_LIST) {
+			if(componentType.getComponentClass() == null) {
+				continue;
+			}
 			PackageBean implClass = componentType.getPackageComponentClassInstance();
 
 			List<Long> systemComponentIds = implClass.fetchSystemComponentIdsToPackage();

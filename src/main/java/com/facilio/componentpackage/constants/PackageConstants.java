@@ -56,6 +56,9 @@ public class PackageConstants {
         public static final String MAIN_FIELD = "Main_Field";
         public static final String FIELDS_LIST = "Fields_List";
         public static final String DISPLAY_TYPE = "Display_Type";
+        public static final String ENUM_FIELD_VALUE = "EnumField_Value";
+        public static final String ENUM_FIELD_VALUES = "EnumField_Values";
+        public static final String DUPLICATE_FIELD_ERROR = "FIELD with name already present";
 
     }
 }

@@ -19,7 +19,7 @@ public interface PackageBean<T> {
 
     public Map<String, Long> createComponentFromXML(List<XMLBuilder> components) throws Exception;
 
-    public Map<String, Long> updateComponentFromXML(Map<Long, XMLBuilder> idVscomponents) throws Exception;
+    public void updateComponentFromXML(Map<Long, XMLBuilder> uniqueIdentifierVsComponents) throws Exception;
 
     public void deleteComponentFromXML(List<Long> ids) throws Exception;
 

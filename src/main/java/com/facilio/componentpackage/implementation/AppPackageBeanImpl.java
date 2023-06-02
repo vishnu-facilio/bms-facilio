@@ -40,8 +40,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     @Override
-    public Map<String, Long> updateComponentFromXML(Map<Long, XMLBuilder> idVscomponents) throws Exception {
-        return null;
+    public void updateComponentFromXML(Map<Long, XMLBuilder> uniqueIdentifierVsComponents) throws Exception {
     }
 
     @Override
