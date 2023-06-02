@@ -18,6 +18,16 @@ public class PackageChainFactory {
         return c;
     }
 
+    public static FacilioChain getDeployPackageChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new UnzipPackageFileCommand());
+        c.addCommand(new DeployPackageCommand());
+        c.addCommand(new DeployPackageComponentCommand());
+
+        return c;
+    }
+
     public static FacilioChain getCreatePackageForSandboxChain() {
         FacilioChain c = getDefaultChain();
 
@@ -25,6 +35,8 @@ public class PackageChainFactory {
         c.addCommand(new ValidateAndCreatePackageCommand());
         c.addCommand(new PopulateExistingChangesetMappingCommand());
         c.addCommand(new CreateXMLPackageCommand());
+        c.addCommand(new DeployPackageCommand());
+        c.addCommand(new DeployPackageComponentCommand());
 
         return c;
     }

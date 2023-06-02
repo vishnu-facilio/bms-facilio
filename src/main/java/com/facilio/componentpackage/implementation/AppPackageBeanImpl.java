@@ -35,7 +35,12 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     @Override
-    public Map<String, Long> createComponentFromXML(List<XMLBuilder> components) throws Exception {
+    public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> components) throws Exception {
         return null;
     }
 

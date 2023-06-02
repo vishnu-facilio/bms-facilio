@@ -22,13 +22,24 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class PackageUtil {
+
+    private static ThreadLocal<Boolean> isInstallThread = new ThreadLocal<>();
+
+    public static void setInstallThread() throws Exception {
+        isInstallThread.set(true);
+    }
+
+    public static Boolean isInstallThread() throws Exception {
+        return isInstallThread.get();
+    }
+
+    public static void clearInstallThread() throws Exception {
+        isInstallThread.remove();
+    }
 
     public static PackageContext getPackage(Organization organization) throws Exception {
         PackageContext packageContext = null;
@@ -80,6 +91,19 @@ public class PackageUtil {
         insertRecordBuilder.save();
 
         return FieldUtil.getAsBeanFromMap(packageProps, PackageContext.class);
+    }
+
+    public static void updatePackageContext(PackageContext packageContext) throws Exception{
+        List<FacilioField> fields = FieldFactory.getPackageFields();
+        FacilioModule packageModule = ModuleFactory.getPackageModule();
+        Map<String, Object> packageProps = FieldUtil.getAsProperties(packageContext);
+
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(packageModule.getTableName())
+                .fields(fields)
+                .andCondition(CriteriaAPI.getIdCondition(packageContext.getId(), packageModule));
+
+        updateRecordBuilder.update(packageProps);
     }
 
     public static Map<ComponentType, List<PackageChangeSetMappingContext>> getAllPackageChangsets(long packageId) throws Exception {
@@ -211,37 +235,64 @@ public class PackageUtil {
     }
 
     public static void addPackageMappingChangeSet(PackageChangeSetMappingContext changeSetContext) throws Exception {
+        addPackageMappingChangesets(Collections.singletonList(changeSetContext));
+    }
+
+    public static void addPackageMappingChangesets(List<PackageChangeSetMappingContext> changeSetContexts) throws Exception {
         List<FacilioField> fields = FieldFactory.getPackageChangesetsFields();
         FacilioModule changeSetModule = ModuleFactory.getPackageChangesetsModule();
-        Map<String, Object> changeSetProps = FieldUtil.getAsProperties(changeSetContext);
+        List<Map<String, Object>> changeSetProps = FieldUtil.getAsMapList(changeSetContexts, PackageChangeSetMappingContext.class);
 
         GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                                                    .fields(fields)
-                                                    .addRecord(changeSetProps)
-                                                    .table(changeSetModule.getTableName());
+                .fields(fields)
+                .addRecords(changeSetProps)
+                .table(changeSetModule.getTableName());
 
         insertRecordBuilder.save();
     }
 
+    public static int updatePackageMappingChangesets(List<PackageChangeSetMappingContext> changeSetContexts) throws Exception {
+        FacilioModule changeSetModule = ModuleFactory.getPackageChangesetsModule();
+        List<FacilioField> updatableFields = FieldFactory.getPackageChangesetsUpdatableFields();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPackageChangesetsFields());
+        List<FacilioField> whereFields = new ArrayList<>();
+        whereFields.add(fieldsMap.get("packageId"));
+        whereFields.add(fieldsMap.get("componentType"));
+        whereFields.add(fieldsMap.get("uniqueIdentifier"));
+
+        List<Map<String, Object>> props = FieldUtil.getAsMapList(changeSetContexts, PackageChangeSetMappingContext.class);
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+        for (Map<String, Object> prop: props) {
+            GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateVal.addWhereValue("packageId",prop.get("packageId"));
+            updateVal.addWhereValue("componentType", prop.get("componentType"));
+            updateVal.addWhereValue("uniqueIdentifier", prop.get("uniqueIdentifier"));
+            updateVal.setUpdateValue(prop);
+            batchUpdateList.add(updateVal);
+        }
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(changeSetModule.getTableName())
+                .fields(updatableFields)
+                ;
+
+        return updateBuilder.batchUpdate(whereFields, batchUpdateList);
+    }
+
     public static int updatePackageMappingChangeSet(PackageChangeSetMappingContext changeSetContext) throws Exception {
         FacilioModule changeSetModule = ModuleFactory.getPackageChangesetsModule();
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPackageChangesetsFields());
-
-        List<FacilioField> updatableFields = new ArrayList<>();
-        updatableFields.add(fieldsMap.get("id"));
-        updatableFields.add(fieldsMap.get("status"));
-        updatableFields.add(fieldsMap.get("modifiedVersion"));
-        updatableFields.add(fieldsMap.get("componentDisplayName"));
-        updatableFields.add(fieldsMap.get("componentLastEditedTime"));
-
         Map<String, Object> changeSetProps = FieldUtil.getAsProperties(changeSetContext);
 
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-                .fields(updatableFields)
+                .fields(FieldFactory.getPackageChangesetsUpdatableFields())
                 .table(changeSetModule.getTableName())
                 .andCondition(CriteriaAPI.getIdCondition(changeSetContext.getId(), changeSetModule));
 
         return updateRecordBuilder.update(changeSetProps);
+    }
+
+    public static void deletePackageMappingChangeSet() throws Exception {
+
     }
 
     public static Double getPackageChangeSetVersion(PackageChangeSetMappingContext.ComponentStatus status, PackageContext packageContext, PackageChangeSetMappingContext changeSetContext) {
@@ -293,7 +344,7 @@ public class PackageUtil {
         }
         PackageChangeSetMappingContext.ComponentStatus status;
         double modifiedVersion = 0.0;
-        if(isSystemComponent) {
+        if(!isSystemComponent) {
             status = PackageChangeSetMappingContext.ComponentStatus.ADDED;
         } else {
             status = PackageChangeSetMappingContext.ComponentStatus.UPDATED;

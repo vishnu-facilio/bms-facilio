@@ -125,18 +125,23 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     }
 
     @Override
-    public Map<String, Long> createComponentFromXML(List<XMLBuilder> components) throws Exception {
+    public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         Map<String, List<FacilioField>> moduleNameVsFields = new HashMap<>();
         Map<String, Map<String, String>> moduleNameVsFieldNameVsUniqueIdentifier = new HashMap<>();
 
-        for (XMLBuilder xmlBuilder : components) {
+        for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            XMLBuilder xmlBuilder = idVsData.getValue();
             XMLBuilder fieldElement = xmlBuilder.getElement(ComponentType.FIELD.getValue());
             if (fieldElement != null) {
                 FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
                 String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
-                String uniqueIdentifier = fieldElement.getElement(PackageConstants.UNIQUE_IDENTIFIER).getText();
 
                 if (StringUtils.isNotEmpty(moduleName) && !moduleNameVsFields.containsKey(moduleName)) {
                     moduleNameVsFields.put(moduleName, new ArrayList<>());
@@ -146,7 +151,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 if(!moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleName)) {
                     moduleNameVsFieldNameVsUniqueIdentifier.put(moduleName, new HashMap<>());
                 }
-                moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName).put(facilioField.getName(), uniqueIdentifier);
+                moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName).put(facilioField.getName(), idVsData.getKey());
             }
         }
 

@@ -11162,12 +11162,28 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("packageId", "PACKAGE_ID", module, FieldType.NUMBER));
         fields.add(getField("componentType", "COMPONENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("parentComponentId", "PARENT_ID", module, FieldType.NUMBER));
         fields.add(getField("createdVersion", "CREATED_VERSION", module, FieldType.DECIMAL));
         fields.add(getField("modifiedVersion", "MODIFIED_VERSION", module, FieldType.DECIMAL));
         fields.add(getField("status", "COMPONENT_STATUS", module, FieldType.NUMBER));
         fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
         fields.add(getField("uniqueIdentifier", "UNIQUE_IDENTIFIER", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getPackageChangesetsUpdatableFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getPackageChangesetsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("parentComponentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("modifiedVersion", "MODIFIED_VERSION", module, FieldType.DECIMAL));
+        fields.add(getField("status", "COMPONENT_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
 
         return fields;
     }

@@ -14,6 +14,7 @@ public class PackageChangeSetMappingContext {
     private long packageId;
     private ComponentType componentType;
     private long componentId;
+    private long parentComponentId;
     private Double createdVersion;
     private Double modifiedVersion;
     private ComponentStatus status;

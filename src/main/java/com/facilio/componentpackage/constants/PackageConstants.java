@@ -17,11 +17,16 @@ public class PackageConstants {
     public static final String MODULENAME = "moduleName";
     public static final String UNIQUE_IDENTIFIER = "uniqueIdentifier";
     public static final String FILE_PATH_SEPARATOR = "/";
-    public static final String FILE_EXTENSION_SEPARATOR = "/";
+    public static final String FILE_EXTENSION_SEPARATOR = ".";
     public static final String PACKAGE_CONF_FILE_NAME = "PackageConf";
     public static final String FILE = "file";
     public static final String FILE_ID = "fileId";
+    public static final String SOURCE_ORG_ID = "sourceOrgId";
     public static final String PACKAGE_ROOT_FOLDER = "Package_root_folder";
+    public static final String PREVIOUS_VERSION = "previousVersion";
+    public static final String PACKAGE_CONFIG_XML = "packageConfigXML";
+
+
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();
 
     static {
@@ -36,6 +41,7 @@ public class PackageConstants {
         public static final String COMPONENT_STATUS = "Status";
         public static final String CREATED_VERSION = "Created_Version";
         public static final String MODIFIED_VERSION = "Modified_Version";
+        public static final String PARENT_COMPONENT_ID = "Parent_Id";
         public static final String COMPONENTS = "Components";
         public static final String COMPONENT = "Component";
         public static final String PACKAGE = "Package";

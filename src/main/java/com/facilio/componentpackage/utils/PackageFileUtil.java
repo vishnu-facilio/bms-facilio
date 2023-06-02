@@ -2,6 +2,7 @@ package com.facilio.componentpackage.utils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.componentpackage.command.CreateXMLPackageCommand;
+import com.facilio.componentpackage.command.UnzipPackageFileCommand;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.services.factory.FacilioFactory;
@@ -78,12 +79,12 @@ public class PackageFileUtil {
         return fileId;
     }
 
-    public static File getPackageZipFile(Long fileId) throws Exception {
+    public static File getPackageZipFile(Long fileId, Long orgId) throws Exception {
 
-        try (InputStream inputStream = FacilioFactory.getFileStore().readFile(fileId)) {
+        try (InputStream inputStream = FacilioFactory.getFileStoreFromOrg(orgId).readFile(fileId)) {
 
-            String tempFilePath = CreateXMLPackageCommand.class.getClassLoader().getResource("").getFile()
-                    + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId()
+            String tempFilePath = UnzipPackageFileCommand.class.getClassLoader().getResource("").getFile()
+                    + File.separator + "facilio-temp-files" + File.separator + orgId
                     + File.separator + "packages"+File.separator+ fileId+".zip";
             File file = new File(tempFilePath);
             try (FileOutputStream outputStream = new FileOutputStream(file, false)) {

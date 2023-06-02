@@ -25,13 +25,14 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		PackageContext packageContext = (PackageContext) context.get(PackageConstants.PACKAGE_CONTEXT);
 		Long fileId = (Long) context.get(PackageConstants.FILE_ID);
+		Long sourceOrgId = (Long) context.get(PackageConstants.SOURCE_ORG_ID);
 
-		File packageZipFile = PackageFileUtil.getPackageZipFile(fileId);
+		File packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId);
 		context.put(PackageConstants.FILE, packageZipFile);
 
 		File outputDirectory = new File(UnzipPackageFileCommand.class.getClassLoader().getResource("").getFile()
 				+ File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId()
-				+ File.separator + "bundles" +File.separator + "Org_Package_" + packageContext.getUniqueName() + "_" + DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
+				+ File.separator + "packages" +File.separator + "Org_Package_" + "_" + DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
 		ZipUtil.unpack(packageZipFile, outputDirectory);
 		PackageFolderContext rootFolder = convertUnzippedFileToPackageFolder(outputDirectory.getAbsolutePath());
 		FileUtils.deleteDirectory(outputDirectory);
