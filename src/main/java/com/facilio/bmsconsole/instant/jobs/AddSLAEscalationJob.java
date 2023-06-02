@@ -43,7 +43,7 @@ public class AddSLAEscalationJob extends InstantJob {
                                             FacilioModule module, FacilioField dueField, Criteria criteria,
                                             ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
-            AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
+            AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "SLAEntity_" + slaEntity.getId() + "_Escalation_", StringOperators.STARTS_WITH, module);
             if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
                 try {
                     LOGGER.info("SLA Escalation Job Entry - " + "\n SLA Entity - " + slaEntity.getName() + "\n Record Id - " + moduleRecord.getId() + "\n Module Name - " + module.getName());
@@ -81,7 +81,7 @@ public class AddSLAEscalationJob extends InstantJob {
                 }
 
                 WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-                workflowRuleContext.setName(slaEntity.getName() + "_Escalation_" + count);
+                workflowRuleContext.setName("SLAEntity_" + slaEntity.getId() + "_Escalation_" + count);
                 workflowRuleContext.setRuleType(WorkflowRuleContext.RuleType.RECORD_SPECIFIC_RULE);
                 workflowRuleContext.setActivityType(EventType.SCHEDULED);
                 workflowRuleContext.setModule(module);

@@ -710,8 +710,8 @@ public class ChainUtil {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
-        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
+        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 
