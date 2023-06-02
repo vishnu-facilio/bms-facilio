@@ -438,7 +438,7 @@ public class TriggerUtil {
 			return;
 		}
 
-		if (triggers != null && triggers.isEmpty()) {
+		if (CollectionUtils.isEmpty(triggers)) {
 			return;
 		}
 
@@ -447,10 +447,8 @@ public class TriggerUtil {
 				.andCondition(CriteriaAPI.getCondition("TYPE", "actionType", String.valueOf(TriggerActionType.RULE_EXECUTION.getVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("TYPE_PRIMARY_ID", "typeRefPrimaryId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
 
-		if (CollectionUtils.isNotEmpty(triggers)) {
 			List<Long> triggerIds = triggers.stream().map(BaseTriggerContext::getId).collect(Collectors.toList());
 			builder.andCondition(CriteriaAPI.getCondition("TRIGGER_ID", "triggerId", StringUtils.join(triggerIds, ","), NumberOperators.EQUALS));
-		}
 
 		builder.delete();
 	}
