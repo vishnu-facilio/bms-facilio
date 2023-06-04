@@ -43,4 +43,6 @@ public interface WebTabBean {
 
     public void deleteTabForGroupCommand(long groupId) throws Exception;
 
+    public void deleteWebTabWebGroupForTabId(long webTabId) throws Exception;
+
 }

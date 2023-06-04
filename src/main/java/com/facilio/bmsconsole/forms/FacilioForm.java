@@ -43,6 +43,23 @@ public class FacilioForm implements Serializable {
 		this.ignoreCustomFields = form.ignoreCustomFields;
 	}
 
+	public FacilioForm(String name, String displayName, String description, long moduleId, FacilioModule module, boolean showInWeb, boolean showInMobile, boolean hideInList, boolean isSystemForm, boolean primaryForm, LabelPosition labelPosition, FacilioForm.Type type, long appId, String appLinkName) {
+		this.name = name;
+		this.type = type;
+		this.appId = appId;
+		this.module = module;
+		this.moduleId = moduleId;
+		this.showInWeb = showInWeb;
+		this.hideInList = hideInList;
+		this.primaryForm = primaryForm;
+		this.displayName = displayName;
+		this.appLinkName = appLinkName;
+		this.description = description;
+		this.showInMobile = showInMobile;
+		this.isSystemForm = isSystemForm;
+		this.labelPosition = labelPosition;
+	}
+
 	private static final long serialVersionUID = 1L;
 	
 	private long id = -1;

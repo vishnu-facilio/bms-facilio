@@ -219,6 +219,15 @@ public class WebTabBeanImpl implements WebTabBean{
     }
 
     @Override
+    public void deleteWebTabWebGroupForTabId(long webTabId) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("WEBTAB_ID", "webTabId", String.valueOf(webTabId), NumberOperators.EQUALS));
+
+        builder.delete();
+    }
+
+    @Override
     public long addWebTabGroup(WebTabGroupContext tabGroup) throws Exception{
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getWebTabGroupModule().getTableName())

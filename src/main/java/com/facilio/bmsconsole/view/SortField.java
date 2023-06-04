@@ -53,6 +53,12 @@ public class SortField {
 		this.setIsAscending(isAscending);
 	}
 
+	public SortField(String fieldName, long fieldId, boolean isAscending) {
+		this.isAscending = isAscending;
+		this.fieldName = fieldName;
+		this.fieldId = fieldId;
+	}
+
 	public FacilioField getSortField() {
 		return sortField;
 	}

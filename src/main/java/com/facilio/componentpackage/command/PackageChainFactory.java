@@ -11,6 +11,7 @@ public class PackageChainFactory {
     public static FacilioChain getCreatePackageChain() {
         FacilioChain c = getDefaultChain();
 
+        c.addCommand(new ValidatePackageCreationPermission());
         c.addCommand(new ValidateAndCreatePackageCommand());
         c.addCommand(new PopulateExistingChangesetMappingCommand());
         c.addCommand(new CreateXMLPackageCommand());

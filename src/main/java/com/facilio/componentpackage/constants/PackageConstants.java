@@ -7,9 +7,15 @@ public class PackageConstants {
     public static final String NAME = "name";
     public static final String UNIQUE_NAME = "uniqueName";
     public static final String DISPLAY_NAME = "displayName";
+    public static final String DESCRIPTION = "Description";
+    public static final String IS_CUSTOM = "IsCustom";
+    public static final String IS_DEFAULT = "isDefault";
     public static final String VERSION = "version";
     public static final String TYPE = "type";
+    public static final String SEQUENCE_NUMBER = "Sequence_Number";
+    public static final String VALUE_ELEMENT = "Value_Element";
     public static final String PACKAGE_TYPE = "packageType";
+    public static final String FROM_ADMIN_TOOL = "fromAdminTool";
     public static final String COMPONENTS_FOLDER_NAME = "components";
     public static final String XML_FILE_EXTN = "xml";
     public static final String PACKAGE_CONTEXT = "packageContext";
@@ -22,10 +28,11 @@ public class PackageConstants {
     public static final String FILE = "file";
     public static final String FILE_ID = "fileId";
     public static final String SOURCE_ORG_ID = "sourceOrgId";
+    public static final String TARGET_ORG_ID = "targetOrgId";
     public static final String PACKAGE_ROOT_FOLDER = "Package_root_folder";
     public static final String PREVIOUS_VERSION = "previousVersion";
     public static final String PACKAGE_CONFIG_XML = "packageConfigXML";
-
+    public static final String USE_LINKNAME_FROM_CONTEXT = "useLinkNameFromContext";
 
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();
 
@@ -50,7 +57,6 @@ public class PackageConstants {
     public static class ModuleXMLConstants {
         public static final String MODULE_TYPE = "Module_Type";
         public static final String DESCRIPTION = "Description";
-        public static final String MODULE_LIST = "Modules_List";
         public static final String STATEFLOW_ENABLED = "Is_StateFlow_Enabled";
         public static final String DUPLICATE_MODULE_ERROR = "Module with name already present";
     }
@@ -66,5 +72,151 @@ public class PackageConstants {
         public static final String ENUM_FIELD_VALUES = "EnumField_Values";
         public static final String DUPLICATE_FIELD_ERROR = "FIELD with name already present";
 
+    }
+
+    public static class AppXMLConstants {
+        public static final String DUPLICATE_APPLICATION_ERROR = "Application with name already present";
+        public static final String APPLICATION_NAME = "ApplicationName";
+        public static final String APPLICATION_ID = "ApplicationId";
+        public static final String APP_CATEGORY = "AppCategory";
+        public static final String DESCRIPTION = "Description";
+        public static final String DOMAIN_TYPE = "DomainType";
+        public static final String IS_DEFAULT = "IsDefault";
+        public static final String SCOPING_ID = "ScopingId";
+        public static final String APP_LINK_NAME = "AppLinkName";
+        public static final String CONFIG = "Config";
+        public static final String LAYOUT = "Layout";
+        public static final String APP_TYPE = "AppType";
+        public static final String LAYOUT_TYPE = "AppLayoutType";
+        public static final String DEVICE_TYPE = "LayoutDeviceType";
+        public static final String VERSION_NUMBER = "VersionNumber";
+        public static final String WEBTAB_GROUP = "WebTabGroup";
+        public static final String WEBTAB_GROUPS_LIST = "WebTabGroupsList";
+        public static final String ROUTE = "Route";
+        public static final String TAB_TYPE = "TabType";
+        public static final String LAYOUT_ID = "LayoutId";
+        public static final String ICON_TYPE = "IconType";
+        public static final String ICON_TYPE_ENUM = "IconTypeEnum";
+        public static final String TAB_ORDER = "TabOrder";
+        public static final String TABGROUP_ORDER = "TabGroupOrder";
+        public static final String MODULE_LIST = "Modules_List";
+        public static final String SPEICAL_MODULES = "Special_Modules";
+        public static final String FEATURE_LICENSE = "FeatureLicense";
+    }
+
+    public static class FormXMLComponents {
+        public static final String SUB_FORM = "Sub_Form";
+
+        public static final String FORM_NAME = "Form_Name";
+        public static final String FACILIO_FIELD_NAME = "Facilio_Field_Name";
+        public static final String SECTION_NAME = "Section_Name";
+        public static final String SUB_FORM_NAME = "Sub_Form_Name";
+        public static final String LOOKUP_MODULE_NAME = "Lookup_Module_Name";
+        public static final String FORM_FIELD_NAME = "Form_Field_Name";
+        public static final String FORM_TYPE = "FormType";
+        public static final String LABEL_POSITION = "LabelPosition";
+        public static final String SHOW_IN_MOBILE = "ShowInMobile";
+        public static final String DISPLAY_TYPE = "Display_Type";
+        public static final String REQUIRED = "Required";
+        public static final String SHOW_IN_WEB = "ShowInWeb";
+        public static final String HIDE_IN_LIST = "HideInList";
+        public static final String STATE_FLOW_ID = "StateFlowId";
+        public static final String PRIMARY_FORM = "PrimaryForm";
+        public static final String IS_SYSTEM_FORM = "SsSystemForm";
+        public static final String TYPE = "Type";
+        public static final String SPAN = "Span";
+        public static final String HIDE_FIELD = "Hide_Field";
+        public static final String IS_DISABLED = "isDisabled";
+        public static final String DEFAULT_VALUE = "Default_Value";
+        public static final String CONFIG = "Config";
+        public static final String ALLOW_CREATE_OPTIONS = "Allow_Create";
+        public static final String IS_LOCKED = "Locked";
+        public static final String SHOW_LABEL = "Show_Label";
+        public static final String SECTION_TYPE = "Section_Type";
+        public static final String FORM_SHARING = "Form_Sharing";
+        public static final String LOOKUP_FIELD_NAME = "Lookup_Field_Name";
+        public static final String SUB_FORM_DEFAULT_VALUE = "Sub_Form_Default_Value";
+        public static final String NUMBER_OF_SUB_FORM_RECORDS = "Number_Of_Sub_Form_Records";
+    }
+
+    public static class ViewConstants {
+        public static final String VIEW = "View";
+        public static final String VIEW_GROUP = "View_Group";
+        public static final String VIEW_GROUPS_LIST = "View_Groups_List";
+        public static final String VIEW_FIELD = "View_Field";
+        public static final String VIEW_FIELDS_LIST = "View_Fields_List";
+        public static final String SORT_FIELDS_LIST = "View_Sort_Fields_List";
+        public static final String SORT_FIELD = "View_Sort_Field";
+        public static final String VIEW_TYPE = "View_Type";
+        public static final String VIEW_GROUP_TYPE = "View_Group_Type";
+        public static final String IS_HIDDEN = "Is_Hidden";
+        public static final String IS_PRIMARY = "Is_Primary";
+        public static final String IS_LOCKED = "Is_Locked";
+        public static final String IS_LIST_VIEW = "Is_List_View";
+        public static final String IS_CALENDAR_VIEW = "Is_Calendar_View";
+        public static final String CALENDAR_VIEW_CONTEXT = "Calendar_View_Context";
+        public static final String START_DATE_FIELD_NAME = "Start_Date_Field_Name";
+        public static final String END_DATE_FIELD_NAME = "End_Date_Field_Name";
+        public static final String DEFAULT_CALENDAR_VIEW = "Default_Calendar_View";
+
+        public static final String PARENT_FIELD_NAME = "Parent_Field_Name";
+        public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
+        public static final String CUSTOMIZATION = "Customization";
+        public static final String IS_ASCENDING = "Is_Ascending";
+        public static final String EXCLUDE_MODULE_CRITERIA = "Exclude_Module_Criteria";
+        public static final String VIEW_FIELD_NAME = "View_Field_Name";
+        public static final String SORT_FIELD_NAME = "Sort_Field_Name";
+        public static final String VIEW_SHARING = "View_Sharing";
+    }
+
+    public static class CriteriaConstants {
+        public static final String CRITERIA = "Criteria";
+        public static final String CONDITION = "Condition";
+        public static final String PATTERN = "Pattern";
+        public static final String SEQUENCE = "Sequence";
+        public static final String FIELD_NAME = "FieldName";
+        public static final String COLUMN_NAME = "Column_Name";
+        public static final String OPERATOR = "Operator";
+        public static final String VALUE = "Value";
+        public static final String JSON_VALUE = "Json_Value";
+        public static final String CRITERIA_VALUE = "Criteria_Value";
+        public static final String PARENT_CRITERIA = "Parent_Criteria";
+        public static final String CONDITIONS_LIST = "Conditions_List";
+        public static final String IS_EXPRESSION_VALUE = "Is_Expression_Value";
+    }
+
+    public static class RoleConstants {
+        public static final String IS_SUPER_ADMIN = "Is_Super_Admin";
+        public static final String IS_PRIVILEGED_ROLE = "Is_Privileged_Role";
+        public static final String ROLE_APP_MAPPING = "Role_App_Mapping";
+    }
+
+    public static class SharingContextConstants {
+        public static final String SINGLE_SHARING_CONTEXT = "Single_haring_Context";
+        public static final String SHARING_CONTEXT = "Sharing_Context";
+        public static final String SHARING_TYPE = "Sharing_Type";
+        public static final String ROLE_NAME = "Role_Name";
+    }
+
+    public static class OrgConstants {
+        public static final String ORGNAME = "OrgName";
+        public static final String PHONE = "Phone";
+        public static final String MOBILE = "Mobile";
+        public static final String FAX = "Fax";
+        public static final String STREET = "Street";
+        public static final String CITY = "City";
+        public static final String STATE = "State";
+        public static final String ZIP = "Zip";
+        public static final String COUNTRY = "Country";
+        public static final String CURRENCY = "Currency";
+        public static final String TIMEZONE = "Timezone";
+        public static final String LOGGER_LEVEL = "Logger_Level";
+        public static final String DATE_FORMAT = "Date_Format";
+        public static final String TIME_FORMAT = "Time_Format";
+        public static final String BUSINESS_HOUR = "Business_Hour";
+        public static final String LANGUAGE = "Language";
+        public static final String GROUP_NAME = "Group_Name";
+        public static final String FACILIODOMAINNAME = "Facilio_Domain_Name";
+        public static final String ALLOW_USER_TIMEZONE = "Allow_User_Timezone";
     }
 }

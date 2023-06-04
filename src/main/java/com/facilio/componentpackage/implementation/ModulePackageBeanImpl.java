@@ -25,13 +25,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.beans.ModuleBean;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>(){{
         add(FacilioModule.ModuleType.NOTES.getValue());
         add(FacilioModule.ModuleType.PHOTOS.getValue());
         add(FacilioModule.ModuleType.ACTIVITY.getValue());
+        add(FacilioModule.ModuleType.TIME_LOG.getValue());
         add(FacilioModule.ModuleType.ATTACHMENTS.getValue());
         add(FacilioModule.ModuleType.LIVE_FORMULA.getValue());
         add(FacilioModule.ModuleType.RELATION_DATA.getValue());
@@ -87,6 +87,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         moduleElement.element(ModuleXMLConstants.DESCRIPTION).text(component.getDescription());
         moduleElement.element(PackageConstants.DISPLAY_NAME).text(component.getDisplayName());
         moduleElement.element(ModuleXMLConstants.MODULE_TYPE).text(String.valueOf(component.getType()));
+        moduleElement.element(PackageConstants.IS_CUSTOM).text(String.valueOf(component.isCustom()));
         moduleElement.element(ModuleXMLConstants.STATEFLOW_ENABLED).text(String.valueOf(component.isStateFlowEnabled()));
     }
 
@@ -95,8 +96,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         Map<String, String> moduleNameVsErrorMessage = new HashMap<>();
         List<String> moduleNamesList = new ArrayList<>();
 
-        for (XMLBuilder xmlBuilder : components) {
-            XMLBuilder moduleElement = xmlBuilder.getElement(ComponentType.MODULE.getValue());
+        for (XMLBuilder moduleElement : components) {
             String moduleName = moduleElement.getElement(PackageConstants.NAME).getText();
             moduleNamesList.add(moduleName);
         }
@@ -156,9 +156,13 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
             String uniqueIdentifier = idVsData.getKey();
             XMLBuilder moduleElement = idVsData.getValue();
             String moduleName = moduleElement.getElement(PackageConstants.NAME).getText();
-            FacilioModule module = moduleBean.getModule(moduleName);
+            boolean isCustom = Boolean.parseBoolean(moduleElement.getElement(PackageConstants.IS_CUSTOM).getText());
 
-            uniqueIdentifierVsModuleId.put(uniqueIdentifier, module.getModuleId());
+            if (!isCustom) {
+                FacilioModule module = moduleBean.getModule(moduleName);
+
+                uniqueIdentifierVsModuleId.put(uniqueIdentifier, module.getModuleId());
+            }
         }
         return uniqueIdentifierVsModuleId;
     }
@@ -166,7 +170,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
-        String name, displayName, description, uniqueIdentifier;
+        String name, displayName, description;
         boolean stateFlowEnabled;
         int moduleType;
 
@@ -181,7 +185,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
                 displayName = moduleElement.getElement(PackageConstants.DISPLAY_NAME).getText();
                 stateFlowEnabled = Boolean.parseBoolean(moduleElement.getElement(ModuleXMLConstants.STATEFLOW_ENABLED).getText());
 
-                long newModuleId = addModule(displayName, description, moduleType, stateFlowEnabled);
+                long newModuleId = addModule(name, displayName, description, moduleType, stateFlowEnabled);
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), newModuleId);
             }
         }
@@ -191,19 +195,20 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         String name, displayName, description;
-        boolean stateFlowEnabled;
-        long moduleId;
+        boolean stateFlowEnabled, isCustom;
 
         for (Map.Entry<Long, XMLBuilder> idVsComponent : idVsXMLComponents.entrySet()) {
-            moduleId = idVsComponent.getKey();
             XMLBuilder moduleElement = idVsComponent.getValue();
 
             name = moduleElement.getElement(PackageConstants.NAME).getText();
             description = moduleElement.getElement(ModuleXMLConstants.DESCRIPTION).getText();
             displayName = moduleElement.getElement(PackageConstants.DISPLAY_NAME).getText();
             stateFlowEnabled = Boolean.parseBoolean(moduleElement.getElement(ModuleXMLConstants.STATEFLOW_ENABLED).getText());
+            isCustom = Boolean.parseBoolean(moduleElement.getElement(PackageConstants.IS_CUSTOM).getText());
 
-            updateModule(name, displayName, description, stateFlowEnabled);
+            if (isCustom) {
+                updateModule(name, displayName, description, stateFlowEnabled);
+            }
         }
     }
 
@@ -229,24 +234,25 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> prop : props) {
-                moduleIdVsParentIds.put((Long) prop.get("moduleId"), null);
+                moduleIdVsParentIds.put((Long) prop.get("moduleId"), -1L);
             }
         }
 
         return moduleIdVsParentIds;
     }
 
-    private long addModule(String displayName, String description, Integer moduleType, boolean stateFlowEnabled) throws Exception {
+    private long addModule(String name, String displayName, String description, Integer moduleType, boolean stateFlowEnabled) throws Exception {
         FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 
         FacilioContext context = addModulesChain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, name);
         context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
         context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
         context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
         context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, null);
         context.put(FacilioConstants.ContextNames.FAILURE_REPORTING_ENABLED, false);
-
+        context.put(PackageConstants.USE_LINKNAME_FROM_CONTEXT, true);
         addModulesChain.execute();
 
         FacilioModule newModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);

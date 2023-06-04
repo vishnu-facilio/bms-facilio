@@ -6,6 +6,14 @@ import com.facilio.modules.fields.FacilioField;
 import java.io.Serializable;
 
 public class CalendarViewContext implements Serializable {
+
+    public CalendarViewContext() {}
+
+    public CalendarViewContext(long startDateFieldId, long endDateFieldId, int defaultCalendarView) {
+        this.startDateFieldId = startDateFieldId;
+        this.endDateFieldId = endDateFieldId;
+        setDefaultCalendarView(defaultCalendarView);
+    }
     private long id;
     public long getId() {
         return id;

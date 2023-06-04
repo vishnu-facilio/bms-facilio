@@ -96,8 +96,18 @@ public class ViewAPI {
 		return (long) prop.get("id");
 		
 	}
+
+	public static void updateViewGroup(ViewGroups viewGroup) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getViewGroupsModule().getTableName())
+				.fields(FieldFactory.getViewGroupFields())
+				.andCondition(CriteriaAPI.getIdCondition(viewGroup.getId(), ModuleFactory.getViewGroupsModule()));
+
+		Map<String, Object> props = FieldUtil.getAsProperties(viewGroup);
+		updateBuilder.update(props);
+	}
 	
-public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Exception {
+	public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Exception {
 		
 		for(ViewGroups viewGroup: viewGroups)
 		{
@@ -898,6 +908,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		addViewGroupSharing(viewDetail.getGroupId());
 		return count;
 	}
+
+	public static void deleteFacilioViews(Collection<Long> viewIds) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getViewsModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(viewIds, ModuleFactory.getViewsModule()));
+		builder.delete();
+	}
+
 	public static int deleteViewSortColumns(long viewId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewSortColumnsModule().getTableName())
@@ -1362,7 +1380,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return viewGroup;
 	}
 
-	public static ViewGroups getViewGroup(String name, long moduleId, long appId) throws Exception{
+	public static ViewGroups getViewGroup(String name, String moduleName, long moduleId, long appId) throws Exception{
 		ViewGroups viewGroup = null;
 		List<FacilioField> allFields = FieldFactory.getViewGroupFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
@@ -1378,6 +1396,10 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 
 		if (moduleId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+		}
+
+		if (StringUtils.isNotEmpty(moduleName)) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleName"), moduleName, StringOperators.IS));
 		}
 
 		List<Map<String, Object>> groupRecord = builder.get();

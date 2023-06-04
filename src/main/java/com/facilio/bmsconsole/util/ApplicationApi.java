@@ -280,6 +280,11 @@ public class ApplicationApi {
         return grps;
     }
 
+    public static ApplicationLayoutContext getLayoutForAppTypeDeviceType(long appId, String appType, int deviceType) throws Exception {
+        List<ApplicationLayoutContext> layouts = getLayoutsForAppLayoutType(appId, appType, deviceType);
+        return CollectionUtils.isNotEmpty(layouts) ? layouts.get(0) : null;
+    }
+
     public static List<ApplicationLayoutContext> getLayoutsForAppLayoutType(long appId, String appType, int deviceType)
             throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -405,6 +410,23 @@ public class ApplicationApi {
             return permission.getPermission();
         }
         return -1;
+    }
+
+    public static List<Long> getAllApplicationIds(boolean fetchSystem) throws Exception {
+        List<Long> appIds = null;
+        FacilioModule applicationModule = ModuleFactory.getApplicationModule();
+        FacilioField appIdField = FieldFactory.getIdField(applicationModule);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(applicationModule.getTableName())
+                .select(Collections.singletonList(appIdField))
+                .andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
+
+        List<Map<String, Object>> props = builder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            appIds = props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList());
+        }
+        return appIds;
     }
 
     public static NewPermission getRolesPermissionForTab(long tabId, long roleId) throws Exception {

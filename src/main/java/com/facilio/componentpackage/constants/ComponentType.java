@@ -1,8 +1,6 @@
 package com.facilio.componentpackage.constants;
 
-import com.facilio.componentpackage.implementation.AppPackageBeanImpl;
-import com.facilio.componentpackage.implementation.FieldPackageBeanImpl;
-import com.facilio.componentpackage.implementation.ModulePackageBeanImpl;
+import com.facilio.componentpackage.implementation.*;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.AllArgsConstructor;
@@ -22,8 +20,8 @@ public enum ComponentType implements FacilioIntEnum {
     APP(AppPackageBeanImpl.class, null, false),
 
 
-    ORG_INFO(null, null, false),
-    ROLE(null, null, false),
+    ORG_INFO(OrgInfoPackageBeanImpl.class, null, false),
+    ROLE(RolePackageBeanImpl.class, null, false),
     SITE(null, null, false),
     USER(null, APP, false),
     LICENSE(null, null, false),
@@ -38,16 +36,19 @@ public enum ComponentType implements FacilioIntEnum {
     CONNECTED_APP_WIDGETS(null, CONNECTED_APP, false),
     CONNECTED_APP_VARIABLES(null, CONNECTED_APP, false),
     CONNECTED_APP_CONNECTORS(null, CONNECTED_APP, false),
-    WEBTAB_GROUP(null, APP, false),
-    WEBTAB(null, APP, false),
-    APP_LAYOUT(null, APP, false),
-    FORM(null, MODULE, false),
-    VIEW(null, MODULE, false),
+    APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, false),
+    WEBTAB_GROUP(WebTabGroupPackageBeanImpl.class, APP_LAYOUT, false),
+    WEBTAB(WebTabPackageBeanImpl.class, APP, false),
+    FORM(FormPackageBeanImpl.class, MODULE, false),
+    FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
+    FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
+    VIEW(ViewPackageBeanImpl.class, MODULE, false),
     FORM_RULE(null, FORM, false),
     VALIDATION_RULE(null, MODULE, false),
     NAMED_CRITERIA(null, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),
-    RELATIONSHIP(null, MODULE, false)
+    RELATIONSHIP(null, MODULE, false),
+    PERMISSION(null, null, false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -55,11 +56,11 @@ public enum ComponentType implements FacilioIntEnum {
         List<ComponentType> componentOrder = new ArrayList<ComponentType>(){{
             add(ORG_INFO);
             add(LICENSE);
+            add(APP);
             add(ROLE);
             add(USER);
             add(MODULE);
             add(FIELD);
-            add(APP);
             add(SITE);
             add(TEAM);
             add(DEFAULT_PICKLISTS);
@@ -68,6 +69,8 @@ public enum ComponentType implements FacilioIntEnum {
             add(FUNCTION);
             add(CONNECTED_APP);
             add(FORM);
+            add(FORM_SECTION);
+            add(FORM_FIELDS);
             add(VIEW);
             add(RELATIONSHIP);
             add(CONNECTED_APP_WIDGETS);
@@ -79,9 +82,10 @@ public enum ComponentType implements FacilioIntEnum {
             add(VALIDATION_RULE);
             add(CUSTOM_BUTTON);
             add(WORKFLOW_RULE);
+            add(APP_LAYOUT);
             add(WEBTAB_GROUP);
             add(WEBTAB);
-            add(APP_LAYOUT);
+            add(PERMISSION);
         }};
         return componentOrder;
     }

@@ -93,14 +93,6 @@ public class SingleSharingContext implements Serializable {
 		this.groupId = groupId;
 	}
 
-	private long sharedBy = -1;
-	public long getSharedBy() {
-		return sharedBy;
-	}
-	public void setSharedBy(long sharedBy) {
-		this.sharedBy = sharedBy;
-	}
-
 	private List<GroupMember> groupMembers;
 	public List<GroupMember> getGroupMembers() {
 		return groupMembers;

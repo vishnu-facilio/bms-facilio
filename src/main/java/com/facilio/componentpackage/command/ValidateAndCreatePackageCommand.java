@@ -13,10 +13,10 @@ public class ValidateAndCreatePackageCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
-		String packageName = (String) context.get(PackageConstants.UNIQUE_NAME);
 		String packageDisplayName = (String) context.get(PackageConstants.DISPLAY_NAME);
 		PackageContext.PackageType packageType = (PackageContext.PackageType) context.get(PackageConstants.PACKAGE_TYPE);
+
+		String packageName = packageDisplayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
 
 		PackageContext packageContext = PackageUtil.getPackageByName(packageName, packageType);
 		if(packageContext != null) {

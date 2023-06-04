@@ -19,11 +19,15 @@
     <tr>
         <td class="table-head"><h4>Components</h4></td>
         <td>
-            <div id="feature">
-                <label class="components-list"><input type="checkbox" name="feature[]" value="1"> Modules & Fields</label><br>
-                <label class="components-list"><input type="checkbox" name="feature[]" value="2"> Tabs & Layouts</label><br>
-                <label class="components-list"><input type="checkbox" name="feature[]" value="3"> Forms</label><br>
-            </div>
+            <ul class="components-list">
+                <li>OrgInfo</li>
+                <li>Applications</li>
+                <li>Roles</li>
+                <li>Modules & Fields</li>
+                <li>Tabs & Layouts</li>
+                <li>Views</li>
+                <li>Forms</li>
+            </ul>
         </td>
     </tr>
 </table>
@@ -38,11 +42,10 @@
         const dataObject = {};
         dataObject.sourceOrgId = $('#sourceOrgId').val();
         dataObject.targetOrgId = $('#targetOrgId').val();
-        dataObject.components = $('#feature input:checked').map(function() { return $(this).val();}).get().toString();
-        console.log(dataObject.components);
+        dataObject.fromAdminTool = true;
 
         $.ajax({
-            url: "/admin/runMetaMigration",
+            url: "/api/v3/sandbox/package/create",
             type: "POST",
             dataType: "application",
             data: dataObject,
@@ -76,12 +79,14 @@
         width : 200px;
     }
 
-    .components-list {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 14px;
+    ul.components-list {
+        flex-direction: column;
+        list-style-type: disc;
+        padding-left: 15px;
         font-weight: bold;
+        font-size: 14px;
+        display: flex;
+        gap: 12px;
     }
 
     .input-field {

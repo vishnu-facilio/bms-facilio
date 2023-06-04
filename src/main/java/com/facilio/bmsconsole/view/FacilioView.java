@@ -76,6 +76,25 @@ public class FacilioView {
 		this.status = view.getStatus();
 	}
 
+	public FacilioView(String name, String displayName, ViewType type, String moduleName, long moduleId, long appId, boolean isDefault, boolean isHidden, long ownerId, int sequenceNumber,
+					   boolean isLocked, boolean isListView, boolean isCalendarView, boolean excludeModuleCriteria) {
+		this.name = name;
+		this.type = type;
+		this.appId = appId;
+		this.ownerId = ownerId;
+		this.moduleId = moduleId;
+		this.isHidden = isHidden;
+		this.isLocked = isLocked;
+		this.isDefault = isDefault;
+		this.moduleName = moduleName;
+		this.isListView = isListView;
+		this.displayName = displayName;
+		this.sequenceNumber = sequenceNumber;
+		this.isCalendarView = isCalendarView;
+		this.excludeModuleCriteria=excludeModuleCriteria;
+
+	}
+
 	private Boolean isListView;
 	public void setIsListView(Boolean listView) {
 		this.isListView = listView;

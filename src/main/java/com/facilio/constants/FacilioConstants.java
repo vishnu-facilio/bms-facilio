@@ -371,6 +371,7 @@ public class FacilioConstants {
 		public static final String CRITERIA = "criteria";
 		public static final String CLIENT_FILTER_CRITERIA = "clientFilterCriteria";
 		public static final String WEB_TAB_GROUP = "webTabGroup";
+		public static final String USE_ORDER_FROM_CONTEXT = "useOrderFromContext";
 		public static final String WEB_TAB_GROUPS = "webTabGroups";
 		public static final String WEB_TAB_WEB_GROUP = "webTabWebGroups";
 		public static final String WEB_TAB_GROUP_ID = "webTabGroupId";

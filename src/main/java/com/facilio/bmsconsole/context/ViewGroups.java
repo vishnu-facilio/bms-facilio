@@ -10,6 +10,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class ViewGroups {
+
+	public ViewGroups() {}
+
+	public ViewGroups(String name, String displayName, String moduleName, long moduleId, long appId, int sequenceNumber, int groupType) {
+		this.name = name;
+		this.appId = appId;
+		this.moduleId = moduleId;
+		this.groupType = groupType;
+		this.moduleName = moduleName;
+		this.displayName = displayName;
+		this.sequenceNumber = sequenceNumber;
+	}
 	
 	private String name;
 	

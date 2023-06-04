@@ -1,14 +1,17 @@
 package com.facilio.componentpackage.implementation;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants.FieldXMLConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.constants.ComponentType;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.field.validation.date.DateValidatorType;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +23,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.fields.*;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
 import java.time.DayOfWeek;
 
@@ -29,13 +33,13 @@ import java.util.stream.Collectors;
 public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
     @Override
-    public List<Long> fetchSystemComponentIdsToPackage() throws Exception {
-        return null;
+    public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
+        return getFieldIds(false);
     }
 
     @Override
-    public List<Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return null;
+    public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
+        return getFieldIds(true);
     }
 
     @Override
@@ -75,14 +79,20 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         for (Map.Entry<String, Object> entry : additionalFieldProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if (value instanceof String) {
-                fieldElement.element(key).text(String.valueOf(value));
-            } else if (value instanceof Map) {
-                for (Map.Entry<String, Object> specialProp : ((Map<String, Object>) value).entrySet()) {
-                    String specialPropKey = specialProp.getKey();
-                    Object specialPropValue = specialProp.getValue();
-                    fieldElement.element(specialPropKey).text(String.valueOf(specialPropValue));
+            value = (value == null) ? "" : value;
+
+            if (value instanceof List) {
+                XMLBuilder valuesListElement = fieldElement.element(key);
+                for (Map<String, Object> keyValuePair : (List<Map<String, Object>>) value) {
+                    XMLBuilder valueElement = valuesListElement.element(PackageConstants.VALUE_ELEMENT);
+                    for (Map.Entry<String, Object> specialProp : keyValuePair.entrySet()) {
+                        String specialPropKey = specialProp.getKey();
+                        Object specialPropValue = specialProp.getValue();
+                        valueElement.element(specialPropKey).text(String.valueOf(specialPropValue));
+                    }
                 }
+            } else {
+                fieldElement.element(key).text(String.valueOf(value));
             }
         }
     }
@@ -93,8 +103,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         ModuleBean moduleBean = Constants.getModBean();
 
         Map<String, List<String>> moduleNameVsFieldNamesMap = new HashMap<>();
-        for (XMLBuilder xmlBuilder : components) {
-            XMLBuilder fieldElement = xmlBuilder.getElement(ComponentType.FIELD.getValue());
+        for (XMLBuilder fieldElement : components) {
             String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
             String fieldName = fieldElement.getElement(PackageConstants.NAME).getText();
 
@@ -125,8 +134,30 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     }
 
     @Override
-    public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+    public List<Long> getDeletedComponentIds(List<Long> componentIds) throws Exception {
         return null;
+    }
+
+    @Override
+    public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        Map<String, Long> uniqueIdentifierVsFieldId = new HashMap<>();
+
+        for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            String uniqueIdentifier = idVsData.getKey();
+            XMLBuilder fieldElement = idVsData.getValue();
+            String fieldName = fieldElement.getElement(PackageConstants.NAME).getText();
+            String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
+            boolean isDefault = Boolean.parseBoolean(fieldElement.getElement(FieldXMLConstants.IS_DEFAULT).getText());
+
+            if (isDefault) {
+                FacilioField field = moduleBean.getField(fieldName, moduleName);
+                if (field != null) {
+                    uniqueIdentifierVsFieldId.put(uniqueIdentifier, field.getFieldId());
+                }
+            }
+        }
+        return uniqueIdentifierVsFieldId;
     }
 
     @Override
@@ -137,30 +168,29 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         Map<String, Map<String, String>> moduleNameVsFieldNameVsUniqueIdentifier = new HashMap<>();
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
-            XMLBuilder xmlBuilder = idVsData.getValue();
-            XMLBuilder fieldElement = xmlBuilder.getElement(ComponentType.FIELD.getValue());
-            if (fieldElement != null) {
-                FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
-                String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
+            XMLBuilder fieldElement = idVsData.getValue();
+            FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
+            String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
 
-                if (StringUtils.isNotEmpty(moduleName) && !moduleNameVsFields.containsKey(moduleName)) {
-                    moduleNameVsFields.put(moduleName, new ArrayList<>());
-                }
-                moduleNameVsFields.get(moduleName).add(facilioField);
-
-                if(!moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleName)) {
-                    moduleNameVsFieldNameVsUniqueIdentifier.put(moduleName, new HashMap<>());
-                }
-                moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName).put(facilioField.getName(), idVsData.getKey());
+            if (StringUtils.isNotEmpty(moduleName) && !moduleNameVsFields.containsKey(moduleName)) {
+                moduleNameVsFields.put(moduleName, new ArrayList<>());
             }
+            moduleNameVsFields.get(moduleName).add(facilioField);
+
+            if(!moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleName)) {
+                moduleNameVsFieldNameVsUniqueIdentifier.put(moduleName, new HashMap<>());
+            }
+            moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName).put(facilioField.getName(), idVsData.getKey());
         }
 
         for (Map.Entry<String, List<FacilioField>> moduleFields : moduleNameVsFields.entrySet()) {
+            // create module fields
             String moduleName = moduleFields.getKey();
             List<FacilioField> fieldsList = moduleFields.getValue();
             FacilioModule module = moduleBean.getModule(moduleName);
             fieldsList = createFields(module, fieldsList);
 
+            // set uniqueIdentifier vs fieldId
             if (moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleName)) {
                 Map<String, String> fieldNameVsUniqueIdentifier = moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName);
                 for (FacilioField field : fieldsList) {
@@ -175,39 +205,94 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> uniqueIdentifierVsComponents) throws Exception {
-//        ModuleBean moduleBean = Constants.getModBean();
-//        Map<Long, String> newUniqueIdentifierVsComponentId = new HashMap<>();
-//
-//        for (Map.Entry<String, XMLBuilder> uniqueIdentifierVsComponent : uniqueIdentifierVsComponents.entrySet()) {
-//            String uniqueIdentifier = uniqueIdentifierVsComponent.getKey();
-//            XMLBuilder xmlBuilder = uniqueIdentifierVsComponent.getValue();
-//            XMLBuilder fieldElement = xmlBuilder.getElement(ComponentType.FIELD.getValue());
-//            if (fieldElement != null) {
-//                String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
-//                FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
-//                FacilioModule currModule = moduleBean.getModule(moduleName);
-//                facilioField.setFieldId(currModule.getModuleId());
-//                updateField(facilioField);
-//
-//                if (!uniqueIdentifierVsComponentId.containsKey(uniqueIdentifier)){
-//                    uniqueIdentifierVsComponentId.put(uniqueIdentifier, facilioField.getFieldId());
-////                    newUniqueIdentifierVsComponentId.put(facilioField.getFieldId(), uniqueIdentifier);
-//                }
-//            }
-//        }
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
+            Long fieldId = uniqueIdentifierVsComponent.getKey();
+            if (fieldId != null && fieldId > 0) {
+                XMLBuilder fieldElement = uniqueIdentifierVsComponent.getValue();
+                String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
+                FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
+                facilioField.setFieldId(fieldId);
 
-//        if (MapUtils.isNotEmpty(newUniqueIdentifierVsComponentId)) {
-//            Organization organization = AccountUtil.getCurrentOrg();
-//            PackageContext packageContext = PackageUtil.getPackage(organization);
-//            PackageUtil.createBulkChangesetMapping(packageContext.getId(), newUniqueIdentifierVsComponentId, packageContext.getVersion(),
-//                    ComponentType.FIELD, false);
-//        }
+                // set additional details for EnumFieldValues
+                if (facilioField.getDataTypeEnum() == FieldType.ENUM || facilioField.getDataTypeEnum() == FieldType.MULTI_ENUM) {
+                    FacilioField dbField = moduleBean.getField(fieldId);
+                    List<EnumFieldValue<Integer>> dbEnumFieldValues = ((BaseEnumField) dbField).getValues();
+                    Map<Integer, Long> indexVsIdMap = dbEnumFieldValues.stream().collect(Collectors.toMap(EnumFieldValue::getIndex, EnumFieldValue::getId));
+
+                    for (EnumFieldValue<Integer> value : ((BaseEnumField) facilioField).getValues()) {
+                        if (indexVsIdMap.containsKey(value.getIndex())) {
+                            value.setId(indexVsIdMap.get(value.getIndex()));
+                            value.setFieldId(fieldId);
+                        }
+                    }
+                }
+
+                updateField(facilioField);
+            }
+        }
     }
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            moduleBean.deleteFields(ids);
+        }
+    }
 
+    public static Map<Long, Long> getFieldIds(boolean fetchCustom) throws Exception {
+        Map<Long, Long> fieldIdVsModuleId = new HashMap<>();
+        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+
+        String[] systemFieldNamesWithCustomConfiguration = {"textContent", "htmlContent"};
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+            add(FieldFactory.getModuleIdField(fieldsModule));
+            add(FieldFactory.getNumberField("fieldId", "FIELDID", fieldsModule));
+        }};
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(selectableFields)
+                .table(fieldsModule.getTableName())
+                .innerJoin("Modules").on("Fields.MODULEID = Modules.MODULEID")
+                .andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(ModulePackageBeanImpl.IGNORE_MODULE_TYPES, ","), NumberOperators.NOT_EQUALS))
+                ;
+
+        if (!fetchCustom) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.TRUE.toString(), BooleanOperators.IS))
+                    .orCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(systemFieldNamesWithCustomConfiguration, ","), StringOperators.IS))
+                    .orCriteria(additionalCriteria());
+        } else {
+            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.FALSE.toString(), BooleanOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(systemFieldNamesWithCustomConfiguration, ","), StringOperators.ISN_T))
+                    .andCustomWhere("(COLUMN_NAME IS NULL OR COLUMN_NAME LIKE '%_CF%')");
+        }
+
+        List<Map<String, Object>> fieldProps = selectBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(fieldProps)) {
+            long moduleId, fieldId;
+            for (Map<String, Object> prop : fieldProps) {
+                moduleId = prop.containsKey("moduleId") ? (Long) prop.get("moduleId") : -1;
+                fieldId = prop.containsKey("fieldId") ? (Long) prop.get("fieldId") : -1;
+                fieldIdVsModuleId.put(fieldId, moduleId);
+            }
+        }
+
+        return fieldIdVsModuleId;
+    }
+
+    public static Criteria additionalCriteria() {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.FALSE.toString(), BooleanOperators.IS));
+
+        Criteria columnNameCriteria = new Criteria();
+        columnNameCriteria.addAndCondition(CriteriaAPI.getCondition("COLUMN_NAME", "columnName", "", CommonOperators.IS_NOT_EMPTY));
+        columnNameCriteria.addAndCondition(CriteriaAPI.getCondition("COLUMN_NAME", "columnName", "_CF", StringOperators.DOESNT_CONTAIN));
+        criteria.andCriteria(columnNameCriteria);
+
+        return criteria;
     }
 
     public List<FacilioField> createFields(FacilioModule module, List<FacilioField> newFields) throws Exception {
@@ -289,8 +374,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
             case DATE:
             case DATE_TIME:
                 List<Map<String, Object>> daysOfWeekProps = getDaysOfWeekProps(((DateField) oldField).getAllowedDays());
-                fieldProps.put("allowedDate", ((DateField) oldField).getAllowedDate().name());
                 fieldProps.put("allowedDays", daysOfWeekProps);
+                if (((DateField) oldField).getAllowedDate() != null) {
+                    fieldProps.put("allowedDate", ((DateField) oldField).getAllowedDate().name());
+                }
                 break;
 
             case BOOLEAN:
@@ -308,13 +395,17 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 if (lookupModuleId > 0) {
                     FacilioModule lookupModule = moduleBean.getModule(lookupModuleId);
                     fieldProps.put("lookupModuleName", lookupModule.getName());
+                } else {
+                    fieldProps.put("lookupModuleName", null);
                 }
                 fieldProps.put("specialType", ((BaseLookupField) oldField).getSpecialType());
                 fieldProps.put("relatedListDisplayName", ((BaseLookupField) oldField).getRelatedListDisplayName());
                 break;
 
             case FILE:
-                fieldProps.put("format", ((FileField) oldField).getFormatEnum().name());
+                if (((FileField) oldField).getFormatEnum() != null) {
+                    fieldProps.put("format", ((FileField) oldField).getFormatEnum().name());
+                }
                 break;
 
             default:
@@ -377,8 +468,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 String unit = fieldElement.getElement("unit").getText();
                 int unitId = Integer.parseInt(fieldElement.getElement("unitId").getText());
                 int metric = Integer.parseInt(fieldElement.getElement("metric").getText());
-                Double minValue = Double.parseDouble(fieldElement.getElement("minValue").getText());
-                Double maxValue = Double.parseDouble(fieldElement.getElement("maxValue").getText());
+                Double minValue = StringUtils.isEmpty(fieldElement.getElement("minValue").getText()) ? null :
+                        Double.parseDouble(fieldElement.getElement("minValue").getText());
+                Double maxValue = StringUtils.isEmpty(fieldElement.getElement("maxValue").getText()) ? null :
+                        Double.parseDouble(fieldElement.getElement("maxValue").getText());
                 boolean counterField = Boolean.parseBoolean(fieldElement.getElement("counterField").getText());
                 facilioField = (NumberField) FieldUtil.getAsBeanFromMap(fieldProp, NumberField.class);
                 ((NumberField) facilioField).setUnit(unit);
@@ -391,10 +484,15 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
             case ENUM:
             case MULTI_ENUM:
-                facilioField = (BaseEnumField) FieldUtil.getAsBeanFromMap(fieldProp, BaseEnumField.class);
                 XMLBuilder enumValuesBuilder = fieldElement.getElement("values");
                 List<EnumFieldValue<Integer>> enumValues = getEnumFieldValues(enumValuesBuilder);
-                ((BaseEnumField) facilioField).setValues(enumValues);
+                if (dataTypeInt == 8) {
+                    facilioField = (EnumField) FieldUtil.getAsBeanFromMap(fieldProp, EnumField.class);
+                    ((EnumField) facilioField).setValues(enumValues);
+                } else {
+                    facilioField = (MultiEnumField) FieldUtil.getAsBeanFromMap(fieldProp, MultiEnumField.class);
+                    ((MultiEnumField) facilioField).setValues(enumValues);
+                }
                 break;
 
             case SYSTEM_ENUM:
@@ -421,12 +519,14 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
             case DATE:
             case DATE_TIME:
                 facilioField = (DateField) FieldUtil.getAsBeanFromMap(fieldProp, DateField.class);
-                String allowedDateStr = fieldElement.getElement("allowedDate").getText();
-                DateValidatorType allowedDate = DateValidatorType.valueOf(allowedDateStr);
-                XMLBuilder valuesBuilder = fieldElement.getElement("values");
+                if (fieldElement.getElement("allowedDate") != null) {
+                    String allowedDateStr = fieldElement.getElement("allowedDate").getText();
+                    DateValidatorType allowedDate = DateValidatorType.valueOf(allowedDateStr);
+                    ((DateField) facilioField).setAllowedDate(allowedDate);
+                }
+                XMLBuilder valuesBuilder = fieldElement.getElement("allowedDays");
                 List<DayOfWeek> daysOfWeek = getDaysOfWeek(valuesBuilder);
                 ((DateField) facilioField).setAllowedDays(daysOfWeek);
-                ((DateField) facilioField).setAllowedDate(allowedDate);
                 break;
 
             case BOOLEAN:
@@ -445,9 +545,11 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
             case FILE:
                 facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldProp, FileField.class);
-                String fileFormatString = fieldElement.getElement("format").getText();
-                FileInfo.FileFormat fileFormat = FileInfo.FileFormat.valueOf(fileFormatString);
-                ((FileField) facilioField).setFormat(fileFormat);
+                if (fieldElement.getElement("format") != null) {
+                    String fileFormatString = fieldElement.getElement("format").getText();
+                    FileInfo.FileFormat fileFormat = FileInfo.FileFormat.valueOf(fileFormatString);
+                    ((FileField) facilioField).setFormat(fileFormat);
+                }
                 break;
 
             case LOOKUP:
@@ -462,11 +564,19 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                     if (lookupModule != null) lookupModuleId = lookupModule.getModuleId();
                 }
 
-                facilioField = (BaseLookupField) FieldUtil.getAsBeanFromMap(fieldProp, BaseLookupField.class);
-                ((BaseLookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
-                ((BaseLookupField) facilioField).setLookupModuleId(lookupModuleId);
-                ((BaseLookupField) facilioField).setLookupModule(lookupModule);
-                ((BaseLookupField) facilioField).setSpecialType(specialType);
+                if (dataTypeInt == 7) {
+                    facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldProp, LookupField.class);
+                    ((LookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
+                    ((LookupField) facilioField).setLookupModuleId(lookupModuleId);
+                    ((LookupField) facilioField).setLookupModule(lookupModule);
+                    ((LookupField) facilioField).setSpecialType(specialType);
+                } else {
+                    facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldProp, MultiLookupField.class);
+                    ((MultiLookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
+                    ((MultiLookupField) facilioField).setLookupModuleId(lookupModuleId);
+                    ((MultiLookupField) facilioField).setLookupModule(lookupModule);
+                    ((MultiLookupField) facilioField).setSpecialType(specialType);
+                }
                 break;
 
             default:
@@ -483,7 +593,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
         List<EnumFieldValue<Integer>> enumFieldValues = new ArrayList<>();
 
-        List<XMLBuilder> allValues = valuesBuilder.getElementList("value");
+        List<XMLBuilder> allValues = valuesBuilder.getElementList(PackageConstants.VALUE_ELEMENT);
         for (XMLBuilder xmlBuilder : allValues) {
             String value = xmlBuilder.getElement("value").getText();
             Integer index = Integer.valueOf(xmlBuilder.getElement("index").getText());
@@ -504,7 +614,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
         List<DayOfWeek> dayOfWeeks = new ArrayList<>();
 
-        List<XMLBuilder> allValues = valuesBuilder.getElementList("value");
+        List<XMLBuilder> allValues = valuesBuilder.getElementList(PackageConstants.VALUE_ELEMENT);
         for (XMLBuilder xmlBuilder : allValues) {
             String value = xmlBuilder.getElement("value").getText();
             DayOfWeek dayOfWeek = DayOfWeek.valueOf(value);

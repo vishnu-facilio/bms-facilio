@@ -5337,6 +5337,13 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getUpdateWebTabWebGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteWebTabWebGroupForTabId());
+		chain.addCommand(new AssociateTabsWithGroupCommand());
+		return chain;
+	}
+
 	public static FacilioChain getDisAssociateTabGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DisAssociateTabGroupCommand());

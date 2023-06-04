@@ -338,8 +338,8 @@ public class PackageUtil {
         return packageContext;
     }
 
-    public static void createBulkChangesetMapping(long packageId, Map<Long, String> componentIdVsUniqueIds, double version, ComponentType type, Boolean isSystemComponent) throws Exception{
-        if(MapUtils.isEmpty(componentIdVsUniqueIds)) {
+    public static void createBulkChangesetMapping(long packageId, Map<Long, Long> componentIdVsParentId, double version, ComponentType type, Boolean isSystemComponent) throws Exception{
+        if(MapUtils.isEmpty(componentIdVsParentId)) {
             return;
         }
         PackageChangeSetMappingContext.ComponentStatus status;
@@ -351,7 +351,7 @@ public class PackageUtil {
             modifiedVersion = version;
         }
         List<PackageChangeSetMappingContext> packageChangesets = new ArrayList<>();
-        for(Map.Entry<Long, String> idVsUid : componentIdVsUniqueIds.entrySet()) {
+        for(Map.Entry<Long, Long> idVsUid : componentIdVsParentId.entrySet()) {
             PackageChangeSetMappingContext changeset = new PackageChangeSetMappingContext();
             changeset.setPackageId(packageId);
             changeset.setComponentId(idVsUid.getKey());
@@ -359,7 +359,9 @@ public class PackageUtil {
             changeset.setStatus(status);
             changeset.setCreatedVersion(version);
             changeset.setModifiedVersion(modifiedVersion);
-            changeset.setUniqueIdentifier(idVsUid.getValue());
+            changeset.setUniqueIdentifier(String.valueOf(idVsUid.getKey()));
+            changeset.setParentComponentId(idVsUid.getValue() != null ? idVsUid.getValue() : -1);
+
             packageChangesets.add(changeset);
         }
 

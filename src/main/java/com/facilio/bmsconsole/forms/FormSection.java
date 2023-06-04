@@ -20,6 +20,20 @@ public class FormSection {
 		this.fields = fields;
 		this.showLabel = showLabel;
 	}
+
+	public FormSection(String name, long formId, FormSection.SectionType sectionType, long sequenceNumber, String subFormDefaultValue, boolean showLabel, int noOfSubFormRecords) {
+		this.name = name;
+		this.formId = formId;
+		this.showLabel = showLabel;
+		this.sectionType = sectionType;
+		this.sequenceNumber = sequenceNumber;
+		this.numberOfSubFormRecords = noOfSubFormRecords;
+		try {
+			this.subFormValue = FacilioUtil.parseJson(subFormDefaultValue);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	
 	
 	private String name;

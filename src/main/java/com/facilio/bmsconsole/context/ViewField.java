@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -93,6 +95,19 @@ public class ViewField{
 		this.name = name;
 		this.columnDisplayName = displayName;
 		this.parentFieldName =parentFieldName;
+	}
+
+	public ViewField(String name, String displayName, long fieldId, long parentFieldId, String customization) {
+		this.name = name;
+		this.fieldName = name;
+		this.fieldId = fieldId;
+		this.parentFieldId = parentFieldId;
+		this.columnDisplayName = displayName;
+		try {
+			this.customization = FacilioUtil.parseJson(customization);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String getParentFieldName() {

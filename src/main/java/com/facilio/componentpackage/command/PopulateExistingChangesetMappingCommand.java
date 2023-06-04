@@ -8,6 +8,7 @@ import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -26,16 +27,17 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 			}
 			PackageBean implClass = componentType.getPackageComponentClassInstance();
 
-			List<Long> systemComponentIds = implClass.fetchSystemComponentIdsToPackage();
-			Map<Long, String> systemIdVsUniqueIds = systemComponentIds.stream().collect(Collectors.toMap(id -> id, id -> String.valueOf(id)));
-			PackageUtil.createBulkChangesetMapping(packageContext.getId(), systemIdVsUniqueIds, packageContext.getVersion(),
-					componentType, true);
+			Map<Long, Long> systemComponentIdVsParentId = implClass.fetchSystemComponentIdsToPackage();
+			if (MapUtils.isNotEmpty(systemComponentIdVsParentId)) {
+				PackageUtil.createBulkChangesetMapping(packageContext.getId(), systemComponentIdVsParentId, packageContext.getVersion(),
+						componentType, true);
+			}
 
-			List<Long> customComponentIds = implClass.fetchCustomComponentIdsToPackage();
-			Map<Long, String> customIdVsUniqueIds = customComponentIds.stream().collect(Collectors.toMap(id -> id, id -> String.valueOf(id)));
-			PackageUtil.createBulkChangesetMapping(packageContext.getId(), customIdVsUniqueIds, packageContext.getVersion(),
-					componentType, false);
-
+			Map<Long, Long> customComponentIdVsParentId = implClass.fetchCustomComponentIdsToPackage();
+			if (MapUtils.isNotEmpty(customComponentIdVsParentId)) {
+				PackageUtil.createBulkChangesetMapping(packageContext.getId(), customComponentIdVsParentId, packageContext.getVersion(),
+						componentType, false);
+			}
 		}
 
 		return false;
