@@ -43,9 +43,13 @@ public class AddSummaryWidgetCommand extends FacilioCommand {
             }
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-            String name = StringUtils.isNotEmpty(summaryWidget.getDisplayName()) ? summaryWidget.getDisplayName() : "summaryWidget";
+            String name = StringUtils.isNotEmpty(summaryWidget.getName()) ? summaryWidget.getName() :
+                    StringUtils.isNotEmpty(summaryWidget.getDisplayName())? summaryWidget.getDisplayName(): "summaryWidget";
             List<String> existingNames = SummaryWidgetUtil.getExistingSummaryWidgetsNameOfModuleInApp(appId, moduleId);
             name = CustomPageAPI.generateUniqueName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""), existingNames, isSystem);
+//            if((isSystem != null && isSystem) && StringUtils.isNotEmpty(summaryWidget.getName()) && !summaryWidget.getName().equalsIgnoreCase(name)) {
+//                throw new IllegalArgumentException("linkName already exists, given linkName for summaryWidget is invalid");
+//            }
             summaryWidget.setName(name);
 
             SummaryWidgetUtil.insertSummaryWidgetToDB(summaryWidget);
