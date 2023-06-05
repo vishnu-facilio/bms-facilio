@@ -427,38 +427,52 @@
 			</result>
 		</action>
 		<action name="addDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardFolder">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
 		<action name="updateDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardFolder">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
 		<action name="deleteDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardFolder">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
 		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
 		<action name="addTabularReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addTabularReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
 		
 		<action name="updateTabularSequence" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateSequence">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
 		
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
@@ -468,6 +482,8 @@
 			</result>
 		</action>
 		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>

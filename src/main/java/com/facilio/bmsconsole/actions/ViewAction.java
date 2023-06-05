@@ -348,6 +348,9 @@ public class ViewAction extends FacilioAction {
 	}
 	
 	public String addView() throws Exception {
+		if(!isAllowed()) {
+			return "unauthorized";
+		}
 		if(!view.containsKey("type")) {
 			view.put("type", ViewType.TABLE_LIST.getIntVal());
 		}
@@ -376,7 +379,9 @@ public class ViewAction extends FacilioAction {
 	}
 	
 	public String v2addGroup() throws Exception {
-		
+		if(!isAllowed()) {
+			return "unauthorized";
+		}
 		FacilioChain chain = TransactionChainFactory.addViewGroupChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
@@ -390,7 +395,9 @@ public class ViewAction extends FacilioAction {
 	}
 	
 	public String v2UpdateGroup() throws Exception {
-		
+		if(!isAllowed()) {
+			return "unauthorized";
+		}
 		FacilioChain chain = TransactionChainFactory.updateViewGroupChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
@@ -404,7 +411,9 @@ public class ViewAction extends FacilioAction {
 	}
 
 	public String v2deleteGroup() throws Exception {
-
+		if(!isAllowed()) {
+			return "unauthorized";
+		}
 		FacilioChain chain = TransactionChainFactory.deleteViewGroupChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_ID, viewGroup.getId());
@@ -798,4 +807,12 @@ public String v2customizeView() throws Exception {
 		}
 	}
 
+	private static boolean isAllowed() throws Exception {
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if(!AccountUtil.isPrivilegedRole()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

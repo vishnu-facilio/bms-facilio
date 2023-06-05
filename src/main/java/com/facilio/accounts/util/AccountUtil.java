@@ -307,6 +307,13 @@ public class AccountUtil {
 		}
 	}
 
+	public static boolean isPrivilegedRole() {
+		if(getCurrentUser() != null && getCurrentUser().getRole() != null && getCurrentUser().getRole().isPrevileged()) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void incrementRedisDeleteTime(long redisTime) {
 		if(currentAccount.get() != null) {
 			currentAccount.get().incrementRedisDeleteTime(redisTime);
