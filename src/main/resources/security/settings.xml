@@ -2447,4 +2447,34 @@
         </requestbody>
     </request>
 
+    <!-- WORKORDER FEATURE SETTINGS API: SETUP PAGE -->
+    <request path="/api/v1/setup/workOrderFeatureSettings/add" method="PUT">
+        <requestbody type="object">
+            <property name="workOrderFeatureSettings" type="array">
+                <items type="object"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/update" method="UPDATE">
+        <requestbody type="object">
+            <property name="workOrderFeatureSettings" type="array">
+            <items type="object"/>
+        </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/list" method="GET">
+        <urlparams>
+            <property name="allowedStateId" type="number" mandatory="false"/>
+            <property name="settingType" type="number" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/typesList" method="GET">
+    </request>
+
+    <!-- WORKORDER FEATURE SETTINGS API: WorkOrder summary PAGE -->
+    <request path="/api/v3/workorders/features/:recordId" method="GET">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

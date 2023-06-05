@@ -5,19 +5,17 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.workorder.workorderFeature.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.v3.V3Action;
-import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -144,6 +142,68 @@ public class WorkorderAction extends V3Action {
         result.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_RESOURCE_LIST,context.get(FacilioConstants.ContextNames.PLANNEDMAINTENANCE_RESOURCE_LIST));
         setData("result",result);
 
+
+        return SUCCESS;
+    }
+
+    // WorkOrder Feature Settings
+    /**
+     * featureSettings() => /api/v3/workorders/features/{record_id}
+     * - This API returns
+     * {
+     *     "data": {
+     *             "workOrderSettings": {
+     *                  "executeTask":{
+     * 		                "allowed": false,
+     * 		                "reason":"You don't have permission to manage or execute tasks"
+     *                  },
+     *                  "inventoryActuals": {
+     * 		                "allowed": true,
+     * 		                "reason":""
+     *                  },
+     *                  "inventoryPlaning": {
+     * 		                "allowed": false,
+     * 		                "reason":"Actions in this tab cannot be performed in the current state!"
+     *                  },
+     *                  "manageTask": {
+     * 		                "allowed": true,
+     * 		                "reason":""
+     *                  }
+     *              }
+     *     }
+     * }
+     *
+     *  'executeTask': BOOLEAN value -> based on `canExecuteTask` at com/facilio/bmsconsoleV3/commands/workorder/workorderFeature/AddTasksRelatedPermissionCheckCommand.java:58
+     *  'manageTask': BOOLEAN value -> based on `canManageTask` at com/facilio/bmsconsoleV3/commands/workorder/workorderFeature/AddTasksRelatedPermissionCheckCommand.java:62
+     *  'inventoryPlaning': BOOLEAN value -> based on `canDoActionsOnPlans` at com/facilio/bmsconsoleV3/commands/workorder/workorderFeature/AddWorkOrderPlansPermissionCheckCommand.java:40
+     *  'inventoryActuals': BOOLEAN value -> based on `canDoActionsOnActuals` at com/facilio/bmsconsoleV3/commands/workorder/workorderFeature/AddWorkOrderActualsPermissionCheckCommand.java:40
+     */
+    @Getter
+    @Setter
+    private Long recordId;
+    public String featureSettings() throws Exception{
+        FacilioChain chain = FacilioChain.getTransactionChain();
+
+        chain.getContext().put("recordId", recordId);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        chain.addCommand(new InitializeWorkOrderSettingObjectsCommand());
+        chain.addCommand(new ValidateAndFetchRecordCommand());
+        // check if atleast one workorder setting is configured.
+        // fetch workorder settings for current module state
+        chain.addCommand(new FetchWorkOrderFeatureSettingsCommand());
+        // add node for task execution and management
+        chain.addCommand(new AddTasksRelatedPermissionCheckCommand());
+        chain.addCommand(new AddWorkOrderPlansPermissionCheckCommand());
+        chain.addCommand(new AddWorkOrderActualsPermissionCheckCommand());
+        chain.addCommand(new FillWorkOrderFeatureSettingsBasedBannerMessagesCommand());
+
+        chain.execute();
+
+        WorkOrderSettings workOrderSettings = (WorkOrderSettings) chain.getContext().get(FacilioConstants.ContextNames.WORK_ORDER_SETTINGS);
+        setData("workOrderSettings", workOrderSettings);
+
+//        HashMap<String, Boolean> featureSettingValueMap = (HashMap<String, Boolean>) chain.getContext().get(FacilioConstants.ContextNames.WORK_ORDER_FEATURE_SETTINGS_VALUES_MAP);
+//        setData("workOrderFeatureSettingValues", featureSettingValueMap);
 
         return SUCCESS;
     }

@@ -155,6 +155,7 @@ classes:
 
   # WorkOrder Modules
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderModules
+  - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderFeatureSettingsDefaultValues
 
   #Add People Group and Group Members
   - com.facilio.bmsconsoleV3.signup.group.AddGroupAndGroupMemberModules

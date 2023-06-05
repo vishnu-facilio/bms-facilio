@@ -598,7 +598,9 @@ public class AccountUtil {
 		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE),//2^10
 		PAGE_BUILDER(138, getExponentValue(11), LicenseMapping.GROUP3LICENSE),//2^11
 		DISABLE_EDIT_SUB_FORM_DATA(139, getExponentValue(12), LicenseMapping.GROUP3LICENSE),//2^12
-		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE);//2^13
+
+		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
+		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE);//2^14
 
 		public int featureId;
 		private long license;

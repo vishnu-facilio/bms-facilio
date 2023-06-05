@@ -285,8 +285,19 @@ public class FacilioConstants {
 		//public static final String RESOURCE_ID = "resourceId";
 		public static final String EMAIL="email";
 		public static final String IS_WEBTAB_PERMISSION = "isWebTabPermission";
+        public static final String WORK_ORDER_FEATURE_SETTINGS_LIST = "workOrderFeatureSettingsList";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_LIST_MAP = "workOrderFeatureSettingsListMap";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_TYPE = "workOrderFeatureSettingsType";
+		public static final String WORK_ORDER_FEATURE_ALLOWED_STATE_ID = "workOrderAllowedStateId";
+        public static final String WORK_ORDER_SETTINGS = "workOrderSettings";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_VALUES_MAP = "workOrderFeatureSettingsValuesMap";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_BASED_BANNER_MESSAGE = "workOrderFeatureSettingsBasedBannerMessage";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_HAS_EXECUTE_TASK_PERMISSION = "workOrderFeatureSettingHasExecuteTaskPermission";
+		public static final String WORK_ORDER_FEATURE_SETTINGS_HAS_MANAGE_TASK_PERMISSION = "workOrderFeatureSettingHasManageTaskPermission";
+		public static final String IS_LOCKED_STATE = "isLockedState";
+		public static final String CURRENT_MODULE_STATE = "currentModuleState";
 
-		public static class HomePage {
+        public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
 			public static final String WIDGET_DATA = "widgetData";

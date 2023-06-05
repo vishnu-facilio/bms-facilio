@@ -205,6 +205,12 @@
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetch"/>
         <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>
     </package>
+    <package name="workOrderFeatureSettings" namespace="/api/v1/setup/workOrderFeatureSettings" extends="v3Api">
+        <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdateWorkOrderFeatureSettings"/>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdateWorkOrderFeatureSettings"/>
+        <action name="list" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetchWorkOrderFeatureSettings"/>
+        <action name="typesList" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetchWorkOrderFeatureSettingsTypes"/>
+    </package>
     <package name="userScoping" namespace="/api/v1/setup/userScoping" extends="v2Api">
         <action name="scopingModules" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="getUserScopingModules">
             <param name="permission">ALL</param>

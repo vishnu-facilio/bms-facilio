@@ -69,7 +69,7 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(10), "UPDATE_OWN", "Update Own", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(11), "UPDATE_CHANGE_OWNERSHIP", "Change Ownership", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(12), "UPDATE_CLOSE_WORKORDER", "Close Workorder", PermissionMapping.GROUP1PERMISSION),
-            new Permission(getExponentValue(13), "UPDATE_TASK", "Update Task", PermissionMapping.GROUP1PERMISSION),
+            new Permission(getExponentValue(13), "UPDATE_TASK", "Manage Task (Add)", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(14), "DELETE_TEAM", "Delete Team", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(15), "DELETE_OWN", "Delete Own", PermissionMapping.GROUP1PERMISSION),
             new Permission(getExponentValue(16), "CAN_APPROVE", "Can Approve", PermissionMapping.GROUP1PERMISSION),
@@ -126,8 +126,9 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(4), "VIEW_BOOKING_OWN", "View Booking Own", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(5), "EDIT", "Edit", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION),
-            new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Update Task", PermissionMapping.GROUP2PERMISSION),
+            new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Execute Task", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(8), "CONTROL", "Control", PermissionMapping.GROUP2PERMISSION)
+            //new Permission(getExponentValue(9), "READ_TASK", "Read Task", PermissionMapping.GROUP2PERMISSION)
         );
 
     private static long getExponentValue(int exponent) {
@@ -169,6 +170,7 @@ public class AppModulePermissionUtil {
         permissionTypes = Arrays.asList(
                 permissionMap.get("CREATE"),
                 new PermissionGroup("Read", Arrays.asList(readPerm, readOwnPerm, readTeamPerm)),
+                //permissionMap.get("READ_TASK"),
                 new PermissionGroup("Update", Arrays.asList(updatePerm, updateOwnPerm, updateTeamPerm)),
                 permissionMap.get("UPDATE_CHANGE_OWNERSHIP"),
                 permissionMap.get("UPDATE_CLOSE_WORKORDER"),

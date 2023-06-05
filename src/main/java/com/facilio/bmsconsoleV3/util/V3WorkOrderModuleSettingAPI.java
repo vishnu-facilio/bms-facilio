@@ -6,10 +6,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -19,6 +17,7 @@ import java.util.Map;
 public class V3WorkOrderModuleSettingAPI {
 
     public static final String HIDE_GALLERY = "hideGallery";
+    private static Logger LOGGER = Logger.getLogger(V3WorkOrderModuleSettingAPI.class);
 
     public static void addOrUpdateSetting(V3WorkOrderModuleSettingContext workOrderModuleSettingContext) throws Exception {
 

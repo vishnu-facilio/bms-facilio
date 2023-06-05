@@ -304,6 +304,11 @@
         <action name="assign"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
                 method="assign"/>
+        
+        <action name="features/*" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="featureSettings">
+            <param name="moduleName">workorder</param>
+            <param name="recordId">{1}</param>
+        </action>
     </package>
 
     <package name="shiftPlannerList" namespace="/api/v3/shiftplanner" extends="v3Api">

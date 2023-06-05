@@ -11728,6 +11728,24 @@ public class FieldFactory extends BaseFieldFactory {
         return list;
     }
 
+    public static List<FacilioField> getWorkOrderFeatureSettingFields(FacilioModule module) {
+        List<FacilioField> list = new ArrayList<>();
+        list.add(getIdField(module));
+        //list.add(AccountConstants.getOrgIdField(module));
+
+        list.add(getNumberField("settingType", "SETTING_TYPE", module));
+        list.add(getField("allowedTicketStatusId", "ALLOWED_TICKET_STATUS_ID", module,FieldType.LOOKUP));
+        list.add(getLastModifiedTimeField(module));
+
+        LookupField modifiedBy = (LookupField) getField("sysModifiedById", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
+        modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+        modifiedBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
+        modifiedBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        modifiedBy.setDefault(true);
+        list.add(modifiedBy);
+
+        return list;
+    }
     public static List<FacilioField> getWorkorderModuleSettingFields(FacilioModule module) {
         List<FacilioField> list = new ArrayList<>();
         list.add(getIdField(module));
