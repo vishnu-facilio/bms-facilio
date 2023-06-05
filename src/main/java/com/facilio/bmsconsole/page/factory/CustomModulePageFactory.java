@@ -30,8 +30,9 @@ public class CustomModulePageFactory extends PageFactory {
 	
 	public static Page getCustomModulePage(ModuleBaseWithCustomFields record, FacilioModule module) throws Exception {
 		Page page = new Page();
-		
-		
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 		
@@ -57,7 +58,6 @@ public class CustomModulePageFactory extends PageFactory {
 		
 		// Temp - to add seperate pagefactory for employee module
 		if( module != null && "people".equalsIgnoreCase(module.getName())) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 	        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 	        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
@@ -76,7 +76,6 @@ public class CustomModulePageFactory extends PageFactory {
 
 		Organization organization = AccountUtil.getCurrentOrg();
 		if((organization != null) && (organization.getId() == 173l) && ("custom_relatedlistmodule").equalsIgnoreCase(module.getName())) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioModule> subModules =
 					modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY,
 							FacilioModule.ModuleType.Q_AND_A_RESPONSE,
@@ -163,7 +162,11 @@ public class CustomModulePageFactory extends PageFactory {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES)) {
 			addFailureReportTab(page);
 		}
-		
+
+		List<FacilioModule> timelogModule = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.TIME_LOG);
+		if (record.getStateFlowId() > 0 && ((CollectionUtils.isNotEmpty(timelogModule)) && (timelogModule.size() > 0))){
+			addTimelogTab(page);
+		}
 		return page;
 	}
 	private static void addFailureReportTab(Page page){
@@ -177,6 +180,20 @@ public class CustomModulePageFactory extends PageFactory {
 		failureReport.addToLayoutParams(failureReportSection, 24, 8);
 		failureReport.addToWidgetParams("card", "failurereports");
 		failureReportSection.addWidget(failureReport);
+	}
+
+	private static void addTimelogTab(Page page){
+		Page.Tab timeLogTab = page.new Tab("Time Log");
+		page.addTab(timeLogTab);
+
+		Page.Section timeLogSection = page.new Section();
+		timeLogTab.addSection(timeLogSection);
+
+		PageWidget timeLog = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
+		timeLog.addToLayoutParams(timeLogSection,24,8);
+		timeLog.addToWidgetParams("card","timeLog");
+		timeLogSection.addWidget(timeLog);
+
 	}
 
 }

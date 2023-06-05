@@ -229,9 +229,12 @@ import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import org.apache.commons.chain.Context;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.facilio.bmsconsole.commands.FacilioChainFactory.getSpaceReadingsChain;
@@ -2146,9 +2149,64 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module("workorderTimeLog")
-    public static Supplier<V3Config> getWorkOrderTimeLog() {
-        return () -> new V3Config(TimelogContext.class, null)
+    @ModuleType(type = FacilioModule.ModuleType.TIME_LOG)
+    public static Supplier<V3Config> getWorkOrderTimeLog(){
+        return () -> new V3Config(TimelogContext.class,null)
+                .list()
+                .beforeFetch(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "parentId"));
+                        Condition condition = CriteriaAPI.getCondition("PARENT_ID", "parent", String.valueOf(parentId), NumberOperators.EQUALS);
+                        context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, condition);
+                        return false;
+                    }
+                })
+                .create()
+                .beforeSave(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        Map<String,Object> bodyParam = Constants.getBodyParams(context);
+                        boolean internal = true;
+                        if(bodyParam != null && bodyParam.containsKey("internal")) {
+                            internal = (boolean) bodyParam.get("internal");
+                        }
+                        if(!internal) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Create is not supported");
+                        }
+                        return false;
+                    }
+                })
+                .update()
+                .beforeSave(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        Map<String,Object> bodyParam = Constants.getBodyParams(context);
+                        boolean internal = true;
+                        if(bodyParam != null && bodyParam.containsKey("internal")) {
+                            internal = (boolean) bodyParam.get("internal");
+                        }
+                        if(!internal) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Update is not supported");
+                        }
+                        return false;
+                    }
+                })
+                .delete()
+                .beforeDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        Map<String,Object> bodyParam = Constants.getBodyParams(context);
+                        boolean internal = true;
+                        if(bodyParam != null && bodyParam.containsKey("internal")) {
+                            internal = (boolean) bodyParam.get("internal");
+                        }
+                        if(!internal) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Delete is not supported");
+                        }
+                        return false;
+                    }
+                })
                 .build();
     }
 

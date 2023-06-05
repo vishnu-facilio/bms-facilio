@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.classification.util.ClassificationUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
@@ -38,6 +41,14 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
 
         modules.add(customAttachmentModule);
 
+        FacilioModule customTimeLogModule = new FacilioModule();
+        customTimeLogModule.setName("timelog__"+module.getName());
+        customTimeLogModule.setDisplayName("Timelog " + module.getDisplayName());
+        customTimeLogModule.setTableName("CustomTimeLog");
+        customTimeLogModule.setType(FacilioModule.ModuleType.TIME_LOG);
+        customTimeLogModule.setCustom(true);
+        modules.add(customTimeLogModule);
+
         FacilioModule classificationDataModule = ClassificationUtil.getNewClassificationDataModule(module,"Custom_Module_Classification_Data");
         classificationDataModule.setCustom(true);
 
@@ -53,8 +64,9 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         return false;
     }
-    public static void addModuleBasedFields(FacilioModule parentModule, FacilioModule subModule) {
+    public static void addModuleBasedFields(FacilioModule parentModule, FacilioModule subModule) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         switch (subModule.getTypeEnum()) {
             case NOTES:
 
@@ -122,6 +134,54 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
                 subModule.setFields(fields);
 
             break;
+
+            case TIME_LOG:
+
+                FacilioField name = FieldFactory.getField("name","Name","NAME",subModule,FieldType.STRING);
+                name.setDefault(true);
+                fields.add(name);
+
+                LookupField parent = (LookupField) FieldFactory.getField("parent", "PARENT", "PARENT_ID", subModule, FieldType.LOOKUP);
+                parent.setDefault(true);
+                parent.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                parent.setLookupModule(parentModule);
+                fields.add(parent);
+
+                LookupField fromStatusId = (LookupField) FieldFactory.getField("fromStatus","From Status","FROM_STATUS_ID",subModule,FieldType.LOOKUP);
+                fromStatusId.setDefault(true);
+                fromStatusId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                fromStatusId.setLookupModule(modBean.getModule("ticketstatus"));
+                fields.add(fromStatusId);
+
+                LookupField toStatusId = (LookupField) FieldFactory.getField("toStatus","To Status","TO_STATUS_ID",subModule,FieldType.LOOKUP);
+                toStatusId.setDefault(true);
+                toStatusId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                toStatusId.setLookupModule(modBean.getModule("ticketstatus"));
+                fields.add(toStatusId);
+
+                FacilioField startTime = FieldFactory.getField("startTime","Start Time","START_TIME", subModule,FieldType.DATE_TIME);
+                startTime.setDefault(true);
+                fields.add(startTime);
+
+                FacilioField endTime = FieldFactory.getField("endTime","End Time","END_TIME",subModule,FieldType.DATE_TIME);
+                endTime.setDefault(true);
+                fields.add(endTime);
+
+                FacilioField duration = FieldFactory.getField("duration","Duration","DURATION",subModule,FieldType.NUMBER);
+                duration.setDefault(true);
+                fields.add(duration);
+
+                FacilioField isTimerEnabaled = FieldFactory.getField("isTimerEnabled","Is Timer Enabled","IS_TIMER_ENABLED",subModule,FieldType.BOOLEAN);
+                isTimerEnabaled.setDefault(true);
+                fields.add(isTimerEnabaled);
+
+                LookupField doneBy = (LookupField) FieldFactory.getField("doneBy", "Done By", "DONE_BY", subModule, FieldType.LOOKUP);
+                doneBy.setSpecialType("users");
+                doneBy.setDefault(true);
+                fields.add(doneBy);
+
+                subModule.setFields(fields);
+
         }
 
     }

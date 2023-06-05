@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -14,7 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.v3.util.V3Util;
-import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
 public class TimerLogUtil {
 
@@ -48,11 +49,13 @@ public class TimerLogUtil {
 	}
 
 	public static void addOrUpdate(FacilioModule m, TimelogContext timeLogProp) throws Exception {
+		JSONObject internal = new JSONObject();
+		internal.put("internal",true);
 		if (timeLogProp.getId() > 0) {
-			V3Util.processAndUpdateSingleRecord(m.getName(), timeLogProp.getId(),FieldUtil.getAsProperties(timeLogProp),null,
-						null, null, null, null,null,null, null);
+			V3Util.processAndUpdateSingleRecord(m.getName(), timeLogProp.getId(),FieldUtil.getAsProperties(timeLogProp),internal,
+						null, null, null, null,null,null,null);
 		} else {
-			V3Util.createRecord(m,FieldUtil.getAsProperties(timeLogProp));
+			V3Util.createRecord(m,FieldUtil.getAsProperties(timeLogProp),internal,null);
 		}
 	}
 }
