@@ -591,6 +591,10 @@ public class FacilioConstants {
 
 		public static final String EMAIL_STRUCTURE = "emailStructure";
 		public static final String WITH_QRURL = "withQrUrl";
+		public static final String PDF_TEMPLATE = "pdfTemplate";
+		public static final String PDF_TEMPLATES = "pdfTemplates";
+
+		public static final String PDF_TEMPLATE_HTML = "pdfTemplateHTML";
 
 		public static class DataProcessor {
 			public static final String UNMODELED = "unmodeled";

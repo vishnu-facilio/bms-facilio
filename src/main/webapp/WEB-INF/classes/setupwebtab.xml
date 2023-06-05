@@ -732,6 +732,28 @@
         </action>
 
     </package>
+    <package name="pdfTemplate" namespace="/api/v1/setup/pdftemplates" extends="v3Api">
+        <action name="list" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="list">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEMPLATES</param>
+        </action>
+        <action name="addOrUpdate" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="addOrUpdate">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEPLATES</param>
+        </action>
+        <action name="view" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="view">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEMPLATES</param>
+        </action>
+        <action name="preview" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="preview">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEMPLATES</param>
+        </action>
+        <action name="delete" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="delete">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEMPLATES</param>
+        </action>
+    </package>
     <package name="peopleSetUp" namespace="/api/v1/setup/people" extends="v3Api">
         <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople">
             <param name="permission">ALL</param>

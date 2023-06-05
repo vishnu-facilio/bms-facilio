@@ -16,8 +16,8 @@
 /internal/migration
 /internal/moduleMigration
 /internal/mlResponseParser
-/internal/updateClientBuild
 /api/v3/internal/dc/lookup
+/internal/updateClientBuild
 /api/v3/internal/dc/add
 /api/v3/internal/dc/deleteDevicePassCode
 /api/v3/internal/dc/markCodeAsConnected
@@ -2789,4 +2789,8 @@
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
 /api/v3/virtualMeterTemplate/publish
-
+/api/v1/setup/pdftemplates/addOrUpdate/:moduleName
+/api/v1/setup/pdftemplates/list/:moduleName
+/api/v1/setup/pdftemplates/delete
+/api/v1/setup/pdftemplates/view/:moduleName/:id
+/api/v1/setup/pdftemplates/preview/:id/:recordId

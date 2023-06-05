@@ -309,8 +309,8 @@ public class WebTabContext implements Serializable {
         VENDOR_KIOSK("Vendor kiosk",false,TabType.SETUP,new SetupTypeHandler()), //100
         METER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), //101
         SANDBOX("Sandbox",false,TabType.SETUP,new SetupTypeHandler()), //102
-        PORTFOLIO("Portfolio",false,TabType.NORMAL,null); // 103
-
+        PORTFOLIO("Portfolio",false,TabType.NORMAL,null), // 103
+        PDF_TEMPLATES("Pdf Templates",false,TabType.SETUP,new SetupTypeHandler()); //104
         public void setName(String name) {
             this.name = name;
         }

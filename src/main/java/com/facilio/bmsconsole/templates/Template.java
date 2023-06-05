@@ -283,6 +283,7 @@ public abstract class Template implements Serializable {
 		EMAIL_STRUCTURE(28),
 		SATISFACTION_SURVEY_EXECUTION (29),
 		SERVICEREQUEST_SATISFACTION_SURVEY_EXECUTION(30),
+		PDF_TEMPLATE(31),
 		;
 
 		

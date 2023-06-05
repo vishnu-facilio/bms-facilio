@@ -69,6 +69,8 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
+import com.facilio.pdftemplate.command.AddOrUpdatePDFTemplateCommand;
+import com.facilio.pdftemplate.command.DeletePDFTemplateCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
@@ -7249,6 +7251,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new RevertMultiCurrencyFieldMigrationCommand());
 		return chain;
 	}
+	public static FacilioChain getAddOrUpdatePDFTemplateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdatePDFTemplateCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeletePDFTemplateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeletePDFTemplateCommand());
+		return chain;
+	}
+
 }
 
 

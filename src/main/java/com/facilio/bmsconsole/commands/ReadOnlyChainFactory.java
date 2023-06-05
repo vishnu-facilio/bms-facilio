@@ -49,6 +49,9 @@ import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.fields.commands.FilterFieldsByPermissionCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.pdftemplate.command.GetPDFTemplatesListCommand;
+import com.facilio.pdftemplate.command.GetPDFTemplateCommand;
+import com.facilio.pdftemplate.command.PreviewPDFTemplateCommand;
 import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
 import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
@@ -3543,5 +3546,28 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetSiteForChildSpaceCommand());
 		return c;
+	}
+	public static FacilioChain getAllPdfStructureChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PreviewPDFTemplateCommand());
+		return chain;
+	}
+	public static FacilioChain getPDFTemplatesListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPDFTemplatesListCommand());
+		return chain;
+	}
+
+	public static FacilioChain getPDFTemplateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPDFTemplateCommand());
+		return chain;
+	}
+
+	public static FacilioChain getPreviewPDFTemplateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPDFTemplateCommand());
+		chain.addCommand(new PreviewPDFTemplateCommand());
+		return chain;
 	}
 }

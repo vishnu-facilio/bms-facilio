@@ -12299,6 +12299,30 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getStringField("value","VALUE",module));
         return fieldList;
     }
+
+    public static List<FacilioField> getPDFTemplatesFields() {
+        FacilioModule module = ModuleFactory.getPDFTemplatesModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+        fields.add(getModuleIdField(module));
+        fields.add(getStringField("headerTemplate", "HEADER_TEMPLATE", module));
+        fields.add(getStringField("footerTemplate", "FOOTER_TEMPLATE", module));
+        fields.add(getNumberField("htmlContentId", "HTML_CONTENT_ID", module));
+        fields.add(getNumberField("htmlContentCssId", "HTML_CONTENT_CSS_ID", module));
+        fields.add(getStringField("templateSettings", "TEMPLATE_SETTINGS", module));
+        fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
+        fields.add(FieldFactory.getSystemField("sysCreatedBy", module));
+        fields.add(FieldFactory.getSystemField("sysModifiedBy", module));
+        fields.add(FieldFactory.getIsDeletedField(module));
+        fields.add(FieldFactory.getSysDeletedTimeField(module));
+        fields.add(FieldFactory.getSysDeletedByField(module));
+        return fields;
+    }
+    
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

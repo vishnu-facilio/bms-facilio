@@ -3062,6 +3062,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
             webTabs.add(new WebTabContext("Classifications","classifications",WebTabContext.Type.CLASSIFICATIONS,null,appId,null,AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()));
             webTabs.add(new WebTabContext("Survey Templates", "surveytemplates", WebTabContext.Type.SETUP_SURVEY, null, appId, null,AccountUtil.FeatureLicense.SURVEY.getFeatureId()));
+            webTabs.add(new WebTabContext("Pdf Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 
@@ -3072,7 +3073,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
-
             groupNameVsWebTabsMap.put("automation", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Automation Plus", "automationplus", layout.getId(), 206, groupOrder++));
@@ -3222,7 +3222,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null, AccountUtil.FeatureLicense.MULTI_LANGUAGE_TRANSLATION.getFeatureId()));
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
             webTabs.add(new WebTabContext("Classifications","classifications",WebTabContext.Type.CLASSIFICATIONS,null,appId,null,AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()));
-
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 
