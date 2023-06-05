@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.NewPermission;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
@@ -71,6 +72,7 @@ public class GetApplicationDetails extends FacilioCommand {
 			} else {
 				appLayouts = ApplicationApi.getLayoutsForAppLayoutType(application.getId(), null, -1);
 			}
+			Boolean hasSetupPermission = NewPermissionUtil.hasSetupPermission();
 			if (CollectionUtils.isNotEmpty(appLayouts)) {
 				for (ApplicationLayoutContext layout : appLayouts) {
 					List<WebTabGroupContext> webTabGroups = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(tabBean.getWebTabGroupForLayoutID(layout),WebTabGroupCacheContext.class),WebTabGroupContext.class);
@@ -159,6 +161,14 @@ public class GetApplicationDetails extends FacilioCommand {
 							if(CollectionUtils.isNotEmpty(webTabs) && considerRole != null && considerRole && AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && !AccountUtil.getCurrentUser().getRole().isPrevileged()) {
 								webTabs.removeIf(t -> (t.getPermissionVal() <= 0 && t.getPermissionVal2() <= 0));
 							}
+
+							boolean fetchRoleSpecificTabs = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FETCH_ROLE_SPECIFIC_WEB_TABS, Boolean.FALSE));
+							if(fetchRoleSpecificTabs && CollectionUtils.isNotEmpty(webTabs) &&
+									AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && !AccountUtil.getCurrentUser().getRole().isPrevileged()
+									&& AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SETUP) && !hasSetupPermission) {
+								webTabs.removeIf(t -> (t.getPermissionVal() <= 0 && t.getPermissionVal2() <= 0));
+							}
+
 							webTabGroup.setWebTabs(webTabs);
 							layout.setWebTabGroupList(webTabGroups);
 						}

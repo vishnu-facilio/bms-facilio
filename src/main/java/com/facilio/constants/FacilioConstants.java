@@ -3266,6 +3266,7 @@ public class FacilioConstants {
 		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
 		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
 		public static final String OMIT_BASESPACE_API = "omitBasespaceAPI";
+		public static final String FETCH_ROLE_SPECIFIC_WEB_TABS = "fetchRoleSpecificTabs";
 
 		public static final String HIDE_COMMENTS_AND_INFORMATION_SECTION_IN_SR="hideCommentsAndInformationSectionInSR";
 
