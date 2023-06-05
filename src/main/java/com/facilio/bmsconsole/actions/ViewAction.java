@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewGroups;
+import com.facilio.bmsconsole.interceptors.ErrorUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -349,7 +350,7 @@ public class ViewAction extends FacilioAction {
 	
 	public String addView() throws Exception {
 		if(!isAllowed()) {
-			return "unauthorized";
+			return ErrorUtil.UNAUTHORIZED;
 		}
 		if(!view.containsKey("type")) {
 			view.put("type", ViewType.TABLE_LIST.getIntVal());
@@ -380,7 +381,7 @@ public class ViewAction extends FacilioAction {
 	
 	public String v2addGroup() throws Exception {
 		if(!isAllowed()) {
-			return "unauthorized";
+			return ErrorUtil.UNAUTHORIZED;
 		}
 		FacilioChain chain = TransactionChainFactory.addViewGroupChain();
 		Context context = chain.getContext();
@@ -396,7 +397,7 @@ public class ViewAction extends FacilioAction {
 	
 	public String v2UpdateGroup() throws Exception {
 		if(!isAllowed()) {
-			return "unauthorized";
+			return ErrorUtil.UNAUTHORIZED;
 		}
 		FacilioChain chain = TransactionChainFactory.updateViewGroupChain();
 		Context context = chain.getContext();
@@ -412,7 +413,7 @@ public class ViewAction extends FacilioAction {
 
 	public String v2deleteGroup() throws Exception {
 		if(!isAllowed()) {
-			return "unauthorized";
+			return ErrorUtil.UNAUTHORIZED;
 		}
 		FacilioChain chain = TransactionChainFactory.deleteViewGroupChain();
 		Context context = chain.getContext();
