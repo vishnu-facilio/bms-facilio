@@ -13,7 +13,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.metamigration.util.MetaMigrationConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -24,6 +26,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -206,6 +209,28 @@ public class MetaMigrationBeanImpl implements MetaMigrationBean {
     }
 
     @Override
+    public WebTabGroupContext getWebTabGroupForRouteAndLayout(long layoutId, String route) throws Exception {
+        if (StringUtils.isEmpty(route)) {
+            throw new IllegalArgumentException("Route cannot be empty");
+        }
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabGroupModule().getTableName())
+                .select(FieldFactory.getWebTabGroupFields())
+                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", route, StringOperators.IS));
+
+        if (layoutId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(layoutId), NumberOperators.EQUALS));
+        } else {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
+        }
+
+        Map<String, Object> props = builder.fetchFirst();
+
+        return MapUtils.isNotEmpty(props) ? FieldUtil.getAsBeanFromMap(props, WebTabGroupContext.class) : null;
+    }
+
+    @Override
     public WebtabWebgroupContext getWebTabWebGroupForTabId(long webTabId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
@@ -221,7 +246,7 @@ public class MetaMigrationBeanImpl implements MetaMigrationBean {
     }
 
     @Override
-    public void addOrUpdateWebTabGroups(List<WebTabGroupContext> webTabGroups, Map<String, List<WebTabContext>> groupNameVsWebTabsMap, ApplicationLayoutContext appLayoutContext) throws Exception {
+    public void addOrUpdateWebTabGroups(List<WebTabGroupContext> webTabGroups, Map<String, List<WebTabContext>> groupNameVsWebTabsMap) throws Exception {
         for (WebTabGroupContext webTabGroupContext : webTabGroups) {
             FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
             FacilioContext chainContext = chain.getContext();
@@ -229,12 +254,13 @@ public class MetaMigrationBeanImpl implements MetaMigrationBean {
             chainContext.put(MetaMigrationConstants.USE_ORDER_FROM_CONTEXT, true);
             chain.execute();
 
-            long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+            webTabGroupContext = (WebTabGroupContext) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP);
+            long webGroupId = webTabGroupContext.getId();
             webTabGroupContext.setId(webGroupId);
 
             List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
 
-            if (appLayoutContext.getAppType().equals("visitor_kiosk") || appLayoutContext.getLayoutDeviceTypeEnum() != ApplicationLayoutContext.LayoutDeviceType.MOBILE) {
+            if (CollectionUtils.isNotEmpty(tabs)) {
                 for (WebTabContext webTabContext : tabs) {
                     chain = TransactionChainFactory.getAddOrUpdateTabChain();
                     chainContext = chain.getContext();
@@ -245,8 +271,9 @@ public class MetaMigrationBeanImpl implements MetaMigrationBean {
                     webTabContext.setId(tabId);
                 }
             }
+
             if (CollectionUtils.isNotEmpty(tabs)) {
-                chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                chain = TransactionChainFactory.getUpdateTabsToGroupChain();
                 chainContext = chain.getContext();
                 chainContext.put(MetaMigrationConstants.USE_ORDER_FROM_CONTEXT, true);
                 chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);

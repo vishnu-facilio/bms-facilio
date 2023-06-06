@@ -47,7 +47,9 @@ public interface MetaMigrationBean {
 
     public WebTabContext getWebTabForAppAndRoute(long appId, String route) throws Exception;
 
+    public WebTabGroupContext getWebTabGroupForRouteAndLayout(long layoutId, String route) throws Exception;
+
     public WebtabWebgroupContext getWebTabWebGroupForTabId(long webTabId) throws Exception;
 
-    public void addOrUpdateWebTabGroups(List<WebTabGroupContext> webTabGroups, Map<String, List<WebTabContext>> groupNameVsWebTabsMap, ApplicationLayoutContext appLayoutContext) throws Exception;
+    public void addOrUpdateWebTabGroups(List<WebTabGroupContext> webTabGroups, Map<String, List<WebTabContext>> groupNameVsWebTabsMap) throws Exception;
 }

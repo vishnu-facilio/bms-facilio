@@ -1,5 +1,6 @@
 package com.facilio.metamigration.util;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -8,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.util.FormsAPI;
 import org.apache.commons.collections.MapUtils;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.Criteria;
@@ -28,6 +30,24 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class MetaMigrationAPI {
+    public enum ComponentsEnum implements FacilioIntEnum {
+        MODULES_AND_FIELDS,
+        TABS_AND_LAYOUTS,
+        FORMS;
+
+        public ComponentsEnum getComponentsEnum(int val) {
+            return TYPE_MAP.get(val);
+        }
+
+        public static final Map<Integer, ComponentsEnum> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+        private static Map<Integer, ComponentsEnum> initTypeMap() {
+            Map<Integer, ComponentsEnum> typeMap = new HashMap<>();
+            for(ComponentsEnum type : values()) {
+                typeMap.put(type.getIndex(), type);
+            }
+            return typeMap;
+        }
+    }
     public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>(){{
         add(FacilioModule.ModuleType.NOTES.getValue());
         add(FacilioModule.ModuleType.PHOTOS.getValue());
@@ -43,49 +63,109 @@ public class MetaMigrationAPI {
         add(FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA.getValue());
         add(FacilioModule.ModuleType.CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP.getValue());
     }};
-    public static void migrateMetaData(long sourceOrgId, long targetOrgId) throws Exception {
+    public static void migrateMetaData(long sourceOrgId, long targetOrgId, List<Integer> componentsToMigrate) throws Exception {
+        Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getId(), "metaMigration");
+        boolean hasMetaMigrationPermission = false;
+        if (MapUtils.isNotEmpty(orgInfo)) {
+            hasMetaMigrationPermission = (boolean) Boolean.parseBoolean(String.valueOf(orgInfo.get("value")));
+        }
+
+        if (!hasMetaMigrationPermission) {
+            return;
+        }
+
         MetaMigrationBean sourceMetaMigration = (MetaMigrationBean) BeanFactory.lookup("MetaMigrationBean", true, sourceOrgId);
         MetaMigrationBean targetMetaMigration = (MetaMigrationBean) BeanFactory.lookup("MetaMigrationBean", true, targetOrgId);
         ModuleBean sourceModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", targetOrgId);
 
-        List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(getModuleFetchCriteria(false));
-        List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(getModuleFetchCriteria(false));
-        List<FacilioModule> oldCustomModules = sourceModuleBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true, null, null);
+        List<ApplicationContext> oldOrgApplications = sourceMetaMigration.getAllApplications();
+        List<ApplicationContext> newOrgApplications = targetMetaMigration.getAllApplications();
+        Map<String, ApplicationContext> newOrgAppNameVsApplication = newOrgApplications.stream()
+                .collect(Collectors.toMap(ApplicationContext::getLinkName, Function.identity()));
 
+        // oldVsNewAppIds
+        Map<Long, Long> oldVsNewAppIds = new HashMap<>();
+        for (ApplicationContext oldAppContext : oldOrgApplications) {
+            if (newOrgAppNameVsApplication.containsKey(oldAppContext.getLinkName())) {
+                long newOrgAppId = newOrgAppNameVsApplication.get(oldAppContext.getLinkName()).getId();
+                oldVsNewAppIds.put(oldAppContext.getId(), newOrgAppId);
+            }
+        }
+
+        // Migrate Modules
+        if (componentsToMigrate.contains(ComponentsEnum.MODULES_AND_FIELDS.getIndex())) {
+            List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(getModuleFetchCriteria(false));
+            List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(getModuleFetchCriteria(false));
+            FacilioUtil.throwIllegalArgumentException(oldSystemModules.size() != newSystemModules.size(), "System Modules are not present properly");
+
+            List<FacilioModule> newCustomModules = new ArrayList<>();
+            Map<Long, Long> oldVsNewCustomModuleIds = new HashMap<>();
+            Map<String, Object> result = migrateModules(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
+            if (MapUtils.isNotEmpty(result)) {
+                newCustomModules = (List<FacilioModule>) result.get(MetaMigrationConstants.MODULES);
+                oldVsNewCustomModuleIds = (Map<Long, Long>) result.get(MetaMigrationConstants.OLD_VS_NEW_IDS);
+            }
+
+
+            Map<String, FacilioModule> newSystemModuleIdsVsModule = newSystemModules.stream().collect(Collectors.toMap(FacilioModule::getName, Function.identity()));
+
+            Map<Long, Long> oldVsNewSystemModuleIds = new HashMap<>();
+            if (CollectionUtils.isNotEmpty(oldSystemModules) && CollectionUtils.isNotEmpty(newSystemModules)) {
+                for (FacilioModule oldSystemModule : oldSystemModules) {
+                    FacilioModule newSystemModule = newSystemModuleIdsVsModule.get(oldSystemModule.getName());
+                    if (newSystemModule == null) {
+                        LOGGER.info("System Module not present - ModuleName - " + oldSystemModule.getName() + " ModuleId - " + oldSystemModule.getModuleId());
+                        continue;
+                    }
+                    oldVsNewSystemModuleIds.put(oldSystemModule.getModuleId(), newSystemModule.getModuleId());
+                }
+            }
+
+            Map<Long, Long> oldVsNewModuleIds = new HashMap<>();
+            oldVsNewModuleIds.putAll(oldVsNewCustomModuleIds);
+            oldVsNewModuleIds.putAll(oldVsNewSystemModuleIds);
+
+            // Migrate Fields
+            migrateFields(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, oldVsNewModuleIds);
+        }
+
+        // Tabs and layouts
+        if (componentsToMigrate.contains(ComponentsEnum.TABS_AND_LAYOUTS.getIndex())) {
+            migrateTabsAndLayouts(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, sourceOrgId, targetOrgId, oldVsNewAppIds);
+        }
+        // Add Custom Forms, Update System Forms
+        if (componentsToMigrate.contains(ComponentsEnum.FORMS.getIndex())) {
+            migrateForms(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, oldVsNewAppIds);
+        }
+    }
+
+    public static Map<String, Object> migrateModules(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration) throws Exception {
+        List<FacilioModule> oldCustomModules = sourceModuleBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true, null, null);
         LOGGER.info("####MetaMigration - Started adding custom modules");
 
+        Map<String, Object> result = null;
         List<FacilioModule> newCustomModules = new ArrayList<>();
         Map<Long, Long> oldVsNewCustomModuleIds = new HashMap<>();
         if (CollectionUtils.isNotEmpty(oldCustomModules)) {
-            Map<String, Object> result = targetMetaMigration.createModules(oldCustomModules);
+            result = targetMetaMigration.createModules(oldCustomModules);
             newCustomModules = (List<FacilioModule>) result.get(MetaMigrationConstants.MODULES);
             oldVsNewCustomModuleIds = (Map<Long, Long>) result.get(MetaMigrationConstants.OLD_VS_NEW_IDS);
         }
 
         LOGGER.info("####MetaMigration - Completed adding custom modules");
-
         FacilioUtil.throwIllegalArgumentException(oldCustomModules.size() != newCustomModules.size(), "Custom Modules are not migrated properly");
+        
+        return result;
+    }
 
-        Map<String, FacilioModule> newSystemModuleIdsVsModule = newSystemModules.stream().collect(Collectors.toMap(FacilioModule::getName, Function.identity()));
+    public static void migrateFields(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration,
+                                     MetaMigrationBean targetMetaMigration, Map<Long, Long> oldVsNewModuleIds) throws Exception {
 
-        Map<Long, Long> oldVsNewSystemModuleIds = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(oldSystemModules) && CollectionUtils.isNotEmpty(newSystemModules)) {
-            for (FacilioModule oldSystemModule : oldSystemModules) {
-                FacilioModule newSystemModule = newSystemModuleIdsVsModule.get(oldSystemModule.getName());
-                if (newSystemModule == null) {
-                    LOGGER.info("System Module not present - ModuleName - " + oldSystemModule.getName() + " ModuleId - " + oldSystemModule.getModuleId());
-                    continue;
-                }
-                oldVsNewSystemModuleIds.put(oldSystemModule.getModuleId(), newSystemModule.getModuleId());
-            }
-        }
-
-        FacilioUtil.throwIllegalArgumentException(oldCustomModules.size() != newCustomModules.size(), "System Modules are not present properly");
-
-        Map<Long, Long> oldVsNewModuleIds = new HashMap<>();
-        oldVsNewModuleIds.putAll(oldVsNewCustomModuleIds);
-        oldVsNewModuleIds.putAll(oldVsNewSystemModuleIds);
+        List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(getModuleFetchCriteria(false));
+        List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(getModuleFetchCriteria(false));
+        List<FacilioModule> oldCustomModules = sourceModuleBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true, null, null);
+        List<FacilioModule> newCustomModules = targetModuleBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true, null, null);
 
         LOGGER.info("####MetaMigration - Started adding custom fields in system modules");
 
@@ -99,35 +179,24 @@ public class MetaMigrationAPI {
         createCustomFields(sourceModuleBean, targetModuleBean, targetMetaMigration, oldCustomModules, newCustomModules, oldVsNewModuleIds);
 
         LOGGER.info("####MetaMigration - Completed adding custom fields in custom modules");
+    }
 
-        // Add Custom Forms, Update System Forms
+    public static void migrateForms(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration,
+                                    MetaMigrationBean targetMetaMigration, Map<Long, Long> oldVsNewAppIds) throws Exception {
         List<Long> moduleIdsWithForms = sourceMetaMigration.getModuleIdsWithForms();
         Map<String, Map<Long, Long>> moduleNameVsOldVsNewFormIds = new HashMap<>();
         if (CollectionUtils.isNotEmpty(moduleIdsWithForms)) {
-            moduleNameVsOldVsNewFormIds = addOrUpdateForms(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, moduleIdsWithForms);
+            moduleNameVsOldVsNewFormIds = addOrUpdateForms(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, oldVsNewAppIds, moduleIdsWithForms);
         }
 
         Map<Long, Long> oldVsNewFormIds = new HashMap<>();
         for (String moduleName : moduleNameVsOldVsNewFormIds.keySet()) {
             oldVsNewFormIds.putAll(moduleNameVsOldVsNewFormIds.get(moduleName));
         }
+    }
 
-        // Tabs and layouts
-        // Apps -> Layouts -> Group -> Tabs -> Group-Tab Mapping -> Tab-Module Mapping
-        List<ApplicationContext> oldOrgApplications = sourceMetaMigration.getAllApplications();
-        List<ApplicationContext> newOrgApplications = targetMetaMigration.getAllApplications();
-        Map<String, ApplicationContext> newOrgAppNameVsApplication = newOrgApplications.stream()
-                .collect(Collectors.toMap(ApplicationContext::getName, Function.identity()));
-
-        // oldVsNewAppIds
-        Map<Long, Long> oldVsNewAppIds = new HashMap<>();
-        for (ApplicationContext oldAppContext : oldOrgApplications) {
-            if (newOrgAppNameVsApplication.containsKey(oldAppContext.getName())) {
-                long newOrgAppId = newOrgAppNameVsApplication.get(oldAppContext.getName()).getId();
-                oldVsNewAppIds.put(oldAppContext.getId(), newOrgAppId);
-            }
-        }
-
+    public static void migrateTabsAndLayouts(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration,
+                                             MetaMigrationBean targetMetaMigration, long sourceOrgId, long targetOrgId, Map<Long, Long> oldVsNewAppIds) throws Exception {
         // oldVsNewTabLayoutIds
         Map<Long, Long> oldVsNewLayoutIds = new HashMap<>();
         for (long oldOrgAppId : oldVsNewAppIds.keySet()) {
@@ -145,12 +214,8 @@ public class MetaMigrationAPI {
             }
         }
 
-        handleTabsAndLayouts(sourceOrgId, targetOrgId, sourceModuleBean, targetModuleBean, sourceMetaMigration,
-                targetMetaMigration, oldVsNewAppIds, oldVsNewLayoutIds);
-
-
+        handleTabsAndLayouts(sourceOrgId, targetOrgId, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, oldVsNewAppIds, oldVsNewLayoutIds);
     }
-
     public static Criteria getModuleFetchCriteria(boolean fetchCustom) {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(fetchCustom), BooleanOperators.IS));
@@ -232,7 +297,7 @@ public class MetaMigrationAPI {
 
     public static Map<String, Map<Long, Long>> addOrUpdateForms(ModuleBean sourceModuleBean, ModuleBean targetModuleBean,
                                                                 MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration,
-                                                                List<Long> moduleIds) throws Exception{
+                                                                Map<Long, Long> oldVsNewAppIds, List<Long> moduleIds) throws Exception{
         LOGGER.info("####MetaMigration - Started adding forms");
         Map<String, Map<Long, Long>> resultOldVsNewIds = new HashMap<>();
 
@@ -263,17 +328,19 @@ public class MetaMigrationAPI {
             oldCustomForms = new ArrayList<>();
 
             for (FacilioForm form : dbFormsList) {
-                if (form.getIsSystemForm() != null && form.getIsSystemForm()) {
-                    oldSystemForms.add(form);
-                } else {
-                    oldCustomForms.add(form);
+                if (oldVsNewAppIds.containsKey(form.getAppId())) {
+                    if (form.getIsSystemForm() != null && form.getIsSystemForm()) {
+                        oldSystemForms.add(form);
+                    } else {
+                        oldCustomForms.add(form);
+                    }
                 }
             }
 
-            Map<Long, Long> currModuleOldVsNewAddedIds = addForms(newOrgModule, oldCustomForms, oldVsNewFieldIdsMap, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
+            Map<Long, Long> currModuleOldVsNewAddedIds = addForms(newOrgModule, oldCustomForms, oldVsNewFieldIdsMap, oldVsNewAppIds, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
             LOGGER.info("####MetaMigration - CurrModuleOldVsNewAddedIds - ModuleName - " + newOrgModule.getName() + " " + currModuleOldVsNewAddedIds);
 
-            Map<Long, Long> currModuleOldVsNewUpdatedIds = updateForms(newOrgModule, oldSystemForms, oldVsNewFieldIdsMap, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
+            Map<Long, Long> currModuleOldVsNewUpdatedIds = updateForms(newOrgModule, oldSystemForms, oldVsNewFieldIdsMap, oldVsNewAppIds, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
             LOGGER.info("####MetaMigration - CurrModuleOldVsNewUpdatedIds - ModuleName - " + newOrgModule.getName() + " " + currModuleOldVsNewUpdatedIds);
 
             resultOldVsNewIds.put(moduleName, currModuleOldVsNewAddedIds);
@@ -285,7 +352,7 @@ public class MetaMigrationAPI {
         return resultOldVsNewIds;
     }
 
-    public static Map<Long, Long> addForms(FacilioModule newOrgModule, List<FacilioForm> oldCustomForms, Map<Long, Long> oldVsNewFieldIdsMap,
+    public static Map<Long, Long> addForms(FacilioModule newOrgModule, List<FacilioForm> oldCustomForms, Map<Long, Long> oldVsNewFieldIdsMap, Map<Long, Long> oldVsNewAppIds,
                                            ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration ,MetaMigrationBean targetMetaMigration) throws Exception {
 
         LOGGER.info("####MetaMigration - Started adding custom forms for module - " + newOrgModule.getName());
@@ -296,14 +363,15 @@ public class MetaMigrationAPI {
             long oldFormId = form.getId();
             FacilioForm newDbForm = targetMetaMigration.getForm(form.getModule().getName(), form.getName());
             if (newDbForm != null) {
-                updateForms(newOrgModule, Collections.singletonList(form), oldVsNewFieldIdsMap, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
+                updateForms(newOrgModule, Collections.singletonList(form), oldVsNewFieldIdsMap, oldVsNewAppIds, sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration);
                 continue;
             }
 
             List<FormField> formFieldsFromSections = FormsAPI.getFormFieldsFromSections(form.getSections());
-            MetaMigrationUtil.updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, form.getSections(), oldVsNewFieldIdsMap);
+            MetaMigrationUtil.updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, form.getSections(), oldVsNewFieldIdsMap, oldVsNewAppIds);
             MetaMigrationUtil.updateFormFieldFieldIds(formFieldsFromSections, oldVsNewFieldIdsMap);
-            form.setAppId(-1);
+            if (oldVsNewAppIds.containsKey(form.getAppId())) { form.setAppId(oldVsNewAppIds.get(form.getAppId())); }
+            form.setStateFlowId(-1);
             form.setId(-1);
 
             long newFormId = targetMetaMigration.createForm(form, newOrgModule);
@@ -316,7 +384,7 @@ public class MetaMigrationAPI {
         return oldVsNewAddedFormIds;
     }
 
-    public static Map<Long, Long> updateForms(FacilioModule newOrgModule, List<FacilioForm> oldSystemForms, Map<Long, Long> oldVsNewFieldIdsMap, ModuleBean sourceModuleBean,
+    public static Map<Long, Long> updateForms(FacilioModule newOrgModule, List<FacilioForm> oldSystemForms, Map<Long, Long> oldVsNewFieldIdsMap, Map<Long, Long> oldVsNewAppIds, ModuleBean sourceModuleBean,
                                               ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration) throws Exception {
         if (CollectionUtils.isEmpty(oldSystemForms)) {
             return new HashMap<>();
@@ -352,7 +420,7 @@ public class MetaMigrationAPI {
 
                 List<FormSection> oldOrgFormSections = oldOrgForm.getSections();
                 List<FormField> formFieldsFromSections = FormsAPI.getFormFieldsFromSections(oldOrgFormSections);
-                MetaMigrationUtil.updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, oldOrgForm.getSections(), oldVsNewFieldIdsMap);
+                MetaMigrationUtil.updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, oldOrgForm.getSections(), oldVsNewFieldIdsMap, oldVsNewAppIds);
                 MetaMigrationUtil.updateFormFieldFieldIds(formFieldsFromSections, oldVsNewFieldIdsMap);
                 newOrgForm.setSections(oldOrgFormSections);
 
@@ -374,43 +442,6 @@ public class MetaMigrationAPI {
 
         WebTabBean sourceTabBean = (WebTabBean) BeanFactory.lookup("TabBean", sourceOrgId);
         WebTabBean targetTabBean = (WebTabBean) BeanFactory.lookup("TabBean", targetOrgId);
-
-        LOGGER.info("####MetaMigration - Started deleting tabs and layouts in orgId - " + targetOrgId);
-
-        // delete old tabs and groups
-        for (long newOrgAppId : oldVsNewAppId.values()) {
-            List<ApplicationLayoutContext> newOrgLayouts = targetMetaMigration.getLayoutsForAppId(newOrgAppId);
-            for (ApplicationLayoutContext newOrgLayout : newOrgLayouts) {
-                List<WebTabGroupContext> newOrgWebTabGroups = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(targetTabBean.getWebTabGroupForLayoutID(newOrgLayout),
-                        WebTabGroupCacheContext.class), WebTabGroupContext.class);
-                if (CollectionUtils.isNotEmpty(newOrgWebTabGroups)) {
-                    for (WebTabGroupContext webTabGroup : newOrgWebTabGroups) {
-                        long groupId = webTabGroup.getId();
-                        List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(targetTabBean.getWebTabsForWebGroup(webTabGroup.getId()),
-                                WebTabCacheContext.class), WebTabContext.class);
-                        if (CollectionUtils.isNotEmpty(webTabs)) {
-                            List<Long> tabIds = new ArrayList<>();
-                            for (WebTabContext webTab : webTabs) {
-                                long tabId = webTab.getId();
-                                tabIds.add(tabId);
-                                targetTabBean.deleteTabMappingEntriesForTab(tabId);
-                            }
-                            targetTabBean.disassociateTabGroup(tabIds, groupId);
-                        }
-                        targetTabBean.deleteTabForGroupCommand(groupId);
-                        targetTabBean.deleteWebTabGroup(groupId);
-                    }
-                }
-            }
-            List<WebTabCacheContext> webTabsForApplication = targetTabBean.getWebTabsForApplication(newOrgAppId);
-            if (CollectionUtils.isNotEmpty(webTabsForApplication)) {
-                for (WebTabContext webTab : webTabsForApplication) {
-                    targetTabBean.deleteTab(webTab.getId());
-                }
-            }
-
-        }
-        LOGGER.info("####MetaMigration - Completed deleting tabs and layouts in orgId - " + targetOrgId);
 
         LOGGER.info("####MetaMigration - Started adding tabs and layouts in orgId - " + targetOrgId);
         // add new tabs and groups
@@ -453,7 +484,7 @@ public class MetaMigrationAPI {
                         }
                         oldOrgLayout.setWebTabGroupList(oldOrgWebTabGroups);
 
-                        constructNewWebTabGroups(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, newOrgAppId, newLayoutId, oldOrgWebTabGroups, oldOrgLayout);
+                        constructNewWebTabGroups(sourceModuleBean, targetModuleBean, sourceMetaMigration, targetMetaMigration, newOrgAppId, newLayoutId, oldOrgWebTabGroups);
                     }
                 }
             }
@@ -462,7 +493,7 @@ public class MetaMigrationAPI {
     }
 
     public static void constructNewWebTabGroups(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration,
-                                                long newOrgAppId, long newLayoutId, List<WebTabGroupContext> oldWebTabGroups, ApplicationLayoutContext appLayoutContext) throws Exception {
+                                                long newOrgAppId, long newLayoutId, List<WebTabGroupContext> oldWebTabGroups) throws Exception {
         Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
         List<WebTabGroupContext> newWebTabGroups = new ArrayList<>();
 
@@ -470,37 +501,42 @@ public class MetaMigrationAPI {
             WebTabGroupContext newWebTabGroup = new WebTabGroupContext(oldWebTabGroup);
             newWebTabGroup.setLayoutId(newLayoutId);
             newWebTabGroup.setWebTabs(null);
-            newWebTabGroup.setId(-1);
             if (newWebTabGroup.getIconType()==-1 && newWebTabGroup.getIconTypeEnum()==null) {newWebTabGroup.setIconType(0);}
+
+            WebTabGroupContext dbWebTabGroup = targetMetaMigration.getWebTabGroupForRouteAndLayout(newLayoutId, newWebTabGroup.getRoute());
+
+            if (dbWebTabGroup != null) {
+                newWebTabGroup.setId(dbWebTabGroup.getId());
+            } else {
+                newWebTabGroup.setId(-1);
+            }
 
             List<WebTabContext> currGroupWebTabs = new ArrayList<>();
             for (WebTabContext oldWebTab : oldWebTabGroup.getWebTabs()) {
-                WebTabContext newWebTab;
-                if (!appLayoutContext.getAppType().equals("visitor_kiosk") && appLayoutContext.getLayoutDeviceTypeEnum() == ApplicationLayoutContext.LayoutDeviceType.MOBILE) {
-                    newWebTab = targetMetaMigration.getWebTabForAppAndRoute(newOrgAppId, oldWebTab.getRoute());
-                    if (newWebTab != null) {
-                        WebtabWebgroupContext webTabWebGroup = targetMetaMigration.getWebTabWebGroupForTabId(newWebTab.getId());
-                        newWebTab.setOrder(webTabWebGroup.getOrder());
-                    }
-                } else {
-                    newWebTab = new WebTabContext(oldWebTab);
-                    newWebTab.setApplicationId(newOrgAppId);
-                    newWebTab.setId(-1);
+                WebTabContext newWebTab = new WebTabContext(oldWebTab);
+                newWebTab.setApplicationId(newOrgAppId);
 
-                    if (CollectionUtils.isNotEmpty(oldWebTab.getModuleIds())) {
-                        newWebTab.setModuleIds(new ArrayList<>());
-                        newWebTab.setModules(new ArrayList<>());
-                        for (long oldModuleId : oldWebTab.getModuleIds()) {
-                            FacilioModule oldModule = sourceModuleBean.getModule(oldModuleId);
-                            FacilioModule newModule = targetModuleBean.getModule(oldModule.getName());
-                            if (newModule != null) {
-                                newWebTab.getModuleIds().add(newModule.getModuleId());
-                                newWebTab.getModules().add(newModule);
-                            } else {
-                                LOGGER.info("####MetaMigration - Module not present in new org - " + oldModule.getName());
-                            }
+                if (CollectionUtils.isNotEmpty(oldWebTab.getModuleIds())) {
+                    newWebTab.setModuleIds(new ArrayList<>());
+                    newWebTab.setModules(new ArrayList<>());
+                    for (long oldModuleId : oldWebTab.getModuleIds()) {
+                        FacilioModule oldModule = sourceModuleBean.getModule(oldModuleId);
+                        FacilioModule newModule = targetModuleBean.getModule(oldModule.getName());
+                        if (newModule != null) {
+                            newWebTab.getModuleIds().add(newModule.getModuleId());
+                            newWebTab.getModules().add(newModule);
+                        } else {
+                            LOGGER.info("####MetaMigration - Module not present in new org - " + oldModule.getName());
                         }
                     }
+                }
+
+                WebTabContext dbWebTabContext = targetMetaMigration.getWebTabForAppAndRoute(newOrgAppId, oldWebTab.getRoute());
+
+                if (dbWebTabContext != null) {
+                    newWebTab.setId(dbWebTabContext.getId());
+                } else {
+                    newWebTab.setId(-1);
                 }
 
                 if (newWebTab != null) {
@@ -514,7 +550,7 @@ public class MetaMigrationAPI {
         }
 
         if (CollectionUtils.isNotEmpty(newWebTabGroups) && MapUtils.isNotEmpty(groupNameVsWebTabsMap)) {
-            targetMetaMigration.addOrUpdateWebTabGroups(newWebTabGroups, groupNameVsWebTabsMap, appLayoutContext);
+            targetMetaMigration.addOrUpdateWebTabGroups(newWebTabGroups, groupNameVsWebTabsMap);
         }
     }
 }

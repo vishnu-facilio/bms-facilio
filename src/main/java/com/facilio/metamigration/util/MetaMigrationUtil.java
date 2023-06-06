@@ -56,7 +56,8 @@ public class MetaMigrationUtil {
         return oldVsNewIds;
     }
 
-    public static void updateSubFormSection(MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration, ModuleBean sourceModuleBean, ModuleBean targetModuleBean, List<FormSection> oldSections, Map<Long, Long> oldVsNewFieldIdsMap) throws Exception {
+    public static void updateSubFormSection(MetaMigrationBean sourceMetaMigration, MetaMigrationBean targetMetaMigration, ModuleBean sourceModuleBean, ModuleBean targetModuleBean,
+                                            List<FormSection> oldSections, Map<Long, Long> oldVsNewFieldIdsMap, Map<Long, Long> oldVsNewAppIds) throws Exception {
         for (FormSection section : oldSections) {
             if (section.getSubFormId() > 0) {
                 long oldSubFormId = section.getSubFormId();
@@ -96,11 +97,12 @@ public class MetaMigrationUtil {
                     }
 
                     List<FormField> formFieldsFromSections = FormsAPI.getFormFieldsFromSections(oldSubFormFromDB.getSections());
-                    updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, oldSubFormFromDB.getSections(), currOldVsNewFieldIdsMap);
+                    updateSubFormSection(sourceMetaMigration, targetMetaMigration, sourceModuleBean, targetModuleBean, oldSubFormFromDB.getSections(), currOldVsNewFieldIdsMap, oldVsNewAppIds);
                     updateFormFieldFieldIds(formFieldsFromSections, currOldVsNewFieldIdsMap);
-                    oldSubFormFromDB.setAppId(-1);
+                    oldSubFormFromDB.setStateFlowId(-1);
                     oldSubFormFromDB.setId(-1);
 
+                    if (oldVsNewAppIds.containsKey(oldSubFormFromDB.getAppId())) { oldSubFormFromDB.setAppId(oldVsNewAppIds.get(oldSubFormFromDB.getAppId())); }
                     long newSubFormId = targetMetaMigration.createForm(oldSubFormFromDB, facilioModule);
                     section.setSubFormId(newSubFormId);
                 }
@@ -109,17 +111,23 @@ public class MetaMigrationUtil {
     }
 
     public static void updateFormFieldFieldIds(List<FormField> formFields, Map<Long, Long> oldVsNewFieldIdsMap) {
+        List<FormField> resultFormFields = new ArrayList<>();
         for (FormField formField : formFields) {
             long oldFieldId = formField.getFieldId();
             if (oldFieldId > 0) {
                 if (MapUtils.isNotEmpty(oldVsNewFieldIdsMap) && oldVsNewFieldIdsMap.containsKey(oldFieldId)) {
                     long newFieldId = oldVsNewFieldIdsMap.get(oldFieldId);
                     formField.setFieldId(newFieldId);
+                    resultFormFields.add(formField);
                 } else {
+                    formField.setFieldId(-1);
                     LOGGER.info("####MetaMigration - Field not found in new org - OldFieldName - " + formField.getName());
                 }
+            } else {
+                resultFormFields.add(formField);
             }
         }
+        formFields = resultFormFields;
     }
 
     public static JSONObject createNewField(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, FacilioField oldField) throws Exception {

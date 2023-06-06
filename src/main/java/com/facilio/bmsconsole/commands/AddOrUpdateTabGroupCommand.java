@@ -28,14 +28,13 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
         WebTabGroupContext tabGroup = (WebTabGroupContext) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP);
         boolean useOrderFromContext = (boolean) context.getOrDefault(MetaMigrationConstants.USE_ORDER_FROM_CONTEXT, false);
         if (tabGroup != null) {
-            if (tabGroup.getId() <= 0) {
-                if (!useOrderFromContext) {
+            if (!useOrderFromContext) {
+                if (tabGroup.getId() <= 0) {
                     int lastOrderNumber = getLastOrderNumber(tabGroup.getLayoutId());
                     tabGroup.setOrder(lastOrderNumber + 1);
+                } else {
+                    tabGroup.setOrder(-1);
                 }
-            }
-            else {
-                tabGroup.setOrder(-1);
             }
 
             WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");

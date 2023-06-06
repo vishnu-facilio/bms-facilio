@@ -16,6 +16,16 @@
         <td class="table-head"><h4>Target OrgId</h4></td>
         <td><input type="text" id="targetOrgId" required class="input-field"/></td>
     </tr>
+    <tr>
+        <td class="table-head"><h4>Components</h4></td>
+        <td>
+            <div id="feature">
+                <label class="components-list"><input type="checkbox" name="feature[]" value="1"> Modules & Fields</label><br>
+                <label class="components-list"><input type="checkbox" name="feature[]" value="2"> Tabs & Layouts</label><br>
+                <label class="components-list"><input type="checkbox" name="feature[]" value="3"> Forms</label><br>
+            </div>
+        </td>
+    </tr>
 </table>
 
 <button type="submit" class='submitBtn' id="submitBtn" onclick="sendAjax()">Submit</button>
@@ -28,6 +38,8 @@
         const dataObject = {};
         dataObject.sourceOrgId = $('#sourceOrgId').val();
         dataObject.targetOrgId = $('#targetOrgId').val();
+        dataObject.components = $('#feature input:checked').map(function() { return $(this).val();}).get().toString();
+        console.log(dataObject.components);
 
         $.ajax({
             url: "/admin/runMetaMigration",
@@ -62,6 +74,14 @@
     .table-head {
         font-weight: bold;
         width : 200px;
+    }
+
+    .components-list {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: bold;
     }
 
     .input-field {
