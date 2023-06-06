@@ -76,9 +76,11 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                     LOGGER.error("Exception scheduling: ", e);
                     String msg = "Exception scheduling: " + e.getMessage() + "PM ID: " + pm.getId() + "; ORG ID" + pm.getOrgId();
                     LOGGER.error(msg, e);
-                    // SendEmailAlert(msg, pm.getOrgId());
+                    LOGGER.error("Exception occured while scheduling PM: "+ pm.getId()+", So WO_GENERATION_STATUS has been changed back to 0");
+                    PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(Collections.singletonList(pm.getId()), 0);
+                    SendEmailAlert(msg, pm.getOrgId());
                     // CommonCommandUtil.emailException("Exception scheduling ", "PM ID " + pm.getId(), e);
-                    throw e;
+                    //throw e;
                 }
             }
         }
