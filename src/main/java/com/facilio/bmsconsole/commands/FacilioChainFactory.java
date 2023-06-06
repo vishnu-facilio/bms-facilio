@@ -1491,6 +1491,8 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain getViewCustomizeColumnChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetDBViewCommand());
+		c.addCommand(new CheckEditAccessCommand());
 		c.addCommand(new CustomizeViewColumnCommand());
 		return c;
 	}
