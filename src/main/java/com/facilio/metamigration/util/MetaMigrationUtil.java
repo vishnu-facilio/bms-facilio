@@ -40,7 +40,7 @@ public class MetaMigrationUtil {
 
     public static Map<Long, Long> getOldVsNewFieldIdMap(String moduleName, List<FacilioField> oldFields, List<FacilioField> newFields) {
         if (oldFields.size() == newFields.size()) {
-            LOGGER.info("Fields count mismatch - ModuleName - " + moduleName);
+            LOGGER.info("####MetaMigration - Fields count mismatch - ModuleName - " + moduleName);
         }
         Map<String, FacilioField> oldFieldsMap = FieldFactory.getAsMap(oldFields);
         Map<String, FacilioField> newFieldsMap = FieldFactory.getAsMap(newFields);
@@ -50,7 +50,7 @@ public class MetaMigrationUtil {
             if (newFieldsMap.containsKey(fieldName)) {
                 oldVsNewIds.put(oldFieldsMap.get(fieldName).getFieldId(), newFieldsMap.get(fieldName).getFieldId());
             } else {
-                LOGGER.info("Field not present - ModuleName - " + moduleName + " FieldName - " + fieldName);
+                LOGGER.info("####MetaMigration - Field not present - ModuleName - " + moduleName + " FieldName - " + fieldName);
             }
         }
         return oldVsNewIds;
@@ -77,7 +77,7 @@ public class MetaMigrationUtil {
                         FacilioField newField = targetModuleBean.getField(oldField.getName(), oldField.getModule().getName());
                         lookupFieldModuleName = oldField.getModule().getName();
                         if (newField == null) {
-                            LOGGER.info("LookupField is not created in moduleName - " + facilioModule.getName() + " old fieldId - " + oldLookupFieldId);
+                            LOGGER.info("####MetaMigration - LookupField is not created in moduleName - " + facilioModule.getName() + " old fieldId - " + oldLookupFieldId);
                         } else {
                             section.setLookupFieldId(newField.getFieldId());
                         }
@@ -116,7 +116,7 @@ public class MetaMigrationUtil {
                     long newFieldId = oldVsNewFieldIdsMap.get(oldFieldId);
                     formField.setFieldId(newFieldId);
                 } else {
-                    LOGGER.info("Field not found in new org - OldFieldName - " + formField.getName());
+                    LOGGER.info("####MetaMigration - Field not found in new org - OldFieldName - " + formField.getName());
                 }
             }
         }

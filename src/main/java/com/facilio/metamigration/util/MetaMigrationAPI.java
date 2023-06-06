@@ -1,7 +1,5 @@
 package com.facilio.metamigration.util;
 
-import com.facilio.bmsconsole.commands.GetModulesListCommand;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -30,14 +28,29 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class MetaMigrationAPI {
+    public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>(){{
+        add(FacilioModule.ModuleType.NOTES.getValue());
+        add(FacilioModule.ModuleType.PHOTOS.getValue());
+        add(FacilioModule.ModuleType.ACTIVITY.getValue());
+        add(FacilioModule.ModuleType.ATTACHMENTS.getValue());
+        add(FacilioModule.ModuleType.LIVE_FORMULA.getValue());
+        add(FacilioModule.ModuleType.RELATION_DATA.getValue());
+        add(FacilioModule.ModuleType.ENUM_REL_MODULE.getValue());
+        add(FacilioModule.ModuleType.SCHEDULED_FORMULA.getValue());
+        add(FacilioModule.ModuleType.LOOKUP_REL_MODULE.getValue());
+        add(FacilioModule.ModuleType.CLASSIFICATION_DATA.getValue());
+        add(FacilioModule.ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
+        add(FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA.getValue());
+        add(FacilioModule.ModuleType.CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP.getValue());
+    }};
     public static void migrateMetaData(long sourceOrgId, long targetOrgId) throws Exception {
         MetaMigrationBean sourceMetaMigration = (MetaMigrationBean) BeanFactory.lookup("MetaMigrationBean", true, sourceOrgId);
         MetaMigrationBean targetMetaMigration = (MetaMigrationBean) BeanFactory.lookup("MetaMigrationBean", true, targetOrgId);
         ModuleBean sourceModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", targetOrgId);
 
-        List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(GetModulesListCommand.MODULES);
-        List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(GetModulesListCommand.MODULES);
+        List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(getModuleFetchCriteria(false));
+        List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(getModuleFetchCriteria(false));
         List<FacilioModule> oldCustomModules = sourceModuleBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true, null, null);
 
         LOGGER.info("####MetaMigration - Started adding custom modules");
@@ -136,6 +149,13 @@ public class MetaMigrationAPI {
                 targetMetaMigration, oldVsNewAppIds, oldVsNewLayoutIds);
 
 
+    }
+
+    public static Criteria getModuleFetchCriteria(boolean fetchCustom) {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(fetchCustom), BooleanOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(IGNORE_MODULE_TYPES, ","), NumberOperators.NOT_EQUALS));
+        return criteria;
     }
 
     public static Map<String, Map<Long, Long>> createCustomFields(ModuleBean sourceModuleBean, ModuleBean targetModuleBean, MetaMigrationBean targetMetaMigration,
@@ -401,7 +421,7 @@ public class MetaMigrationAPI {
                 for (ApplicationLayoutContext oldOrgLayout : oldOrgLayouts) {
                     long oldLayoutId = oldOrgLayout.getId();
                     if (!oldVsNewLayoutIds.containsKey(oldLayoutId)) {
-                        LOGGER.info("Layout not present in new org - Old AppId - " + oldOrgAppId + " Old layoutId - " + oldLayoutId);
+                        LOGGER.info("####MetaMigration - Layout not present in new org - Old AppId - " + oldOrgAppId + " Old layoutId - " + oldLayoutId);
                         continue;
                     }
                     long newLayoutId = oldVsNewLayoutIds.get(oldLayoutId);
