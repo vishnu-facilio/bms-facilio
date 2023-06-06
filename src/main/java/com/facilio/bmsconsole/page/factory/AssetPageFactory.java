@@ -265,7 +265,6 @@ public class AssetPageFactory extends PageFactory {
 				addSafetyPlanTab(page, asset);
 			}
 
-			if(!AccountUtil.isFeatureEnabled(FeatureLicense.PERMISSION_SET)) {
 				Tab tab11 = page.new Tab("Related");
 				List<Long> moduleIds = new ArrayList<>();
 				moduleIds.add(module.getModuleId());
@@ -284,7 +283,6 @@ public class AssetPageFactory extends PageFactory {
 				if ((tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) || isRelationshipAdded) {
 					page.addTab(tab11);
 				}
-			}
 		}
 		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLASSIFICATION)){
 			addClassificationTab(page);
