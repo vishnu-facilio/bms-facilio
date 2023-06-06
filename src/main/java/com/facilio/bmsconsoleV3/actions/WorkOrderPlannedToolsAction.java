@@ -23,8 +23,6 @@ public class WorkOrderPlannedToolsAction extends V3Action {
         this.workOrderId = workOrderId;
     }
 
-    private String toolTypeIds;
-
     public Long getPlannedToolId() {
         return plannedToolId;
     }
@@ -35,22 +33,6 @@ public class WorkOrderPlannedToolsAction extends V3Action {
 
     private Long plannedToolId;
 
-    public String getToolTypeIds() {
-        return toolTypeIds;
-    }
-
-    public void setToolTypeIds(String toolTypeIds) {
-        this.toolTypeIds = toolTypeIds;
-    }
-    public String list() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.getPlannedToolsUnSavedListChainV3();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderId);
-        context.put(FacilioConstants.ContextNames.TOOL_TYPES, toolTypeIds);
-        chain.execute();
-        setData(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, FieldUtil.getAsJSONArray((List) context.get(FacilioConstants.ContextNames.WO_PLANNED_TOOLS), WorkOrderPlannedToolsContext.class));
-        return V3Action.SUCCESS;
-    }
     public String getPlannedToolForActuals() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.getPlannedToolForActualsChain();
         FacilioContext context = chain.getContext();

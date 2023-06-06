@@ -2620,14 +2620,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PlansCostCommandV3());
         return c;
     }
-
-    public static FacilioChain getPlannedItemsUnSavedListChainV3() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PlannedItemsUnSavedListCommandV3());
-        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return c;
-    }
-
     public static FacilioChain getWorkorderLabourPlanBeforeFetchChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new GenericFetchLookUpFieldsCommandV3());
@@ -2657,20 +2649,6 @@ public class TransactionChainFactoryV3 {
         return c;
 
     }
-    public static FacilioChain getPlannedToolsUnSavedListChainV3() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PlannedToolsUnSavedListCommandV3());
-        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return c;
-    }
-
-    public static FacilioChain getPlannedServicesUnSavedListChainV3() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PlannedServicesUnSavedListCommandV3());
-        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
-        return c;
-    }
-
     public static FacilioChain getWorkOrderItemChainV3() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetWorkOrderItemCommandV3());

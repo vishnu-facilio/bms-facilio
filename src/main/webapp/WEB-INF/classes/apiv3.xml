@@ -1531,17 +1531,9 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
                 method="reserve">
         </action>
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
-                method="list">
-        </action>
     </package>
     <package name="workOrderPlannedTools" namespace="/api/v3/workOrderPlannedTools"
              extends="v3Api">
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
-                method="list">
-        </action>
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="getPlannedToolForActuals">
@@ -1549,10 +1541,6 @@
     </package>
     <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
              extends="v3Api">
-        <action name="list"
-                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
-                method="list">
-        </action>
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
                 method="getPlannedServiceForActuals">

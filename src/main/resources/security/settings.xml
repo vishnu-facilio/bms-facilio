@@ -2321,5 +2321,21 @@
             <property name="toolId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v3/workOrderPlannedItems/reserve">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderPlannedTools/forActuals">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="plannedToolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderPlannedServices/forActuals">
+        <requestbody type="object">
+            <property name="plannedServiceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/setup/portalUsersList" method="GET" />
 </config>
