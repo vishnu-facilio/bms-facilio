@@ -97,7 +97,7 @@
 
 <%
     try {
-        List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
+        List<Organization> orgs = AccountUtil.getOrgBean().getOrgsForMigration();
         response.getWriter().println("orgs count ::"+orgs.size()+"<br>");
         if (CollectionUtils.isNotEmpty(orgs)) {
             for (Organization org : orgs) {
