@@ -166,15 +166,15 @@ public class PeopleAPI {
 	}
 
 	public static void updatePeopleOnUserUpdate(User user) throws Exception {
-		PeopleContext peopleExisting = getPeople(user.getEmail());
+		PeopleContext people = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
-		EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisting), EmployeeContext.class);
-		emp.setName(user.getName());
-		emp.setPhone(user.getMobile());
-		emp.setRoleId(user.getRoleId());
-		emp.setLanguage(user.getLanguage());
-		RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
+		people.setName(user.getName());
+		people.setPhone(user.getPhone());
+		people.setMobile(user.getMobile());
+		people.setLanguage(user.getLanguage());
+		people.setTimezone(user.getTimezone());
+		RecordAPI.updateRecord(people, module, modBean.getAllFields(module.getName()));
 	}
 
 	public static void updatePeopleOnUserStatusChange(User user, Boolean userStatus) throws Exception {
