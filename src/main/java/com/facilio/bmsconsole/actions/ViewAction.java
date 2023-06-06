@@ -108,7 +108,9 @@ public class ViewAction extends FacilioAction {
 		this.scheduledReports = scheduledReports;
 	}
 	public String addWoScheduleView() throws Exception {
-		
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
 		emailTemplate.setName("Report");
 		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		
@@ -141,6 +143,9 @@ public class ViewAction extends FacilioAction {
 	}
 	
 	public String editWoScheduledView () throws Exception {
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
 		emailTemplate.setName("Report");
 		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		
@@ -165,6 +170,9 @@ public class ViewAction extends FacilioAction {
 	}
 	
 	public String deleteScheduledView () throws Exception {
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		FacilioChain mailReportChain = ReportsChainFactory.deleteWoScheduledViewChain();
@@ -428,6 +436,9 @@ public class ViewAction extends FacilioAction {
 }
 	
 	public String v2customizeViewGroups() throws Exception {
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -446,7 +457,10 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-public String v2customizeView() throws Exception {
+	public String v2customizeView() throws Exception {
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -540,7 +554,10 @@ public String v2customizeView() throws Exception {
 	
 		
 	public String customizeView() throws Exception {
-		
+		if(!isAllowed()) {
+			return ErrorUtil.UNAUTHORIZED;
+		}
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
