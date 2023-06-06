@@ -26,7 +26,7 @@ public class FillActivityforServiceRequestCommand extends FacilioCommand {
 		
 		List<V3ServiceRequestContext> serviceRequests = Constants.getRecordList((FacilioContext) context);
 		
-		Map<Long, V3ServiceRequestContext> oldRecordMap = (Map<Long, V3ServiceRequestContext>) context.get(FacilioConstants.ContextNames.OLD_RECORD_MAP);
+		Map<Long, V3ServiceRequestContext> oldRecordMap = Constants.getOldRecordMap(context);
 		
 		for(V3ServiceRequestContext serviceRequest : serviceRequests) {
 			

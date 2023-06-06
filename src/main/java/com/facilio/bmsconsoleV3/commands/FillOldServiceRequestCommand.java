@@ -28,9 +28,7 @@ public class FillOldServiceRequestCommand extends FacilioCommand {
 			
 			List<V3ServiceRequestContext> oldServiceRequest = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.SERVICE_REQUEST, serviceRequestIds , V3ServiceRequestContext.class);
 			
-			Map<Long, V3ServiceRequestContext> oldRecordMap = oldServiceRequest.stream().collect(Collectors.toMap(V3ServiceRequestContext::getId, Function.identity()));
-			
-			context.put(FacilioConstants.ContextNames.OLD_RECORD_MAP, oldRecordMap);
+			Constants.addToOldRecordMap(context,FacilioConstants.ContextNames.SERVICE_REQUEST,oldServiceRequest);
 		}
 		
 		return false;
